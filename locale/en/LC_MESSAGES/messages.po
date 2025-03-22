@@ -1,19 +1,85 @@
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
-msgid "Checking Papi-web version..."
+#, python-format
+msgid "#%(board_number)d"
 msgstr ""
 
-msgid "Y *** THE LETTER TO ANSWER YES"
-msgstr "Y"
-
-msgid "N *** THE LETTER TO ANSWER NO"
-msgstr "N"
-
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+#, python-format
+msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
 
-msgid "The installation of version [{version}] failed."
+#, python-format
+msgid "%%s is replaced by the time left before the hour."
+msgstr ""
+
+#, python-format
+msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+msgstr ""
+
+#, python-format
+msgid "%(lib)s version"
+msgstr ""
+
+#, python-format
+msgid "%(minutes)d minutes after"
+msgstr ""
+
+#, python-format
+msgid "%(minutes)d minutes before"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (check-in)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr ""
+
+#, python-format
+msgid "%f to %l"
+msgstr ""
+
+#, python-format
+msgid "%t (%f to %l)"
+msgstr ""
+
+msgid "%t (by board)"
+msgstr ""
+
+msgid "%t (by player)"
+msgstr ""
+
+#, python-format
+msgid "%t [Boards %f-%l]"
+msgstr ""
+
+msgid "%t crosstable"
+msgstr ""
+
+msgid "%t ranking"
+msgstr ""
+
+#, python-format
+msgid "(%(num)d screen)"
+msgid_plural "(%(num)d screens)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "(by default)"
+msgstr ""
+
+msgid "(no screens)"
+msgstr ""
+
+msgid "- *** NAME FOR GENDER NONE"
+msgstr "-"
+
+msgid "- *** SHORT NAME FOR GENDER NONE"
+msgstr "-"
+
+msgid "- Download the files (ZIP archive): {bin_zip_url}"
 msgstr ""
 
 msgid "- Version {version} ({events})"
@@ -22,327 +88,1149 @@ msgstr ""
 msgid "- Version {version}: no events"
 msgstr ""
 
-msgid "No events found in previously installed versions."
-msgstr ""
-
-msgid "No previously installed versions found."
-msgstr ""
-
-msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-msgstr ""
-
-msgid "Please choose the version to recover:"
-msgstr ""
-
-msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q"
-
-msgid "  - [{q_uc}] Do not recover"
-msgstr ""
-
-msgid "Please enter the number of the version to recover [{default}]: "
-msgstr ""
-
-msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
-msgstr ""
-
-msgid "Recovering events from version {version}..."
-msgstr ""
-
-msgid "Recovering event [{event_uniq_id}]..."
-msgstr ""
-
-msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
-msgstr ""
-
-msgid "Recovering custom files..."
-msgstr ""
-
-msgid "Events recovered: {num} (from directory [{dir}])."
-msgstr ""
-
-msgid "Tournaments recovered: {num} (from directory [{dir}])."
-msgstr ""
-
-msgid "Custom files recovered: {num} (from directory [{dir}])."
-msgstr ""
-
-msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
-msgstr ""
-
-msgid "Failed to read [{url}] (connection error): [{ex}]."
-msgstr ""
-
-msgid "Failed to read [{url}] (timeout): [{ex}]."
-msgstr ""
-
-msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
-msgstr ""
-
-msgid "Failed to read [{url}]: [{ex}]."
-msgstr ""
-
-msgid "Sending the files to a server..."
-msgstr ""
-
-msgid "Files have been sent to bin {bin_name}."
-msgstr ""
-
 msgid "- View the files on filebin.net: {bin_url}"
 msgstr ""
 
-msgid "- Download the files (ZIP archive): {bin_zip_url}"
+msgid "/move"
 msgstr ""
 
-msgid "[Papi-web {version}] Request for the integration of custom files"
+msgid "1 *** THE LETTER TO ANSWER ONCE"
+msgstr "1"
+
+msgid "20+"
 msgstr ""
 
-msgid "Hello,"
+msgid "50+"
 msgstr ""
 
-msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgid "65+"
 msgstr ""
 
-msgid "Thanks :-)"
+msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr ""
 
-msgid "View the files on filebin.net"
-msgstr ""
-
-msgid "Download the files (ZIP archive)"
-msgstr ""
-
-msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
-msgstr ""
-
-msgid "First name LAST NAME"
-msgstr ""
-
-msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
-msgstr ""
-
-msgid "Checking the version failed."
-msgstr ""
-
-msgid "Your Papi-web version is up to date."
+msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
 msgid "A more recent version is available ([{version}])."
 msgstr ""
 
-msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
+#, python-format
+msgid "A password is required to enter results for the event %(event_uniq_id)s."
+msgstr ""
+
+msgid "A positive integer is expected."
 msgstr ""
 
 msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
 msgstr ""
 
-msgid "You are using un unstable version more recent than the last stable version available ({version})."
+msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr ""
 
-msgid "Looking for a more recent version on GitHub ([{url}])..."
+msgid "Absent"
 msgstr ""
 
-msgid "No response from GitHub."
+msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
-msgid "Invalid response from GitHub: {ex}."
+msgid "Access denied, please authenticate to enter results."
 msgstr ""
 
-msgid "No stable version found."
+msgid "Access driver (found)"
 msgstr ""
 
-msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
+msgid "Access driver (not found)"
 msgstr ""
 
-msgid "Downloading version {version} from GitHub ([{url}])..."
+msgid "Access from the Papi-web server"
 msgstr ""
 
-msgid "Downloading failed with code [{code}]."
+msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
-msgid "File downloaded: [{zip_file}]."
+msgid "Access to the arbiter interface is not allowed from this client."
 msgstr ""
 
-msgid "New version [{version}] has been installed in [{dir}]."
+msgid "Action: {action}"
 msgstr ""
 
-msgid "Papi-web project"
+msgid "Actions:"
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}]: {text}"
+msgid "Add"
 msgstr ""
 
-msgid "Family [{family_uniq_id}]: {text}"
+msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
+msgid "Add a family of screens to display the pairings by board."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}]: {text}"
+msgid "Add a family of screens to display the ranking."
 msgstr ""
 
-msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
+msgid "Add a family of screens to enter the results."
 msgstr ""
 
-msgid "Screen [{screen_uniq_id}]: {text}"
+msgid "Add a hour"
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}]: {text}"
+msgid "Add a player to the event."
 msgstr ""
 
-msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
+msgid "Add a rotator to the event."
 msgstr ""
 
-msgid "No name set, by default [{name}]"
+msgid "Add a screen to display an image."
 msgstr ""
 
-msgid "No directory set for Papi files, by default [{path}]."
+msgid "Add a screen to display the last results."
+msgstr ""
+
+msgid "Add a screen to display the pairings by alphabetical order."
+msgstr ""
+
+msgid "Add a screen to display the pairings by board."
+msgstr ""
+
+msgid "Add a screen to display the ranking."
+msgstr ""
+
+msgid "Add a screen to enter the results."
+msgstr ""
+
+msgid "Add a set"
+msgstr ""
+
+msgid "Add a timer to the event."
+msgstr ""
+
+msgid "Add a tournament before adding players."
+msgstr ""
+
+msgid "Add a tournament to the event."
+msgstr ""
+
+msgid "Add an event."
+msgstr ""
+
+msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
+msgstr ""
+
+msgid "Add player"
+msgstr ""
+
+msgid "Alert message"
+msgstr ""
+
+msgid "Alert message:"
+msgstr ""
+
+msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
+msgstr ""
+
+msgid "All the players intended to play the coming round did check-in."
+msgstr ""
+
+msgid "All the tournaments"
+msgstr ""
+
+msgid "Allow"
+msgstr ""
+
+msgid "Any comment on the player (comments are visible only by the arbiters)."
+msgstr ""
+
+msgid "Application"
+msgstr ""
+
+msgid "Arbiter interface (private access)"
+msgstr ""
+
+msgid "Archived event"
+msgstr ""
+
+msgid "Archived events ({num})"
+msgstr ""
+
+#, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Authenticating..."
+msgstr ""
+
+msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
+msgstr ""
+
+msgid "Authentication failed."
+msgstr ""
+
+msgid "Authentication successful!"
+msgstr ""
+
+msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
+
+msgid "Automatically launch a browser when starting the server"
+msgstr ""
+
+msgid "Average of opponents Buchholz"
+msgstr ""
+
+msgid "Average perfect performance of opponents"
+msgstr ""
+
+msgid "Average performance rating of opponents"
+msgstr ""
+
+msgid "Average rating of opponents"
+msgstr ""
+
+msgid "B *** BLACK COLOR FOR CROSSTABLE"
+msgstr "B"
+
+msgid "BLACK WINS"
+msgstr ""
+
+msgid "BY FORFEIT"
+msgstr ""
+
+msgid "Background colour:"
+msgstr ""
+
+#, python-format
+msgid "Background colour: %(color)s"
+msgstr ""
+
+msgid "Background image and colour"
+msgstr ""
+
+msgid "Background image:"
+msgstr ""
+
+msgid "Black"
+msgstr ""
+
+msgid "Blitz"
+msgstr ""
+
+msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgstr "Blitz"
+
+msgid "Blitz rating"
+msgstr ""
+
+msgid "Blitz:"
+msgstr ""
+
+#, python-format
+msgid "Board #%(board_number)d with %(color)s"
+msgstr ""
+
+msgid "Board & color"
+msgstr ""
+
+msgid "Board selection (by number)"
+msgstr ""
+
+#, python-format
+msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Boards"
+msgstr ""
+
+#, python-format
+msgid "Boards %f-%l"
+msgstr ""
+
+#, python-format
+msgid "Boards from #%(first)d to #%(last)d"
+msgstr ""
+
+msgid "Boards screen creation"
+msgstr ""
+
+msgid "Boards screen family creation"
+msgstr ""
+
+msgid "Boards screens show pairings by board number."
+msgstr ""
+
+msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
+msgstr "Bu."
+
+msgid "Buchholz"
+msgstr ""
+
+msgid "Buchholz cut bottom"
+msgstr ""
+
+msgid "By board"
+msgstr ""
+
+msgid "By default - {option}"
+msgstr ""
+
+#, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr ""
+
+msgid "By player"
+msgstr ""
+
+msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
+msgstr "C"
+
+msgid "C *** THE LETTER TO ANSWER CREATE"
+msgstr "C"
+
+msgid "CHECK-IN"
+msgstr ""
+
+msgid "CHECK-OUT"
+msgstr ""
+
+msgid "CLEAR THE RESULT"
+msgstr ""
+
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "CM"
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Candidate Master"
+msgstr ""
+
+msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
+msgstr "Cat"
+
+msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgstr "Cat."
+
+msgid "Cat."
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
+msgstr "Category"
+
+msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgstr ""
+
+msgid "Change the player's tournament."
+msgstr ""
+
+msgid "Character [{char}] is not allowed."
+msgstr ""
+
+msgid "Check the box to allow other screens to display a link to the screen of this family."
+msgstr ""
+
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr ""
+
+msgid "Check-in"
+msgstr ""
+
+msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
+msgstr "Check-in"
+
+#, python-format
+msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Checked-in"
+msgstr ""
+
+msgid "Checking Papi-web version..."
+msgstr ""
+
+msgid "Checking the version failed."
+msgstr ""
+
+msgid "Chess"
+msgstr ""
+
+msgid "ChessEvent"
+msgstr ""
+
+msgid "ChessEvent Password:"
+msgstr ""
+
+msgid "ChessEvent connection not defined."
+msgstr ""
+
+msgid "ChessEvent event not set."
+msgstr ""
+
+msgid "ChessEvent event:"
+msgstr ""
+
+msgid "ChessEvent tournament name not set."
+msgstr ""
+
+msgid "ChessEvent tournament:"
+msgstr ""
+
+msgid "Chessevent ID:"
+msgstr ""
+
+#, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
+msgstr ""
+
+#, python-format
+msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+msgstr ""
+
+msgid "Choose a custom image:"
+msgstr ""
+
+msgid "Choose the columns displayed."
+msgstr ""
+
+msgid "Choose what to do after closing the check-in:"
+msgstr ""
+
+msgid "Clear all the filters."
+msgstr ""
+
+msgid "Click here to access the public screens of the events."
+msgstr ""
+
+msgid "Click to check-in the player."
+msgstr ""
+
+msgid "Click to check-out the player."
+msgstr ""
+
+msgid "Clone"
+msgstr ""
+
+msgid "Clone the rotator."
+msgstr ""
+
+msgid "Clone the screen family."
+msgstr ""
+
+msgid "Clone the timer."
+msgstr ""
+
+msgid "Clone the tournament."
+msgstr ""
+
+#, python-format
+msgid "Cloning of screen family [%(family_uniq_id)s]"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+#, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+msgid "Close the check-in"
+msgstr ""
+
+msgid "Club"
+msgstr ""
+
+msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
+msgstr "Club"
+
+msgid "Club *** CLUB FOR PLAYERS COLUMNS"
+msgstr "Club"
+
+msgid "Club *** CLUB FOR PRINT VIEW"
+msgstr "Club"
+
+msgid "Club:"
+msgstr ""
+
+msgid "Color"
+msgstr ""
+
+msgid "Colors and delays"
+msgstr ""
+
+#, python-format
+msgid "Colour #%(num)d:"
+msgstr ""
+
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+msgstr ""
+
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+msgstr ""
+
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr ""
+
+msgid "Columns"
+msgstr ""
+
+msgid "Columns:"
+msgstr ""
+
+msgid "Comma-separated board numbers ; if this field is set, other fields are omitted."
+msgstr ""
+
+msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgstr "Comment"
+
+msgid "Comment:"
+msgstr ""
+
+msgid "Configuration"
+msgstr ""
+
+msgid "Connection French Chess Federation"
+msgstr ""
+
+msgid "Connection to the ChessEvent platform"
+msgstr ""
+
+msgid "Connection to the FFE database failed."
+msgstr ""
+
+msgid "Connection to the FFE database failed: {error}."
+msgstr ""
+
+msgid "Connection to the FFE server failed."
+msgstr ""
+
+msgid "Connection to the FFE server failed: {error}."
+msgstr ""
+
+msgid "Connections ChessEvent"
+msgstr ""
+
+msgid "Contact and registration"
+msgstr ""
+
+msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
+msgstr ""
+
+msgid "Continuously"
+msgstr ""
+
+msgid "Could not download [{url}], error code [{code}]."
+msgstr ""
+
+msgid "Could not download [{url}]: {ex}."
+msgstr ""
+
+msgid "Could not unzip data."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create a rotator"
+msgstr ""
+
+msgid "Create a screen"
+msgstr ""
+
+msgid "Create a screen family"
+msgstr ""
+
+msgid "Create a timer"
+msgstr ""
+
+msgid "Create a tournament"
+msgstr ""
+
+msgid "Create an event"
+msgstr ""
+
+msgid "Create and add default screens"
+msgstr ""
+
+msgid "Create the Papi files"
+msgstr ""
+
+msgid "Create the Papi files and send them to the FFE website"
+msgstr ""
+
+msgid "Crosstable"
+msgstr ""
+
+#, python-format
+msgid "Crosstable %f to %l"
+msgstr ""
+
+#, python-format
+msgid "Crosstable %f-%l"
+msgstr ""
+
+msgid "Crosstable after round #{round}"
+msgstr ""
+
+msgid "Current events ({num})"
+msgstr ""
+
+msgid "Custom files recovered: {num} (from directory [{dir}])."
+msgstr ""
+
+msgid "Customization"
+msgstr ""
+
+msgid "Cut"
+msgstr ""
+
+msgid "Cut bottom"
+msgstr ""
+
+msgid "Cut top"
+msgstr ""
+
+msgid "DOUBLE"
+msgstr ""
+
+msgid "DRAW"
+msgstr ""
+
+msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
+msgstr ""
+
+msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
+msgstr ""
+
+msgid "Data is already displayed on the FFE website."
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Date of birth:"
+msgstr ""
+
+msgid "Date:"
+msgstr ""
+
+msgid "Default directory of the Papi files"
+msgstr ""
+
+msgid "Default directory of the Papi files:"
+msgstr ""
+
+msgid "Default federation:"
+msgstr ""
+
+msgid "Default language"
+msgstr ""
+
+msgid "Default timer configuration"
+msgstr ""
+
+#, python-format
+msgid "Delay #%(num)d:"
+msgstr ""
+
+msgid "Delay:"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Delete the rotator."
+msgstr ""
+
+msgid "Delete the screen family."
+msgstr ""
+
+msgid "Delete the timer."
+msgstr ""
+
+msgid "Delete the tournament."
+msgstr ""
+
+msgid "Deletion date"
+msgstr ""
+
+#, python-format
+msgid "Deletion of event [%(event_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgstr ""
+
+#, python-format
+msgid "Deletion of rotator [%(rotator_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Deletion of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Deletion of screen family [%(family_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Deletion of timer [%(timer_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Deletion of tournament [%(tournament_uniq_id)s]"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Direct encounter"
 msgstr ""
 
 msgid "Directory [{path}] not found."
 msgstr ""
 
-msgid "[{path}] is not a directory."
+msgid "Directory of the Papi file:"
 msgstr ""
 
-msgid "No background image set, by default [{background_image}]"
+msgid "Display"
 msgstr ""
 
-msgid "No background colour set, by default [{background_color}]"
+msgid "Display all the players, paired and unpaired"
 msgstr ""
 
-msgid "No password set for the results entry"
+msgid "Display link not found, check that a Papi file has already been sent."
 msgstr ""
 
-msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
+msgid "Display of a screen exit button:"
 msgstr ""
 
-msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
+msgid "Display of unpaired players:"
 msgstr ""
 
-msgid "timer"
+msgid "Display only paired players"
 msgstr ""
 
-msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
+msgid "Display the exit button"
 msgstr ""
 
-msgid "tournament"
+msgid "Do nothing"
 msgstr ""
 
-msgid "New tournament"
+msgid "Do you want Papi-web to create the file?"
 msgstr ""
 
-msgid "Errors have been found on screens; families and rotators will not be loaded."
+msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr ""
 
-msgid "{screen_type}-screen"
+msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+msgstr ""
+
+msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
+msgstr ""
+
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+msgstr ""
+
+msgid "Document:"
+msgstr ""
+
+msgid "Download fees invoices"
+msgstr ""
+
+msgid "Download the files (ZIP archive)"
+msgstr ""
+
+msgid "Download the information of the selected players (CSV format)."
+msgstr ""
+
+msgid "Download the information of the selected players (ODS format)."
+msgstr ""
+
+msgid "Download the information of the selected players (XLSX format)."
+msgstr ""
+
+msgid "Download the players."
+msgstr ""
+
+msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
+msgstr ""
+
+msgid "Downloading failed with code [{code}]."
+msgstr ""
+
+msgid "Downloading the FFE database..."
+msgstr ""
+
+msgid "Downloading the FIDE database..."
+msgstr ""
+
+msgid "Downloading version {version} from GitHub ([{url}])..."
+msgstr ""
+
+msgid "Drag the hours to order them."
+msgstr ""
+
+msgid "Drag the sets to order them."
+msgstr ""
+
+msgid "Draw"
+msgstr ""
+
+msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
+msgstr "E"
+
+#, python-format
+msgid "E.g.: %(family_type)s-family"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(minutes)d (minutes)"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(num)d"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(screen_type)s-screen"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(seconds)d (seconds)"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr ""
+
+msgid "E.g.: 20 (place 20 boards on each screen)"
+msgstr ""
+
+msgid "E.g.: 20 (place 20 players on each screen)"
+msgstr ""
+
+msgid "E.g.: 4 (split the boards on 4 screens)"
+msgstr ""
+
+msgid "E.g.: 4 (split the players on 4 screens)"
+msgstr ""
+
+msgid "E.g.: 50 (Elo)"
+msgstr ""
+
+msgid "E.g.: @boards, @family, another-screen"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Boards %%f to %%l"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Boards %%f-%%l"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Check-in started for %%s"
+msgstr ""
+
+msgid "E.g.: DOE"
+msgstr ""
+
+msgid "E.g.: John"
+msgstr ""
+
+msgid "E.g.: Link to my screen"
+msgstr ""
+
+msgid "E.g.: Main tournament"
+msgstr ""
+
+msgid "E.g.: My favourite club!"
+msgstr ""
+
+msgid "E.g.: My screen"
+msgstr ""
+
+msgid "E.g.: My screen family"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Players %%f to %%l"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Players %%f-%%l"
+msgstr ""
+
+msgid "E.g.: Please keep quiet until the end of the round!"
+msgstr ""
+
+msgid "E.g.: Start of check-in"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Start of check-in in %%s"
+msgstr ""
+
+msgid "E.g.: Tournoi A"
+msgstr ""
+
+msgid "E.g.: World championship"
+msgstr ""
+
+msgid "E.g.: c:\\chess\tournaments"
+msgstr ""
+
+msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
+msgstr ""
+
+msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
+msgstr ""
+
+msgid "E.g.: c:\\chess\\tournaments\\papi"
+msgstr ""
+
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr ""
+
+msgid "E.g.: john doe"
+msgstr ""
+
+msgid "E.g.: john.doe@chess.com"
+msgstr ""
+
+msgid "E.g.: main"
+msgstr ""
+
+msgid "E.g.: my-rotator"
+msgstr ""
+
+msgid "E.g.: my_password"
+msgstr ""
+
+msgid "E.g.: timer"
+msgstr ""
+
+msgid "E.g.: world-championship"
+msgstr ""
+
+msgid "EXEMPT"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit the Papi-web settings."
+msgstr ""
+
+msgid "Edit the hours of the timer"
+msgstr ""
+
+msgid "Edit the player's properties."
+msgstr ""
+
+msgid "Edit the player's tournament record."
+msgstr ""
+
+msgid "Edit the properties of the rotator."
+msgstr ""
+
+msgid "Edit the properties of the screen family."
+msgstr ""
+
+msgid "Edit the properties of the screen."
+msgstr ""
+
+msgid "Edit the properties of the timer."
+msgstr ""
+
+msgid "Edit the properties of the tournament."
+msgstr ""
+
+msgid "Edit the sets of boards displayed on the screen."
+msgstr ""
+
+msgid "Edit the sets of players displayed on the screen."
+msgstr ""
+
+#, python-format
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Edition of event [%(event_uniq_id)s]"
+msgstr ""
+
+msgid "Edition of papi-web settings"
+msgstr ""
+
+#, python-format
+msgid "Edition of player [%(last_name)s %(first_name)s]"
+msgstr ""
+
+#, python-format
+msgid "Edition of rotator [%(rotator_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Edition of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Edition of screen family [%(family_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Edition of timer [%(timer_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Edition of tournament [%(tournament_uniq_id)s]"
+msgstr ""
+
+msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
+msgstr "Elo"
+
+msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgstr "Elo"
+
+msgid "Elo step (handicap):"
+msgstr ""
+
+msgid "Email:"
+msgstr ""
+
+msgid "Enable/disable the details of events on the cards below."
+msgstr ""
+
+msgid "Enable/disable the details of the rotators on the cards below."
+msgstr ""
+
+msgid "Enable/disable the details of the screen families on the cards below."
+msgstr ""
+
+msgid "Enable/disable the details of the screens on the cards below."
+msgstr ""
+
+msgid "Enable/disable the details of tournaments on the cards below."
+msgstr ""
+
+msgid "End of upload (Ctrl-C)"
+msgstr ""
+
+msgid "End:"
+msgstr ""
+
+msgid "Enter here the event ID"
+msgstr ""
+
+msgid "Enter here the tournament ID"
+msgstr ""
+
+msgid "Enter the event ID to confirm its deletion:"
+msgstr ""
+
+msgid "Enter the result"
+msgstr ""
+
+msgid "Enter the tournament ID to confirm its deletion:"
+msgstr ""
+
+msgid "Error reading the following row (player ignored): [{row}]."
+msgstr ""
+
+msgid "Error while creating the database: {ex}."
+msgstr ""
+
+msgid "Error while updating the FFE database."
+msgstr ""
+
+msgid "Error while updating the FIDE database."
 msgstr ""
 
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr ""
 
-msgid "{family_type}-family"
-msgstr ""
-
 msgid "Errors have been found on rotators."
 msgstr ""
 
-msgid "rotator"
+msgid "Errors have been found on screens; families and rotators will not be loaded."
+msgstr ""
+
+msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
+msgstr ""
+
+msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
+msgstr ""
+
+msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr ""
 
 #, python-format
-msgid "%t (%f to %l)"
+msgid "Errors: %(num)d"
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
+msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
+msgstr "Estimated"
+
+msgid "Event"
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
+msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
 msgstr ""
 
-msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
+msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
-msgid "all the boards"
+msgid "Event [{uniq_id}] already exists."
 msgstr ""
 
-msgid "boards from #{first} to end"
+msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
-msgid "boards from start to #{last}"
+msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
-msgid "boards from #{first} to #{last}"
+msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
-msgid "screens of {number} boards"
+msgid "Event creation"
 msgstr ""
 
-msgid "screens of {number} boards from #{first} to end"
+msgid "Event: {event_name}"
 msgstr ""
 
-msgid "screens of {number} boards from start to #{last}"
+msgid "Events (public access)"
 msgstr ""
 
-msgid "screens of {number} boards from #{first} to #{last}"
+msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-msgid "boards on {parts} screens"
+msgid "Exclude players"
 msgstr ""
-
-msgid "boards from #{first} to end, on {parts} screens"
-msgstr ""
-
-msgid "boards from start to #{last}, on {parts} screens"
-msgstr ""
-
-msgid "boards from #{first} to #{last}, on {parts} screens"
-msgstr ""
-
-msgid "all the players"
-msgstr ""
-
-msgid "players from #{first} to end"
-msgstr ""
-
-msgid "players from start to #{last}"
-msgstr ""
-
-msgid "players from #{first} to #{last}"
-msgstr ""
-
-msgid "screens of {number} players"
-msgstr ""
-
-msgid "screens of {number} players from #{first} to end"
-msgstr ""
-
-msgid "screens of {number} players from start to #{last}"
-msgstr ""
-
-msgid "screens of {number} players from #{first} to #{last}"
-msgstr ""
-
-msgid "players on {parts} screens"
-msgstr ""
-
-msgid "players from #{first} to end, on {parts} screens"
-msgstr ""
-
-msgid "players from start to #{last}, on {parts} screens"
-msgstr ""
-
-msgid "players from #{first} to #{last}, on {parts} screens"
-msgstr ""
-
-msgid "Unpaired *** FEMALE"
-msgstr "Unpaired"
-
-msgid "Unpaired *** MALE"
-msgstr "Unpaired"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempt"
@@ -350,97 +1238,267 @@ msgstr "Exempt"
 msgid "Exempt *** MALE"
 msgstr "Exempt"
 
-msgid "Last results"
+msgid "Exit button:"
 msgstr ""
 
-msgid "Image"
+msgid "Expired FFE licence"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Export to TRF(bx) (pairing)"
+msgstr ""
+
+msgid "Export to TRF16 (rating)"
+msgstr ""
+
+msgid "F *** SHORT NAME FOR GENDER FEMALE"
+msgstr "F"
+
+msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
+msgstr "F"
+
+msgid "F *** THE LETTER TO ANSWER FEES"
+msgstr "F"
+
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+msgstr "FFE"
+
+msgid "FFE *** FFE FOR PLAYERS COLUMNS"
+msgstr "FFE"
+
+msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgstr ""
+
+msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "FFE Uniq ID:"
+msgstr ""
+
+msgid "FFE certification number (optional):"
+msgstr ""
+
+msgid "FFE database:"
+msgstr ""
+
+msgid "FFE licence A (competition)"
+msgstr ""
+
+msgid "FFE licence B (leisure)"
+msgstr ""
+
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #, python-format
-msgid "Boards %f-%l"
-msgstr ""
-
-msgid "By board"
+msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr ""
 
 #, python-format
-msgid "%t [Boards %f-%l]"
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
 msgstr ""
 
-msgid "%t (by board)"
-msgstr ""
-
-msgid "By player"
-msgstr ""
-
-msgid "%t (by player)"
-msgstr ""
-
-msgid "Ranking"
-msgstr ""
-
-msgid "%t (ranking)"
-msgstr ""
-
-msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
-msgid "Pattern [{pattern}] can be used by screen families."
-msgstr ""
-
-msgid "Pattern [{pattern}] matches no screen."
-msgstr ""
-
-msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
-msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
-msgstr ""
-
-msgid "Invalid board number [{fixed_board_str}]."
-msgstr ""
-
-msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
+msgid "FFE password:"
 msgstr ""
 
 #, python-format
-msgid "%f to %l"
+msgid "FFE qualification: %(ffe_id)s"
 msgstr ""
 
-msgid "boards {board_numbers}"
+msgid "FIDE"
 msgstr ""
 
-msgid "Tournament {tournament_uniq_id} ({numbers_str})"
+msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
+msgstr "Fide"
+
+msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
+msgstr "Fide"
+
+msgid "FIDE *** NAME FOR RATING TYPE FIDE"
+msgstr "Fide"
+
+msgid "FIDE ID"
 msgstr ""
 
-msgid "Cut"
+msgid "FIDE ID:"
 msgstr ""
 
-msgid "Cut top"
+#, python-format
+msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
-msgid "Cut bottom"
+msgid "FIDE Title:"
 msgstr ""
 
-msgid "Played modifier"
+msgid "FIDE database:"
+msgstr ""
+
+msgid "FM *** SHORT NAME FOR Fide Master"
+msgstr "FM"
+
+msgid "FORFEIT"
+msgstr ""
+
+msgid "Failed to read [{url}] (connection error): [{ex}]."
+msgstr ""
+
+msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
+msgstr ""
+
+msgid "Failed to read [{url}] (timeout): [{ex}]."
+msgstr ""
+
+msgid "Failed to read [{url}]: [{ex}]."
+msgstr ""
+
+msgid "Families"
+msgstr ""
+
+msgid "Families ({num})"
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Family [{family_uniq_id}]: {text}"
+msgstr ""
+
+msgid "Family [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgstr "Fed."
+
+msgid "Fed."
+msgstr ""
+
+msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
+msgstr "Fed."
+
+msgid "Federation"
+msgstr ""
+
+msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
+msgstr "Fed."
+
+msgid "Federation:"
+msgstr ""
+
+msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+msgstr ""
+
+msgid "Female *** NAME FOR GENDER FEMALE"
+msgstr "Female"
+
+msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Fide Master"
+msgstr ""
+
+msgid "File [{file}] not found."
+msgstr ""
+
+msgid "File downloaded: [{zip_file}]."
+msgstr ""
+
+msgid "Files have been sent to bin {bin_name}."
+msgstr ""
+
+msgid "Filter the categories."
+msgstr ""
+
+msgid "Filter the check-in status."
+msgstr ""
+
+msgid "Filter the clubs."
+msgstr ""
+
+msgid "Filter the federations."
+msgstr ""
+
+msgid "Filter the genders."
+msgstr ""
+
+msgid "Filter the leagues."
+msgstr ""
+
+msgid "Filter the licences."
+msgstr ""
+
+msgid "Filter the tournaments."
+msgstr ""
+
+msgid "First board number:"
+msgstr ""
+
+#, python-format
+msgid "First board number: %(board_number)d"
+msgstr ""
+
+msgid "First board:"
+msgstr ""
+
+msgid "First name LAST NAME"
+msgstr ""
+
+msgid "First name:"
+msgstr ""
+
+msgid "First player:"
+msgstr ""
+
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Fixed board"
+
+msgid "Fixed board:"
+msgstr ""
+
+msgid "Fixed boards:"
+msgstr ""
+
+msgid "Fore Buchholz"
 msgstr ""
 
 msgid "Fore modifier"
 msgstr ""
 
-msgid "Limit"
+msgid "Forfeit gain"
 msgstr ""
 
-msgid "Exclude players"
+msgid "Forfeit loss"
 msgstr ""
 
-msgid "Number of wins"
+msgid "French Chess Federation"
 msgstr ""
 
-msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
-msgstr "NW"
+msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgstr ""
 
-msgid "Number of games won"
+msgid "Frequency: {frequency}"
+msgstr ""
+
+msgid "From the Papi-web server"
+msgstr ""
+
+msgid "From the local network (LAN/WAN)"
+msgstr ""
+
+msgid "Full-point bye (deprecated)"
+msgstr ""
+
+msgid "GM *** SHORT NAME FOR Grand Master"
+msgstr "GM"
+
+msgid "Gain"
 msgstr ""
 
 msgid "Games played with black"
@@ -449,119 +1507,2172 @@ msgstr ""
 msgid "Games won with black"
 msgstr ""
 
-msgid "Progressive scores"
+msgid "Gender"
 msgstr ""
 
-msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
-msgstr "PS"
+msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
+msgstr "Gender"
 
-msgid "Rounds one Elected to Play"
+msgid "Gender:"
 msgstr ""
 
-msgid "Buchholz"
+msgid "Generate pairings for the next round."
 msgstr ""
 
-msgid "Fore Buchholz"
+msgid "Getting fees for tournament [{ffe_id}]..."
 msgstr ""
 
-msgid "Sum of Buchholz"
+msgid "Go back to the events page."
 msgstr ""
 
-msgid "Average of opponents Buchholz"
+msgid "Go back to the home page."
 msgstr ""
 
-msgid "Sonnenborn-Berger"
+msgid "Go to the first screen."
 msgstr ""
 
-msgid "Koya"
+msgid "Go to the rotator."
 msgstr ""
 
-msgid "Ko. *** ACRONYM FOR PAPI KOYA"
-msgstr "Ko."
-
-msgid "Kashdan"
+msgid "Go to the screen."
 msgstr ""
 
-msgid "Average rating of opponents"
+msgid "Grand Master"
 msgstr ""
 
-msgid "Tournament performance rating"
+msgid "Half-point bye"
 msgstr ""
 
-msgid "Average performance rating of opponents"
+msgid "Hello,"
 msgstr ""
 
-msgid "Perfect tournament performance"
+msgid "Hide the exit button"
 msgstr ""
 
-msgid "Average perfect performance of opponents"
+msgid "Hour [{uniq_id}] already exists."
 msgstr ""
 
-msgid "Direct encounter"
+msgid "Hour:"
 msgstr ""
 
-msgid "Time is not defined."
+msgid "Hours"
 msgstr ""
 
-msgid "Invalid time [{time_str}]."
+msgid "How to split the results."
 msgstr ""
 
-msgid "The date of the first hour is not defined (mandatory)."
+msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgstr ""
+
+msgid "ID (unique):"
+msgstr ""
+
+msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
+msgstr ""
+
+msgid "IM *** SHORT NAME FOR International Master"
+msgstr "IM"
+
+msgid "Identity"
+msgstr ""
+
+msgid "Illegal moves are not recorded."
+msgstr ""
+
+msgid "Illegal moves recording:"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Image ({num})"
+msgstr ""
+
+msgid "Image screen creation"
+msgstr ""
+
+msgid "Image screens show an image (local or remote)."
+msgstr ""
+
+msgid "Image:"
+msgstr ""
+
+#, python-format
+msgid "Image: %(image)s"
+msgstr ""
+
+msgid "Incorrect password."
+msgstr ""
+
+msgid "Incorrect path [{path}]."
+msgstr ""
+
+msgid "Increment (optional, seconds):"
+msgstr ""
+
+#, python-format
+msgid "Informations: %(num)d"
+msgstr ""
+
+msgid "Initial time (optional, seconds):"
+msgstr ""
+
+msgid "Initializing a session to [{url}]..."
+msgstr ""
+
+msgid "Input screen creation"
+msgstr ""
+
+msgid "Input screen family creation"
+msgstr ""
+
+msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr ""
+
+msgid "International Master"
+msgstr ""
+
+msgid "Internationalization"
+msgstr ""
+
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr ""
+
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr ""
+
+msgid "Invalid FIDE ID [{fide_id}]."
+msgstr ""
+
+msgid "Invalid URL [{background_image}]."
+msgstr ""
+
+msgid "Invalid amount [{amount}]."
+msgstr ""
+
+msgid "Invalid board number [{fixed_board_str}]."
+msgstr ""
+
+msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
-msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
-msgstr ""
-
 msgid "Invalid date and time [{datetime_str}]."
 msgstr ""
 
-msgid "No valid hour defined."
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr ""
+
+msgid "Invalid display link text [{text}]"
+msgstr ""
+
+msgid "Invalid federation [{federation}]."
+msgstr ""
+
+msgid "Invalid fees link text [{text}]."
+msgstr ""
+
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr ""
+
+msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
+msgstr ""
+
+msgid "Invalid locale [{locale}]."
+msgstr ""
+
+msgid "Invalid log level [{log_level}]."
+msgstr ""
+
+msgid "Invalid mail [{mail}]."
+msgstr ""
+
+msgid "Invalid phone number [{phone}]."
+msgstr ""
+
+msgid "Invalid response from GitHub: {ex}."
+msgstr ""
+
+msgid "Invalid time [{time_str}]."
+msgstr ""
+
+msgid "Invalid value [{value}]."
+msgstr ""
+
+msgid "Invoice saved to [{file}]."
+msgstr ""
+
+msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
+msgstr "Ka."
+
+msgid "Kashdan"
+msgstr ""
+
+msgid "Ko. *** ACRONYM FOR PAPI KOYA"
+msgstr "Ko."
+
+msgid "Koya"
+msgstr ""
+
+msgid "LAN/WAN URL: {lan_url}"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Language:"
+msgstr ""
+
+msgid "Last board:"
+msgstr ""
+
+msgid "Last player:"
+msgstr ""
+
+msgid "Last results"
+msgstr ""
+
+msgid "Last results ({num})"
+msgstr ""
+
+msgid "Last rounds no byes:"
+msgstr ""
+
+msgid "Last update"
+msgstr ""
+
+msgid "Launch browser:"
+msgstr ""
+
+msgid "Launching the browser on server startup"
+msgstr ""
+
+msgid "Layout"
+msgstr ""
+
+msgid "League"
+msgstr ""
+
+msgid "League *** LEAGUE FOR PRINT VIEW"
+msgstr "League"
+
+msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
+msgstr "League"
+
+msgid "League:"
+msgstr ""
+
+msgid "Libraries"
+msgstr ""
+
+msgid "Licence number:"
+msgstr ""
+
+msgid "Licence:"
+msgstr ""
+
+msgid "Limit"
+msgstr ""
+
+msgid "Links displayed on the screen menu:"
+msgstr ""
+
+msgid "Links to this screen:"
+msgstr ""
+
+msgid "List of players"
+msgstr ""
+
+msgid "Local URL: {local_url}"
+msgstr ""
+
+msgid "Log level"
+msgstr ""
+
+msgid "Log level:"
+msgstr ""
+
+msgid "Logging level: {log_level}"
+msgstr ""
+
+msgid "Looking for a more recent version on GitHub ([{url}])..."
+msgstr ""
+
+msgid "Loss"
+msgstr ""
+
+msgid "M *** SHORT NAME FOR GENDER MALE"
+msgstr "M"
+
+msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
+msgstr "Mail"
+
+#, python-format
+msgid "Mail: %(mail)s (click to copy to the clipboard)."
+msgstr ""
+
+msgid "Make the tournaments visible on the FFE website"
+msgstr ""
+
+msgid "Making the tournament visible on the FFE website..."
+msgstr ""
+
+msgid "Male *** NAME FOR GENDER MALE"
+msgstr "Male"
+
+msgid "Mandatory for the first hour, optional for next hours."
+msgstr ""
+
+msgid "Mark as forfeit for the coming round"
+msgstr ""
+
+msgid "Mark as forfeit for the rest of the tournament"
+msgstr ""
+
+msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
+msgstr ""
+
+msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
+msgstr ""
+
+#, python-format
+msgid "Max age: %(num)d minute"
+msgid_plural "Max age: %(num)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Max age: unlimited"
+msgstr ""
+
+msgid "Max byes:"
+msgstr ""
+
+#, python-format
+msgid "Max number: %(num)d"
+msgstr ""
+
+msgid "Max number: unlimited"
+msgstr ""
+
+msgid "Maximum age of the results:"
+msgstr ""
+
+#, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr ""
+
+msgid "Maximum number of illegal moves"
+msgstr ""
+
+msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
+msgstr ""
+
+msgid "Maximum number of points (included):"
+msgstr ""
+
+msgid "Maximum number of results displayed:"
+msgstr ""
+
+msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
+msgstr ""
+
+#, python-format
+msgid "Maximum number of results: %(num)d"
+msgstr ""
+
+msgid "Maximum number of results: unlimited"
+msgstr ""
+
+msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me."
+
+msgid "Median Buchholz"
+msgstr ""
+
+msgid "Menu label:"
+msgstr ""
+
+msgid "Menu link label:"
+msgstr ""
+
+#, python-format
+msgid "Menu link label: %(menu_label)s"
+msgstr ""
+
+msgid "Menu link label: none"
+msgstr ""
+
+msgid "Menu:"
+msgstr ""
+
+#, python-format
+msgid "Menu: %(menu)s"
+msgstr ""
+
+msgid "Menu: none"
+msgstr ""
+
+msgid "Menus"
+msgstr ""
+
+msgid "Minimal time (handicap, seconds):"
+msgstr ""
+
+msgid "Minimum number of points (included):"
+msgstr ""
+
+msgid "Missing Papi file"
+msgstr ""
+
+msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr ""
+
+msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
+msgstr "N"
+
+msgid "N *** THE LETTER TO ANSWER NO"
+msgstr "N"
+
+msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
+msgstr "NW"
+
+msgid "Name"
+msgstr ""
+
+msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
+msgstr "Name"
+
+msgid "Name *** NAME FOR PLAYERS COLUMNS"
+msgstr "Name"
+
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
+msgid "Name of the Papi file (with no extension):"
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+#, python-format
+msgid "Name: %(screen_set_name)s"
+msgstr ""
+
+msgid "Name: by default"
+msgstr ""
+
+msgid "National *** NAME FOR RATING TYPE NATIONAL"
+msgstr "National"
+
+msgid "Nb. *** NB FOR PRINT VIEW"
+msgstr "Nb."
+
+msgid "New event"
+msgstr ""
+
+msgid "New tournament"
+msgstr ""
+
+msgid "New version [{version}] has been installed in [{dir}]."
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "No ChessEvent event defined"
+msgstr ""
+
+msgid "No ChessEvent identifier defined"
+msgstr ""
+
+msgid "No ChessEvent tournament defined"
+msgstr ""
+
+msgid "No FFE Licence"
+msgstr ""
+
+msgid "No FFE operations can be done on the tournaments of this event."
+msgstr ""
+
+msgid "No FFE qualification"
+msgstr ""
+
+msgid "No FIDE ID."
+msgstr ""
+
+msgid "No Papi file for the tournaments of the event, players can not be added."
+msgstr ""
+
+#, python-format
+msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
+msgstr ""
+
+msgid "No alert message"
+msgstr ""
+
+msgid "No archived events."
+msgstr ""
+
+msgid "No background colour set, by default [{background_color}]"
+msgstr ""
+
+msgid "No background image set, by default [{background_image}]"
+msgstr ""
+
+msgid "No category"
+msgstr ""
+
+msgid "No current events."
+msgstr ""
+
+msgid "No data received from [{url}]."
+msgstr ""
+
+msgid "No directory set for Papi files, by default [{path}]."
 msgstr ""
 
 msgid "No directory set for the Papi file, by default [{path}]."
 msgstr ""
 
-msgid "The name of the Papi file is not set, by default [{filename}]"
+msgid "No errors"
 msgstr ""
 
-msgid "Export to TRF16 (rating)"
+msgid "No events found in previously installed versions."
 msgstr ""
 
-msgid "Export to TRF(bx) (pairing)"
+msgid "No events found."
+msgstr ""
+
+msgid "No hours."
+msgstr ""
+
+msgid "No informations"
+msgstr ""
+
+msgid "No internet connection and no local database."
+msgstr ""
+
+msgid "No local database."
+msgstr ""
+
+msgid "No mail defined."
+msgstr ""
+
+msgid "No name set, by default [{name}]"
+msgstr ""
+
+msgid "No need to upload the results to the FFE website (up to date)."
+msgstr ""
+
+msgid "No need to upload the rules to the FFE website (up to date)."
+msgstr ""
+
+msgid "No passed events."
+msgstr ""
+
+msgid "No password required"
+msgstr ""
+
+msgid "No password set for the results entry"
+msgstr ""
+
+msgid "No phone defined."
+msgstr ""
+
+msgid "No players found in {seconds:.2f} seconds."
+msgstr ""
+
+msgid "No players found."
+msgstr ""
+
+msgid "No players."
+msgstr ""
+
+msgid "No previously installed versions found."
+msgstr ""
+
+msgid "No recording"
+msgstr ""
+
+msgid "No response from GitHub."
+msgstr ""
+
+msgid "No results."
+msgstr ""
+
+msgid "No rotators"
+msgstr ""
+
+msgid "No rotators."
+msgstr ""
+
+msgid "No rules file set"
+msgstr ""
+
+msgid "No screen families"
+msgstr ""
+
+msgid "No screen families."
+msgstr ""
+
+msgid "No screen neither family to rotate."
+msgstr ""
+
+msgid "No screen nor family to rotate."
+msgstr ""
+
+msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
+msgstr ""
+
+msgid "No screens"
+msgstr ""
+
+msgid "No screens."
+msgstr ""
+
+msgid "No split"
+msgstr ""
+
+msgid "No stable version found."
+msgstr ""
+
+msgid "No such screens."
+msgstr ""
+
+msgid "No timer defined"
+msgstr ""
+
+msgid "No timers"
+msgstr ""
+
+msgid "No timers."
+msgstr ""
+
+msgid "No title"
+msgstr ""
+
+msgid "No tournaments"
+msgstr ""
+
+msgid "No tournaments."
+msgstr ""
+
+msgid "No upcoming events."
+msgstr ""
+
+msgid "No update found."
+msgstr ""
+
+msgid "No valid hour defined."
+msgstr ""
+
+msgid "No warnings"
+msgstr ""
+
+msgid "No, I will do it later"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Not checked-in yet"
+msgstr ""
+
+msgid "Not connected to internet."
+msgstr ""
+
+msgid "Not part of the selected tournament ({rounds} rounds)."
+msgstr ""
+
+msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
+msgstr ""
+
+#, python-format
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
+msgstr ""
+
+msgid "Number of games won"
+msgstr ""
+
+#, python-format
+msgid "Number of players : %(num)d"
+msgstr ""
+
+msgid "Number of wins"
+msgstr ""
+
+msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Off"
+msgstr ""
+
+msgid "On"
+msgstr ""
+
+msgid "On a given number of screens:"
+msgstr ""
+
+msgid "On fixed size screens:"
+msgstr ""
+
+msgid "Once"
+msgstr ""
+
+msgid "One event found, press Enter (Q to quit): "
+msgstr ""
+
+msgid "Only arbiters can see private events."
+msgstr ""
+
+msgid "Only arbiters can see private screen families."
+msgstr ""
+
+msgid "Only arbiters can see private screens."
+msgstr ""
+
+msgid "Only arbiters can view private rotators."
+msgstr ""
+
+msgid "Only estimated ratings are optional."
+msgstr ""
+
+#, python-format
+msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+msgid "Open/close check-in."
+msgstr ""
+
+msgid "Opening the welcome page [{url}] in a browser..."
+msgstr ""
+
+msgid "Opponent"
+msgstr ""
+
+msgid "Opponent Elo"
+msgstr ""
+
+msgid "Opponent Elo [Pts]"
+msgstr ""
+
+msgid "Options"
+msgstr ""
+
+msgid "Other ODBC drivers found on the server"
+msgstr ""
+
+msgid "Over 20"
+msgstr ""
+
+msgid "Over 50"
+msgstr ""
+
+msgid "Over 65"
+msgstr ""
+
+msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgstr "Owed"
+
+msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
+msgstr "Owed/paid"
+
+msgid "Owed:"
+msgstr ""
+
+msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgstr "PS"
+
+msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
+msgstr "Paid"
+
+msgid "Paid:"
+msgstr ""
+
+msgid "Pair"
+msgstr ""
+
+msgid "Pairing allocated bye"
+msgstr ""
+
+msgid "Pairings"
+msgstr ""
+
+msgid "Pairings by board"
+msgstr ""
+
+msgid "Pairings by board ({num})"
+msgstr ""
+
+msgid "Pairings by player"
+msgstr ""
+
+msgid "Pairings by player ({num})"
+msgstr ""
+
+msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi file [{file}] created."
+msgstr ""
+
+msgid "Papi file [{file}] has been created (players: {num})."
+msgstr ""
+
+msgid "Papi file [{tournament_file}] not found."
+msgstr ""
+
+msgid "Papi file has not been created."
+msgstr ""
+
+msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi version: {version}"
+msgstr ""
+
+msgid "Papi-web can automatically launch a web browser when starting the web server."
+msgstr ""
+
+msgid "Papi-web project"
+msgstr ""
+
+msgid "Papi-web settings"
+msgstr ""
+
+msgid "Papi-web settings (private access)"
+msgstr ""
+
+msgid "Papi-web settings has been updated."
+msgstr ""
+
+msgid "Parings by player"
+msgstr ""
+
+msgid "Passed events ({num})"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Password to enter results"
+msgstr ""
+
+msgid "Password to enter results:"
+msgstr ""
+
+msgid "Pattern [{pattern}] can be used by screen families only."
+msgstr ""
+
+msgid "Pattern [{pattern}] matches no screen."
+msgstr ""
+
+msgid "Penalty (handicap, seconds):"
+msgstr ""
+
+msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
+msgstr "Perf."
+
+msgid "Perfect tournament performance"
+msgstr ""
+
+msgid "Performance"
+msgstr ""
+
+msgid "Personal"
+msgstr ""
+
+msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgstr "Phone"
+
+msgid "Phone number:"
+msgstr ""
+
+#, python-format
+msgid "Phone: %(phone)s (click to copy to the clipboard)."
+msgstr ""
+
+msgid "Played modifier"
+msgstr ""
+
+msgid "Player / Elo"
+msgstr ""
+
+msgid "Player Elo"
+msgstr ""
+
+msgid "Player Elo [Pts]"
+msgstr ""
+
+#, python-format
+msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgstr ""
+
+msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgstr ""
+
+msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Player creation"
+msgstr ""
+
+msgid "Player selection (by alphabetical order)"
+msgstr ""
+
+msgid "Player selection (by rank)"
+msgstr ""
+
+#, python-format
+msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Player updates are possible, select the players to update:"
+msgstr ""
+
+msgid "Players"
+msgstr ""
+
+msgid "Players ({num})"
+msgstr ""
+
+#, python-format
+msgid "Players from #%(first)d to #%(last)d"
+msgstr ""
+
+#, python-format
+msgid "Players from #%(first)s to #%(last)s"
+msgstr ""
+
+msgid "Players screen creation"
+msgstr ""
+
+msgid "Players screen family creation"
+msgstr ""
+
+msgid "Players screens show pairings by alphabetical order."
+msgstr ""
+
+msgid "Playing"
+msgstr ""
+
+msgid "Please ask the organizer to get the password."
+msgstr ""
+
+msgid "Please choose the Papi version:"
+msgstr ""
+
+msgid "Please choose the document."
+msgstr ""
+
+msgid "Please choose the event:"
+msgstr ""
+
+msgid "Please choose the tournament."
+msgstr ""
+
+msgid "Please choose the version to recover:"
+msgstr ""
+
+msgid "Please enter a URL or select an image on the right hand side."
+msgstr ""
+
+msgid "Please enter a date after the start date."
+msgstr ""
+
+msgid "Please enter a password for the ChessEvent connection."
+msgstr ""
+
+msgid "Please enter a valid date."
+msgstr ""
+
+msgid "Please enter a valid time."
+msgstr ""
+
+msgid "Please enter the date of birth."
+msgstr ""
+
+msgid "Please enter the date of the first hour."
+msgstr ""
+
+msgid "Please enter the end date of the event."
+msgstr ""
+
+msgid "Please enter the event ID."
+msgstr ""
+
+msgid "Please enter the family ID."
+msgstr ""
+
+msgid "Please enter the image URL."
+msgstr ""
+
+msgid "Please enter the last name."
+msgstr ""
+
+msgid "Please enter the name of the event."
+msgstr ""
+
+msgid "Please enter the number of the version to recover [{default}]: "
+msgstr ""
+
+msgid "Please enter the password to enter results:"
+msgstr ""
+
+msgid "Please enter the password."
+msgstr ""
+
+msgid "Please enter the rotator ID."
+msgstr ""
+
+msgid "Please enter the round number or the hour ID."
+msgstr ""
+
+msgid "Please enter the screen ID."
+msgstr ""
+
+msgid "Please enter the start date of the event."
+msgstr ""
+
+msgid "Please enter the text to display after the hour (mandatory except for rounds)."
+msgstr ""
+
+msgid "Please enter the text to display before the hour (mandatory except for rounds)."
+msgstr ""
+
+msgid "Please enter the time."
+msgstr ""
+
+msgid "Please enter the timer ID."
+msgstr ""
+
+msgid "Please enter the tournament ID."
+msgstr ""
+
+msgid "Please enter the tournament name."
+msgstr ""
+
+msgid "Please enter valid date and time."
+msgstr ""
+
+msgid "Please validate the global configuration of the application."
+msgstr ""
+
+msgid "Plugins"
+msgstr ""
+
+msgid "Points for draw (half-point bye)"
+msgstr ""
+
+msgid "Points for gain (full-point bye)"
+msgstr ""
+
+msgid "Points for loss (zero-point bye)"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s or more"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr ""
+
+#, python-format
+msgid "Points: up to %(max)s"
+msgstr ""
+
+msgid "Port"
+msgstr ""
+
+msgid "Port [{port}] already in use."
+msgstr ""
+
+msgid "Port: {port}"
+msgstr ""
+
+msgid "Present"
+msgstr ""
+
+msgid "Print"
+msgstr ""
+
+msgid "Print players, results, etc."
+msgstr ""
+
+msgid "Private event"
+msgstr ""
+
+msgid "Progressive scores"
+msgstr ""
+
+msgid "Properties"
+msgstr ""
+
+msgid "Properties (image)"
+msgstr ""
+
+msgid "Properties (last results)"
+msgstr ""
+
+msgid "Properties (pairings by board)"
+msgstr ""
+
+msgid "Properties (pairings by player)"
+msgstr ""
+
+msgid "Properties (ranking)"
+msgstr ""
+
+msgid "Properties (results entry)"
+msgstr ""
+
+msgid "Pts *** POINTS FOR PRINT VIEW"
+msgstr "Pts"
+
+msgid "Public event"
+msgstr ""
+
+msgid "Public family"
+msgstr ""
+
+msgid "Public rotator"
+msgstr ""
+
+msgid "Public screen"
+msgstr ""
+
+msgid "Q *** THE LETTER TO ANSWER QUIT"
+msgstr "Q"
+
+msgid "Quit"
+msgstr ""
+
+#, python-format
+msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgstr "R %(round)d"
+
+msgid "R *** THE LETTER TO ANSWER RULES"
+msgstr "R"
+
+msgid "Ranking"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f to %l"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f-%l"
+msgstr ""
+
+msgid "Ranking ({num})"
+msgstr ""
+
+msgid "Ranking after round #{round}"
+msgstr ""
+
+msgid "Ranking only"
+msgstr ""
+
+msgid "Ranking screen creation"
+msgstr ""
+
+msgid "Ranking screen family creation"
+msgstr ""
+
+msgid "Ranking screens show the players by rank."
+msgstr ""
+
+msgid "Rapid"
+msgstr ""
+
+msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgstr "Rapid"
+
+msgid "Rapid rating"
+msgstr ""
+
+msgid "Rapid:"
+msgstr ""
+
+msgid "Rating"
+msgstr ""
+
+msgid "Rating *** RATING FOR PLAYERS COLUMNS"
+msgstr "Rating"
+
+msgid "Ratings"
+msgstr ""
+
+msgid "Record"
+msgstr ""
+
+msgid "Record *** RECORD FOR PLAYERS COLUMNS"
+msgstr "Record"
+
+msgid "Recovering custom files..."
+msgstr ""
+
+msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
+msgstr ""
+
+msgid "Recovering event [{event_uniq_id}]..."
+msgstr ""
+
+msgid "Recovering events from version {version}..."
+msgstr ""
+
+msgid "Refresh this page."
+msgstr ""
+
+msgid "Remove the player from the event."
+msgstr ""
+
+msgid "Renaming the database failed: {ex}."
+msgstr ""
+
+msgid "Request to the FFE database failed."
+msgstr ""
+
+msgid "Request to the FFE database failed: {error}."
+msgstr ""
+
+msgid "Result"
+msgstr ""
+
+msgid "Results entry"
+msgstr ""
+
+msgid "Results entry ({num})"
+msgstr ""
+
+msgid "Results screen creation"
+msgstr ""
+
+msgid "Results screens show the last results (most recent first)."
+msgstr ""
+
+msgid "Results upload OK"
+msgstr ""
+
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
+
+msgid "Rnd.Boa"
+msgstr ""
+
+#, python-format
+msgid "Rotation delay: %(seconds)d sec."
+msgstr ""
+
+msgid "Rotator [{rotator_uniq_id}] has been created."
+msgstr ""
+
+msgid "Rotator [{rotator_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Rotator [{rotator_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Rotator [{rotator_uniq_id}]: {text}"
+msgstr ""
+
+msgid "Rotator [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Rotator automatically rotate between multiple screens."
+msgstr ""
+
+msgid "Rotator creation"
+msgstr ""
+
+msgid "Rotators"
+msgstr ""
+
+msgid "Rotators ({num})"
+msgstr ""
+
+#, python-format
+msgid "Rotators: %(num)d"
+msgstr ""
+
+msgid "Round"
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d"
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d is finished."
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d is running."
+msgstr ""
+
+msgid "Round not finished (last finished: {round})."
+msgstr ""
+
+msgid "Round number or text:"
+msgstr ""
+
+msgid "Round numbers must be positive integers."
+msgstr ""
+
+msgid "Round skipped"
+msgstr ""
+
+msgid "Round:"
+msgstr ""
+
+#, python-format
+msgid "Round: %(round)d"
+msgstr ""
+
+msgid "Round: the last finished round"
+msgstr ""
+
+msgid "Rounds one Elected to Play"
+msgstr ""
+
+msgid "Rules"
+msgstr ""
+
+msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Rules file location:"
+msgstr ""
+
+msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Rules file set"
+msgstr ""
+
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr ""
+
+msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
+msgstr "SBh"
+
+msgid "Save"
+msgstr ""
+
+msgid "Save the hour or cancel."
+msgstr ""
+
+msgid "Save the set or cancel."
+msgstr ""
+
+msgid "Score"
+msgstr ""
+
+msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}] has been created."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}]: {text}"
+msgstr ""
+
+msgid "Screen [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Screen families"
+msgstr ""
+
+msgid "Screen families:"
+msgstr ""
+
+#, python-format
+msgid "Screen families: %(num)d"
+msgstr ""
+
+msgid "Screens"
+msgstr ""
+
+msgid "Screens ({num})"
+msgstr ""
+
+msgid "Screens:"
+msgstr ""
+
+#, python-format
+msgid "Screens: %(num)d"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Searching..."
+msgstr ""
+
+msgid "Selection"
+msgstr ""
+
+#, python-format
+msgid "Selection: %(selection)s"
+msgstr ""
+
+msgid "Sending the files to a server..."
+msgstr ""
+
+msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr ""
+
+msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr ""
+
+msgid "Show/hide the boards screens."
+msgstr ""
+
+msgid "Show/hide the image screens."
+msgstr ""
+
+msgid "Show/hide the input screens."
+msgstr ""
+
+msgid "Show/hide the players screens."
+msgstr ""
+
+msgid "Show/hide the ranking screens."
+msgstr ""
+
+msgid "Show/hide the results screens."
+msgstr ""
+
+msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+msgid "Sonnenborn-Berger"
+msgstr ""
+
+msgid "Sort the players by category (oldest first)."
+msgstr ""
+
+msgid "Sort the players by category (youngest first)."
+msgstr ""
+
+msgid "Sort the players by club."
+msgstr ""
+
+msgid "Sort the players by name."
+msgstr ""
+
+msgid "Sort the players by rating (less rated first)."
+msgstr ""
+
+msgid "Sort the players by rating (most rated first)."
+msgstr ""
+
+msgid "Sort the players by tournament."
+msgstr ""
+
+msgid "Sort the players by year of birth (oldest first)."
+msgstr ""
+
+msgid "Sort the players by year of birth (youngest first)."
+msgstr ""
+
+msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr ""
+
+msgid "Split by:"
+msgstr ""
+
+msgid "Standard"
 msgstr ""
 
 msgid "Standard rating"
 msgstr ""
 
-msgid "Rapid rating"
+msgid "Standard:"
 msgstr ""
 
-msgid "Blitz rating"
+msgid "Start:"
 msgstr ""
 
-msgid "- *** NAME FOR GENDER NONE"
-msgstr "-"
-
-msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Female"
-
-msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Male"
-
-msgid "- *** SHORT NAME FOR GENDER NONE"
-msgstr "-"
-
-msgid "F *** SHORT NAME FOR GENDER FEMALE"
-msgstr "F"
-
-msgid "M *** SHORT NAME FOR GENDER MALE"
-msgstr "M"
-
-msgid "U8"
+msgid "Starting Papi-web server, please wait..."
 msgstr ""
+
+msgid "Storing data..."
+msgstr ""
+
+msgid "Sum of Buchholz"
+msgstr ""
+
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
+msgid "T *** THE LETTER TO ANSWER TEST"
+msgstr "T"
+
+msgid "Test the tournament passwords on the FFE website"
+msgstr ""
+
+msgid "Text after the hour:"
+msgstr ""
+
+msgid "Text before the hour:"
+msgstr ""
+
+msgid "Text colour:"
+msgstr ""
+
+msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
+msgstr ""
+
+msgid "Thanks :-)"
+msgstr ""
+
+msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "The FFE ID is a positive integer."
+msgstr ""
+
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr ""
+
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr ""
+
+msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr ""
+
+msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr ""
+
+msgid "The FIDE database is not available."
+msgstr ""
+
+msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
+msgstr ""
+
+msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
+msgstr ""
+
+msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr ""
+
+#, python-format
+msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
+msgstr ""
+
+#, python-format
+msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
+msgstr ""
+
+#, python-format
+msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
+msgstr ""
+
+msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
+msgstr ""
+
+msgid "The URL of the image to display."
+msgstr ""
+
+msgid "The URL or the path of the image to display (by default the Papi-web logo)."
+msgstr ""
+
+msgid "The Unique ID, used for data storage and export."
+msgstr ""
+
+msgid "The Unique ID, used to reference the rotator."
+msgstr ""
+
+msgid "The Unique ID, used to reference the screen family."
+msgstr ""
+
+msgid "The Unique ID, used to reference the screen."
+msgstr ""
+
+msgid "The Unique ID, used to reference the timer."
+msgstr ""
+
+msgid "The Unique ID, used to reference the tournament."
+msgstr ""
+
+msgid "The arbiter interface allows the management of the events."
+msgstr ""
+
+msgid "The background colour is used when the image does not fill the whole screen."
+msgstr ""
+
+msgid "The background colour of the alert messages."
+msgstr ""
+
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr ""
+
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr ""
+
+msgid "The date of the first hour is not defined (mandatory)."
+msgstr ""
+
+#, python-format
+msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
+msgstr ""
+
+msgid "The default federation for your events."
+msgstr ""
+
+msgid "The default language used."
+msgstr ""
+
+#, python-format
+msgid "The directory of the Papi file, by default %(dir)s."
+msgstr ""
+
+msgid "The end date and time of the event."
+msgstr ""
+
+msgid "The federation that organizes the event."
+msgstr ""
+
+msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgstr ""
+
+msgid "The following players did not check-in:"
+msgstr ""
+
+msgid "The following screen families will also be deleted:"
+msgstr ""
+
+msgid "The following screens will also be deleted:"
+msgstr ""
+
+msgid "The initial time in seconds (may be empty if an increment is set)."
+msgstr ""
+
+msgid "The installation of version [{version}] failed."
+msgstr ""
+
+msgid "The last set of a screen can not be deleted."
+msgstr ""
+
+msgid "The log level allows you to trace the behaviour of the application."
+msgstr ""
+
+msgid "The mail addresses."
+msgstr ""
+
+#, python-format
+msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
+msgstr ""
+
+#, python-format
+msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgstr ""
+
+#, python-format
+msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
+msgstr ""
+
+#, python-format
+msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
+msgstr ""
+
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr ""
+
+msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr ""
+
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr ""
+
+msgid "The minimum time, whatever the ranking difference between the two players."
+msgstr ""
+
+msgid "The name of the Papi file is not set, by default [{filename}]"
+msgstr ""
+
+msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
+msgstr ""
+
+msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr ""
+
+msgid "The name of the event, used for display and reports."
+msgstr ""
+
+#, python-format
+msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
+msgstr ""
+
+msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
+msgstr ""
+
+msgid "The name of the screen, displayed on event screens."
+msgstr ""
+
+msgid "The name of the tournament on the ChessEvent platform."
+msgstr ""
+
+msgid "The name of the tournament, used for display."
+msgstr ""
+
+msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
+msgstr ""
+
+msgid "The number of columns used to display data."
+msgstr ""
+
+#, python-format
+msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgstr ""
+
+msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
+msgstr ""
+
+msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr ""
+
+msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
+msgstr ""
+
+msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgstr ""
+
+msgid "The number of seconds added to the players' clock at each move."
+msgstr ""
+
+#, python-format
+msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgstr ""
+
+msgid "The number of the first board to select, optional (the first board by default)."
+msgstr ""
+
+msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
+msgstr ""
+
+msgid "The number of the last board to select, optional (the last board by default)."
+msgstr ""
+
+msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgstr ""
+
+msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
+msgstr ""
+
+msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
+msgstr ""
+
+msgid "The password required on input screens to enter results (optional)."
+msgstr ""
+
+msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
+msgstr ""
+
+msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr ""
+
+msgid "The phone numbers."
+msgstr ""
+
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "The player's FIDE ID (do not change)."
+msgstr ""
+
+msgid "The player's FIDE title."
+msgstr ""
+
+msgid "The player's Uniq ID for the French federation (do not change)."
+msgstr ""
+
+msgid "The player's birth date."
+msgstr ""
+
+msgid "The player's club."
+msgstr ""
+
+msgid "The player's email."
+msgstr ""
+
+msgid "The player's federation."
+msgstr ""
+
+msgid "The player's first name."
+msgstr ""
+
+msgid "The player's gender."
+msgstr ""
+
+msgid "The player's last name."
+msgstr ""
+
+msgid "The player's league."
+msgstr ""
+
+msgid "The player's licence number."
+msgstr ""
+
+msgid "The player's licence."
+msgstr ""
+
+msgid "The player's phone number."
+msgstr ""
+
+msgid "The player's tournament."
+msgstr ""
+
+msgid "The price the player already paid."
+msgstr ""
+
+msgid "The price the player pays to register."
+msgstr ""
+
+msgid "The public screens are not available until the Papi-web settings have been validated."
+msgstr ""
+
+msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
+msgstr ""
+
+msgid "The rank of the first player to select, optional (1 by default)."
+msgstr ""
+
+msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
+msgstr ""
+
+msgid "The rating used when the time control is at least 60 minutes."
+msgstr ""
+
+msgid "The rating used when the time control is at most 10 minutes."
+msgstr ""
+
+msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
+msgstr ""
+
+#, python-format
+msgid "The rotating delay between two screens (by default %(default)d seconds)."
+msgstr ""
+
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr ""
+
+msgid "The round for which the document is printed (Defaults to the last possible round)."
+msgstr ""
+
+msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
+msgstr ""
+
+msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
+msgstr ""
+
+msgid "The start date and time of the event."
+msgstr ""
+
+msgid "The text colour of the alert messages."
+msgstr ""
+
+msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+msgstr ""
+
+msgid "The timer displayed on the screen."
+msgstr ""
+
+msgid "The timer displayed on the screens of the family."
+msgstr ""
+
+msgid "The tournament is finished."
+msgstr ""
+
+msgid "The tournament is not started yet."
+msgstr ""
+
+msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
+msgstr ""
+
+msgid "The tournament of which you want to show the pairings, mandatory."
+msgstr ""
+
+msgid "The tournament to print."
+msgstr ""
+
+msgid "The type of document to print."
+msgstr ""
+
+msgid "This action can not be applied to the tournaments of this event."
+msgstr ""
+
+msgid "This event is private (by default, screens are not visible by the users)."
+msgstr ""
+
+msgid "This event is public (by default, screens are visible by the users)."
+msgstr ""
+
+msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+msgstr ""
+
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr ""
+
+msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
+msgstr ""
+
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr ""
+
+msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+msgstr ""
+
+msgid "This rotator is private (not visible by the users)."
+msgstr ""
+
+msgid "This rotator is public (visible by the users)."
+msgstr ""
+
+msgid "This screen family is private (not visible by the users)."
+msgstr ""
+
+msgid "This screen family is public (visible by the users)."
+msgstr ""
+
+msgid "This screen is private (not visible by the users)."
+msgstr ""
+
+msgid "This screen is public (visible by the users)."
+msgstr ""
+
+#, python-format
+msgid "Tie-break #%(index)d:"
+msgstr ""
+
+msgid "Tie-break already in use."
+msgstr ""
+
+msgid "Tie-breaks"
+msgstr ""
+
+msgid "Time control"
+msgstr ""
+
+msgid "Time is not defined."
+msgstr ""
+
+msgid "Timer [{timer_id}] not found."
+msgstr ""
+
+msgid "Timer [{timer_uniq_id}] has been created."
+msgstr ""
+
+msgid "Timer [{timer_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Timer [{timer_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
+msgstr ""
+
+msgid "Timer [{timer_uniq_id}]: {text}"
+msgstr ""
+
+msgid "Timer [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Timer creation"
+msgstr ""
+
+msgid "Timer hours"
+msgstr ""
+
+msgid "Timer {timer_uniq_id}"
+msgstr ""
+
+msgid "Timer:"
+msgstr ""
+
+#, python-format
+msgid "Timer: %(timer_uniq_id)s"
+msgstr ""
+
+msgid "Timer: none"
+msgstr ""
+
+msgid "Timers"
+msgstr ""
+
+msgid "Timers ({num})"
+msgstr ""
+
+#, python-format
+msgid "Timers: %(num)d"
+msgstr ""
+
+msgid "Tournament"
+msgstr ""
+
+msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
+msgstr "Tournament"
+
+msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgstr "Tournament"
+
+#, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is finished."
+msgstr ""
+
+#, python-format
+msgid "Tournament [%(tournament_uniq_id)s] is playing."
+msgstr ""
+
+msgid "Tournament [{ffe_id}]:"
+msgstr ""
+
+msgid "Tournament [{tournament_id}] not found."
+msgstr ""
+
+msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has been created."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] has started."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] is not started yet."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}] is started."
+msgstr ""
+
+msgid "Tournament [{tournament_uniq_id}]: {text}"
+msgstr ""
+
+msgid "Tournament [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Tournament creation"
+msgstr ""
+
+msgid "Tournament exempt from registration fees."
+msgstr ""
+
+msgid "Tournament performance rating"
+msgstr ""
+
+msgid "Tournament record"
+msgstr ""
+
+msgid "Tournament {tournament_uniq_id} ({numbers_str})"
+msgstr ""
+
+msgid "Tournament:"
+msgstr ""
+
+#, python-format
+msgid "Tournament: %(tournament_name)s"
+msgstr ""
+
+msgid "Tournament: not set"
+msgstr ""
+
+msgid "Tournaments"
+msgstr ""
+
+msgid "Tournaments ({num})"
+msgstr ""
+
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr ""
+
+msgid "Tournaments displayed:"
+msgstr ""
+
+msgid "Tournaments recovered: {num} (from directory [{dir}])."
+msgstr ""
+
+#, python-format
+msgid "Tournaments: %(num)d"
+msgstr ""
+
+msgid "Tournaments: {tournament_ffe_ids}"
+msgstr ""
+
+msgid "Tournaments: {tournament_names}"
+msgstr ""
+
+msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr."
+
+msgid "Type:"
+msgstr ""
+
+#, python-format
+msgid "Type: %(family_type)s"
+msgstr ""
+
+#, python-format
+msgid "Type: %(screen_type)s"
+msgstr ""
+
+msgid "U *** THE LETTER TO ANSWER UPLOAD"
+msgstr "U"
 
 msgid "U10"
 msgstr ""
@@ -581,19 +3692,19 @@ msgstr ""
 msgid "U20"
 msgstr ""
 
-msgid "20+"
+msgid "U8"
 msgstr ""
 
-msgid "50+"
+msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
-msgid "65+"
+msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-msgid "No category"
+msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
-msgid "Under 8"
+msgid "Unable to create Papi files since no tournaments are defined."
 msgstr ""
 
 msgid "Under 10"
@@ -614,1586 +3725,33 @@ msgstr ""
 msgid "Under 20"
 msgstr ""
 
-msgid "Over 20"
+msgid "Under 8"
 msgstr ""
 
-msgid "Over 50"
-msgstr ""
-
-msgid "Over 65"
-msgstr ""
-
-msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
-msgstr "Estimated"
-
-msgid "National *** NAME FOR RATING TYPE NATIONAL"
-msgstr "National"
-
-msgid "FIDE *** NAME FOR RATING TYPE FIDE"
-msgstr "Fide"
-
-msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
-msgstr "E"
-
-msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
-msgstr "N"
-
-msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
-msgstr "F"
-
-msgid "No title"
-msgstr ""
-
-msgid "Woman Candidate Master"
-msgstr ""
-
-msgid "Candidate Master"
-msgstr ""
-
-msgid "Woman Fide Master"
-msgstr ""
-
-msgid "Fide Master"
-msgstr ""
-
-msgid "Woman International Master"
-msgstr ""
-
-msgid "International Master"
-msgstr ""
-
-msgid "Woman Grand Master"
-msgstr ""
-
-msgid "Grand Master"
-msgstr ""
-
-msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
-msgstr "WCM"
-
-msgid "CM *** SHORT NAME FOR Candidate Master"
-msgstr "CM"
-
-msgid "WFM *** SHORT NAME FOR Woman Fide Master"
-msgstr "WFM"
-
-msgid "FM *** SHORT NAME FOR Fide Master"
-msgstr "FM"
-
-msgid "WIM *** SHORT NAME FOR Woman International Master"
-msgstr "WIM"
-
-msgid "IM *** SHORT NAME FOR International Master"
-msgstr "IM"
-
-msgid "WGM *** SHORT NAME FOR Woman Grand Master"
-msgstr "WGM"
-
-msgid "GM *** SHORT NAME FOR Grand Master"
-msgstr "GM"
-
-msgid "W *** WHITE COLOR FOR CROSSTABLE"
-msgstr "W"
-
-msgid "B *** BLACK COLOR FOR CROSSTABLE"
-msgstr "B"
-
-msgid "White"
-msgstr ""
-
-msgid "Black"
-msgstr ""
-
-msgid "Pairings by board"
-msgstr ""
-
-msgid "Results entry"
-msgstr ""
-
-msgid "Parings by player"
-msgstr ""
-
-msgid "No split"
-msgstr ""
-
-msgid "Category"
-msgstr ""
-
-msgid "Club"
-msgstr ""
-
-msgid "Federation"
-msgstr ""
-
-msgid "List of players"
-msgstr ""
-
-msgid "Ranking after round #{round}"
-msgstr ""
-
-msgid "Crosstable after round #{round}"
-msgstr ""
-
-msgid "Crosstable"
-msgstr ""
-
-msgid "Connection to the FFE server failed: {error}."
-msgstr ""
-
-msgid "Connection to the FFE server failed."
-msgstr ""
-
-msgid "Connection to the FFE database failed: {error}."
-msgstr ""
-
-msgid "Connection to the FFE database failed."
-msgstr ""
-
-msgid "Request to the FFE database failed: {error}."
-msgstr ""
-
-msgid "Request to the FFE database failed."
-msgstr ""
-
-msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr ""
-
-msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr ""
-
-msgid "Downloading the FIDE database..."
-msgstr ""
-
-msgid "Could not download [{url}], error code [{code}]."
-msgstr ""
-
-msgid "Could not download [{url}]: {ex}."
-msgstr ""
-
-msgid "No data received from [{url}]."
-msgstr ""
-
-msgid "Could not unzip data."
-msgstr ""
-
-msgid "Storing data..."
-msgstr ""
-
-msgid "{number} players written."
-msgstr ""
-
-msgid "Error while creating the database: {ex}."
-msgstr ""
-
-msgid "Please enter a password for the ChessEvent connection."
-msgstr ""
-
-msgid "ChessEvent connection not defined."
-msgstr ""
-
-msgid "ChessEvent event not set."
-msgstr ""
-
-msgid "ChessEvent tournament name not set."
-msgstr ""
-
-msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] has started."
-msgstr ""
-
-msgid "Event: {event_name}"
-msgstr ""
-
-msgid "Unable to create Papi files since no tournaments are defined."
-msgstr ""
-
-msgid "Tournaments: {tournament_names}"
-msgstr ""
-
-msgid "C *** THE LETTER TO ANSWER CREATE"
-msgstr "C"
-
-msgid "U *** THE LETTER TO ANSWER UPLOAD"
-msgstr "U"
-
-msgid "Create the Papi files"
-msgstr ""
-
-msgid "Create the Papi files and send them to the FFE website"
-msgstr ""
-
-msgid "Quit"
-msgstr ""
-
-msgid "Your choice (by default {default}): "
-msgstr ""
-
-msgid "Action: {action}"
-msgstr ""
-
-msgid "1 *** THE LETTER TO ANSWER ONCE"
-msgstr "1"
-
-msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
-msgstr "C"
-
-msgid "Once"
-msgstr ""
-
-msgid "Continuously"
-msgstr ""
-
-msgid "Frequency: {frequency}"
-msgstr ""
-
-msgid "Please choose the Papi version:"
-msgstr ""
-
-msgid "Papi version: {version}"
-msgstr ""
-
-msgid "This action can not be applied to the tournaments of this event."
-msgstr ""
-
-msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
-msgstr ""
-
-msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
-msgstr ""
-
-msgid "Papi file [{file}] has been created (players: {num})."
-msgstr ""
-
-msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
-msgstr ""
-
-msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
-msgstr ""
-
-msgid "Missing parameter (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "Unknown response code: [{code}] ([{chessevent_string}])."
-msgstr ""
-
-msgid "No events found."
-msgstr ""
-
-msgid "One event found, press Enter (Q to quit): "
-msgstr ""
-
-msgid "Please choose the event:"
-msgstr ""
-
-msgid "Your choice: "
+msgid "Unique ID"
 msgstr ""
 
 #, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
-msgstr ""
-
-msgid "No ChessEvent identifier defined"
-msgstr ""
-
-msgid "No ChessEvent event defined"
-msgstr ""
-
-msgid "Connection to the ChessEvent platform"
-msgstr ""
-
-msgid "Chessevent ID:"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(string)s"
-msgstr ""
-
-msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr ""
-
-msgid "ChessEvent Password:"
-msgstr ""
-
-msgid "E.g.: my_password"
-msgstr ""
-
-msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr ""
-
-msgid "ChessEvent event:"
-msgstr ""
-
-msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
-msgstr ""
-
-msgid "ChessEvent"
-msgstr ""
-
-#, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
-msgstr ""
-
-msgid "No ChessEvent tournament defined"
-msgstr ""
-
-msgid "Connections ChessEvent"
-msgstr ""
-
-msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
-msgstr ""
-
-msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
-msgstr ""
-
-msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
-msgstr ""
-
-msgid "ChessEvent tournament:"
-msgstr ""
-
-msgid "E.g.: Tournoi A"
-msgstr ""
-
-msgid "The name of the tournament on the ChessEvent platform."
-msgstr ""
-
-msgid "Error while updating the FFE database."
-msgstr ""
-
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr ""
-
-msgid "Invalid FFE licence number [{ffe_licence_number}]."
-msgstr ""
-
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr ""
-
-msgid "The FFE ID is a positive integer."
-msgstr ""
-
-msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr ""
-
-msgid "League"
-msgstr ""
-
-msgid "League *** LEAGUE FOR PRINT VIEW"
-msgstr "League"
-
-msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr ""
-
-msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr ""
-
-msgid "Downloading the FFE database..."
-msgstr ""
-
-msgid "Error reading the following row (player ignored): [{row}]."
-msgstr ""
-
-msgid "{num} player found in {seconds:.2f} seconds."
-msgid_plural "{num} players found in {seconds:.2f} seconds."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "No players found in {seconds:.2f} seconds."
-msgstr ""
-
-msgid "{num} player found."
-msgid_plural "{num} players found."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "No players found."
-msgstr ""
-
-msgid "No local database."
-msgstr ""
-
-msgid "Not connected to internet."
-msgstr ""
-
-msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
-msgstr "Bu."
-
-msgid "Buchholz cut bottom"
-msgstr ""
-
-msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-msgid "Median Buchholz"
-msgstr ""
-
-msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-msgid "Performance"
-msgstr ""
-
-msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr "Perf."
-
-msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
-msgstr "SBh"
-
-msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
-msgstr "Ka."
-
-msgid "No FFE Licence"
-msgstr ""
-
-msgid "Expired FFE licence"
-msgstr ""
-
-msgid "FFE licence B (leisure)"
-msgstr ""
-
-msgid "FFE licence A (competition)"
-msgstr ""
-
-msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "No FFE operations can be done on the tournaments of this event."
-msgstr ""
-
-msgid "Tournaments: {tournament_ffe_ids}"
-msgstr ""
-
-msgid "T *** THE LETTER TO ANSWER TEST"
-msgstr "T"
-
-msgid "V *** THE LETTER TO ANSWER VISIBLE"
-msgstr "V"
-
-msgid "F *** THE LETTER TO ANSWER FEES"
-msgstr "F"
-
-msgid "R *** THE LETTER TO ANSWER RULES"
-msgstr "R"
-
-msgid "Test the tournament passwords on the FFE website"
-msgstr ""
-
-msgid "Make the tournaments visible on the FFE website"
-msgstr ""
-
-msgid "Download fees invoices"
-msgstr ""
-
-msgid "Upload the rules of the tournaments"
-msgstr ""
-
-msgid "Upload the results of the tournaments"
-msgstr ""
-
-msgid "Actions:"
-msgstr ""
-
-msgid "No need to upload the rules to the FFE website (up to date)."
-msgstr ""
-
-msgid "No need to upload the results to the FFE website (up to date)."
-msgstr ""
-
-msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "End of upload (Ctrl-C)"
-msgstr ""
-
-msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-msgstr ""
-
-msgid "Initializing a session to [{url}]..."
-msgstr ""
-
-msgid "OK"
-msgstr ""
-
-msgid "Authenticating..."
-msgstr ""
-
-msgid "Authentication failed."
-msgstr ""
-
-msgid "Tournament [{ffe_id}]:"
-msgstr ""
-
-msgid "Getting fees for tournament [{ffe_id}]..."
-msgstr ""
-
-msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
-msgstr ""
-
-msgid "Tournament exempt from registration fees."
-msgstr ""
-
-msgid "Invalid fees link text [{text}]."
-msgstr ""
-
-msgid "Invoice saved to [{file}]."
-msgstr ""
-
-msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-msgstr ""
-
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr ""
-
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr ""
-
-msgid "Results upload OK"
-msgstr ""
-
-msgid "Making the tournament visible on the FFE website..."
-msgstr ""
-
-msgid "Display link not found, check that a Papi file has already been sent."
-msgstr ""
-
-msgid "Data is already displayed on the FFE website."
-msgstr ""
-
-msgid "Invalid display link text [{text}]"
-msgstr ""
-
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr ""
-
-msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr ""
-
-msgid "French Chess Federation"
-msgstr ""
-
-msgid "Licence number:"
-msgstr ""
-
-msgid "The player's licence number."
-msgstr ""
-
-msgid "Licence:"
-msgstr ""
-
-msgid "The player's licence."
-msgstr ""
-
-msgid "FFE Uniq ID:"
-msgstr ""
-
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr ""
-
-msgid "League:"
-msgstr ""
-
-msgid "The player's league."
-msgstr ""
-
-msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
-msgstr "League"
-
-msgid "Filter the leagues."
-msgstr ""
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+msgid "Unique ID: %(uniq_id)s"
 msgstr ""
 
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
-
-msgid "Filter the licences."
-msgstr ""
-
-msgid "FFE database:"
-msgstr ""
-
-msgid "No internet connection and no local database."
-msgstr ""
-
-msgid "Searching..."
-msgstr ""
-
-#, python-format
-msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-msgstr ""
-
-#, python-format
-msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-msgstr ""
-
-#, python-format
-msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-msgstr ""
-
-#, python-format
-msgid "FFE qualification: %(ffe_id)s"
-msgstr ""
-
-msgid "No FFE qualification"
-msgstr ""
-
-msgid "Connection French Chess Federation"
-msgstr ""
-
-msgid "FFE certification number (optional):"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(num)d"
-msgstr ""
-
-msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
-msgstr ""
-
-msgid "FFE password:"
-msgstr ""
-
-msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
-msgstr ""
-
-msgid "Opening the welcome page [{url}] in a browser..."
-msgstr ""
-
-msgid "Web server not started yet ({ex}), waiting..."
-msgstr ""
-
-msgid "Starting Papi-web server, please wait..."
-msgstr ""
-
-msgid "Logging level: {log_level}"
-msgstr ""
-
-msgid "Error while updating the FIDE database."
-msgstr ""
-
-msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
-
-msgid "Port [{port}] already in use."
-msgstr ""
-
-msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
-msgstr ""
-
-msgid "Port: {port}"
-msgstr ""
-
-msgid "Local URL: {local_url}"
-msgstr ""
-
-msgid "LAN/WAN URL: {lan_url}"
-msgstr ""
-
-msgid "USE AT YOUR OWN RISKS"
-msgstr ""
-
-msgid "No recording"
-msgstr ""
-
-msgid "{num} illegal move max"
-msgid_plural "{num} illegal moves max"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "By default - {option}"
-msgstr ""
-
-msgid "Points for gain (full-point bye)"
-msgstr ""
-
-msgid "Points for draw (half-point bye)"
-msgstr ""
-
-msgid "Points for loss (zero-point bye)"
-msgstr ""
-
-msgid "None"
-msgstr ""
-
-msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-msgstr ""
-
-msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
-msgstr ""
-
-msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr ""
-
-msgid "Pairings by player"
-msgstr ""
-
-msgid "Use no timer"
-msgstr ""
-
-msgid "No timer defined"
-msgstr ""
-
-msgid "Timer {timer_uniq_id}"
-msgstr ""
-
-msgid "Display the exit button"
-msgstr ""
-
-msgid "Hide the exit button"
-msgstr ""
-
-msgid "Display only paired players"
-msgstr ""
-
-msgid "Display all the players, paired and unpaired"
-msgstr ""
-
-msgid "Invalid value [{value}]."
-msgstr ""
-
-msgid "URL [{url}] responded code [{code}]."
-msgstr ""
-
-msgid "URL [{url}] did not respond (error: [{error}])."
-msgstr ""
-
-msgid "Incorrect path [{path}]."
-msgstr ""
-
-msgid "File [{file}] not found."
-msgstr ""
-
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr ""
-
-msgid "Invalid color [{color}] ([#RRGGBB] expected)."
-msgstr ""
-
-msgid "Please enter the event ID."
-msgstr ""
-
-msgid "event ID does not match."
-msgstr ""
-
-msgid "Character [{char}] is not allowed."
-msgstr ""
-
-msgid "Event [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Please enter the name of the event."
-msgstr ""
-
-msgid "Please enter the start date of the event."
-msgstr ""
-
-msgid "Please enter the end date of the event."
-msgstr ""
-
-msgid "Please enter a date after the start date."
-msgstr ""
-
-msgid "Please enter a URL or select an image on the right hand side."
-msgstr ""
-
-msgid "New event"
-msgstr ""
-
-msgid "event"
-msgstr ""
-
-msgid "Invalid log level [{log_level}]."
-msgstr ""
-
-msgid "Invalid federation [{federation}]."
-msgstr ""
-
-msgid "Invalid locale [{locale}]."
-msgstr ""
-
-msgid "Current events ({num})"
-msgstr ""
-
-msgid "No current events."
-msgstr ""
-
-msgid "Upcoming events ({num})"
-msgstr ""
-
-msgid "No upcoming events."
-msgstr ""
-
-msgid "Passed events ({num})"
-msgstr ""
-
-msgid "No passed events."
-msgstr ""
-
-msgid "Archived events ({num})"
-msgstr ""
-
-msgid "No archived events."
-msgstr ""
-
-msgid "Papi-web settings"
-msgstr ""
-
-msgid "Automatically launch a browser when starting the server"
-msgstr ""
-
-msgid "Do nothing"
-msgstr ""
-
-msgid "Tournaments ({num})"
-msgstr ""
-
-msgid "Players ({num})"
-msgstr ""
-
-msgid "Screens ({num})"
-msgstr ""
-
-msgid "Families ({num})"
-msgstr ""
-
-msgid "Rotators ({num})"
-msgstr ""
-
-msgid "Timers ({num})"
-msgstr ""
-
-msgid "Renaming the database failed: {ex}."
-msgstr ""
-
-msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
-msgstr ""
-
-msgid "Event [{uniq_id}] has been updated."
-msgstr ""
-
-msgid "Event [{uniq_id}] has been created."
-msgstr ""
-
-msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
-msgstr ""
-
-msgid "Please choose the tournament."
-msgstr ""
-
-msgid "Please choose the document."
-msgstr ""
-
-msgid "A positive integer is expected."
-msgstr ""
-
-msgid "Not part of the selected tournament ({rounds} rounds)."
-msgstr ""
-
-msgid "Round not finished (last finished: {round})."
-msgstr ""
-
-msgid "Personal"
-msgstr ""
-
-msgid "Chess"
-msgstr ""
-
-msgid "Please enter the family ID."
-msgstr ""
-
-msgid "Family [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Tournament [{tournament_id}] not found."
-msgstr ""
-
-msgid "Timer [{timer_id}] not found."
-msgstr ""
-
-msgid "Specifying the number of parts and the number of items per part is not possible."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been created."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Papi-web settings has been updated."
-msgstr ""
-
-msgid "Please enter the last name."
-msgstr ""
-
-msgid "Please enter the date of birth."
-msgstr ""
-
-msgid "Only estimated ratings are optional."
-msgstr ""
-
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Invalid FIDE ID [{fide_id}]."
-msgstr ""
-
-msgid "Invalid mail [{mail}]."
-msgstr ""
-
-msgid "Invalid phone number [{phone}]."
-msgstr ""
-
-msgid "Invalid amount [{amount}]."
-msgstr ""
-
-msgid "Invalid fixed board number [{fixed_board}]."
-msgstr ""
-
-msgid "Standard:"
-msgstr ""
-
-msgid "The rating used when the time control is at least 60 minutes."
-msgstr ""
-
-msgid "Rapid:"
-msgstr ""
-
-msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
-msgstr ""
-
-msgid "Blitz:"
-msgstr ""
-
-msgid "The rating used when the time control is at most 10 minutes."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
-msgstr ""
-
-msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
-msgstr ""
-
-msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Papi file [{tournament_file}] not found."
-msgstr ""
-
-msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
-msgstr ""
-
-msgid "Check-in is open for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Please enter the rotator ID."
-msgstr ""
-
-msgid "Rotator [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Rotator [{rotator_uniq_id}] has been created."
-msgstr ""
-
-msgid "Rotator [{rotator_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Rotator [{rotator_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Please enter the screen ID."
-msgstr ""
-
-msgid "Screen [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Please enter the image URL."
-msgstr ""
-
-msgid "Invalid URL [{background_image}]."
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}] has been created."
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "The last set of a screen can not be deleted."
-msgstr ""
-
-msgid "Please enter the timer ID."
-msgstr ""
-
-msgid "Timer [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr ""
-
-msgid "Please enter the round number or the hour ID."
-msgstr ""
-
-msgid "Please enter the time."
-msgstr ""
-
-msgid "Please enter a valid time."
-msgstr ""
-
-msgid "Please enter the date of the first hour."
-msgstr ""
-
-msgid "Please enter a valid date."
-msgstr ""
-
-msgid "Please enter valid date and time."
-msgstr ""
-
-msgid "Hour [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Round numbers must be positive integers."
-msgstr ""
-
-msgid "Please enter the text to display before the hour (mandatory except for rounds)."
-msgstr ""
-
-msgid "Please enter the text to display after the hour (mandatory except for rounds)."
-msgstr ""
-
-msgid "Timer [{timer_uniq_id}] has been created."
-msgstr ""
-
-msgid "Timer [{timer_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Timer [{timer_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Please enter the tournament ID."
-msgstr ""
-
-msgid "tournament ID does not match."
-msgstr ""
-
-msgid "Tournament [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Please enter the tournament name."
-msgstr ""
-
-msgid "Tie-break already in use."
-msgstr ""
-
-msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Papi file [{file}] created."
-msgstr ""
-
-msgid "Papi file has not been created."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] has been created."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Access denied, please authenticate to enter results."
-msgstr ""
-
-msgid "Incorrect password."
-msgstr ""
-
-msgid "Results entry ({num})"
-msgstr ""
-
-msgid "Pairings by board ({num})"
-msgstr ""
-
-msgid "Pairings by player ({num})"
-msgstr ""
-
-msgid "Last results ({num})"
-msgstr ""
-
-msgid "Ranking ({num})"
-msgstr ""
-
-msgid "Image ({num})"
-msgstr ""
-
-msgid "Authentication successful!"
-msgstr ""
-
-msgid "Please enter the password."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] is not started yet."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] is started."
-msgstr ""
-
-msgid "Welcome to Papi-web!"
-msgstr ""
-
-msgid "Language"
-msgstr ""
-
-msgid "Web access"
-msgstr ""
-
-msgid "From the Papi-web server"
-msgstr ""
-
-msgid "From the local network (LAN/WAN)"
-msgstr ""
-
-msgid "The public screens are not available until the Papi-web settings have been validated."
-msgstr ""
-
-msgid "Click here to access the public screens of the events."
-msgstr ""
-
-msgid "Events (public access)"
-msgstr ""
-
-msgid "The arbiter interface allows the management of the events."
-msgstr ""
-
-msgid "Access to the arbiter interface is not allowed from this client."
-msgstr ""
-
-msgid "Papi-web settings (private access)"
-msgstr ""
-
-msgid "Arbiter interface (private access)"
-msgstr ""
-
-msgid "Go back to the home page."
-msgstr ""
-
-msgid "The tournament is not started yet."
-msgstr ""
-
-#, python-format
-msgid "Round #%(round)d is running."
-msgstr ""
-
-#, python-format
-msgid "Round #%(round)d is finished."
-msgstr ""
-
-msgid "The tournament is finished."
-msgstr ""
-
-msgid "Sort the players by name."
-msgstr ""
-
-msgid "Sort the players by rating (most rated first)."
-msgstr ""
-
-msgid "Sort the players by rating (less rated first)."
-msgstr ""
-
-msgid "Sort the players by club."
-msgstr ""
-
-msgid "Sort the players by year of birth (youngest first)."
-msgstr ""
-
-msgid "Sort the players by year of birth (oldest first)."
-msgstr ""
-
-msgid "Sort the players by category (oldest first)."
-msgstr ""
-
-msgid "Sort the players by category (youngest first)."
-msgstr ""
-
-msgid "Sort the players by tournament."
-msgstr ""
-
-msgid "by default"
-msgstr ""
-
-msgid "Alert message:"
-msgstr ""
-
-msgid "E.g.: Please keep quiet until the end of the round!"
-msgstr ""
-
-msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
-msgstr ""
-
-msgid "Display of a screen exit button:"
-msgstr ""
-
-msgid "When not displaying the exit button, users can not accidentally exit input screens."
-msgstr ""
-
-msgid "Display of unpaired players:"
-msgstr ""
-
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
-msgstr ""
-
-#, python-format
-msgid "Colour #%(num)d:"
-msgstr ""
-
-#, python-format
-msgid "Delay #%(num)d:"
-msgstr ""
-
-#, python-format
-msgid "By default: %(minutes)d minutes"
-msgstr ""
-
-msgid "Event creation"
-msgstr ""
-
-#, python-format
-msgid "Edition of event [%(event_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of event [%(event_uniq_id)s]"
-msgstr ""
-
-msgid "Warning: the deletion of an event is permanent!"
-msgstr ""
-
-msgid "Enter the event ID to confirm its deletion:"
-msgstr ""
-
-msgid "Enter here the event ID"
-msgstr ""
-
-msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
-msgstr ""
-
-msgid "Properties"
-msgstr ""
-
-msgid "Visibility:"
-msgstr ""
-
-msgid "Public event"
-msgstr ""
-
-msgid "Only arbiters can see private events."
-msgstr ""
-
-msgid "Federation:"
-msgstr ""
-
-msgid "The federation that organizes the event."
-msgstr ""
-
-msgid "ID (unique):"
-msgstr ""
-
-msgid "E.g.: world-championship"
-msgstr ""
-
-msgid "The Unique ID, used for data storage and export."
-msgstr ""
-
-msgid "Name:"
-msgstr ""
-
-msgid "E.g.: World championship"
-msgstr ""
-
-msgid "The name of the event, used for display and reports."
-msgstr ""
-
-msgid "Start:"
-msgstr ""
-
-msgid "The start date and time of the event."
-msgstr ""
-
-msgid "End:"
-msgstr ""
-
-msgid "The end date and time of the event."
-msgstr ""
-
-msgid "Default directory of the Papi files:"
-msgstr ""
-
-msgid "E.g.: c:\\chess\tournaments"
-msgstr ""
-
-#, python-format
-msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
-msgstr ""
-
-msgid "Password to enter results:"
-msgstr ""
-
-msgid "The password required on input screens to enter results (optional)."
-msgstr ""
-
-msgid "Illegal moves recording:"
-msgstr ""
-
-#, python-format
-msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
-msgstr ""
-
-msgid "Rules"
-msgstr ""
-
-msgid "Rules file location:"
-msgstr ""
-
-msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr ""
-
-msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
-msgstr ""
-
-msgid "Display"
-msgstr ""
-
-msgid "Background image:"
-msgstr ""
-
-msgid "The URL or the path of the image to display (by default the Papi-web logo)."
-msgstr ""
-
-msgid "no background image"
-msgstr ""
-
-msgid "Choose a custom image:"
-msgstr ""
-
-msgid "Background colour:"
-msgstr ""
-
-msgid "The background colour is used when the image does not fill the whole screen."
-msgstr ""
-
-msgid "Alert message"
-msgstr ""
-
-msgid "The background colour of the alert messages."
-msgstr ""
-
-msgid "Text colour:"
-msgstr ""
-
-msgid "The text colour of the alert messages."
-msgstr ""
-
-msgid "Cancel"
-msgstr ""
-
-msgid "Create"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Print"
-msgstr ""
-
-msgid "Tournament"
-msgstr ""
-
-msgid "Tournament:"
-msgstr ""
-
-msgid "The tournament to print."
-msgstr ""
-
-msgid "Options"
-msgstr ""
-
-msgid "Document:"
-msgstr ""
-
-msgid "The type of document to print."
-msgstr ""
-
-msgid "Round:"
-msgstr ""
-
-msgid "The round for which the document is printed (Defaults to the last possible round)."
-msgstr ""
-
-msgid "Split by:"
-msgstr ""
-
-msgid "How to split the results."
-msgstr ""
-
-msgid "Edit"
-msgstr ""
-
-msgid "Clone"
-msgstr ""
-
-msgid "Customization"
-msgstr ""
-
-msgid "Unique ID"
-msgstr ""
-
-msgid "Date"
-msgstr ""
-
-msgid "Visibility"
-msgstr ""
-
-msgid "Private event"
-msgstr ""
-
-msgid "Default directory of the Papi files"
-msgstr ""
-
-msgid "(by default)"
-msgstr ""
-
-msgid "Background image and colour"
-msgstr ""
-
-msgid "Password to enter results"
-msgstr ""
-
-msgid "No password required"
-msgstr ""
-
-msgid "Maximum number of illegal moves"
-msgstr ""
-
-msgid "No rules file set"
-msgstr ""
-
-msgid "No alert message"
-msgstr ""
-
-msgid "Last update"
-msgstr ""
-
-#, python-format
-msgid "Type: %(family_type)s"
-msgstr ""
-
-#, python-format
-msgid "Tournament: %(tournament_name)s"
-msgstr ""
-
-#, python-format
-msgid "Selection: %(selection)s"
-msgstr ""
-
-msgid "Columns:"
-msgstr ""
-
-#, python-format
-msgid "Menu link label: %(menu_label)s"
-msgstr ""
-
-msgid "Menu link label: none"
-msgstr ""
-
-#, python-format
-msgid "Menu: %(menu)s"
-msgstr ""
-
-msgid "Menu: none"
-msgstr ""
-
-#, python-format
-msgid "Timer: %(timer_uniq_id)s"
+msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
-msgid "Timer: none"
-msgstr ""
+msgid "Unpaired *** FEMALE"
+msgstr "Unpaired"
 
-msgid "Exit button:"
-msgstr ""
+msgid "Unpaired *** MALE"
+msgstr "Unpaired"
 
-msgid "yes"
+msgid "Unpaired players: displayed"
 msgstr ""
 
-msgid "no"
+msgid "Unpaired players: hidden"
 msgstr ""
 
 msgid "Unpaired: displayed"
@@ -2202,1758 +3760,349 @@ msgstr ""
 msgid "Unpaired: hidden"
 msgstr ""
 
-#, python-format
-msgid "Boards from #%(first)d to #%(last)d"
+msgid "Upcoming events ({num})"
 msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Update players"
+msgstr ""
+
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr ""
+
+msgid "Upload the results of the tournaments"
+msgstr ""
+
+msgid "Upload the rules of the tournaments"
+msgstr ""
+
+msgid "Use no timer"
+msgstr ""
+
+msgid "V *** THE LETTER TO ANSWER VISIBLE"
+msgstr "V"
+
+msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
+msgstr ""
+
+msgid "View the files on filebin.net"
+msgstr ""
+
+msgid "Visibility"
+msgstr ""
+
+msgid "Visibility:"
+msgstr ""
+
+msgid "W *** WHITE COLOR FOR CROSSTABLE"
+msgstr "W"
+
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WCM"
+
+msgid "WFM *** SHORT NAME FOR Woman Fide Master"
+msgstr "WFM"
+
+msgid "WGM *** SHORT NAME FOR Woman Grand Master"
+msgstr "WGM"
+
+msgid "WHITE WINS"
+msgstr ""
+
+msgid "WIM *** SHORT NAME FOR Woman International Master"
+msgstr "WIM"
 
 #, python-format
-msgid "Players from #%(first)s to #%(last)s"
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
 msgstr ""
 
-#, python-format
-msgid "Players from #%(first)d to #%(last)d"
+msgid "Warning: the deletion of a player is permanent!"
 msgstr ""
 
-msgid "No screens"
-msgstr ""
-
-msgid "Edit the properties of the screen family."
-msgstr ""
-
-msgid "Clone the screen family."
-msgstr ""
-
-msgid "Delete the screen family."
-msgstr ""
-
-msgid "Input screen family creation"
-msgstr ""
-
-msgid "Boards screen family creation"
-msgstr ""
-
-msgid "Players screen family creation"
-msgstr ""
-
-msgid "Ranking screen family creation"
-msgstr ""
-
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Edition of screen family [%(family_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of screen family [%(family_uniq_id)s]"
+msgid "Warning: the deletion of a rotator is permanent!"
 msgstr ""
 
 msgid "Warning: the deletion of a screen family is permanent!"
 msgstr ""
 
-msgid "Properties (results entry)"
+msgid "Warning: the deletion of a screen is permanent!"
 msgstr ""
 
-msgid "Properties (pairings by board)"
+msgid "Warning: the deletion of a timer is permanent!"
 msgstr ""
 
-msgid "Properties (pairings by player)"
+msgid "Warning: the deletion of a tournament is permanent!"
 msgstr ""
 
-msgid "Properties (ranking)"
-msgstr ""
-
-msgid "Public family"
-msgstr ""
-
-msgid "Only arbiters can see private screen families."
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(family_type)s-family"
-msgstr ""
-
-msgid "The Unique ID, used to reference the screen family."
-msgstr ""
-
-msgid "E.g.: My screen family"
-msgstr ""
-
-#, python-format
-msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-msgstr ""
-
-msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
-msgstr ""
-
-msgid "Board selection (by number)"
-msgstr ""
-
-msgid "Player selection (by alphabetical order)"
-msgstr ""
-
-msgid "Player selection (by rank)"
-msgstr ""
-
-msgid "The number of the first board to select, optional (the first board by default)."
-msgstr ""
-
-msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
-msgstr ""
-
-msgid "The rank of the first player to select, optional (1 by default)."
-msgstr ""
-
-msgid "First board:"
-msgstr ""
-
-msgid "First player:"
-msgstr ""
-
-msgid "The number of the last board to select, optional (the last board by default)."
-msgstr ""
-
-msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
-msgstr ""
-
-msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
-msgstr ""
-
-msgid "Last board:"
-msgstr ""
-
-msgid "Last player:"
-msgstr ""
-
-msgid "On a given number of screens:"
-msgstr ""
-
-msgid "E.g.: 4 (split the boards on 4 screens)"
-msgstr ""
-
-msgid "E.g.: 4 (split the players on 4 screens)"
-msgstr ""
-
-msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
-msgstr ""
-
-msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
-msgstr ""
-
-msgid "On fixed size screens:"
-msgstr ""
-
-msgid "E.g.: 20 (place 20 boards on each screen)"
-msgstr ""
-
-msgid "E.g.: 20 (place 20 players on each screen)"
-msgstr ""
-
-msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
-msgstr ""
-
-msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
-msgstr ""
-
-msgid "Layout"
-msgstr ""
-
-msgid "Timer:"
-msgstr ""
-
-msgid "The timer displayed on the screens of the family."
-msgstr ""
-
-msgid "The number of columns used to display data."
-msgstr ""
-
-msgid "Menus"
-msgstr ""
-
-msgid "Links displayed on the screen menu:"
-msgstr ""
-
-msgid "E.g.: @boards, @family, another-screen"
-msgstr ""
-
-msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-msgstr ""
-
-msgid "Links to this screen:"
-msgstr ""
-
-msgid "Allow"
-msgstr ""
-
-msgid "Check the box to allow other screens to display a link to the screen of this family."
-msgstr ""
-
-msgid "Menu link label:"
-msgstr ""
-
-#, python-format
-msgid "E.g.: Boards %%f-%%l"
-msgstr ""
-
-#, python-format
-msgid "E.g.: Players %%f-%%l"
-msgstr ""
-
-msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
-msgstr ""
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr ""
-
-msgid "Screen families"
-msgstr ""
-
-msgid "Enable/disable the details of the screen families on the cards below."
-msgstr ""
-
-msgid "Details"
-msgstr ""
-
-msgid "You must create a tournament before creating a screen family."
-msgstr ""
-
-msgid "Create a screen family"
-msgstr ""
-
-msgid "Add a family of screens to enter the results."
-msgstr ""
-
-msgid "Add a family of screens to display the pairings by board."
-msgstr ""
-
-msgid "Add a family of screens to display the pairings by alphabetical order."
-msgstr ""
-
-msgid "Add a family of screens to display the ranking."
-msgstr ""
-
-msgid "No screen families."
-msgstr ""
-
-msgid "Archived event"
-msgstr ""
-
-msgid "Deletion date"
-msgstr ""
-
-msgid "Edition of papi-web settings"
-msgstr ""
-
-msgid "Please validate the global configuration of the application."
-msgstr ""
-
-msgid "Application"
-msgstr ""
-
-msgid "Launch browser:"
-msgstr ""
-
-msgid "Papi-web can automatically launch a web browser when starting the web server."
-msgstr ""
-
-msgid "Log level:"
-msgstr ""
-
-msgid "The log level allows you to trace the behaviour of the application."
-msgstr ""
-
-msgid "Internationalization"
-msgstr ""
-
-msgid "The default federation for your events."
-msgstr ""
-
-msgid "Language:"
-msgstr ""
-
-msgid "The default language used."
-msgstr ""
-
-msgid "Edit the Papi-web settings."
-msgstr ""
-
-msgid "Add an event."
-msgstr ""
-
-msgid "Create an event"
-msgstr ""
-
-msgid "Configuration"
-msgstr ""
-
-msgid "Port"
-msgstr ""
-
-msgid "Access from the Papi-web server"
-msgstr ""
-
-msgid "Access from the local network (LAN/WAN)"
-msgstr ""
-
-msgid "Default language"
-msgstr ""
-
-msgid "Default federation:"
-msgstr ""
-
-msgid "Launching the browser on server startup"
-msgstr ""
-
-msgid "Yes"
-msgstr ""
-
-msgid "No"
-msgstr ""
-
-msgid "Log level"
-msgstr ""
-
-#, python-format
-msgid "%(lib)s version"
-msgstr ""
-
-msgid "Access driver (found)"
-msgstr ""
-
-msgid "Access driver (not found)"
-msgstr ""
-
-msgid "Other ODBC drivers found on the server"
-msgstr ""
-
-#, python-format
-msgid "Unique ID: %(uniq_id)s"
-msgstr ""
-
-#, python-format
-msgid "Tournaments: %(num)d"
-msgstr ""
-
-msgid "No tournaments"
-msgstr ""
-
-#, python-format
-msgid "Timers: %(num)d"
-msgstr ""
-
-msgid "No timers"
-msgstr ""
-
-#, python-format
-msgid "Screens: %(num)d"
-msgstr ""
-
-#, python-format
-msgid "Screen families: %(num)d"
-msgstr ""
-
-msgid "No screen families"
-msgstr ""
-
-#, python-format
-msgid "Rotators: %(num)d"
-msgstr ""
-
-msgid "No rotators"
-msgstr ""
-
-#, python-format
-msgid "Errors: %(num)d"
-msgstr ""
-
-msgid "No errors"
+msgid "Warning: the deletion of an event is permanent!"
 msgstr ""
 
 #, python-format
 msgid "Warnings: %(num)d"
 msgstr ""
 
-msgid "No warnings"
+msgid "Web access"
 msgstr ""
 
-#, python-format
-msgid "Informations: %(num)d"
+msgid "Web server not started yet ({ex}), waiting..."
 msgstr ""
 
-msgid "No informations"
+msgid "Welcome to Papi-web!"
 msgstr ""
 
-msgid "Enable/disable the details of events on the cards below."
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr ""
 
-msgid "Refresh this page."
-msgstr ""
-
-msgid "Open/close check-in."
-msgstr ""
-
-msgid "Check-in"
-msgstr ""
-
-#, python-format
-msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-#, python-format
-msgid "Tournament [%(tournament_uniq_id)s] is finished."
-msgstr ""
-
-#, python-format
-msgid "Tournament [%(tournament_uniq_id)s] is playing."
-msgstr ""
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-#, python-format
-msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
-msgstr ""
-
-msgid "The following players did not check-in:"
-msgstr ""
-
-msgid "Choose what to do after closing the check-in:"
-msgstr ""
-
-msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
-msgstr ""
-
-msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
-msgstr ""
-
-msgid "All the players intended to play the coming round did check-in."
-msgstr ""
-
-msgid "Mark as forfeit for the rest of the tournament"
-msgstr ""
-
-msgid "Mark as forfeit for the coming round"
-msgstr ""
-
-msgid "Close the check-in"
-msgstr ""
-
-msgid "Download the players."
-msgstr ""
-
-msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
-msgstr ""
-
-msgid "Download the information of the selected players (CSV format)."
-msgstr ""
-
-msgid "Download the information of the selected players (ODS format)."
-msgstr ""
-
-msgid "Download the information of the selected players (XLSX format)."
-msgstr ""
-
-msgid "No results."
-msgstr ""
-
-msgid "Filter the categories."
-msgstr ""
-
-msgid "Filter the check-in status."
-msgstr ""
-
-msgid "Absent"
-msgstr ""
-
-msgid "Not checked-in yet"
-msgstr ""
-
-msgid "Checked-in"
-msgstr ""
-
-msgid "Filter the clubs."
-msgstr ""
-
-msgid "Choose the columns displayed."
-msgstr ""
-
-msgid "Columns"
-msgstr ""
-
-msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Mail"
-
-msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Phone"
-
-msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Name"
-
-msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Rating"
-
-msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Fed."
-
-msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "Club"
-
-msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "YOB"
-
-msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
-msgstr "Category"
-
-msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Gender"
-
-msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
-msgstr "Fixed board"
-
-msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
-msgstr "Fide"
-
-msgid "FFE *** FFE FOR PLAYERS COLUMNS"
-msgstr "FFE"
-
-msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
-msgstr "Check-in"
-
-msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "Owed/paid"
-
-msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
-msgstr "Tournament"
-
-msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
-msgstr "Comment"
-
-msgid "Record *** RECORD FOR PLAYERS COLUMNS"
-msgstr "Record"
-
-msgid "Filter the federations."
-msgstr ""
-
-msgid "Filter the genders."
-msgstr ""
-
-msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Tournament"
-
-msgid "Filter the tournaments."
-msgstr ""
-
-msgid "Player creation"
-msgstr ""
-
-#, python-format
-msgid "Edition of player [%(last_name)s %(first_name)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of player [%(last_name)s %(first_name)s]"
-msgstr ""
-
-msgid "Warning: the deletion of a player is permanent!"
-msgstr ""
-
-msgid "Search"
-msgstr ""
-
-msgid "FIDE database:"
-msgstr ""
-
-msgid "E.g.: john doe"
-msgstr ""
-
-msgid "The FIDE database is not available."
-msgstr ""
-
-msgid "Identity"
-msgstr ""
-
-msgid "E.g.: DOE"
-msgstr ""
-
-msgid "The player's last name."
-msgstr ""
-
-msgid "First name:"
-msgstr ""
-
-msgid "E.g.: John"
-msgstr ""
-
-msgid "The player's first name."
-msgstr ""
-
-msgid "Date of birth:"
-msgstr ""
-
-msgid "The player's birth date."
-msgstr ""
-
-msgid "Gender:"
-msgstr ""
-
-msgid "The player's gender."
-msgstr ""
-
-msgid "Club:"
-msgstr ""
-
-msgid "E.g.: My favourite club!"
-msgstr ""
-
-msgid "The player's club."
-msgstr ""
-
-msgid "The player's tournament."
-msgstr ""
-
-msgid "Fixed board:"
-msgstr ""
-
-msgid "The board number the player will always be assigned to (use it for disabled people)."
-msgstr ""
-
-msgid "Ratings"
-msgstr ""
-
-msgid "FIDE"
-msgstr ""
-
-msgid "FIDE ID:"
-msgstr ""
-
-msgid "The player's FIDE ID (do not change)."
-msgstr ""
-
-msgid "FIDE Title:"
-msgstr ""
-
-msgid "The player's FIDE title."
-msgstr ""
-
-msgid "The player's federation."
-msgstr ""
-
-msgid "Contact and registration"
-msgstr ""
-
-msgid "Email:"
-msgstr ""
-
-msgid "E.g.: john.doe@chess.com"
-msgstr ""
-
-msgid "The player's email."
-msgstr ""
-
-msgid "Phone number:"
-msgstr ""
-
-msgid "The player's phone number."
-msgstr ""
-
-msgid "Owed:"
-msgstr ""
-
-msgid "The price the player pays to register."
-msgstr ""
-
-msgid "Paid:"
-msgstr ""
-
-msgid "The price the player already paid."
-msgstr ""
-
-msgid "Comment:"
-msgstr ""
-
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr ""
-
-msgid "Tournament record"
-msgstr ""
-
-msgid "Round"
-msgstr ""
-
-msgid "Score"
-msgstr ""
-
-msgid "Result"
-msgstr ""
-
-msgid "Color"
-msgstr ""
-
-msgid "Opponent"
-msgstr ""
-
-msgid "Rating"
-msgstr ""
-
-msgid "Round skipped"
-msgstr ""
-
-msgid "Playing"
-msgstr ""
-
-msgid "Pairing allocated bye"
-msgstr ""
-
-msgid "Loss"
-msgstr ""
-
-msgid "Draw"
-msgstr ""
-
-msgid "Gain"
-msgstr ""
-
-msgid "Half-point bye"
-msgstr ""
-
-msgid "Full-point bye (deprecated)"
-msgstr ""
-
-msgid "Forfeit loss"
-msgstr ""
-
-msgid "Forfeit gain"
-msgstr ""
-
-msgid "Present"
-msgstr ""
-
-#, python-format
-msgid "Maximum number of byes: %(max_byes)d"
-msgstr ""
-
-#, python-format
-msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "Players"
-msgstr ""
-
-msgid "Add a player to the event."
-msgstr ""
-
-msgid "Tournaments are finished, you can not add players any longer."
-msgstr ""
-
-msgid "No Papi file for the tournaments of the event, players can not be added."
-msgstr ""
-
-msgid "Add a tournament before adding players."
-msgstr ""
-
-msgid "Create a player"
-msgstr ""
-
-msgid "Clear all the filters."
-msgstr ""
-
-msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Name"
-
-msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
-msgstr "Elo"
-
-msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
-msgstr "Fed."
-
-msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
-msgstr "Club"
-
-msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
-msgstr "YOB"
-
-msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Cat"
-
-msgid "The mail addresses."
-msgstr ""
-
-msgid "The phone numbers."
-msgstr ""
-
-msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "Fide"
-
-msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
-msgstr "Owed"
-
-msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
-msgstr "Paid"
-
-msgid "Edit the player's properties."
-msgstr ""
-
-msgid "Edit the player's tournament record."
-msgstr ""
-
-msgid "Record"
-msgstr ""
-
-msgid "Remove the player from the event."
-msgstr ""
-
-#, python-format
-msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-#, python-format
-msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-msgid "Click to check-out the player."
-msgstr ""
-
-msgid "Click to check-in the player."
-msgstr ""
-
-#, python-format
-msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr ""
-
-msgid "No mail defined."
-msgstr ""
-
-#, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr ""
-
-msgid "No phone defined."
-msgstr ""
-
-#, python-format
-msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-msgstr ""
-
-msgid "No FIDE ID."
-msgstr ""
-
-msgid "Change the player's tournament."
-msgstr ""
-
-msgid "No players."
-msgstr ""
-
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
-
-msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nb."
-
-msgid "Name *** NAME FOR PRINT VIEW"
-msgstr "Name"
-
-msgid "Elo *** STD ELO FOR PRINT VIEW"
-msgstr "Elo"
-
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
-msgstr "Rapid"
-
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
-msgstr "Blitz"
-
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Fed."
-
-#, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
-msgstr "R %(round)d"
-
-msgid "Club *** CLUB FOR PRINT VIEW"
-msgstr "Club"
-
-msgid "Pts *** POINTS FOR PRINT VIEW"
-msgstr "Pts"
-
-#, python-format
-msgid "Rotation delay: %(seconds)d sec."
-msgstr ""
-
-msgid "No screen neither family to rotate."
-msgstr ""
-
-msgid "Screens:"
-msgstr ""
-
-msgid "Screen families:"
-msgstr ""
-
-#, python-format
-msgid "(%(num)d screen)"
-msgid_plural "(%(num)d screens)"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "(no screens)"
-msgstr ""
-
-msgid "Edit the properties of the rotator."
-msgstr ""
-
-msgid "Clone the rotator."
-msgstr ""
-
-msgid "Delete the rotator."
-msgstr ""
-
-msgid "Rotator creation"
-msgstr ""
-
-#, python-format
-msgid "Edition of rotator [%(rotator_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of rotator [%(rotator_uniq_id)s]"
-msgstr ""
-
-msgid "Warning: the deletion of a rotator is permanent!"
-msgstr ""
-
-msgid "Public rotator"
-msgstr ""
-
-msgid "Only arbiters can view private rotators."
-msgstr ""
-
-msgid "E.g.: my-rotator"
-msgstr ""
-
-msgid "The Unique ID, used to reference the rotator."
-msgstr ""
-
-msgid "Delay:"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(seconds)d (seconds)"
-msgstr ""
-
-#, python-format
-msgid "The rotating delay between two screens (by default %(default)d seconds)."
-msgstr ""
-
-msgid "Selection"
-msgstr ""
-
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
-msgstr ""
-
-msgid "No screens."
-msgstr ""
-
-msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
+msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
 msgstr ""
 
 msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
 msgstr ""
 
-msgid "Rotators"
-msgstr ""
-
-msgid "Enable/disable the details of the rotators on the cards below."
-msgstr ""
-
-msgid "Add a rotator to the event."
-msgstr ""
-
-msgid "You must create a screen or a family of screens before creating a rotator."
-msgstr ""
-
-msgid "Create a rotator"
-msgstr ""
-
-msgid "No rotators."
-msgstr ""
-
-#, python-format
-msgid "Type: %(screen_type)s"
-msgstr ""
-
-#, python-format
-msgid "Max number: %(num)d"
-msgstr ""
-
-msgid "Max number: unlimited"
-msgstr ""
-
-#, python-format
-msgid "Max age: %(num)d minute"
-msgid_plural "Max age: %(num)d minutes"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "Max age: unlimited"
-msgstr ""
-
-#, python-format
-msgid "Image: %(image)s"
-msgstr ""
-
-#, python-format
-msgid "Background colour: %(color)s"
-msgstr ""
-
-msgid "All the tournaments"
-msgstr ""
-
-msgid "Edit the properties of the screen."
-msgstr ""
-
-msgid "Edit the sets of boards displayed on the screen."
-msgstr ""
-
-msgid "Edit the sets of players displayed on the screen."
-msgstr ""
-
-msgid "Boards"
-msgstr ""
-
-msgid "Input screen creation"
-msgstr ""
-
-msgid "Boards screen creation"
-msgstr ""
-
-msgid "Players screen creation"
-msgstr ""
-
-msgid "Results screen creation"
-msgstr ""
-
-msgid "Ranking screen creation"
-msgstr ""
-
-msgid "Image screen creation"
-msgstr ""
-
-#, python-format
-msgid "Edition of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-msgid "Warning: the deletion of a screen is permanent!"
-msgstr ""
-
-msgid "Properties (last results)"
-msgstr ""
-
-msgid "Properties (image)"
-msgstr ""
-
-msgid "Public screen"
-msgstr ""
-
-msgid "Only arbiters can see private screens."
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(screen_type)s-screen"
-msgstr ""
-
-msgid "The Unique ID, used to reference the screen."
-msgstr ""
-
-msgid "E.g.: My screen"
-msgstr ""
-
-msgid "The name of the screen, displayed on event screens."
-msgstr ""
-
-msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
-msgstr ""
-
-msgid "The timer displayed on the screen."
-msgstr ""
-
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr ""
-
-msgid "Check the box to allow other screens to display a link to this screen."
-msgstr ""
-
-msgid "E.g.: Link to my screen"
-msgstr ""
-
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr ""
-
 msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
 msgstr ""
 
-msgid "Maximum number of results displayed:"
-msgstr ""
-
-msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
-msgstr ""
-
-msgid "Maximum age of the results:"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(minutes)d (minutes)"
-msgstr ""
-
-#, python-format
-msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
-msgstr ""
-
-msgid "Tournaments displayed:"
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-msgid "E.g.: https://my.club.us/tournament.jpg"
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
 msgstr ""
 
-msgid "The URL of the image to display."
+msgid "White"
 msgstr ""
 
-#, python-format
-msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgid "Woman Candidate Master"
 msgstr ""
 
-#, python-format
-msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgid "Woman Fide Master"
 msgstr ""
 
-msgid "Save the set or cancel."
+msgid "Woman Grand Master"
 msgstr ""
 
-msgid "Drag the sets to order them."
+msgid "Woman International Master"
 msgstr ""
 
-msgid "Close"
+msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr ""
 
-msgid "Add a set"
-msgstr ""
-
-msgid "The tournament of which you want to show the pairings, mandatory."
-msgstr ""
-
-#, python-format
-msgid "E.g.: Boards %%f to %%l"
-msgstr ""
-
-#, python-format
-msgid "E.g.: Players %%f to %%l"
-msgstr ""
-
-msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
-msgstr ""
-
-msgid "Fixed boards:"
-msgstr ""
-
-msgid "Comma-separated board numbers ; if this field is set, other fields are omitted."
-msgstr ""
-
-msgid "Tournament: not set"
-msgstr ""
-
-#, python-format
-msgid "Name: %(screen_set_name)s"
-msgstr ""
-
-msgid "Name: by default"
-msgstr ""
-
-msgid "Screens"
-msgstr ""
-
-msgid "Show/hide the screens created from screen families."
-msgstr ""
-
-msgid "Families"
-msgstr ""
-
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr ""
-
-msgid "You must create a tournament before creating screens."
-msgstr ""
-
-msgid "Create a screen"
-msgstr ""
-
-msgid "Add a screen to enter the results."
-msgstr ""
-
-msgid "Add a screen to display the pairings by board."
-msgstr ""
-
-msgid "Add a screen to display the pairings by alphabetical order."
-msgstr ""
-
-msgid "Add a screen to display the last results."
-msgstr ""
-
-msgid "Add a screen to display the ranking."
-msgstr ""
-
-msgid "Add a screen to display an image."
-msgstr ""
-
-msgid "Show/hide the input screens."
-msgstr ""
-
-msgid "Show/hide the boards screens."
-msgstr ""
-
-msgid "Show/hide the players screens."
-msgstr ""
-
-msgid "Show/hide the results screens."
-msgstr ""
-
-msgid "Show/hide the ranking screens."
-msgstr ""
-
-msgid "Show/hide the image screens."
-msgstr ""
-
-msgid "No such screens."
-msgstr ""
-
-#, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
-msgstr ""
-
-msgid "Timers"
-msgstr ""
-
-msgid "Add a timer to the event."
-msgstr ""
-
-msgid "Create a timer"
-msgstr ""
-
-msgid "Default timer configuration"
-msgstr ""
+msgid "Y *** THE LETTER TO ANSWER YES"
+msgstr "Y"
 
-msgid "Edit the properties of the timer."
+msgid "YOB"
 msgstr ""
 
-#, python-format
-msgid "%(minutes)d minutes before"
-msgstr ""
-
-#, python-format
-msgid "%(minutes)d minutes after"
-msgstr ""
-
-msgid "No timers."
-msgstr ""
-
-#, python-format
-msgid "Round #%(round)d"
-msgstr ""
-
-msgid "No hours."
-msgstr ""
-
-msgid "Edit the hours of the timer"
-msgstr ""
-
-msgid "Hours"
-msgstr ""
-
-msgid "Clone the timer."
-msgstr ""
-
-msgid "Delete the timer."
-msgstr ""
-
-msgid "Timer hours"
-msgstr ""
-
-msgid "Save the hour or cancel."
-msgstr ""
-
-msgid "Drag the hours to order them."
-msgstr ""
-
-msgid "Add a hour"
-msgstr ""
-
-msgid "Date:"
-msgstr ""
-
-msgid "Mandatory for the first hour, optional for next hours."
-msgstr ""
-
-msgid "Hour:"
-msgstr ""
-
-msgid "E.g.: Start of check-in"
-msgstr ""
-
-msgid "Round number or text:"
-msgstr ""
-
-msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
-msgstr ""
-
-msgid "Text before the hour:"
-msgstr ""
-
-#, python-format
-msgid "E.g.: Check-in started for %%s"
-msgstr ""
-
-#, python-format
-msgid "%%s is replaced by the time left before the hour."
-msgstr ""
-
-msgid "Text after the hour:"
-msgstr ""
-
-#, python-format
-msgid "E.g.: Start of check-in in %%s"
-msgstr ""
-
-#, python-format
-msgid "%%s is replaced by the time elapsed since the hour."
-msgstr ""
-
-msgid "Timer creation"
-msgstr ""
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
+msgstr "YOB"
 
-#, python-format
-msgid "Edition of timer [%(timer_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of timer [%(timer_uniq_id)s]"
-msgstr ""
-
-msgid "Warning: the deletion of a timer is permanent!"
-msgstr ""
-
-msgid "E.g.: timer"
-msgstr ""
-
-msgid "The Unique ID, used to reference the timer."
-msgstr ""
-
-msgid "Colors and delays"
-msgstr ""
-
-msgid "Missing Papi file"
-msgstr ""
-
-#, python-format
-msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-msgstr ""
-
-msgid "Do you want Papi-web to create the file?"
-msgstr ""
+msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
+msgstr "YOB"
 
-msgid "No, I will do it later"
+msgid "Yes"
 msgstr ""
 
 msgid "Yes, create the file"
 msgstr ""
 
-msgid "Tournaments"
+msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr ""
 
-msgid "Enable/disable the details of tournaments on the cards below."
+msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
-msgid "Add a tournament to the event."
+msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr ""
 
-msgid "Create a tournament"
+msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
-msgid "No tournaments."
+msgid "You must create a tournament before creating screens."
 msgstr ""
 
-#, python-format
-msgid "Number of players : %(num)d"
+msgid "Your Papi-web version is up to date."
 msgstr ""
 
-msgid "Illegal moves are not recorded."
+msgid "Your choice (by default {default}): "
 msgstr ""
 
-#, python-format
-msgid "At most %(num)d illegal move is recorded."
-msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "Rules file set"
-msgstr ""
-
-#, python-format
-msgid "First board number: %(board_number)d"
-msgstr ""
-
-msgid "Edit the properties of the tournament."
-msgstr ""
-
-msgid "Generate pairings for the next round."
-msgstr ""
-
-msgid "Pair"
-msgstr ""
-
-msgid "Export"
-msgstr ""
-
-msgid "Print players, results, etc."
-msgstr ""
-
-msgid "Clone the tournament."
-msgstr ""
-
-msgid "Delete the tournament."
-msgstr ""
-
-msgid "Tournament creation"
-msgstr ""
-
-#, python-format
-msgid "Edition of tournament [%(tournament_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of tournament [%(tournament_uniq_id)s]"
-msgstr ""
-
-msgid "Warning: the deletion of a tournament is permanent!"
-msgstr ""
-
-msgid "The following screens will also be deleted:"
-msgstr ""
-
-msgid "The following screen families will also be deleted:"
-msgstr ""
-
-msgid "Enter the tournament ID to confirm its deletion:"
-msgstr ""
-
-msgid "Enter here the tournament ID"
-msgstr ""
-
-msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
-msgstr ""
-
-msgid "E.g.: main"
-msgstr ""
-
-msgid "The Unique ID, used to reference the tournament."
-msgstr ""
-
-msgid "E.g.: Main tournament"
-msgstr ""
-
-msgid "The name of the tournament, used for display."
-msgstr ""
-
-msgid "Directory of the Papi file:"
-msgstr ""
-
-msgid "E.g.: c:\\chess\\tournaments\\papi"
-msgstr ""
-
-#, python-format
-msgid "The directory of the Papi file, by default %(dir)s."
-msgstr ""
-
-msgid "Name of the Papi file (with no extension):"
-msgstr ""
-
-msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
-msgstr ""
-
-msgid "Time control"
-msgstr ""
-
-msgid "Initial time (optional, seconds):"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
-msgstr ""
-
-msgid "The initial time in seconds (may be empty if an increment is set)."
-msgstr ""
-
-msgid "Increment (optional, seconds):"
-msgstr ""
-
-msgid "The number of seconds added to the players' clock at each move."
-msgstr ""
-
-msgid "Penalty (handicap, seconds):"
-msgstr ""
-
-msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
-msgstr ""
-
-msgid "Elo step (handicap):"
-msgstr ""
-
-msgid "E.g.: 50 (Elo)"
-msgstr ""
-
-msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
-msgstr ""
-
-msgid "Minimal time (handicap, seconds):"
-msgstr ""
-
-msgid "The minimum time, whatever the ranking difference between the two players."
-msgstr ""
-
-msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr ""
-
-msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
-msgstr ""
-
-#, python-format
-msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
-msgstr ""
-
-msgid "Pairings"
-msgstr ""
-
-msgid "First board number:"
-msgstr ""
-
-#, python-format
-msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr ""
-
-msgid "Max byes:"
-msgstr ""
-
-#, python-format
-msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr ""
-
-msgid "Last rounds no byes:"
-msgstr ""
-
-#, python-format
-msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
-msgstr ""
-
-msgid "Tie-breaks"
-msgstr ""
-
-#, python-format
-msgid "Tie-break #%(index)d:"
-msgstr ""
-
-msgid "Create and add default screens"
-msgstr ""
-
-msgid "This event is public (by default, screens are visible by the users)."
-msgstr ""
-
-msgid "This screen is public (visible by the users)."
-msgstr ""
-
-msgid "This screen family is public (visible by the users)."
-msgstr ""
-
-msgid "This rotator is public (visible by the users)."
-msgstr ""
-
-msgid "This event is private (by default, screens are not visible by the users)."
-msgstr ""
-
-msgid "This screen is private (not visible by the users)."
-msgstr ""
-
-msgid "This screen family is private (not visible by the users)."
+msgid "Your choice: "
 msgstr ""
 
-msgid "This rotator is private (not visible by the users)."
+msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr ""
 
-msgid "Boards screens show pairings by board number."
+msgid "[{path}] is not a directory."
 msgstr ""
 
-msgid "Input screens show pairings by board number and allow people to enter results."
+msgid "all the boards"
 msgstr ""
 
-msgid "Players screens show pairings by alphabetical order."
+msgid "all the players"
 msgstr ""
 
-msgid "Results screens show the last results (most recent first)."
+msgid "boards from #{first} to #{last}"
 msgstr ""
 
-msgid "Ranking screens show the players by rank."
+msgid "boards from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
-msgid "Image screens show an image (local or remote)."
+msgid "boards from #{first} to end"
 msgstr ""
 
-msgid "Rotator automatically rotate between multiple screens."
+msgid "boards from #{first} to end, on {parts} screens"
 msgstr ""
 
-msgid "Go back to the events page."
+msgid "boards from start to #{last}"
 msgstr ""
 
-msgid "Please enter the password to enter results:"
+msgid "boards from start to #{last}, on {parts} screens"
 msgstr ""
 
-msgid "Event"
+msgid "boards on {parts} screens"
 msgstr ""
 
-#, python-format
-msgid "A password is required to enter results for the event %(event_uniq_id)s."
+msgid "boards {board_numbers}"
 msgstr ""
 
-msgid "Password"
+msgid "by default"
 msgstr ""
 
-msgid "Please ask the organizer to get the password."
+msgid "event"
 msgstr ""
 
-msgid "Enter the result"
+msgid "event ID does not match."
 msgstr ""
 
-msgid "WHITE WINS"
+msgid "no"
 msgstr ""
 
-msgid "DRAW"
+msgid "no background image"
 msgstr ""
 
-msgid "BLACK WINS"
+msgid "players from #{first} to #{last}"
 msgstr ""
 
-msgid "BY FORFEIT"
+msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
-msgid "DOUBLE"
+msgid "players from #{first} to end"
 msgstr ""
 
-msgid "FORFEIT"
+msgid "players from #{first} to end, on {parts} screens"
 msgstr ""
 
-msgid "CLEAR THE RESULT"
+msgid "players from start to #{last}"
 msgstr ""
 
-msgid "CHECK-IN"
+msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
-msgid "CHECK-OUT"
+msgid "players on {parts} screens"
 msgstr ""
 
-msgid "No screen nor family to rotate."
+msgid "ranking from #{first} to #{last}"
 msgstr ""
 
-#, python-format
-msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+msgid "ranking from #{first} to end"
 msgstr ""
 
-msgid "Menu label:"
+msgid "ranking from start to #{last}"
 msgstr ""
 
-msgid "Menu:"
+msgid "rotator"
 msgstr ""
 
-msgid "Unpaired players: displayed"
+msgid "screens of {number} boards"
 msgstr ""
 
-msgid "Unpaired players: hidden"
+msgid "screens of {number} boards from #{first} to #{last}"
 msgstr ""
 
-#, python-format
-msgid "Maximum number of results: %(num)d"
+msgid "screens of {number} boards from #{first} to end"
 msgstr ""
 
-msgid "Maximum number of results: unlimited"
+msgid "screens of {number} boards from start to #{last}"
 msgstr ""
 
-msgid "Image:"
+msgid "screens of {number} players"
 msgstr ""
 
-msgid "Rnd.Boa"
+msgid "screens of {number} players from #{first} to #{last}"
 msgstr ""
 
-msgid "EXEMPT"
+msgid "screens of {number} players from #{first} to end"
 msgstr ""
 
-msgid "/move"
+msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
-#, python-format
-msgid "%(set_name)s (round %(round)d)"
+msgid "the whole ranking"
 msgstr ""
 
 msgid "time control"
 msgstr ""
 
-#, python-format
-msgid "#%(board_number)d"
+msgid "timer"
 msgstr ""
 
-#, python-format
-msgid "%(set_name)s (check-in)"
+msgid "tournament"
 msgstr ""
 
-msgid "Player / Elo"
-msgstr ""
-
-msgid "Player Elo [Pts]"
-msgstr ""
-
-msgid "Player Elo"
-msgstr ""
-
-msgid "Board & color"
-msgstr ""
-
-msgid "Opponent Elo [Pts]"
-msgstr ""
-
-msgid "Opponent Elo"
-msgstr ""
-
-#, python-format
-msgid "Board #%(board_number)d with %(color)s"
+msgid "tournament ID does not match."
 msgstr ""
 
 msgid "vs"
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
+msgid "{family_type}-family"
+msgstr ""
+
+msgid "{number} players written."
+msgstr ""
+
+msgid "{num} illegal move max"
+msgid_plural "{num} illegal moves max"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{num} player found in {seconds:.2f} seconds."
+msgid_plural "{num} players found in {seconds:.2f} seconds."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{num} player found."
+msgid_plural "{num} players found."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{screen_type}-screen"
 msgstr ""
 
 #~ msgid "The FFE database is not available."
 #~ msgstr ""
 
 #~ msgid "Download the vCards of the selected players (VCF format)."
+#~ msgstr ""
+
+#~ msgid "%t (ranking)"
+#~ msgstr ""
+
+#~ msgid "Pattern [{pattern}] can be used by screen families."
+#~ msgstr ""
+
+#~ msgid "Create a player"
 #~ msgstr ""
 

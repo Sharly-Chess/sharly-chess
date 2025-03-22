@@ -364,7 +364,7 @@ class I18nUpdater:
         for locale_info in self.locale_infos.values():
             locale_info.control()
             if (
-                locale_info.id not in trusted_locales
+                locale_info.id not in self.trusted_locales
                 and locale_info.empty_optional_messages
             ):
                 untrusted_locales_with_missing_translations.append(locale_info.id)
@@ -408,6 +408,7 @@ class I18nUpdater:
             [
                 f'--mapping-file={extract_config_file}',
                 f'--output-file={self.pot_file}',
+                '--sort-output',
                 '--add-location=never',
                 '--no-wrap',
                 '--omit-header',
@@ -543,20 +544,28 @@ class I18nUpdater:
 
 
 if __name__ == '__main__':
-    """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
-    updater = I18nUpdater(
-        trusted_locales=[
-            'en',
-            'fr',
-        ],
-        untrusted_locales=[
+    untrusted_locales: list[str] = []
+    if (
+        input_interactive(
+            'Do you want to update the untrusted locales (y/N)? '
+        ).upper()
+        or 'N'
+    ) == 'Y':
+        untrusted_locales = [
             'de',
             'el',
             'es',
             'it',
             'nl',
             'sv',
+        ]
+    # PO and MO files are automatically created from this list; to add a new locale, add it to the list.
+    updater = I18nUpdater(
+        trusted_locales=[
+            'en',
+            'fr',
         ],
+        untrusted_locales=untrusted_locales,
     )
     if not updater.new_locales:
         updater.check_trusted_locales()
