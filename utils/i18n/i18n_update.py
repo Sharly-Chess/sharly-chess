@@ -29,7 +29,7 @@ from common.i18n import (
     locale_localized_name,
     locale_flag_url,
     trusted_locales,
-    translators,
+    translators, untrusted_locales,
 )
 from common.logger import (
     print_interactive_error,
@@ -408,6 +408,7 @@ class I18nUpdater:
             [
                 f'--mapping-file={extract_config_file}',
                 f'--output-file={self.pot_file}',
+                '--sort-output',
                 '--add-location=never',
                 '--no-wrap',
                 '--omit-header',
@@ -543,20 +544,28 @@ class I18nUpdater:
 
 
 if __name__ == '__main__':
-    """ PO and MO files are automatically created from this list; to add a new locale, add it to the list. """
-    updater = I18nUpdater(
-        trusted_locales=[
-            'en',
-            'fr',
-        ],
-        untrusted_locales=[
+    untrusted_locales: list[str] = []
+    if (
+        input_interactive(
+            'Do you want to update the untrusted locales (y/N)? '
+        ).upper()
+        or 'N'
+    ) == 'Y':
+        untrusted_locales = [
             'de',
             'el',
             'es',
             'it',
             'nl',
             'sv',
+        ]
+    # PO and MO files are automatically created from this list; to add a new locale, add it to the list.
+    updater = I18nUpdater(
+        trusted_locales=[
+            'en',
+            'fr',
         ],
+        untrusted_locales=untrusted_locales,
     )
     if not updater.new_locales:
         updater.check_trusted_locales()
