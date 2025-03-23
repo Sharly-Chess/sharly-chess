@@ -6,7 +6,6 @@ from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
-from networkx.algorithms.tournament import tournament_matrix
 
 from common.i18n import _
 from common.logger import get_logger
