@@ -8,11 +8,12 @@
         placeholder=_('E.g.: %(string)s', string='pierre dupont paris'),
         errors={} if ffe_search_available else {'search_ffe': _('No internet connection and no local database.'), },
         hx_get=url_for('ffe-search', event_uniq_id=admin_event.uniq_id),
-        hx_trigger='keyup changed delay:0.2s',
+        hx_trigger='keyup changed delay:400ms',
         hx_target='#ffe-search-results',
         hx_indicator_img=url_for('static', file_path='images/papi-web.gif'),
         hx_on_before_request='$(\'#ffe-search-results\').show();',
-        hx_on_after_request='$(\'#ffe-search-results\').show();'
+        hx_on_after_request='$(\'#ffe-search-results\').show();',
+        hx_sync="this:replace"
     ) }}
     <ul id="ffe-search-results" class="dropdown-menu ffe-search-results p-0">
         <li class="dropdown-item no-hover text-nowrap">

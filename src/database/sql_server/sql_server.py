@@ -3,8 +3,9 @@ import json
 from pathlib import Path
 from typing import Any, Self
 from logging import Logger
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 import pyodbc
+import aioodbc
 
 from common import DEVEL_ENV
 from common.exception import PapiWebException
@@ -40,7 +41,7 @@ class SqlServerCredentials:
             if DEVEL_ENV:
                 raise PapiWebException(f'Could not read SQL server credentials ({e}), please run generate_ffe_sql_server_credentials.py.') from e
             else:
-                raise PapiWebException('Could not read SQL server credentials.')
+                raise PapiWebException('Could not read SQL server credentials.') from None
 
     @staticmethod
     def dump(
@@ -82,10 +83,11 @@ class SqlServer:
         """Initializes the database object, raises PapiWebException on error."""
         self.credentials: SqlServerCredentials = SqlServerCredentials(credentials_file)
         self.timeout: int = timeout | self.DEFAULT_TIMEOUT
-        self.database: pyodbc.Connection | None = None
-        self.cursor: pyodbc.Cursor | None = None
+        self.database: aioodbc.Connection | None = None
+        self.cursor: aioodbc.Cursor | None = None
+        self.error: str | None = None
 
-    def __enter__(self) -> Self:
+    async def __aenter__(self) -> Self:
         """Opens the database connection, raises PapiWebException on error."""
         needed_driver: str = 'SQL Server'
         if needed_driver not in pyodbc.drivers():
@@ -103,17 +105,17 @@ class SqlServer:
             return self
         db_url: str = f'Driver={{{needed_driver}}};Server={self.credentials.host};Database={self.credentials.database};UID={self.credentials.user};PWD={self.credentials.password}'
         try:
-            self.database = pyodbc.connect(db_url)
-            self.database.timeout = self.timeout or self.DEFAULT_TIMEOUT
+            timeout = self.timeout or self.DEFAULT_TIMEOUT
+            self.database = await aioodbc.connect(dsn=db_url, timeout=timeout)
         except pyodbc.Error as e:
             if DEVEL_ENV:
                 error: str = _('Connection to the FFE server failed: {error}.').format(error=e.args)
             else:
                 error: str = _('Connection to the FFE server failed.')
             logger.error(error)
-            raise PapiWebException(error)
+            raise PapiWebException(error) from e
         try:
-            self.cursor = self.database.cursor()
+            self.cursor = await self.database.cursor()
         except pyodbc.Error as e:
             self.database = None
             if DEVEL_ENV:
@@ -121,50 +123,50 @@ class SqlServer:
             else:
                 error: str = _('Connection to the FFE database failed.')
             logger.error(error)
-            raise PapiWebException(error)
+            raise PapiWebException(error) from e
         return self
 
-    def __exit__(self, exc_type, exc_value, tb):
+    async def __aexit__(self, exc_type, exc_value, tb):
         """Closes the database connection."""
         if self.database is not None:
-            self.cursor.close()
+            await self.cursor.close()
             del self.cursor
             self.cursor = None
-            self.database.close()
+            await self.database.close()
             del self.database
             self.database = None
 
-    def execute(self, query: str, params: tuple = ()):
+    async def execute(self, query: str, params: tuple = ()):
         """Executes the prepare query with the given parameters."""
         try:
-            self.cursor.execute(query, params)
+            await self.cursor.execute(query, params)
         except pyodbc.Error as e:
             if DEVEL_ENV:
                 error: str = _('Request to the FFE database failed: {error}.').format(error=e.args)
             else:
                 error: str = _('Request to the FFE database failed.')
             logger.error(error)
-            raise PapiWebException(error)
+            raise PapiWebException(error) from e
 
-    def fetchall(self) -> Iterator[dict[str, Any]]:
+    async def fetchall(self) -> AsyncIterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
         columns = [column[0] for column in self.cursor.description]
-        while row := self.cursor.fetchone():
+        while row := await self.cursor.fetchone():
             yield dict(zip(columns, row))
 
-    def fetchone(self) -> dict[str, Any]:
+    async def fetchone(self) -> dict[str, Any]:
         """Returns a dictionary from the last executed query, in the format
         {column_name: value, ...}.
         Repeated applications of this method will advance the database cursor
         and return different row data."""
         columns = [column[0] for column in self.cursor.description]
-        return dict(zip(columns, self.cursor.fetchone()))
+        return dict(zip(columns, await self.cursor.fetchone()))
 
-    def fetchval(self) -> Any:
+    async def fetchval(self) -> Any:
         """Returns the next database cursor value."""
-        return self.cursor.fetchval()
+        return await self.cursor.fetchval()
 
-    def commit(self):
+    async def commit(self):
         """Commits the pending transaction."""
-        self.cursor.commit()
+        await self.cursor.commit()
