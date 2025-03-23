@@ -19,6 +19,7 @@ from common.logger import (
     print_interactive_error, print_interactive_warning,
 )
 from common.papi_web_config import PapiWebConfig
+from common.network import check_connected
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.manager import plugin_manager
 from web.settings import route_handlers, template_config, middlewares, stores
@@ -105,6 +106,15 @@ class ServerEngine(Engine):
 
         if papi_web_config.launch_browser:
             Thread(target=launch_browser, args=(papi_web_config.local_url,)).start()
+        # NOTE(Amaras): The entire Python program exits when only daemon threads
+        # are left, and those threads will be stopped abruptly on program shutdown
+        # See https://docs.python.org/3.12/library/threading.html#thread-objects
+        # for more documentation
+        # In this case, we are only creating or deleting a file, and this should
+        # not be a problem.
+        # TODO(Amaras): think about setting the connection checker sleep_time
+        connection_checker = Thread(target=check_connected, daemon=True)
+        connection_checker.start()
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,

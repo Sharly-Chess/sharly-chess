@@ -17,6 +17,7 @@ from common.logger import get_logger
 APP_NAME: str = 'papi-web'
 PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
+
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
@@ -62,6 +63,7 @@ except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', TMP_DIR.absolute(), pe)
     sys.exit()
 
+CONNECTION_LOCK_FILE = TMP_DIR / f'{APP_NAME}.connected'
 
 # The base directory, differs for developers. base_dir must be used when looking for application files
 # (images, templates, ...) while user file should be search in the current directory.
