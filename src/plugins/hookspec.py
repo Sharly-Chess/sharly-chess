@@ -1,7 +1,6 @@
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
 from litestar.contrib.htmx.request import HTMXRequest
@@ -10,16 +9,16 @@ import pluggy  # type: ignore
 from common import APP_NAME
 from data.player import Player
 from data.tournament_export import AbstractTournamentExporter
-from data.util import PrintDocument, ScreenType
+from data.util import ScreenType
 from plugins.utils import (
     PluginMigrationManager,
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
-    PrintSplitOption,
 )
 
 if TYPE_CHECKING:
+    from data.print import AbstractPlayerSplitter, AbstractPrintDocument
     from data.tie_break import AbstractTieBreak
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredEvent
@@ -221,19 +220,17 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------  
 
     @hookspec
-    def get_print_split_options(self) -> Iterable[PrintSplitOption]:
-        """Provide print splitting options"""
+    def insert_print_player_splitters(
+        self, player_splitters: list['AbstractPlayerSplitter']
+    ):
+        """Provide print player splitting options"""
 
     @hookspec
-    def split_printed_players_by(self, split_by: str, players: list[Player]):
-        """Split players by the chosen split option"""
-
-    @hookspec
-    def get_extra_print_view_columns(self, document: PrintDocument) -> Iterable[ExtraColumn]:
+    def get_extra_print_view_columns(self, document: 'AbstractPrintDocument') -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
     @hookspec
-    def get_extra_print_view_css(self, document: PrintDocument) -> str:
+    def get_extra_print_view_css(self, document: 'AbstractPrintDocument') -> str:
         """Provide extra CSS for the print view"""
 
     # ---------------------------------------------------------------------------------

@@ -315,9 +315,6 @@ msgstr ""
 msgid "Black"
 msgstr ""
 
-msgid "Blitz"
-msgstr ""
-
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
@@ -412,9 +409,6 @@ msgstr "Cat"
 
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat."
-
-msgid "Cat."
-msgstr ""
 
 msgid "Category"
 msgstr ""
@@ -693,15 +687,6 @@ msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr ""
 
 msgid "Customization"
-msgstr ""
-
-msgid "Cut"
-msgstr ""
-
-msgid "Cut bottom"
-msgstr ""
-
-msgid "Cut top"
 msgstr ""
 
 msgid "DOUBLE"
@@ -1229,9 +1214,6 @@ msgstr ""
 msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr ""
 
-msgid "Exclude players"
-msgstr ""
-
 msgid "Exempt *** FEMALE"
 msgstr "Exempt"
 
@@ -1319,9 +1301,6 @@ msgstr "Fide"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE ID"
-msgstr ""
-
 msgid "FIDE ID:"
 msgstr ""
 
@@ -1376,9 +1355,6 @@ msgstr ""
 
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed."
-
-msgid "Fed."
-msgstr ""
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -1468,9 +1444,6 @@ msgstr ""
 msgid "Fore Buchholz"
 msgstr ""
 
-msgid "Fore modifier"
-msgstr ""
-
 msgid "Forfeit gain"
 msgstr ""
 
@@ -1505,9 +1478,6 @@ msgid "Games played with black"
 msgstr ""
 
 msgid "Games won with black"
-msgstr ""
-
-msgid "Gender"
 msgstr ""
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
@@ -1773,9 +1743,6 @@ msgstr ""
 msgid "Licence:"
 msgstr ""
 
-msgid "Limit"
-msgstr ""
-
 msgid "Links displayed on the screen menu:"
 msgstr ""
 
@@ -1937,9 +1904,6 @@ msgstr "N"
 
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NW"
-
-msgid "Name"
-msgstr ""
 
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Name"
@@ -2135,9 +2099,6 @@ msgstr ""
 msgid "No screens."
 msgstr ""
 
-msgid "No split"
-msgstr ""
-
 msgid "No stable version found."
 msgstr ""
 
@@ -2165,9 +2126,6 @@ msgstr ""
 msgid "No upcoming events."
 msgstr ""
 
-msgid "No update found."
-msgstr ""
-
 msgid "No valid hour defined."
 msgstr ""
 
@@ -2184,6 +2142,21 @@ msgid "Not checked-in yet"
 msgstr ""
 
 msgid "Not connected to internet."
+msgstr ""
+
+msgid "Not connected, can not check Papi-web version."
+msgstr ""
+
+msgid "Not connected, can not create the FFE database."
+msgstr ""
+
+msgid "Not connected, can not create the FIDE database."
+msgstr ""
+
+msgid "Not connected, can not update the FFE database."
+msgstr ""
+
+msgid "Not connected, can not update the FIDE database."
 msgstr ""
 
 msgid "Not part of the selected tournament ({rounds} rounds)."
@@ -2262,9 +2235,6 @@ msgid "Opponent Elo"
 msgstr ""
 
 msgid "Opponent Elo [Pts]"
-msgstr ""
-
-msgid "Options"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
@@ -2403,9 +2373,6 @@ msgstr ""
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
-msgid "Played modifier"
-msgstr ""
-
 msgid "Player / Elo"
 msgstr ""
 
@@ -2436,9 +2403,6 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-msgid "Player updates are possible, select the players to update:"
 msgstr ""
 
 msgid "Players"
@@ -2693,9 +2657,6 @@ msgid "Ranking screen family creation"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
-msgstr ""
-
-msgid "Rapid"
 msgstr ""
 
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
@@ -3005,9 +2966,6 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr ""
 
 msgid "Split by:"
-msgstr ""
-
-msgid "Standard"
 msgstr ""
 
 msgid "Standard rating"
@@ -3542,6 +3500,9 @@ msgstr ""
 msgid "Timers: %(num)d"
 msgstr ""
 
+msgid "Top cut must be at most equal to bottom cut."
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
@@ -3766,9 +3727,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-msgid "Update players"
-msgstr ""
-
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
@@ -3893,9 +3851,6 @@ msgstr ""
 
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
-
-msgid "YOB"
-msgstr ""
 
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
@@ -4090,19 +4045,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "The FFE database is not available."
-#~ msgstr ""
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr ""
-
-#~ msgid "%t (ranking)"
-#~ msgstr ""
-
-#~ msgid "Pattern [{pattern}] can be used by screen families."
-#~ msgstr ""
-
-#~ msgid "Create a player"
-#~ msgstr ""
 

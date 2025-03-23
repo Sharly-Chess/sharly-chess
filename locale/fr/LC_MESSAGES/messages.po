@@ -315,9 +315,6 @@ msgstr "Image de fond :"
 msgid "Black"
 msgstr "Noirs"
 
-msgid "Blitz"
-msgstr "Blitz"
-
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
@@ -411,9 +408,6 @@ msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
-msgstr "Cat."
-
-msgid "Cat."
 msgstr "Cat."
 
 msgid "Category"
@@ -694,15 +688,6 @@ msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire
 
 msgid "Customization"
 msgstr "Personnalisation"
-
-msgid "Cut"
-msgstr "Coupure"
-
-msgid "Cut bottom"
-msgstr "Coupure en bas"
-
-msgid "Cut top"
-msgstr "Coupure en haut"
 
 msgid "DOUBLE"
 msgstr "DOUBLE"
@@ -1229,9 +1214,6 @@ msgstr "Évènements (accès public)"
 msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr "Évènements récupérés : {num} (depuis le répertoire [{dir}])."
 
-msgid "Exclude players"
-msgstr ""
-
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
 
@@ -1319,9 +1301,6 @@ msgstr "Fide"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE ID"
-msgstr "FIDE ID"
-
 msgid "FIDE ID:"
 msgstr "Identifiant FIDE :"
 
@@ -1375,9 +1354,6 @@ msgid "Family [{uniq_id}] already exists."
 msgstr "La famille [{uniq_id}] existe déjà."
 
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
-msgstr "Féd."
-
-msgid "Fed."
 msgstr "Féd."
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
@@ -1468,9 +1444,6 @@ msgstr "Échiquiers fixes :"
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
-msgid "Fore modifier"
-msgstr ""
-
 msgid "Forfeit gain"
 msgstr "Gain par forfait"
 
@@ -1506,9 +1479,6 @@ msgstr "Nombre de parties jouées avec les noirs"
 
 msgid "Games won with black"
 msgstr "Nombre de parties gagnées avec les noirs"
-
-msgid "Gender"
-msgstr "Genre"
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Genre"
@@ -1773,9 +1743,6 @@ msgstr "Numéro de licence :"
 msgid "Licence:"
 msgstr "Licence :"
 
-msgid "Limit"
-msgstr "Limite"
-
 msgid "Links displayed on the screen menu:"
 msgstr "Liens affichés sur le menu de l'écran :"
 
@@ -1937,9 +1904,6 @@ msgstr "N"
 
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NV"
-
-msgid "Name"
-msgstr "Nom"
 
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nom"
@@ -2135,9 +2099,6 @@ msgstr "Aucun écran"
 msgid "No screens."
 msgstr "Aucun écran."
 
-msgid "No split"
-msgstr "Sans rupture"
-
 msgid "No stable version found."
 msgstr "Aucun version stable trouvée."
 
@@ -2165,9 +2126,6 @@ msgstr "Aucun tournoi."
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
 
-msgid "No update found."
-msgstr "Aucun mise à jour trouvée."
-
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
 
@@ -2185,6 +2143,21 @@ msgstr "Non point·ée"
 
 msgid "Not connected to internet."
 msgstr "Aucune connection à internet."
+
+msgid "Not connected, can not check Papi-web version."
+msgstr "Hors-ligne, impossible de vérifier la version de Papi-web."
+
+msgid "Not connected, can not create the FFE database."
+msgstr "Hors-ligne, impossible de créer la base de données de la FFE."
+
+msgid "Not connected, can not create the FIDE database."
+msgstr "Hors-ligne, impossible de créer la base de données de la FIDE."
+
+msgid "Not connected, can not update the FFE database."
+msgstr "Hors-ligne, impossible de mettre à jour la base de données de la FFE."
+
+msgid "Not connected, can not update the FIDE database."
+msgstr "Hors-ligne, impossible de mettre à jour la base de données de la FIDE."
 
 msgid "Not part of the selected tournament ({rounds} rounds)."
 msgstr "Ne fait pas partie du tournoi sélectionné ({rounds} rondes)."
@@ -2263,9 +2236,6 @@ msgstr "Adversaire Elo"
 
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
-
-msgid "Options"
-msgstr "Options"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
@@ -2403,9 +2373,6 @@ msgstr "Numéro de téléphone :"
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
-msgid "Played modifier"
-msgstr ""
-
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
 
@@ -2437,9 +2404,6 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
-
-msgid "Player updates are possible, select the players to update:"
-msgstr "Des mises à jour sont possibles, sélectionnez les joueur·euses à mettre à jour :"
 
 msgid "Players"
 msgstr "Joueur·euses"
@@ -2694,9 +2658,6 @@ msgstr "Création d'une famille d'écrans de classement"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
-
-msgid "Rapid"
-msgstr "Rapide"
 
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapide"
@@ -3006,9 +2967,6 @@ msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le
 
 msgid "Split by:"
 msgstr "Rupture :"
-
-msgid "Standard"
-msgstr "Standard"
 
 msgid "Standard rating"
 msgstr "Classement standard"
@@ -3542,6 +3500,9 @@ msgstr "Chronomètres ({num})"
 msgid "Timers: %(num)d"
 msgstr "Chronomètres : %(num)d"
 
+msgid "Top cut must be at most equal to bottom cut."
+msgstr "La troncature haute doit au moins être égale à la troncature basse."
+
 msgid "Tournament"
 msgstr "Tournoi"
 
@@ -3766,9 +3727,6 @@ msgstr "Évènements à venir ({num})"
 msgid "Update"
 msgstr "Modifier"
 
-msgid "Update players"
-msgstr "Mettre à jour les joueur·euses"
-
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
 
@@ -3893,9 +3851,6 @@ msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
 
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
-
-msgid "YOB"
-msgstr "An."
 
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "An."
@@ -4090,7 +4045,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Create a player"
-#~ msgstr "Créer un·e joueur·euse"
 

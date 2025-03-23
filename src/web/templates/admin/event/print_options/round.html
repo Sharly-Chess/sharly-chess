@@ -1,0 +1,9 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('Round:'),
+        help_text=_('The round for which the document is printed (Defaults to the last possible round).'),
+        min=1,
+        data=data, errors=errors
+    ) }}
+</div>

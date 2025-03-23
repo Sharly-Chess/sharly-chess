@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, NamedTuple, override
 
 from packaging.version import Version
 
-from data.player import Player
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredPlugin
 from database.sqlite.migration import AbstractMigrationManager, AbstractMigration
@@ -28,6 +27,43 @@ class PluginUtils:
         default: Any = None,
     ):
         return (plugin_data or {}).get(plugin_id, {}).get(field, default)
+
+    @staticmethod
+    def insert_on_condition[T](
+        source_list: list[T],
+        element: T,
+        condition: Callable[[T], bool],
+        after: bool = True,
+    ):
+        """Inserts *element* into the list *source_list*. The insert in made at
+        the position of the first element matching *condition*.
+        If no element matches *condition*, append the element to the list.
+        If *after* is True, element is inserted after the matched element,
+        otherwise it is inserted before.
+        """
+        for index, match_element in enumerate(source_list):
+            if condition(match_element):
+                source_list.insert(index + after, element)
+                return
+        source_list.append(element)
+
+    @classmethod
+    def insert_on_isinstance[T](
+        cls,
+        source_list: list[T],
+        element: T,
+        insert_type: type[T],
+        after: bool = True,
+    ):
+        """Wrapper on insert_on_condition where the condition
+        is an element being an instance of *insert_type*"""
+        cls.insert_on_condition(
+            source_list,
+            element,
+            lambda elem: isinstance(elem, insert_type),
+            after
+        )
+
 
 
 class PluginContext:
@@ -145,7 +181,6 @@ class PluginMigrationManager(AbstractMigrationManager):
         self.plugin_id = plugin.id
         self._migration_module = migration_module
 
-    @override
     @property
     def base_module(self) -> ModuleType:
         return self._migration_module
@@ -185,15 +220,6 @@ class PluginEngineArgument:
 
     def init_engine(self) -> 'Engine':
         return self.engine_type()
-
-
-@dataclass
-class PrintSplitOption:
-    name: str
-    url_name: str
-    split_fn: Callable[
-        [list[Player]], dict[str, list[Player]]
-    ]
 
 
 @dataclass

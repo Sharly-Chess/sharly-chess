@@ -3,7 +3,6 @@ from logging import Logger
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Callable
 from collections import defaultdict
-from functools import partial
 
 from data.tournament_export import AbstractTournamentExporter, Trf16TournamentExporter, TrfBxTournamentExporter
 import trf
@@ -18,12 +17,12 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.logger import get_logger
-from data.player import Player
 from data.event import Event
 from data.loader import EventLoader
+from data.print import PrintDocumentManager
 from data.tie_break import AbstractTieBreak, TieBreakManager
 from data.tournament import Tournament
-from data.util import PlayerCategory, PrintSplit, TrfType, PrintDocument
+from data.util import TrfType
 from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
@@ -785,58 +784,26 @@ class TournamentAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @staticmethod
-    def split_printed_players_by(split_by: PrintSplit, players: list[Player]) -> dict[str, list[Player]]:
-        split_functions: dict[PrintSplit, Callable] = {
-            PrintSplit.CLUB: lambda p: p.club,
-            PrintSplit.CATEGORY: lambda p: p.category.short_name,
-            PrintSplit.FEDERATION: lambda p: p.federation,
-        }
-
-        split_players: dict[str, list[Player]]
-        if split_by == PrintSplit.CATEGORY:
-            split_players = {
-                category.short_name: [] for category in PlayerCategory
-            }
-        else:
-            split_players = defaultdict(list)
-
-        # Split players by group
-        for player in players:
-            split_players[split_functions[split_by](player)].append(player)
-
-        if split_by == PrintSplit.CATEGORY:
-            # Filter out empty categories
-            split_players = {
-                key: split_players[key] for key in split_players.keys()
-                if len(split_players[key]) > 0
-            }
-        else:
-            # Sort by key
-            split_players = {
-                key: split_players[key]
-                for key in sorted(split_players.keys())
-            }
-        return split_players
-
-    @get(
-        path='/admin/player-print-view/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-player-print-view',
+    @post(
+        path='/admin/tournament-print-view/{event_uniq_id:str}/{tournament_id:int}/{document: str}',
+        name='admin-tournament-print-view',
     )
-    async def htmx_tournament_player_print_view(
+    async def htmx_tournament_print_view(
         self,
         request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
         event_uniq_id: str,
         tournament_id: int,
-        split: str | None = None,
-        document: str | None = None,
-        round: int | None = None,
+        document: str,
     ) -> Template | ClientRedirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            data=None,
+            data=data,
         )
         if web_context.error:
             return web_context.error
@@ -845,43 +812,20 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
         )
-        print_document: PrintDocument = (
-            PrintDocument(document) if document else PrintDocument.PLAYER_LIST
-        )
-        if round is None:
-            round = admin_tournament.max_ranking_round
-        players: list[Player]
-        match print_document:
-            case PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                players = list(admin_tournament.compute_player_ranks(after_round=round).values())
-            case PrintDocument.PLAYER_LIST:
-                players = admin_tournament.players_by_name_with_unpaired
-            case _:
-                raise ValueError(f'{print_document=}')
-
-        split_by = split or PrintSplit.NO_SPLIT
-        split_players: dict[str, list[Player]]
-        if split_by == PrintSplit.NO_SPLIT:
-            split_players = {
-                "": players,
-            }
-        else:
-            per_plugin_split_options = plugin_manager.hook.get_print_split_options()
-            plugin_split_options = [option for options in per_plugin_split_options for option in options]
-
-            split_functions = {
-                PrintSplit.CLUB: partial(self.split_printed_players_by, PrintSplit.CLUB),
-                PrintSplit.CATEGORY: partial(self.split_printed_players_by, PrintSplit.CATEGORY),
-                PrintSplit.FEDERATION: partial(self.split_printed_players_by, PrintSplit.FEDERATION),
-            } | {
-                plugin_option.url_name: plugin_option.split_fn
-                for plugin_option in plugin_split_options
-            }
-
-            split_players = split_functions[split_by](players)
+        document_type = PrintDocumentManager.document_type_by_id()[document]
+        options = []
+        for option in document_type.default_options():
+            value = WebContext.form_data_to_value(
+                data,
+                option.id,
+                option.type,
+                option.default_value,
+            )
+            options.append(type(option)(value))
+        document = document_type(options, admin_tournament)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
-            document=print_document
+            document=document
         )
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
@@ -889,21 +833,15 @@ class TournamentAdminController(BaseEventAdminController):
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
         per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
-            document=print_document
+            document=document
         )
         extra_css: str = '\n'.join(per_plugin_css)
 
         template_context |= {
-            'tournament': admin_tournament,
-            'players': split_players,
-            'title': print_document.to_title(round),
-            'crosstable': print_document.is_crosstable,
-            'ranking': print_document.is_ranking,
-            'player_list': print_document.is_player_list,
-            'ranking_round': round,
+            'document': document,
             'extra_columns': extra_columns,
             'extra_css': extra_css,
-        }
+        } | document.template_context
         return HTMXTemplate(
-            template_name='admin/print/players.html', context=template_context
+            template_name=document.template_name, context=template_context
         )

@@ -18,7 +18,6 @@ class Column:
 
 
 class Migration(AbstractPluginMigration):
-    @override
     def forward(self):
         # TODO replace by column creation once deprecated columns have been globally deleted
         self.database.execute(
@@ -50,7 +49,6 @@ class Migration(AbstractPluginMigration):
                     f'`{column.name}` {column.type_declaration}'
                 )
 
-    @override
     def backward(self):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `ffe_id`'

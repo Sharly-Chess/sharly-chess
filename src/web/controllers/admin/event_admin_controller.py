@@ -20,7 +20,8 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
-from data.util import PrintSplit, TournamentRating, PrintDocument
+from data.print import PrintDocumentManager, AbstractPrintDocument
+from data.util import TournamentRating, OptionError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -107,33 +108,32 @@ class EventAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'print':
+                print_options = PrintDocumentManager.default_options()
                 if data is None:
                     event = web_context.admin_event
                     if len(event.tournaments_sorted_by_uniq_id) == 1:
                         tournament_id = (
                             event.tournaments_sorted_by_uniq_id[0].id
                         )
-                    data = (
-                        {
-                            'tournament_id': WebContext.value_to_form_data(
-                                tournament_id
-                            ),
-                            'split': WebContext.value_to_form_data(
-                                PrintSplit.NO_SPLIT
-                            ),
-                            'document': WebContext.value_to_form_data(
-                                PrintDocument.PLAYER_LIST
-                            )
-                        }
-                    )
-
+                    data = {
+                        'tournament_id': WebContext.value_to_form_data(tournament_id)
+                    } | {
+                        option.id: WebContext.value_to_form_data(option.default_value)
+                        for option in print_options
+                    }
+                containers_by_document = {'': []} | {
+                    document.id: [
+                        option.container_id for option
+                        in document.default_options()
+                    ] for document in
+                    PrintDocumentManager.default_documents()
+                }
                 template_context |= {
                     'modal': 'print',
                     'tournament_options': web_context.get_tournament_options(),
-                    'split_options': web_context.get_print_split_options(),
-                    'document_options': (
-                        web_context.get_print_document_options()
-                    ),
+                    'document_options': web_context.get_print_document_options(),
+                    'print_options': print_options,
+                    'containers_by_document': containers_by_document,
                     'data': data,
                     'errors': errors or {},
                 }
@@ -400,33 +400,29 @@ class EventAdminController(BaseEventAdminController):
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
 
-        document: PrintDocument | None = None
+        document_type: type[AbstractPrintDocument] | None = None
         field = 'document'
         try:
-            document = PrintDocument(
+            document_type = PrintDocumentManager.document_type_by_id()[
                 WebContext.form_data_to_str(data, field)
-            )
-        except ValueError:
+            ]
+        except KeyError:
             errors[field] = _('Please choose the document.')
-
-        field = 'round'
-        round_: int | None = None
-        try:
-            round_ = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        if round_ is not None:
-            if tournament:
-                if round_ > tournament.rounds:
-                    errors[field] = _(
-                        'Not part of the selected tournament ({rounds} rounds).'
-                    ).format(rounds=tournament.rounds)
-                elif document and (document.is_ranking or document.is_crosstable):
-                    max_round = tournament.max_ranking_round
-                    if max_round is not None and round_ > max_round:
-                        errors[field] = _(
-                            'Round not finished (last finished: {round}).'
-                        ).format(round=max_round)
+        if tournament and document_type:
+            options = []
+            for option in document_type.default_options():
+                value = WebContext.form_data_to_value(
+                    data,
+                    option.id,
+                    option.type,
+                    option.default_value,
+                )
+                options.append(type(option)(value))
+            document = document_type(options, tournament)
+            try:
+                document.validate_options()
+            except OptionError as error:
+                errors[error.option.id] = str(error)
 
         if len(errors):
             return self._admin_event_config_render(
@@ -446,9 +442,11 @@ class EventAdminController(BaseEventAdminController):
             params={
                 "event_uniq_id": event_uniq_id,
                 "tournament_id": tournament.id,
-                "split": data['split'],
                 "document": data['document'],
-                "round": data['round'],
+                "options": {
+                    option.id: data[option.id]
+                    for option in document_type.default_options()
+                }
             }
         )
 

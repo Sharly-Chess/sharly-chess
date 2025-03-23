@@ -1,0 +1,9 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Split by:'),
+        help_text=_('How to split the results.'),
+        select_options=option.player_splitter_options,
+        data=data, errors=errors
+    ) }}
+</div>

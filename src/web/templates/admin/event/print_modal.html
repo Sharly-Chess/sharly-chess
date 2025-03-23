@@ -12,9 +12,6 @@
                 hx-post="{{ url_for('admin-event-print', event_uniq_id=admin_event.uniq_id) }}"
                 hx-indicator="#please-wait"
             >
-                <h4 class="mt-3">
-                    {{ _('Tournament') }}
-                </h4>
                 <div class="row">
                     <div class="col-12 mb-3">
                         {{ admin_macros.select_input(
@@ -26,10 +23,6 @@
                         ) }}
                     </div>
                 </div>
-
-                <h4 class="mt-3">
-                    {{ _('Options') }}
-                </h4>
                 <div class="row">
                     <div class="col-12 mb-3">
                         {{ admin_macros.select_input(
@@ -41,37 +34,23 @@
                         ) }}
                     </div>
                 </div>
-                <div class="row" id="round_input" style="display:none">
-                    <div class="col-12 mb-3">
-                        {{ admin_macros.number_input(
-                            name='round',
-                            label=_('Round:'),
-                            help_text=_('The round for which the document is printed (Defaults to the last possible round).'),
-                            min=1,
-                            data=data, errors=errors
-                        ) }}
+                {% for option in print_options %}
+                    <div class="row" id="{{ option.container_id }}" style="display:none">
+                        {% include option.template_name %}
                     </div>
-                </div>
+                {% endfor %}
                 <script>
                     $('#document').change(function() {
-                        if (['ranking', 'crosstable'].includes($(this).val())) {
-                            $('#round_input').css('display', 'block');
-                        } else {
-                            $('#round_input').css('display', 'none');
-                        }
+                        const document_containers = {{ containers_by_document|tojson }}[$(this).val()];
+                        let container_id = '';
+                        {% for option in print_options %}
+                            container_id = '{{ option.container_id }}';
+                            $('#' + container_id).css(
+                                'display', document_containers.includes(container_id) ? 'block' : 'none'
+                            );
+                        {% endfor %}
                     });
                 </script>
-                <div class="row">
-                    <div class="col-12 mb-3">
-                        {{ admin_macros.select_input(
-                            name='split',
-                            label=_('Split by:'),
-                            help_text=_('How to split the results.'),
-                            select_options=split_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
             </form>
         </div> 
 
@@ -87,7 +66,7 @@
             <button
                 type="submit"
                 form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                class="text-nowrap white btn btn-primary"
             >
                 <i class="bi bi-printer-fill pe-1"></i>
                 {{ _('Print') }}

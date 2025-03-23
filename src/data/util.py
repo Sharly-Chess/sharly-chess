@@ -1,5 +1,5 @@
 """A file grouping all the "utility" classes/enum"""
-
+from abc import ABC, abstractmethod
 from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
@@ -7,16 +7,13 @@ from enum import Enum, StrEnum, IntEnum
 from functools import lru_cache
 from logging import Logger
 from math import floor
+from types import UnionType
 from typing import Any, Self
 
 from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
-
-
-def get_plugin_data(plugin_name: str, plugin_data: dict[str, dict] | None, field: str, default: Any = None):
-    return (plugin_data or {}).get(plugin_name, {}).get(field, default)
 
 
 class StaticUtils:
@@ -45,6 +42,13 @@ class StaticUtils:
         if num - lowest_int >= 0.5:
             return lowest_int + 1
         return lowest_int
+
+    @staticmethod
+    def register_class(cls, register: list[type]):
+        """Decorator registering a class into a variable.
+        Used to refer on top of a file to classes defined lower."""
+        register.append(cls)
+        return cls
 
 
 class SharedUtils:
@@ -78,6 +82,123 @@ class SharedUtils:
             'get_round_ranking_function',
             StaticUtils.round_ranking
         )(num)
+
+
+class OptionError(ValueError):
+    def __init__(self, message: str, option: 'AbstractOption'):
+        super().__init__(message)
+        self.option = option
+
+
+class AbstractOption(ABC):
+    """Abstract class representing an option.
+    Options can either be represented in the DB or in a form."""
+    def __init__(self, value: Any | None = None):
+        self.value = value if value is not None else self.default_value
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """Represents the option class in forms and databases.
+        Has to be unique."""
+        pass
+
+    @property
+    @abstractmethod
+    def type(self) -> type | UnionType:
+        """Expected type for the value of the option"""
+        pass
+
+    @property
+    @abstractmethod
+    def default_value(self) -> Any:
+        """Value used as default for the option.
+        Should be of type {self.type}"""
+        pass
+
+    @property
+    @abstractmethod
+    def template_name(self) -> str:
+        """Name of the template representing the option in a form.
+        Template is intended to be used with a context where
+        "option" refers to the AbstractOption object
+        """
+        pass
+
+    @property
+    def container_id(self) -> str:
+        """ID of the HTML element containing the template."""
+        return f'{self.id}_container'
+
+    def validate(self):
+        """Checks if the value is correctly implemented.
+        Raises an OptionError if not."""
+        if not isinstance(self.value, self.type):
+            raise OptionError(f'{self.value=} (expected type: {self.type})', self)
+
+
+class AbstractOptionHandler(ABC):
+    """Abstract class handling options."""
+    def __init__(self, options: list[AbstractOption] | None = None):
+        self.options: list[AbstractOption] = options or self.default_options
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Represents the handler in the UI."""
+        pass
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """Represents the handler in a DB or a form."""
+        pass
+
+    @staticmethod
+    def available_options() -> list[type[AbstractOption]]:
+        """Types of options the handler can be initialized with."""
+        return []
+
+    @classmethod
+    def default_options(cls) -> list[AbstractOption]:
+        """List of all available options with default values."""
+        return [option_type() for option_type in cls.available_options()]
+
+    def validate_options(self):
+        """Checks the validity of options, Raises a ValueError if invalid."""
+        used_option_types: list[type[AbstractOption]] = []
+        for option in self.options:
+            option.validate()
+            option_type = type(option)
+            if option_type in used_option_types:
+                raise OptionError(f'Option [{option.id}] already used', option)
+            if option_type not in self.available_options():
+                raise OptionError(
+                    f'Option [{option.id}] not available [{self.name}]', option
+                )
+            used_option_types.append(option_type)
+
+    def _get_option[AbstractOption](
+        self, option_type: type[AbstractOption]
+    ) -> AbstractOption:
+        """Retrieve an option from its type. If no option with this type 
+        exists in the options, returns on with the default value"""
+        return next(
+            (
+                option for option in self.options
+                if isinstance(option, option_type)
+            ),
+            option_type(),
+        )
+
+    def get_option_values(self) -> list:
+        """Retrieves for each of the available options
+        the corresponding value in an ordered list.
+        Intended usage: option1, option2 = self.get_option_values()"""
+        return [
+            self._get_option(option_type).value
+            for option_type in self.available_options()
+        ]
 
 
 class PapiResult(IntEnum):
@@ -1230,68 +1351,6 @@ class TrfType(StrEnum):
                 return 'trfx'
             case _:
                 raise ValueError(f'Unknown value: {self}')
-
-
-class PrintSplit(StrEnum):
-    NO_SPLIT = 'no-split'
-    CATEGORY = 'category'
-    CLUB = 'club'
-    FEDERATION = 'federation'
-
-    @property
-    def name(self) -> str:
-        match self:
-            case PrintSplit.NO_SPLIT:
-                return _('No split')
-            case PrintSplit.CATEGORY:
-                return _('Category')
-            case PrintSplit.CLUB:
-                return _('Club')
-            case PrintSplit.FEDERATION:
-                return _('Federation')
-            case _:
-                raise ValueError(f'Invalid print split type: {self}')
-
-
-class PrintDocument(StrEnum):
-    PLAYER_LIST = "player-list"
-    RANKING = "ranking"
-    CROSSTABLE = "crosstable"
-
-    def to_title(self, tournament_round: int) -> str:
-        match self:
-            case self.PLAYER_LIST:
-                return _('List of players')
-            case self.RANKING:
-                return _('Ranking after round #{round}').format(round=tournament_round)
-            case self.CROSSTABLE:
-                return _('Crosstable after round #{round}').format(round=tournament_round)
-            case _:
-                raise ValueError(f'Invalid print type: {self}')
-
-    @property
-    def is_player_list(self) -> bool:
-        return self == PrintDocument.PLAYER_LIST
-
-    @property
-    def is_ranking(self) -> bool:
-        return self == PrintDocument.RANKING
-
-    @property
-    def is_crosstable(self) -> bool:
-        return self  == PrintDocument.CROSSTABLE
-
-    @property
-    def name(self) -> str:
-        match self:
-            case self.PLAYER_LIST:
-                return _('List of players')
-            case self.RANKING:
-                return _('Ranking')
-            case self.CROSSTABLE:
-                return _('Crosstable')
-            case _:
-                raise ValueError(f'Invalid print type: {self}')
 
 
 class PointValueType(Enum):

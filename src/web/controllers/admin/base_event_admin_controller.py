@@ -13,8 +13,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
-from data.util import PrintSplit, PrintDocument
-from plugins.manager import plugin_manager
+from data.print import PrintDocumentManager
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -62,23 +61,13 @@ class BaseEventAdminWebContext(AdminWebContext):
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
 
-    def get_print_split_options(self) -> dict[str, str]:
-        per_plugin_split_options = plugin_manager.hook.get_print_split_options()
-        plugin_split_options = [option for options in per_plugin_split_options for option in options]
-
-        return {
-            self.value_to_form_data(split): PrintSplit(split).name
-            for split in PrintSplit
-        } | {
-            self.value_to_form_data(plugin_option.url_name): plugin_option.name
-            for plugin_option in plugin_split_options
-        }
-
-    def get_print_document_options(self) -> dict[str, str]:
-        return {
-            self.value_to_form_data(document): PrintDocument(document).name
-            for document in PrintDocument
-        }
+    @staticmethod
+    def get_print_document_options() -> dict[str, str]:
+        options = {'': '-'}
+        for document_type in PrintDocumentManager.document_types():
+            document = document_type()
+            options[document.id] = document.name
+        return options
 
 
 class BaseEventAdminController(BaseAdminController):
