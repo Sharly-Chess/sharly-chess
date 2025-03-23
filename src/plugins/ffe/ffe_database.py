@@ -23,6 +23,7 @@ from common.logger import (
     print_interactive_success,
     print_interactive_warning,
 )
+from common.network import connected
 from common.papi_web_config import PapiWebConfig
 from data.player import Player
 from data.util import (
@@ -60,6 +61,9 @@ class FfeDatabase(SQLiteDatabase):
         returns True if the database is available after the call, False otherwise."""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
         if not self.exists():
+            if not connected():
+                print_interactive_warning(_('Not connected, can not create the FFE database.'))
+                return False
             if (
                 input_interactive(
                     _(
@@ -72,6 +76,9 @@ class FfeDatabase(SQLiteDatabase):
         else:
             age: int = int(time() - self.file.lstat().st_mtime)
             if age > 2 * 24 * 60 * 60:
+                if not connected():
+                    print_interactive_warning(_('Not connected, can not update the FFE database.'))
+                    return True
                 days: int = age // (24 * 60 * 60)
                 if (
                     input_interactive(
