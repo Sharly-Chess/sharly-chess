@@ -2966,7 +2966,7 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
 msgid "Split by:"
-msgstr "Rupture :"
+msgstr "Séparateur :"
 
 msgid "Standard rating"
 msgstr "Classement standard"
