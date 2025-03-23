@@ -161,6 +161,9 @@ class FFESqlServer(SqlServer):
         limit: int = 0,  # no limit set if no param or null param passed
     ) -> AsyncIterator[Player]:
         """Searches the SQL server for the given tokens, raises PapiWebException on error."""
+        # NOTE(Amaras): Quicken search if the string looks like a complete FFE
+        # licence number, so that it skips a more complex request
+        string = string.upper().strip()
         # TODO: fix magic number
         if string.isalnum() and len(string) == 6:
             if string[0].isalpha() and string[1:].isdecimal():
@@ -174,7 +177,7 @@ class FFESqlServer(SqlServer):
                     self.get_player_from_row(row)
                     async for row in self.fetchall()
                 )
-        tokens: list[str] = string.upper().split(' ')
+        tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
             ('joueur.Prenom', '', '%'),

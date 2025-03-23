@@ -8,7 +8,7 @@
         placeholder=_('E.g.: %(string)s', string='pierre dupont paris'),
         errors={} if ffe_search_available else {'search_ffe': _('No internet connection and no local database.'), },
         hx_get=url_for('ffe-search', event_uniq_id=admin_event.uniq_id),
-        hx_trigger='keyup changed delay:0.2s',
+        hx_trigger='keyup changed delay:400ms',
         hx_target='#ffe-search-results',
         hx_indicator_img=url_for('static', file_path='images/papi-web.gif'),
         hx_on_before_request='$(\'#ffe-search-results\').show();',

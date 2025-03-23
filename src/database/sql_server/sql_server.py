@@ -41,7 +41,7 @@ class SqlServerCredentials:
             if DEVEL_ENV:
                 raise PapiWebException(f'Could not read SQL server credentials ({e}), please run generate_ffe_sql_server_credentials.py.') from e
             else:
-                raise PapiWebException('Could not read SQL server credentials.') from e
+                raise PapiWebException('Could not read SQL server credentials.') from None
 
     @staticmethod
     def dump(
