@@ -50,9 +50,9 @@ class FfeSearchController(BaseEventAdminController):
             if DEVEL_ENV:
                 start = time.perf_counter()
             try:
-                with FFESqlServer() as ffe_sql_server:
+                async with FFESqlServer() as ffe_sql_server:
                     search_results: list['Player'] = [
-                        player for player in ffe_sql_server.search_player(
+                        player async for player in await ffe_sql_server.search_player(
                             search_ffe, limit=self.MAX_RESULTS
                         )
                     ]
@@ -142,8 +142,8 @@ class FfeSearchController(BaseEventAdminController):
     ) -> Template | ClientRedirect:
         if player_ffe_id:
             if connected():
-                with FFESqlServer() as ffe_sql_server:
-                    ffe_player: Player = ffe_sql_server.get_player_by_ffe_id(player_ffe_id)
+                async with FFESqlServer() as ffe_sql_server:
+                    ffe_player: Player = await ffe_sql_server.get_player_by_ffe_id(player_ffe_id)
             else:
                 with FfeDatabase() as ffe_database:
                     ffe_player: Player = ffe_database.get_player_by_ffe_id(player_ffe_id)

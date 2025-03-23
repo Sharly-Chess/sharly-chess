@@ -187,7 +187,8 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     hx_indicator_img='',
     hx_trigger='',
     hx_on_before_request='',
-    hx_on_after_request=''
+    hx_on_after_request='',
+    hx_sync=''
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -305,6 +306,9 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                         {% if hx_on_after_request %}
                             hx-on::after-request="{{ hx_on_after_request }}"
                         {% endif %}
+                        {% if hx_sync %}
+                            hx-sync="{{ hx_sync }}"
+                        {% endif %}
                     />
                     {% if input_type == 'password' %}
                         <i
@@ -376,7 +380,8 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     hx_target='',
     hx_indicator_img='',
     hx_on_before_request='',
-    hx_on_after_request=''
+    hx_on_after_request='',
+    hx_sync=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -397,6 +402,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         hx_indicator_img=hx_indicator_img,
         hx_on_before_request=hx_on_before_request,
         hx_on_after_request=hx_on_after_request,
+        hx_sync=hx_sync,
     ) }}
 {% endmacro %}
 

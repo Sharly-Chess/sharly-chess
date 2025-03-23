@@ -12,7 +12,8 @@
         hx_target='#ffe-search-results',
         hx_indicator_img=url_for('static', file_path='images/papi-web.gif'),
         hx_on_before_request='$(\'#ffe-search-results\').show();',
-        hx_on_after_request='$(\'#ffe-search-results\').show();'
+        hx_on_after_request='$(\'#ffe-search-results\').show();',
+        hx_sync="this:replace"
     ) }}
     <ul id="ffe-search-results" class="dropdown-menu ffe-search-results p-0">
         <li class="dropdown-item no-hover text-nowrap">
