@@ -140,7 +140,7 @@ class AbstractOption(ABC):
 class AbstractOptionHandler(ABC):
     """Abstract class handling options."""
     def __init__(self, options: list[AbstractOption] | None = None):
-        self.options: list[AbstractOption] = options or self.default_options
+        self.options: list[AbstractOption] = options or self.default_options()
 
     @property
     @abstractmethod
