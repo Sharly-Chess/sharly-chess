@@ -1,11 +1,11 @@
 import re
 
-from collections import Counter, defaultdict
+from collections import Counter
 from collections.abc import Callable
 
 from datetime import datetime
 from decimal import Decimal
-from functools import partial, cached_property
+from functools import cached_property
 from typing import Any, TYPE_CHECKING, Iterable, override
 
 from litestar.contrib.htmx.request import HTMXRequest
@@ -17,8 +17,9 @@ from common.logger import print_interactive_error
 from common.network import connected
 from data.event import Event
 from data.tie_break import AbstractTieBreak
-from data.util import PlayerCategory, PlayerRatingType, PrintDocument, ScreenType, TournamentRating
+from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
+from data.print import AbstractPlayerSplitter, ClubPlayerSplitter, AbstractPrintDocument, AbstractPlayerPrintDocument
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
@@ -27,8 +28,8 @@ from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_break import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
-from plugins.hookspec import ExtraAdminColumn, PrintSplitOption, hookimpl, ExtraColumn
-from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginMigrationManager
+from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
+from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginMigrationManager, PluginUtils
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -41,17 +42,14 @@ if TYPE_CHECKING:
 
 class FfePlugin(AbstractPlugin):
 
-    @override
     @property
     def id(self) -> str:
         return PLUGIN_NAME
 
-    @override
     @property
     def name(self) -> str:
         return 'FFE'
 
-    @override
     @property
     def description(self) -> str:
         return _(
@@ -59,7 +57,6 @@ class FfePlugin(AbstractPlugin):
             '(player search, leagues, Papi compatibility)'
         )
 
-    @override
     @property
     def version(self) -> Version:
         return Version('0.1.1')
@@ -623,63 +620,49 @@ class FfePlugin(AbstractPlugin):
     # Printing
     # ---------------------------------------------------------------------------------
 
+    class LeaguePlayerSplitter(AbstractPlayerSplitter):
+        @property
+        def id(self) -> str:
+            return 'ffe_league'
+
+        @property
+        def name(self) -> str:
+            return _('League')
+
+        @staticmethod
+        def get_split_key(player: Player) -> str:
+            return PluginUtils.get_plugin_data(
+                PLUGIN_NAME, player.plugin_data, 'league', ''
+            )
+
     @hookimpl
-    def get_print_split_options(self) -> Iterable[PrintSplitOption]:
-        return [
-            PrintSplitOption(
-                name=_('League'),
-                url_name="ffe-league",
-                split_fn=partial(self._split_printed_players_by, "ffe-league"),
-            ),
-        ]
-
-    def _split_printed_players_by(self, split_by: str, players: list[Player]):
-        split_functions = {
-            "ffe-league": lambda p: p.plugin_data.get(self.id, {}).get('league', None),
-        }
-
-        split_players = defaultdict(list)
-
-        # Split players by group
-        for player in players:
-            split_players[split_functions[split_by](player)].append(player)
-
-        # Sort by key
-        split_players = {
-            key: split_players[key]
-            for key in sorted(split_players.keys())
-        }
-
-        return split_players
+    def insert_print_player_splitters(
+        self, player_splitters: list['AbstractPlayerSplitter']
+    ):
+        PluginUtils.insert_on_isinstance(
+            player_splitters, self.LeaguePlayerSplitter(), ClubPlayerSplitter
+        )
 
     @hookimpl
     def get_extra_print_view_columns(
-        self, document: PrintDocument
+        self, document: AbstractPrintDocument
     ) -> Iterable[ExtraColumn]:
-        match document:
-            case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                return [
-                    ExtraColumn(
-                        at="first-round" if document == PrintDocument.CROSSTABLE else "club",
-                        title=_('League *** LEAGUE FOR PRINT VIEW'),
-                        classes="center",
-                        value=lambda player: self.get_data(player.plugin_data, 'league'),
-                    )
-                ]
-
-            case _:
-                return []
+        if isinstance(document, AbstractPlayerPrintDocument):
+            return [
+                ExtraColumn(
+                    at="first-round" if document.is_crosstable else "club",
+                    title=_('League *** LEAGUE FOR PRINT VIEW'),
+                    classes="center",
+                    value=lambda player: self.get_data(player.plugin_data, 'league'),
+                )
+            ]
+        return []
 
     @hookimpl
-    def get_extra_print_view_css(
-        self,
-        document: PrintDocument
-    ) -> str:
-        match document:
-            case PrintDocument.PLAYER_LIST | PrintDocument.RANKING | PrintDocument.CROSSTABLE:
-                return '.player-table .league { text-align: center; }'
-            case _:
-                return ''
+    def get_extra_print_view_css(self, document: AbstractPrintDocument) -> str:
+        if isinstance(document, AbstractPlayerPrintDocument):
+            return '.player-table .league { text-align: center; }'
+        return ''
 
     # ---------------------------------------------------------------------------------
     # User screens

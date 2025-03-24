@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from itertools import cycle
 import re
 import time
@@ -93,6 +94,26 @@ class WebContext:
         :return:
         """
         return 'light'
+
+    @classmethod
+    def form_data_to_value[T](
+        cls,
+        data: dict[str, str],
+        field: str,
+        expected_type: T,
+        empty_value: str | None = None,
+    ) -> T | None:
+        type_functions: dict[type, Callable] = {
+            str: cls.form_data_to_str,
+            int: cls.form_data_to_int,
+            float: cls.form_data_to_float,
+            bool: cls.form_data_to_bool,
+            date: cls.form_data_to_date,
+        }
+        for type_, function in type_functions.items():
+            if expected_type in (type_, type_ | None):
+                return function(data, field, empty_value)
+        raise ValueError(f'Unsupported type: {expected_type}')
 
     @staticmethod
     def form_data_to_str(

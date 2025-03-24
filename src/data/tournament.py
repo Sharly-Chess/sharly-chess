@@ -383,12 +383,12 @@ class Tournament:
         return counter
 
     @property
-    def current_round(self) -> int | None:
+    def current_round(self) -> int:
         self.read_papi()
         return self._current_round
 
     @property
-    def max_ranking_round(self) -> int | None:
+    def max_ranking_round(self) -> int:
         if not self.started:
             return 0
         if self.playing:

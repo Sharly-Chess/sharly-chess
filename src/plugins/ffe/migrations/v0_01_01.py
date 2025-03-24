@@ -4,7 +4,6 @@ from plugins.utils import AbstractPluginMigration
 
 
 class Migration(AbstractPluginMigration):
-    @override
     def forward(self):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `ffe_last_upload`'
@@ -21,7 +20,6 @@ class Migration(AbstractPluginMigration):
             f'`deprecated_last_ffe_rules_upload` TO `ffe_last_rules_upload`'
         )
 
-    @override
     def backward(self):
 
         self.database.execute(

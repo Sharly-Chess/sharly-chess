@@ -5,13 +5,22 @@ from collections import namedtuple
 from collections.abc import Iterable
 from contextlib import suppress
 from decimal import Decimal
+from functools import partial
 from math import isclose
 from types import UnionType
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, override
 
 from common.i18n import _
 from data.pairing import Pairing
-from data.util import Result, BoardColor, TournamentPairing, StaticUtils
+from data.util import (
+    Result,
+    BoardColor,
+    TournamentPairing,
+    StaticUtils,
+    AbstractOption,
+    AbstractOptionHandler,
+    OptionError,
+)
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
@@ -24,18 +33,10 @@ TIE_BREAK_CLASSES: list[type['AbstractTieBreak']] = []
 OPTION_CLASSES: list[type['AbstractTieBreakOption']] = []
 
 
-def register_tie_break(cls):
-    """Decorator for tie-break classes.
-    Registers the class in TIE_BREAK_CLASSES"""
-    TIE_BREAK_CLASSES.append(cls)
-    return cls
-
-
-def register_option(cls):
-    """Decorator for tie-break option classes.
-    Registers the class in OPTION_CLASSES"""
-    OPTION_CLASSES.append(cls)
-    return cls
+register_tie_break = partial(
+    StaticUtils.register_class, register=TIE_BREAK_CLASSES
+)
+register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 
 
 class TieBreakManager:
@@ -83,61 +84,16 @@ class TieBreakManager:
         }
 
 
-class AbstractTieBreakOption(ABC):
+class AbstractTieBreakOption(AbstractOption, ABC):
     """Abstract class representing an option of a tie-break"""
-
-    def __init__(self, value: Any | None = None):
-        self.value = value if value is not None else self.default_value
-
     @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """Represents the option class in the database"""
-        pass
-
-    @property
-    @abstractmethod
-    def type(self) -> type | UnionType:
-        """Expected type for the value of the option"""
-        pass
-
-    @property
-    @abstractmethod
-    def default_value(self) -> Any:
-        """Value used as default for the option. 
-        Should be of type {self.type}"""
-        pass
-
-    def check_value(self):
-        """Check the validity of the value. Raises a ValueError if invalid."""
-        if not isinstance(self.value, self.type):
-            raise ValueError(
-                f'Option [{self.id}={self.value}] '
-                f'does not match expected type [{self.type}]'
-            )
+    def template_name(self) -> str:
+        # TODO Implement templates for tie-break options
+        return ''
 
 
-class AbstractTieBreak(ABC):
+class AbstractTieBreak(AbstractOptionHandler, ABC):
     """Abstract class representing a tie-break"""
-
-    def __init__(self, options: list[AbstractTieBreakOption] | None = None):
-        self.options: list[AbstractTieBreakOption] = options or []
-        self.check_options()
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        pass
 
     @property
     @abstractmethod
@@ -163,54 +119,10 @@ class AbstractTieBreak(ABC):
         return True
 
     @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
-        """Types of options used for the player value computation"""
-        return []
-
-    @property
     def papi_id(self) -> str | None:
         """Represents the tie-break in a Papi database.
         If None, the tie-break will not appear in the database"""
         return None
-
-    def check_options(self):
-        """Checks the validity of options, Raises a ValueError if invalid"""
-        if not self.options:
-            return
-        used_option_types: list[type[AbstractTieBreakOption]] = []
-        for option in self.options:
-            option.check_value()
-            option_type = type(option)
-            if option_type in used_option_types:
-                raise ValueError(f'Option [{option.id}] already used')
-            if option_type not in self.available_options:
-                raise ValueError(
-                    f'Option [{option.id}] not available '
-                    f'for tie-break [{self.name}]'
-                )
-            used_option_types.append(option_type)
-
-    def _get_option(
-        self, option_type: type[AbstractTieBreakOption]
-    ) -> AbstractTieBreakOption:
-        """Retrieve an option from its type. If no option with this type 
-        exists in the options, returns on with the default value"""
-        return next(
-            (
-                option for option in self.options
-                if isinstance(option, option_type)
-            ),
-            option_type(),
-        )
-
-    def get_option_values(self) -> list:
-        """Retrieves for each of the available options
-        the corresponding value in an ordered list.
-        Intended usage: option1, option2 = self.get_option_values()"""
-        return [
-            self._get_option(option_type).value
-            for option_type in self.available_options
-        ]
 
 
 class TieBreakUtils:
@@ -278,90 +190,45 @@ class TieBreakUtils:
         return dummy
 
 
-@register_option
-class CutTieBreakOption(AbstractTieBreakOption):
+class AbstractCutTieBreakOption(AbstractTieBreakOption, ABC):
     @property
-    def name(self) -> str:
-        return _('Cut')
+    def type(self) -> type | UnionType:
+        return int
 
+    @property
+    def default_value(self) -> Any:
+        return 0
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value < 0:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+@register_option
+class CutTieBreakOption(AbstractCutTieBreakOption):
     @property
     def id(self) -> str:
         return 'CUT'
 
-    @property
-    def type(self) -> type | UnionType:
-        return int
-
-    @property
-    def default_value(self) -> Any:
-        return 0
-
-    def check_value(self):
-        super().check_value()
-        if self.value < 0:
-            raise ValueError(
-                f'Option {self.id} must be non-negative, got: {self.value}'
-            )
-
 
 @register_option
-class CutTopTieBreakOption(AbstractTieBreakOption):
-    @property
-    def name(self) -> str:
-        return _('Cut top')
-
+class CutTopTieBreakOption(AbstractCutTieBreakOption):
     @property
     def id(self) -> str:
         return 'CUT_TOP'
 
-    @property
-    def type(self) -> type | UnionType:
-        return int
-
-    @property
-    def default_value(self) -> Any:
-        return 0
-
-    def check_value(self):
-        super().check_value()
-        if self.value < 0:
-            raise ValueError(
-                f'Option {self.id} must be non-negative, got: {self.value}'
-            )
-
 
 @register_option
-class CutBottomTieBreakOption(AbstractTieBreakOption):
-    @property
-    def name(self) -> str:
-        return _('Cut bottom')
-
+class CutBottomTieBreakOption(AbstractCutTieBreakOption):
     @property
     def id(self) -> str:
         return 'CUT_BOTTOM'
 
-    @property
-    def type(self) -> type | UnionType:
-        return int
-
-    @property
-    def default_value(self) -> Any:
-        return 0
-
-    def check_value(self):
-        super().check_value()
-        if self.value < 0:
-            raise ValueError(
-                f'Option {self.id} must be non-negative, got: {self.value}'
-            )
-
 
 @register_option
 class PlayedModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def name(self) -> str:
-        return _('Played modifier')
-
     @property
     def id(self) -> str:
         return 'PLAYED_MODIFIER'
@@ -378,10 +245,6 @@ class PlayedModifierTieBreakOption(AbstractTieBreakOption):
 @register_option
 class ForeModifierTieBreakOption(AbstractTieBreakOption):
     @property
-    def name(self) -> str:
-        return _('Fore modifier')
-
-    @property
     def id(self) -> str:
         return 'FORE_MODIFIER'
 
@@ -397,10 +260,6 @@ class ForeModifierTieBreakOption(AbstractTieBreakOption):
 @register_option
 class LimitTieBreakOption(AbstractTieBreakOption):
     @property
-    def name(self) -> str:
-        return _('Limit')
-
-    @property
     def id(self) -> str:
         return 'LIMIT'
 
@@ -415,10 +274,6 @@ class LimitTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ExcludeIdsTieBreakOption(AbstractTieBreakOption):
-    @property
-    def name(self) -> str:
-        return _('Exclude players')
-
     @property
     def id(self) -> str:
         return 'EXCLUDE_IDS'
@@ -594,8 +449,8 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         # FIDE Acronym: 'PS'
         return _('PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE')
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [CutTieBreakOption]
 
     def compute_player_value(
@@ -676,27 +531,28 @@ class BuchholzTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'BH'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [
             CutTopTieBreakOption,
             CutBottomTieBreakOption,
             PlayedModifierTieBreakOption,
         ]
 
-    def check_options(self):
-        super().check_options()
-        cut_top, cut_bottom, _ = self.get_option_values()
+    def validate_options(self):
+        super().validate_options()
+        cut_top, cut_bottom, _played = self.get_option_values()
         if cut_top and cut_top < cut_bottom:
-            raise ValueError(
-                f'{cut_top=} must be at most equal to {cut_bottom=}.'
+            raise OptionError(
+                _(f'Top cut must be at most equal to bottom cut.'),
+                self._get_option(CutTopTieBreakOption)
             )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
         if after_round is None:
@@ -780,20 +636,21 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'FB'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [
             CutTopTieBreakOption,
             CutBottomTieBreakOption,
             PlayedModifierTieBreakOption,
         ]
 
-    def check_options(self):
-        super().check_options()
-        cut_top, cut_bottom, _ = self.get_option_values()
+    def validate_options(self):
+        super().validate_options()
+        cut_top, cut_bottom, _played = self.get_option_values()
         if cut_top and cut_top < cut_bottom:
-            raise ValueError(
-                f'{cut_top=} must be at most equal to {cut_bottom=}.'
+            raise OptionError(
+                _(f'Top cut must be at most equal to bottom cut.'),
+                self._get_option(CutTopTieBreakOption)
             )
 
     def compute_player_value(
@@ -867,8 +724,8 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'SOB'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
     def compute_player_value(
@@ -914,8 +771,8 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'AOB'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
     def compute_player_value(
@@ -932,7 +789,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
             tournament.players_by_id[pairing.opponent_id]
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round and pairing.opponent_id is not None
-               and pairing.played
+            and pairing.played
         ]
         tie_break = (
             ForeBuchholzTieBreak() if fore_modifier else BuchholzTieBreak()
@@ -970,8 +827,8 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'SB'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [
             CutTieBreakOption,
             PlayedModifierTieBreakOption,
@@ -1095,8 +952,8 @@ class KoyaTieBreak(AbstractTieBreak):
         # FIDE Acronym: 'KS'
         return _('Ko. *** ACRONYM FOR PAPI KOYA')
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [LimitTieBreakOption]
 
     def compute_player_value(
@@ -1201,19 +1058,20 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'ARO'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [
             CutTopTieBreakOption,
             CutBottomTieBreakOption,
         ]
 
-    def check_options(self):
-        super().check_options()
+    def validate_options(self):
+        super().validate_options()
         cut_top, cut_bottom = self.get_option_values()
         if cut_top and cut_top < cut_bottom:
-            raise ValueError(
-                f'{cut_top=} must be at most equal to {cut_bottom=}.'
+            raise OptionError(
+                _(f'Top cut must be at most equal to bottom cut.'),
+                self._get_option(CutTopTieBreakOption)
             )
 
     def compute_player_value(
@@ -1541,8 +1399,8 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'DE'
 
-    @property
-    def available_options(self) -> list[type[AbstractTieBreakOption]]:
+    @staticmethod
+    def available_options() -> list[type[AbstractTieBreakOption]]:
         return [
             ExcludeIdsTieBreakOption,
             PlayedModifierTieBreakOption,
@@ -1582,7 +1440,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
             opponent_id: opponent
             for opponent_id, opponent in tied_opponents.items()
             if opponent_id is not None
-               and opponent.points_after(after_round) == final_points
+            and opponent.points_after(after_round) == final_points
         }
         if exclude_ids is not None:
             tied_opponents = {
