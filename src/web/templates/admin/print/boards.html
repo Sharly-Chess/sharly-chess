@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for board in document.tournament.boards %}
+            {% for board in boards %}
                 <tr
                     id="board-{{board.id}}"
                     class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}"

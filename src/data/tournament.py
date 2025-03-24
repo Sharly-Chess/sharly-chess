@@ -573,13 +573,11 @@ class Tournament:
             self._start_date = ''
             self._end_date = ''
             self._arbiter = ''
-            self._boards = []
-            self._unpaired_players = []
         self._papi_read = True
         self._calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round
-        self._calculate_points_before_current_round()
-        self._build_boards()
+        self.calculate_points_before_round()
+        self._boards, self._unpaired_players = self.build_boards()
         self.estimate_players(after_round=None)
 
     def _calculate_current_round(self):
@@ -622,12 +620,18 @@ class Tournament:
             if self._current_round == 0:
                 self._current_round = paired_rounds[-1]
 
-    def _calculate_points_before_current_round(self):
-        for player in self._players_by_id.values():
+    def calculate_points_before_round(self, before_round: int | None = None):
+        """Calculate the points of all player before *before_round*.
+        Defaults to the current round"""
+        if before_round is None:
+            before_round = self.current_round
+        for player in self.players_by_id.values():
             if player.ref_id == 1:
                 continue
-            vpoints = self._calculate_player_virtual_points(player, at_round=self._current_round)
-            player.compute_points(before_round=self._current_round)
+            vpoints = self._calculate_player_virtual_points(
+                player, at_round=before_round
+            )
+            player.compute_points(before_round=before_round)
             player.vpoints = player.points + vpoints
 
     def _calculate_player_virtual_points(
@@ -865,16 +869,22 @@ class Tournament:
             'Tournament._players_by_rank is not set, call Tournament.compute_player_ranks() before.'
         return self._players_by_rank
 
-    def _build_boards(self):
-        if not self._current_round:
-            return
-        self._boards: list[Board] = []
-        self._unpaired_players: list[Player] = []
-        for player in self._players_by_id.values():
-            opponent_id = player.pairings[self._current_round].opponent_id
-            if opponent_id in self._players_by_id:
+    def build_boards(
+        self, at_round: int | None = None
+    ) -> tuple[list[Board], list[Player]]:
+        """Build boards for round *at_round*. Defaults to the current round.
+        Returns the boards in order and the unpaired players."""
+        if at_round is None:
+            at_round = self.current_round
+        if not at_round:
+            return [], []
+        boards: list[Board] = []
+        unpaired_players: list[Player] = []
+        for player in self.players_by_id.values():
+            opponent_id = player.pairings[at_round].opponent_id
+            if opponent_id in self.players_by_id:
                 player_board: Board | None = None
-                for board in self._boards:
+                for board in boards:
                     if (
                         board.white_player is not None
                         and board.white_player.id == opponent_id
@@ -890,18 +900,18 @@ class Tournament:
                         player_board.white_player = player
                         break
                 if player_board is None:
-                    if player.pairings[self._current_round].color == BoardColor.WHITE:
-                        self._boards.append(Board(white_player=player))
+                    if player.pairings[at_round].color == BoardColor.WHITE:
+                        boards.append(Board(white_player=player))
                     else:
-                        self._boards.append(Board(black_player=player))
+                        boards.append(Board(black_player=player))
             else:
-                if player.pairings[self._current_round].exempt:
-                    self._boards.append(Board(white_player=player))
+                if player.pairings[at_round].exempt:
+                    boards.append(Board(white_player=player))
                 else:
-                    self._unpaired_players.append(player)
+                    unpaired_players.append(player)
 
-        self._boards = sorted(self._boards, reverse=True)
-        for index, board in enumerate(self._boards, start=1):
+        boards = sorted(boards, reverse=True)
+        for index, board in enumerate(boards, start=1):
             board.id = index
             number: int = (
                 board.white_player.fixed
@@ -912,7 +922,7 @@ class Tournament:
             board.white_player.set_board(index, number, BoardColor.WHITE)
             if board.black_player is not None:
                 board.black_player.set_board(index, number, BoardColor.BLACK)
-            board.result = board.white_player.pairings[self._current_round].result
+            board.result = board.white_player.pairings[at_round].result
             if self.handicap and board.black_player is not None:
                 strong_player: Player
                 weak_player: Player
@@ -934,6 +944,7 @@ class Tournament:
                 weak_player.set_time_control(
                     weak_time, self.time_control_increment, False
                 )
+        return boards, unpaired_players
 
     def add_result(self, board: Board, white_result: Result):
         """Stores the given result for the given `board` in the current round.
