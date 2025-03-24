@@ -1,0 +1,19 @@
+{% import '/common/macros.j2' as macros %}
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
+        <title>{{ document.name }} - {{ document.tournament.name }}</title>
+        <style type="text/css">
+            {% block css %}{% endblock %}
+            {% include 'print.css' %}
+            {{ extra_css }}
+        </style>
+    </head>
+    <body class="{{ document.id }}">
+        <div align="center">
+            <div class="page-title">{{ document.tournament.name }}</div>
+            <div class="page-subtitle">{{ document.title }}</div>
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

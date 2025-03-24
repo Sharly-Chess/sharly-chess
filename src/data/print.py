@@ -305,7 +305,6 @@ class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
         return {
             'tournament': self.tournament,
             'players': self.ordered_splitted_players,
-            'title': self.title,
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
@@ -415,4 +414,57 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     @override
     @property
     def is_crosstable(self) -> bool:
+        return True
+
+
+class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/boards.html'
+
+    @property
+    def show_results(self) -> bool:
+        return False
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {'show_result': self.show_results}
+
+    @property
+    def round(self) -> int:
+        return self.tournament.current_round
+
+
+@register_document
+class PairingPrintDocument(AbstractBoardPrintDocument):
+    @property
+    def title(self) -> str:
+        return _('Pairings for round #{round}').format(round=self.round)
+
+    @property
+    def name(self) -> str:
+        return _('Pairings')
+
+    @property
+    def id(self) -> str:
+        return 'pairings'
+
+
+@register_document
+class ResultPrintDocument(AbstractBoardPrintDocument):
+    @property
+    def title(self) -> str:
+        return _('Results for round #{round}').format(round=self.round)
+
+    @property
+    def name(self) -> str:
+        return _('Results')
+
+    @property
+    def id(self) -> str:
+        return 'results'
+
+    @override
+    @property
+    def show_results(self) -> bool:
         return True
