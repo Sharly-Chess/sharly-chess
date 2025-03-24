@@ -2802,6 +2802,9 @@ msgstr ""
 msgid "Round not finished (last finished: {round})."
 msgstr ""
 
+msgid "Round not paired (last paired: {round})."
+msgstr ""
+
 msgid "Round number or text:"
 msgstr ""
 
@@ -4060,7 +4063,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Pts ** POINTS FOR PRINT VIEW"
-#~ msgstr ""
 

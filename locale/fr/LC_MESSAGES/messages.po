@@ -2802,6 +2802,9 @@ msgstr "La ronde %(round)d est en cours."
 msgid "Round not finished (last finished: {round})."
 msgstr "Ronde non terminée (dernière terminée : {round})."
 
+msgid "Round not paired (last paired: {round})."
+msgstr "Ronde non-appariée (derniers appariements: ronde {round})."
+
 msgid "Round number or text:"
 msgstr "Numéro de ronde ou texte :"
 
