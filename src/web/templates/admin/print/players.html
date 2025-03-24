@@ -1,43 +1,27 @@
-{% import '/common/macros.j2' as macros %}
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
-        <title>{{ tournament.name }}</title>
-        <style type="text/css">
-            {% include 'print.css' %}
-            {% include 'players.css' %}
-            {{ extra_css }}
-        </style>
-    </head>
-    <body class="
-        {% if crosstable %}crosstable{% endif %}
-        {% if ranking %}ranking{% endif %}
-        {% if player_list %}player-list{% endif %}
-    ">
-        <div align="center">
-            <div class="page-title">{{ tournament.name }}</div>
-            <div class="page-subtitle">{{ title }}</div>
-            {% set n = [1] %}
-            {% if players %}
-                {% for split_by in players.keys() %}
-                    <div class="split-by-title">
-                        {{ split_by }}
-                    </div>
-                    <table class="player-table">
-                        <thead>
-                            {% include '/common/print/player_header.html' %}
-                        </thead>
-                        <tbody>
-                            {% for player in players[split_by] %}
-                                {% with row_class='even' if loop.index is even else 'odd' %}
-                                    {% include '/common/print/player_row.html' %}
-                                {% endwith %}
-                                {% set __ = n.append(1) %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endfor %}
-            {% endif %}
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'players.css' %}
+{% endblock %}
+
+{% block content %}
+    {% set n = [1] %}
+    {% for split_by in players.keys() %}
+        <div class="split-by-title">
+            {{ split_by }}
         </div>
-    </body>
-</html>
+        <table class="player-table">
+            <thead>
+                {% include '/common/print/player_header.html' %}
+            </thead>
+            <tbody>
+                {% for player in players[split_by] %}
+                    {% with row_class='even' if loop.index is even else 'odd' %}
+                        {% include '/common/print/player_row.html' %}
+                    {% endwith %}
+                    {% set __ = n.append(1) %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+{% endblock %}

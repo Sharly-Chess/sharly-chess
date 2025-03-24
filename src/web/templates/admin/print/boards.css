@@ -1,0 +1,13 @@
+{# ========== BORDERS ========== #}
+.board-table { border-collapse:collapse; }
+{# ========== WIDTH, MARGINS, PADDING ==========#}
+.board-table { width: 750px; }
+.board-table { padding: 2px; border-spacing: 0; }
+{# ========== FONT WEIGHT ========== #}
+.board-header * { font-weight: bold; }
+{# ========== TEXT ALIGN ========== #}
+.board-table .player { text-align: left; }
+.board-table .rating,
+.board-table .board-number { text-align: right; }
+.board-table .points,
+.board-table .result { text-align: center; }

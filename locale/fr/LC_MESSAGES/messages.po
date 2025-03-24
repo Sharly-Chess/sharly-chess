@@ -312,6 +312,9 @@ msgstr "Image et couleur de fond"
 msgid "Background image:"
 msgstr "Image de fond :"
 
+msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
+msgstr "Ech."
+
 msgid "Black"
 msgstr "Noirs"
 
@@ -2288,6 +2291,9 @@ msgstr "Appariements par ordre alphabétique"
 msgid "Pairings by player ({num})"
 msgstr "Appariements par ordre alphabétique ({num})"
 
+msgid "Pairings for round #{round}"
+msgstr "Appariements de la ronde {round}"
+
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
@@ -2710,14 +2716,23 @@ msgstr "La requête à la base fédérale a échoué."
 msgid "Request to the FFE database failed: {error}."
 msgstr "La requête à la base fédérale a échoué : {error}."
 
+msgid "Res. ** RESULT FOR PRINT VIEW"
+msgstr "Res."
+
 msgid "Result"
 msgstr "Résultat"
+
+msgid "Results"
+msgstr "Résultats"
 
 msgid "Results entry"
 msgstr "Saisie des résultats"
 
 msgid "Results entry ({num})"
 msgstr "Saisie des résultats ({num})"
+
+msgid "Results for round #{round}"
+msgstr "Résultats de la ronde {round}"
 
 msgid "Results screen creation"
 msgstr "Création d'un écran de résultats"

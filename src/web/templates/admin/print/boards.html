@@ -1,0 +1,61 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'boards.css' %}
+{% endblock %}
+
+{% block content %}
+    <table class="board-table">
+        <thead>
+            <tr class="board-header">
+                <th class="board-number">{{ _('Bd. *** BOARD NUMBER FOR PRINT VIEW') }}</th>
+                <th class="points">{{ _('Pts *** POINTS FOR PRINT VIEW') }}</th>
+                <th class="player">{{ _('White') }}</th>
+                <th class="rating"></th>
+                <th class="result">
+                    {% if show_result %}
+                        {{ _('Res. ** RESULT FOR PRINT VIEW') }}
+                    {% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
+                </th>
+                <th class="player">{{ _('Black') }}</th>
+                <th class="rating"></th>
+                <th class="points">{{ _('Pts *** POINTS FOR PRINT VIEW') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for board in document.tournament.boards %}
+                <tr
+                    id="board-{{board.id}}"
+                    class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}"
+                >
+                    <td class="board-number">{{ board.number }}</td>
+                    <td class="points">{{ board.white_player.points_str }}</td>
+                    <td class="player">
+                        {{ board.white_player.last_name }}&nbsp;{{ board.white_player.first_name }}
+                    </td>
+                    <td class="rating">
+                        {{ board.white_player.rating }}&nbsp;{{ board.white_player.rating_type }}
+                    </td>
+                    <td class="result">
+                        {% if show_result or board.exempt %}
+                            {{ board.result_str }}
+                        {% endif %}
+                    </td>
+                    {% if board.black_player %}
+                        <td class="player">
+                            {{ board.black_player.last_name }}&nbsp;{{ board.black_player.first_name }}
+                        </td>
+                        <td class="rating">
+                            {{ board.black_player.rating }}&nbsp;{{ board.black_player.rating_type }}
+                        </td>
+                        <td class="points">{{ board.black_player.points_str }}</td>
+                    {% else %}
+                        <td class="player">{{ board.white_player.exempt_str }}</td>
+                        <td></td><td></td>
+                    {% endif %}
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
