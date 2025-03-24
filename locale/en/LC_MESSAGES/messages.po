@@ -312,6 +312,9 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
+msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
+msgstr "Bd."
+
 msgid "Black"
 msgstr ""
 
@@ -2288,6 +2291,9 @@ msgstr ""
 msgid "Pairings by player ({num})"
 msgstr ""
 
+msgid "Pairings for round #{round}"
+msgstr ""
+
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2710,13 +2716,22 @@ msgstr ""
 msgid "Request to the FFE database failed: {error}."
 msgstr ""
 
+msgid "Res. ** RESULT FOR PRINT VIEW"
+msgstr ""
+
 msgid "Result"
+msgstr ""
+
+msgid "Results"
 msgstr ""
 
 msgid "Results entry"
 msgstr ""
 
 msgid "Results entry ({num})"
+msgstr ""
+
+msgid "Results for round #{round}"
 msgstr ""
 
 msgid "Results screen creation"
@@ -2785,6 +2800,9 @@ msgid "Round #%(round)d is running."
 msgstr ""
 
 msgid "Round not finished (last finished: {round})."
+msgstr ""
+
+msgid "Round not paired (last paired: {round})."
 msgstr ""
 
 msgid "Round number or text:"

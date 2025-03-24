@@ -6,6 +6,7 @@ from types import UnionType
 from typing import Any, Iterable, override
 
 from common.i18n import _
+from data.board import Board
 from data.player import Player
 from data.tournament import Tournament
 from data.util import AbstractOptionHandler, AbstractOption, StaticUtils, PlayerCategory, OptionError
@@ -305,7 +306,6 @@ class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
         return {
             'tournament': self.tournament,
             'players': self.ordered_splitted_players,
-            'title': self.title,
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
@@ -415,4 +415,96 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     @override
     @property
     def is_crosstable(self) -> bool:
+        return True
+
+
+class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/boards.html'
+
+    @property
+    def show_results(self) -> bool:
+        return False
+
+    @property
+    def boards(self) -> list[Board]:
+        self.tournament.calculate_points_before_round(
+            before_round=self.at_round
+        )
+        boards, _ = self.tournament.build_boards(self.at_round)
+        return boards
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'show_result': self.show_results,
+            'boards': self.boards,
+        }
+
+    @property
+    def at_round(self) -> int:
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.current_round
+        )
+
+    @staticmethod
+    def available_options() -> list[type[AbstractOption]]:
+        return [RoundPrintOption]
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        at_round = self._get_option(RoundPrintOption).value
+        if at_round is None:
+            return
+        if at_round > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'Not part of the selected tournament ({rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                at_round,
+            )
+        if at_round > self.tournament.current_round:
+            raise OptionError(
+                _(
+                    'Round not paired (last paired: {round}).'
+                ).format(round=self.tournament.current_round),
+                at_round,
+            )
+
+
+@register_document(index=1)
+class PairingPrintDocument(AbstractBoardPrintDocument):
+    @property
+    def title(self) -> str:
+        return _('Pairings for round #{round}').format(round=self.at_round)
+
+    @property
+    def name(self) -> str:
+        return _('Pairings')
+
+    @property
+    def id(self) -> str:
+        return 'pairings'
+
+
+@register_document(index=2)
+class ResultPrintDocument(AbstractBoardPrintDocument):
+    @property
+    def title(self) -> str:
+        return _('Results for round #{round}').format(round=self.at_round)
+
+    @property
+    def name(self) -> str:
+        return _('Results')
+
+    @property
+    def id(self) -> str:
+        return 'results'
+
+    @override
+    @property
+    def show_results(self) -> bool:
         return True
