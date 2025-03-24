@@ -63,8 +63,6 @@ except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', TMP_DIR.absolute(), pe)
     sys.exit()
 
-CONNECTION_LOCK_FILE = TMP_DIR / f'{APP_NAME}.connected'
-
 # The base directory, differs for developers. base_dir must be used when looking for application files
 # (images, templates, ...) while user file should be search in the current directory.
 BASE_DIR: Path = (

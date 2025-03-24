@@ -3,13 +3,18 @@ import socket
 import random
 from logging import Logger
 import time
+from threading import Thread
 
-from common import get_logger, CONNECTION_LOCK_FILE
+from common import get_logger
 
 logger: Logger = get_logger()
 
+SLEEP_TIME = 15
 
-def test_dns_server(ip: str) -> bool:
+# We assume we're connected to the internet on startup
+connected_status = [True]
+
+def _test_dns_server(ip: str) -> bool:
     """Tries to connect to a given DNS over TCP server (port 53).
     Returns True if it connected, False otherwise"""
     # https://stackoverflow.com/questions/3764291/how-can-i-see-if-theres-an-available-and-active-network-connection-in-python
@@ -20,22 +25,7 @@ def test_dns_server(ip: str) -> bool:
     except socket.error:
         return False
 
-
-def connected() -> bool:
-    """Checks if the program is connected to the internet.
-    This relies on a background thread checking every few seconds, and assumes
-    no other process messes with the file.
-    If the public check happens between the start of the undelying check
-    and its first success, this function may erreneously assume the internet
-    is not available."""
-    return CONNECTION_LOCK_FILE.exists()
-
-
-def check_connected(sleep_time: int = 15) -> None:
-    """This function is supposed to be ran in a thread or process, or it will
-    hog all the caller's time.
-    Tries to connect to root DNS servers, as shit has already hit the fan if
-    they are not reachable"""
+def _test_for_internet_connection(connected_status_list: list[bool]):
     # https://www.iana.org/domains/root/servers
     root_dns_servers: list[str] = [
         '198.41.0.4',
@@ -52,11 +42,79 @@ def check_connected(sleep_time: int = 15) -> None:
         '199.7.83.42',
         '202.12.27.33',
     ]
+
+    # NOTE(Amaras): if you need to prioritize servers, use the `counts`
+    # keyword argument to specify integer weights for each server.
+    selected_servers: list[str] = random.sample(root_dns_servers, 2)
+    if any(_test_dns_server(server) for server in selected_servers):
+        print("Connected")
+        connected_status_list[0] = True
+    else:
+        print("Disconnected")
+        connected_status_list[0] = False
+
+def _check_connected(connected_status_list: list[bool]) -> None:
+    """This function is supposed to be run in a thread or process, or it will
+    hog all the caller's time.
+    Tries to connect to root DNS servers, as shit has already hit the fan if
+    they are not reachable"""
+
     while True:
-        CONNECTION_LOCK_FILE.unlink(missing_ok=True)
-        # NOTE(Amaras): if you need to prioritize servers, use the `counts`
-        # keyword argument to specify integer weights for each server.
-        selected_servers: str = random.sample(root_dns_servers, 2)
-        if any(test_dns_server(server) for server in selected_servers):
-            CONNECTION_LOCK_FILE.touch(exist_ok=True)
-        time.sleep(sleep_time)
+        _test_for_internet_connection(connected_status_list)
+        time.sleep(SLEEP_TIME)
+
+# ---------------------------------------------------------------------------------
+# Main thread functions
+# ---------------------------------------------------------------------------------
+
+def start_network_connection_thread():
+    """Starts a thread to test for internet connectivity every few seconds"""
+    # NOTE(Amaras): The entire Python program exits when only daemon threads
+    # are left, and those threads will be stopped abruptly on program shutdown
+    # See https://docs.python.org/3.12/library/threading.html#thread-objects
+    # for more documentation
+    #
+    # By passing connected_status as an arg, we can share it with the main thread.
+
+    connection_checker = Thread(target=_check_connected, args=(connected_status, ), daemon=True)
+    connection_checker.start()
+    
+def can_resolve_ip_addr(IP: str, timeout=2):
+    """Tests if we can at least resolve an IP address
+    This will will fail if no internet connection
+    We can't control the timeout on this, so we use threads instead"""
+    ans = {"success": False}
+
+    def _is_ip_connected(IP, ans):
+        try:
+            socket.gethostbyaddr(IP)
+            ans["success"] = True
+        except:
+            pass
+
+    time_thread = Thread(target=time.sleep, args=(timeout,), daemon=True)
+    IP_thread = Thread(target=_is_ip_connected,  kwargs={"IP": IP, "ans": ans}, daemon=True)
+
+    time_thread.start()
+    IP_thread.start()
+
+    while time_thread.is_alive() and IP_thread.is_alive():
+        pass
+
+    return(ans["success"])
+
+def set_connected(connected: bool):
+    """Sets the connected status from the main thread"""
+    print("Setting connected from main thread", connected)
+    connected_status[0] = connected
+
+def connected(use_cached = True) -> bool:
+    """Checks if the program is connected to the internet.
+    This relies on a background thread checking every few seconds.
+    If the public check happens between the start of the underlying check
+    and its first success, this function may erroneously assume the internet
+    is available."""
+    
+    if use_cached == False:
+        _test_for_internet_connection(connected_status)
+    return connected_status[0]
