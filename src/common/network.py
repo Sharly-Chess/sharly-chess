@@ -1,4 +1,5 @@
 """Common network code"""
+from contextlib import suppress
 import socket
 import random
 from logging import Logger
@@ -78,35 +79,34 @@ def start_network_connection_thread():
 
     connection_checker = Thread(target=_check_connected, args=(connected_status, ), daemon=True)
     connection_checker.start()
-    
-def can_resolve_ip_addr(IP: str, timeout=2):
+
+
+def can_resolve_host(host: str, timeout=2):
     """Tests if we can at least resolve an IP address
     This will will fail if no internet connection
     We can't control the timeout on this, so we use threads instead"""
     ans = {"success": False}
 
-    def _is_ip_connected(IP, ans):
-        try:
-            socket.gethostbyaddr(IP)
+    def _is_host_connected(host, ans):
+        with suppress(Exception):
+            socket.gethostbyname(host)
             ans["success"] = True
-        except:
-            pass
 
     time_thread = Thread(target=time.sleep, args=(timeout,), daemon=True)
-    IP_thread = Thread(target=_is_ip_connected,  kwargs={"IP": IP, "ans": ans}, daemon=True)
+    host_thread = Thread(target=_is_host_connected,  kwargs={"host": host, "ans": ans}, daemon=True)
 
     time_thread.start()
-    IP_thread.start()
+    host_thread.start()
 
-    while time_thread.is_alive() and IP_thread.is_alive():
+    while time_thread.is_alive() and host_thread.is_alive():
         pass
 
-    return(ans["success"])
+    return ans["success"]
 
-def set_connected(connected: bool):
+def set_connected(connection_status: bool):
     """Sets the connected status from the main thread"""
-    print("Setting connected from main thread", connected)
-    connected_status[0] = connected
+    print("Setting connected from main thread", connection_status)
+    connection_status[0] = connection_status
 
 def connected(use_cached = True) -> bool:
     """Checks if the program is connected to the internet.
@@ -114,7 +114,7 @@ def connected(use_cached = True) -> bool:
     If the public check happens between the start of the underlying check
     and its first success, this function may erroneously assume the internet
     is available."""
-    
-    if use_cached == False:
+
+    if not use_cached:
         _test_for_internet_connection(connected_status)
     return connected_status[0]

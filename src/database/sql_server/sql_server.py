@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Self
 from logging import Logger
 from collections.abc import AsyncIterator
-from common.network import can_resolve_ip_addr, set_connected
+from common.network import can_resolve_host, set_connected
 import pyodbc
 import aioodbc
 
@@ -110,7 +110,7 @@ class SqlServer:
             timeout = self.timeout or self.DEFAULT_TIMEOUT
             # The timeout parameter of aioodbc.connect doesn't work for this server type.
             # We test that we are connected to the internet by trying to resolve the host time
-            if not can_resolve_ip_addr(self.credentials.host, timeout):
+            if not can_resolve_host(self.credentials.host, timeout):
                 set_connected(False)
                 raise PapiWebException(_('Connection to the FFE server failed.'))
             self.database = await aioodbc.connect(dsn=db_url, timeout=timeout)     
