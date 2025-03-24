@@ -278,8 +278,14 @@ msgstr "Installation automatique de BBP Pairings pour les developpeur·euses ave
 msgid "Automatically launch a browser when starting the server"
 msgstr ""
 
+msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
+msgstr "Average Bu."
+
 msgid "Average of opponents Buchholz"
 msgstr ""
+
+msgid "Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS"
+msgstr "Average perf."
 
 msgid "Average perfect performance of opponents"
 msgstr ""
@@ -287,8 +293,14 @@ msgstr ""
 msgid "Average performance rating of opponents"
 msgstr ""
 
+msgid "Average rating"
+msgstr ""
+
 msgid "Average rating of opponents"
 msgstr ""
+
+msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
+msgstr "Avg. Perfect Perf."
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
@@ -316,6 +328,12 @@ msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
 
 msgid "Black"
+msgstr ""
+
+msgid "Black games"
+msgstr ""
+
+msgid "Black wins"
 msgstr ""
 
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
@@ -363,6 +381,9 @@ msgstr ""
 
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
+
+msgid "Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ"
+msgstr "Bu. sum"
 
 msgid "Buchholz"
 msgstr ""
@@ -1444,6 +1465,9 @@ msgstr ""
 msgid "Fixed boards:"
 msgstr ""
 
+msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
+msgstr "Fore Bu."
+
 msgid "Fore Buchholz"
 msgstr ""
 
@@ -1477,7 +1501,13 @@ msgstr "GM"
 msgid "Gain"
 msgstr ""
 
+msgid "Games played"
+msgstr ""
+
 msgid "Games played with black"
+msgstr ""
+
+msgid "Games won"
 msgstr ""
 
 msgid "Games won with black"
@@ -1695,6 +1725,9 @@ msgstr "Ko."
 msgid "Koya"
 msgstr ""
 
+msgid "Koya system"
+msgstr ""
+
 msgid "LAN/WAN URL: {lan_url}"
 msgstr ""
 
@@ -1863,6 +1896,9 @@ msgstr ""
 
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
+
+msgid "Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me. Buchholz"
 
 msgid "Median Buchholz"
 msgstr ""
@@ -2112,6 +2148,9 @@ msgid "No stable version found."
 msgstr ""
 
 msgid "No such screens."
+msgstr ""
+
+msgid "No tie-break defined"
 msgstr ""
 
 msgid "No timer defined"
@@ -2366,6 +2405,9 @@ msgstr ""
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf."
 
+msgid "Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE"
+msgstr "Perfect perf."
+
 msgid "Perfect tournament performance"
 msgstr ""
 
@@ -2588,6 +2630,9 @@ msgid "Print players, results, etc."
 msgstr ""
 
 msgid "Private event"
+msgstr ""
+
+msgid "Progressive"
 msgstr ""
 
 msgid "Progressive scores"
@@ -2853,6 +2898,9 @@ msgstr ""
 
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
+
+msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgstr "S-Berger"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
@@ -3468,6 +3516,9 @@ msgstr ""
 msgid "Tie-breaks"
 msgstr ""
 
+msgid "Tie-breaks:"
+msgstr ""
+
 msgid "Time control"
 msgstr ""
 
@@ -3644,6 +3695,9 @@ msgstr ""
 
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr."
+
+msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr. Buchholz"
 
 msgid "Type:"
 msgstr ""
@@ -3856,6 +3910,9 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr ""
 
 msgid "White"
+msgstr ""
+
+msgid "Wins"
 msgstr ""
 
 msgid "Woman Candidate Master"

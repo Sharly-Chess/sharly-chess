@@ -175,6 +175,10 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Bu. *** ACRONYM FOR PAPI BUCHHOLZ')
 
+    @property
+    def short_name(self) -> str:
+        return _('Buchholz')
+
     def compute_player_value(
         self,
         player: 'Player',
@@ -203,6 +207,10 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM')
 
+    @property
+    def short_name(self) -> str:
+        return _('Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM')
+
     def compute_player_value(
             self,
             player: 'Player',
@@ -230,6 +238,10 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     @property
     def acronym(self) -> str:
         return _('Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ')
+
+    @property
+    def short_name(self) -> str:
+        return _('Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ')
 
     def compute_player_value(
             self,
@@ -261,6 +273,10 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
     @property
     def acronym(self) -> str:
         return _('Perf *** ACRONYM FOR PAPI PERFORMANCE')
+
+    @property
+    def short_name(self) -> str:
+        return _('Performance')
 
     def compute_player_value(
             self,
@@ -313,6 +329,10 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
     def acronym(self) -> str:
         return _('SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ')
 
+    @property
+    def short_name(self) -> str:
+        return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
+
     def compute_player_value(
             self,
             player: 'Player',
@@ -350,6 +370,10 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
     @property
     def acronym(self) -> str:
         return _('Ka. *** ACRONYM FOR PAPI KASHDAN')
+
+    @property
+    def short_name(self) -> str:
+        return _('Kashdan')
 
     def compute_player_value(
             self,

@@ -62,17 +62,30 @@
                 {{ _('No rules file set') }}
             {% endif %}
         </div>
-        <div class="text-start">
-            {% if tournament.pairing %}
+        {% if tournament.pairing %}
+            <div class="text-start">
                 {{ tournament.pairing }}
-            {% endif %}
-        </div>
-        <div class="text-start">
-            {% if tournament.rating %}
+            </div>
+        {% endif %}
+        {% if tournament.rating %}
+            <div class="text-start">
                 {{ tournament.rating }}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
         {% if admin_tournaments_show_details %}
+            <div class="text-start {% if not tournament.tie_breaks %}text-secondary{%endif%}">
+                {% if tournament.tie_breaks %}
+                    {{ _('Tie-breaks:') }}&nbsp;
+                    {% for tie_break in tournament.tie_breaks %}
+                        <span {{ macros.tooltip_attributes('info', tie_break.name, 'top') }}>
+                            {{ tie_break.short_name }}
+                        </span>
+                        {% if not loop.last %}&nbsp;-&nbsp;{% endif %}
+                    {% endfor %}
+                {% else %}
+                    {{ _('No tie-break defined') }}
+                {% endif %}
+            </div>
             <div class="text-start {% if not tournament.stored_tournament.first_board_number %}text-secondary{% endif %}">
                 {{ _('First board number: %(board_number)d', board_number=tournament.first_board_number) }}
             </div>
