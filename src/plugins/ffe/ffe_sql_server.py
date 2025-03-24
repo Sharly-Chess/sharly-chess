@@ -27,7 +27,7 @@ class FFESqlServer(SqlServer):
     ):
         super().__init__(
             self.CREDENTIALS_FILE,
-            timeout=10
+            timeout=3
         )
         if not connected():
             error: str = _('Not connected to internet.')

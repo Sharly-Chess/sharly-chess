@@ -48,7 +48,7 @@ class Engine:
             f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
         )
         new_stable_version: Version | None = None
-        if connected():
+        if connected(use_cached=False):
             print_interactive_info(_('Checking Papi-web version...'))
             new_stable_version: Version | None = self._check_version()
         else:

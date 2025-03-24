@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Self
 from logging import Logger
 from collections.abc import AsyncIterator
+from common.network import can_resolve_host, set_connected
 import pyodbc
 import aioodbc
 
@@ -82,7 +83,7 @@ class SqlServer:
     ):
         """Initializes the database object, raises PapiWebException on error."""
         self.credentials: SqlServerCredentials = SqlServerCredentials(credentials_file)
-        self.timeout: int = timeout | self.DEFAULT_TIMEOUT
+        self.timeout: int = timeout or self.DEFAULT_TIMEOUT
         self.database: aioodbc.Connection | None = None
         self.cursor: aioodbc.Cursor | None = None
         self.error: str | None = None
@@ -104,15 +105,23 @@ class SqlServer:
             logger.error(self.error)
             return self
         db_url: str = f'Driver={{{needed_driver}}};Server={self.credentials.host};Database={self.credentials.database};UID={self.credentials.user};PWD={self.credentials.password}'
+        
         try:
             timeout = self.timeout or self.DEFAULT_TIMEOUT
-            self.database = await aioodbc.connect(dsn=db_url, timeout=timeout)
+            # The timeout parameter of aioodbc.connect doesn't work for this server type.
+            # We test that we are connected to the internet by trying to resolve the host time
+            if not can_resolve_host(self.credentials.host, timeout):
+                set_connected(False)
+                raise PapiWebException(_('Connection to the FFE server failed.'))
+            self.database = await aioodbc.connect(dsn=db_url, timeout=timeout)     
         except pyodbc.Error as e:
             if DEVEL_ENV:
                 error: str = _('Connection to the FFE server failed: {error}.').format(error=e.args)
             else:
                 error: str = _('Connection to the FFE server failed.')
+            set_connected(False)
             logger.error(error)
+            
             raise PapiWebException(error) from e
         try:
             self.cursor = await self.database.cursor()
