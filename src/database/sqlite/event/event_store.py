@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from common.papi_web_config import PapiWebConfig
-from data.tie_break import AbstractTieBreak
 
 
 @dataclass
@@ -51,7 +50,7 @@ class StoredTournament:
     paired_bye_result: int | None
     max_byes: int | None
     last_rounds_no_byes: int | None
-    tie_breaks: list[AbstractTieBreak] | None
+    tie_breaks: list[dict[str, str | dict[str, Any]]] | None
     check_in_open: bool = field(default=False)
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)

@@ -19,11 +19,6 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
-from data.tie_break import (
-    AbstractTieBreak,
-    AbstractTieBreakOption,
-    TieBreakManager,
-)
 from data.util import Result as UtilResult
 from database.sqlite.migration import AbstractMigrationManager
 from database.sqlite.event.event_store import (
@@ -1386,7 +1381,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
             # needed to open event databases when version < 2.4.23 before checking the version
-            tie_breaks=cls._load_tie_breaks_from_database_field(row.get('tie_breaks', None)),
+            tie_breaks=cls.load_json_from_database_field(row.get('tie_breaks', None)),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
         return stored_tournament
@@ -1454,7 +1449,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.first_board_number,
             stored_tournament.paired_bye_result,
             stored_tournament.max_byes,
-            self._dump_to_json_database_tie_breaks(stored_tournament.tie_breaks),
+            self.dump_to_json_database_field(stored_tournament.tie_breaks),
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
@@ -1542,44 +1537,6 @@ class EventDatabase(SQLiteVersionedDatabase):
                 tournament_id,
             ),
         )
-
-    @classmethod
-    def _load_tie_breaks_from_database_field(
-        cls, tie_breaks_field: str | None
-    ) -> list[AbstractTieBreak] | None:
-        """load tie breaks from the database field"""
-        tie_break_list = cls.load_json_from_database_field(tie_breaks_field)
-        if not tie_break_list:
-            return None
-        tie_breaks: list[AbstractTieBreak] = []
-        tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
-        option_type_by_id = TieBreakManager.option_type_by_id()
-        for tie_break_dict in tie_break_list:
-            tie_break_id = tie_break_dict['type']
-            options: list[AbstractTieBreakOption] = []
-            for option_id, value in tie_break_dict['options'].items():
-                if option_type := option_type_by_id.get(option_id, None):
-                    options.append(option_type(value))
-            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                tie_breaks.append(tie_break_type(options))
-        return tie_breaks
-
-    @classmethod
-    def _dump_to_json_database_tie_breaks(
-            cls, tie_breaks: list[AbstractTieBreak] | None
-    ) -> str | None:
-        """Serializes the tie breaks into JSON. Returns a serialization
-        with format [{'type': str, 'options': {str: value}}]."""
-        if tie_breaks is None:
-            return None
-        return cls.dump_to_json_database_field([
-            {
-                'type': tie_break.id,
-                'options': {
-                    option.id: option.value for option in tie_break.options
-                }
-            } for tie_break in tie_breaks
-        ])
 
     # ---------------------------------------------------------------------------------
     # Illegal moves

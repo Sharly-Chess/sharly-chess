@@ -124,6 +124,53 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
         If None, the tie-break will not appear in the database"""
         return None
 
+    def to_dict(self) -> dict:
+        return {
+            'type': self.id,
+            'options': {
+                option.id: option.value for option in self.options
+            }
+        }
+
+    def check_options(self):
+        """Checks the validity of options, Raises a ValueError if invalid"""
+        if not self.options:
+            return
+        used_option_types: list[type[AbstractTieBreakOption]] = []
+        for option in self.options:
+            option.check_value()
+            option_type = type(option)
+            if option_type in used_option_types:
+                raise ValueError(f'Option [{option.id}] already used')
+            if option_type not in self.available_options:
+                raise ValueError(
+                    f'Option [{option.id}] not available '
+                    f'for tie-break [{self.name}]'
+                )
+            used_option_types.append(option_type)
+
+    def _get_option(
+        self, option_type: type[AbstractTieBreakOption]
+    ) -> AbstractTieBreakOption:
+        """Retrieve an option from its type. If no option with this type 
+        exists in the options, returns on with the default value"""
+        return next(
+            (
+                option for option in self.options
+                if isinstance(option, option_type)
+            ),
+            option_type(),
+        )
+
+    def get_option_values(self) -> list:
+        """Retrieves for each of the available options
+        the corresponding value in an ordered list.
+        Intended usage: option1, option2 = self.get_option_values()"""
+        return [
+            self._get_option(option_type).value
+            for option_type in self.available_options
+        ]
+
 
 class TieBreakUtils:
     """Utilities for tie-breaks"""
