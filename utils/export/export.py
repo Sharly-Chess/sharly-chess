@@ -6,6 +6,9 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
 
+# Needs to be imported first to avoid circular import
+from plugins.manager import plugin_manager # Noqa
+
 from common import BASE_DIR
 from database.sqlite.config.config_database import ConfigMigrationManager
 from database.sqlite.event.event_database import EventMigrationManager
@@ -278,7 +281,9 @@ def update_readme():
             )
             return
     lines: list[str] = [
-        f'- **[Télécharger la dernière version stable ({PAPI_WEB_VERSION})](https://github.com/papi-web-org/papi-web/releases/download/{PAPI_WEB_VERSION}/papi-web-{PAPI_WEB_VERSION}.zip)**\n'
+        f'- **[Télécharger la dernière version stable ({PAPI_WEB_VERSION})]'
+        '(https://github.com/papi-web-org/papi-web/releases/download/'
+        f'{PAPI_WEB_VERSION}/papi-web-{PAPI_WEB_VERSION}.zip)**\n'
     ]
     with open(readme, 'w', encoding='utf-8') as f:
         for line in lines_before_comment + lines + lines_after_comment:
