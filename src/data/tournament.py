@@ -20,7 +20,7 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_break import AbstractTieBreak
+from data.tie_break import AbstractTieBreak, TieBreakManager, AbstractTieBreakOption
 from data.util import (
     BoardColor,
     PlayerGender,
@@ -252,7 +252,20 @@ class Tournament:
 
     @property
     def stored_tie_breaks(self) -> list[AbstractTieBreak] | None:
-        return self.stored_tournament.tie_breaks
+        if not self.stored_tournament.tie_breaks:
+            return None
+        tie_breaks: list[AbstractTieBreak] = []
+        tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
+        option_type_by_id = TieBreakManager.option_type_by_id()
+        for tie_break_dict in self.stored_tournament.tie_breaks:
+            tie_break_id = tie_break_dict['type']
+            options: list[AbstractTieBreakOption] = []
+            for option_id, value in tie_break_dict['options'].items():
+                if option_type := option_type_by_id.get(option_id, None):
+                    options.append(option_type(value))
+            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
+                tie_breaks.append(tie_break_type(options))
+        return tie_breaks
 
     @property
     def download_allowed(self) -> bool:

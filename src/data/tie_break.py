@@ -124,6 +124,14 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
         If None, the tie-break will not appear in the database"""
         return None
 
+    def to_dict(self) -> dict:
+        return {
+            'type': self.id,
+            'options': {
+                option.id: option.value for option in self.options
+            }
+        }
+
 
 class TieBreakUtils:
     """Utilities for tie-breaks"""

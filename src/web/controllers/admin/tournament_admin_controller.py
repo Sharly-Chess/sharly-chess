@@ -20,7 +20,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.print import PrintDocumentManager
-from data.tie_break import AbstractTieBreak, TieBreakManager
+from data.tie_break import TieBreakManager
 from data.tournament import Tournament
 from data.util import TrfType
 from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
@@ -134,7 +134,7 @@ class TournamentAdminController(BaseEventAdminController):
         paired_bye_result: int | None = None
         max_byes: int | None = None
         last_rounds_no_byes: int | None = None
-        tie_breaks: list[AbstractTieBreak] | None = None
+        tie_breaks: list[dict] | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -194,7 +194,7 @@ class TournamentAdminController(BaseEventAdminController):
                 if tie_break_type := (
                     tie_break_type_by_id.get(tie_break_id, None)
                 ):
-                    tie_breaks.append(tie_break_type())
+                    tie_breaks.append(tie_break_type().to_dict())
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
