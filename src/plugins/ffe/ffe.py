@@ -14,7 +14,7 @@ from packaging.version import Version
 
 from common.i18n import _
 from common.logger import print_interactive_error
-from common.network import connected
+from common.network import NetworkMonitor
 from data.event import Event
 from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
@@ -123,7 +123,7 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_search_available': FfeDatabase().exists() or connected(),
+            'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES
 }
 

@@ -8,7 +8,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from common import DEVEL_ENV
 from common.exception import PapiWebException
 from common.i18n import ngettext, _
-from common.network import connected
+from common.network import NetworkMonitor
 from data.util import PlayerRatingType, TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
@@ -141,7 +141,7 @@ class FfeSearchController(BaseEventAdminController):
         player_ffe_id: int | None,
     ) -> Template | ClientRedirect:
         if player_ffe_id:
-            if connected():
+            if NetworkMonitor.connected():
                 async with FFESqlServer() as ffe_sql_server:
                     ffe_player: Player = await ffe_sql_server.get_player_by_ffe_id(player_ffe_id)
             else:
