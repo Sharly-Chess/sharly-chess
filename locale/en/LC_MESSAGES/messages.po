@@ -1608,6 +1608,12 @@ msgstr ""
 msgid "Internationalization"
 msgstr ""
 
+msgid "Internet connection established"
+msgstr ""
+
+msgid "Internet connection lost"
+msgstr ""
+
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 

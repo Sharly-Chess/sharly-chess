@@ -19,7 +19,7 @@ from common.logger import (
     print_interactive_error, print_interactive_warning,
 )
 from common.papi_web_config import PapiWebConfig
-from common.network import start_network_connection_thread
+from common.network import NetworkMonitor
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.manager import plugin_manager
 from web.settings import route_handlers, template_config, middlewares, stores
@@ -107,7 +107,7 @@ class ServerEngine(Engine):
         if papi_web_config.launch_browser:
             Thread(target=launch_browser, args=(papi_web_config.local_url,)).start()
         
-        start_network_connection_thread()
+        NetworkMonitor.start_monitoring()
         
         app: Litestar = Litestar(
             debug=True,

@@ -8,7 +8,7 @@ from typing import Any
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
-from common.network import connected
+from common.network import NetworkMonitor
 from data.player import Player
 from data.util import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
@@ -29,7 +29,7 @@ class FFESqlServer(SqlServer):
             self.CREDENTIALS_FILE,
             timeout=3
         )
-        if not connected():
+        if not NetworkMonitor.connected():
             error: str = _('Not connected to internet.')
             logger.error(error)
             raise PapiWebException(error)
