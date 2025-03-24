@@ -7,7 +7,6 @@ from threading import Thread
 
 from common import get_logger
 from common.i18n import _
-from common.singleton import Singleton
 
 logger: Logger = get_logger()
 
@@ -74,7 +73,7 @@ class NetworkMonitor:
         # See https://docs.python.org/3.12/library/threading.html#thread-objects
         # for more documentation
         #
-        # By passing connected_status as an arg, we can share it with the main thread.
+        # By passing cls as an arg, we can share it with the main thread.
 
         def _check_connected(cls) -> None:
             """This function is supposed to be run in a thread or process, or it will
@@ -97,10 +96,8 @@ class NetworkMonitor:
     @classmethod
     def connected(cls, use_cached = True) -> bool:
         """Checks if the program is connected to the internet.
-        This relies on a background thread checking every few seconds.
-        If the public check happens between the start of the underlying check
-        and its first success, this function may erroneously assume the internet
-        is available."""
+        This relies on a background thread checking every few seconds,
+        and so the returned value isn't 100% sure"""
 
         if not use_cached:
             cls._test_for_internet_connection()
