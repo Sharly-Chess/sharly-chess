@@ -2810,7 +2810,7 @@ msgid "No upcoming events."
 msgstr "Inga kommande händelser."
 
 #, ai_translation
-msgid "No update found."
+msgid "No updates found."
 msgstr "Ingen uppdatering hittades."
 
 #, ai_translation

@@ -2815,7 +2815,7 @@ msgid "No upcoming events."
 msgstr "Όχι επερχόμενα γεγονότα."
 
 #, ai_translation
-msgid "No update found."
+msgid "No updates found."
 msgstr "Δεν βρέθηκε ενημέρωση."
 
 #, ai_translation

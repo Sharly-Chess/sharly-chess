@@ -2,14 +2,13 @@ from collections.abc import AsyncIterator
 from contextlib import suppress
 from logging import Logger
 from pathlib import Path
-from string import capwords
 from typing import Any
 
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import Player
+from data.player import Player, Federation, Club
 from data.util import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins.ffe import PLUGIN_NAME
@@ -97,10 +96,10 @@ class FFESqlServer(SqlServer):
     )
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+    def _get_player_from_row(row: dict[str, Any]) -> Player | None:
         return Player(
             id=0,
-            first_name=capwords(row['Prenom']) if row['Prenom'] else '',
+            first_name=row['Prenom'].title() if row['Prenom'] else '',
             last_name=row['Nom'].upper(),
             date_of_birth=row['NeLe'],
             gender=PlayerGender.from_papi_value(row['Sexe']),
@@ -120,9 +119,9 @@ class FFESqlServer(SqlServer):
                 TournamentRating.RAPID: PlayerRatingType.from_papi_value(row['Fide03']),
                 TournamentRating.BLITZ: PlayerRatingType.from_papi_value(row['Fide06']),
             },
-            fide_id=row['FideCode'],
-            federation=row['Federation'],
-            club=row['ClubNom'],
+            fide_id=int(row['FideCode']) if row['FideCode'] else 0,
+            federation=Federation(row['Federation']),
+            club=Club(row['ClubNom']),
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
@@ -174,7 +173,7 @@ class FFESqlServer(SqlServer):
                 )
                 await self.execute(query, string)
                 return (
-                    self.get_player_from_row(row)
+                    self._get_player_from_row(row)
                     async for row in self.fetchall()
                 )
         tokens: list[str] = string.split(' ')
@@ -212,22 +211,22 @@ class FFESqlServer(SqlServer):
             params += [limit, ]
         await self.execute(query, tuple(params), )
         return (
-            self.get_player_from_row(row)
+            self._get_player_from_row(row)
             async for row in self.fetchall()
         )
 
     async def _get_player_by_id(
         self,
         field: str,
-        id_: int,
+        id_: int | str,
     ) -> Player | None:
         query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {field} = ?'
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
         )
         await self.execute(query, (id_, ), )
         if row := await self.fetchone():
-            return self.get_player_from_row(row)
+            return self._get_player_from_row(row)
         else:
             return None
 
@@ -242,3 +241,19 @@ class FFESqlServer(SqlServer):
         player_fide_id: int,
     ) -> Player | None:
         return await self._get_player_by_id('joueur.FideCode', player_fide_id)
+
+    async def get_players_by_ffe_licence_number(
+        self,
+        player_ffe_licence_numbers: list[str],
+    ) -> AsyncIterator[Player]:
+        query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE joueur.NrFFE IN ({query_array})'
+        )
+        await self.execute(query, tuple(player_ffe_licence_numbers))
+        return (
+            self._get_player_from_row(row)
+            async for row in self.fetchall()
+        )

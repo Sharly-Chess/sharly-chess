@@ -1,6 +1,5 @@
 import csv
 from logging import Logger
-from string import capwords
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
 
@@ -466,13 +465,13 @@ class EventAdminController(BaseEventAdminController):
             )
             if player.first_name:
                 data += (
-                    f'N:{capwords(player.last_name)};{player.first_name}\n'
-                    f'FN:{player.first_name} {capwords(player.last_name)}\n'
+                    f'N:{player.last_name.title()};{player.first_name}\n'
+                    f'FN:{player.first_name} {player.last_name.title()}\n'
                 )
             else:
                 data += (
-                    f'N:{capwords(player.last_name)}\n'
-                    f'FN:{capwords(player.last_name)}\n'
+                    f'N:{player.last_name.title()}\n'
+                    f'FN:{player.last_name.title()}\n'
                 )
             data += (
                 f'ORG:{player.club}\n'

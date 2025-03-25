@@ -4,7 +4,12 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Callable
 from collections import defaultdict
 
-from data.tournament_export import AbstractTournamentExporter, Trf16TournamentExporter, TrfBxTournamentExporter
+from data.input_output import (
+    AbstractTournamentExporter,
+    Trf16TournamentExporter,
+    TrfBxTournamentExporter,
+    PlayerUpdaterManager,
+)
 import trf
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
@@ -279,6 +284,7 @@ class TournamentAdminController(BaseEventAdminController):
                     web_context.request
                 )
             ),
+            'player_updaters': PlayerUpdaterManager.updaters(),
         } | tournament_card_block_data
 
         match modal:

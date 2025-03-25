@@ -8,7 +8,7 @@ import pluggy  # type: ignore
 
 from common import APP_NAME
 from data.player import Player
-from data.tournament_export import AbstractTournamentExporter
+from data.input_output import AbstractTournamentExporter, AbstractPlayerUpdater
 from data.util import ScreenType
 from plugins.utils import (
     PluginMigrationManager,
@@ -137,7 +137,15 @@ class AppHookSpecs:
     @hookspec
     def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
         """Provide extra columns for the player download datasheets """
-        
+
+    @hookspec
+    def get_player_updaters(self) -> list[AbstractPlayerUpdater]:
+        """Provide extra player updaters."""
+
+    @hookspec
+    def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
+        """Provide additional columns for the players update view"""
+    
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------

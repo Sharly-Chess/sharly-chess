@@ -336,6 +336,9 @@ msgstr "Parties Noirs"
 msgid "Black wins"
 msgstr "Victoires Noirs"
 
+msgid "Blitz"
+msgstr "Blitz"
+
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
@@ -651,6 +654,9 @@ msgstr "Le contenu de l'URL [{url}] n'est pa valide (input[id=[{id]] introuvable
 msgid "Continuously"
 msgstr "En continu"
 
+msgid "Could not connect to data source [{player_updater_name}]."
+msgstr "Connexion impossible à la source de données [{player_updater_name}]."
+
 msgid "Could not download [{url}], error code [{code}]."
 msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
 
@@ -730,6 +736,9 @@ msgstr "Les données sont déjà affichées sur le site web FFE."
 
 msgid "Date"
 msgstr "Date"
+
+msgid "Date of birth"
+msgstr "Date de naissance"
 
 msgid "Date of birth:"
 msgstr "Date naiss. :"
@@ -1268,6 +1277,9 @@ msgstr "F"
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "H"
 
+msgid "FFE"
+msgstr "FFE"
+
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
@@ -1280,11 +1292,17 @@ msgstr "L'identifiant et le mot de passe FFE ne sont pas correctement définis p
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr "L'identifiant FFE non défini pour le tournoi [{tournament_uniq_id}]."
 
+msgid "FFE Licence"
+msgstr "Licence FFE"
+
 msgid "FFE Uniq ID:"
 msgstr "Identifiant unique FFE :"
 
 msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
+
+msgid "FFE database"
+msgstr "Base de données FFE"
 
 msgid "FFE database:"
 msgstr "Base de données FFE :"
@@ -1297,6 +1315,9 @@ msgstr "Licence FFE B (loisir)"
 
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament_uniq_id}]."
+
+msgid "FFE licence number"
+msgstr "Numéro de licence FFE"
 
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
@@ -1325,6 +1346,9 @@ msgstr "Fide"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE ID"
+msgstr "Identifiant FIDE"
+
 msgid "FIDE ID:"
 msgstr "Identifiant FIDE :"
 
@@ -1334,6 +1358,9 @@ msgstr "Identifiant FIDE : %(fide_id)s (cliquer pour copier dans le presse-papie
 
 msgid "FIDE Title:"
 msgstr "Titre FIDE :"
+
+msgid "FIDE database"
+msgstr "Base de données FIDE"
 
 msgid "FIDE database:"
 msgstr "Base de données FIDE :"
@@ -1379,6 +1406,9 @@ msgstr "La famille [{uniq_id}] existe déjà."
 
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Féd."
+
+msgid "Fed."
+msgstr "Fed."
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -1512,6 +1542,9 @@ msgstr "Parties gagnées"
 
 msgid "Games won with black"
 msgstr "Nombre de parties gagnées avec les noirs"
+
+msgid "Gender"
+msgstr "Genre"
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
 msgstr "Genre"
@@ -1779,6 +1812,9 @@ msgstr "Ligue :"
 msgid "Libraries"
 msgstr "Bibliothèques"
 
+msgid "Lic."
+msgstr "Lic."
+
 msgid "Licence number:"
 msgstr "Numéro de licence :"
 
@@ -1950,6 +1986,9 @@ msgstr "N"
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NV"
 
+msgid "Name"
+msgstr "Nom"
+
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Nom"
 
@@ -2099,6 +2138,9 @@ msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
 msgid "No players found."
 msgstr "Aucun·e joueur·euse trouvé·e."
 
+msgid "No players updated."
+msgstr "Aucun·e joueur·euse mis·e à jour."
+
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
@@ -2173,6 +2215,9 @@ msgstr "Aucun tournoi."
 
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
+
+msgid "No updates found."
+msgstr "Aucun changement détecté."
 
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
@@ -2716,6 +2761,9 @@ msgstr "Création d'une famille d'écrans de classement"
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
 
+msgid "Rapid"
+msgstr "Rapide"
+
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapide"
 
@@ -2760,6 +2808,10 @@ msgstr "Supprimer le·la joueur·euse de l'évènement."
 
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
+
+#, python-format
+msgid "Replace [%(old)s] by [%(new)s]"
+msgstr "Remplacer [%(old)s] par [%(new)s]"
 
 msgid "Request to the FFE database failed."
 msgstr "La requête à la base fédérale a échoué."
@@ -2967,6 +3019,9 @@ msgstr "Recherche"
 msgid "Searching..."
 msgstr "Recherche en cours..."
 
+msgid "Select the players and the data to update:"
+msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
+
 msgid "Selection"
 msgstr "Sélection"
 
@@ -2982,6 +3037,9 @@ msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
+
+msgid "Show all the players"
+msgstr "Afficher tou·tes les joueur·euses"
 
 msgid "Show/hide the boards screens."
 msgstr "Afficher/cacher les écrans d'affichage des échiquiers."
@@ -3039,6 +3097,9 @@ msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le
 
 msgid "Split by:"
 msgstr "Séparateur :"
+
+msgid "Standard"
+msgstr "Standard"
 
 msgid "Standard rating"
 msgstr "Classement standard"
@@ -3805,6 +3866,20 @@ msgstr "Évènements à venir ({num})"
 msgid "Update"
 msgstr "Modifier"
 
+msgid "Update players"
+msgstr "Mettre à jour les joueur·euses"
+
+#, python-format
+msgid "Update the players (data source: %(player_updater_name)s)"
+msgstr "Mettre à jour les joueur·euses (source de données : %(player_updater_name)s)"
+
+#, python-format
+msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)"
+msgstr "Mettre à jour les joueur·euses du tournoi [%(tournament_uniq_id)s] (source de données : %(player_updater_name)s)"
+
+msgid "Update the players' information from an external data source."
+msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
+
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
 
@@ -3853,6 +3928,9 @@ msgstr "MIF"
 #, python-format
 msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
 msgstr "Attention: Fichier Papi [%(path)s] introuvable, de nombreuses fonctionnalités sont désactivées."
+
+msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
 
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
@@ -4097,6 +4175,11 @@ msgstr "contre"
 
 msgid "yes"
 msgstr "oui"
+
+msgid "{count} player updated."
+msgid_plural "{count} players updated."
+msgstr[0] "{count} joueur·euse mis·e à jour."
+msgstr[1] "{count} joueur·euses mis·es à jour."
 
 msgid "{family_type}-family"
 msgstr "famille-{family_type}"

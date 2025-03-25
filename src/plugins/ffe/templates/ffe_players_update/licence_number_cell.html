@@ -1,0 +1,8 @@
+{% import '/common/macros.j2' as macros %}
+
+{% set field_id='ffe_licence_number' %}
+{% if field_id in field_ids %}
+    <td scope="col" class="text-nowrap text-start {{ player_class }}">
+        {{ value.player.plugin_data.ffe.ffe_licence_number }}
+    </td>
+{% endif %}

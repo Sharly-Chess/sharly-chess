@@ -19,6 +19,7 @@ from web.controllers.admin.player_admin_controller import PlayerAdminController
 if TYPE_CHECKING:
     from data.player import Player
 
+
 class FfeSearchController(BaseEventAdminController):
 
     MAX_RESULTS: int = 10

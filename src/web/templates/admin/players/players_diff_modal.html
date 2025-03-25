@@ -1,0 +1,372 @@
+{% import '/common/macros.j2' as macros %}
+
+{% set player_updated_class='' %}
+{% set player_unchanged_class='text-secondary' %}
+{% set field_updated_class='text-warning fw-bold' %}
+{% set field_unchanged_class='' %}
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal d-block" style="max-width: 90%;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
+                    {{ _('Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)', tournament_uniq_id=admin_tournament.uniq_id, player_updater_name=player_updater.name) }}
+                {% else %}
+                    {{ _('Update the players (data source: %(player_updater_name)s)', player_updater_name=player_updater.name) }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-event-players-update', event_uniq_id=admin_event.uniq_id, player_updater_id=player_updater.id) }}"
+                {% if admin_tournament %}
+                    hx-vals='{"tournament_id": "{{ admin_tournament.id }}"}'
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {# these inputs are always checked with an empty value (ignored) to be sure to get list parameters. #}
+                <input type="hidden" name="player_ids" value="" />
+                <input type="hidden" name="field_ids" value="" />
+                {% if player_updater.warning_message %}
+                    <div class="text-warning mb-3">
+                        <b>{{ player_updater.warning_message }}</b>
+                    </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            {% if update_enabled %}
+                                {{ _('Select the players and the data to update:') }}
+                            {% else %}
+                                {{ _('No updates found.') }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <p>
+                            <input
+                                type="checkbox"
+                                onclick="
+                                    if ($(this).is(':checked')) {
+                                        $('tr.player-unchanged').show();
+                                    } else {
+                                        $('tr.player-unchanged').hide();
+                                    }
+                                "
+                                {% if not update_enabled %}checked{% endif %}
+                            />
+                            {{ _('Show all the players') }}
+                        </p>
+                    </div>
+                </div>
+                {% set show_tournament=not admin_tournament and admin_event.tournaments_by_id|length > 1 %}
+                <table
+                    id="player-matches-table"
+                    class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                >
+                    <thead
+                        id="player-matches-table-header"
+                    >
+                        <tr>
+                            {% if update_enabled %}
+                                <th scope="col" class="text-nowrap text-center">
+                                    <input
+                                        type="checkbox"
+                                        onclick="
+                                            $('input.player-id-checkbox').prop('checked', this.checked);
+                                            $('#update-players-button').prop('disabled', $('input.player-id-checkbox:checked').length == 0);
+                                        "
+                                        checked
+                                    />
+                                </th>
+                            {% endif %}
+                            {{ admin_macros.extra_admin_column_header("fide_id", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-start">
+                                {% if update_enabled and 'fide_id' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="fide_id"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('FIDE ID') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("title", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-start">
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("name", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-start">
+                                {% if update_enabled and 'name' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="name"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Name') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("date_of_birth", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-center" colspan="2">
+                                {% if update_enabled and 'date_of_birth' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="date_of_birth"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Category') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("gender", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-center">
+                                {% if update_enabled and 'gender' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="gender"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Gender') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("rating_1", admin_players_update_extra_columns)}}
+                            <th scope="col" colspan="2" class="text-nowrap text-center">
+                                {% if update_enabled and 'rating_1' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="rating_1"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Standard') }}
+                            </th>
+                            <th scope="col" colspan="2" class="text-nowrap text-center">
+                                {% if update_enabled and 'rating_2' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="rating_2"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Rapid') }}
+                            </th>
+                            <th scope="col" colspan="2" class="text-nowrap text-center">
+                                {% if update_enabled and 'rating_3' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="rating_3"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Blitz') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("federation", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-center">
+                                {% if update_enabled and 'federation' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="federation"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Fed.') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("club", admin_players_update_extra_columns)}}
+                            <th scope="col" class="text-nowrap text-start">
+                                {% if update_enabled and 'club' in field_ids %}
+                                    <input
+                                        type="checkbox"
+                                        name="field_ids"
+                                        value="club"
+                                        checked
+                                        class="field-id-checkbox"
+                                    />
+                                {% endif %}
+                                {{ _('Club') }}
+                            </th>
+                            {{ admin_macros.extra_admin_column_header("end", admin_players_update_extra_columns)}}
+                            {% if show_tournament %}
+                                <th scope="col" class="text-nowrap text-start">
+                                    {{ _('Tournament') }}
+                                </th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody id="player-matches-table-body">
+                        {% for player_match in player_matches %}
+                            {% set player=player_match.player %}
+                            {% set diff_field_ids=player_match.diff_field_ids %}
+                            {% set player_updated=player_match.match_player and diff_field_ids|length > 0 %}
+                            {% if player_updated %}
+                                {% set match_player=player_match.match_player %}
+                                {% set player_class=player_updated_class %}
+                            {% else %}
+                                {% set match_player=player %}
+                                {% set player_class=player_unchanged_class %}
+                            {% endif %}
+                            <tr
+                                    class="{% if player_updated %}player-updated{% else %}player-unchanged{% endif %}"
+                                    style="{% if update_enabled and not player_updated %}display: none{% endif %}"
+                            >
+                                {% if update_enabled %}
+                                    <td scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}">
+                                        {% if player_updated %}
+                                            <input
+                                                type="checkbox"
+                                                name="player_ids"
+                                                value="{{ player.id }}"
+                                                checked
+                                                onclick="
+                                                    $('#update-players-button').prop('disabled', $('input.player-id-checkbox:checked').length == 0);
+                                                "
+                                                class="player-id-checkbox"
+                                            />
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                {{ admin_macros.extra_admin_column_cell("fide_id", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='fide_id' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
+                                    {{ player.fide_id }}
+                                </td>
+                                {{ admin_macros.extra_admin_column_cell("title", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='title' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                <td
+                                        scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.title.short_name, new=match_player.title.short_name), 'top') }}{% endif %}
+                                >
+                                    {{ match_player.title.short_name }}
+                                </th>
+                                {{ admin_macros.extra_admin_column_cell("name", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='name' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                <td
+                                        scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.last_name ~ ' ' ~ player.first_name, new=match_player.last_name ~ ' ' ~ match_player.first_name), 'top') }}{% endif %}
+                                >
+                                    {{ match_player.last_name }} {{ match_player.first_name }}
+                                </td>
+                                {{ admin_macros.extra_admin_column_cell("date_of_birth", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='date_of_birth' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                {% set tooltip_text=_(
+                                    'Replace [%(old)s] by [%(new)s]',
+                                    old=player.date_of_birth.year ~ '-' ~ player.date_of_birth.month ~ '-' ~ player.date_of_birth.day,
+                                    new=match_player.date_of_birth.year ~ '-' ~ match_player.date_of_birth.month ~ '-' ~ match_player.date_of_birth.day
+                                ) %}
+                                <td
+                                        scope="col"
+                                        class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', tooltip_text, 'top') }}{% endif %}
+                                >
+                                    {{ match_player.year_of_birth }}
+                                </td>
+                                <td
+                                        scope="col"
+                                        class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', tooltip_text, 'top') }}{% endif %}
+                                >
+                                    {{ match_player.category }}
+                                </td>
+                                {{ admin_macros.extra_admin_column_cell("gender", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='gender' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                <td
+                                        scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.gender.name, new=match_player.gender.name), 'top') }}{% endif %}
+                                >
+                                    {{ admin_macros.gender_icon(match_player.gender) }}
+                                    {{ player.gender.short_name }}
+                                </td>
+                                {{ admin_macros.extra_admin_column_cell("rating_1", player_match, admin_players_update_extra_columns)}}
+                                {% for rt in range(1, 4) %}
+                                    {% set field_id='rating_' ~ rt %}
+                                    {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                    {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                    <td
+                                            scope="col" colspan="2" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                            {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt] ~ ' ' ~ player.rating_types[rt], new=match_player.ratings[rt] ~ ' ' ~ match_player.rating_types[rt]), 'top') }}{% endif %}
+                                    >
+                                        {% if field_updated %}
+                                            {{ match_player.ratings[rt] }} {{ match_player.rating_types[rt] }}
+                                        {% else %}
+                                            {{ player.ratings[rt] }} {{ player.rating_types[rt] }}
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                {{ admin_macros.extra_admin_column_cell("federation", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='federation' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                <td
+                                        scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.federation.name, new=match_player.federation.name), 'top') }}{% endif %}
+                                >
+                                    {{ match_player.federation }}
+                                </td>
+                                {{ admin_macros.extra_admin_column_cell("club", player_match, admin_players_update_extra_columns)}}
+                                {% set field_id='club' %}
+                                {% set field_updated=player_updated and field_id in diff_field_ids %}
+                                {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                <td
+                                        scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.club.name, new=match_player.club.name), 'top') }}{% endif %}
+                                >
+                                    {{ match_player.club.name if match_player.club.name else player.club.name }}
+                                </td>
+                                {{ admin_macros.extra_admin_column_cell("end", player_match, admin_players_update_extra_columns)}}
+                                {% if show_tournament %}
+                                    <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
+                                        {{ player.tournament.uniq_id }}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                id="update-players-button"
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                {% if not update_enabled %}disabled{% endif %}
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Update') }}
+            </button>
+        </div>
+    </div>
+</div>
