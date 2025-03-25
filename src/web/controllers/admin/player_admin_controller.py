@@ -137,7 +137,7 @@ class PlayerAdminController(BaseEventAdminController):
             data, 'first_name'
         )
         if first_name:
-            first_name = first_name.title if first_name else ''
+            first_name = first_name.title() if first_name else ''
         date_of_birth: date | None = WebContext.form_data_to_date(
             data, field := 'date_of_birth'
         )
