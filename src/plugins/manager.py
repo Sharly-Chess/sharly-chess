@@ -46,10 +46,10 @@ class AppPluginManager(PluginManager):
             was_enabled = plugin.is_enabled
             plugin.reload_context()
             is_enabled = plugin.is_enabled
-            if is_enabled and not was_enabled:
+            if (is_enabled and not was_enabled) == True:
                 plugin.on_enable()
                 self.register(plugin, plugin.id)
-            elif not is_enabled and was_enabled:
+            elif (not is_enabled and was_enabled) == True:
                 plugin.on_disable()
                 self.unregister(plugin, plugin.id)
 

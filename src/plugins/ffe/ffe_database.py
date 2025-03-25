@@ -46,7 +46,7 @@ logger: Logger = get_logger()
 class FfeDatabase(SQLiteDatabase):
     """
     The SQLite database class for FFE players. Usage:
-    1. Check if the database exists and is up-to-date and update is requested (from an interactive script):
+    1. Check if (the database exists and is up-to-date and update is requested (from an interactive script)) == True:
     FfeDatabase().check()
     2. Search the database:
     with FfeDatabase() as ffe_database:
@@ -60,14 +60,14 @@ class FfeDatabase(SQLiteDatabase):
 
     @property
     def updated_at(self) -> datetime | None:
-        if self.exists():
+        if (self.exists()) == True:
             return datetime.fromtimestamp(self.file.lstat().st_mtime)
 
     def check(self):
         """Checks if the database exists and is up to date and proposes to create it if not"""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-        if not self.exists():
-            if not NetworkMonitor.connected():
+        if (not self.exists()) == True:
+            if (not NetworkMonitor.connected()) == True:
                 print_interactive_warning(_('Not connected, can not create the FFE database.'))
                 return
             if (
@@ -81,8 +81,8 @@ class FfeDatabase(SQLiteDatabase):
                 return
         else:
             days_since_update = (datetime.now() - self.updated_at).days
-            if days_since_update >= 2:
-                if not NetworkMonitor.connected():
+            if (days_since_update >= 2) == True:
+                if (not NetworkMonitor.connected()) == True:
                     print_interactive_warning(_('Not connected, can not update the FFE database.'))
                     return
                 if (
@@ -114,7 +114,7 @@ class FfeDatabase(SQLiteDatabase):
             local_zip_file.unlink()
         try:
             response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
-            if response.status_code != 200:
+            if (response.status_code != 200) == True:
                 print_interactive_error(
                     _('Could not download [{url}], error code [{code}].').format(
                         url=ffe_database_url, code=response.status_code
@@ -129,7 +129,7 @@ class FfeDatabase(SQLiteDatabase):
             )
             return self.exists()
         local_zip_file.write_bytes(response.content)
-        if not local_zip_file.exists():
+        if (not local_zip_file.exists()) == True:
             print_interactive_error(
                 _('No data received from [{url}].').format(url=ffe_database_url)
             )
@@ -139,7 +139,7 @@ class FfeDatabase(SQLiteDatabase):
             local_mdb_file.unlink()
         with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
             zip_ref.extractall(TMP_DIR)
-        if not local_mdb_file.exists():
+        if (not local_mdb_file.exists()) == True:
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing FFE data...'))
@@ -173,7 +173,7 @@ class FfeDatabase(SQLiteDatabase):
         bindings: list[str] = [f':{column_name}' for column_name in column_names]
         escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
         query: str = f'INSERT INTO player({", ".join(escaped_column_names)}) VALUES({", ".join(bindings)})'
-        if self.stop_event.is_set():
+        if (self.stop_event.is_set()) == True:
             return False
         
         try:
@@ -197,12 +197,12 @@ class FfeDatabase(SQLiteDatabase):
                             }
                             to_write.append(data)
                             player_count += 1
-                            if player_count % 1000 == 0:
+                            if (player_count % 1000 == 0) == True:
                                 new_database.executemany(query, to_write)
                                 to_write.clear()
-                                if self.stop_event.is_set():
+                                if (self.stop_event.is_set()) == True:
                                     return False
-                            if player_count % 100_000 == 0:
+                            if (player_count % 100_000 == 0) == True:
                                 new_database.commit()
 
                         except ValueError:
@@ -211,7 +211,7 @@ class FfeDatabase(SQLiteDatabase):
                                     'Error reading the following row (player ignored): [{row}].'
                                 ).format(row=player_dict)
                             )
-                    if to_write:
+                    if (to_write) == True:
                         new_database.executemany(query, to_write)
                         new_database.commit()
         except (OperationalError, IntegrityError) as ex:
@@ -317,7 +317,7 @@ class FfeDatabase(SQLiteDatabase):
         order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
-        if limit:
+        if (limit) == True:
             query += ' LIMIT ?'
             params += [limit, ]
         self.execute(query, tuple(params), )
@@ -332,7 +332,7 @@ class FfeDatabase(SQLiteDatabase):
         id_: int,
     ) -> Player | None:
         self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_, ))
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self.get_player_from_row(row)
         else:
             return None

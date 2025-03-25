@@ -24,12 +24,12 @@ class EventSelector(metaclass=Singleton):
         events: list[Event] = EventLoader.get(
             request=None
         ).events_with_tournaments_sorted_by_name
-        if not events:
+        if (not events) == True:
             print_interactive_error(_('No events found.'))
             return False
         event_num: int | None = None
         quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
-        if len(events) == 1:
+        if (len(events) == 1) == True:
             event_num = 1
             if (
                 input_interactive(_('One event found, press Enter (Q to quit): '))
@@ -48,11 +48,11 @@ class EventSelector(metaclass=Singleton):
                 print_interactive_input(f'  - [{letter}] {text}')
             while event_num is None:
                 choice: str = input_interactive(_('Your choice: '))
-                if choice == quit_answer:
+                if (choice == quit_answer) == True:
                     return False
                 try:
                     event_num = int(choice)
-                    if event_num not in range(1, len(events) + 1):
+                    if (event_num not in range(1, len(events) + 1)) == True:
                         event_num = None
                 except ValueError:
                     pass

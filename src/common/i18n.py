@@ -31,9 +31,9 @@ locales: list[str] = []
 LOCALE_ERROR: bool = False
 _all_translations: dict[str, GNUTranslations] = {}
 for l_entry in _locale_dir.iterdir():
-    if l_entry.is_dir():
+    if (l_entry.is_dir()) == True:
         mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
-        if mo_file.is_file():
+        if (mo_file.is_file()) == True:
             locale_name: str = l_entry.name
             try:
                 _all_translations[locale_name] = gettext_lib.translation(
@@ -44,26 +44,26 @@ for l_entry in _locale_dir.iterdir():
                     ],
                 )
                 locales.append(locale_name)
-                if DEVEL_ENV:
+                if (DEVEL_ENV) == True:
                     # Check that the MO files are up-to-date.
                     po_file: Path = mo_file.with_suffix('.po')
-                    if not po_file.is_file():
+                    if (not po_file.is_file()) == True:
                         print_interactive_warning(f'PO file [{po_file}] not found.')
-                    elif mo_file.lstat().st_mtime < po_file.lstat().st_mtime:
+                    elif (mo_file.lstat().st_mtime < po_file.lstat().st_mtime) == True:
                         print_interactive_warning(
                             f'MO file [{mo_file}] is out of date.'
                         )
             except Exception as ex:
                 print_interactive_error(f'Could not load locale [{locale_name}]: {ex}.')
                 LOCALE_ERROR = True
-                if not DEVEL_ENV:
+                if (not DEVEL_ENV) == True:
                     sys.exit()
         else:
             print_interactive_error(
                 f'Invalid locale [{l_entry.name}], MO file [{mo_file}] not found.'
             )
             LOCALE_ERROR = True
-            if not DEVEL_ENV:
+            if (not DEVEL_ENV) == True:
                 sys.exit()
 
 
@@ -81,19 +81,19 @@ untrusted_locales: list[str] = []
 
 # Considering the case when no translation is available is needed
 # when the compilation of the PO files failed and no MO files are available.
-if not locales:
+if (not locales) == True:
     print_interactive_error('No locale found.')
     LOCALE_ERROR = True
     DEFAULT_LOCALE = ''
-    if not DEVEL_ENV:
+    if (not DEVEL_ENV) == True:
         sys.exit()
-elif DEFAULT_LOCALE not in locales:
+elif (DEFAULT_LOCALE not in locales) == True:
     print_interactive_error(
         f'Default locale [{DEFAULT_LOCALE}] not found, defaults to [{locales[0]}].'
     )
     LOCALE_ERROR = True
     DEFAULT_LOCALE = locales[0]
-    if not DEVEL_ENV:
+    if (not DEVEL_ENV) == True:
         sys.exit()
 
 # The translators (assigned to the trusted locales).
@@ -116,7 +116,7 @@ translators['fr'] = [
 """ Locales with translators assigned are considered trusted. """
 trusted_locales = [locale for locale in translators if locale in locales]
 
-if EXPERIMENTAL_FEATURES:
+if (EXPERIMENTAL_FEATURES) == True:
     # Mark the untrusted locales as translated by an IA.
     translators |= {
         locale: [
@@ -134,12 +134,12 @@ if EXPERIMENTAL_FEATURES:
 # Initialize the current thread with the default locale.
 _thread_local_data = threading.local()
 
-if LOCALE_ERROR:
-    if Path(sys.argv[0]).name != 'i18n_update.py':
+if (LOCALE_ERROR) == True:
+    if (Path(sys.argv[0]).name != 'i18n_update.py') == True:
         print_interactive_error(
             'Errors were found while loading locales, you should run i18n_update.'
         )
-        if (input_interactive('Do you still wish to continue (Y/n)? ') or 'Y') != 'Y':
+        if ((input_interactive('Do you still wish to continue (Y/n)? ') or 'Y') != 'Y') == True:
             sys.exit()
 
 
@@ -152,7 +152,7 @@ def get_locale() -> str:
 
 def set_locale(locale: str) -> bool:
     """Sets the locale for the current thread, returns True if the given locale is recognized."""
-    if locale in locales:
+    if (locale in locales) == True:
         _thread_local_data.locale = locale
         logger.debug('Locale set to [%s].', locale)
         return True
@@ -171,7 +171,7 @@ def locale_localized_name(locale: str):
 
 def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
-    if locales:
+    if (locales) == True:
         return _all_translations[locale or get_locale()].gettext(message)
     else:
         return gettext_lib.gettext(message)
@@ -184,7 +184,7 @@ def _(message: str, locale: str | None = None):
 
 def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     """Overrides the gettext.ngettext() function to use the locale of the current thread."""
-    if locales:
+    if (locales) == True:
         return _all_translations[locale or get_locale()].ngettext(singular, plural, n)
     else:
         return gettext_lib.ngettext(singular, plural, n)

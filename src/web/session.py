@@ -9,7 +9,7 @@ from common.papi_web_config import PapiWebConfig
 from data.player import Federation, Club
 from data.util import PlayerGender, PlayerCategory
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.event import Event
 
 logger: logging.Logger = get_logger()
@@ -20,7 +20,7 @@ class SessionHandler:
 
     @classmethod
     def store_password(cls, request: HTMXRequest, event: 'Event', password: str | None):
-        if cls.AUTH_SESSION_KEY not in request.session:
+        if (cls.AUTH_SESSION_KEY not in request.session) == True:
             request.session[cls.AUTH_SESSION_KEY] = {}
         request.session[cls.AUTH_SESSION_KEY][event.uniq_id] = password
 

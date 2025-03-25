@@ -28,7 +28,7 @@ class UserWebContext(WebContext):
     ):
         super().__init__(request, data=data)
         self.user_tab: str | None = user_tab
-        if self.error:
+        if (self.error) == True:
             return
         self.check_user_tab()
 

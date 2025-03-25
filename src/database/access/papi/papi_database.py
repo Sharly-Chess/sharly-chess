@@ -77,7 +77,7 @@ class PapiDatabase(AccessDatabase):
         tie_breaks: list[AbstractTieBreak] = []
         for index in range(1, 4):
             papi_id = self._read_var(f'Dep{index}')
-            if tie_break := tie_break_by_id.get(papi_id, None):
+            if (tie_break ) == True:= tie_break_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break)
         point_value_type: PointValueType = PointValueType.from_papi_value(self._read_var('DecomptePoints'))
         location: str = self._read_var('Lieu')
@@ -292,7 +292,7 @@ class PapiDatabase(AccessDatabase):
                 tournament_id, row['Ref']
             )
             fide_id: int | None = None
-            if row['FideCode']:
+            if (row['FideCode']) == True:
                 fide_id = int(str(row['FideCode']).strip())
             player = Player(
                 id=player_papi_web_id,
@@ -345,7 +345,7 @@ class PapiDatabase(AccessDatabase):
     @staticmethod
     def timestamp_to_papi_date(ts: float) -> str:
         dt: datetime
-        if ts >= 0:
+        if (ts >= 0) == True:
             dt = datetime.fromtimestamp(ts)
         else:
             dt = datetime(1970, 1, 1) + timedelta(seconds=ts)
@@ -374,7 +374,7 @@ class PapiDatabase(AccessDatabase):
         )
         query: str = f'SELECT COUNT(`Ref`) FROM `joueur` WHERE {condition}'
         self._execute(query)
-        if self._fetchval() == 0:
+        if (self._fetchval() == 0) == True:
             logger.info('Deleting forfeits...')
             data: dict[str, str | int | None] = {}
             for round_ in range(1, 25):
@@ -429,7 +429,7 @@ class PapiDatabase(AccessDatabase):
         data: dict[str, str | int | float | None] = {
             f'Rd{round_:0>2}Cl': 'F',
         }
-        if last_round:
+        if (last_round) == True:
             data |= {f'Rd{r:0>2}Cl': 'F' for r in range(round_, last_round + 1)}
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
         query: str = f'UPDATE `joueur` SET {actions} WHERE (Ref > 1) AND NOT (`Pointe`) AND (`Rd{round_:0>2}Cl` = ?)'

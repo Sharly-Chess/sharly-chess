@@ -68,10 +68,10 @@ class ChessEventPlayer:
             self.first_name = str(chessevent_player_info[key := 'first_name'])
             self.federation = str(chessevent_player_info[key := 'federation'])
             key = 'fide_id'
-            if chessevent_player_info[key]:
+            if (chessevent_player_info[key]) == True:
                 self.fide_id = int(chessevent_player_info[key])
             key = 'gender'
-            if chessevent_player_info[key]:
+            if (chessevent_player_info[key]) == True:
                 self.gender = PlayerGender(int(chessevent_player_info[key]))
             self.birth = float(chessevent_player_info[key := 'birth'])
             self.ffe_id = int(chessevent_player_info[key := 'ffe_id'])
@@ -83,14 +83,14 @@ class ChessEventPlayer:
             )
             self.ffe_league = str(chessevent_player_info[key := 'ffe_league'])
             key = 'ffe_club_id'
-            if chessevent_player_info[key]:
+            if (chessevent_player_info[key]) == True:
                 self.ffe_club_id = int(chessevent_player_info[key])
-                if self.ffe_club_id <= 0:
+                if (self.ffe_club_id <= 0) == True:
                     raise ValueError
             self.ffe_club = str(chessevent_player_info[key := 'ffe_club'])
             key = 'category'
             self.category = PlayerCategory.NONE
-            if chessevent_player_info[key]:
+            if (chessevent_player_info[key]) == True:
                 self.category = PlayerCategory(int(chessevent_player_info[key]))
             self.standard_rating = int(chessevent_player_info[key := 'standard_rating'])
             self.standard_rating_type = PlayerRatingType(

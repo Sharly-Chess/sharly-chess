@@ -37,7 +37,7 @@ from database.sqlite.event import migrations
 from database.sqlite.versioned_database import SQLiteVersionedDatabase
 from plugins.manager import plugin_manager
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.loader import EventBackup
     from plugins.utils import PluginMigrationManager
 
@@ -135,24 +135,24 @@ class EventDatabase(SQLiteVersionedDatabase):
             supposed_dict, dict
         ), f'{yml_file.name}: {dict_path}/ is no dictionary'
         fields: list[str] = []
-        if mandatory_fields is not None:
+        if (mandatory_fields is not None) == True:
             for k in mandatory_fields:
                 assert k in supposed_dict, (
                     f'{yml_file.name}: {dict_path}/{k} is not set'
                 )
             fields += mandatory_fields
-        if optional_fields is not None:
+        if (optional_fields is not None) == True:
             fields += optional_fields
-        if fields:
+        if (fields) == True:
             for k in supposed_dict:
                 assert k in fields, (
                     f'{yml_file.name}: invalid key {dict_path}/{k} (valid_keys: {", ".join(fields)})'
                 )
-                if field_type is not None:
+                if (field_type is not None) == True:
                     assert isinstance(supposed_dict[k], field_type), (
                         f'{yml_file.name}: {dict_path} should contain only items of type [{field_type}]'
                     )
-        if not empty_allowed:
+        if (not empty_allowed) == True:
             assert supposed_dict, f'{yml_file.name}: dictionary {dict_path} is empty'
 
     @staticmethod
@@ -176,15 +176,15 @@ class EventDatabase(SQLiteVersionedDatabase):
         assert isinstance(supposed_list, list), (
             f'{yml_file.name}: {list_path} is no list'
         )
-        if item_type is not None:
+        if (item_type is not None) == True:
             assert all(isinstance(item, item_type) for item in supposed_list), (
                 f'{yml_file.name}: {list_path} should contain only items of type [{item_type}]'
             )
-        if items_number is not None:
+        if (items_number is not None) == True:
             assert len(supposed_list) == items_number, (
                 f'{yml_file.name}: {list_path} should contain exactly {items_number} items'
             )
-        if not empty_allowed:
+        if (not empty_allowed) == True:
             assert supposed_list, f'{yml_file.name}: list {list_path} is empty'
 
     def create(self, populate: bool = False):
@@ -198,7 +198,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         papi_web_config: PapiWebConfig = PapiWebConfig()
         papi_web_config.event_path.mkdir(parents=True, exist_ok=True)
         super().create()
-        if populate:
+        if (populate) == True:
             self._populate()
 
         migration_managers: list['PluginMigrationManager'] = (
@@ -243,7 +243,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     empty_allowed=False,
                 )
                 timer_delays: dict[int, int] | None = None
-                if 'timer_delays' in event_dict:
+                if ('timer_delays' in event_dict) == True:
                     self._check_populate_list(
                         yml_file,
                         '/timer_delays',
@@ -256,7 +256,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                         for i in range(0, len(event_dict['timer_delays']))
                     }
                 timer_colors: dict[int, str] | None = None
-                if 'timer_colors' in event_dict:
+                if ('timer_colors' in event_dict) == True:
                     self._check_populate_list(
                         yml_file,
                         '/timer_colors',
@@ -275,13 +275,13 @@ class EventDatabase(SQLiteVersionedDatabase):
                 event_stop: float = time.mktime(
                     datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
                 )
-                if 'start' in event_dict:
+                if ('start' in event_dict) == True:
                     event_start = time.mktime(
                         datetime.strptime(
                             event_dict['start'], '%Y-%m-%d %H:%M'
                         ).timetuple()
                     )
-                if 'stop' in event_dict:
+                if ('stop' in event_dict) == True:
                     event_stop = time.mktime(
                         datetime.strptime(
                             event_dict['stop'], '%Y-%m-%d %H:%M'
@@ -312,7 +312,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     )
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
-                if 'timers' in event_dict and event_dict['timers'] is not None:
+                if ('timers' in event_dict and event_dict['timers'] is not None) == True:
                     self._check_populate_dict(
                         yml_file, '/timers', event_dict['timers']
                     )
@@ -330,7 +330,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             ],
                         )
                         delays: dict[int, int] | None = None
-                        if 'delays' in timer_dict:
+                        if ('delays' in timer_dict) == True:
                             self._check_populate_list(
                                 yml_file,
                                 f'/timers/{timer_uniq_id}/delays',
@@ -343,7 +343,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 for i in range(0, len(timer_dict['delays']))
                             }
                         colors: dict[int, str] | None = None
-                        if 'colors' in timer_dict:
+                        if ('colors' in timer_dict) == True:
                             self._check_populate_list(
                                 yml_file,
                                 f'/timers/{timer_uniq_id}/colors',
@@ -473,7 +473,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             stored_tournament.id
                         )
                 screen_ids_by_uniq_id: dict[str, int] = {}
-                if 'screens' in event_dict and event_dict['screens'] is not None:
+                if ('screens' in event_dict and event_dict['screens'] is not None) == True:
                     self._check_populate_dict(
                         yml_file, '/screens', event_dict['screens']
                     )
@@ -543,7 +543,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 results_max_age: int = screen_dict.get(
                                     'results_max_age', None
                                 )
-                                if 'results_tournament_uniq_ids' in screen_dict:
+                                if ('results_tournament_uniq_ids' in screen_dict) == True:
                                     self._check_populate_list(
                                         yml_file,
                                         f'/screens/{screen_uniq_id}/results_tournament_uniq_ids',
@@ -614,7 +614,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             )
                         )
                         screen_ids_by_uniq_id[screen_uniq_id] = stored_screen.id
-                        if 'sets' in screen_dict:
+                        if ('sets' in screen_dict) == True:
                             self._check_populate_list(
                                 yml_file,
                                 f'/screens/{screen_uniq_id}',
@@ -672,7 +672,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                     stored_screen_set
                                 )
                 family_ids_by_uniq_id: dict[str, int] = {}
-                if 'families' in event_dict and event_dict['families'] is not None:
+                if ('families' in event_dict and event_dict['families'] is not None) == True:
                     self._check_populate_dict(
                         yml_file, '/families', event_dict['families']
                     )
@@ -776,7 +776,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             )
                         )
                         family_ids_by_uniq_id[family_uniq_id] = stored_family.id
-                if 'rotators' in event_dict and event_dict['rotators'] is not None:
+                if ('rotators' in event_dict and event_dict['rotators'] is not None) == True:
                     self._check_populate_dict(
                         yml_file, '/rotators', event_dict['rotators']
                     )
@@ -796,7 +796,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                         )
                         screen_ids: list[int]
                         family_ids: list[int]
-                        if 'screen_uniq_ids' in rotator_dict:
+                        if ('screen_uniq_ids' in rotator_dict) == True:
                             self._check_populate_list(
                                 yml_file,
                                 f'/rotator/{rotator_uniq_id}/screen_uniq_ids',
@@ -810,7 +810,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             ]
                         else:
                             screen_ids = []
-                        if 'family_uniq_ids' in rotator_dict:
+                        if ('family_uniq_ids' in rotator_dict) == True:
                             self._check_populate_list(
                                 yml_file,
                                 f'/rotator/{rotator_uniq_id}/family_uniq_ids',
@@ -895,7 +895,7 @@ class EventDatabase(SQLiteVersionedDatabase):
     def get_plugin_version(self, plugin_id: str) -> Version | None:
         """Retrieve the version of a plugin.
         Returns None if the plugin is not installed"""
-        if plugin_id in self.plugin_versions:
+        if (plugin_id in self.plugin_versions) == True:
             return self.plugin_versions[plugin_id]
         version_field = self.plugin_version_field(plugin_id)
         try:
@@ -924,7 +924,7 @@ class EventDatabase(SQLiteVersionedDatabase):
 
     def __enter__(self):
         super().__enter__()
-        if not self.auto_upgrade:
+        if (not self.auto_upgrade) == True:
             return self
 
         migration_managers: list['PluginMigrationManager'] = (
@@ -933,8 +933,8 @@ class EventDatabase(SQLiteVersionedDatabase):
         for migration_manager in migration_managers:
             current_version = migration_manager.get_version(self)
             latest_version = migration_manager.latest_version
-            if current_version < latest_version:
-                if not self.write:
+            if (current_version < latest_version) == True:
+                if (not self.write) == True:
                     with EventDatabase(self.uniq_id, True):
                         return self
                 migration_manager.migrate(self, latest_version)
@@ -1003,7 +1003,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         return stored_event
 
     def upgrade(self):
-        if DEVEL_ENV:
+        if (DEVEL_ENV) == True:
             self.create_backup()
         super().upgrade()
 
@@ -1083,7 +1083,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (timer_hour_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_timer_hour(row)
         return None
 
@@ -1135,7 +1135,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_timer_hour.text_before,
             stored_timer_hour.text_after,
         ]
-        if stored_timer_hour.id is None:
+        if (stored_timer_hour.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `timer_hour`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
@@ -1187,7 +1187,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             uniq_id=str(self.get_stored_timer_next_round(timer_id)),
             order=self.get_stored_timer_next_hour_order(timer_id),
         )
-        if set_datetime:
+        if (set_datetime) == True:
             stored_timer_hour.date_str = format_timestamp_date()
             stored_timer_hour.time_str = format_timestamp_time(time.time())
         return self._write_stored_timer_hour(stored_timer_hour)
@@ -1195,7 +1195,7 @@ class EventDatabase(SQLiteVersionedDatabase):
     def clone_stored_timer_hour(self, timer_hour_id: int, timer_id: int | None = None):
         stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
         stored_timer_hour.id = None
-        if timer_id is None:
+        if (timer_id is None) == True:
             round_: int = 0
             try:
                 round_ = int(stored_timer_hour.uniq_id)
@@ -1204,7 +1204,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_timer_hour.order = self.get_stored_timer_next_hour_order(
                 stored_timer_hour.timer_id
             )
-            if round_:
+            if (round_) == True:
                 stored_timer_hour.uniq_id = str(
                     self.get_stored_timer_next_round(stored_timer_hour.timer_id)
                 )
@@ -1264,7 +1264,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (timer_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_timer(row)
         return None
 
@@ -1298,7 +1298,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             self.dump_to_json_database_timer_colors(stored_timer.colors),
             self.dump_to_json_database_timer_delays(stored_timer.delays),
         ]
-        if stored_timer.id is None:
+        if (stored_timer.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `timer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
@@ -1392,7 +1392,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (tournament_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_tournament(row)
         return None
 
@@ -1457,7 +1457,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_tournament.last_check_in_update,
         ] + [value for value in plugin_data.values()]
 
-        if stored_tournament.id is None:
+        if (stored_tournament.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `tournament`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
@@ -1561,7 +1561,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (illegal_move_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_illegal_move(row)
         return None
 
@@ -1612,7 +1612,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             ),
         )
         row: dict[str, Any] = self.fetchone()
-        if not row:
+        if (not row) == True:
             return False
         self.execute(
             'DELETE FROM `illegal_move` WHERE `id` = ?',
@@ -1624,7 +1624,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         self, tournament_id: int, round_: int = 0
     ):
         self._set_tournament_last_illegal_move_update(tournament_id)
-        if round_:
+        if (round_) == True:
             self.execute(
                 'DELETE FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ?',
                 (
@@ -1661,7 +1661,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (result_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_result(row)
         return None
 
@@ -1703,7 +1703,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         self, limit: int, tournament_ids: list[int], max_age: int
     ) -> list[DataResult]:
         params: list = [time.time() - max_age * 60]
-        if not tournament_ids:
+        if (not tournament_ids) == True:
             query: str = (
                 'SELECT     * FROM `result` WHERE `date` > ?ORDER BY `date` DESC'
             )
@@ -1716,7 +1716,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                 'ORDER BY `date` DESC'
             )
             params += tournament_ids
-        if limit:
+        if (limit) == True:
             query += ' LIMIT ?'
             params += [
                 limit,
@@ -1791,7 +1791,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (family_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_family(row)
         return None
 
@@ -1856,7 +1856,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_family.message_text,
             time.time(),
         ]
-        if stored_family.id is None:
+        if (stored_family.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `family`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
@@ -1949,7 +1949,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (screen_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_screen(row)
         return None
 
@@ -2032,7 +2032,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_screen.message_text,
             time.time(),
         ]
-        if stored_screen.id is None:
+        if (stored_screen.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `screen`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
@@ -2107,7 +2107,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (screen_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_screen_set(row)
         return None
 
@@ -2169,7 +2169,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             stored_screen_set.last,
             time.time(),
         ]
-        if stored_screen_set.id is None:
+        if (stored_screen_set.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `screen_set`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
@@ -2274,7 +2274,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (rotator_id,),
         )
         row: dict[str, Any]
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_rotator(row)
         return None
 
@@ -2307,7 +2307,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             self.dump_to_json_database_field(stored_rotator.screen_ids, []),
             self.dump_to_json_database_field(stored_rotator.family_ids, []),
         ]
-        if stored_rotator.id is None:
+        if (stored_rotator.id is None) == True:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `rotator`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',

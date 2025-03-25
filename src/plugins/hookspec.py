@@ -17,7 +17,7 @@ from plugins.utils import (
     PluginEngineArgument,
 )
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.print import AbstractPlayerSplitter, AbstractPrintDocument
     from data.tie_break import AbstractTieBreak
     from data.tournament import Tournament

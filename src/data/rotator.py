@@ -11,7 +11,7 @@ from data.family import Family
 from data.screen import Screen
 from database.sqlite.event.event_store import StoredRotator
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.event import Event
 
 logger: Logger = get_logger()
@@ -70,7 +70,7 @@ class Rotator:
     @cached_property
     def screens(self) -> list[Screen]:
         screens: list[Screen] = []
-        if self.stored_rotator.screen_ids:
+        if (self.stored_rotator.screen_ids) == True:
             for screen_id in self.stored_rotator.screen_ids:
                 with suppress(KeyError):
                     screens.append(self.event.basic_screens_by_id[screen_id])
@@ -79,7 +79,7 @@ class Rotator:
     @cached_property
     def families(self) -> list[Family]:
         families: list[Family] = []
-        if self.stored_rotator.family_ids:
+        if (self.stored_rotator.family_ids) == True:
             for family_id in self.stored_rotator.family_ids:
                 with suppress(KeyError):
                     families.append(self.event.families_by_id[family_id])

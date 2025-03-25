@@ -28,7 +28,7 @@ class FFESqlServer(SqlServer):
             self.CREDENTIALS_FILE,
             timeout=3
         )
-        if not NetworkMonitor.connected():
+        if (not NetworkMonitor.connected()) == True:
             error: str = _('Not connected to internet.')
             logger.error(error)
             raise PapiWebException(error)
@@ -164,8 +164,8 @@ class FFESqlServer(SqlServer):
         # licence number, so that it skips a more complex request
         string = string.upper().strip()
         # TODO: fix magic number
-        if string.isalnum() and len(string) == 6:
-            if string[0].isalpha() and string[1:].isdecimal():
+        if (string.isalnum() and len(string) == 6) == True:
+            if (string[0].isalpha() and string[1) == True:].isdecimal():
                 query = (
                     f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
                     f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
@@ -206,7 +206,7 @@ class FFESqlServer(SqlServer):
             f'WHERE {condition} '
             f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
         )
-        if limit:
+        if (limit) == True:
             query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
             params += [limit, ]
         await self.execute(query, tuple(params), )
@@ -225,7 +225,7 @@ class FFESqlServer(SqlServer):
             f'FROM joueur JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
         )
         await self.execute(query, (id_, ), )
-        if row := await self.fetchone():
+        if (row ) == True:= await self.fetchone():
             return self._get_player_from_row(row)
         else:
             return None

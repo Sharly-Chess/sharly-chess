@@ -13,7 +13,7 @@ from data.screen import Screen
 from data.util import ScreenType
 from database.sqlite.event.event_store import StoredFamily
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.event import Event
     from data.tournament import Tournament
 
@@ -71,7 +71,7 @@ class Family:
 
     @property
     def columns(self) -> int:
-        if self.stored_family.columns:
+        if (self.stored_family.columns) == True:
             return self.stored_family.columns
         return 1
 
@@ -85,9 +85,9 @@ class Family:
 
     @cached_property
     def menu_label(self) -> str | None:
-        if not self.menu_link:
+        if (not self.menu_link) == True:
             return None
-        if self.menu_text:
+        if (self.menu_text) == True:
             return self.menu_text
         single_tournament: bool = len(self.event.tournaments_by_id) == 1
         text: str
@@ -98,11 +98,11 @@ class Family:
             text = self.menu_text or Screen.default_boards_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
-        elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+        elif (self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]) == True:
             text = self.menu_text or Screen.default_players_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
-        elif self.type == ScreenType.RANKING:
+        elif (self.type == ScreenType.RANKING) == True:
             text = self.menu_text or Screen.default_ranking_screen_menu_text(
                 single_tournament=single_tournament,
                 first_last=True,
@@ -126,13 +126,13 @@ class Family:
 
     @property
     def input_exit_button(self) -> bool:
-        if self.stored_family.input_exit_button is None:
+        if (self.stored_family.input_exit_button is None) == True:
             return PapiWebConfig.default_input_exit_button
         return self.stored_family.input_exit_button
 
     @property
     def players_show_unpaired(self) -> bool:
-        if self.stored_family.players_show_unpaired is None:
+        if (self.stored_family.players_show_unpaired is None) == True:
             return PapiWebConfig.default_players_show_unpaired
         return self.stored_family.players_show_unpaired
 
@@ -217,7 +217,7 @@ class Family:
 
     @cache
     def _calculate_screens(self) -> bool:
-        if not self.tournament.rounds:
+        if (not self.tournament.rounds) == True:
             self.error = _(
                 'Tournament [{tournament_uniq_id}] can not be read, family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
@@ -226,11 +226,11 @@ class Family:
         players_instead_of_boards: bool
         match ScreenType(self.type):
             case ScreenType.BOARDS | ScreenType.INPUT:
-                if self.tournament.current_round:
+                if (self.tournament.current_round) == True:
                     players_instead_of_boards = False
                     total_items_number: int = len(self.tournament.boards)
-                    if self.first:
-                        if self.first > total_items_number:
+                    if (self.first) == True:
+                        if (self.first > total_items_number) == True:
                             self.error = _(
                                 'Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored.'
                             ).format(
@@ -243,7 +243,7 @@ class Family:
                         self._calculated_first = self.first
                     else:
                         self._calculated_first = 1
-                    if self.last:
+                    if (self.last) == True:
                         self._calculated_last = min(self.last, total_items_number)
                     else:
                         self._calculated_last = total_items_number
@@ -259,9 +259,9 @@ class Family:
                     self._calculated_last = cut_items_number
             case ScreenType.PLAYERS | ScreenType.RANKING:
                 players_instead_of_boards = False
-                if ScreenType(self.type) == ScreenType.PLAYERS:
-                    if self.tournament.current_round:
-                        if self.players_show_unpaired:
+                if (ScreenType(self.type) == ScreenType.PLAYERS) == True:
+                    if (self.tournament.current_round) == True:
+                        if (self.players_show_unpaired) == True:
                             total_items_number = len(
                                 self.tournament.players_by_name_with_unpaired
                             )
@@ -286,8 +286,8 @@ class Family:
                                )
                         ]
                     )
-                if self.first:
-                    if self.first > total_items_number:
+                if (self.first) == True:
+                    if (self.first > total_items_number) == True:
                         self.error = _(
                             'Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored.'
                         ).format(
@@ -300,14 +300,14 @@ class Family:
                     self._calculated_first = self.first
                 else:
                     self._calculated_first = 1
-                if self.last:
+                if (self.last) == True:
                     self._calculated_last = min(self.last, total_items_number)
                 else:
                     self._calculated_last = total_items_number
                 cut_items_number = self._calculated_last - self._calculated_first + 1
             case _:
                 raise ValueError(f'type={self.type}')
-        if not cut_items_number:
+        if (not cut_items_number) == True:
             self.error = _(
                 'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
@@ -315,18 +315,18 @@ class Family:
             return False
         # OK now we know the number of items and the number of the first item to take
         # Let's go for the number of items by part and the number of parts
-        if self.number:
-            if players_instead_of_boards:
+        if (self.number) == True:
+            if (players_instead_of_boards) == True:
                 self._calculated_number = self.number * 2
             else:
                 self._calculated_number = self.number
-        elif self.parts:
+        elif (self.parts) == True:
             self._calculated_number = ceil(cut_items_number / self.parts)
         else:
             self._calculated_number = cut_items_number
         divisor: int = self.columns * 2 if players_instead_of_boards else self.columns
         # ensure that the number of items is divisible by the number of columns
-        if self._calculated_number % divisor != 0:
+        if (self._calculated_number % divisor != 0) == True:
             self._calculated_number = min(
                 (self._calculated_number // divisor + 1) * divisor, cut_items_number
             )
@@ -338,7 +338,7 @@ class Family:
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = {}
-        if self._calculate_screens():
+        if (self._calculate_screens()) == True:
             for family_index in range(1, self.calculated_parts + 1):
                 screen: Screen = Screen(
                     self.event, family=self, family_part=family_index
@@ -372,13 +372,13 @@ class Family:
 
     @property
     def numbers_str(self):
-        if self.type in (ScreenType.BOARDS, ScreenType.INPUT):
+        if (self.type in (ScreenType.BOARDS, ScreenType.INPUT)) == True:
             match (self.first, self.last, self.number, self.parts):
                 case (None, None, None, None):
                     return _('all the boards')
-                case (first, None, None, None) if first is not None:
+                case (first, None, None, None) if (first is not None) == True:
                     return _('boards from #{first} to end').format(first=first)
-                case (None, last, None, None) if last is not None:
+                case (None, last, None, None) if (last is not None) == True:
                     return _('boards from start to #{last}').format(last=last)
                 case (first, last, None, None) if (
                     first is not None and last is not None
@@ -386,7 +386,7 @@ class Family:
                     return _('boards from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (None, None, number, None) if number is not None:
+                case (None, None, number, None) if (number is not None) == True:
                     return _('screens of {number} boards').format(number=number)
                 case (first, None, number, None) if (
                     first is not None and number is not None
@@ -406,7 +406,7 @@ class Family:
                     return _(
                         'screens of {number} boards from #{first} to #{last}'
                     ).format(first=first, last=last, number=number)
-                case (None, None, None, parts) if parts is not None:
+                case (None, None, None, parts) if (parts is not None) == True:
                     return _('boards on {parts} screens').format(parts=parts)
                 case (first, None, None, parts) if (
                     first is not None and parts is not None
@@ -434,9 +434,9 @@ class Family:
             match (self.first, self.last, self.number, self.parts):
                 case (None, None, None, None):
                     return _('all the players')
-                case (first, None, None, None) if first is not None:
+                case (first, None, None, None) if (first is not None) == True:
                     return _('players from #{first} to end').format(first=first)
-                case (None, last, None, None) if last is not None:
+                case (None, last, None, None) if (last is not None) == True:
                     return _('players from start to #{last}').format(last=last)
                 case (first, last, None, None) if (
                     first is not None and last is not None
@@ -444,7 +444,7 @@ class Family:
                     return _('players from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (None, None, number, None) if number is not None:
+                case (None, None, number, None) if (number is not None) == True:
                     return _('screens of {number} players').format(number=number)
                 case (first, None, number, None) if (
                     first is not None and number is not None
@@ -464,7 +464,7 @@ class Family:
                     return _(
                         'screens of {number} players from #{first} to #{last}'
                     ).format(first=first, last=last, number=number)
-                case (None, None, None, parts) if parts is not None:
+                case (None, None, None, parts) if (parts is not None) == True:
                     return _('players on {parts} screens').format(parts=parts)
                 case (first, None, None, parts) if (
                     first is not None and parts is not None

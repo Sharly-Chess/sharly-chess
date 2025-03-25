@@ -51,7 +51,7 @@ class ServerEngine(Engine):
     def __init__(self, debug: bool=False):
         super().__init__()
         self.debug = debug
-        if self.updated:
+        if (self.updated) == True:
             return
 
         print_interactive_info(_('Starting Papi-web server, please wait...'))
@@ -67,8 +67,8 @@ class ServerEngine(Engine):
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
 
-        if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
-            if DEVEL_ENV:
+        if (EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed) == True:
+            if (DEVEL_ENV) == True:
                 print_interactive_info(
                     _('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.')
                 )
@@ -77,7 +77,7 @@ class ServerEngine(Engine):
                 raise FileNotFoundError('BBP Pairings not installed.')
 
         for port in papi_web_config.web_ports:
-            if self.__port_in_use(port):
+            if (self.__port_in_use(port)) == True:
                 print_interactive_warning(
                     _(
                         'Port [{port}] already in use.'
@@ -86,7 +86,7 @@ class ServerEngine(Engine):
                 continue
             papi_web_config.web_port = port
             break
-        if papi_web_config.web_port is None:
+        if (papi_web_config.web_port is None) == True:
             print_interactive_error(
                 _(
                     'All the candidate ports [{ports}] are already in use, can not start Papi-web server.'
@@ -98,12 +98,12 @@ class ServerEngine(Engine):
         print_interactive_info(
             _('Local URL: {local_url}').format(local_url=papi_web_config.local_url)
         )
-        if papi_web_config.lan_url:
+        if (papi_web_config.lan_url) == True:
             print_interactive_info(
                 _('LAN/WAN URL: {lan_url}').format(lan_url=papi_web_config.lan_url)
             )
 
-        if papi_web_config.launch_browser:
+        if (papi_web_config.launch_browser) == True:
             Thread(target=launch_browser, args=(papi_web_config.local_url,)).start()
         
         NetworkMonitor.start_monitoring()

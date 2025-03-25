@@ -38,9 +38,9 @@ class IndexAdminController(BaseAdminController):
         web_context: AdminWebContext = AdminWebContext(
             request, data=None, admin_tab=admin_tab
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
-        if admin_events_show_details is not None:
+        if (admin_events_show_details is not None) == True:
             SessionHandler.set_session_admin_events_show_details(
                 request, admin_events_show_details
             )
@@ -107,12 +107,12 @@ class IndexAdminController(BaseAdminController):
         web_context: AdminWebContext = AdminWebContext(
             request, data=data, admin_tab=admin_tab
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
             'create', request, None, data
         )
-        if stored_event.errors:
+        if (stored_event.errors) == True:
             return self._admin(
                 request,
                 admin_tab=admin_tab,
@@ -164,7 +164,7 @@ class IndexAdminController(BaseAdminController):
             admin_tab='config',
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_config: StoredConfig = (
             self._admin_validate_config_update_data(data)
@@ -175,7 +175,7 @@ class IndexAdminController(BaseAdminController):
         errors = stored_config.errors
         for plugin in stored_plugins:
             errors |= plugin.errors
-        if errors:
+        if (errors) == True:
             return self._admin_render(
                 web_context,
                 modal='config',

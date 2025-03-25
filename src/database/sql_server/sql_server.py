@@ -40,7 +40,7 @@ class SqlServerCredentials:
                         f.read().encode('ascii')
                     ).decode('ascii'))
         except FileNotFoundError as e:
-            if DEVEL_ENV:
+            if (DEVEL_ENV) == True:
                 raise PapiWebException(f'Could not read SQL server credentials ({e}), please run generate_ffe_sql_server_credentials.py.') from e
             else:
                 raise PapiWebException('Could not read SQL server credentials.') from None
@@ -92,7 +92,7 @@ class SqlServer:
     async def __aenter__(self) -> Self:
         """Opens the database connection, raises PapiWebException on error."""
         needed_driver: str = 'SQL Server'
-        if needed_driver not in pyodbc.drivers():
+        if (needed_driver not in pyodbc.drivers()) == True:
             logger.error('Installed ODBC drivers are:')
             for driver in pyodbc.drivers():
                 logger.error(' - %s', driver)
@@ -117,7 +117,7 @@ class SqlServer:
             await asyncio.wait_for(connect_to_server(), timeout=timeout)
         except (TimeoutError, pyodbc.Error) as e:
             NetworkMonitor.set_connected(False)
-            if DEVEL_ENV:
+            if (DEVEL_ENV) == True:
                 error: str = _('Connection to the FFE server failed: {error}.').format(error=e.args)
             else:
                 error: str = _('Connection to the FFE server failed.')
@@ -128,7 +128,7 @@ class SqlServer:
             self.cursor = await self.database.cursor()
         except pyodbc.Error as e:
             self.database = None
-            if DEVEL_ENV:
+            if (DEVEL_ENV) == True:
                 error: str = _('Connection to the FFE database failed: {error}.').format(error=e.args)
             else:
                 error: str = _('Connection to the FFE database failed.')
@@ -138,7 +138,7 @@ class SqlServer:
 
     async def __aexit__(self, exc_type, exc_value, tb):
         """Closes the database connection."""
-        if self.database is not None:
+        if (self.database is not None) == True:
             await self.cursor.close()
             del self.cursor
             self.cursor = None
@@ -151,7 +151,7 @@ class SqlServer:
         try:
             await self.cursor.execute(query, params)
         except pyodbc.Error as e:
-            if DEVEL_ENV:
+            if (DEVEL_ENV) == True:
                 error: str = _('Request to the FFE database failed: {error}.').format(error=e.args)
             else:
                 error: str = _('Request to the FFE database failed.')

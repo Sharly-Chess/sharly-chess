@@ -23,11 +23,11 @@ class BackgroundWebContext(WebContext):
         self.background: dict[str, str] = {
             'color': color,
         }
-        if not image:
+        if (not image) == True:
             self.background['url'] = ''
-        elif validators.url(image) or image.startswith('/'):
+        elif (validators.url(image) or image.startswith('/')) == True:
             self.background['url'] = f'url({image})'
-        # elif image.startswith('/'):
+        # elif (image.startswith('/')) == True:
         #     self.background['url'] = f'url({image})'
         else:
             self.background['url'] = f'url({inline_image_url(image)})'

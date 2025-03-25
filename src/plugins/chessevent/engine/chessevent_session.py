@@ -52,7 +52,7 @@ class ChessEventSession(Session):
             logger.debug('Response headers: %s', response.headers)
             data: str = response.content.decode()
             logger.debug('response data (length: %s): %s', len(data), data)
-            if response.status_code == 200:
+            if (response.status_code == 200) == True:
                 return data
             match response.status_code:
                 case 401:

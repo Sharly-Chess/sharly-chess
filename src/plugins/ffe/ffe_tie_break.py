@@ -19,10 +19,10 @@ def papi_performance_bonus(fractional_score: float) -> int | float:
     percent_int = floor(percent)
     bonus = performance_table[index]
     smaller_difference = percent - percent_int
-    if smaller_difference > 0:
+    if (smaller_difference > 0) == True:
         smaller_difference *= performance_table[index + 1] - bonus
         bonus += smaller_difference
-    if fractional_score < 0.5:
+    if (fractional_score < 0.5) == True:
         bonus *= -1
     return bonus
 
@@ -46,18 +46,18 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     ) -> float:
         """Legacy: Unplayed rounds are counted as draws"""
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
+        if (after_round is None) == True:
             after_round = max(player.pairings)
-        if tournament.pairing == TournamentPairing.BERGER:
+        if (tournament.pairing == TournamentPairing.BERGER) == True:
             return player.points_after(after_round)
         score = 0
         for round_index, pairing in player.pairings.items():
-            if round_index > after_round:
+            if (round_index > after_round) == True:
                 continue
-            if pairing.unplayed:
+            if (pairing.unplayed) == True:
                 score += Result.DRAW.points(tournament.point_values)
                 continue
-            if pairing.requested_bye:
+            if (pairing.requested_bye) == True:
                 if all(
                         p.voluntary_unplayed
                         for index, p in player.pairings.items()
@@ -94,9 +94,9 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     @staticmethod
     @cache
     def _papi_buchholz_cut(tournament_rounds: int) -> int:
-        if tournament_rounds <= 7:
+        if (tournament_rounds <= 7) == True:
             return 1
-        elif tournament_rounds <= 12:
+        elif (tournament_rounds <= 12) == True:
             return 2
         return 3
 
@@ -108,20 +108,20 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         use_cut_top: bool = False,
         use_cut_btm: bool = False,
     ) -> float:
-        if after_round is None:
+        if (after_round is None) == True:
             after_round = max(player.pairings)
         tournament: 'Tournament' = player.tournament
         cut = self._papi_buchholz_cut(tournament.rounds)
         cut_top = cut if use_cut_top else 0
         cut_btm = cut if use_cut_btm else 0
-        if cut_top + cut_btm >= after_round:
+        if (cut_top + cut_btm >= after_round) == True:
             return 0
         pairings: dict[int, Pairing] = {
             round_index: pairing
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         }
-        if tournament.pairing == TournamentPairing.BERGER:
+        if (tournament.pairing == TournamentPairing.BERGER) == True:
             return sum(
                 self._papi_adjusted_score(
                     tournament.players_by_id[pairing.opponent_id],
@@ -135,14 +135,14 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         for round_index, pairing in pairings.items():
             should_add_dummy = tournament.pairing.swiss and pairing.unplayed
 
-            if should_add_dummy:
+            if (should_add_dummy) == True:
                 dummy_points = self._papi_dummy_score(
                     player, pairing, after_round=after_round, round_index=round_index
                 )
                 scores.append(dummy_points)
                 continue
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
-            if tournament.pairing.swiss:
+            if (tournament.pairing.swiss) == True:
                 opponent_adjusted_score = self._papi_adjusted_score(
                     opponent, after_round=after_round
                 )
@@ -153,7 +153,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         scores = sorted(scores)
         scores = voluntary_unplayed + scores
 
-        if cut_top:
+        if (cut_top) == True:
             return sum(scores[cut_btm:-cut_top])
         return sum(scores[cut_btm:])
 
@@ -201,7 +201,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
 
     @property
     def papi_id(self) -> str:
-        return 'BrÃ©silien'
+        return 'Brésilien'
 
     @property
     def acronym(self) -> str:
@@ -285,7 +285,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
             after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
+        if (after_round is None) == True:
             after_round = max(player.pairings)
         pairings: list[Pairing] = [
             pairing
@@ -303,7 +303,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
                         opponent.estimation))
                 ratings.append(rating)
                 score += pairing.result.points(tournament.point_values)
-        if not ratings:
+        if (not ratings) == True:
             return 0
         max_score = len(ratings) * Result.GAIN.points(tournament.point_values)
         average = sum(ratings) / len(ratings)
@@ -340,7 +340,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
             after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
+        if (after_round is None) == True:
             after_round = max(player.pairings)
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
@@ -382,7 +382,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
             after_round: int | None,
     ) -> float:
         """Legacy: unplayed rounds are counted"""
-        if after_round is None:
+        if (after_round is None) == True:
             after_round = max(player.pairings)
 
         pairings: list[Pairing] = [

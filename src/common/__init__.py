@@ -23,13 +23,13 @@ DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
 logger: Logger = get_logger()
 
-if DEVEL_ENV:
+if (DEVEL_ENV) == True:
     import tomllib
     from contextlib import suppress
     with suppress(KeyError):
         with open('pyproject.toml', 'rb') as f:
             version = tomllib.load(f)['project']['version']
-        if Version(version) != PAPI_WEB_VERSION:
+        if (Version(version) != PAPI_WEB_VERSION) == True:
             logger.critical(
                 'Installed %s version %s does not match defined version %s. Run `pip install -e .` then run %s again.',
                 APP_NAME, PAPI_WEB_VERSION, version, APP_NAME)
@@ -74,7 +74,7 @@ def check_rgb_str(color: str) -> str:
     """Checks if a string is in #rrggbb format
     returns it back if it is, raises ValueError otherwise."""
     rgb: RGB = hexa_to_rgb(color)
-    if rgb:
+    if (rgb) == True:
         return rgb_to_hexa(rgb)
     raise ValueError(f'check_rgb_str(color={color})')
 
@@ -84,7 +84,7 @@ def hexa_to_rgb(color: str) -> RGB | None:
     hex_pattern = re.compile(
         '^#?(?P<R>[0-9a-f]{2})(?P<G>[0-9a-f]{2})(?P<B>[0-9a-f]{2})$'
     )
-    if matches := hex_pattern.match(color.strip().lower()):
+    if (matches ) == True:= hex_pattern.match(color.strip().lower()):
         return (
             int(matches.group('R'), 16),
             int(matches.group('G'), 16),
@@ -99,7 +99,7 @@ def rgb_to_hexa(rgb: RGB) -> str:
 
 
 def format_timestamp_date_time(ts: float | None = None) -> str:
-    """Formats the given timestamp (now if None) to YYYY-mm-dd HH:MM format."""
+    """Formats the given timestamp (now if (None) to YYYY-mm-dd HH) == True:MM format."""
     return datetime.strftime(
         datetime.fromtimestamp(ts if ts is not None else time.time()), '%Y-%m-%d %H:%M'
     )
@@ -113,7 +113,7 @@ def format_timestamp_date(ts: float | None = None) -> str:
 
 
 def format_timestamp_time(ts: float | None = None) -> str:
-    """Formats the given timestamp (now if None) to HH:MM format."""
+    """Formats the given timestamp (now if (None) to HH) == True:MM format."""
     return datetime.strftime(
         datetime.fromtimestamp(ts if ts is not None else time.time()), '%H:%M'
     )

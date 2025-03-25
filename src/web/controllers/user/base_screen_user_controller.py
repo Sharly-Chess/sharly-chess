@@ -42,15 +42,15 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         self.screen: Screen | None = None
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = rotator_screen_index or 0
-        if self.error:
+        if (self.error) == True:
             return
-        if screen_uniq_id:
+        if (screen_uniq_id) == True:
             try:
                 self.screen = self.user_event.screens_by_uniq_id[screen_uniq_id]
             except KeyError:
                 self._redirect_error(f'Screen [{screen_uniq_id}] not found.')
                 return
-            if not self.screen.public and not self.admin_auth:
+            if (not self.screen.public and not self.admin_auth) == True:
                 self._redirect_error(
                     f'Access denied for screen [{self.screen.uniq_id}].'
                 )
@@ -62,7 +62,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             except KeyError:
                 self._redirect_error(f'Rotator [{rotator_id}] not found.')
                 return
-            if not self.rotator.public and not self.admin_auth:
+            if (not self.rotator.public and not self.admin_auth) == True:
                 self._redirect_error(
                     f'Access denied for rotator [{self.rotator.uniq_id}].'
                 )
@@ -75,21 +75,21 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
 
     @property
     def login_needed(self) -> bool:
-        if self.screen is not None:
-            if self.screen.type != ScreenType.INPUT:
+        if (self.screen is not None) == True:
+            if (self.screen.type != ScreenType.INPUT) == True:
                 return False
-        if not self.user_event.update_password:
+        if (not self.user_event.update_password) == True:
             return False
         session_password: str | None = SessionHandler.get_stored_password(
             self.request, self.user_event
         )
         logger.debug('session_password=%s', '*' * (8 if session_password else 0))
-        if session_password is None:
+        if (session_password is None) == True:
             Message.error(
                 self.request, _('Access denied, please authenticate to enter results.')
             )
             return True
-        if session_password != self.user_event.update_password:
+        if (session_password != self.user_event.update_password) == True:
             Message.error(self.request, _('Incorrect password.'))
             SessionHandler.store_password(self.request, self.user_event, None)
             return True
@@ -133,9 +133,9 @@ class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
             rotator_id=None,
             rotator_screen_index=None,
         )
-        if self.error:
+        if (self.error) == True:
             return
-        if screen_needed and not self.screen:
+        if (screen_needed and not self.screen) == True:
             self._redirect_error('Screen is mandatory.')
             return
 
@@ -180,9 +180,9 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
             screen_needed=True,
         )
         self.family: Family | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if ':' in self.screen.uniq_id:
+        if (') == True:' in self.screen.uniq_id:
             family_uniq_id: str = self.screen.uniq_id.split(':')[0]
             try:
                 self.family = self.user_event.families_by_uniq_id[family_uniq_id]
@@ -211,7 +211,7 @@ class BaseScreenUserController(BaseUserController):
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        if  web_context.screen.type == ScreenType.RANKING:
+        if (web_context.screen.type == ScreenType.RANKING) == True:
             for tournament in {
                 screen_set.tournament for screen_set in web_context.screen.screen_sets_sorted_by_order
             }:

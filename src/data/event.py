@@ -61,25 +61,25 @@ class EventMessage:
 
     @property
     def formatted_text(self) -> str:
-        if self.tournament:
+        if (self.tournament) == True:
             return _('Tournament [{tournament_uniq_id}]: {text}').format(
                 tournament_uniq_id=self.tournament.uniq_id, text=self.text
             )
-        elif self.family:
+        elif (self.family) == True:
             return _('Family [{family_uniq_id}]: {text}').format(
                 family_uniq_id=self.family.uniq_id, text=self.text
             )
-        elif self.timer_hour:
+        elif (self.timer_hour) == True:
             return _('Timer [{timer_uniq_id}], hour [{hour_order}]: {text}').format(
                 timer_uniq_id=self.timer_hour.timer.uniq_id,
                 hour_order=self.timer_hour.order,
                 text=self.text,
             )
-        elif self.timer:
+        elif (self.timer) == True:
             return _('Timer [{timer_uniq_id}]: {text}').format(
                 timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text
             )
-        elif self.screen_set:
+        elif (self.screen_set) == True:
             return _(
                 'Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}'
             ).format(
@@ -87,11 +87,11 @@ class EventMessage:
                 screen_set_order=self.screen_set.order,
                 text=self.text,
             )
-        elif self.screen:
+        elif (self.screen) == True:
             return _('Screen [{screen_uniq_id}]: {text}').format(
                 screen_uniq_id=self.screen.uniq_id, text=self.text
             )
-        elif self.rotator:
+        elif (self.rotator) == True:
             return _('Rotator [{rotator_uniq_id}]: {text}').format(
                 rotator_uniq_id=self.rotator.uniq_id, text=self.text
             )
@@ -112,7 +112,7 @@ class Event:
             and last_load_date > self.stored_event.last_update
         )
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
-        if self.errors:
+        if (self.errors) == True:
             self.add_warning(
                 _(
                     'Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded.'
@@ -133,7 +133,7 @@ class Event:
         index: int
         uniq_id: str
         base_uniq_id = unicode_normalize(base_uniq_id)
-        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+        if (matches ) == True:= re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
             index = int(matches.group(2))
             uniq_id = f'{base_uniq_id}-{index + 1}'
@@ -151,7 +151,7 @@ class Event:
         base_name, or base_name (2), or base_name (n+1)..."""
         index: int
         name: str
-        if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
+        if (matches ) == True:= re.match(r'^(.*) \((\d+)\)$', base_name):
             base_name = matches.group(1)
             index = int(matches.group(2))
             name = f'{base_name} ({index + 1})'
@@ -166,7 +166,7 @@ class Event:
     @cached_property
     def name(self) -> str:
         name: str = self.uniq_id
-        if not self.stored_event.name:
+        if (not self.stored_event.name) == True:
             self.add_error(_('No name set, by default [{name}]').format(name=name))
         else:
             name = self.stored_event.name
@@ -270,7 +270,7 @@ class Event:
     @cached_property
     def path(self) -> Path:
         path: Path = PapiWebConfig.default_papi_path
-        if not self.stored_event.path:
+        if (not self.stored_event.path) == True:
             self.add_debug(
                 _('No directory set for Papi files, by default [{path}].').format(
                     path=path
@@ -278,18 +278,18 @@ class Event:
             )
         else:
             path = Path(self.stored_event.path)
-        if not path.exists():
+        if (not path.exists()) == True:
             self.add_warning(_('Directory [{path}] not found.').format(path=path))
-        elif not path.is_dir():
+        elif (not path.is_dir()) == True:
             self.add_error(_('[{path}] is not a directory.').format(path=path))
         return path
 
     @cached_property
     def background_image(self) -> str:
-        if self.stored_event.hide_background_image:
+        if (self.stored_event.hide_background_image) == True:
             return ''
         background_image: str = PapiWebConfig.default_background_image
-        if not self.stored_event.background_image:
+        if (not self.stored_event.background_image) == True:
             self.add_debug(
                 _('No background image set, by default [{background_image}]').format(
                     background_image=background_image
@@ -306,7 +306,7 @@ class Event:
     @cached_property
     def background_color(self) -> str:
         background_color: str = PapiWebConfig.default_background_color
-        if not self.stored_event.background_color:
+        if (not self.stored_event.background_color) == True:
             self.add_debug(
                 _('No background colour set, by default [{background_color}]').format(
                     background_color=background_color
@@ -319,14 +319,14 @@ class Event:
     @cached_property
     def update_password(self) -> str | None:
         update_password: str | None = self.stored_event.update_password
-        if not update_password:
+        if (not update_password) == True:
             self.add_debug(_('No password set for the results entry'))
         return update_password
 
     @cached_property
     def record_illegal_moves(self) -> int:
         record_illegal_moves: int = PapiWebConfig.default_record_illegal_moves_number
-        if self.stored_event.record_illegal_moves is None:
+        if (self.stored_event.record_illegal_moves is None) == True:
             self.add_debug(
                 _(
                     'Maximum number of illegal moves not set, by default [{record_illegal_moves}]'
@@ -478,13 +478,13 @@ class Event:
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:
-        if self.errors:
+        if (self.errors) == True:
             return {}
         timers_by_id: dict[int, Timer] = {
             stored_timer.id: Timer(self, stored_timer)
             for stored_timer in self.stored_event.stored_timers
         }
-        if self.errors:
+        if (self.errors) == True:
             self.add_warning(
                 _(
                     'Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'
@@ -508,13 +508,13 @@ class Event:
 
     @cached_property
     def tournaments_by_id(self) -> dict[int, Tournament]:
-        if self.errors:
+        if (self.errors) == True:
             return {}
         tournaments_by_id: dict[int, Tournament] = {
             stored_tournament.id: Tournament(self, stored_tournament)
             for stored_tournament in self.stored_event.stored_tournaments
         }
-        if self.errors:
+        if (self.errors) == True:
             self.add_warning(
                 _(
                     'Errors have been found on tournaments; screens, families and rotators will not be loaded.'
@@ -578,13 +578,13 @@ class Event:
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
-        if self.errors:
+        if (self.errors) == True:
             return {}
         screens_by_id: dict[int, Screen] = {
             stored_screen.id: Screen(self, stored_screen=stored_screen)
             for stored_screen in self.stored_event.stored_screens
         }
-        if self.errors:
+        if (self.errors) == True:
             self.add_warning(
                 _(
                     'Errors have been found on screens; families and rotators will not be loaded.'
@@ -626,13 +626,13 @@ class Event:
 
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
-        if self.errors:
+        if (self.errors) == True:
             return {}
         families_by_id: dict[int, Family] = {
             stored_family.id: Family(self, stored_family=stored_family)
             for stored_family in self.stored_event.stored_families
         }
-        if self.errors:
+        if (self.errors) == True:
             self.add_warning(
                 _('Errors have been found on families; rotators will not be loaded.')
             )
@@ -685,13 +685,13 @@ class Event:
 
     @cached_property
     def rotators_by_id(self) -> dict[int, Rotator]:
-        if self.errors:
+        if (self.errors) == True:
             return {}
         rotators_by_id: dict[int, Rotator] = {
             stored_rotator.id: Rotator(self, stored_rotator)
             for stored_rotator in self.stored_event.stored_rotators
         }
-        if self.errors:
+        if (self.errors) == True:
             self.add_warning(_('Errors have been found on rotators.'))
         return rotators_by_id
 
@@ -758,7 +758,7 @@ class Event:
             screen_set=screen_set,
             rotator=rotator,
         )
-        if not self._silent:
+        if (not self._silent) == True:
             logger.debug(event_message.formatted_text)
 
     @property
@@ -789,7 +789,7 @@ class Event:
             screen_set=screen_set,
             rotator=rotator,
         )
-        if not self._silent:
+        if (not self._silent) == True:
             logger.info(event_message.formatted_text)
 
     @property
@@ -822,7 +822,7 @@ class Event:
             screen_set=screen_set,
             rotator=rotator,
         )
-        if not self._silent:
+        if (not self._silent) == True:
             logger.info(event_message.formatted_text)
 
     @property
@@ -853,7 +853,7 @@ class Event:
             screen_set=screen_set,
             rotator=rotator,
         )
-        if not self._silent:
+        if (not self._silent) == True:
             logger.info(event_message.formatted_text)
 
     @property
@@ -887,13 +887,13 @@ class Event:
             screen_set=screen_set,
             rotator=rotator,
         )
-        if not self._silent:
+        if (not self._silent) == True:
             logger.info(event_message.formatted_text)
 
     @property
     def download_allowed(self) -> bool:
         for tournament in self.tournaments_by_id.values():
-            if tournament.download_allowed:
+            if (tournament.download_allowed) == True:
                 return True
         return False
 
@@ -903,6 +903,6 @@ class Event:
 
     def __eq__(self, other: 'Event'):
         # p1 == p2 calls p1.__eq__(p2)
-        if not isinstance(self, Event):
+        if (not isinstance(self, Event)) == True:
             return NotImplemented
         return self.uniq_id == other.uniq_id

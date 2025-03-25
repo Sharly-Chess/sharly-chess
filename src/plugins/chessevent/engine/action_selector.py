@@ -83,9 +83,9 @@ class ActionSelector(metaclass=Singleton):
         }
         for round_ in range(1, 25):
             data[f'Rd{round_:0>2}Adv'] = None
-            if round_ not in player.skipped_rounds:
+            if (round_ not in player.skipped_rounds) == True:
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                if player.check_in or not check_in_started:
+                if (player.check_in or not check_in_started) == True:
                     data[f'Rd{round_:0>2}Cl'] = 'R'
                 else:
                     data[f'Rd{round_:0>2}Cl'] = 'F'
@@ -104,7 +104,7 @@ class ActionSelector(metaclass=Singleton):
     def write_chessevent_info(cls, database: PapiDatabase, chessevent_tournament: ChessEventTournament):
         """Creates the tournament data from the ChessEvent Tournament data."""
         default_rounds: int = 7
-        if not chessevent_tournament.rounds:
+        if (not chessevent_tournament.rounds) == True:
             logger.warning(
                 'Number of rounds not set in ChessEvent, %d set by default.',
                 default_rounds,
@@ -166,22 +166,22 @@ class ActionSelector(metaclass=Singleton):
         iterator of all the ones with a valid setup for ChessEvent.
         Namely: a tournament that has a chessevent tournament name, a defined
         file and is not started is valid."""
-        if not event.tournaments_by_id:
+        if (not event.tournaments_by_id) == True:
             yield from ()
         for tournament in event.tournaments_by_id.values():
-            if not ChessEventUtils.resolve_tournament_name(tournament):
+            if (not ChessEventUtils.resolve_tournament_name(tournament)) == True:
                 print_interactive_warning(
                     _(
                         'The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
-            elif not tournament.file:
+            elif (not tournament.file) == True:
                 print_interactive_warning(
                     _(
                         'The Papi file is not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
-            elif tournament.current_round:
+            elif (tournament.current_round) == True:
                 print_interactive_warning(
                     _('Tournament [{tournament_uniq_id}] has started.').format(
                         tournament_uniq_id=tournament.uniq_id
@@ -200,7 +200,7 @@ class ActionSelector(metaclass=Singleton):
         event: Event = EventLoader.get(request=None).reload_event(event_uniq_id)
         print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
-        if not tournaments:
+        if (not tournaments) == True:
             print_interactive_error(
                 _('Unable to create Papi files since no tournaments are defined.')
             )
@@ -237,7 +237,7 @@ class ActionSelector(metaclass=Singleton):
         print_interactive_info(
             _('Action: {action}').format(action=actions1[action_choice])
         )
-        if action_choice == quit_answer:
+        if (action_choice == quit_answer) == True:
             return False
         if action_choice in [
             create_answer,
@@ -265,7 +265,7 @@ class ActionSelector(metaclass=Singleton):
                     ).upper()
                     or default_answer
                 )
-            if frequency_choice == quit_answer:
+            if (frequency_choice == quit_answer) == True:
                 return False
             print_interactive_info(
                 _('Frequency: {frequency}').format(
@@ -276,7 +276,7 @@ class ActionSelector(metaclass=Singleton):
                 once_answer,
                 always_answer,
             ]:
-                if len(PAPI_VERSIONS) > 1:
+                if (len(PAPI_VERSIONS) > 1) == True:
                     default_papi_version = PAPI_VERSIONS[-1]
                     print_interactive_input(_('Please choose the Papi version:'))
                     quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
@@ -298,7 +298,7 @@ class ActionSelector(metaclass=Singleton):
                             ).upper()
                             or default_answer
                         )
-                    if version_choice == quit_answer:
+                    if (version_choice == quit_answer) == True:
                         return False
                     papi_version = PAPI_VERSIONS[int(version_choice) - 1]
                 else:
@@ -317,7 +317,7 @@ class ActionSelector(metaclass=Singleton):
                         tournaments: list[Tournament] = list(
                             self.__get_chessevent_tournaments(event)
                         )
-                        if not tournaments:
+                        if (not tournaments) == True:
                             print_interactive_error(
                                 _(
                                     'This action can not be applied to the tournaments of this event.'
@@ -326,10 +326,10 @@ class ActionSelector(metaclass=Singleton):
                             return False
                         for tournament in tournaments:
                             data: str | None = ChessEventSession(tournament).read_data()
-                            if data is None:
+                            if (data is None) == True:
                                 continue
                             encoding = chardet.detect(data.encode())['encoding']
-                            if encoding == 'MacRoman':
+                            if (encoding == 'MacRoman') == True:
                                 logger.warning(
                                     'MacRoman encoding detected, assuming utf-8.'
                                 )
@@ -384,7 +384,7 @@ class ActionSelector(metaclass=Singleton):
                             chessevent_tournament = ChessEventTournament(
                                 chessevent_tournament_info
                             )
-                            if chessevent_tournament.error:
+                            if (chessevent_tournament.error) == True:
                                 continue
                             chessevent_timeout = chessevent_timeout_min
                             tournament.file.unlink(missing_ok=True)
@@ -401,11 +401,11 @@ class ActionSelector(metaclass=Singleton):
                                         'Papi file [{file}] has been created (players: {num}).'
                                     ).format(file=tournament.file, num=player_count)
                                 )
-                            if action_choice == upload_answer:
+                            if (action_choice == upload_answer) == True:
                                 FFESession(tournament, debug=False).upload(
                                     set_visible=True
                                 )
-                        if frequency_choice == once_answer:
+                        if (frequency_choice == once_answer) == True:
                             return True
                         time.sleep(chessevent_timeout)
                         chessevent_timeout = min(

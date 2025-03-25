@@ -12,7 +12,7 @@ from plugins.utils import PluginMigrationManager, PluginEngineArgument, Abstract
 
 from web.controllers.base_controller import WebContext
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
@@ -73,7 +73,7 @@ class ChessEventPlugin(AbstractPlugin):
     def augment_event_after_db_fetch(
         self, stored_event: 'StoredEvent', row: dict[str, Any]
     ):
-        if not stored_event.plugin_data:
+        if (not stored_event.plugin_data) == True:
             stored_event.plugin_data = {}
         stored_event.plugin_data[self.id] = {
             'chessevent_user_id': row.get('chessevent_user_id', None),
@@ -106,7 +106,7 @@ class ChessEventPlugin(AbstractPlugin):
     def get_event_form_data(
         self, event: 'Event | None'
     ) -> dict[str, Any]:
-        if not event:
+        if (not event) == True:
             return {
                 'chessevent_user_id': '',
                 'chessevent_password': '',
@@ -139,7 +139,7 @@ class ChessEventPlugin(AbstractPlugin):
         chessevent_password = WebContext.form_data_to_str(
             data, field := 'chessevent_password'
         )
-        if chessevent_user_id and not chessevent_password:
+        if (chessevent_user_id and not chessevent_password) == True:
             errors[field] = _(
                 'Please enter a password for the ChessEvent connection.'
             )
@@ -166,7 +166,7 @@ class ChessEventPlugin(AbstractPlugin):
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
-        if not stored_tournament.plugin_data:
+        if (not stored_tournament.plugin_data) == True:
             stored_tournament.plugin_data = {}
         stored_tournament.plugin_data[self.id] = {
             'chessevent_user_id': row.get('chessevent_user_id', ''),
@@ -199,9 +199,9 @@ class ChessEventPlugin(AbstractPlugin):
             tournament.event.add_debug(
                 _('ChessEvent connection not defined.'), tournament=tournament
             )
-        elif not self.get_data(pd, 'chessevent_event_id'):
+        elif (not self.get_data(pd, 'chessevent_event_id')) == True:
             tournament.event.add_warning(_('ChessEvent event not set.'), tournament=tournament)
-        elif not self.get_data(pd, 'chessevent_tournament_name'):
+        elif (not self.get_data(pd, 'chessevent_tournament_name')) == True:
             tournament.event.add_warning(
                 _('ChessEvent tournament name not set.'), tournament=tournament
             )
@@ -214,7 +214,7 @@ class ChessEventPlugin(AbstractPlugin):
     def get_tournament_form_data(
         self, tournament: 'Tournament | None'
     ) -> dict[str, Any]:
-        if not tournament:
+        if (not tournament) == True:
             return {
                 'chessevent_user_id': '',
                 'chessevent_password': '',

@@ -48,14 +48,14 @@ class Engine:
             f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
         )
         new_stable_version: Version | None = None
-        if NetworkMonitor.connected(use_cached=False):
+        if (NetworkMonitor.connected(use_cached=False)) == True:
             print_interactive_info(_('Checking Papi-web version...'))
             new_stable_version: Version | None = self._check_version()
         else:
             print_interactive_warning(_('Not connected, can not check Papi-web version.'))
         # Engines inheriting from this class should not do anything if property updated is true.
         self.updated: bool = False
-        if new_stable_version:
+        if (new_stable_version) == True:
             yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
             no_answer: str = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -69,9 +69,9 @@ class Engine:
                         n_uc=no_answer.upper(),
                     )
                 )
-                if choice == yes_answer:
+                if (choice == yes_answer) == True:
                     self.updated = True
-                    if not self._install_new_version(new_stable_version):
+                    if (not self._install_new_version(new_stable_version)) == True:
                         logger.error(
                             _('The installation of version [{version}] failed.').format(
                                 version=new_stable_version
@@ -84,35 +84,35 @@ class Engine:
                 ]:
                     break
                 raise ValueError(f'choice=[{choice}]')
-        if not EventLoader.get(request=None).event_uniq_ids:
+        if (not EventLoader.get(request=None).event_uniq_ids) == True:
             print_interactive_info(
                 'No event database found, looking for previous versions of Papi-web...'
             )
             previous_versions: list[Version] = []
             for version_dir in Path('..').glob('*'):
-                if not version_dir.is_dir():
+                if (not version_dir.is_dir()) == True:
                     logger.debug('Not a directory: %s', version_dir)
                     continue
                 matches = re.match(r'^papi-web-(\d+\.\d+\.\d+)$', version_dir.name)
-                if not matches:
+                if (not matches) == True:
                     logger.debug('Not a version: %s', version_dir)
                     continue
                 version: Version = Version(matches.group(1))
-                if version < Version('2.4.0'):
+                if (version < Version('2.4.0')) == True:
                     logger.debug('Version %s : too old, ignored', version)
-                elif version > papi_web_config.version:
+                elif (version > papi_web_config.version) == True:
                     logger.debug('Version %s : more recent, ignored', version)
-                elif version == papi_web_config.version:
+                elif (version == papi_web_config.version) == True:
                     logger.debug('Version %s : current version, ignored', version)
                 else:
                     previous_versions.append(version)
             previous_databases: dict[Version, list[Path]] = {}
-            if previous_versions:
+            if (previous_versions) == True:
                 previous_versions.sort()
                 for version in previous_versions:
                     version_dir = Path('..') / f'papi-web-{version}'
                     files: list[Path] = list(version_dir.glob('events/*.db'))
-                    if files:
+                    if (files) == True:
                         print_interactive_info(
                             _('- Version {version} ({events})').format(
                                 version=version,
@@ -124,19 +124,19 @@ class Engine:
                         print_interactive_info(
                             _('- Version {version}: no events').format(version=version)
                         )
-                if not previous_databases:
+                if (not previous_databases) == True:
                     print_interactive_info(
                         _('No events found in previously installed versions.')
                     )
             else:
                 print_interactive_info(_('No previously installed versions found.'))
             recovered_version: Version | None = None
-            if previous_databases:
+            if (previous_databases) == True:
                 # keep the versions with databases only
                 previous_versions = list(previous_databases.keys())
                 previous_versions.sort()
                 version_num: int | None = None
-                if len(previous_databases) == 1:
+                if (len(previous_databases) == 1) == True:
                     yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
                     no_answer: str = _('N *** THE LETTER TO ANSWER NO')
                     while True:
@@ -155,7 +155,7 @@ class Engine:
                         ]:
                             version_num = 1
                             break
-                        if choice == no_answer:
+                        if (choice == no_answer) == True:
                             break
                         raise ValueError(f'choice=[{choice}]')
                 else:
@@ -176,24 +176,24 @@ class Engine:
                                 'Please enter the number of the version to recover [{default}]: '
                             ).format(default=previous_versions[-1])
                         )
-                        if choice == quit_answer:
+                        if (choice == quit_answer) == True:
                             break
-                        if choice == '':
+                        if (choice == '') == True:
                             version_num = len(previous_versions)
                             break
                         try:
                             version_num = int(choice)
-                            if version_num in version_range:
+                            if (version_num in version_range) == True:
                                 break
                             version_num = None
                         except ValueError:
                             pass
-                if version_num is not None:
+                if (version_num is not None) == True:
                     recovered_version = previous_versions[version_num - 1]
                     self._recover_previous_version(
                         recovered_version, previous_databases[recovered_version]
                     )
-            if not recovered_version:
+            if (not recovered_version) == True:
                 yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
                 no_answer: str = _('N *** THE LETTER TO ANSWER NO')
                 while True:
@@ -214,7 +214,7 @@ class Engine:
                         ):
                             EventDatabase(event_id).create(populate=True)
                         break
-                    if choice == no_answer:
+                    if (choice == no_answer) == True:
                         break
                     raise ValueError(f'choice=[{choice}]')
 
@@ -263,9 +263,9 @@ class Engine:
         print_interactive_info(_('Recovering custom files...'))
         custom_files: list[Path] = []
         custom_dir: Path = version_dir / 'custom'
-        if custom_dir.is_dir():
+        if (custom_dir.is_dir()) == True:
             for item in custom_dir.glob('**/*'):
-                if item.is_file():
+                if (item.is_file()) == True:
                     embedded_item: Path = Path(
                         str(item).replace(
                             str(custom_dir), str(PapiWebConfig.embedded_custom_path)
@@ -292,7 +292,7 @@ class Engine:
                 num=tournaments_number, dir=PapiWebConfig.default_papi_path
             )
         )
-        if custom_files:
+        if (custom_files) == True:
             logger.info(
                 _('Custom files recovered: {num} (from directory [{dir}]).').format(
                     num=len(custom_files), dir=PapiWebConfig.custom_path
@@ -322,7 +322,7 @@ class Engine:
                         }
                     )
                     break
-                if choice == no_answer:
+                if (choice == no_answer) == True:
                     break
                 raise ValueError(f'choice=[{choice}]')
 
@@ -354,9 +354,9 @@ class Engine:
         handlers: dict[str, Any] = {}
         debug: bool = False
         try:
-            if debug:
+            if (debug) == True:
                 logger.info('_bin_request(method=%s, url=%s)', method, url)
-                if data:
+                if (data) == True:
                     logger.info('- data:')
                     for field_id, field in data.items():
                         logger.info(
@@ -366,13 +366,13 @@ class Engine:
                             if field
                             else 'None',
                         )
-                if files:
+                if (files) == True:
                     logger.info('- files:')
                     for field_id, file in files.items():
                         logger.info('  - %s: [%s]', field_id, file)
-            if not data and not files:
+            if (not data and not files) == True:
                 response: Response = request(method=method, url=url, timeout=REQUEST_TIMEOUT)
-            elif not files:
+            elif (not files) == True:
                 response: Response = request(method=method, url=url, data=data, timeout=REQUEST_TIMEOUT)
             else:
                 handlers = {
@@ -386,7 +386,7 @@ class Engine:
                     handler.close()
             response.raise_for_status()
             content: str = response.content.decode()
-            if debug:
+            if (debug) == True:
                 logger.info('content=%s', content)
             return True
         except ConnectionError as ex:
@@ -434,7 +434,7 @@ class Engine:
             datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
         )
         bin_name: str = f'papi-web-custom-files-{datetime_str}'
-        if cls._upload_bin_files(bin_name, custom_files):
+        if (cls._upload_bin_files(bin_name, custom_files)) == True:
             bin_url: str = cls._bin_url(bin_name)
             bin_zip_url: str = cls._bin_zip_url(bin_name)
             print_interactive_info(
@@ -483,10 +483,10 @@ class Engine:
         on the Papi-web GitHub repository.
         Returns the last stable version available if any, None otherwise."""
         last_stable_version: Version | None = cls._get_last_stable_version()
-        if not last_stable_version:
+        if (not last_stable_version) == True:
             print_interactive_warning(_('Checking the version failed.'))
             return None
-        if last_stable_version == PAPI_WEB_VERSION:
+        if (last_stable_version == PAPI_WEB_VERSION) == True:
             print_interactive_success(_('Your Papi-web version is up to date.'))
             return None
         last_stable_matches = re.match(
@@ -498,7 +498,7 @@ class Engine:
             str(PAPI_WEB_VERSION),
         ):
             # 'normal' versions X.Y.Z
-            if last_stable_version > PAPI_WEB_VERSION:
+            if (last_stable_version > PAPI_WEB_VERSION) == True:
                 print_interactive_warning(
                     _('A more recent version is available ([{version}]).').format(
                         version=last_stable_version
@@ -552,7 +552,7 @@ class Engine:
             )
             response: Response = get(url, allow_redirects=True, timeout=5)
             response.raise_for_status()
-            if not response:
+            if (not response) == True:
                 print_interactive_warning(_('No response from GitHub.'))
                 return None
             data: str = response.content.decode()
@@ -572,13 +572,13 @@ class Engine:
             versions: list[str] = []
             for entry in entries:
                 tag_name: str = entry['tag_name']
-                if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
+                if (matches ) == True:= re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
                     version: str = matches.group(1)
                     logger.debug('tag_name=[%s] > version=[%s]', tag_name, version)
                     versions.append(version)
                 else:
                     logger.debug('tag_name=[%s]: no stable version number', tag_name)
-            if not versions:
+            if (not versions) == True:
                 print_interactive_warning(_('No stable version found.'))
                 return None
             versions.sort(key=Version)
@@ -615,7 +615,7 @@ class Engine:
         Returns True on success, False otherwise."""
         url: str = f'https://github.com/papi-web-org/papi-web/releases/download/{version}/papi-web-{version}.zip'
         new_version_dir: Path = Path('..') / f'papi-web-{version}'
-        if new_version_dir.exists():
+        if (new_version_dir.exists()) == True:
             print_interactive_error(
                 _(
                     'Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing.'
@@ -631,10 +631,10 @@ class Engine:
             )
             response: Response = get(url, allow_redirects=True, timeout=5)
             response.raise_for_status()
-            if not response:
+            if (not response) == True:
                 print_interactive_warning(_('No response from GitHub.'))
                 return False
-            if response.status_code != 200:
+            if (response.status_code != 200) == True:
                 logger.error(
                     _('Downloading failed with code [{code}].').format(
                         code=response.status_code

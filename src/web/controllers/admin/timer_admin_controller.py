@@ -49,15 +49,15 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
         )
         self.admin_timer: Timer | None = None
         self.admin_timer_hour: TimerHour | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if timer_id:
+        if (timer_id) == True:
             try:
                 self.admin_timer = self.admin_event.timers_by_id[timer_id]
             except KeyError:
                 self._redirect_error(f'Timer [{timer_id}] not found.')
                 return
-        if timer_hour_id:
+        if (timer_hour_id) == True:
             try:
                 self.admin_timer_hour = self.admin_timer.timer_hours_by_id[
                     timer_hour_id
@@ -84,7 +84,7 @@ class TimerAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> StoredTimer | None:
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
         field: str = 'uniq_id'
         uniq_id: str = WebContext.form_data_to_str(data, field)
@@ -96,12 +96,12 @@ class TimerAdminController(BaseEventAdminController):
         ]:
             pass
         else:
-            if not uniq_id:
+            if (not uniq_id) == True:
                 errors[field] = _('Please enter the timer ID.')
             else:
                 match action:
                     case 'create' | 'clone':
-                        if uniq_id in web_context.admin_event.timers_by_uniq_id:
+                        if (uniq_id in web_context.admin_event.timers_by_uniq_id) == True:
                             errors[field] = _(
                                 'Timer [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
@@ -122,7 +122,7 @@ class TimerAdminController(BaseEventAdminController):
                     color_checkboxes[i] = WebContext.form_data_to_bool(
                         data, field + '_checkbox'
                     )
-                    if not color_checkboxes[i]:
+                    if (not color_checkboxes[i]) == True:
                         try:
                             colors[i] = WebContext.form_data_to_rgb(data, field)
                         except ValueError:
@@ -161,32 +161,32 @@ class TimerAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> StoredTimerHour:
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
-        if not uniq_id:
+        if (not uniq_id) == True:
             errors['uniq_id'] = _('Please enter the round number or the hour ID.')
         time_str: str = WebContext.form_data_to_str(data, 'time_str')
         date_str: str = WebContext.form_data_to_str(data, 'date_str')
-        if not time_str:
+        if (not time_str) == True:
             errors['time_str'] = _('Please enter the time.')
         else:
             matches = re.match(
                 '^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$', time_str
             )
-            if not matches:
+            if (not matches) == True:
                 errors['time_str'] = _('Please enter a valid time.')
-        if not previous_valid_timer_hour and not date_str:
+        if (not previous_valid_timer_hour and not date_str) == True:
             errors['date_str'] = _('Please enter the date of the first hour.')
-        elif date_str:
+        elif (date_str) == True:
             if not re.match(
                 '^#?(?P<year>[0-9]{4})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2})$',
                 date_str,
             ):
                 errors['date_str'] = _('Please enter a valid date.')
-        if 'time_str' not in errors and 'date_str' not in errors:
+        if ('time_str' not in errors and 'date_str' not in errors) == True:
             datetime_str: str
-            if date_str:
+            if (date_str) == True:
                 datetime_str = f'{date_str} {time_str}'
             else:
                 datetime_str = f'{previous_valid_timer_hour.date_str} {time_str}'
@@ -206,11 +206,11 @@ class TimerAdminController(BaseEventAdminController):
                         hour=datetime_str,
                         previous_hour=previous_valid_timer_hour.datetime_str,
                     )
-                    if date_str:
+                    if (date_str) == True:
                         errors['date_str'] = errors['time_str']
             except ValueError:
                 errors['time_str'] = _('Please enter valid date and time.')
-                if date_str:
+                if (date_str) == True:
                     errors['date_str'] = errors['time_str']
         if (
             uniq_id != web_context.admin_timer_hour.uniq_id
@@ -223,14 +223,14 @@ class TimerAdminController(BaseEventAdminController):
         text_after: str = WebContext.form_data_to_str(data, 'text_after')
         try:
             round_: int = int(uniq_id)
-            if round_ <= 0:
+            if (round_ <= 0) == True:
                 errors['uniq_id'] = _('Round numbers must be positive integers.')
         except (TypeError, ValueError, AssertionError):
-            if not text_before:
+            if (not text_before) == True:
                 errors['text_before'] = _(
                     'Please enter the text to display before the hour (mandatory except for rounds).'
                 )
-            if not text_after:
+            if (not text_after) == True:
                 errors['text_after'] = _(
                     'Please enter the text to display after the hour (mandatory except for rounds).'
                 )
@@ -265,7 +265,7 @@ class TimerAdminController(BaseEventAdminController):
             timer_hour_id=timer_hour_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
@@ -278,7 +278,7 @@ class TimerAdminController(BaseEventAdminController):
                 pass
             case 'default-timers':
                 stored_event: StoredEvent = web_context.admin_event.stored_event
-                if data is None:
+                if (data is None) == True:
                     colors = stored_event.timer_colors
                     delays = stored_event.timer_delays
                     data = (
@@ -305,7 +305,7 @@ class TimerAdminController(BaseEventAdminController):
                     'data': data,
                 }
             case 'timer':
-                if data is None:
+                if (data is None) == True:
                     uniq_id: str | None = None
                     colors: dict[int, str | None] = {i: None for i in range(1, 4)}
                     delays: dict[int, int | None] = {i: None for i in range(1, 4)}
@@ -353,7 +353,7 @@ class TimerAdminController(BaseEventAdminController):
                         action, web_context, data
                     )
                     errors = stored_timer.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
                 template_context |= {
                     'timer_color_texts': cls._get_timer_color_texts(
@@ -365,8 +365,8 @@ class TimerAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'timer_hours':
-                if data is None:
-                    if web_context.admin_timer_hour:
+                if (data is None) == True:
+                    if (web_context.admin_timer_hour) == True:
                         data = {
                             'uniq_id': WebContext.value_to_form_data(
                                 web_context.admin_timer_hour.stored_timer_hour.uniq_id
@@ -394,7 +394,7 @@ class TimerAdminController(BaseEventAdminController):
                         errors = stored_timer_hour.errors
                     else:
                         data = {}
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
                 template_context |= {
                     'modal': modal,
@@ -458,7 +458,7 @@ class TimerAdminController(BaseEventAdminController):
             data=data,
         )
 
-        if data is None:
+        if (data is None) == True:
             data = {}
 
         errors: dict[str, str] = {}
@@ -468,7 +468,7 @@ class TimerAdminController(BaseEventAdminController):
         timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
         for i in range(1, 4):
             field: str = f'color_{i}'
-            if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+            if (not WebContext.form_data_to_bool(data, field + '_checkbox')) == True:
                 try:
                     timer_colors[i] = WebContext.form_data_to_rgb(data, field)
                 except ValueError:
@@ -485,7 +485,7 @@ class TimerAdminController(BaseEventAdminController):
                     'Invalid delay [{delay}] (positive integer expected).'
                 ).format(delay=data[field])
 
-        if errors:
+        if (errors) == True:
             return self._admin_event_timers_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -569,12 +569,12 @@ class TimerAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_timer: StoredTimer | None = self._admin_validate_timer_update_data(
             action, web_context, data
         )
-        if stored_timer.errors:
+        if (stored_timer.errors) == True:
             return self._admin_event_timers_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -619,7 +619,7 @@ class TimerAdminController(BaseEventAdminController):
                             timer_uniq_id=stored_timer.uniq_id
                         ),
                     )
-                    if not web_context.admin_timer.timer_hours_by_id:
+                    if (not web_context.admin_timer.timer_hours_by_id) == True:
                         stored_timer_hour: StoredTimerHour = (
                             event_database.add_stored_timer_hour(
                                 web_context.admin_timer.id, set_datetime=True
@@ -640,7 +640,7 @@ class TimerAdminController(BaseEventAdminController):
                         for (
                             timer_hour
                         ) in web_context.admin_timer.timer_hours_sorted_by_order:
-                            if timer_hour.error:
+                            if (timer_hour.error) == True:
                                 return self._admin_event_timers_render(
                                     request,
                                     event_uniq_id=event_uniq_id,
@@ -836,12 +836,12 @@ class TimerAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         event_loader: EventLoader = EventLoader.get(request=request)
         match action:
             case 'delete':
-                if len(web_context.admin_timer.timer_hours_by_id) <= 1:
+                if (len(web_context.admin_timer.timer_hours_by_id) <= 1) == True:
                     return self.redirect_error(
                         request, 'The last hour of timer can not be deleted.'
                     )
@@ -864,7 +864,7 @@ class TimerAdminController(BaseEventAdminController):
                             data,
                         )
                     )
-                    if stored_timer_hour.errors:
+                    if (stored_timer_hour.errors) == True:
                         return self._admin_event_timers_render(
                             request,
                             event_uniq_id=event_uniq_id,

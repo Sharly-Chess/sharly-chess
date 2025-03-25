@@ -48,7 +48,7 @@ class AdminWebContext(WebContext):
     ):
         super().__init__(request, data=data)
         self.admin_tab: str | None = admin_tab
-        if self.error:
+        if (self.error) == True:
             return
         self.check_admin_tab()
 
@@ -93,7 +93,7 @@ class BaseAdminController(BaseController):
     @staticmethod
     def _get_federation_options(default_federation: str | None):
         federation_options: dict[str, str] = {}
-        if default_federation:
+        if (default_federation) == True:
             federation_options = {
                 default_federation: _('By default - {option}').format(
                     option=f'{default_federation} - {PapiWebConfig.federations[default_federation]}'
@@ -167,7 +167,7 @@ class BaseAdminController(BaseController):
             'boards': _('Pairings by board'),
             'players': _('Pairings by player'),
         }
-        if not family_screens_only:
+        if (not family_screens_only) == True:
             options['results'] = _('Last results')
             options['image'] = _('Image')
         return options
@@ -241,11 +241,11 @@ class BaseAdminController(BaseController):
     ) -> str | None:
         field: str = 'rules'
         rules: str | None = WebContext.form_data_to_str(data, field)
-        if rules:
-            if validators.url(rules):
+        if (rules) == True:
+            if (validators.url(rules)) == True:
                 try:
                     response = requests.get(rules, timeout=REQUEST_TIMEOUT)
-                    if response.status_code != 200:
+                    if (response.status_code != 200) == True:
                         errors[field] = _(
                             'URL [{url}] responded code [{code}].'
                         ).format(url=rules, code=response.status_code)
@@ -254,14 +254,14 @@ class BaseAdminController(BaseController):
                         'URL [{url}] did not respond (error: [{error}]).'
                     ).format(url=rules, error=str(ce))
             else:
-                if rules.find('..') != -1:
+                if (rules.find('..') != -1) == True:
                     errors[field] = _('Incorrect path [{path}].').format(path=rules)
                     data[field] = ''
                 else:
                     file: Path = Path(rules)
-                    if not file.exists() or not file.is_file():
+                    if (not file.exists() or not file.is_file()) == True:
                         errors[field] = _('File [{file}] not found.').format(file=rules)
-                    elif file.suffix.lower() != '.pdf':
+                    elif (file.suffix.lower() != '.pdf') == True:
                         errors[field] = _(
                             'Wrong file extension [{ext}] ([pdf] expected).'
                         ).format(ext=file.suffix)
@@ -275,7 +275,7 @@ class BaseAdminController(BaseController):
         field: str = 'background_color'
         background_color: str | None = None
         color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
-        if not color_checkbox:
+        if (not color_checkbox) == True:
             try:
                 background_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
@@ -292,19 +292,19 @@ class BaseAdminController(BaseController):
         admin_event: Event | None,
         data: dict[str, str] | None = None,
     ) -> StoredEvent:
-        if data is None:
+        if (data is None) == True:
             data = {}
         errors: dict[str, str] = {}
         uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
-        if action == 'delete':
-            if not uniq_id:
+        if (action == 'delete') == True:
+            if (not uniq_id) == True:
                 errors['uniq_id'] = _('Please enter the event ID.')
-            elif uniq_id != admin_event.uniq_id:
+            elif (uniq_id != admin_event.uniq_id) == True:
                 errors['uniq_id'] = _('event ID does not match.')
         else:
-            if not uniq_id:
+            if (not uniq_id) == True:
                 errors['uniq_id'] = _('Please enter the event ID.')
-            elif uniq_id.find('/') != -1:
+            elif (uniq_id.find('/') != -1) == True:
                 errors['uniq_id'] = _('Character [{char}] is not allowed.').format(
                     char='/'
                 )
@@ -314,12 +314,12 @@ class BaseAdminController(BaseController):
                 ).event_uniq_ids
                 match action:
                     case 'clone' | 'create':
-                        if uniq_id in event_uniq_ids:
+                        if (uniq_id in event_uniq_ids) == True:
                             errors['uniq_id'] = _(
                                 'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
-                        if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
+                        if (uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids) == True:
                             errors['uniq_id'] = _(
                                 'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
@@ -343,19 +343,19 @@ class BaseAdminController(BaseController):
         match action:
             case 'clone' | 'update' | 'create':
                 name = WebContext.form_data_to_str(data, field := 'name')
-                if not name:
+                if (not name) == True:
                     errors[field] = _('Please enter the name of the event.')
                 federation = WebContext.form_data_to_str(
                     data, field := 'federation', PapiWebConfig().default_federation
                 )
-                if federation not in PapiWebConfig.federations:
+                if (federation not in PapiWebConfig.federations) == True:
                     # should never happen, not translated.
                     errors[field] = f'Invalid federation value [{data[field]}].'
                     data[field] = ''
                 start_str: str | None = WebContext.form_data_to_str(
                     data, field := 'start'
                 )
-                if not start_str:
+                if (not start_str) == True:
                     errors[field] = _('Please enter the start date of the event.')
                 else:
                     start = time.mktime(
@@ -364,13 +364,13 @@ class BaseAdminController(BaseController):
                 stop_str: str | None = WebContext.form_data_to_str(
                     data, field := 'stop'
                 )
-                if not stop_str:
+                if (not stop_str) == True:
                     errors[field] = _('Please enter the end date of the event.')
                 else:
                     stop = time.mktime(
                         datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
                     )
-                if 'start' not in errors and 'stop' not in errors and start > stop:
+                if ('start' not in errors and 'stop' not in errors and start > stop) == True:
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
                 path = WebContext.form_data_to_str(data, 'path')
@@ -379,12 +379,12 @@ class BaseAdminController(BaseController):
                 hide_background_image = WebContext.form_data_to_bool(
                     data, field + '_checkbox'
                 )
-                if not hide_background_image:
-                    if background_image := WebContext.form_data_to_str(data, field, ''):
-                        if validators.url(background_image):
+                if (not hide_background_image) == True:
+                    if (background_image ) == True:= WebContext.form_data_to_str(data, field, ''):
+                        if (validators.url(background_image)) == True:
                             try:
                                 response = requests.get(background_image, timeout=REQUEST_TIMEOUT)
-                                if response.status_code != 200:
+                                if (response.status_code != 200) == True:
                                     errors[field] = _(
                                         'URL [{url}] responded code [{code}].'
                                     ).format(
@@ -394,13 +394,13 @@ class BaseAdminController(BaseController):
                                 errors[field] = _(
                                     'URL [{url}] did not respond (error: [{error}]).'
                                 ).format(url=background_image, error=str(ce))
-                        elif Path(background_image).exists():
+                        elif (Path(background_image).exists()) == True:
                             errors[field] = _(
                                 'Please enter a URL or select an image on the right hand side.'
                             )
                         else:
                             background_image = background_image.strip('/')
-                            if background_image.find('..') != -1:
+                            if (background_image.find('..') != -1) == True:
                                 errors[field] = _('Incorrect path [{path}].').format(
                                     path=background_image
                                 )
@@ -427,7 +427,7 @@ class BaseAdminController(BaseController):
                 field: str = 'message_text'
                 message_text = WebContext.form_data_to_str(data, field)
                 field: str = 'message_color'
-                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+                if (not WebContext.form_data_to_bool(data, field + '_checkbox')) == True:
                     try:
                         message_color = WebContext.form_data_to_rgb(data, field)
                     except ValueError:
@@ -435,7 +435,7 @@ class BaseAdminController(BaseController):
                             'Invalid color [{color}] ([#RRGGBB] expected).'
                         ).format(color={data[field]})
                 field: str = 'message_background_color'
-                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+                if (not WebContext.form_data_to_bool(data, field + '_checkbox')) == True:
                     try:
                         message_background_color = WebContext.form_data_to_rgb(
                             data, field
@@ -495,11 +495,11 @@ class BaseAdminController(BaseController):
                     .replace('\\', '/')
                     .lstrip('/')
                 )
-                if item.is_dir():
-                    if item_str not in dirs:
+                if (item.is_dir()) == True:
+                    if (item_str not in dirs) == True:
                         dirs.append(item_str)
                 else:
-                    if item_str not in files:
+                    if (item_str not in files) == True:
                         files.append(item_str)
         dir_nodes: list[dict[str, str]] = [
             {
@@ -671,24 +671,24 @@ class BaseAdminController(BaseController):
             data: dict[str, str] | None = None,
     ) -> StoredConfig:
         papi_web_config: PapiWebConfig = PapiWebConfig()
-        if data is None:
+        if (data is None) == True:
             data = {}
         errors: dict[str, str] = {}
         log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
-        if log_level and log_level not in papi_web_config.log_levels:
+        if (log_level and log_level not in papi_web_config.log_levels) == True:
             errors[field] = _('Invalid log level [{log_level}].').format(log_level=log_level)
             data[field] = ''
         launch_browser: bool | None = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(data, field := 'federation')
         federation: Federation | None = None
-        if federation_name:
-            if federation_name not in papi_web_config.federations:
+        if (federation_name) == True:
+            if (federation_name not in papi_web_config.federations) == True:
                 errors[field] = _('Invalid federation [{federation}].').format(federation=federation_name)
                 data[field] = ''
             else:
                 federation = Federation(federation_name)
         locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
-        if locale and locale not in papi_web_config.locales:
+        if (locale and locale not in papi_web_config.locales) == True:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
@@ -704,11 +704,11 @@ class BaseAdminController(BaseController):
     def _admin_validate_plugins_update_data(
         cls, data: dict[str, str] | None = None
     ) -> list[StoredPlugin]:
-        if data is None:
+        if (data is None) == True:
             data = {}
         stored_plugins: list[StoredPlugin] = []
         for plugin in plugin_manager.all_plugins:
-            if not plugin.is_state_editable:
+            if (not plugin.is_state_editable) == True:
                 continue
             errors: dict[str, str] = {}
             stored_plugins.append(
@@ -781,9 +781,9 @@ class BaseAdminController(BaseController):
                 'disabled': False,
             },
         }
-        if papi_web_config.force_edit:
+        if (papi_web_config.force_edit) == True:
             web_context.admin_tab = 'config'
-        if not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']:
+        if (not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']) == True:
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
@@ -815,7 +815,7 @@ class BaseAdminController(BaseController):
             case None:
                 pass
             case 'config':
-                if data is None:
+                if (data is None) == True:
                     papi_web_config: PapiWebConfig = PapiWebConfig()
                     data = {
                         'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
@@ -836,7 +836,7 @@ class BaseAdminController(BaseController):
                     errors = stored_config.errors
                     for stored_plugin in stored_plugins:
                         errors |= stored_plugin.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
                 log_level_options: dict[str, str] = {
                     '': '-',
@@ -861,7 +861,7 @@ class BaseAdminController(BaseController):
                     locale: locale_localized_name(locale)
                     for locale in trusted_locales
                 }
-                if EXPERIMENTAL_FEATURES:
+                if (EXPERIMENTAL_FEATURES) == True:
                     locale_options |= {
                         locale: locale_localized_name(locale)
                         for locale in untrusted_locales
@@ -882,7 +882,7 @@ class BaseAdminController(BaseController):
                 }
             case 'event':
                 action: str = 'create'
-                if data is None:
+                if (data is None) == True:
                     data = cls._prepare_event_modal_data(
                         action, web_context.request, None
                     )
@@ -890,7 +890,7 @@ class BaseAdminController(BaseController):
                         action, web_context.request, None, data
                     )
                     errors = stored_event.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
 
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
@@ -916,7 +916,7 @@ class BaseAdminController(BaseController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
-        if "modal" in context:
+        if ("modal" in context) == True:
             return HTMXTemplate(
                 template_name='admin/modals.html',
                 context=context,

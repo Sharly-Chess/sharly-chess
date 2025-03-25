@@ -19,7 +19,7 @@ from data.util import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.event import Event
     from data.family import Family
 
@@ -36,7 +36,7 @@ class Screen:
         family: 'Family | None' = None,
         family_part: int | None = None,
     ):
-        if stored_screen is None:
+        if (stored_screen is None) == True:
             assert family is not None and family_part is not None, (
                 f'screen={stored_screen}, family={family}, family_part={family_part}'
             )
@@ -61,7 +61,7 @@ class Screen:
     def screen_sets_by_id(self) -> dict[int | None, ScreenSet]:
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
-                if self.stored_screen:
+                if (self.stored_screen) == True:
                     return {
                         stored_screen_set.id: ScreenSet(
                             self, stored_screen_set=stored_screen_set
@@ -109,8 +109,8 @@ class Screen:
 
     @property
     def name(self) -> str:
-        if self.stored_screen:
-            if self.stored_screen.name:
+        if (self.stored_screen) == True:
+            if (self.stored_screen.name) == True:
                 return self.stored_screen.name
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT:
@@ -128,8 +128,8 @@ class Screen:
 
     @property
     def columns(self) -> int:
-        if self.stored_screen:
-            if self.stored_screen.columns:
+        if (self.stored_screen) == True:
+            if (self.stored_screen.columns) == True:
                 return self.stored_screen.columns
             else:
                 return 1
@@ -156,13 +156,13 @@ class Screen:
     def default_boards_screen_menu_text(
         single_tournament: bool, first_last: bool
     ) -> str:
-        if single_tournament:
-            if first_last:
+        if (single_tournament) == True:
+            if (first_last) == True:
                 return _('Boards %f-%l')
             else:
                 return _('By board')
         else:
-            if first_last:
+            if (first_last) == True:
                 return _('%t [Boards %f-%l]')
             else:
                 return _('%t (by board)')
@@ -171,13 +171,13 @@ class Screen:
     def default_players_screen_menu_text(
         single_tournament: bool, first_last: bool
     ) -> str:
-        if single_tournament:
-            if first_last:
+        if (single_tournament) == True:
+            if (first_last) == True:
                 return '%f-%l'
             else:
                 return _('By player')
         else:
-            if first_last:
+            if (first_last) == True:
                 return '%t [%f-%l]'
             else:
                 return _('%t (by player)')
@@ -188,32 +188,32 @@ class Screen:
             first_last: bool,
             crosstable: bool,
     ) -> str:
-        if single_tournament:
-            if first_last:
-                if crosstable:
+        if (single_tournament) == True:
+            if (first_last) == True:
+                if (crosstable) == True:
                     return _('Crosstable %f-%l')
                 else:
                     return _('Ranking %f-%l')
             else:
-                if crosstable:
+                if (crosstable) == True:
                     return _('Crosstable')
                 else:
                     return _('Ranking')
         else:
-            if first_last:
-                if crosstable:
+            if (first_last) == True:
+                if (crosstable) == True:
                     return '%t crosstable [%f-%l]'
                 else:
                     return '%t ranking [%f-%l]'
             else:
-                if crosstable:
+                if (crosstable) == True:
                     return '%t crosstable'
                 else:
                     return _('%t ranking')
 
     @property
     def menu_label(self) -> str | None:
-        if not self.menu_link:
+        if (not self.menu_link) == True:
             return None
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
@@ -228,40 +228,40 @@ class Screen:
                     text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
-                elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+                elif (self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]) == True:
                     text = self.menu_text or self.default_players_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
-                elif self.type == ScreenType.RANKING:
+                elif (self.type == ScreenType.RANKING) == True:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last, crosstable=self.ranking_crosstable
                     )
                 else:
                     text = self.menu_text
                 text = text.replace('%t', screen_set.tournament.name)
-                if self.type == ScreenType.RANKING:
-                    if '%f' in text:
+                if (self.type == ScreenType.RANKING) == True:
+                    if ('%f' in text) == True:
                         text = text.replace('%f', str(screen_set.first_player_by_rank.rank))
-                    if '%l' in text:
+                    if ('%l' in text) == True:
                         text = text.replace('%l', str(screen_set.last_player_by_rank.rank))
                 elif (
                     self.type == ScreenType.PLAYERS
                     or not screen_set.tournament.current_round
                 ):
-                    if screen_set.first_player_by_name:
+                    if (screen_set.first_player_by_name) == True:
                         text = text.replace(
                             '%f',
                             str(screen_set.first_player_by_name.last_name[:3]).upper(),
                         )
-                    if screen_set.last_player_by_name:
+                    if (screen_set.last_player_by_name) == True:
                         text = text.replace(
                             '%l',
                             str(screen_set.last_player_by_name.last_name[:3]).upper(),
                         )
-                elif self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]:
-                    if '%f' in text:
+                elif (self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]) == True:
+                    if ('%f' in text) == True:
                         text = text.replace('%f', str(screen_set.first_board.id))
-                    if '%l' in text:
+                    if ('%l' in text) == True:
                         text = text.replace('%l', str(screen_set.last_board.id))
                 return text
             case ScreenType.RESULTS:
@@ -271,17 +271,17 @@ class Screen:
 
     def _menu_screens(self, admin: bool) -> list[Self]:
         menu_screens: list[Self] = []
-        if self.menu is not None:
+        if (self.menu is not None) == True:
             for menu_part in map(str.strip, self.menu.split(',')):
-                if not menu_part:
+                if (not menu_part) == True:
                     continue
-                if menu_part == '@boards':
+                if (menu_part == '@boards') == True:
                     part_menu_screens: list[Screen] = (
                         self.event.boards_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_boards_screens_sorted_by_uniq_id
                     )
-                    if not part_menu_screens:
+                    if (not part_menu_screens) == True:
                         self.event.add_warning(
                             _(
                                 'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
@@ -290,13 +290,13 @@ class Screen:
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == '@input':
+                if (menu_part == '@input') == True:
                     part_menu_screens: list[Screen] = (
                         self.event.input_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_input_screens_sorted_by_uniq_id
                     )
-                    if not part_menu_screens:
+                    if (not part_menu_screens) == True:
                         self.event.add_warning(
                             _(
                                 'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
@@ -305,13 +305,13 @@ class Screen:
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == '@players':
+                if (menu_part == '@players') == True:
                     part_menu_screens: list[Screen] = (
                         self.event.players_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_players_screens_sorted_by_uniq_id
                     )
-                    if not part_menu_screens:
+                    if (not part_menu_screens) == True:
                         self.event.add_warning(
                             _(
                                 'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
@@ -320,13 +320,13 @@ class Screen:
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == '@results':
+                if (menu_part == '@results') == True:
                     part_menu_screens: list[Screen] = (
                         self.event.results_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_results_screens_sorted_by_uniq_id
                     )
-                    if not part_menu_screens:
+                    if (not part_menu_screens) == True:
                         self.event.add_warning(
                             _(
                                 'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
@@ -335,13 +335,13 @@ class Screen:
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == '@ranking':
+                if (menu_part == '@ranking') == True:
                     part_menu_screens: list[Screen] = (
                         self.event.ranking_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_ranking_screens_sorted_by_uniq_id
                     )
-                    if not part_menu_screens:
+                    if (not part_menu_screens) == True:
                         self.event.add_warning(
                             _(
                                 'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
@@ -350,8 +350,8 @@ class Screen:
                     else:
                         menu_screens += part_menu_screens
                     continue
-                if menu_part == '@family':
-                    if self.family_id is None:
+                if (menu_part == '@family') == True:
+                    if (self.family_id is None) == True:
                         self.event.add_warning(
                             _(
                                 'Pattern [{pattern}] can be used by screen families only.'
@@ -362,11 +362,11 @@ class Screen:
                             self.family_id
                         ].screens_by_uniq_id.values()
                     continue
-                if '*' in menu_part:
+                if ('*' in menu_part) == True:
                     menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
                         self.event.screens_by_uniq_id.keys(), menu_part
                     )
-                    if not menu_part_screen_uniq_ids:
+                    if (not menu_part_screen_uniq_ids) == True:
                         self.event.add_warning(
                             _('Pattern [{pattern}] matches no screen.').format(
                                 pattern=menu_part
@@ -378,7 +378,7 @@ class Screen:
                             for screen_uniq_id in menu_part_screen_uniq_ids
                         ]
                     continue
-                if menu_part in self.event.screens_by_uniq_id:
+                if (menu_part in self.event.screens_by_uniq_id) == True:
                     menu_screens.append(self.event.screens_by_uniq_id[menu_part])
                 else:
                     self.event.add_warning(
@@ -424,8 +424,8 @@ class Screen:
     def input_exit_button(self) -> bool:
         match self.type:
             case ScreenType.INPUT:
-                if self.stored_screen:
-                    if self.stored_screen.input_exit_button is not None:
+                if (self.stored_screen) == True:
+                    if (self.stored_screen.input_exit_button is not None) == True:
                         return self.stored_screen.input_exit_button
                     else:
                         return PapiWebConfig.default_input_exit_button
@@ -441,8 +441,8 @@ class Screen:
                 # Needed to display the players before the first round is paired
                 return True
             case ScreenType.PLAYERS:
-                if self.stored_screen:
-                    if self.stored_screen.players_show_unpaired is not None:
+                if (self.stored_screen) == True:
+                    if (self.stored_screen.players_show_unpaired is not None) == True:
                         return self.stored_screen.players_show_unpaired
                     else:
                         return PapiWebConfig.default_players_show_unpaired
@@ -460,8 +460,8 @@ class Screen:
             type_: ScreenType,
             crosstable: bool | None,
     ) -> str:
-        if type_ == ScreenType.RANKING:
-            if crosstable:
+        if (type_ == ScreenType.RANKING) == True:
+            if (crosstable) == True:
                 return _('Crosstable')
             else:
                 return _('Ranking')
@@ -479,7 +479,7 @@ class Screen:
     def results_limit(self) -> int:
         match self.type:
             case ScreenType.RESULTS:
-                if not self.stored_screen.results_limit:
+                if (not self.stored_screen.results_limit) == True:
                     return PapiWebConfig.default_results_screen_limit
                 elif (
                     self.stored_screen.results_limit
@@ -553,7 +553,7 @@ class Screen:
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:
-                if self.stored_screen:
+                if (self.stored_screen) == True:
                     return self.stored_screen.ranking_crosstable == True
                 else:
                     return self.family.ranking_crosstable
@@ -564,7 +564,7 @@ class Screen:
     def ranking_round(self) -> int | None:
         match self.type:
             case ScreenType.RANKING:
-                if self.stored_screen:
+                if (self.stored_screen) == True:
                     return self.stored_screen.ranking_round
                 else:
                     return self.family.ranking_round
@@ -575,7 +575,7 @@ class Screen:
     def ranking_min_points(self) -> int | None:
         match self.type:
             case ScreenType.RANKING:
-                if self.stored_screen:
+                if (self.stored_screen) == True:
                     return self.stored_screen.ranking_min_points
                 else:
                     return self.family.ranking_min_points
@@ -586,7 +586,7 @@ class Screen:
     def ranking_max_points(self) -> int | None:
         match self.type:
             case ScreenType.RANKING:
-                if self.stored_screen:
+                if (self.stored_screen) == True:
                     return self.stored_screen.ranking_max_points
                 else:
                     return self.family.ranking_max_points
@@ -603,7 +603,7 @@ class Screen:
 
     @property
     def background_image(self) -> str:
-        if self.stored_screen and self.stored_screen.background_image:
+        if (self.stored_screen and self.stored_screen.background_image) == True:
             return self.stored_screen.background_image
         else:
             return self.event.background_image
@@ -614,7 +614,7 @@ class Screen:
 
     @property
     def background_color(self) -> str:
-        if self.stored_screen and self.stored_screen.background_color:
+        if (self.stored_screen and self.stored_screen.background_color) == True:
             return self.stored_screen.background_color
         else:
             return self.event.background_color
@@ -629,7 +629,7 @@ class Screen:
 
     @property
     def message_text(self) -> str | None:
-        if self.message_default:
+        if (self.message_default) == True:
             return self.event.message_text
         else:
             return (

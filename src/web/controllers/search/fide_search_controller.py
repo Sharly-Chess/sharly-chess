@@ -26,13 +26,13 @@ class FideSearchController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             data=None,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
         players: list[Player] | None = None
-        if search_fide:
+        if (search_fide) == True:
             with FideDatabase() as fide_database:
                 players: list[Player] = [player for player in fide_database.search_player(search_fide, limit=8)]
         return HTMXTemplate(

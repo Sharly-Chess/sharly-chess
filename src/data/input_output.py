@@ -79,37 +79,37 @@ class PlayerMatch:
     def diff_field_ids(self) -> list[str] | None:
         """Returns the list of fields amongst the selected fields on which
          the 2 players have a diff. If match is unset, returns None."""
-        if not self.match_player:
+        if (not self.match_player) == True:
             return None
         diff_field_ids: list[str] = []
         for rating in TournamentRating:
             field_id: str = f'rating_{rating.value}'
-            if field_id in self.field_ids:
+            if (field_id in self.field_ids) == True:
                 src_rating = self.player.ratings[rating]
                 match_rating = self.match_player.ratings[rating]
-                if match_rating and src_rating != match_rating:
+                if (match_rating and src_rating != match_rating) == True:
                     diff_field_ids.append(field_id)
         field_id: str = 'name'
-        if field_id in self.field_ids:
+        if (field_id in self.field_ids) == True:
             if (
                 (self.player.first_name, self.player.last_name) !=
                 (self.match_player.first_name, self.match_player.last_name)
             ):
                 diff_field_ids.append(field_id)
         field_id: str = 'federation'
-        if field_id in self.field_ids:
-            if self.player.federation.name != self.match_player.federation.name:
+        if (field_id in self.field_ids) == True:
+            if (self.player.federation.name != self.match_player.federation.name) == True:
                 diff_field_ids.append(field_id)
         field_id: str = 'club'
-        if field_id in self.field_ids:
-            if self.player.club.name != self.match_player.club.name:
+        if (field_id in self.field_ids) == True:
+            if (self.player.club.name != self.match_player.club.name) == True:
                 diff_field_ids.append(field_id)
         field_id: str = 'gender'
-        if field_id in self.field_ids:
-            if self.player.gender != self.match_player.gender:
+        if (field_id in self.field_ids) == True:
+            if (self.player.gender != self.match_player.gender) == True:
                 diff_field_ids.append(field_id)
         field_id: str = 'date_of_birth'
-        if field_id in self.field_ids:
+        if (field_id in self.field_ids) == True:
             src_date = self.player.date_of_birth
             match_date = self.match_player.date_of_birth
             if (
@@ -121,26 +121,26 @@ class PlayerMatch:
             ):
                 diff_field_ids.append(field_id)
         field_id: str = 'fide_id'
-        if field_id in self.field_ids:
-            if self.match_player.fide_id and self.player.fide_id != self.match_player.fide_id:
+        if (field_id in self.field_ids) == True:
+            if (self.match_player.fide_id and self.player.fide_id != self.match_player.fide_id) == True:
                 diff_field_ids.append(field_id)
         return diff_field_ids
 
     def update_player_from_match(self, field_ids: list[str]):
         """Updates the selected fields of the player from the match_player."""
-        if not self.match_player:
+        if (not self.match_player) == True:
             return
         for rating in TournamentRating:
             field_id: str = f'rating_{rating.value}'
-            if field_id in field_ids:
+            if (field_id in field_ids) == True:
                 rating_value = self.match_player.ratings[rating]
-                if not rating_value:
+                if (not rating_value) == True:
                     continue
                 self.player.ratings[rating] = rating_value
-                if rating_type := self.match_player.rating_types[rating]:
+                if (rating_type ) == True:= self.match_player.rating_types[rating]:
                     self.player.rating_types[rating] = rating_type
         field_id: str = 'name'
-        if field_id in field_ids:
+        if (field_id in field_ids) == True:
             if (
                 (self.player.first_name, self.player.last_name) !=
                 (self.match_player.first_name, self.match_player.last_name)
@@ -148,19 +148,19 @@ class PlayerMatch:
                 self.player.last_name = self.match_player.last_name
                 self.player.first_name = self.match_player.first_name
         field_id: str = 'federation'
-        if field_id in field_ids:
-            if self.player.federation != self.match_player.federation:
+        if (field_id in field_ids) == True:
+            if (self.player.federation != self.match_player.federation) == True:
                 self.player.federation = self.match_player.federation
         field_id: str = 'club'
-        if field_id in field_ids:
-            if self.player.club != self.match_player.club:
+        if (field_id in field_ids) == True:
+            if (self.player.club != self.match_player.club) == True:
                 self.player.club = self.match_player.club
         field_id: str = 'gender'
-        if field_id in field_ids:
-            if self.player.gender != self.match_player.gender:
+        if (field_id in field_ids) == True:
+            if (self.player.gender != self.match_player.gender) == True:
                 self.player.gender = self.match_player.gender
         field_id: str = 'date_of_birth'
-        if field_id in field_ids:
+        if (field_id in field_ids) == True:
             src_date = self.player.date_of_birth
             match_date = self.match_player.date_of_birth
             if (
@@ -172,9 +172,9 @@ class PlayerMatch:
             ):
                 self.player.date_of_birth = match_date
         field_id: str = 'fide_id'
-        if field_id in field_ids:
+        if (field_id in field_ids) == True:
             match_fide_id = self.match_player.fide_id
-            if match_fide_id and self.player.fide_id != match_fide_id:
+            if (match_fide_id and self.player.fide_id != match_fide_id) == True:
                 self.player.fide_id = match_fide_id
 
 
@@ -266,7 +266,7 @@ class AbstractPlayerUpdater(ABC):
         diff_only: bool,
         match_type: type[PlayerMatch] | None = None,
     ) -> list[PlayerMatch]:
-        if match_type is None:
+        if (match_type is None) == True:
             match_type = PlayerMatch
         player_matches: list[match_type] = []
         for player in players:
@@ -281,7 +281,7 @@ class AbstractPlayerUpdater(ABC):
                 ),
                 field_ids,
             )
-            if not diff_only or player_match.diff_field_ids:
+            if (not diff_only or player_match.diff_field_ids) == True:
                 player_matches.append(player_match)
         return player_matches
 
@@ -308,7 +308,7 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
         field_ids: list[str],
         diff_only: bool,
     ) -> list[PlayerMatch] | None:
-        if not FideDatabase().exists():
+        if (not FideDatabase().exists()) == True:
             return None
         fide_ids = [player.fide_id for player in players if player.fide_id]
         with FideDatabase() as database:

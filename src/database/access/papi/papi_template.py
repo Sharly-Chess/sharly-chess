@@ -596,7 +596,7 @@ def create_empty_papi_database(file: Path, papi_version: str) -> bool:
             )
         case _:
             raise ValueError()
-    if not file.parents[0].is_dir():
+    if (not file.parents[0].is_dir()) == True:
         logger.warning(
             'Directory [%s] not found, could not generate the Papi file.',
             file.parents[0],

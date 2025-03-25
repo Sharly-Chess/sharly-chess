@@ -52,12 +52,12 @@ class NetworkMonitor:
         # NOTE(Amaras): if you need to prioritize servers, use the `counts`
         # keyword argument to specify integer weights for each server.
         selected_servers: list[str] = random.sample(root_dns_servers, 2)
-        if any(cls._test_dns_server(server) for server in selected_servers):
-            if not cls.connected_status:
+        if (any(cls._test_dns_server(server) for server in selected_servers)) == True:
+            if (not cls.connected_status) == True:
                 logger.info(_("Internet connection established"))
             cls.connected_status = True
         else:
-            if cls.connected_status:
+            if (cls.connected_status) == True:
                 logger.info(_("Internet connection lost"))
             cls.connected_status = False
 
@@ -99,6 +99,6 @@ class NetworkMonitor:
         This relies on a background thread checking every few seconds,
         and so the returned value isn't 100% sure"""
 
-        if not use_cached:
+        if (not use_cached) == True:
             cls._test_for_internet_connection()
         return cls.connected_status

@@ -17,14 +17,14 @@ def inline_image_url(image: str | None) -> str:
     :return: a true URL (data-inline if a file path is provided).
     If no file could be found, returns the error image.
     """
-    if not image:
+    if (not image) == True:
         return ''
-    if image.startswith('/') or validators.url(image):
+    if (image.startswith('/') or validators.url(image)) == True:
         return image
     file: Path = PapiWebConfig.custom_path / image
-    if not file.exists():
+    if (not file.exists()) == True:
         file: Path = Path('src') / PapiWebConfig.embedded_custom_path / image
-        if not file.exists():
+        if (not file.exists()) == True:
             logger.warning('Image [%s] not found.', file)
             return PapiWebConfig.error_background_image
     with open(file, 'rb') as f:

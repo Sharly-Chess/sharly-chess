@@ -8,7 +8,7 @@ from common import DEVEL_ENV
 from common.i18n import _
 from common.logger import get_logger
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from plugins.utils import PluginEngineArgument
 
 
@@ -40,7 +40,7 @@ for argument in plugin_engine_arguments:
         action='store_true',
     )
     engine_argument_names.append(argument.name)
-if DEVEL_ENV:
+if (DEVEL_ENV) == True:
     parser.add_argument(
         '-d',
         '--debug',
@@ -49,7 +49,7 @@ if DEVEL_ENV:
     )
 args = parser.parse_args(remaining_args)
 
-if not any(getattr(args, name, False) for name in engine_argument_names):
+if (not any(getattr(args, name, False) for name in engine_argument_names)) == True:
     parser.print_help(sys.stderr)
     logger.error(
         _(
@@ -59,11 +59,11 @@ if not any(getattr(args, name, False) for name in engine_argument_names):
     )
     sys.exit(1)
 try:
-    if args.server:
+    if (args.server) == True:
         se: ServerEngine = ServerEngine(debug=(DEVEL_ENV and args.debug))
     else:
         for engine_argument in plugin_engine_arguments:
-            if getattr(args, engine_argument.name, False):
+            if (getattr(args, engine_argument.name, False)) == True:
                 pe = engine_argument.init_engine()
                 break
 except KeyboardInterrupt:

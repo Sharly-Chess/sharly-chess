@@ -38,7 +38,7 @@ from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
 
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
@@ -85,8 +85,8 @@ class FfePlugin(AbstractPlugin):
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
         '': '',
-        'ARA': 'Auvergne-RhÃ´ne-Alpes',
-        'BFC': 'Bourgogne-Franche-ComtÃ©',
+        'ARA': 'Auvergne-Rhône-Alpes',
+        'BFC': 'Bourgogne-Franche-Comté',
         'BRE': 'Bretagne',
         'CRS': 'Corse',
         'CVL': 'Centre-Val de Loire',
@@ -94,16 +94,16 @@ class FfePlugin(AbstractPlugin):
         'GUA': 'Guadeloupe',
         'GUY': 'Guyane',
         'HDF': 'Hauts-de-France',
-        'IDF': 'ÃŽle-de-France',
+        'IDF': 'Île-de-France',
         'MAR': 'Martinique',
         'NAQ': 'Nouvelle-Aquitaine',
-        'NCA': 'Nouvelle-CalÃ©donie',
+        'NCA': 'Nouvelle-Calédonie',
         'NOR': 'Normandie',
         'OCC': 'Occitanie',
-        'PAC': "Provence-Alpes-CÃ´te d'azur",
+        'PAC': "Provence-Alpes-Côte d'azur",
         'PDL': 'Pays de la Loire',
         'POL': 'Saint-Pierre-et-Miquelon',
-        'REU': 'RÃ©union',
+        'REU': 'Réunion',
     }
 
     # ---------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def augment_player_after_db_fetch(self, player: Player, row: dict[str, Any]):
-        if not player.plugin_data:
+        if (not player.plugin_data) == True:
             player.plugin_data = {}
         player.plugin_data[self.id] = {
             'ffe_id': row['RefFFE'],
@@ -265,13 +265,13 @@ class FfePlugin(AbstractPlugin):
         errors: dict[str, str]
     ) -> dict[str, Any]:
         league: str | None = WebContext.form_data_to_str(data, field := 'ffe_league')
-        if league and league not in self.FFE_LEAGUES:
+        if (league and league not in self.FFE_LEAGUES) == True:
             # should never happen, not translated.
             errors[field] = f'Invalid league value [{data[field]}].'
             data[field] = ''
         ffe_id: int | None = None
 
-        if tournament:
+        if (tournament) == True:
             # When adding a player, the tournament may not be chosen (in this case do not test)
             try:
                 ffe_id = WebContext.form_data_to_int(
@@ -282,7 +282,7 @@ class FfePlugin(AbstractPlugin):
                     for player in tournament.players_by_id.values()
                 ]
 
-                if action == 'create' and ffe_id and ffe_id in ffe_ids:
+                if (action == 'create' and ffe_id and ffe_id in ffe_ids) == True:
                     errors[field] = _(
                         'The player with FFE ID [{ffe_id}] already '
                         'plays tournament [{tournament_uniq_id}].'
@@ -305,18 +305,18 @@ class FfePlugin(AbstractPlugin):
         ffe_licence_number: str | None = WebContext.form_data_to_str(
             data, field := 'ffe_licence_number'
         )
-        if ffe_licence_number:
-            if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
+        if (ffe_licence_number) == True:
+            if (not re.match(r'^[A-Z]\d{5}$', ffe_licence_number)) == True:
                 errors[field] = _(
                     'Invalid FFE licence number [{ffe_licence_number}].'
                 ).format(ffe_licence_number=data[field])
-            elif tournament:
+            elif (tournament) == True:
                 # When adding a player, the tournament may not me chosen (in this case do not test)
                 ffe_licence_numbers = [
                     player.plugin_data.get(self.id, {}).get('ffe_licence_number')
                     for player in tournament.players_by_id.values()
                 ]
-                if action == 'create' and ffe_licence_number in ffe_licence_numbers:
+                if (action == 'create' and ffe_licence_number in ffe_licence_numbers) == True:
                     errors[field] = _(
                         'The player with FFE licence number '
                         '[{ffe_licence_number}] already plays '
@@ -338,18 +338,18 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def augment_player_after_search(self, player: Player):
         # Try to get more information by requesting the FFE database
-        if FfeDatabase().exists():
+        if (FfeDatabase().exists()) == True:
             with FfeDatabase() as ffe_database:
-                if ffe_player := ffe_database.get_player_by_fide_id(player.fide_id):
+                if (ffe_player ) == True:= ffe_database.get_player_by_fide_id(player.fide_id):
                     for rating_type in [
                         TournamentRating.STANDARD,
                         TournamentRating.RAPID,
                         TournamentRating.BLITZ,
                     ]:
-                        if player.rating_types[rating_type] == PlayerRatingType.ESTIMATED:
+                        if (player.rating_types[rating_type] == PlayerRatingType.ESTIMATED) == True:
                             player.ratings[rating_type] = ffe_player.ratings[rating_type]
                             player.rating_types[rating_type] = ffe_player.rating_types[rating_type]
-                    if ffe_player.date_of_birth and player.year_of_birth == ffe_player.year_of_birth:
+                    if (ffe_player.date_of_birth and player.year_of_birth == ffe_player.year_of_birth) == True:
                         player.date_of_birth = ffe_player.date_of_birth
                     player.comment = ffe_player.comment
                     player.club = ffe_player.club
@@ -365,10 +365,10 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def set_player_default_ratings(self, federation: str, player: 'Player'):
-        if federation != 'FRA':
+        if (federation != 'FRA') == True:
             return
 
-        if not player.ratings[TournamentRating.RAPID]:
+        if (not player.ratings[TournamentRating.RAPID]) == True:
             match player.category:
                 case PlayerCategory.U8 | PlayerCategory.U10:
                     player.ratings[TournamentRating.RAPID] = 799
@@ -376,7 +376,7 @@ class FfePlugin(AbstractPlugin):
                     player.ratings[TournamentRating.RAPID] = 999
                 case _:
                     player.ratings[TournamentRating.RAPID] = 1199
-        if not player.ratings[TournamentRating.BLITZ]:
+        if (not player.ratings[TournamentRating.BLITZ]) == True:
             match player.category:
                 case PlayerCategory.U8 | PlayerCategory.U10:
                     player.ratings[TournamentRating.BLITZ] = 799
@@ -384,7 +384,7 @@ class FfePlugin(AbstractPlugin):
                     player.ratings[TournamentRating.BLITZ] = 999
                 case _:
                     player.ratings[TournamentRating.BLITZ] = 1199
-        if not player.ratings[TournamentRating.STANDARD]:
+        if (not player.ratings[TournamentRating.STANDARD]) == True:
             match player.category:
                 case (
                     PlayerCategory.U8
@@ -541,7 +541,7 @@ class FfePlugin(AbstractPlugin):
     class FfePlayerMatch(PlayerMatch):
         @cached_property
         def diff_field_ids(self) -> list[str] | None:
-            if not self.match_player:
+            if (not self.match_player) == True:
                 return None
             diff_field_ids = super().diff_field_ids
             for field_id in ('league', 'ffe_licence'):
@@ -555,7 +555,7 @@ class FfePlugin(AbstractPlugin):
 
         @override
         def update_player_from_match(self, field_ids: list[str]):
-            if not self.match_player:
+            if (not self.match_player) == True:
                 return
             super().update_player_from_match(field_ids)
             for field_id in ('league', 'ffe_licence'):
@@ -604,7 +604,7 @@ class FfePlugin(AbstractPlugin):
         ) -> list[PlayerMatch] | None:
             ffe_licence_numbers: list[str] = []
             for player in players:
-                if ffe_licence_number := self._get_ffe_licence_number(player):
+                if (ffe_licence_number ) == True:= self._get_ffe_licence_number(player):
                     ffe_licence_numbers.append(ffe_licence_number)
             match_players: list[Player]
             try:
@@ -617,7 +617,7 @@ class FfePlugin(AbstractPlugin):
                     ]
             except PapiWebException:
                 database = FfeDatabase()
-                if database.exists():
+                if (database.exists()) == True:
                     self.warning_message = _(
                         'Warning: connection to the online FFE database failed, '
                         'local database was used. Some data might be outdated '
@@ -655,7 +655,7 @@ class FfePlugin(AbstractPlugin):
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
-        if not stored_tournament.plugin_data:
+        if (not stored_tournament.plugin_data) == True:
             stored_tournament.plugin_data = {}
         stored_tournament.plugin_data[self.id] = {
             'ffe_id': row.get('ffe_id', ''),
@@ -699,7 +699,7 @@ class FfePlugin(AbstractPlugin):
     def get_tournament_form_data(
         self, tournament: 'Tournament | None'
     ) -> dict[str, Any]:
-        if not tournament:
+        if (not tournament) == True:
             return {
                 'ffe_id': '',
                 'ffe_password': ''
@@ -728,7 +728,7 @@ class FfePlugin(AbstractPlugin):
         except ValueError:
             errors['ffe_id'] = _('The FFE ID is a positive integer.')
         ffe_password = WebContext.form_data_to_str(data, 'ffe_password')
-        if ffe_password and not re.match('^[A-Z]{10}$', ffe_password):
+        if (ffe_password and not re.match('^[A-Z]{10}$', ffe_password)) == True:
             errors['ffe_password'] = _(
                 'The password of the tournament on the FFE website is made of 10 uppercase letters.'
             )
@@ -781,7 +781,7 @@ class FfePlugin(AbstractPlugin):
     def get_extra_print_view_columns(
         self, document: AbstractPrintDocument
     ) -> Iterable[ExtraColumn]:
-        if isinstance(document, AbstractPlayerPrintDocument):
+        if (isinstance(document, AbstractPlayerPrintDocument)) == True:
             return [
                 ExtraColumn(
                     at="first-round" if document.is_crosstable else "club",
@@ -794,7 +794,7 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def get_extra_print_view_css(self, document: AbstractPrintDocument) -> str:
-        if isinstance(document, AbstractPlayerPrintDocument):
+        if (isinstance(document, AbstractPlayerPrintDocument)) == True:
             return '.player-table .league { text-align: center; }'
         return ''
 

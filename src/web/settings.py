@@ -84,7 +84,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 # Keep this here for the day we need to add extra functions to templates
 # def template_test_function(ctx: dict[str, Any], param: str) -> str:
 #     request: HTMXRequest = ctx["request"]
-#     return f'le rÃ©sultat de template_test_function(): string=[{param}], session=[{request.session}]'
+#     return f'le résultat de template_test_function(): string=[{param}], session=[{request.session}]'
 #
 # def register_template_callables(engine: JinjaTemplateEngine) -> None:
 #     engine.register_template_callable(
@@ -108,7 +108,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
             # Use posixpath even on Windows to avoid "drive:" or UNC
             # segments breaking out of the search directory.
             filename = posixpath.join(searchpath, *pieces)
-            if os.path.isfile(filename):
+            if (os.path.isfile(filename)) == True:
                 break
         else:
             plural = 'path' if len(self.searchpath) == 1 else 'paths'

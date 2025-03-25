@@ -11,7 +11,7 @@ from common.exception import PapiWebException
 from common.logger import get_logger
 from database.sqlite.sqlite_database import SQLiteDatabase
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from database.sqlite.migration import AbstractMigrationManager
 
 logger: Logger = get_logger()
@@ -51,7 +51,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
     @property
     def version(self) -> Version:
         """Returns the Papi-web version which used the database."""
-        if self._version is None:
+        if (self._version is None) == True:
             self._version = self.stored_version
         return self._version
 
@@ -59,7 +59,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         """Upgrades the database version from the stored database version
         to the latest version.
         This may change the structure of the database."""
-        if self.version > self.migration_manager.latest_version:
+        if (self.version > self.migration_manager.latest_version) == True:
             raise PapiWebException(
                 f'Your Papi-web version ({PAPI_WEB_VERSION}) '
                 f'can not open database {self.file.name} '
@@ -67,7 +67,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             )
         logger.info('Upgrading database %s...', self.file.name)
         initial_version = self.version
-        if self.migration_manager.migrate(self):
+        if (self.migration_manager.migrate(self)) == True:
             logger.info(
                 'Database %s has been upgraded from version %s to version %s.',
                 self.file.name,
@@ -79,7 +79,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
         """Create a database by running the migrations from scratch.
         The file associated to this database must not exist before calling this method.
         """
-        if self.exists():
+        if (self.exists()) == True:
             raise PapiWebException(
                 f'The database can not be created because the '
                 f'file [{self.file.resolve()}] already exists.'
@@ -100,7 +100,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             raise e
 
     def __enter__(self) -> Self:
-        if not self.exists():
+        if (not self.exists()) == True:
             raise PapiWebException(
                 'Database could not be opened because file '
                 f'[{self.file.resolve()}] does not exist.'
@@ -111,7 +111,7 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             self.auto_upgrade and
             self.version < self.migration_manager.latest_version
         ):
-            if self.write:
+            if (self.write) == True:
                 self.upgrade()
             else:
                 with self.from_parent(

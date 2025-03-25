@@ -46,9 +46,9 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
         )
         self.admin_family: Family | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if family_id:
+        if (family_id) == True:
             try:
                 self.admin_family = self.admin_event.families_by_id[family_id]
             except KeyError:
@@ -74,7 +74,7 @@ class FamilyAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> StoredFamily:
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
         field: str
         type_: str
@@ -117,14 +117,14 @@ class FamilyAdminController(BaseEventAdminController):
         ]:
             pass
         else:
-            if not uniq_id:
+            if (not uniq_id) == True:
                 errors[field] = _('Please enter the family ID.')
-            elif ':' in uniq_id:
+            elif (') == True:' in uniq_id:
                 errors[field] = _('Character [{char}] is not allowed.').format(char=':')
             else:
                 match action:
                     case 'create' | 'clone':
-                        if uniq_id in web_context.admin_event.families_by_uniq_id:
+                        if (uniq_id in web_context.admin_event.families_by_uniq_id) == True:
                             errors[field] = _(
                                 'Family [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
@@ -146,14 +146,14 @@ class FamilyAdminController(BaseEventAdminController):
             case 'create' | 'clone' | 'update':
                 field: str = 'tournament_id'
                 try:
-                    if len(web_context.admin_event.tournaments_by_id) == 1:
+                    if (len(web_context.admin_event.tournaments_by_id) == 1) == True:
                         tournament_id = list(
                             web_context.admin_event.tournaments_by_id.keys()
                         )[0]
                         data[field] = WebContext.value_to_form_data(tournament_id)
                     else:
                         tournament_id = WebContext.form_data_to_int(data, field)
-                        if not tournament_id:
+                        if (not tournament_id) == True:
                             errors[field] = _('Please choose the tournament.')
                         elif (
                             tournament_id
@@ -194,7 +194,7 @@ class FamilyAdminController(BaseEventAdminController):
                     last = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                if first and last and first > last:
+                if (first and last and first > last) == True:
                     error: str = _(
                         'Numbers {first} and {last} are not compatible ({first} > {last}).'
                     ).format(first=first, last=last)
@@ -237,7 +237,7 @@ class FamilyAdminController(BaseEventAdminController):
                     number = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                if parts and number:
+                if (parts and number) == True:
                     error: str = _(
                         'Specifying the number of parts and the number of items per part is not possible.'
                     )
@@ -247,7 +247,7 @@ class FamilyAdminController(BaseEventAdminController):
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox', False
                 )
-                if message_default and web_context.admin_family:
+                if (message_default and web_context.admin_family) == True:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
                     message_text = web_context.admin_family.stored_family.message_text
@@ -307,7 +307,7 @@ class FamilyAdminController(BaseEventAdminController):
             family_type=family_type,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
@@ -322,7 +322,7 @@ class FamilyAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'family':
-                if data is None:
+                if (data is None) == True:
                     uniq_id: str | None = None
                     name: str | None = None
                     public: bool | None = None
@@ -462,7 +462,7 @@ class FamilyAdminController(BaseEventAdminController):
                         )
                     )
                     errors = stored_family.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
                 template_context |= {
                     'tournament_options': web_context.get_tournament_options(),
@@ -493,7 +493,7 @@ class FamilyAdminController(BaseEventAdminController):
         event_uniq_id: str,
         admin_families_show_details: bool | None,
     ) -> Template | ClientRedirect:
-        if admin_families_show_details is not None:
+        if (admin_families_show_details is not None) == True:
             SessionHandler.set_session_admin_families_show_details(
                 request, admin_families_show_details
             )
@@ -565,12 +565,12 @@ class FamilyAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_family: StoredFamily = self._admin_validate_family_update_data(
             action, web_context, data
         )
-        if stored_family.errors:
+        if (stored_family.errors) == True:
             return self._admin_event_families_render(
                 request,
                 event_uniq_id=event_uniq_id,

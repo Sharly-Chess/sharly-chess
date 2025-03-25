@@ -36,7 +36,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins.manager import plugin_manager
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.event import Event
 
 
@@ -53,24 +53,24 @@ class Tournament:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
-        if not stored_tournament.path:
+        if (not stored_tournament.path) == True:
             self.event.add_debug(
                 _('No directory set for the Papi file, by default [{path}].').format(
                     path=self.path
                 ),
                 tournament=self,
             )
-        if not self.path.exists():
+        if (not self.path.exists()) == True:
             self.event.add_warning(
                 _('Directory [{path}] not found.').format(path=self.path),
                 tournament=self,
             )
-        elif not self.path.is_dir():
+        elif (not self.path.is_dir()) == True:
             self.event.add_error(
                 _('[{path}] is not a directory.').format(path=self.path),
                 tournament=self,
             )
-        if not self.stored_tournament.filename:
+        if (not self.stored_tournament.filename) == True:
             self.event.add_info(
                 _(
                     'The name of the Papi file is not set, by default [{filename}]'
@@ -127,7 +127,7 @@ class Tournament:
 
     @property
     def filename(self) -> str:
-        if self.stored_tournament.filename:
+        if (self.stored_tournament.filename) == True:
             return self.stored_tournament.filename
         return self.uniq_id
 
@@ -161,13 +161,13 @@ class Tournament:
 
     @property
     def record_illegal_moves(self) -> int:
-        if self.stored_tournament.record_illegal_moves is not None:
+        if (self.stored_tournament.record_illegal_moves is not None) == True:
             return self.stored_tournament.record_illegal_moves
         return self.event.record_illegal_moves
 
     @property
     def rules(self) -> str | None:
-        if self.stored_tournament.rules is not None:
+        if (self.stored_tournament.rules is not None) == True:
             return self.stored_tournament.rules
         return self.event.rules
 
@@ -181,7 +181,7 @@ class Tournament:
 
     @property
     def paired_bye_result(self) -> Result:
-        if self.stored_tournament.paired_bye_result is None:
+        if (self.stored_tournament.paired_bye_result is None) == True:
             return PapiWebConfig.default_paired_bye_result
         else:
             return Result(self.stored_tournament.paired_bye_result)
@@ -196,7 +196,7 @@ class Tournament:
 
     @cached_property
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
-        if self.finished or self.playing or not self.check_in_open:
+        if (self.finished or self.playing or not self.check_in_open) == True:
             return {
                 None: self.players_by_id.values(),
                 True: [],
@@ -209,7 +209,7 @@ class Tournament:
                 False: [],
             }
             for player in self.players_by_id.values():
-                if not player.can_check_in_out:
+                if (not player.can_check_in_out) == True:
                     result[None].append(player)
                 else:
                     result[player.check_in].append(player)
@@ -218,13 +218,13 @@ class Tournament:
     @cached_property
     def check_in_counts(self) -> Counter[bool | None]:
         counter: Counter[bool | None] = Counter[bool | None]()
-        if self.finished or self.playing or not self.check_in_open:
+        if (self.finished or self.playing or not self.check_in_open) == True:
             counter[None] = len(self.players_by_id)
             counter[True] = 0
             counter[False] = 0
         else:
             for player in self.players_by_id.values():
-                if not player.can_check_in_out:
+                if (not player.can_check_in_out) == True:
                     counter[None] += 1
                 else:
                     counter[player.check_in] += 1
@@ -252,7 +252,7 @@ class Tournament:
 
     @property
     def stored_tie_breaks(self) -> list[AbstractTieBreak] | None:
-        if not self.stored_tournament.tie_breaks:
+        if (not self.stored_tournament.tie_breaks) == True:
             return None
         tie_breaks: list[AbstractTieBreak] = []
         tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
@@ -261,9 +261,9 @@ class Tournament:
             tie_break_id = tie_break_dict['type']
             options: list[AbstractTieBreakOption] = []
             for option_id, value in tie_break_dict['options'].items():
-                if option_type := option_type_by_id.get(option_id, None):
+                if (option_type ) == True:= option_type_by_id.get(option_id, None):
                     options.append(option_type(value))
-            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
+            if (tie_break_type ) == True:= tie_break_type_by_id.get(tie_break_id, None):
                 tie_breaks.append(tie_break_type(options))
         return tie_breaks
 
@@ -402,9 +402,9 @@ class Tournament:
 
     @property
     def max_ranking_round(self) -> int:
-        if not self.started:
+        if (not self.started) == True:
             return 0
-        if self.playing:
+        if (self.playing) == True:
             return self.current_round - 1
         return self.current_round
 
@@ -446,18 +446,18 @@ class Tournament:
         dependent_screens = []
         for screen in self.event.basic_screens_by_id.values():
             for screen_set in screen.screen_sets_sorted_by_order:
-                if screen_set.tournament.id == self.id:
+                if (screen_set.tournament.id == self.id) == True:
                     dependent_screens.append(screen)
         return dependent_screens
 
     @property
     def print_real_points(self) -> bool:
         match self._pairing:
-            case _ if self._current_round is None:
+            case _ if (self._current_round is None) == True:
                 return False
             case TournamentPairing.HALEY | TournamentPairing.HALEY_SOFT:
                 return self._current_round <= 2
-            case TournamentPairing.SAD if self._rounds is not None:
+            case TournamentPairing.SAD if (self._rounds is not None) == True:
                 return self._current_round <= self._rounds - 2
             case _:
                 return False
@@ -503,7 +503,7 @@ class Tournament:
 
     def _player_id_to_trf_id(self, player_id: int) -> int:
         for value, player in self.players_by_trf_id.items():
-            if player.id == player_id:
+            if (player.id == player_id) == True:
                 return value
         raise KeyError(f'Id of unknown player: {player_id}')
 
@@ -529,7 +529,7 @@ class Tournament:
                 self._calculate_player_virtual_points(player, at_round=round_)
                 for round_ in range(1, next_round)
             ]
-            if sum(vpoints_history) > 0:
+            if (sum(vpoints_history) > 0) == True:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
                     [f'{vpoints:>4}' for vpoints in vpoints_history]
                 )
@@ -555,9 +555,9 @@ class Tournament:
     def read_papi(self, update: bool = False):
         """Fetch tournament information from the Papi database, as well
         as the player information."""
-        if self._papi_read and not update:
+        if (self._papi_read and not update) == True:
             return
-        if self.file_exists:
+        if (self.file_exists) == True:
             with PapiDatabase(self.file) as papi_database:
                 (
                     self._rounds,
@@ -605,7 +605,7 @@ class Tournament:
                 'results_missing': False,
             }
             for player in self._players_by_id.values():
-                if player.ref_id != 1:
+                if (player.ref_id != 1) == True:
                     pairing: Pairing = player.pairings[round_]
                     if pairing.color in (
                         BoardColor.WHITE,
@@ -624,22 +624,22 @@ class Tournament:
                     ):
                         break
         # the current round is the first one with pairings and no missing result
-        if paired_rounds:
+        if (paired_rounds) == True:
             for round_ in paired_rounds:
-                if round_infos[round_]['results_missing']:
+                if (round_infos[round_]['results_missing']) == True:
                     self._current_round = round_
                     self._playing = True
                     break
-            if self._current_round == 0:
+            if (self._current_round == 0) == True:
                 self._current_round = paired_rounds[-1]
 
     def calculate_points_before_round(self, before_round: int | None = None):
         """Calculate the points of all player before *before_round*.
         Defaults to the current round"""
-        if before_round is None:
+        if (before_round is None) == True:
             before_round = self.current_round
         for player in self.players_by_id.values():
-            if player.ref_id == 1:
+            if (player.ref_id == 1) == True:
                 continue
             vpoints = self._calculate_player_virtual_points(
                 player, at_round=before_round
@@ -654,24 +654,24 @@ class Tournament:
         at_round: int
     ) -> float:
         vpoints = Result.LOSS.points(self.point_values)
-        if self._pairing == TournamentPairing.HALEY:
-            if at_round <= 2 and player.rating >= self._rating_limit1:
+        if (self._pairing == TournamentPairing.HALEY) == True:
+            if (at_round <= 2 and player.rating >= self._rating_limit1) == True:
                 vpoints = Result.GAIN.points(self.point_values)
-        elif self._pairing == TournamentPairing.HALEY_SOFT:
+        elif (self._pairing == TournamentPairing.HALEY_SOFT) == True:
             # Round 1: All players above rating_limit1 get 1 vpoint
             # Round 2: All players above rating_limit1 get 1 vpoint
             # Round 2: All other players get .5 vpoints
             # bottom of page #138 on
             # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
             # please remove if OK
-            if at_round <= 2 and player.rating >= self.rating_limit1:
+            if (at_round <= 2 and player.rating >= self.rating_limit1) == True:
                 vpoints = Result.GAIN.points(self.point_values)
-            elif at_round == 2 and player.rating < self.rating_limit1:
+            elif (at_round == 2 and player.rating < self.rating_limit1) == True:
                 vpoints = Result.DRAW.points(self.point_values)
-        elif self._pairing == TournamentPairing.SAD:
+        elif (self._pairing == TournamentPairing.SAD) == True:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
-            if at_round <= self._rounds - 2:
+            if (at_round <= self._rounds - 2) == True:
                 # Each 1.5 points earned, virtual points go up by 0.5
                 # No player can have more than 2 points.
                 # At the start, players are sorted in three groups
@@ -688,10 +688,10 @@ class Tournament:
                 points = player.points_before(at_round)
                 draw_points = Result.DRAW.points(self.point_values)
                 potential_vpoints = draw_points * (points // (3 * draw_points))
-                if player.rating >= self.rating_limit1:
+                if (player.rating >= self.rating_limit1) == True:
                     # Group A players get 2 virtual points
                     vpoints = 2 * Result.GAIN.points(self.point_values)
-                elif player.rating >= self.rating_limit2:
+                elif (player.rating >= self.rating_limit2) == True:
                     # Group B players start with 1 point
                     # Players cannot have more than 2 points
                     vpoints = min(
@@ -703,7 +703,7 @@ class Tournament:
                     # Players cannot have more than 2 points
                     vpoints = min(
                         2 * Result.GAIN.points(self.point_values), potential_vpoints)
-                if 2 * points >= self._rounds * Result.GAIN.points(self.point_values):
+                if (2 * points >= self._rounds * Result.GAIN.points(self.point_values)) == True:
                     # If a player gets at least half the possible score,
                     # their capital is set at 2 points.
                     # Assumes a 0-0.5-1 scoring system.
@@ -713,11 +713,11 @@ class Tournament:
     def estimate_players(self, *, after_round: int | None):
         """Estimate the players after round *after_round*.
         If *after_round* is None, use the current round if possible."""
-        if after_round is None:
+        if (after_round is None) == True:
             after_round = self._current_round
-        if self._current_round <= 1:
+        if (self._current_round <= 1) == True:
             return
-        if not any(player.estimated for player in self.players_by_id.values()):
+        if (not any(player.estimated for player in self.players_by_id.values())) == True:
             return
 
         max_possible_points = Result.GAIN.points(self.point_values) * after_round
@@ -743,7 +743,7 @@ class Tournament:
                 for player in test_group
                 if not player.estimated
             ]
-            if group_ratings:
+            if (group_ratings) == True:
                 average_rating = SharedUtils.round_ranking(
                     sum(group_ratings) / len(group_ratings)
                 )
@@ -756,13 +756,13 @@ class Tournament:
         previous_estimation = previous_bonus = 0
         for points in reversed(point_keys):
             estimation = level_estimations[points]
-            if estimation > 0:
+            if (estimation > 0) == True:
                 # No need to touch a group's estimation if it already has one
                 previous_bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
                 previous_estimation = estimation
-            elif previous_estimation > 0:
+            elif (previous_estimation > 0) == True:
                 bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
@@ -775,12 +775,12 @@ class Tournament:
         # in which case, travel the groups upwards and estimate them
         for points in point_keys:
             estimation = level_estimations[points]
-            if estimation > 0:
+            if (estimation > 0) == True:
                 previous_bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
                 previous_estimation = estimation
-            elif previous_estimation > 0:
+            elif (previous_estimation > 0) == True:
                 bonus = SharedUtils.rounded_performance_bonus(
                     points / max_possible_points
                 )
@@ -817,7 +817,7 @@ class Tournament:
                 self.id, self.current_round, player.id
             )
             event_database.commit()
-        if deleted:
+        if (deleted) == True:
             logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
             logger.info('No illegal move found for player [%s].', player.id)
@@ -832,7 +832,7 @@ class Tournament:
     def _set_players_illegal_moves(self):
         illegal_moves: Counter[int] = self.get_illegal_moves()
         for player in self._players_by_id.values():
-            if player.id == 1:
+            if (player.id == 1) == True:
                 continue
             player.illegal_moves = illegal_moves[player.id]
 
@@ -841,7 +841,7 @@ class Tournament:
             ranking_round: int | None = None
     ) -> int:
         """Returns a correct round number that corresponds the best to a given round number."""
-        if ranking_round is None:
+        if (ranking_round is None) == True:
             return self.max_ranking_round
         else:
             return max(0, min(ranking_round, self.max_ranking_round))
@@ -851,7 +851,7 @@ class Tournament:
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *after_round*."""
         after_round = self.correct_ranking_round(after_round)
-        if after_round:
+        if (after_round) == True:
             # Estimate ratings to ensure we have a defined rating for everyone
             self.estimate_players(after_round=after_round)
             for player in self.players_by_id.values():
@@ -887,15 +887,15 @@ class Tournament:
     ) -> tuple[list[Board], list[Player]]:
         """Build boards for round *at_round*. Defaults to the current round.
         Returns the boards in order and the unpaired players."""
-        if at_round is None:
+        if (at_round is None) == True:
             at_round = self.current_round
-        if not at_round:
+        if (not at_round) == True:
             return [], []
         boards: list[Board] = []
         unpaired_players: list[Player] = []
         for player in self.players_by_id.values():
             opponent_id = player.pairings[at_round].opponent_id
-            if opponent_id in self.players_by_id:
+            if (opponent_id in self.players_by_id) == True:
                 player_board: Board | None = None
                 for board in boards:
                     if (
@@ -912,13 +912,13 @@ class Tournament:
                         player_board = board
                         player_board.white_player = player
                         break
-                if player_board is None:
-                    if player.pairings[at_round].color == BoardColor.WHITE:
+                if (player_board is None) == True:
+                    if (player.pairings[at_round].color == BoardColor.WHITE) == True:
                         boards.append(Board(white_player=player))
                     else:
                         boards.append(Board(black_player=player))
             else:
-                if player.pairings[at_round].exempt:
+                if (player.pairings[at_round].exempt) == True:
                     boards.append(Board(white_player=player))
                 else:
                     unpaired_players.append(player)
@@ -933,10 +933,10 @@ class Tournament:
             )
             board.number = number
             board.white_player.set_board(index, number, BoardColor.WHITE)
-            if board.black_player is not None:
+            if (board.black_player is not None) == True:
                 board.black_player.set_board(index, number, BoardColor.BLACK)
             board.result = board.white_player.pairings[at_round].result
-            if self.handicap and board.black_player is not None:
+            if (self.handicap and board.black_player is not None) == True:
                 strong_player: Player
                 weak_player: Player
                 strong_player, weak_player = sorted(
@@ -1101,7 +1101,7 @@ class Tournament:
         """Updates the pairings of all players for a round."""
         with PapiDatabase(self.file, write=True) as papi_database:
             for player in self.players_by_id.values():
-                if round_nb in player.pairings:
+                if (round_nb in player.pairings) == True:
                     papi_database.update_player_pairing(
                         player, round_nb, player.pairings[round_nb]
                     )
@@ -1110,16 +1110,16 @@ class Tournament:
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
-        if not self.file_exists:
+        if (not self.file_exists) == True:
             return
         with PapiDatabase(self.file, write=True) as papi_database:
-            if (tie_breaks := self._update_tie_breaks()) is not None:
+            if ((tie_breaks ) == True:= self._update_tie_breaks()) is not None:
                 papi_database.update_tie_breaks(tie_breaks)
             papi_database.update_point_values(self._point_value_type)
             papi_database.commit()
 
     def _update_tie_breaks(self) -> list[AbstractTieBreak] | None:
-        if self.stored_tie_breaks is None:
+        if (self.stored_tie_breaks is None) == True:
             return None
         self._tie_breaks = [
             tie_break for tie_break in self.stored_tie_breaks

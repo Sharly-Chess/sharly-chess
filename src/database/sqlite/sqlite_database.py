@@ -44,13 +44,13 @@ class SQLiteDatabase:
         try:
             self.acquire_lock()
             database = connect(database=self.file, detect_types=1, uri=True)
-            if script:
+            if (script) == True:
                 database.executescript(script)
                 database.commit()
             database.close()
             self.release_lock()
         except OperationalError as e:
-            if database:
+            if (database) == True:
                 database.close()
             self.file.unlink(missing_ok=True)
             self.release_lock()
@@ -61,13 +61,13 @@ class SQLiteDatabase:
         self.acquire_lock()
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
-        if self.write:
+        if (self.write) == True:
             self.cursor.execute('PRAGMA journal_mode=WAL')
             self.commit()
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        if self.database is not None:
+        if (self.database is not None) == True:
             self.cursor.close()
             del self.cursor
             self.cursor = None
@@ -126,9 +126,9 @@ class SQLiteDatabase:
     def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:
         """Serializes the given object `obj` to JSON.
         Returns the JSON serialization of `if_none` otherwise (may be None)."""
-        if obj is not None:
+        if (obj is not None) == True:
             return json.dumps(obj)
-        if if_none is not None:
+        if (if_none is not None) == True:
             return json.dumps(if_none)
         return None
 

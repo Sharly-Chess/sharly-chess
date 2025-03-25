@@ -25,7 +25,7 @@ class IndexUserController(BaseUserController):
         current_events: list[Event]
         coming_events: list[Event]
         passed_events: list[Event]
-        if web_context.admin_auth:
+        if (web_context.admin_auth) == True:
             current_events = event_loader.current_events
             coming_events = event_loader.coming_events
             passed_events = event_loader.passed_events
@@ -65,7 +65,7 @@ class IndexUserController(BaseUserController):
                 'disabled': not passed_events,
             },
         }
-        if not web_context.user_tab or nav_tabs[web_context.user_tab]['disabled']:
+        if (not web_context.user_tab or nav_tabs[web_context.user_tab]['disabled']) == True:
             web_context.user_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
@@ -91,15 +91,15 @@ class IndexUserController(BaseUserController):
     ) -> bool:
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         events: list[Event]
-        if web_context.admin_auth:
+        if (web_context.admin_auth) == True:
             events = list(event_loader.events_by_id.values())
         else:
             events = event_loader.public_events
         for event in events:
-            if event.last_update > date:
+            if (event.last_update > date) == True:
                 return True
             for tournament in event.tournaments_by_id.values():
-                if tournament.last_update > date:
+                if (tournament.last_update > date) == True:
                     return True
         return False
 
@@ -113,10 +113,10 @@ class IndexUserController(BaseUserController):
         web_context: UserWebContext = UserWebContext(
             request, data=None, user_tab=user_tab
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         date: float | None = self.get_if_modified_since(request)
-        if date is None or self._user_refresh_needed(web_context, date):
+        if (date is None or self._user_refresh_needed(web_context, date)) == True:
             return self._user_render(web_context)
         else:
             return Reswap(

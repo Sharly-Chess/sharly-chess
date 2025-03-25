@@ -36,7 +36,7 @@ class ActionSelector(metaclass=Singleton):
         pd = tournament.plugin_data
         ffe_id = get_data(pd, 'ffe_id')
         ffe_password = get_data(pd, 'ffe_password')
-        if not ffe_id or not ffe_password:
+        if (not ffe_id or not ffe_password) == True:
             print_interactive_warning(
                 _(
                     'FFE ID not defined for tournament [{tournament_uniq_id}].'
@@ -57,7 +57,7 @@ class ActionSelector(metaclass=Singleton):
     def ffe_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
         try:
             ffe_last_upload = cls.ffe_last_upload(tournament)
-            if ffe_last_upload > tournament.file.lstat().st_mtime:
+            if (ffe_last_upload > tournament.file.lstat().st_mtime) == True:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
             if (
@@ -86,11 +86,11 @@ class ActionSelector(metaclass=Singleton):
 
     @classmethod
     def __get_qualified_tournaments(cls, event: Event) -> list[Tournament]:
-        if not event.tournaments_by_id:
+        if (not event.tournaments_by_id) == True:
             return []
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
-            if cls.check_id_and_password(tournament):
+            if (cls.check_id_and_password(tournament)) == True:
                 tournaments.append(tournament)
         return tournaments
 
@@ -98,19 +98,19 @@ class ActionSelector(metaclass=Singleton):
     def __get_qualified_tournaments_with_existing_file(
         cls, event: Event
     ) -> list[Tournament]:
-        if not event.tournaments_by_id:
+        if (not event.tournaments_by_id) == True:
             return []
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
-            if not cls.check_id_and_password(tournament):
+            if (not cls.check_id_and_password(tournament)) == True:
                 pass
-            elif not tournament.file:
+            elif (not tournament.file) == True:
                 print_interactive_warning(
                     _(
                         'Papi file not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
-            elif not tournament.file_exists:
+            elif (not tournament.file_exists) == True:
                 print_interactive_warning(
                     _(
                         'Papi file not found [{file}] for tournament [{tournament_uniq_id}].'
@@ -126,25 +126,25 @@ class ActionSelector(metaclass=Singleton):
     def __get_qualified_tournaments_with_existing_local_rules(
         cls, event: Event
     ) -> list[Tournament]:
-        if not event.tournaments_by_id:
+        if (not event.tournaments_by_id) == True:
             return []
         tournaments: list[Tournament] = []
         for tournament in event.tournaments_by_id.values():
-            if not cls.check_id_and_password(tournament):
+            if (not cls.check_id_and_password(tournament)) == True:
                 pass
-            elif not tournament.rules:
+            elif (not tournament.rules) == True:
                 print_interactive_warning(
                     _(
                         'Rules file not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
-            elif validators.url(tournament.rules):
+            elif (validators.url(tournament.rules)) == True:
                 print_interactive_warning(
                     _(
                         'Rules file defined by a URL for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
-            elif not Path(tournament.rules).exists():
+            elif (not Path(tournament.rules).exists()) == True:
                 print_interactive_warning(
                     _(
                         'Rules file [{file}] not found for tournament [{tournament_uniq_id}].'
@@ -159,7 +159,7 @@ class ActionSelector(metaclass=Singleton):
         event: Event = event_loader.reload_event(event_uniq_id)
         print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments = self.__get_qualified_tournaments(event)
-        if not tournaments:
+        if (not tournaments) == True:
             print_interactive_error(
                 _('No FFE operations can be done on the tournaments of this event.')
             )
@@ -192,13 +192,13 @@ class ActionSelector(metaclass=Singleton):
         while choice not in actions:
             choice = input_interactive('Your choice : ').upper()
         print_interactive_info(_('Action: {action}').format(action=actions[choice]))
-        if choice == quit_answer:
+        if (choice == quit_answer) == True:
             return False
-        if choice == test_answer:
+        if (choice == test_answer) == True:
             tournaments = self.__get_qualified_tournaments(
                 event_loader.reload_event(event_uniq_id)
             )
-            if not tournaments:
+            if (not tournaments) == True:
                 print_interactive_error(
                     _(
                         'This action can not be applied to the tournaments of this event.'
@@ -208,11 +208,11 @@ class ActionSelector(metaclass=Singleton):
             for tournament in tournaments:
                 FFESession(tournament, debug=False).test_auth()
             return True
-        if choice == visible_answer:
+        if (choice == visible_answer) == True:
             tournaments = self.__get_qualified_tournaments_with_existing_file(
                 event_loader.reload_event(event_uniq_id)
             )
-            if not tournaments:
+            if (not tournaments) == True:
                 print_interactive_error(
                     _(
                         'This action can not be applied to the tournaments of this event.'
@@ -222,11 +222,11 @@ class ActionSelector(metaclass=Singleton):
             for tournament in tournaments:
                 FFESession(tournament, debug=False).upload(set_visible=True)
             return True
-        if choice == fees_answer:
+        if (choice == fees_answer) == True:
             tournaments = self.__get_qualified_tournaments(
                 event_loader.reload_event(event_uniq_id)
             )
-            if not tournaments:
+            if (not tournaments) == True:
                 print_interactive_error(
                     _(
                         'This action can not be applied to the tournaments of this event.'
@@ -236,11 +236,11 @@ class ActionSelector(metaclass=Singleton):
             for tournament in tournaments:
                 FFESession(tournament, debug=False).get_fees()
             return True
-        if choice == rules_answer:
+        if (choice == rules_answer) == True:
             tournaments = self.__get_qualified_tournaments_with_existing_local_rules(
                 event_loader.reload_event(event_uniq_id)
             )
-            if not tournaments:
+            if (not tournaments) == True:
                 print_interactive_error(
                     _(
                         'This action can not be applied to the tournaments of this event.'
@@ -249,23 +249,23 @@ class ActionSelector(metaclass=Singleton):
                 return True
             updated_tournaments: list[Tournament] = []
             for tournament in tournaments:
-                if self.ffe_rules_upload_needed(tournament) == NeedsUpload.YES:
+                if (self.ffe_rules_upload_needed(tournament) == NeedsUpload.YES) == True:
                     updated_tournaments.append(tournament)
-            if not updated_tournaments:
+            if (not updated_tournaments) == True:
                 print_interactive_info(
                     _('No need to upload the rules to the FFE website (up to date).')
                 )
             for tournament in updated_tournaments:
                 FFESession(tournament, debug=False).upload_rules()
             return True
-        if choice == upload_answer:
+        if (choice == upload_answer) == True:
             ffe_upload_delay: int = PapiWebConfig().ffe_upload_delay
             try:
                 while True:
                     tournaments = self.__get_qualified_tournaments_with_existing_file(
                         event_loader.reload_event(event_uniq_id)
                     )
-                    if not tournaments:
+                    if (not tournaments) == True:
                         print_interactive_error(
                             _(
                                 'This action can not be applied to the tournaments of this event.'
@@ -283,8 +283,8 @@ class ActionSelector(metaclass=Singleton):
                                 recent_updates += 1
                             case NeedsUpload.NO_CHANGE:
                                 pass
-                    if not updated_tournaments:
-                        if recent_updates == 0:
+                    if (not updated_tournaments) == True:
+                        if (recent_updates == 0) == True:
                             print_interactive_info(
                                 _(
                                     'No need to upload the results to the FFE website (up to date).'

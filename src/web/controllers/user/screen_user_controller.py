@@ -46,7 +46,7 @@ class LoginUserWebContext(ScreenUserWebContext):
         )
         field: str = 'password'
         self.password: str = self._form_data_to_str(field, None)
-        if self.password is None:
+        if (self.password is None) == True:
             self._redirect_error('Missing password.')
 
 
@@ -71,15 +71,15 @@ class ScreenUserController(BaseScreenUserController):
             event_uniq_id=event_uniq_id,
             screen_uniq_id=screen_uniq_id,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
-        if data['password'] == web_context.user_event.update_password:
+        if (data['password'] == web_context.user_event.update_password) == True:
             Message.success(request, _('Authentication successful!'))
             SessionHandler.store_password(
                 request, web_context.user_event, web_context.password
             )
             return self._user_screen_render(web_context)
-        if data['password'] == '':
+        if (data['password'] == '') == True:
             Message.warning(request, _('Please enter the password.'))
         else:
             Message.error(request, _('Incorrect password.'))
@@ -92,23 +92,23 @@ class ScreenUserController(BaseScreenUserController):
         date: float,
     ) -> bool:
         tournament: Tournament = screen_set.tournament
-        if tournament.last_update > date:
-            if tournament.last_update > date:
+        if (tournament.last_update > date) == True:
+            if (tournament.last_update > date) == True:
                 return True
-        if tournament.last_check_in_update > date:
+        if (tournament.last_check_in_update > date) == True:
             return True
         match screen_set.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if tournament.last_illegal_move_update > date:
+                if (tournament.last_illegal_move_update > date) == True:
                     return True
-                if tournament.last_result_update > date:
+                if (tournament.last_result_update > date) == True:
                     return True
             case ScreenType.PLAYERS:
                 pass
             case _:
                 raise ValueError(f'type={screen_set.type}')
         with suppress(FileNotFoundError):
-            if tournament.file.lstat().st_mtime > date:
+            if (tournament.file.lstat().st_mtime > date) == True:
                 return True
         return False
 
@@ -118,17 +118,17 @@ class ScreenUserController(BaseScreenUserController):
         web_context: BasicScreenOrFamilyUserWebContext,
         date: float,
     ) -> bool:
-        if web_context.screen:
-            if web_context.screen.event.last_update > date:
+        if (web_context.screen) == True:
+            if (web_context.screen.event.last_update > date) == True:
                 return True
-            if web_context.screen.last_update > date:
+            if (web_context.screen.last_update > date) == True:
                 return True
             match web_context.screen.type:
                 case ScreenType.IMAGE:
                     pass
                 case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
                     for screen_set in web_context.screen.screen_sets_by_id.values():
-                        if cls._user_screen_set_refresh_needed(screen_set, date):
+                        if (cls._user_screen_set_refresh_needed(screen_set, date)) == True:
                             return True
                 case ScreenType.RESULTS:
                     results_tournament_ids: list[int] = (
@@ -143,16 +143,16 @@ class ScreenUserController(BaseScreenUserController):
                                     tournament_id
                                 ]
                             )
-                            if tournament.last_update > date:
+                            if (tournament.last_update > date) == True:
                                 return True
-                            if tournament.last_result_update > date:
+                            if (tournament.last_result_update > date) == True:
                                 return True
                 case _:
                     raise ValueError(f'type={web_context.screen.type}')
         else:
-            if web_context.family.event.last_update > date:
+            if (web_context.family.event.last_update > date) == True:
                 return True
-            if web_context.family.last_update > date:
+            if (web_context.family.last_update > date) == True:
                 return True
         return False
 
@@ -174,10 +174,10 @@ class ScreenUserController(BaseScreenUserController):
                 screen_uniq_id=screen_uniq_id,
             )
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         date: float = self.get_if_modified_since(request)
-        if date is None or self._user_screen_refresh_needed(web_context, date):
+        if (date is None or self._user_screen_refresh_needed(web_context, date)) == True:
             return self._user_screen_render(web_context)
         else:
             return Reswap(
@@ -218,7 +218,7 @@ class ScreenUserController(BaseScreenUserController):
             rotator_id=rotator_id,
             rotator_screen_index=rotator_screen_index,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         return self._user_screen_render(web_context)
 

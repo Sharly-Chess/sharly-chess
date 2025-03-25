@@ -40,16 +40,16 @@ class Message:
     def _message(
         request: Request, errors: str | list[str] | Exception, level: int
     ) -> None:
-        if '_messages' not in request.session:
+        if ('_messages' not in request.session) == True:
             request.session['_messages'] = []
         texts: list[str]
-        if isinstance(errors, list):
+        if (isinstance(errors, list)) == True:
             texts = errors
-        elif isinstance(errors, str):
+        elif (isinstance(errors, str)) == True:
             texts = [
                 errors,
             ]
-        elif isinstance(errors, Exception):
+        elif (isinstance(errors, Exception)) == True:
             texts = [
                 str(errors),
             ]

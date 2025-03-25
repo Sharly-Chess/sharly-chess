@@ -61,7 +61,7 @@ class PapiWebConfig(metaclass=Singleton):
     }
 
     def __init__(self):
-        if not DEFAULT_LOCALE:
+        if (not DEFAULT_LOCALE) == True:
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
@@ -87,7 +87,7 @@ class PapiWebConfig(metaclass=Singleton):
         logger.debug(' - Platform: %s', platform.platform())
         logger.debug(' - Architecture: %s', " ".join(platform.architecture()))
         self.locales: list[str] = trusted_locales
-        if EXPERIMENTAL_FEATURES:
+        if (EXPERIMENTAL_FEATURES) == True:
             self.locales += untrusted_locales
         configure_logger(self.log_level)
 
@@ -113,7 +113,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     @property
     def launch_browser(self) -> bool:
-        if self.stored_config.launch_browser is not None:
+        if (self.stored_config.launch_browser is not None) == True:
             return self.stored_config.launch_browser
         else:
             return self.default_launch_browser
@@ -144,7 +144,7 @@ class PapiWebConfig(metaclass=Singleton):
     @property
     def copyright(self) -> str:
         """The copyright of the application."""
-        return f'Â© {self.project} 2013-2025'
+        return f'© {self.project} 2013-2025'
 
     @property
     def project(self) -> str:
@@ -226,7 +226,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     def _url(self, ip: str | None) -> str | None:
         """Returns the URL of the application for the given IP."""
-        if ip is None:
+        if (ip is None) == True:
             return None
         return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
@@ -292,10 +292,10 @@ class PapiWebConfig(metaclass=Singleton):
     default_rotator_delay: int = 15
 
     # The default text shown on timers before the start of a round.
-    default_timer_round_text_before: str = 'DÃ©but de la ronde {} dans %s'
+    default_timer_round_text_before: str = 'Début de la ronde {} dans %s'
 
     # The default text shown on timers after the start of a round.
-    default_timer_round_text_after: str = 'Ronde {} commencÃ©e depuis %s'
+    default_timer_round_text_after: str = 'Ronde {} commencée depuis %s'
 
     # The delay before checking if the user index page has changed.
     user_index_update_delay: int = 10
@@ -365,7 +365,7 @@ class PapiWebConfig(metaclass=Singleton):
         'record',
     ]
 
-    # The default fÃ©dÃ©ration when creating events or players
+    # The default fédération when creating events or players
     default_federation: str = 'FID'
 
     # The federation names.
@@ -412,7 +412,7 @@ class PapiWebConfig(metaclass=Singleton):
         'COL': 'Colombia',
         'COM': 'Comoros Islands',
         'CRC': 'Costa Rica',
-        'CIV': 'Cote dâ€™Ivoire',
+        'CIV': 'Cote d’Ivoire',
         'CRO': 'Croatia',
         'CUB': 'Cuba',
         'CYP': 'Cyprus',

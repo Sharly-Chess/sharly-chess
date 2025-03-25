@@ -44,9 +44,9 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
         )
         self.admin_rotator: Rotator | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if rotator_id:
+        if (rotator_id) == True:
             try:
                 self.admin_rotator = self.admin_event.rotators_by_id[rotator_id]
             except KeyError:
@@ -68,7 +68,7 @@ class RotatorAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> StoredRotator:
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
         field: str = 'uniq_id'
         uniq_id: str = WebContext.form_data_to_str(data, field)
@@ -83,12 +83,12 @@ class RotatorAdminController(BaseEventAdminController):
         ]:
             pass
         else:
-            if not uniq_id:
+            if (not uniq_id) == True:
                 errors[field] = _('Please enter the rotator ID.')
             else:
                 match action:
                     case 'create' | 'clone':
-                        if uniq_id in web_context.admin_event.rotators_by_uniq_id:
+                        if (uniq_id in web_context.admin_event.rotators_by_uniq_id) == True:
                             errors[field] = _(
                                 'Rotator [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
@@ -114,18 +114,18 @@ class RotatorAdminController(BaseEventAdminController):
                 screen_ids = []
                 for screen_id in web_context.admin_event.basic_screens_by_id:
                     field = f'screen_{screen_id}'
-                    if WebContext.form_data_to_bool(data, field):
+                    if (WebContext.form_data_to_bool(data, field)) == True:
                         screen_ids.append(screen_id)
                 family_ids = []
                 for family_id in web_context.admin_event.families_by_id:
                     field = f'family_{family_id}'
-                    if WebContext.form_data_to_bool(data, field):
+                    if (WebContext.form_data_to_bool(data, field)) == True:
                         family_ids.append(family_id)
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox', False
                 )
-                if message_default and web_context.admin_rotator:
+                if (message_default and web_context.admin_rotator) == True:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
                     message_text = web_context.admin_rotator.stored_rotator.message_text
@@ -170,7 +170,7 @@ class RotatorAdminController(BaseEventAdminController):
             rotator_id=rotator_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
@@ -185,7 +185,7 @@ class RotatorAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'rotator':
-                if data is None:
+                if (data is None) == True:
                     uniq_id: str | None = None
                     public: bool | None = None
                     delay: int | None = None
@@ -242,14 +242,14 @@ class RotatorAdminController(BaseEventAdminController):
                         ),
                         'message_text': WebContext.value_to_form_data(message_text),
                     }
-                    if screen_ids:
+                    if (screen_ids) == True:
                         data |= {
                             f'screen_{screen_id}': WebContext.value_to_form_data(
                                 screen_id in screen_ids
                             )
                             for screen_id in web_context.admin_event.basic_screens_by_id
                         }
-                    if family_ids:
+                    if (family_ids) == True:
                         data |= {
                             f'family_{family_id}': WebContext.value_to_form_data(
                                 family_id in family_ids
@@ -262,7 +262,7 @@ class RotatorAdminController(BaseEventAdminController):
                         )
                     )
                     errors = stored_rotator.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
                 template_context |= {
                     'modal': modal,
@@ -285,7 +285,7 @@ class RotatorAdminController(BaseEventAdminController):
         event_uniq_id: str,
         admin_rotators_show_details: bool | None,
     ) -> Template | ClientRedirect:
-        if admin_rotators_show_details is not None:
+        if (admin_rotators_show_details is not None) == True:
             SessionHandler.set_session_admin_rotators_show_details(
                 request, admin_rotators_show_details
             )
@@ -353,12 +353,12 @@ class RotatorAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_rotator: StoredRotator = self._admin_validate_rotator_update_data(
             action, web_context, data
         )
-        if stored_rotator.errors:
+        if (stored_rotator.errors) == True:
             return self._admin_event_rotators_render(
                 request,
                 event_uniq_id=event_uniq_id,

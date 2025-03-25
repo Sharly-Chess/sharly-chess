@@ -29,10 +29,10 @@ class EventLoader:
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
-        if not request:
+        if (not request) == True:
             return cls()
         event_loader: EventLoader = request.state.get('event_loader', None)
-        if not event_loader:
+        if (not event_loader) == True:
             request.state['event_loader'] = cls()
         return request.state['event_loader']
 
@@ -41,14 +41,14 @@ class EventLoader:
         given event."""
         with suppress(AttributeError):
             del self.event_uniq_ids
-        if event_uniq_id:
+        if (event_uniq_id) == True:
             with suppress(KeyError):
                 del self._loaded_stored_events_by_id[event_uniq_id]
         with suppress(AttributeError):
             del self.stored_events_by_id
         with suppress(AttributeError):
             del self.stored_events_sorted_by_name
-        if event_uniq_id:
+        if (event_uniq_id) == True:
             with suppress(KeyError):
                 del self._loaded_events_by_id[event_uniq_id]
         with suppress(AttributeError):
@@ -79,7 +79,7 @@ class EventLoader:
         index: int
         uniq_id: str
         base_uniq_id = unicode_normalize(base_uniq_id)
-        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+        if (matches ) == True:= re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
             index = int(matches.group(2))
             uniq_id = f'{base_uniq_id}-{index + 1}'
@@ -96,7 +96,7 @@ class EventLoader:
         base_name, or base_name (2), or base_name (n+1)..."""
         index: int
         name: str
-        if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
+        if (matches ) == True:= re.match(r'^(.*) \((\d+)\)$', base_name):
             base_name = matches.group(1)
             index = int(matches.group(2))
             name = f'{base_name} ({index + 1})'
@@ -120,7 +120,7 @@ class EventLoader:
         return sorted(self.stored_events_by_id.values(), key=lambda event: event.name)
 
     def _load_event(self, uniq_id: str, reload: bool) -> Event:
-        if reload:
+        if (reload) == True:
             self.clear_cache(uniq_id)
         try:
             return self._loaded_events_by_id[uniq_id]
@@ -248,10 +248,10 @@ class ArchiveLoader:
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
-        if not request:
+        if (not request) == True:
             return cls()
         archive_loader: ArchiveLoader = request.state.get('archive_loader')
-        if not archive_loader:
+        if (not archive_loader) == True:
             request.state['archive_loader'] = cls()
         return request.state['archive_loader']
 
@@ -302,10 +302,10 @@ class EventBackupLoader:
     def event_backups(event_id: str) -> list[EventBackup]:
         backups: list[EventBackup] = []
         for version_dir in PapiWebConfig.event_backup_base_path.iterdir():
-            if not version_dir.is_dir():
+            if (not version_dir.is_dir()) == True:
                 continue
             backup = EventBackup(event_id, Version(version_dir.name))
-            if backup.exists:
+            if (backup.exists) == True:
                 backups.append(backup)
         return backups
 
@@ -320,9 +320,9 @@ class EventBackupLoader:
         ]
 
     def versions(self, event_id: str | None = None) -> list[Version]:
-        if not PapiWebConfig.event_backup_base_path.exists():
+        if (not PapiWebConfig.event_backup_base_path.exists()) == True:
             return []
-        if event_id:
+        if (event_id) == True:
             return [backup.version for backup in self.event_backups(event_id)]
         return [
             Version(version_dir.name) for version_dir in
@@ -338,6 +338,6 @@ class EventBackupLoader:
             version for version in self.versions(event_id)
             if version <= PapiWebConfig().version
         ]
-        if not compatible_versions:
+        if (not compatible_versions) == True:
             return None
         return max(compatible_versions)

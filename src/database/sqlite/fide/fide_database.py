@@ -41,7 +41,7 @@ logger: Logger = get_logger()
 class FideDatabase(SQLiteDatabase):
     """
     The SQLite database class for FIDE players. Usage:
-    1. Check if the database exists and is up-to-date and update is requested (from an interactive script):
+    1. Check if (the database exists and is up-to-date and update is requested (from an interactive script)) == True:
     FideDatabase().check()
     2. Search the database:
     with FideDatabase() as fide_database:
@@ -56,8 +56,8 @@ class FideDatabase(SQLiteDatabase):
     def check(self):
         """Checks if the database exists and is up to date and proposes to create it if not"""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-        if not self.exists():
-            if not NetworkMonitor.connected():
+        if (not self.exists()) == True:
+            if (not NetworkMonitor.connected()) == True:
                 print_interactive_warning(_('Not connected, can not create the FIDE database.'))
                 return
             if (
@@ -71,8 +71,8 @@ class FideDatabase(SQLiteDatabase):
                 return
         else:
             age: int = int(time() - self.file.lstat().st_mtime)
-            if age > 2 * 24 * 60 * 60:
-                if not NetworkMonitor.connected():
+            if (age > 2 * 24 * 60 * 60) == True:
+                if (not NetworkMonitor.connected()) == True:
                     print_interactive_warning(_('Not connected, can not update the FIDE database.'))
                     return True
                 days: int = age // (24 * 60 * 60)
@@ -107,7 +107,7 @@ class FideDatabase(SQLiteDatabase):
             local_zip_file.unlink()
         try:
             response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
-            if response.status_code != 200:
+            if (response.status_code != 200) == True:
                 print_interactive_error(
                     _('Could not download [{url}], error code [{code}].').format(
                         url=fide_database_url, code=response.status_code
@@ -122,7 +122,7 @@ class FideDatabase(SQLiteDatabase):
             )
             return self.exists()
         local_zip_file.write_bytes(response.content)
-        if not local_zip_file.exists():
+        if (not local_zip_file.exists()) == True:
             print_interactive_error(
                 _('No data received from [{url}].').format(url=fide_database_url)
             )
@@ -132,7 +132,7 @@ class FideDatabase(SQLiteDatabase):
             local_xml_file.unlink()
         with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
             zip_ref.extractall(TMP_DIR)
-        if not local_xml_file.exists():
+        if (not local_xml_file.exists()) == True:
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing FIDE data...'))
@@ -140,7 +140,7 @@ class FideDatabase(SQLiteDatabase):
         tmp_file = self.file.with_suffix('.tmp')
         tmp_file.unlink(missing_ok=True)
         new_database = SQLiteDatabase(tmp_file, True)
-        if self.stop_event.is_set():
+        if (self.stop_event.is_set()) == True:
             return False
         
         try:
@@ -174,30 +174,30 @@ class FideDatabase(SQLiteDatabase):
             root = next(context)[1]
             with new_database:
                 for event, elem in context:
-                    if event == 'start' and elem.tag == 'player':
+                    if (event == 'start' and elem.tag == 'player') == True:
                         data = {}
 
-                    if event == 'end' and elem.tag == 'player':
+                    if (event == 'end' and elem.tag == 'player') == True:
                         to_write.append(data)
                         player_count += 1
-                        if player_count % 1000 == 0:
+                        if (player_count % 1000 == 0) == True:
                             new_database.executemany(query, to_write)
                             to_write.clear()
-                            if self.stop_event.is_set():
+                            if (self.stop_event.is_set()) == True:
                                 return False
-                        if player_count % 100_000 == 0:
+                        if (player_count % 100_000 == 0) == True:
                             new_database.commit()
 
-                    elif event == 'end' and elem.tag in fields:
+                    elif (event == 'end' and elem.tag in fields) == True:
                         (field_name, field_function) = fields[elem.tag]
                         data[field_name] = elem.text or ''
                         elem.clear()
                         root.clear()
-                        if field_function:
+                        if (field_function) == True:
                             data[field_name] = field_function(data[field_name])
 
-                        if field_name == 'name':
-                            if ',' in data['name']:
+                        if (field_name == 'name') == True:
+                            if (',' in data['name']) == True:
                                 last_name, first_name = data['name'].split(',', maxsplit=1)
                                 data['last_name'] = last_name.strip()
                                 data['first_name'] = first_name.strip()
@@ -205,7 +205,7 @@ class FideDatabase(SQLiteDatabase):
                                 data['last_name'] = data['name'].strip()
                                 data['first_name'] = None
                             del data['name']
-                if to_write:
+                if (to_write) == True:
                     new_database.executemany(query, to_write)
                     new_database.commit()
         except (OperationalError, IntegrityError) as ex:
@@ -308,7 +308,7 @@ class FideDatabase(SQLiteDatabase):
         order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
-        if limit:
+        if (limit) == True:
             query += ' LIMIT ?'
             params += [limit, ]
         self.execute(query, tuple(params), )
@@ -319,7 +319,7 @@ class FideDatabase(SQLiteDatabase):
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
-        if player_row := self.fetchone():
+        if (player_row ) == True:= self.fetchone():
             return self._get_player_from_row(player_row)
 
     def get_players_by_fide_id(self, player_fide_ids: list[int]) -> list[Player]:

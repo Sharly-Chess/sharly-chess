@@ -47,7 +47,7 @@ class ChessEventTournament:
             self.name = str(chessevent_tournament_info[key := 'name'])
             self.type = TournamentType(int(chessevent_tournament_info[key := 'type']))
             self.rounds = int(chessevent_tournament_info[key := 'rounds'])
-            if self.rounds not in range(25):  # the 0-value is set by default later
+            if (self.rounds not in range(25)) == True:  # the 0-value is set by default later
                 raise ValueError
             self.pairing = TournamentPairing(
                 int(chessevent_tournament_info[key := 'pairing'])
@@ -62,16 +62,16 @@ class ChessEventTournament:
                 int(chessevent_tournament_info[key := 'rating'])
             )
             ffe_id = chessevent_tournament_info[key := 'ffe_id']
-            if ffe_id:
+            if (ffe_id) == True:
                 self.ffe_id = int(ffe_id)
             key = 'players'
             for chessevent_player_info in chessevent_tournament_info[key]:
                 chessevent_player: ChessEventPlayer = ChessEventPlayer(
                     chessevent_player_info
                 )
-                if chessevent_player.check_in:
+                if (chessevent_player.check_in) == True:
                     self.check_in_started = True
-                if chessevent_player.error:
+                if (chessevent_player.error) == True:
                     return
                 self.players.append(chessevent_player)
         except KeyError:

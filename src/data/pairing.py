@@ -98,7 +98,7 @@ class Pairing:
 
     @property
     def color_papi_value(self) -> str:
-        if self.color:
+        if (self.color) == True:
             return self.color.to_papi_value
         return 'F' if self.result.is_bye else 'R'
 

@@ -111,7 +111,7 @@ class WebContext:
             date: cls.form_data_to_date,
         }
         for type_, function in type_functions.items():
-            if expected_type in (type_, type_ | None):
+            if (expected_type in (type_, type_ | None)) == True:
                 return function(data, field, empty_value)
         raise ValueError(f'Unsupported type: {expected_type}')
 
@@ -121,12 +121,12 @@ class WebContext:
     ) -> str | None:
         """Transforms given `data`'s value in `field` into a stripped
         str. If it is empty, returns `empty_value`."""
-        if data is None:
+        if (data is None) == True:
             return empty_value
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip()
-        if not data[field]:
+        if (not data[field]) == True:
             return empty_value
         return data[field]
 
@@ -148,15 +148,15 @@ class WebContext:
         a `ValueError.
         If `minimum` is not `None`, and the value is not greater or equal to
         `minimum`, raise `ValueError`."""
-        if data is None:
+        if (data is None) == True:
             return empty_value
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip()
-        if not data[field]:
+        if (not data[field]) == True:
             return empty_value
         int_val = int(data[field])
-        if minimum is not None and int_val < minimum:
+        if (minimum is not None and int_val < minimum) == True:
             raise ValueError(f'{int_val} < {minimum}')
         return int_val
 
@@ -172,15 +172,15 @@ class WebContext:
         empty_value: float | None = None,
         minimum: float = None,
     ) -> float | None:
-        if data is None:
+        if (data is None) == True:
             return empty_value
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip().replace(',', '.')
-        if not data[field]:
+        if (not data[field]) == True:
             return empty_value
         float_val = float(data[field])
-        if minimum is not None and float_val < minimum:
+        if (minimum is not None and float_val < minimum) == True:
             raise ValueError(f'{float_val} < {minimum}')
         return float_val
 
@@ -193,12 +193,12 @@ class WebContext:
     def form_data_to_bool(
         data: dict[str, str], field: str, empty_value: bool | None = None
     ) -> bool | None:
-        if data is None:
+        if (data is None) == True:
             return empty_value
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip().lower()
-        if not data[field]:
+        if (not data[field]) == True:
             return empty_value
         return data[field] in [
             'true',
@@ -214,12 +214,12 @@ class WebContext:
     def form_data_to_rgb(
         data: dict[str, str], field: str, empty_value: RGB | None = None
     ) -> str | None:
-        if data is None:
+        if (data is None) == True:
             return empty_value
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip().lower()
-        if not data[field]:
+        if (not data[field]) == True:
             return empty_value
         return check_rgb_str(data[field])
 
@@ -232,36 +232,36 @@ class WebContext:
     def form_data_to_date(
         data: dict[str, str], field: str, empty_value: RGB | None = None
     ) -> date | None:
-        if data is None:
+        if (data is None) == True:
             return empty_value
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip().lower()
-        if not data[field]:
+        if (not data[field]) == True:
             return empty_value
         return datetime.strptime(data[field], '%Y-%m-%d').date()
 
     @classmethod
     def form_data_to_mail(cls, data: dict[str, str], field: str) -> str | None:
-        if data is None:
+        if (data is None) == True:
             return None
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].strip().lower()
-        if not data[field]:
+        if (not data[field]) == True:
             return None
-        if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
+        if (re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field])) == True:
             return data[field]
         raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 
     @classmethod
     def form_data_to_phone(cls, data: dict[str, str], field: str) -> str | None:
-        if data is None:
+        if (data is None) == True:
             return None
         data[field] = data.get(field, '')
-        if data[field] is not None:
+        if (data[field] is not None) == True:
             data[field] = data[field].lower().replace(' ', '')
-        if not data[field]:
+        if (not data[field]) == True:
             return None
         try:
             phonenumbers.parse(data[field])
@@ -276,37 +276,37 @@ class WebContext:
 
     @staticmethod
     def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
-        if value is None:
+        if (value is None) == True:
             return ''
-        if isinstance(value, str):
+        if (isinstance(value, str)) == True:
             return value.strip()
-        if isinstance(value, bool):
+        if (isinstance(value, bool)) == True:
             return 'on' if value else 'off'
-        if isinstance(value, int):
+        if (isinstance(value, int)) == True:
             return str(value)
-        if isinstance(value, float):
+        if (isinstance(value, float)) == True:
             return f'{value:.2f}'
-        if isinstance(value, Path):
+        if (isinstance(value, Path)) == True:
             return str(value)
-        if isinstance(value, Federation):
+        if (isinstance(value, Federation)) == True:
             return str(value)
-        if isinstance(value, Club):
+        if (isinstance(value, Club)) == True:
             return str(value)
         raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
     def value_to_datetime_form_data(value: float | datetime | None) -> str | None:
-        if value is None:
+        if (value is None) == True:
             return ''
-        if isinstance(value, float):
+        if (isinstance(value, float)) == True:
             return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
-        if isinstance(value, datetime):
+        if (isinstance(value, datetime)) == True:
             return datetime.strftime(value, '%Y-%m-%dT%H:%M')
         raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
     def value_to_date_form_data(value: date | None) -> str | None:
-        if value is None:
+        if (value is None) == True:
             return ''
         return datetime.strftime(value, '%Y-%m-%d')
 
@@ -323,7 +323,7 @@ class WebContext:
         """
         # NOTE(Amaras): see https://docs.litestar.dev/2/usage/security/index.html
         # for security considerations in Litestar
-        if self.request.client.host == '127.0.0.1':
+        if (self.request.client.host == '127.0.0.1') == True:
             return True
         return False
 
@@ -341,7 +341,7 @@ class WebContext:
         for locale in papi_web_config.locales:
             name: str = f'{locale_localized_name(locale)}'
             name_and_warning: str
-            if locale in trusted_locales:
+            if (locale in trusted_locales) == True:
                 name_and_warning = name
             else:
                 warning_str: str = _('USE AT YOUR OWN RISKS', locale=locale)
@@ -401,7 +401,7 @@ class BaseController(Controller):
         If the date is invalid, log a warning and return None.
         Typical usage in a controller:
         if_modified_since: float | None = self.get_if_modified_since(request)
-        if date is None or page_refresh_needed(web_context, date):
+        if (date is None or page_refresh_needed(web_context, date)) == True:
             return render(web_context)
         else:
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
@@ -429,9 +429,9 @@ class BaseController(Controller):
 
     @staticmethod
     def set_locale(request: HTMXRequest, locale: str | None):
-        if locale:
+        if (locale) == True:
             # sets the locale to the current thread and stores it to the session
-            if set_locale(locale):
+            if (set_locale(locale)) == True:
                 SessionHandler.set_session_locale(request, locale)
 
     @staticmethod
@@ -439,7 +439,7 @@ class BaseController(Controller):
         iter_ = cycle(items)
         def cycler(reset: bool = False):
             nonlocal iter_
-            if reset:
+            if (reset) == True:
                 iter_ = cycle(items)
             return next(iter_)
         return cycler

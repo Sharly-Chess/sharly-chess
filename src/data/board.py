@@ -40,21 +40,21 @@ class Board:
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)
-        if not isinstance(other, Board):
+        if (not isinstance(other, Board)) == True:
             return NotImplemented
-        if self.board_id is not None and other.board_id is not None:
+        if (self.board_id is not None and other.board_id is not None) == True:
             return self.board_id < other.board_id
-        if self.black_player is None:
+        if (self.black_player is None) == True:
             # The pairing allocated bye board is last
             return True
-        elif other.black_player is None:
+        elif (other.black_player is None) == True:
             # The pairing allocated bye is last
             return False
         # Here we have no board id, so we need to compare
         # the highest-scoring players
         self_player_1: Player
         self_player_2: Player
-        if self.white_player < self.black_player:
+        if (self.white_player < self.black_player) == True:
             self_player_1 = self.black_player
             self_player_2 = self.white_player
         else:
@@ -63,41 +63,41 @@ class Board:
         # Here self_player_1 is the strongest player of this board
         other_player_1: Player
         other_player_2: Player
-        if other.white_player < other.black_player:
+        if (other.white_player < other.black_player) == True:
             other_player_1 = other.black_player
             other_player_2 = other.white_player
         else:
             other_player_1 = other.white_player
             other_player_2 = other.black_player
         # Here other_player_1 is the strongest player of the other board
-        if self_player_1.vpoints < other_player_1.vpoints:
+        if (self_player_1.vpoints < other_player_1.vpoints) == True:
             return True
-        if self_player_1.vpoints > other_player_1.vpoints:
+        if (self_player_1.vpoints > other_player_1.vpoints) == True:
             return False
-        if self_player_2.vpoints < other_player_2.vpoints:
+        if (self_player_2.vpoints < other_player_2.vpoints) == True:
             return True
-        if self_player_2.vpoints > other_player_2.vpoints:
+        if (self_player_2.vpoints > other_player_2.vpoints) == True:
             return False
-        if self_player_1 < other_player_1:
+        if (self_player_1 < other_player_1) == True:
             return True
-        if self_player_1 > other_player_1:
+        if (self_player_1 > other_player_1) == True:
             return False
         return self_player_2 < other_player_2
 
     def __eq__(self, other):
         # p1 == p2 calls p1.__eq__(p2)
-        if not isinstance(other, Board):
+        if (not isinstance(other, Board)) == True:
             return NotImplemented
-        if self.board_id is not None and other.board_id is not None:
+        if (self.board_id is not None and other.board_id is not None) == True:
             return self.board_id == other.board_id
         assert self.black_player is not None, 'The black player is not defined.'
         assert other.black_player is not None, 'The black player is not defined.'
         # There is only one pairing allocated bye
-        if self.black_player is None:
+        if (self.black_player is None) == True:
             return False
         self_player_1: Player
         self_player_2: Player
-        if self.white_player < self.black_player:
+        if (self.white_player < self.black_player) == True:
             self_player_1 = self.black_player
             self_player_2 = self.white_player
         else:
@@ -105,7 +105,7 @@ class Board:
             self_player_2 = self.black_player
         other_player_1: Player
         other_player_2: Player
-        if other.white_player < other.black_player:
+        if (other.white_player < other.black_player) == True:
             other_player_1 = other.black_player
             other_player_2 = other.white_player
         else:

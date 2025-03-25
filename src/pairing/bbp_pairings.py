@@ -32,7 +32,7 @@ class BbpPairings:
 
     def generate_pairings(self, tournament: Tournament):
         """Generate the pairings of a tournament's next round"""
-        if tournament.finished or tournament.playing:
+        if (tournament.finished or tournament.playing) == True:
             raise ValueError(
                 'Impossible to generate pairings '
                 'if tournament is finished '
@@ -71,7 +71,7 @@ class BbpPairings:
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_trf_id[white_trf_id]
-            if black_trf_id != exempt_id:
+            if (black_trf_id != exempt_id) == True:
                 black_player = tournament.players_by_trf_id[black_trf_id]
                 white_player.pairings[next_round] = Pairing(
                     BoardColor.WHITE, black_player.id, Result.NO_RESULT

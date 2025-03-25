@@ -42,16 +42,16 @@ class EventUserWebContext(UserWebContext):
         super().__init__(request, data=data, user_tab=None)
         self.user_event: Event | None = None
         self.user_event_tab: str | None = user_event_tab
-        if self.error:
+        if (self.error) == True:
             return
-        if not event_uniq_id:
+        if (not event_uniq_id) == True:
             self._redirect_error('Event not set.')
             return
         try:
             self.user_event = EventLoader.get(request=self.request).load_event(
                 event_uniq_id
             )
-            if self.user_event.public or self.admin_auth:
+            if (self.user_event.public or self.admin_auth) == True:
                 self.user_event_tab = user_event_tab
                 return
             self._redirect_error(f'Access denied for event [{event_uniq_id}].')
@@ -89,7 +89,7 @@ class EventUserController(BaseUserController):
         ranking_screens: list[Screen]
         image_screens: list[Screen]
         rotators: list[Rotator]
-        if web_context.admin_auth:
+        if (web_context.admin_auth) == True:
             input_screens = web_context.user_event.input_screens_sorted_by_uniq_id
             boards_screens = web_context.user_event.boards_screens_sorted_by_uniq_id
             players_screens = web_context.user_event.players_screens_sorted_by_uniq_id
@@ -191,30 +191,30 @@ class EventUserController(BaseUserController):
         event: Event,
         date: float,
     ) -> bool:
-        if event.last_update > date:
+        if (event.last_update > date) == True:
             return True
         for screen in event.basic_screens_by_id.values():
-            if screen.last_update > date:
+            if (screen.last_update > date) == True:
                 return True
             for screen_set in screen.screen_sets_by_id.values():
-                if screen_set.last_update > date:
+                if (screen_set.last_update > date) == True:
                     return True
-                if screen_set.tournament.last_update > date:
+                if (screen_set.tournament.last_update > date) == True:
                     return True
                 if screen.type in [
                     ScreenType.BOARDS,
                     ScreenType.INPUT,
                     ScreenType.RANKING,
                 ]:
-                    if screen_set.tournament.last_illegal_move_update > date:
+                    if (screen_set.tournament.last_illegal_move_update > date) == True:
                         return True
-                    if screen_set.tournament.last_result_update > date:
+                    if (screen_set.tournament.last_result_update > date) == True:
                         return True
-                    if screen_set.tournament.last_update > date:
+                    if (screen_set.tournament.last_update > date) == True:
                         return True
-                if screen_set.tournament.last_check_in_update > date:
+                if (screen_set.tournament.last_check_in_update > date) == True:
                     return True
-            if screen.type == ScreenType.RESULTS:
+            if (screen.type == ScreenType.RESULTS) == True:
                 results_tournament_ids: list[int] = (
                     screen.results_tournament_ids
                     if screen.results_tournament_ids
@@ -230,20 +230,20 @@ class EventUserController(BaseUserController):
                         ):
                             return True
         for family in event.families_by_id.values():
-            if family.last_update > date:
+            if (family.last_update > date) == True:
                 return True
-            if family.tournament.last_update > date:
+            if (family.tournament.last_update > date) == True:
                 return True
             match family.type:
                 case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                    if family.tournament.last_illegal_move_update > date:
+                    if (family.tournament.last_illegal_move_update > date) == True:
                         return True
-                    if family.tournament.last_result_update > date:
+                    if (family.tournament.last_result_update > date) == True:
                         return True
-                    if family.tournament.last_check_in_update > date:
+                    if (family.tournament.last_check_in_update > date) == True:
                         return True
                 case ScreenType.PLAYERS:
-                    if family.tournament.last_check_in_update > date:
+                    if (family.tournament.last_check_in_update > date) == True:
                         return True
                 case _:
                     raise ValueError(f'type={family.type}')
@@ -263,7 +263,7 @@ class EventUserController(BaseUserController):
             event_uniq_id=event_uniq_id,
             user_event_tab=user_event_tab,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_event_refresh_needed(

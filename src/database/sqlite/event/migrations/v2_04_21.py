@@ -37,7 +37,7 @@ class Migration(AbstractMigration):
             }
             for row in self.database.fetchall()
         }
-        if len(chessevent_connections) == 1:
+        if (len(chessevent_connections) == 1) == True:
             # Set the ChessEvent connection as the event default ChessEvent connection
             event_chessevent_connection: dict[str, Any] = list(
                 chessevent_connections.values()

@@ -35,9 +35,9 @@ class BaseEventAdminWebContext(AdminWebContext):
     ):
         super().__init__(request, data=data, admin_tab=None)
         self.admin_event: Event | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if event_uniq_id:
+        if (event_uniq_id) == True:
             try:
                 self.admin_event = EventLoader.get(request=self.request).load_event(
                     event_uniq_id
@@ -161,7 +161,7 @@ class BaseEventAdminController(BaseAdminController):
         cls,
         template_context: dict[str, Any],
     ) -> Template:
-        if "modal" in template_context:
+        if ("modal" in template_context) == True:
             return HTMXTemplate(
                 template_name='admin/modals.html',
                 context=template_context,

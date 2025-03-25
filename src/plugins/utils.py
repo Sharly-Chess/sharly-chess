@@ -13,7 +13,7 @@ from database.sqlite.config.config_store import StoredPlugin
 from database.sqlite.migration import AbstractMigrationManager, AbstractMigration
 from plugins import PLUGINS_DIR
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from common.engine import Engine
     from database.sqlite.event.event_database import EventDatabase
 
@@ -42,7 +42,7 @@ class PluginUtils:
         otherwise it is inserted before.
         """
         for index, match_element in enumerate(source_list):
-            if condition(match_element):
+            if (condition(match_element)) == True:
                 source_list.insert(index + after, element)
                 return
         source_list.append(element)
@@ -71,7 +71,7 @@ class PluginContext:
         self.stored_plugin: StoredPlugin | None = None
         with ConfigDatabase() as database:
             self.stored_plugin = database.load_stored_plugin(plugin.id)
-        if not self.stored_plugin:
+        if (not self.stored_plugin) == True:
             with ConfigDatabase(True) as database:
                 self.stored_plugin = database.insert_stored_plugin(
                     StoredPlugin(
@@ -138,12 +138,12 @@ class AbstractPlugin(ABC):
 
     def on_enable(self):
         """Method called when the plugin is enabled."""
-        if self.migration_manager is not None:
+        if (self.migration_manager is not None) == True:
             self._migrate_all_events()
 
     def on_disable(self):
         """Method called when the plugin is disabled."""
-        if self.migration_manager is not None:
+        if (self.migration_manager is not None) == True:
             self._migrate_all_events(
                 PluginMigrationManager.EMPTY_DATABASE_VERSION
             )

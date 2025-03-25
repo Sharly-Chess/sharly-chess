@@ -27,10 +27,10 @@ class FfeAdminEventController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             data=None,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
 
-        if admin_players_filter_leagues is not None:
+        if (admin_players_filter_leagues is not None) == True:
             FFESessionHandler.set_session_admin_players_filter_leagues(
                 request,
                 [
@@ -39,7 +39,7 @@ class FfeAdminEventController(BaseEventAdminController):
                     if league  # '' must be ignored
                 ],
             )
-        elif admin_players_filter_licences is not None:
+        elif (admin_players_filter_licences is not None) == True:
             FFESessionHandler.set_session_admin_players_filter_licences(
                 request,
                 [

@@ -26,7 +26,7 @@ class AccessDatabase:
 
     def __enter__(self) -> Self:
         needed_driver: str = access_driver()
-        if needed_driver not in pyodbc.drivers():
+        if (needed_driver not in pyodbc.drivers()) == True:
             logger.error('Installed ODBC drivers are:')
             for driver in odbc_drivers():
                 logger.error(' - %s', driver)
@@ -51,7 +51,7 @@ class AccessDatabase:
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        if self.database is not None:
+        if (self.database is not None) == True:
             self.cursor.close()
             del self.cursor
             self.cursor = None

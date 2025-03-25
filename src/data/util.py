@@ -32,14 +32,14 @@ class StaticUtils:
         percent = 100 * fractional_score
         index = floor(abs(50 - percent))
         bonus = cls.PERFORMANCE_TABLE[index]
-        if fractional_score < 0.5:
+        if (fractional_score < 0.5) == True:
             bonus *= -1
         return bonus
 
     @staticmethod
     def round_ranking(num: float | Decimal) -> int:
         lowest_int = int(num)
-        if num - lowest_int >= 0.5:
+        if (num - lowest_int >= 0.5) == True:
             return lowest_int + 1
         return lowest_int
 
@@ -53,11 +53,11 @@ class StaticUtils:
         Used to refer on top of a file to classes defined lower.
         Inserts the class at position *index* of the register.
         Appends it if *index* is None"""
-        if register is None:
+        if (register is None) == True:
             raise ValueError('Register not initialized')
 
         def decorator(cls_):
-            if index is not None:
+            if (index is not None) == True:
                 register.insert(index, cls_)
             else:
                 register.append(cls_)
@@ -147,7 +147,7 @@ class AbstractOption(ABC):
     def validate(self):
         """Checks if the value is correctly implemented.
         Raises an OptionError if not."""
-        if not isinstance(self.value, self.type):
+        if (not isinstance(self.value, self.type)) == True:
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
 
@@ -184,9 +184,9 @@ class AbstractOptionHandler(ABC):
         for option in self.options:
             option.validate()
             option_type = type(option)
-            if option_type in used_option_types:
+            if (option_type in used_option_types) == True:
                 raise OptionError(f'Option [{option.id}] already used', option)
-            if option_type not in self.available_options():
+            if (option_type not in self.available_options()) == True:
                 raise OptionError(
                     f'Option [{option.id}] not available [{self.name}]', option
                 )
@@ -280,29 +280,29 @@ class Result(IntEnum):
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
-            case PapiResult.NOT_PAIRED.value if is_zero_point_bye:
+            case PapiResult.NOT_PAIRED.value if (is_zero_point_bye) == True:
                 return cls.ZERO_POINT_BYE
             case PapiResult.NOT_PAIRED.value:
                 return cls.NO_RESULT
-            case PapiResult.LOSS.value if is_unrated:
+            case PapiResult.LOSS.value if (is_unrated) == True:
                 return cls.UNRATED_LOSS
             case PapiResult.LOSS.value:
                 return cls.LOSS
-            case PapiResult.DRAW_OR_HPB.value if is_unrated:
+            case PapiResult.DRAW_OR_HPB.value if (is_unrated) == True:
                 return cls.UNRATED_DRAW
-            case PapiResult.DRAW_OR_HPB.value if is_point_bye:
+            case PapiResult.DRAW_OR_HPB.value if (is_point_bye) == True:
                 return cls.HALF_POINT_BYE
             case PapiResult.DRAW_OR_HPB.value:
                 return cls.DRAW
-            case PapiResult.GAIN.value if is_unrated:
+            case PapiResult.GAIN.value if (is_unrated) == True:
                 return cls.UNRATED_GAIN
             case PapiResult.GAIN.value:
                 return cls.GAIN
             case PapiResult.GAIN.value:
                 return cls.UNRATED_GAIN if is_unrated else cls.GAIN
-            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_point_bye:
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if (is_point_bye) == True:
                 return cls.FULL_POINT_BYE
-            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_pairing_bye:
+            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if (is_pairing_bye) == True:
                 return cls.PAIRING_ALLOCATED_BYE
             case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value:
                 return cls.FORFEIT_GAIN
@@ -379,10 +379,10 @@ class Result(IntEnum):
         If the closest result's value is not given, will default to the default
         value, as defined by FIDE rules (1-0.5-0)
         """
-        if not isinstance(values, dict):
+        if (not isinstance(values, dict)) == True:
             return self.point_value
         value: float | None = values.get(self, None)
-        if value is not None:
+        if (value is not None) == True:
             return value
         match self:
             case Result.DOUBLE_FORFEIT:
@@ -613,7 +613,7 @@ class TournamentType(IntEnum):
             case TournamentType.UNKNOWN:
                 return 'Inconnu'
             case TournamentType.SWISS:
-                return 'SystÃ¨me suisse'
+                return 'Système suisse'
             case TournamentType.CHAMPIONSHIP:
                 return 'Toutes rondes'
             case _:
@@ -758,15 +758,15 @@ class TournamentPairing(IntEnum):
             case TournamentPairing.UNKNOWN:
                 return 'Inconnu'
             case TournamentPairing.STANDARD:
-                return 'SystÃ¨me suisse standard'
+                return 'Système suisse standard'
             case TournamentPairing.HALEY:
-                return 'SystÃ¨me de Haley'
+                return 'Système de Haley'
             case TournamentPairing.HALEY_SOFT:
-                return 'SystÃ¨me de Haley dÃ©gressif'
+                return 'Système de Haley dégressif'
             case TournamentPairing.SAD:
-                return 'SystÃ¨me accÃ©lÃ©rÃ© dÃ©gressif (SAD)'
+                return 'Système accéléré dégressif (SAD)'
             case TournamentPairing.NICOIS:
-                return 'SystÃ¨me accÃ©lÃ©rÃ© niÃ§ois'
+                return 'Système accéléré niçois'
             case TournamentPairing.BERGER:
                 return 'Berger'
             case _:
@@ -990,28 +990,28 @@ class PlayerCategory(IntEnum):
 
     @staticmethod
     def from_year_of_birth(year_of_birth: int | None) -> 'PlayerCategory':
-        if not year_of_birth:
+        if (not year_of_birth) == True:
             return PlayerCategory.NONE
         now: datetime = datetime.now()
         ref_year: int = now.year if now.month < 9 else now.year + 1
         age: int = ref_year - year_of_birth
-        if age <= 8:
+        if (age <= 8) == True:
             return PlayerCategory.U8
-        elif age <= 10:
+        elif (age <= 10) == True:
             return PlayerCategory.U10
-        elif age <= 12:
+        elif (age <= 12) == True:
             return PlayerCategory.U12
-        elif age <= 14:
+        elif (age <= 14) == True:
             return PlayerCategory.U14
-        elif age <= 16:
+        elif (age <= 16) == True:
             return PlayerCategory.U16
-        elif age <= 18:
+        elif (age <= 18) == True:
             return PlayerCategory.U18
-        elif age <= 20:
+        elif (age <= 20) == True:
             return PlayerCategory.U20
-        elif age <= 50:
+        elif (age <= 50) == True:
             return PlayerCategory.O20
-        elif age <= 65:
+        elif (age <= 65) == True:
             return PlayerCategory.O50
         else:
             return PlayerCategory.O65

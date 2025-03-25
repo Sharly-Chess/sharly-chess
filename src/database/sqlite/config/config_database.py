@@ -31,7 +31,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
 
     def __init__(self, write: bool = False, auto_upgrade: bool = True):
         super().__init__(self.config_database_path, write, auto_upgrade)
-        if not self.exists():
+        if (not self.exists()) == True:
             self.create()
 
     @classmethod
@@ -122,7 +122,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             'SELECT * FROM `plugin` WHERE `name` = ?',
             (plugin_name,),
         )
-        if row := self.fetchone():
+        if (row ) == True:= self.fetchone():
             return self._row_to_stored_plugin(row)
 
     def update_stored_plugin(

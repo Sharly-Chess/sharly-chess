@@ -55,7 +55,7 @@ class EventAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
@@ -71,7 +71,7 @@ class EventAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'event':
-                if data is None:
+                if (data is None) == True:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
                     )
@@ -79,7 +79,7 @@ class EventAdminController(BaseEventAdminController):
                         action, request, web_context.admin_event, data
                     )
                     errors = stored_event.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
 
                 plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
@@ -108,9 +108,9 @@ class EventAdminController(BaseEventAdminController):
                 }
             case 'print':
                 print_options = PrintDocumentManager.default_options()
-                if data is None:
+                if (data is None) == True:
                     event = web_context.admin_event
-                    if len(event.tournaments_sorted_by_uniq_id) == 1:
+                    if (len(event.tournaments_sorted_by_uniq_id) == 1) == True:
                         tournament_id = (
                             event.tournaments_sorted_by_uniq_id[0].id
                         )
@@ -155,11 +155,11 @@ class EventAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             data=None,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
-        if web_context.admin_event.player_count:
+        if (web_context.admin_event.player_count) == True:
             return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
-        if web_context.admin_event.tournaments_by_uniq_id:
+        if (web_context.admin_event.tournaments_by_uniq_id) == True:
             return Redirect(admin_event_tournaments_url(request, web_context.admin_event.uniq_id))
         return Redirect(admin_event_config_url(request, web_context.admin_event.uniq_id))
 
@@ -232,12 +232,12 @@ class EventAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
             action, request, web_context.admin_event, data
         )
-        if stored_event.errors:
+        if (stored_event.errors) == True:
             return self._admin_event_config_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -251,7 +251,7 @@ class EventAdminController(BaseEventAdminController):
         match action:
             case 'update':
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
-                if rename:
+                if (rename) == True:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
                     try:
                         EventDatabase(web_context.admin_event.uniq_id).rename(
@@ -265,7 +265,7 @@ class EventAdminController(BaseEventAdminController):
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
                     event_database.commit()
-                if rename:
+                if (rename) == True:
                     Message.success(
                         request,
                         _(
@@ -384,10 +384,10 @@ class EventAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
 
         tournament: Tournament | None = None
@@ -407,7 +407,7 @@ class EventAdminController(BaseEventAdminController):
             ]
         except KeyError:
             errors[field] = _('Please choose the document.')
-        if tournament and document_type:
+        if (tournament and document_type) == True:
             options = []
             for option in document_type.default_options():
                 value = WebContext.form_data_to_value(
@@ -423,7 +423,7 @@ class EventAdminController(BaseEventAdminController):
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
-        if len(errors):
+        if (len(errors)) == True:
             return self._admin_event_config_render(
                 request,
                 modal='print',
@@ -457,13 +457,13 @@ class EventAdminController(BaseEventAdminController):
         """Returns a file with all the vCards of the players."""
         data: str = ''
         for player in players:
-            if not (player.mail or player.phone):
+            if (not (player.mail or player.phone)) == True:
                 continue
             data += (
                 'BEGIN:VCARD\n'
                 'VERSION:3.0\n'
             )
-            if player.first_name:
+            if (player.first_name) == True:
                 data += (
                     f'N:{player.last_name.title()};{player.first_name}\n'
                     f'FN:{player.first_name} {player.last_name.title()}\n'
@@ -648,14 +648,14 @@ class EventAdminController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request, event_uniq_id=event_uniq_id, data=None
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         players: list[Player] = [
             web_context.admin_event.players_by_id[player_id]
             for player_id in player_ids
             if player_id
         ]
-        if not players:
+        if (not players) == True:
             players = web_context.admin_event.players_sorted_by_name
         match download_format:
             case 'vcf':

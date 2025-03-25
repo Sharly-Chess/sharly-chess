@@ -63,9 +63,9 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             data=data,
         )
         self.admin_tournament: Tournament | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if tournament_id:
+        if (tournament_id) == True:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
                     tournament_id
@@ -90,26 +90,26 @@ class TournamentAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> StoredTournament:
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
         check_in_open: bool = False
-        if action == 'delete':
-            if not uniq_id:
+        if (action == 'delete') == True:
+            if (not uniq_id) == True:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
-            elif uniq_id != web_context.admin_tournament.uniq_id:
+            elif (uniq_id != web_context.admin_tournament.uniq_id) == True:
                 errors['uniq_id'] = _('tournament ID does not match.')
         else:
-            if not uniq_id:
+            if (not uniq_id) == True:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
-            elif uniq_id.find('/') != -1:
+            elif (uniq_id.find('/') != -1) == True:
                 errors['uniq_id'] = _('Character [{char}] is not allowed.').format(
                     char='/'
                 )
             else:
                 match action:
                     case 'create' | 'clone':
-                        if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
+                        if (uniq_id in web_context.admin_event.tournaments_by_uniq_id) == True:
                             errors['uniq_id'] = _(
                                 'Tournament [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
@@ -143,7 +143,7 @@ class TournamentAdminController(BaseEventAdminController):
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
-                if not name:
+                if (not name) == True:
                     errors['name'] = _('Please enter the tournament name.')
                 path = WebContext.form_data_to_str(data, 'path')
                 filename = WebContext.form_data_to_str(data, 'filename')
@@ -183,20 +183,20 @@ class TournamentAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
 
-        if action == 'update':
+        if (action == 'update') == True:
             tie_breaks = []
             tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
             used_tie_break_ids: list[str] = []
             for index in range(1, 4):
                 field = f'tie_break_{index}'
                 tie_break_id = WebContext.form_data_to_str(data, field)
-                if not tie_break_id:
+                if (not tie_break_id) == True:
                     continue
-                if tie_break_id in used_tie_break_ids:
+                if (tie_break_id in used_tie_break_ids) == True:
                     errors[field] = _('Tie-break already in use.')
                     break
                 used_tie_break_ids.append(tie_break_id)
-                if tie_break_type := (
+                if (tie_break_type ) == True:= (
                     tie_break_type_by_id.get(tie_break_id, None)
                 ):
                     tie_breaks.append(tie_break_type().to_dict())
@@ -251,7 +251,7 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament = web_context.admin_tournament
@@ -291,7 +291,7 @@ class TournamentAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'tournament':
-                if data is None:
+                if (data is None) == True:
                     uniq_id: str | None = None
                     name: str | None = None
                     match action:
@@ -353,7 +353,7 @@ class TournamentAdminController(BaseEventAdminController):
                             filename = (
                                 web_context.admin_tournament.stored_tournament.filename
                             )
-                            if web_context.admin_tournament.file_exists:
+                            if (web_context.admin_tournament.file_exists) == True:
                                 tie_breaks = web_context.admin_tournament.tie_breaks
                                 tie_break_1, tie_break_2, tie_break_3 = (
                                     tie_breaks.pop(0).id if tie_breaks else None
@@ -406,7 +406,7 @@ class TournamentAdminController(BaseEventAdminController):
                         )
                     )
                     errors = stored_tournament.errors
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
 
                 plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
@@ -442,7 +442,7 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         admin_tournaments_show_details: bool | None,
     ) -> Template | ClientRedirect:
-        if admin_tournaments_show_details is not None:
+        if (admin_tournaments_show_details is not None) == True:
             SessionHandler.set_session_admin_tournaments_show_details(
                 request, admin_tournaments_show_details
             )
@@ -545,7 +545,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         file = context.admin_tournament.file
         file.parent.mkdir(parents=True, exist_ok=True)
-        if create_empty_papi_database(file, PAPI_VERSIONS[-1]):
+        if (create_empty_papi_database(file, PAPI_VERSIONS[-1])) == True:
             Message.success(
                 request, _('Papi file [{file}] created.').format(file=file)
             )
@@ -575,12 +575,12 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         stored_tournament: StoredTournament = (
             self._admin_validate_tournament_update_data(action, web_context, data)
         )
-        if stored_tournament.errors:
+        if (stored_tournament.errors) == True:
             return self._admin_event_tournaments_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -599,7 +599,7 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_tournament = event_database.add_stored_tournament(
                         stored_tournament
                     )
-                    if 'add_screens' in data:
+                    if ('add_screens' in data) == True:
                         for type_, menu, name in [
                             (
                                 'input',
@@ -651,7 +651,7 @@ class TournamentAdminController(BaseEventAdminController):
                                 stored_screen.id, stored_tournament.id
                             )
                     event_database.commit()
-                    if 'add_screens' in data:
+                    if ('add_screens' in data) == True:
                         Message.success(
                             request,
                             _(
@@ -811,7 +811,7 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
 
         admin_tournament: Tournament = web_context.admin_tournament

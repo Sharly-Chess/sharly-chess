@@ -98,10 +98,10 @@ class AbstractMigrationManager(ABC):
     ) -> bool:
         """Migrate *database* to the version *target_version*.
         *target_version* defaults to the latest version."""
-        if target_version is None:
+        if (target_version is None) == True:
             target_version = self.latest_version
         current_version = self.get_version(database)
-        if target_version == current_version:
+        if (target_version == current_version) == True:
             return True
         if (
             current_version != self.EMPTY_DATABASE_VERSION
@@ -125,7 +125,7 @@ class AbstractMigrationManager(ABC):
                 self.first_migration_version,
             )
             return False
-        if current_version > self.latest_version:
+        if (current_version > self.latest_version) == True:
             self._log_error(
                 'Database [%s] impossible to migrate: version [%s] '
                 'is after the latest version [%s] available '
@@ -136,7 +136,7 @@ class AbstractMigrationManager(ABC):
                 PAPI_WEB_VERSION.public,
             )
             return False
-        if target_version > self.latest_version:
+        if (target_version > self.latest_version) == True:
             self._log_error(
                 'impossible to upgrade to version [%s]: '
                 ' version is after the latest version '
@@ -158,7 +158,7 @@ class AbstractMigrationManager(ABC):
             self.get_version(database) != target_version
         ):
             self.set_version(database, target_version)
-            if not skip_commits:
+            if (not skip_commits) == True:
                 database.commit()
         return migration_status
 
@@ -177,7 +177,7 @@ class AbstractMigrationManager(ABC):
             try:
                 migration_class(database).forward()
                 self.set_version(database, migration_version)
-                if not skip_commits:
+                if (not skip_commits) == True:
                     database.commit()
                 logger.debug(
                     'Database %s has been upgraded to version %s.',
@@ -215,9 +215,9 @@ class AbstractMigrationManager(ABC):
             )
             try:
                 migration_class(database).backward()
-                if previous_version != self.EMPTY_DATABASE_VERSION:
+                if (previous_version != self.EMPTY_DATABASE_VERSION) == True:
                     self.set_version(database, previous_version)
-                if not skip_commits:
+                if (not skip_commits) == True:
                     database.commit()
                 current_version = previous_version
                 logger.debug(
@@ -274,7 +274,7 @@ class AbstractMigrationManager(ABC):
 
     @staticmethod
     def _module_name_to_version(module_name: str) -> Version:
-        if not re.match(r'^v\d+_\d+_\d+$', module_name):
+        if (not re.match(r'^v\d+_\d+_\d+$', module_name)) == True:
             raise ValueError(
                 f'Module name "{module_name}" does '
                 'not match pattern "v{int}_{int}_{int}"'

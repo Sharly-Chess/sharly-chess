@@ -65,24 +65,24 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         )
         self.admin_player: Player | None = None
         self.admin_tournament: Tournament | None = None
-        if self.error:
+        if (self.error) == True:
             return
-        if player_id:
+        if (player_id) == True:
             try:
                 self.admin_player = self.admin_event.players_by_id[player_id]
             except KeyError:
                 self._redirect_error(f'Player [{player_id}] not found.')
                 return
-        elif player_fide_id:
+        elif (player_fide_id) == True:
             # player_fide_id is set when is a player is to be imported from the FIDE database
             with FideDatabase() as fide_database:
                 self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
             plugin_manager.hook.augment_player_after_search(player=self.admin_player)
-        elif player_from_plugin:
+        elif (player_from_plugin) == True:
             # A player has been returned via a plugin search
             self.admin_player = player_from_plugin
 
-        if tournament_id:
+        if (tournament_id) == True:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
                     tournament_id
@@ -108,7 +108,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> Player:
         errors: dict[str, str] = {}
-        if data is None:
+        if (data is None) == True:
             data = {}
         field: str = ''
         if action in [
@@ -129,19 +129,19 @@ class PlayerAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action={action}')
         last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
-        if not last_name:
+        if (not last_name) == True:
             errors[field] = _('Please enter the last name.')
         else:
             last_name = last_name.upper()
         first_name: str | None = WebContext.form_data_to_str(
             data, 'first_name'
         )
-        if first_name:
+        if (first_name) == True:
             first_name = first_name.title() if first_name else ''
         date_of_birth: date | None = WebContext.form_data_to_date(
             data, field := 'date_of_birth'
         )
-        if not date_of_birth:
+        if (not date_of_birth) == True:
             errors[field] = _('Please enter the date of birth.')
         gender: PlayerGender | None = PlayerGender.NONE
         try:
@@ -163,7 +163,7 @@ class PlayerAdminController(BaseEventAdminController):
             for tr in TournamentRating
         }
         for tr in TournamentRating:
-            if rating_types[tr] != PlayerRatingType.ESTIMATED and not ratings[tr]:
+            if (rating_types[tr] != PlayerRatingType.ESTIMATED and not ratings[tr]) == True:
                 errors[f'{field}_{tr.value}'] = _(
                     'Only estimated ratings are optional.'
                 )
@@ -178,7 +178,7 @@ class PlayerAdminController(BaseEventAdminController):
             data, field := 'federation', PapiWebConfig().default_federation
         )
         federation: Federation | None = None
-        if federation_name not in PapiWebConfig.federations:
+        if (federation_name not in PapiWebConfig.federations) == True:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
@@ -189,7 +189,7 @@ class PlayerAdminController(BaseEventAdminController):
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
-            if action == 'create' and tournament and fide_id and fide_id in tournament.players_by_fide_id:
+            if (action == 'create' and tournament and fide_id and fide_id in tournament.players_by_fide_id) == True:
                 errors[field] = _(
                     'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
                 ).format(
@@ -289,7 +289,7 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
@@ -605,7 +605,7 @@ class PlayerAdminController(BaseEventAdminController):
                     papi_web_config.stored_config.federation or PapiWebConfig.default_federation
                 )
                 
-                if data is None:
+                if (data is None) == True:
                     first_name: str | None = None
                     last_name: str | None = None
                     date_of_birth: float | None = None
@@ -627,7 +627,7 @@ class PlayerAdminController(BaseEventAdminController):
                     paid: float = 0.0
                     fixed: int = 0
                     plugin_data = {}
-                    if admin_player:
+                    if (admin_player) == True:
                         first_name = admin_player.first_name
                         last_name = admin_player.last_name
                         gender = admin_player.gender
@@ -649,7 +649,7 @@ class PlayerAdminController(BaseEventAdminController):
                         case 'update' | 'delete':
                             tournament_id = admin_player.tournament.id
                         case 'create':
-                            if len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) == 1:
+                            if (len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) == 1) == True:
                                 tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[0].id
                             else:
                                 tournament_id = None
@@ -700,7 +700,7 @@ class PlayerAdminController(BaseEventAdminController):
                         }
                         | plugin_form_data
                     )
-                if errors is None:
+                if (errors is None) == True:
                     errors = {}
                 tournament_options: dict[str, str] = (
                     {  # force the choice of the tournament on player creation if several tournaments
@@ -803,11 +803,11 @@ class PlayerAdminController(BaseEventAdminController):
         admin_players_filter_name: str | None = None,
         admin_players_clear_filters: int | None = None,
     ) -> Template | ClientRedirect:
-        if admin_players_sort is not None:
+        if (admin_players_sort is not None) == True:
             SessionHandler.set_session_admin_players_sort(
                 request, admin_players_sort
             )
-        elif admin_players_filter_columns is not None:
+        elif (admin_players_filter_columns is not None) == True:
             SessionHandler.set_session_admin_players_filter_columns(
                 request,
                 [
@@ -816,7 +816,7 @@ class PlayerAdminController(BaseEventAdminController):
                     if column  # '' must be ignored
                 ],
             )
-        elif admin_players_filter_federations is not None:
+        elif (admin_players_filter_federations is not None) == True:
             SessionHandler.set_session_admin_players_filter_federations(
                 request,
                 [
@@ -825,7 +825,7 @@ class PlayerAdminController(BaseEventAdminController):
                     if query_param  # '' must be ignored
                 ],
             )
-        elif admin_players_filter_clubs is not None:
+        elif (admin_players_filter_clubs is not None) == True:
             SessionHandler.set_session_admin_players_filter_clubs(
                 request,
                 [
@@ -834,7 +834,7 @@ class PlayerAdminController(BaseEventAdminController):
                     if query_param  # '' must be ignored
                 ],
             )
-        elif admin_players_filter_genders is not None:
+        elif (admin_players_filter_genders is not None) == True:
             SessionHandler.set_session_admin_players_filter_genders(
                 request,
                 [
@@ -843,7 +843,7 @@ class PlayerAdminController(BaseEventAdminController):
                     if query_param >= 0  # -1 must be ignored
                 ],
             )
-        elif admin_players_filter_check_ins is not None:
+        elif (admin_players_filter_check_ins is not None) == True:
             SessionHandler.set_session_admin_players_filter_check_ins(
                 request,
                 [
@@ -856,7 +856,7 @@ class PlayerAdminController(BaseEventAdminController):
                     if query_param >= 0  # -1 must be ignored
                 ],
             )
-        elif admin_players_filter_tournaments is not None:
+        elif (admin_players_filter_tournaments is not None) == True:
             SessionHandler.set_session_admin_players_filter_tournaments(
                 request,
                 [
@@ -865,7 +865,7 @@ class PlayerAdminController(BaseEventAdminController):
                     if query_param > 0  # 0 must be ignored
                 ],
             )
-        elif admin_players_filter_categories is not None:
+        elif (admin_players_filter_categories is not None) == True:
             SessionHandler.set_session_admin_players_filter_categories(
                 request,
                 [
@@ -874,15 +874,15 @@ class PlayerAdminController(BaseEventAdminController):
                     if query_param >= 0  # -1 must be ignored
                 ],
             )
-        elif admin_players_filter_name is not None:
+        elif (admin_players_filter_name is not None) == True:
             SessionHandler.set_session_admin_players_filter_name(
                 request, unicode_normalize(admin_players_filter_name).lower()
             )
-        elif admin_players_filter_clubs_search is not None:
+        elif (admin_players_filter_clubs_search is not None) == True:
             SessionHandler.set_session_admin_players_filter_clubs_search(
                 request, unicode_normalize(admin_players_filter_clubs_search).lower()
             )
-        elif admin_players_clear_filters:
+        elif (admin_players_clear_filters) == True:
             SessionHandler.set_session_admin_players_filter_federations(
                 request, []
             )
@@ -1003,12 +1003,12 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         player: Player = self._admin_validate_player_update_data(
             action, web_context, data
         )
-        if player.errors:
+        if (player.errors) == True:
             return self._admin_event_players_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -1036,7 +1036,7 @@ class PlayerAdminController(BaseEventAdminController):
                     player=player
                 )
                 tournament: Tournament = player.tournament
-                if tournament.finished:
+                if (tournament.finished) == True:
                     Message.error(
                         request,
                         _(
@@ -1049,7 +1049,7 @@ class PlayerAdminController(BaseEventAdminController):
                         action=action,
                         data=data,
                     )
-                if not tournament.file_exists:
+                if (not tournament.file_exists) == True:
                     Message.error(
                         request,
                         _(
@@ -1068,7 +1068,7 @@ class PlayerAdminController(BaseEventAdminController):
                 event_loader.clear_cache(event_uniq_id)
             case 'delete':
                 tournament: Tournament = player.tournament
-                if player.has_real_pairings:
+                if (player.has_real_pairings) == True:
                     Message.error(
                         request,
                         _(
@@ -1111,12 +1111,12 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         admin_player: Player = web_context.admin_player
         src_tournament: Tournament = admin_player.tournament
 
-        if admin_player.has_real_pairings:
+        if (admin_player.has_real_pairings) == True:
             Message.error(
                 request,
                 _(
@@ -1130,14 +1130,14 @@ class PlayerAdminController(BaseEventAdminController):
         else:
             dst_tournament: Tournament = web_context.admin_tournament
 
-            if not dst_tournament.file_exists:
+            if (not dst_tournament.file_exists) == True:
                 Message.error(
                     request,
                     _('Papi file [{tournament_file}] not found.').format(
                         tournament_file=dst_tournament.file
                     ),
                 )
-            elif admin_player.fide_id in dst_tournament.players_by_fide_id:
+            elif (admin_player.fide_id in dst_tournament.players_by_fide_id) == True:
                 Message.error(
                     request,
                     _(
@@ -1147,7 +1147,7 @@ class PlayerAdminController(BaseEventAdminController):
                         tournament_uniq_id=dst_tournament.uniq_id,
                     ),
                 )
-            elif plugin_error := (plugin_manager.hook.is_tournament_participation_possible(
+            elif (plugin_error ) == True:= (plugin_manager.hook.is_tournament_participation_possible(
                 tournament=dst_tournament, player=admin_player
             ) or None):
                 Message.error(request, plugin_error)
@@ -1227,7 +1227,7 @@ class PlayerAdminController(BaseEventAdminController):
             admin_player.tournament.rounds + 1
         ):
             field: str = f'round_{round_}_result'
-            if field in data:
+            if (field in data) == True:
                 pairing: Pairing = pairings[round_]
                 if not(pairing.not_paired or pairing.result in [
                     Result.ZERO_POINT_BYE, Result.HALF_POINT_BYE, Result.FULL_POINT_BYE,
@@ -1238,14 +1238,14 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     return {}
                 result: Result = Result(int(data[field]))
-                if result == pairings[round_].result:
+                if (result == pairings[round_].result) == True:
                     continue
                 match result:
                     case Result.ZERO_POINT_BYE | Result.NO_RESULT:
                         new_byes[round_] = result
                         continue
                     case Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
-                        if round_ > admin_tournament.rounds - admin_tournament.last_rounds_no_byes:
+                        if (round_ > admin_tournament.rounds - admin_tournament.last_rounds_no_byes) == True:
                             logger.warning('Bye not allowed for round [%d].', round_)
                             return {}
                         new_byes[round_] = result
@@ -1260,7 +1260,7 @@ class PlayerAdminController(BaseEventAdminController):
                     byes += 1
                 case Result.FULL_POINT_BYE:
                     byes += 2
-            if byes > admin_tournament.max_byes:
+            if (byes > admin_tournament.max_byes) == True:
                 logger.warning('Too many byes.')
                 return {}
         return new_byes
@@ -1288,9 +1288,9 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=None,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
-        if new_byes := self._new_byes(web_context, data):
+        if (new_byes ) == True:= self._new_byes(web_context, data):
             web_context.admin_player.tournament.set_player_byes(web_context.admin_player, new_byes)
             event_loader: EventLoader = EventLoader.get(request=request)
             event_loader.clear_cache(event_uniq_id)
@@ -1342,7 +1342,7 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         admin_tournament: Tournament = web_context.admin_tournament
         admin_tournament.open_check_in()
@@ -1398,7 +1398,7 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         admin_tournament: Tournament = web_context.admin_tournament
         admin_tournament.close_check_in(forfeit_all_rounds)
@@ -1476,7 +1476,7 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=None,
             data=data,
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         admin_player: Player = web_context.admin_player
         admin_player.tournament.check_in_player(admin_player, check_in)
@@ -1546,7 +1546,7 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request, event_uniq_id=event_uniq_id, tournament_id=tournament_id
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         try:
             player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.updaters_by_id()[player_updater_id]
@@ -1568,7 +1568,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_matches = await (
             player_updater.get_player_matches(players, field_ids, diff_only=True)
         )
-        if player_matches is None:
+        if (player_matches is None) == True:
             Message.error(
                 request,
                 _('Could not connect to data source [{player_updater_name}].').format(
@@ -1618,7 +1618,7 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request, event_uniq_id=event_uniq_id, tournament_id=tournament_id
         )
-        if web_context.error:
+        if (web_context.error) == True:
             return web_context.error
         try:
             player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.updaters_by_id()[player_updater_id]
@@ -1639,7 +1639,7 @@ class PlayerAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
-        if player_matches is None:
+        if (player_matches is None) == True:
             Message.error(
                 request,
                 _('Could not connect to data source [{player_updater_name}].').format(

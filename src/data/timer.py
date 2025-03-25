@@ -19,7 +19,7 @@ from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
 from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from data.event import Event
 
 
@@ -80,7 +80,7 @@ class TimerHour:
             return 0
 
     def _format_stored_text(self, text, round_default_text) -> str:
-        if self.round:
+        if (self.round) == True:
             return (
                 text.format(self.round)
                 if text
@@ -180,7 +180,7 @@ class Timer:
         for stored_timer_hour in self.stored_timer.stored_timer_hours:
             timer_hour: TimerHour = TimerHour(self, stored_timer_hour)
             self.timer_hours_by_id[timer_hour.id] = timer_hour
-            if not stored_timer_hour.time_str:
+            if (not stored_timer_hour.time_str) == True:
                 timer_hour.error = _('Time is not defined.')
                 self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
             else:
@@ -188,7 +188,7 @@ class Timer:
                     '^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$',
                     stored_timer_hour.time_str,
                 )
-                if not matches:
+                if (not matches) == True:
                     timer_hour.error = _('Invalid time [{time_str}].').format(
                         time_str=stored_timer_hour.time_str
                     )
@@ -211,7 +211,7 @@ class Timer:
                         )
                         self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
                     else:
-                        if stored_timer_hour.date_str:
+                        if (stored_timer_hour.date_str) == True:
                             datetime_str = f'{stored_timer_hour.date_str} {stored_timer_hour.time_str}'
                         else:
                             datetime_str = f'{previous_valid_timer_hour.date_str} {stored_timer_hour.time_str}'
@@ -244,11 +244,11 @@ class Timer:
                             self.event.add_warning(
                                 timer_hour.error, timer_hour=timer_hour
                             )
-            if not timer_hour.error:
+            if (not timer_hour.error) == True:
                 previous_valid_timer_hour = timer_hour
-        if previous_valid_timer_hour:
+        if (previous_valid_timer_hour) == True:
             for timer_hour in reversed(self.timer_hours_sorted_by_order):
-                if not timer_hour.error:
+                if (not timer_hour.error) == True:
                     timer_hour.last_valid = True
                     break
         else:
@@ -290,7 +290,7 @@ class Timer:
         Relies on insertion order being consistent with timer ordering."""
         previous_timer_hour: TimerHour | None = None
         for th in self.timer_hours_by_id.values():
-            if th.id == timer_hour.id:
+            if (th.id == timer_hour.id) == True:
                 return previous_timer_hour
             previous_timer_hour = th
         return None

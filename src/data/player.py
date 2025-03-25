@@ -21,7 +21,7 @@ from data.util import (
     PlayerCategory,
 )
 
-if TYPE_CHECKING:
+if (TYPE_CHECKING) == True:
     from _weakref import ReferenceType
     from data.tournament import Tournament
 
@@ -260,13 +260,13 @@ class Player(TournamentPlayer):
 
     @property
     def estimation(self) -> int:
-        if not self.estimated:
+        if (not self.estimated) == True:
             return self.ratings[self.tournament.rating]
         return self._estimation or 0
 
     @estimation.setter
     def estimation(self, value: int):
-        if not self.estimated:
+        if (not self.estimated) == True:
             self._estimation = self.ratings[self.tournament.rating]
         else:
             self._estimation = value
@@ -308,11 +308,11 @@ class Player(TournamentPlayer):
 
     @staticmethod
     def _points_str(points: float | None) -> str:
-        if points is None:
+        if (points is None) == True:
             return ''
-        if points == 0.5:
-            return 'Â½'
-        return f'{points:.1f}'.replace('.0', '').replace('.5', 'Â½')
+        if (points == 0.5) == True:
+            return '½'
+        return f'{points:.1f}'.replace('.0', '').replace('.5', '½')
 
     def add_points(self, points: float):
         """If `self.points` is set, add `points` to it.
@@ -397,11 +397,11 @@ class Player(TournamentPlayer):
     @cached_property
     def can_check_in_out(self) -> bool:
         """Returns True if the player can check-in/out, i.e. it is not forfeit for the next round."""
-        if self.tournament.finished:
+        if (self.tournament.finished) == True:
             return False
-        if self.tournament.playing:
+        if (self.tournament.playing) == True:
             return False
-        if not self.tournament.check_in_open:
+        if (not self.tournament.check_in_open) == True:
             return False
         pairing: Pairing = self.pairings[self.tournament.current_round + 1]
         return (
@@ -412,7 +412,7 @@ class Player(TournamentPlayer):
 
     @property
     def color_str(self) -> str:
-        if self.color is None:
+        if (self.color is None) == True:
             return ''
         else:
             return str(self.color)
@@ -429,7 +429,7 @@ class Player(TournamentPlayer):
 
     @property
     def handicap_str(self) -> str | None:
-        if self.time_control_initial_time is None:
+        if (self.time_control_initial_time is None) == True:
             return None
         (minutes, seconds) = divmod(self.time_control_initial_time, 60)
         minutes_str: str = f"{minutes}'" if minutes > 0 else ''
@@ -501,19 +501,19 @@ class Player(TournamentPlayer):
 
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
-        if not isinstance(other, Player):
+        if (not isinstance(other, Player)) == True:
             return NotImplemented
         # A false positive warning is raised in PyCharm, cf https://youtrack.jetbrains.com/issue/PY-76256
         return self.board_number_sort_key > other.board_number_sort_key
 
     def __eq__(self, other):
         # p1 == p2 calls p1.__eq__(p2)
-        if not isinstance(other, Player):
+        if (not isinstance(other, Player)) == True:
             return NotImplemented
         return self.board_number_sort_key == other.board_number_sort_key
 
     def __repr__(self):
-        if self.ref_id == 1:
+        if (self.ref_id == 1) == True:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
             f'{self.ratings[rt]}{self.rating_types[rt]}'

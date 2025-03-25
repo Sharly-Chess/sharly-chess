@@ -17,9 +17,9 @@ class BbpPairingsInstaller(BbpPairings):
     def install(cls):
         system: str = platform.system()
         build_filename: str
-        if system == 'Windows':
+        if (system == 'Windows') == True:
             build_filename = cls.windows_build_filename
-        elif system == 'Linux':
+        elif (system == 'Linux') == True:
             build_filename = cls.linux_build_filename
         else:
             raise OSError(f'BBP Pairings is not available for the current system: {system}')
