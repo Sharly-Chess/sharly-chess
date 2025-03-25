@@ -42,6 +42,7 @@ SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
+FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
 
 
 def clean(clean_zip: bool):
@@ -68,11 +69,12 @@ def build_exe():
         '--noconfirm',
         '--name=' + basename,
         '--onefile',
-        '--hiddenimport=chessevent',
+        '--copy-metadata', 'papi_web',
         '--hiddenimport=common',
         '--hiddenimport=data',
         '--hiddenimport=database',
-        '--hiddenimport=ffe',
+        '--hiddenimport=pairing',
+        '--hiddenimport=plugins',
         '--hiddenimport=web',
         '--hiddenimport=babel.numbers',
         '--hiddenimport=pyexcel_io.writers',
@@ -145,6 +147,7 @@ def build_exe():
     files += [file for file in custom_dir.glob('**/*') if file.is_file()]
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
     files += [BbpPairings().executable_path]
+    files += [FFE_SQL_SERVER_CREDENTIALS_FILE, ]
     for file in files:
         print(file)
         pyinstaller_params.append(
@@ -291,19 +294,6 @@ def update_readme():
     print_interactive_success(f'Successfully updated {readme}.')
 
 
-def update_pyproject():
-    pyproject_file: Path = Path('pyproject.toml')
-    print_interactive_info(f'Updating {pyproject_file}...')
-    with open(pyproject_file, 'r') as file:
-        content = file.read()
-    content = re.sub(
-        r'version\s*=\s*"[\d\\.]+"', f'version = "{PAPI_WEB_VERSION}"', content
-    )
-    with open(pyproject_file, 'w') as file:
-        file.write(content)
-    print_interactive_success(f'Successfully updated {pyproject_file}.')
-
-
 def main():
     clean(clean_zip=True)
     bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
@@ -324,7 +314,6 @@ def main():
     build_test()
     clean(clean_zip=False)
     update_readme()
-    update_pyproject()
 
 
 main()
