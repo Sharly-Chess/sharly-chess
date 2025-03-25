@@ -54,8 +54,7 @@ class FideDatabase(SQLiteDatabase):
         self.stop_event = Event()
         
     def check(self):
-        """Check if the database exists and proposes to create it if not, or update it if too old,
-        returns True if the database is available after the call, False otherwise."""
+        """Checks if the database exists and is up to date and proposes to create it if not"""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
         if not self.exists():
             if not NetworkMonitor.connected():
