@@ -6,7 +6,10 @@
     {% set field_updated_class='text-primary fw-bold' %}
     {% set field_unchanged_class='' %}
     {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
-    <td scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}">
+    <td
+        scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=value.player.plugin_data.ffe.league, new=value.match_player.plugin_data.ffe.league), 'top') }}{% endif %}
+    >
         {% if field_updated %}
             {{ value.match_player.plugin_data.ffe.league }}
         {% else %}

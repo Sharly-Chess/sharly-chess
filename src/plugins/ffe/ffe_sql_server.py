@@ -96,7 +96,7 @@ class FFESqlServer(SqlServer):
     )
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+    def _get_player_from_row(row: dict[str, Any]) -> Player | None:
         return Player(
             id=0,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
@@ -173,7 +173,7 @@ class FFESqlServer(SqlServer):
                 )
                 await self.execute(query, string)
                 return (
-                    self.get_player_from_row(row)
+                    self._get_player_from_row(row)
                     async for row in self.fetchall()
                 )
         tokens: list[str] = string.split(' ')
@@ -211,7 +211,7 @@ class FFESqlServer(SqlServer):
             params += [limit, ]
         await self.execute(query, tuple(params), )
         return (
-            self.get_player_from_row(row)
+            self._get_player_from_row(row)
             async for row in self.fetchall()
         )
 
@@ -226,7 +226,7 @@ class FFESqlServer(SqlServer):
         )
         await self.execute(query, (id_, ), )
         if row := await self.fetchone():
-            return self.get_player_from_row(row)
+            return self._get_player_from_row(row)
         else:
             return None
 
@@ -254,6 +254,6 @@ class FFESqlServer(SqlServer):
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
         return (
-            self.get_player_from_row(row)
+            self._get_player_from_row(row)
             async for row in self.fetchall()
         )

@@ -2811,7 +2811,7 @@ msgstr "Le renommage de la base de données a échoué : {ex}"
 
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
-msgstr "Remplacer [%(old)s] by [%(new)s]"
+msgstr "Remplacer [%(old)s] par [%(new)s]"
 
 msgid "Request to the FFE database failed."
 msgstr "La requête à la base fédérale a échoué."
@@ -3929,6 +3929,9 @@ msgstr "MIF"
 msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
 msgstr "Attention: Fichier Papi [%(path)s] introuvable, de nombreuses fonctionnalités sont désactivées."
 
+msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
+
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
 
@@ -4206,13 +4209,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Could not connect to data source [{data_source}]."
-#~ msgstr "Connexion impossible à la source de données [{data_source}]."
-
-#~ msgid "Update players with %(data_source)s data"
-#~ msgstr "Mettre à jour les joueur·euses à partir de %(data_source)s"
-
-#~ msgid "Update players with %(data_source)s data (tournament [%(tournament_uniq_id)s])"
-#~ msgstr "Mettre à jour les joueur·euses à partir de %(data_source)s (tournoi [%(tournament_uniq_id)s])"
 

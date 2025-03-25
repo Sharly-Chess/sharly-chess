@@ -2,7 +2,7 @@ import os.path
 import types
 import zipfile
 from contextlib import suppress
-from datetime import datetime
+from datetime import datetime, timedelta
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError, IntegrityError
@@ -55,6 +55,11 @@ class FfeDatabase(SQLiteDatabase):
     def __init__(self, write: bool = False):
         super().__init__(TMP_DIR / f'ffe.{PapiWebConfig.federation_database_ext}', write)
 
+    @property
+    def updated_at(self) -> datetime | None:
+        if self.exists():
+            return datetime.fromtimestamp(self.file.lstat().st_mtime)
+
     def check(self) -> bool:
         """Check if the database exists and proposes to create it if not, or update it if too old,
         returns True if the database is available after the call, False otherwise."""
@@ -73,17 +78,16 @@ class FfeDatabase(SQLiteDatabase):
             ) != yes_answer:
                 return True
         else:
-            age: int = int(time() - self.file.lstat().st_mtime)
-            if age > 2 * 24 * 60 * 60:
+            days_since_update = (datetime.now() - self.updated_at).days
+            if days_since_update >= 2:
                 if not NetworkMonitor.connected():
                     print_interactive_warning(_('Not connected, can not update the FFE database.'))
                     return True
-                days: int = age // (24 * 60 * 60)
                 if (
                     input_interactive(
                         _(
                             'The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? '
-                        ).format(file=self.file, days=days)
+                        ).format(file=self.file, days=days_since_update)
                     ).upper()
                     or yes_answer
                 ) != yes_answer:

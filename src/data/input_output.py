@@ -188,6 +188,10 @@ class AbstractPlayerUpdater(ABC):
     """Abstract class representing a tool
     updating a player from a data source."""
 
+    def __init__(self):
+        # Message displayed in the diff modal if something does wrong
+        self.warning_message: str | None = None
+
     @property
     @abstractmethod
     def name(self) -> str:

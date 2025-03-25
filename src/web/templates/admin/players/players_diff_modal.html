@@ -28,6 +28,11 @@
                 {# these inputs are always checked with an empty value (ignored) to be sure to get list parameters. #}
                 <input type="hidden" name="player_ids" value="" />
                 <input type="hidden" name="field_ids" value="" />
+                {% if player_updater.warning_message %}
+                    <div class="text-danger mb-3">
+                        <b>{{ player_updater.warning_message }}</b>
+                    </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-6">
                         <p>

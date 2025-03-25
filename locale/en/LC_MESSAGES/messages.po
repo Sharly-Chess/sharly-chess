@@ -3929,6 +3929,9 @@ msgstr "WIM"
 msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
 msgstr ""
 
+msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+msgstr ""
+
 msgid "Warning: the deletion of a player is permanent!"
 msgstr ""
 
@@ -4206,13 +4209,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Could not connect to data source [{data_source}]."
-#~ msgstr ""
-
-#~ msgid "Update players with %(data_source)s data"
-#~ msgstr ""
-
-#~ msgid "Update players with %(data_source)s data (tournament [%(tournament_uniq_id)s])"
-#~ msgstr ""
 

@@ -616,10 +616,20 @@ class FfePlugin(AbstractPlugin):
                             ffe_licence_numbers
                         )
                     ]
-            except PapiWebException as e:
-                if FfeDatabase().exists():
-                    with FfeDatabase() as database:
-                        match_players = database.get_players_by_ffe_licence_number(ffe_licence_numbers)
+            except PapiWebException:
+                database = FfeDatabase()
+                if database.exists():
+                    self.warning_message = _(
+                        'Warning: connection to the online FFE database failed, '
+                        'local database was used. Some data might be outdated '
+                        '(last update on {date})'
+                    ).format(date=database.updated_at.strftime('%d-%m-%Y'))
+                    with database:
+                        match_players = (
+                            database.get_players_by_ffe_licence_number(
+                                ffe_licence_numbers
+                            )
+                        )
                 else:
                     return None
             return self._create_player_matches(

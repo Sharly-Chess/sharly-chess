@@ -7,7 +7,7 @@
             {% endif %}
         </button>
         <ul class="dropdown-menu locale">
-            {% for updater in player_updaters %}
+            {% for player_updater in player_updaters %}
                 <li
                     class="dropdown-item text-start cursor-pointer"
                     hx-get="{{ url_for('admin-event-players-diff-modal', event_uniq_id=admin_event.uniq_id, player_updater_id=player_updater.id) }}"
@@ -20,7 +20,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
                 >
-                    {{ updater.name }}
+                    {{ player_updater.name }}
                 </li>
             {% endfor %}
         </ul>
