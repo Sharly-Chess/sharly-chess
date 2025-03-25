@@ -1,3 +1,4 @@
+import atexit
 import os.path
 import types
 import zipfile
@@ -6,6 +7,7 @@ from datetime import datetime, timedelta
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError, IntegrityError
+from threading import Event, Thread
 from time import time
 from typing import Iterator, Any
 
@@ -54,13 +56,14 @@ class FfeDatabase(SQLiteDatabase):
 
     def __init__(self, write: bool = False):
         super().__init__(TMP_DIR / f'ffe.{PapiWebConfig.federation_database_ext}', write)
+        self.stop_event = Event()
 
     @property
     def updated_at(self) -> datetime | None:
         if self.exists():
             return datetime.fromtimestamp(self.file.lstat().st_mtime)
 
-    def check(self) -> bool:
+    def check(self) -> bool | None:
         """Check if the database exists and proposes to create it if not, or update it if too old,
         returns True if the database is available after the call, False otherwise."""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
@@ -94,7 +97,15 @@ class FfeDatabase(SQLiteDatabase):
                     return True
             else:
                 return True
-        return self.create()
+            
+        update_thread = Thread(target=self.create, daemon=True)
+        update_thread.start()
+        atexit.register(self.stop_background_thread, update_thread)
+        return None
+    
+    def stop_background_thread(self, thread):
+        self.stop_event.set()
+        thread.join()
 
     def create(self) -> bool:
         """Create the FFE database, returns True if the database is available after the call, False otherwise."""
@@ -133,13 +144,11 @@ class FfeDatabase(SQLiteDatabase):
         if not local_mdb_file.exists():
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
-        print_interactive_info(_('Storing data...'))
-        # if the file already exists, save it to restore it on error.
-        save: Path | None = None
-        if self.file.exists():
-            save = self.file.with_suffix('.save')
-            save.unlink(missing_ok=True)
-            self.file.rename(save)
+        print_interactive_info(_('Storing FFE data...'))
+        
+        tmp_file = self.file.with_suffix('.tmp')
+        tmp_file.unlink(missing_ok=True)
+        new_database = SQLiteDatabase(tmp_file, True)
 
         translations: dict[str, types.FunctionType] = {
             'ffe_id': None,
@@ -166,14 +175,17 @@ class FfeDatabase(SQLiteDatabase):
         bindings: list[str] = [f':{column_name}' for column_name in column_names]
         escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
         query: str = f'INSERT INTO player({", ".join(escaped_column_names)}) VALUES({", ".join(bindings)})'
+        if self.stop_event.is_set():
+            return False
+        
         try:
             with open(
                 PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8'
             ) as f:
-                self._create(f.read())
+                new_database._create(f.read())
             with FfeAccessDatabase(local_mdb_file) as ffe_access_database:
-                self.write = True
-                with self:
+                new_database.write = True
+                with new_database:
                     player_count: int = 0
                     to_write: list[dict[str, Any]] = []
                     data: dict[str, Any]
@@ -188,14 +200,12 @@ class FfeDatabase(SQLiteDatabase):
                             to_write.append(data)
                             player_count += 1
                             if player_count % 1000 == 0:
-                                self.executemany(query, to_write)
-                                print_interactive_info(
-                                    _('{number} players written.').format(number=player_count),
-                                    end='\r'
-                                )
+                                new_database.executemany(query, to_write)
                                 to_write.clear()
+                                if self.stop_event.is_set():
+                                    return False
                             if player_count % 100_000 == 0:
-                                self.commit()
+                                new_database.commit()
 
                         except ValueError:
                             print_interactive_warning(
@@ -204,20 +214,24 @@ class FfeDatabase(SQLiteDatabase):
                                 ).format(row=player_dict)
                             )
                     if to_write:
-                        self.executemany(query, to_write)
-                        self.commit()
+                        new_database.executemany(query, to_write)
+                        new_database.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 _('Error while creating the database: {ex}.').format(ex=ex)
             )
-            self.file.unlink(missing_ok=True)
-            if save:
-                save.rename(self.file)
+            tmp_file.unlink(missing_ok=True)
             return False
-        if save:
-            save.unlink(missing_ok=True)
+        
+        # Copy the new database to it's proper location
+        
+        self.acquire_lock()
+        self.file.unlink(missing_ok=True)
+        tmp_file.rename(self.file)
+        self.release_lock()
+        
         print_interactive_success(
-            _('{number} players written.').format(number=player_count)
+            _('{number} players written to FFE database.').format(number=player_count)
         )
         self.create_indexes()
         return True

@@ -3113,7 +3113,10 @@ msgstr ""
 msgid "Starting Papi-web server, please wait..."
 msgstr ""
 
-msgid "Storing data..."
+msgid "Storing FFE data..."
+msgstr ""
+
+msgid "Storing FIDE data..."
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -4184,7 +4187,10 @@ msgstr[1] ""
 msgid "{family_type}-family"
 msgstr ""
 
-msgid "{number} players written."
+msgid "{number} players written to FFE database."
+msgstr ""
+
+msgid "{number} players written to FIDE database."
 msgstr ""
 
 msgid "{num} illegal move max"
@@ -4209,4 +4215,10 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Storing data..."
+#~ msgstr ""
+
+#~ msgid "{number} players written."
+#~ msgstr ""
 

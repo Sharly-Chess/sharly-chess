@@ -112,7 +112,7 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def on_init(self):
-        if not FfeDatabase().check():
+        if FfeDatabase().check() == False:
             print_interactive_error(_('Error while updating the FFE database.'))
 
     @hookimpl
