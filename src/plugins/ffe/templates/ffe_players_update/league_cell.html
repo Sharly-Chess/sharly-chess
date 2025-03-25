@@ -3,7 +3,7 @@
 {% set field_id='league' %}
 {% if field_id in field_ids %}
     {% set field_updated=value.diff_field_ids and field_id in value.diff_field_ids %}
-    {% set field_updated_class='text-primary fw-bold' %}
+    {% set field_updated_class='text-warning fw-bold' %}
     {% set field_unchanged_class='' %}
     {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
     <td

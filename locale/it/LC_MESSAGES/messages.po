@@ -2807,7 +2807,7 @@ msgid "No upcoming events."
 msgstr "Nessun evento imminente."
 
 #, ai_translation
-msgid "No update found."
+msgid "No updates found."
 msgstr "Nessun aggiornamento trovato."
 
 #, ai_translation

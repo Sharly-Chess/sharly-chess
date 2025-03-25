@@ -2216,7 +2216,7 @@ msgstr ""
 msgid "No upcoming events."
 msgstr ""
 
-msgid "No update found."
+msgid "No updates found."
 msgstr ""
 
 msgid "No valid hour defined."

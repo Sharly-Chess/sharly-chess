@@ -2216,7 +2216,7 @@ msgstr "Aucun tournoi."
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
 
-msgid "No update found."
+msgid "No updates found."
 msgstr "Aucun changement détecté."
 
 msgid "No valid hour defined."

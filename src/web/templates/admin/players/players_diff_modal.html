@@ -2,7 +2,7 @@
 
 {% set player_updated_class='' %}
 {% set player_unchanged_class='text-secondary' %}
-{% set field_updated_class='text-primary fw-bold' %}
+{% set field_updated_class='text-warning fw-bold' %}
 {% set field_unchanged_class='' %}
 <div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal d-block" style="max-width: 90%;">
     <div class="modal-content">
@@ -29,7 +29,7 @@
                 <input type="hidden" name="player_ids" value="" />
                 <input type="hidden" name="field_ids" value="" />
                 {% if player_updater.warning_message %}
-                    <div class="text-danger mb-3">
+                    <div class="text-warning mb-3">
                         <b>{{ player_updater.warning_message }}</b>
                     </div>
                 {% endif %}
@@ -39,7 +39,7 @@
                             {% if update_enabled %}
                                 {{ _('Select the players and the data to update:') }}
                             {% else %}
-                                {{ _('No update found.') }}
+                                {{ _('No updates found.') }}
                             {% endif %}
                         </p>
                     </div>
@@ -324,10 +324,7 @@
                                         scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
                                         {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.federation.name, new=match_player.federation.name), 'top') }}{% endif %}
                                 >
-                                    <img
-                                        class="player-federation-flag"
-                                        src="{{ url_for('static', file_path='/images/federations/' ~ match_player.federation ~ '.svg') }}"
-                                    />
+                                    {{ match_player.federation }}
                                 </td>
                                 {{ admin_macros.extra_admin_column_cell("club", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='club' %}
