@@ -675,7 +675,8 @@ class TournamentRating(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         match self:
             case TournamentRating.STANDARD:
                 return _('Standard rating')
@@ -685,6 +686,21 @@ class TournamentRating(IntEnum):
                 return _('Blitz rating')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case TournamentRating.STANDARD:
+                return _('Standard')
+            case TournamentRating.RAPID:
+                return _('Rapid')
+            case TournamentRating.BLITZ:
+                return _('Blitz')
+            case _:
+                raise ValueError(f'Unknown rating: {self}')
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class TournamentPairing(IntEnum):
@@ -757,7 +773,7 @@ class TournamentPairing(IntEnum):
                 raise ValueError(f'Unknown pairing type: {self}')
 
     @property
-    def swiss(self):
+    def swiss(self) -> bool:
         return self in (
             TournamentPairing.HALEY,
             TournamentPairing.HALEY_SOFT,

@@ -1,5 +1,5 @@
+import atexit
 import os.path
-from string import capwords
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
@@ -7,6 +7,7 @@ from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError, IntegrityError
+from threading import Event, Thread
 from time import time
 from types import FunctionType
 from typing import Iterator, Any
@@ -50,15 +51,15 @@ class FideDatabase(SQLiteDatabase):
 
     def __init__(self, write: bool = False):
         super().__init__(TMP_DIR / f'fide.{PapiWebConfig.federation_database_ext}', write)
-
-    def check(self) -> bool:
-        """Check if the database exists and proposes to create it if not, or update it if too old,
-        returns True if the database is available after the call, False otherwise."""
+        self.stop_event = Event()
+        
+    def check(self):
+        """Checks if the database exists and is up to date and proposes to create it if not"""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
         if not self.exists():
             if not NetworkMonitor.connected():
                 print_interactive_warning(_('Not connected, can not create the FIDE database.'))
-                return False
+                return
             if (
                 input_interactive(
                     _(
@@ -67,7 +68,7 @@ class FideDatabase(SQLiteDatabase):
                 ).upper()
                 or yes_answer
             ) != yes_answer:
-                return False
+                return
         else:
             age: int = int(time() - self.file.lstat().st_mtime)
             if age > 2 * 24 * 60 * 60:
@@ -83,11 +84,18 @@ class FideDatabase(SQLiteDatabase):
                     ).upper()
                     or yes_answer
                 ) != yes_answer:
-                    return True
+                    return
             else:
-                return True
-        return self.create()
+                return
+            
+        update_thread = Thread(target=self.create, daemon=True)
+        update_thread.start()
+        atexit.register(self.stop_background_thread, update_thread)
 
+    def stop_background_thread(self, thread):
+        self.stop_event.set()
+        thread.join()
+        
     def create(self) -> bool:
         """Create the FIDE database, returns True if the database is available after the call, False otherwise."""
         print_interactive_info(_('Downloading the FIDE database...'))
@@ -127,18 +135,19 @@ class FideDatabase(SQLiteDatabase):
         if not local_xml_file.exists():
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
-        print_interactive_info(_('Storing data...'))
-        # if the file already exists, save it to restore it on error.
-        save: Path | None = None
-        if self.file.exists():
-            save = self.file.with_suffix('.save')
-            save.unlink(missing_ok=True)
-            self.file.rename(save)
+        print_interactive_info(_('Storing FIDE data...'))
+
+        tmp_file = self.file.with_suffix('.tmp')
+        tmp_file.unlink(missing_ok=True)
+        new_database = SQLiteDatabase(tmp_file, True)
+        if self.stop_event.is_set():
+            return False
+        
         try:
             with open(
                 PapiWebConfig.database_sql_path / 'create_fide.sql', encoding='utf-8'
             ) as f:
-                self._create(f.read())
+                new_database._create(f.read())
             fields: dict[str, tuple[str, FunctionType | None]] = {
                 'fideid': ('fide_id', lambda s: int(s.strip())),
                 'name': ('name', None),
@@ -158,12 +167,12 @@ class FideDatabase(SQLiteDatabase):
             db_columns += ['first_name', 'last_name']
             query = f'''INSERT INTO player({", ".join(db_columns)}) VALUES({", ".join([f':{c}' for c in db_columns])})'''
             player_count: int = 0
-            self.write = True
+            new_database.write = True
             to_write = []
             data: dict[str, Any] = {}
             context = ElementTree.iterparse(local_xml_file, events=('start', 'end'))
             root = next(context)[1]
-            with self:
+            with new_database:
                 for event, elem in context:
                     if event == 'start' and elem.tag == 'player':
                         data = {}
@@ -172,11 +181,12 @@ class FideDatabase(SQLiteDatabase):
                         to_write.append(data)
                         player_count += 1
                         if player_count % 1000 == 0:
-                            self.executemany(query, to_write)
-                            print_interactive_info(_('{number} players written.').format(number=player_count), end='\r')
+                            new_database.executemany(query, to_write)
                             to_write.clear()
+                            if self.stop_event.is_set():
+                                return False
                         if player_count % 100_000 == 0:
-                            self.commit()
+                            new_database.commit()
 
                     elif event == 'end' and elem.tag in fields:
                         (field_name, field_function) = fields[elem.tag]
@@ -196,20 +206,23 @@ class FideDatabase(SQLiteDatabase):
                                 data['first_name'] = None
                             del data['name']
                 if to_write:
-                    self.executemany(query, to_write)
-                    self.commit()
+                    new_database.executemany(query, to_write)
+                    new_database.commit()
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 _('Error while creating the database: {ex}.').format(ex=ex)
             )
-            self.file.unlink(missing_ok=True)
-            if save:
-                save.rename(self.file)
+            tmp_file.unlink(missing_ok=True)
             return False
-        if save:
-            save.unlink(missing_ok=True)
+        
+        # Copy the new database to it's proper location
+        self.acquire_lock()
+        self.file.unlink(missing_ok=True)
+        tmp_file.rename(self.file)
+        self.release_lock()
+        
         print_interactive_success(
-            _('{number} players written.').format(number=player_count)
+            _('{number} players written to FIDE database.').format(number=player_count)
         )
         self.create_indexes()
         return True
@@ -230,10 +243,10 @@ class FideDatabase(SQLiteDatabase):
         yield from map(lambda row: row['federation'], self.fetchall())
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+    def _get_player_from_row(row: dict[str, Any]) -> Player:
         return Player(
             id=0,
-            first_name=capwords(row['first_name']) if row['first_name'] else '',
+            first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(
                 f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
@@ -265,8 +278,7 @@ class FideDatabase(SQLiteDatabase):
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
             tournament=None,
-        ) if row else None
-
+        )
 
     def search_player(
             self,
@@ -301,11 +313,22 @@ class FideDatabase(SQLiteDatabase):
             params += [limit, ]
         self.execute(query, tuple(params), )
         return (
-            self.get_player_from_row(row)
+            self._get_player_from_row(row)
             for row in self.fetchall()
         )
 
-
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
-        return self.get_player_from_row(self.fetchone())
+        if player_row := self.fetchone():
+            return self._get_player_from_row(player_row)
+
+    def get_players_by_fide_id(self, player_fide_ids: list[int]) -> list[Player]:
+        query_array = ', '.join('?' for _ in player_fide_ids)
+        self.execute(
+            f'SELECT * FROM player WHERE fide_id IN ({query_array})',
+            tuple(player_fide_ids),
+        )
+        return [
+            self._get_player_from_row(row)
+            for row in self.fetchall()
+        ]

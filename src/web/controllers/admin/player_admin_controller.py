@@ -1,7 +1,7 @@
-import string
+from collections import defaultdict
 from datetime import date
 from logging import Logger
-from typing import Annotated, Any
+from typing import Annotated, Any, Iterable
 
 from common import unicode_normalize
 from litestar import get, patch, delete, post
@@ -9,13 +9,14 @@ from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template
+from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
+from data.input_output import PlayerUpdaterManager, AbstractPlayerUpdater, PlayerMatch
 from data.loader import EventLoader
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
@@ -28,9 +29,11 @@ from data.util import (
     PlayerTitle,
     Result,
 )
+from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.util import PlayerFFELicence
 from plugins.manager import plugin_manager
+from plugins.utils import ExtraAdminColumn
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -47,15 +50,15 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        player_id: int | None,
-        player_fide_id: int | None,
-        player_from_plugin: Player | None,
-        tournament_id: int | None,
+        player_id: int | None = None,
+        player_fide_id: int | None = None,
+        player_from_plugin: Player | None = None,
+        tournament_id: int | None = None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ]
-        | None,
+        | None = None,
     ):
         super().__init__(
             request, event_uniq_id=event_uniq_id, data=data
@@ -134,7 +137,7 @@ class PlayerAdminController(BaseEventAdminController):
             data, 'first_name'
         )
         if first_name:
-            first_name = string.capwords(first_name)
+            first_name = first_name.title() if first_name else ''
         date_of_birth: date | None = WebContext.form_data_to_date(
             data, field := 'date_of_birth'
         )
@@ -296,8 +299,8 @@ class PlayerAdminController(BaseEventAdminController):
         papi_web_config: PapiWebConfig = PapiWebConfig()
         
         # Allow plugin to provide extra columns
-        per_plugin_columns = plugin_manager.hook.get_extra_player_columns()
-        extra_columns = {}
+        per_plugin_columns: Iterable[ExtraAdminColumn] = plugin_manager.hook.get_extra_player_columns()
+        extra_columns: dict[str, list[ExtraAdminColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
@@ -393,7 +396,7 @@ class PlayerAdminController(BaseEventAdminController):
         filter_origin_parts: list[str] = filter_origin.split(' ')
         
         per_plugin_context = plugin_manager.hook.get_player_admin_template_context(web_context=web_context)
-        plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
+        plugin_context = {key: value for context in per_plugin_context for key, value in context.items()}
 
         template_context |= plugin_context
         
@@ -591,6 +594,7 @@ class PlayerAdminController(BaseEventAdminController):
                 web_context.request
             ),
             'admin_players_extra_columns': extra_columns,
+            'player_updaters': PlayerUpdaterManager.updaters(),
         }
         
         match modal:
@@ -1523,3 +1527,143 @@ class PlayerAdminController(BaseEventAdminController):
             player_id=player_id,
             check_in=False,
         )
+
+    @patch(
+        path='/admin/players-update/{event_uniq_id:str}/{player_updater_id:str}',
+        name='admin-event-players-update',
+    )
+    async def htmx_admin_update_event_players(
+            self,
+            request: HTMXRequest,
+            data: Annotated[
+                dict[str, str | list[str]],
+                Body(media_type=RequestEncodingType.URL_ENCODED),
+            ],
+            event_uniq_id: str,
+            player_updater_id: str,
+            tournament_id: int | None = None,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, tournament_id=tournament_id
+        )
+        if web_context.error:
+            return web_context.error
+        try:
+            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.updaters_by_id()[player_updater_id]
+        except KeyError:
+            return self.redirect_error(request, f'Unknown data source [{player_updater_id}].')
+        plugin_updater_field_ids: list[str] = [
+            field.id
+            for field in player_updater.fields()
+        ]
+        field_ids: list[str] = [
+            field_id
+            for field_id in data['field_ids']
+            if field_id in plugin_updater_field_ids
+        ]
+        players: list[Player] = [
+            web_context.admin_event.players_by_id[player_id]
+            for player_id in map(int, (id_ for id_ in data['player_ids'] if id_))
+        ]
+        player_matches = await (
+            player_updater.get_player_matches(players, field_ids, diff_only=True)
+        )
+        if player_matches is None:
+            Message.error(
+                request,
+                _('Could not connect to data source [{player_updater_name}].').format(
+                    player_updater_name=player_updater.name
+                )
+            )
+        else:
+            for match in player_matches:
+                match.update_player_from_match(field_ids)
+
+            players_by_tournament_id: dict[int, list[Player]] = defaultdict(list[Player])
+            for player_match in player_matches:
+                players_by_tournament_id[player_match.player.tournament_id].append(player_match.player)
+            for tournament_id, tournament_players in players_by_tournament_id.items():
+                tournament: Tournament = web_context.admin_event.tournaments_by_id[tournament_id]
+                with PapiDatabase(tournament.file, True) as database:
+                    for player in tournament_players:
+                        database.update_player(player)
+                    database.commit()
+
+            count: int = len(player_matches)
+            Message.success(
+                request,
+                ngettext(
+                    '{count} player updated.',
+                    '{count} players updated.',
+                    count
+                ).format(count=count)
+                if count else
+                _('No players updated.')
+            )
+        return self._admin_event_players_render(
+            request, event_uniq_id=event_uniq_id
+        )
+
+    @get(
+        path='/admin/event-players-diff-modal/{event_uniq_id:str}/{player_updater_id:str}',
+        name='admin-event-players-diff-modal',
+    )
+    async def htmx_admin_event_players_diff_modal(
+            self,
+            request: HTMXRequest,
+            event_uniq_id: str,
+            player_updater_id: str,
+            tournament_id: int | None = None,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, event_uniq_id=event_uniq_id, tournament_id=tournament_id
+        )
+        if web_context.error:
+            return web_context.error
+        try:
+            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.updaters_by_id()[player_updater_id]
+        except KeyError:
+            # should never happen, not translated
+            return self.redirect_error(request, f'Unknown data source [{player_updater_id}].')
+        field_ids: list[str] = [
+            field.id for field in player_updater.fields()
+        ]
+        players = (
+            web_context.admin_tournament.players_by_name_with_unpaired
+            if web_context.admin_tournament else
+            web_context.admin_event.players_sorted_by_name
+        )
+        player_matches: list[PlayerMatch] | None = await (
+            player_updater.get_player_matches(players, field_ids, diff_only=False)
+        )
+        template_context: dict[str, Any] = self._get_admin_event_render_context(
+            web_context
+        )
+        if player_matches is None:
+            Message.error(
+                request,
+                _('Could not connect to data source [{player_updater_name}].').format(
+                    player_updater_name=player_updater.name
+                )
+            )
+            return self._admin_event_players_render(
+                request, event_uniq_id=event_uniq_id
+            )
+
+        per_plugin_columns: Iterable[ExtraAdminColumn] = plugin_manager.hook.get_extra_players_update_columns()
+        extra_columns: dict[str, list[ExtraAdminColumn]] = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                c = extra_columns.setdefault(extra_column.at, [])
+                c.append(extra_column)
+
+        template_context |= {
+            'modal': 'players_diff',
+            'player_updater': player_updater,
+            'field_ids': field_ids,
+            'player_matches': player_matches,
+            'update_enabled': any(player_match.diff_field_ids for player_match in player_matches),
+            'admin_players_update_extra_columns': extra_columns,
+        }
+        return self._admin_event_render(template_context)
+

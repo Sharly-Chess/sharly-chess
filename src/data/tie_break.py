@@ -100,6 +100,11 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
     def acronym(self) -> str:
         pass
 
+    @property
+    @abstractmethod
+    def short_name(self) -> str:
+        pass
+
     @abstractmethod
     def compute_player_value(
         self,
@@ -318,6 +323,10 @@ class WinsTieBreak(AbstractTieBreak):
         # FIDE acronym: 'WIN'
         return _('NW *** ACRONYM FOR PAPI NUMBER OF WINS')
 
+    @property
+    def short_name(self) -> str:
+        return _('Wins')
+
     def compute_player_value(
         self,
         player: 'Player',
@@ -352,6 +361,10 @@ class GamesWonTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'WON'
 
+    @property
+    def short_name(self) -> str:
+        return _('Games won')
+
     def compute_player_value(
         self,
         player: 'Player',
@@ -384,6 +397,10 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'BPG'
 
+    @property
+    def short_name(self) -> str:
+        return _('Black games')
+
     def compute_player_value(
         self,
         player: 'Player',
@@ -415,6 +432,10 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'BWG'
+
+    @property
+    def short_name(self) -> str:
+        return _('Black wins')
 
     def compute_player_value(
             self,
@@ -457,6 +478,10 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         # FIDE Acronym: 'PS'
         return _('PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE')
 
+    @property
+    def short_name(self) -> str:
+        return _('Progressive')
+
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
         return [CutTieBreakOption]
@@ -490,6 +515,10 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'REP'
+
+    @property
+    def short_name(self) -> str:
+        return _('Games played')
 
     def compute_player_value(
             self,
@@ -538,6 +567,11 @@ class BuchholzTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'BH'
+
+
+    @property
+    def short_name(self) -> str:
+        return _('Buchholz')
 
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
@@ -644,6 +678,10 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'FB'
 
+    @property
+    def short_name(self) -> str:
+        return _('Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ')
+
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
         return [
@@ -732,6 +770,10 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'SOB'
 
+    @property
+    def short_name(self) -> str:
+        return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
+
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
         return [ForeModifierTieBreakOption]
@@ -778,6 +820,10 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'AOB'
+
+    @property
+    def short_name(self) -> str:
+        return _('Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ')
 
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
@@ -834,6 +880,10 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'SB'
+
+    @property
+    def short_name(self) -> str:
+        return _('S-Berger *** SHORT NAME FOR SONNENBORN-BERGER')
 
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
@@ -945,7 +995,7 @@ class KoyaTieBreak(AbstractTieBreak):
 
     @property
     def name(self) -> str:
-        return _('Koya')
+        return _('Koya system')
 
     @property
     def id(self) -> str:
@@ -959,6 +1009,10 @@ class KoyaTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         # FIDE Acronym: 'KS'
         return _('Ko. *** ACRONYM FOR PAPI KOYA')
+
+    @property
+    def short_name(self) -> str:
+        return _('Koya')
 
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
@@ -1009,6 +1063,10 @@ class KashdanTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'KA'
+
+    @property
+    def short_name(self) -> str:
+        return _('Kashdan')
 
     def compute_player_value(
         self,
@@ -1065,6 +1123,10 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'ARO'
+
+    @property
+    def short_name(self) -> str:
+        return _('Average rating')
 
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:
@@ -1136,6 +1198,10 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'TPR'
 
+    @property
+    def short_name(self) -> str:
+        return _('Performance')
+
     def compute_player_value(
             self,
             player: 'Player',
@@ -1185,6 +1251,13 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'APRO'
 
+    @property
+    def short_name(self) -> str:
+        return _(
+            'Average perf. *** SHORT NAME FOR AVERAGE'
+            ' PERFORMANCE RATING OPPONENTS'
+        )
+
     def compute_player_value(
             self,
             player: 'Player',
@@ -1230,6 +1303,13 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'PTP'
+
+    @property
+    def short_name(self) -> str:
+        return _(
+            'Perfect perf. *** SHORT NAME '
+            'FOR PERFECT TOURNAMENT PERFORMANCE'
+        )
 
     def compute_player_value(
             self,
@@ -1358,6 +1438,13 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
     def acronym(self) -> str:
         return 'APPO'
 
+    @property
+    def short_name(self) -> str:
+        return _(
+            'Avg. Perfect Perf. *** '
+            'SHORT NAME FOR AVERAGE PERFECT PERFORMANCE'
+        )
+
     def compute_player_value(
             self,
             player: 'Player',
@@ -1406,6 +1493,10 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     @property
     def acronym(self) -> str:
         return 'DE'
+
+    @property
+    def short_name(self) -> str:
+        return _('Direct encounter')
 
     @staticmethod
     def available_options() -> list[type[AbstractTieBreakOption]]:

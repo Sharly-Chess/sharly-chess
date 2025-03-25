@@ -278,8 +278,14 @@ msgstr "Installation automatique de BBP Pairings pour les developpeur·euses ave
 msgid "Automatically launch a browser when starting the server"
 msgstr ""
 
+msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
+msgstr "Average Bu."
+
 msgid "Average of opponents Buchholz"
 msgstr ""
+
+msgid "Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS"
+msgstr "Average perf."
 
 msgid "Average perfect performance of opponents"
 msgstr ""
@@ -287,8 +293,14 @@ msgstr ""
 msgid "Average performance rating of opponents"
 msgstr ""
 
+msgid "Average rating"
+msgstr ""
+
 msgid "Average rating of opponents"
 msgstr ""
+
+msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
+msgstr "Avg. Perfect Perf."
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
@@ -316,6 +328,15 @@ msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
 
 msgid "Black"
+msgstr ""
+
+msgid "Black games"
+msgstr ""
+
+msgid "Black wins"
+msgstr ""
+
+msgid "Blitz"
 msgstr ""
 
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
@@ -363,6 +384,9 @@ msgstr ""
 
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
+
+msgid "Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ"
+msgstr "Bu. sum"
 
 msgid "Buchholz"
 msgstr ""
@@ -630,6 +654,9 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
+msgid "Could not connect to data source [{player_updater_name}]."
+msgstr ""
+
 msgid "Could not download [{url}], error code [{code}]."
 msgstr ""
 
@@ -708,6 +735,9 @@ msgid "Data is already displayed on the FFE website."
 msgstr ""
 
 msgid "Date"
+msgstr ""
+
+msgid "Date of birth"
 msgstr ""
 
 msgid "Date of birth:"
@@ -1247,6 +1277,9 @@ msgstr "F"
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "F"
 
+msgid "FFE"
+msgstr ""
+
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
@@ -1259,10 +1292,16 @@ msgstr ""
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "FFE Licence"
+msgstr ""
+
 msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number (optional):"
+msgstr ""
+
+msgid "FFE database"
 msgstr ""
 
 msgid "FFE database:"
@@ -1275,6 +1314,9 @@ msgid "FFE licence B (leisure)"
 msgstr ""
 
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "FFE licence number"
 msgstr ""
 
 #, python-format
@@ -1304,6 +1346,9 @@ msgstr "Fide"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE ID"
+msgstr ""
+
 msgid "FIDE ID:"
 msgstr ""
 
@@ -1312,6 +1357,9 @@ msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "FIDE Title:"
+msgstr ""
+
+msgid "FIDE database"
 msgstr ""
 
 msgid "FIDE database:"
@@ -1358,6 +1406,9 @@ msgstr ""
 
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed."
+
+msgid "Fed."
+msgstr ""
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -1444,6 +1495,9 @@ msgstr ""
 msgid "Fixed boards:"
 msgstr ""
 
+msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
+msgstr "Fore Bu."
+
 msgid "Fore Buchholz"
 msgstr ""
 
@@ -1477,10 +1531,19 @@ msgstr "GM"
 msgid "Gain"
 msgstr ""
 
+msgid "Games played"
+msgstr ""
+
 msgid "Games played with black"
 msgstr ""
 
+msgid "Games won"
+msgstr ""
+
 msgid "Games won with black"
+msgstr ""
+
+msgid "Gender"
 msgstr ""
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
@@ -1695,6 +1758,9 @@ msgstr "Ko."
 msgid "Koya"
 msgstr ""
 
+msgid "Koya system"
+msgstr ""
+
 msgid "LAN/WAN URL: {lan_url}"
 msgstr ""
 
@@ -1744,6 +1810,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Libraries"
+msgstr ""
+
+msgid "Lic."
 msgstr ""
 
 msgid "Licence number:"
@@ -1864,6 +1933,9 @@ msgstr ""
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
 
+msgid "Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me. Buchholz"
+
 msgid "Median Buchholz"
 msgstr ""
 
@@ -1913,6 +1985,9 @@ msgstr "N"
 
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NW"
+
+msgid "Name"
+msgstr ""
 
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Name"
@@ -2063,6 +2138,9 @@ msgstr ""
 msgid "No players found."
 msgstr ""
 
+msgid "No players updated."
+msgstr ""
+
 msgid "No players."
 msgstr ""
 
@@ -2114,6 +2192,9 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
+msgid "No tie-break defined"
+msgstr ""
+
 msgid "No timer defined"
 msgstr ""
 
@@ -2133,6 +2214,9 @@ msgid "No tournaments."
 msgstr ""
 
 msgid "No upcoming events."
+msgstr ""
+
+msgid "No updates found."
 msgstr ""
 
 msgid "No valid hour defined."
@@ -2366,6 +2450,9 @@ msgstr ""
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf."
 
+msgid "Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE"
+msgstr "Perfect perf."
+
 msgid "Perfect tournament performance"
 msgstr ""
 
@@ -2590,6 +2677,9 @@ msgstr ""
 msgid "Private event"
 msgstr ""
 
+msgid "Progressive"
+msgstr ""
+
 msgid "Progressive scores"
 msgstr ""
 
@@ -2671,6 +2761,9 @@ msgstr ""
 msgid "Ranking screens show the players by rank."
 msgstr ""
 
+msgid "Rapid"
+msgstr ""
+
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapid"
 
@@ -2714,6 +2807,10 @@ msgid "Remove the player from the event."
 msgstr ""
 
 msgid "Renaming the database failed: {ex}."
+msgstr ""
+
+#, python-format
+msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
 msgid "Request to the FFE database failed."
@@ -2854,6 +2951,9 @@ msgstr ""
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
+msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgstr "S-Berger"
+
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
 
@@ -2919,6 +3019,9 @@ msgstr ""
 msgid "Searching..."
 msgstr ""
 
+msgid "Select the players and the data to update:"
+msgstr ""
+
 msgid "Selection"
 msgstr ""
 
@@ -2933,6 +3036,9 @@ msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...
 msgstr ""
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr ""
+
+msgid "Show all the players"
 msgstr ""
 
 msgid "Show/hide the boards screens."
@@ -2992,6 +3098,9 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
+msgid "Standard"
+msgstr ""
+
 msgid "Standard rating"
 msgstr ""
 
@@ -3004,7 +3113,10 @@ msgstr ""
 msgid "Starting Papi-web server, please wait..."
 msgstr ""
 
-msgid "Storing data..."
+msgid "Storing FFE data..."
+msgstr ""
+
+msgid "Storing FIDE data..."
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -3468,6 +3580,9 @@ msgstr ""
 msgid "Tie-breaks"
 msgstr ""
 
+msgid "Tie-breaks:"
+msgstr ""
+
 msgid "Time control"
 msgstr ""
 
@@ -3645,6 +3760,9 @@ msgstr ""
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr."
 
+msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr. Buchholz"
+
 msgid "Type:"
 msgstr ""
 
@@ -3751,6 +3869,20 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+msgid "Update players"
+msgstr ""
+
+#, python-format
+msgid "Update the players (data source: %(player_updater_name)s)"
+msgstr ""
+
+#, python-format
+msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)"
+msgstr ""
+
+msgid "Update the players' information from an external data source."
+msgstr ""
+
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
@@ -3798,6 +3930,9 @@ msgstr "WIM"
 
 #, python-format
 msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr ""
+
+msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""
 
 msgid "Warning: the deletion of a player is permanent!"
@@ -3856,6 +3991,9 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr ""
 
 msgid "White"
+msgstr ""
+
+msgid "Wins"
 msgstr ""
 
 msgid "Woman Candidate Master"
@@ -4041,10 +4179,18 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+msgid "{count} player updated."
+msgid_plural "{count} players updated."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "{family_type}-family"
 msgstr ""
 
-msgid "{number} players written."
+msgid "{number} players written to FFE database."
+msgstr ""
+
+msgid "{number} players written to FIDE database."
 msgstr ""
 
 msgid "{num} illegal move max"
@@ -4069,4 +4215,10 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Storing data..."
+#~ msgstr ""
+
+#~ msgid "{number} players written."
+#~ msgstr ""
 

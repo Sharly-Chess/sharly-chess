@@ -1,15 +1,18 @@
+from collections import defaultdict
 import json
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from logging import Logger
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
+from threading import Lock
 from typing import Self, Any
 
 from common.logger import get_logger
 
 logger: Logger = get_logger()
 
+locks: defaultdict[Path, Lock] = defaultdict(Lock)
 
 @dataclass
 class SQLiteDatabase:
@@ -30,22 +33,32 @@ class SQLiteDatabase:
         """Deletes the database if it exists."""
         self.file.unlink(missing_ok=True)
 
+    def acquire_lock(self):
+        locks[self.file].acquire()
+
+    def release_lock(self):
+        locks[self.file].release()
+
     def _create(self, script: str | None = None):
         database: Connection | None = None
         try:
+            self.acquire_lock()
             database = connect(database=self.file, detect_types=1, uri=True)
             if script:
                 database.executescript(script)
                 database.commit()
             database.close()
+            self.release_lock()
         except OperationalError as e:
             if database:
                 database.close()
             self.file.unlink(missing_ok=True)
+            self.release_lock()
             raise e
 
     def __enter__(self) -> Self:
         db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
+        self.acquire_lock()
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
         if self.write:
@@ -61,6 +74,7 @@ class SQLiteDatabase:
             self.database.close()
             del self.database
             self.database = None
+        self.release_lock()
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         self.cursor.execute(query, params)
