@@ -5,7 +5,7 @@ from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
-from common import DEVEL_ENV
+from common import DEVEL_ENV, unicode_normalize
 from common.exception import PapiWebException
 from common.i18n import ngettext, _
 from common.network import NetworkMonitor
@@ -54,7 +54,7 @@ class FfeSearchController(BaseEventAdminController):
                 async with FFESqlServer() as ffe_sql_server:
                     search_results: list['Player'] = [
                         player async for player in await ffe_sql_server.search_player(
-                            search_ffe, limit=self.MAX_RESULTS
+                            unicode_normalize(search_ffe), limit=self.MAX_RESULTS
                         )
                     ]
                     if DEVEL_ENV:
@@ -94,7 +94,7 @@ class FfeSearchController(BaseEventAdminController):
                     with FfeDatabase() as ffe_database:
                         search_results: list['Player'] = [
                             player for player in ffe_database.search_player(
-                                search_ffe, limit=self.MAX_RESULTS)
+                                unicode_normalize(search_ffe), limit=self.MAX_RESULTS)
                         ]
                         if DEVEL_ENV:
                             seconds: float = time.perf_counter() - start
