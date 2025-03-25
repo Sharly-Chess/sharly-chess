@@ -3113,8 +3113,11 @@ msgstr "Début :"
 msgid "Starting Papi-web server, please wait..."
 msgstr "Démarrage du serveur Papi-web, veuillez patienter..."
 
-msgid "Storing data..."
-msgstr "Enregistrement des données..."
+msgid "Storing FFE data..."
+msgstr "Enregistrement des données FFE"
+
+msgid "Storing FIDE data..."
+msgstr "Enregistrement des données FIDE"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
@@ -4184,8 +4187,11 @@ msgstr[1] "{count} joueur·euses mis·es à jour."
 msgid "{family_type}-family"
 msgstr "famille-{family_type}"
 
-msgid "{number} players written."
-msgstr "{number} joueur·euses enregistré·es."
+msgid "{number} players written to FFE database."
+msgstr "{number} joueur·euses enregistré·es dans la base de données FFE."
+
+msgid "{number} players written to FIDE database."
+msgstr "{number} joueur·euses enregistré·es dans la base de données FIDE."
 
 msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
@@ -4209,4 +4215,10 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "Storing data..."
+#~ msgstr "Enregistrement des données..."
+
+#~ msgid "{number} players written."
+#~ msgstr "{number} joueur·euses enregistré·es."
 

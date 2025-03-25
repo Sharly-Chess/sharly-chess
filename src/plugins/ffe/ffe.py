@@ -112,8 +112,7 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def on_init(self):
-        if not FfeDatabase().check():
-            print_interactive_error(_('Error while updating the FFE database.'))
+        FfeDatabase().check()
 
     @hookimpl
     def get_event_migration_manager(self) -> PluginMigrationManager:
