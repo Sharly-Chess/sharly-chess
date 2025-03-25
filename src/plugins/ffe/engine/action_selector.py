@@ -148,7 +148,7 @@ class ActionSelector(metaclass=Singleton):
                 print_interactive_warning(
                     _(
                         'Rules file [{file}] not found for tournament [{tournament_uniq_id}].'
-                    ).format(tournament_uniq_id=tournament.uniq_id)
+                    ).format(file=tournament.rules, tournament_uniq_id=tournament.uniq_id)
                 )
             else:
                 tournaments.append(tournament)

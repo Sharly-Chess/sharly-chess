@@ -53,14 +53,14 @@ class FideDatabase(SQLiteDatabase):
         super().__init__(TMP_DIR / f'fide.{PapiWebConfig.federation_database_ext}', write)
         self.stop_event = Event()
         
-    def check(self) -> bool | None:
+    def check(self):
         """Check if the database exists and proposes to create it if not, or update it if too old,
         returns True if the database is available after the call, False otherwise."""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
         if not self.exists():
             if not NetworkMonitor.connected():
                 print_interactive_warning(_('Not connected, can not create the FIDE database.'))
-                return False
+                return
             if (
                 input_interactive(
                     _(
@@ -69,7 +69,7 @@ class FideDatabase(SQLiteDatabase):
                 ).upper()
                 or yes_answer
             ) != yes_answer:
-                return False
+                return
         else:
             age: int = int(time() - self.file.lstat().st_mtime)
             if age > 2 * 24 * 60 * 60:
@@ -85,14 +85,13 @@ class FideDatabase(SQLiteDatabase):
                     ).upper()
                     or yes_answer
                 ) != yes_answer:
-                    return True
+                    return
             else:
-                return True
+                return
             
         update_thread = Thread(target=self.create, daemon=True)
         update_thread.start()
         atexit.register(self.stop_background_thread, update_thread)
-        return None
 
     def stop_background_thread(self, thread):
         self.stop_event.set()

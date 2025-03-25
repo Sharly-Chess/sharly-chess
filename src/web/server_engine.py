@@ -62,8 +62,7 @@ class ServerEngine(Engine):
             )
         )
 
-        if FideDatabase().check() == False:
-            print_interactive_error(_('Error while updating the FIDE database.'))
+        FideDatabase().check()
 
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
