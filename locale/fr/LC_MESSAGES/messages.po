@@ -278,8 +278,14 @@ msgstr "Installation automatique de BBP Pairings pour les développeur·euses av
 msgid "Automatically launch a browser when starting the server"
 msgstr "Lancement automatique du navigateur au démarrage du serveur"
 
+msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
+msgstr "Bu. moyen"
+
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
+
+msgid "Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS"
+msgstr "Perf. moyenne"
 
 msgid "Average perfect performance of opponents"
 msgstr "Moyenne des performances ELO parfaites des adversaires"
@@ -287,8 +293,14 @@ msgstr "Moyenne des performances ELO parfaites des adversaires"
 msgid "Average performance rating of opponents"
 msgstr "Moyenne des performances ELO des adversaires"
 
+msgid "Average rating"
+msgstr "ELO moyen"
+
 msgid "Average rating of opponents"
 msgstr "Classement ELO moyen des adversaires"
+
+msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
+msgstr "Perf. parfaite moyenne"
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
@@ -317,6 +329,12 @@ msgstr "Ech."
 
 msgid "Black"
 msgstr "Noirs"
+
+msgid "Black games"
+msgstr "Parties noires"
+
+msgid "Black wins"
+msgstr "Victoires noires"
 
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
@@ -363,6 +381,9 @@ msgstr "Les écrans d'affichage des échiquiers présentent les appariements par
 
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
+
+msgid "Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ"
+msgstr "Somme des Bu."
 
 msgid "Buchholz"
 msgstr "Buchholz"
@@ -1444,6 +1465,9 @@ msgstr "Échiquier fixe :"
 msgid "Fixed boards:"
 msgstr "Échiquiers fixes :"
 
+msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
+msgstr "Fore Bu."
+
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
@@ -1477,8 +1501,14 @@ msgstr "GMI"
 msgid "Gain"
 msgstr "Gain"
 
+msgid "Games played"
+msgstr "Parties jouées"
+
 msgid "Games played with black"
 msgstr "Nombre de parties jouées avec les noirs"
+
+msgid "Games won"
+msgstr "Parties gagnées"
 
 msgid "Games won with black"
 msgstr "Nombre de parties gagnées avec les noirs"
@@ -1695,6 +1725,9 @@ msgstr "Ko."
 msgid "Koya"
 msgstr "Koya"
 
+msgid "Koya system"
+msgstr "Système Koya"
+
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "URL LAN/WAN : {lan_url}"
 
@@ -1863,6 +1896,9 @@ msgstr "Nombre maximum de résultats : illimité"
 
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
+
+msgid "Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Bu. médian"
 
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
@@ -2113,6 +2149,9 @@ msgstr "Aucun version stable trouvée."
 
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
+
+msgid "No tie-break defined"
+msgstr "Départages non définis"
 
 msgid "No timer defined"
 msgstr "Aucun chronomètre défini"
@@ -2366,6 +2405,9 @@ msgstr "Pénalité (handicap, en secondes) :"
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf"
 
+msgid "Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE"
+msgstr "Pref. parfaite"
+
 msgid "Perfect tournament performance"
 msgstr "Performance ELO parfaite"
 
@@ -2589,6 +2631,9 @@ msgstr "Imprimer les participant·es, les résultats, les classements..."
 
 msgid "Private event"
 msgstr "Évènement privé"
+
+msgid "Progressive"
+msgstr "Cumulatif"
 
 msgid "Progressive scores"
 msgstr "Cumulatif"
@@ -2853,6 +2898,9 @@ msgstr "Règlement défini"
 
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
+
+msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgstr "S-Berger"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
@@ -3468,6 +3516,9 @@ msgstr "Départage déjà utilisé."
 msgid "Tie-breaks"
 msgstr "Départages"
 
+msgid "Tie-breaks:"
+msgstr "Départages :"
+
 msgid "Time control"
 msgstr "Cadence"
 
@@ -3644,6 +3695,9 @@ msgstr "Tournois : {tournament_names}"
 
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr."
+
+msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Bu. tronqué"
 
 msgid "Type:"
 msgstr "Type :"
@@ -3857,6 +3911,9 @@ msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il 
 
 msgid "White"
 msgstr "Blancs"
+
+msgid "Wins"
+msgstr "Victoires"
 
 msgid "Woman Candidate Master"
 msgstr "Candidat Maître Femme"
