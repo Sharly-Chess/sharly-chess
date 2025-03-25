@@ -1,0 +1,16 @@
+{% import '/common/macros.j2' as macros %}
+
+{% set field_id='league' %}
+{% if field_id in field_ids %}
+    {% set field_updated=value.diff_field_ids and field_id in value.diff_field_ids %}
+    {% set field_updated_class='text-primary fw-bold' %}
+    {% set field_unchanged_class='' %}
+    {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+    <td scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}">
+        {% if field_updated %}
+            {{ value.match_player.plugin_data.ffe.league }}
+        {% else %}
+            {{ value.player.plugin_data.ffe.league }}
+        {% endif %}
+    </td>
+{% endif %}

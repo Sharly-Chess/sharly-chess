@@ -1,5 +1,5 @@
 {% import '/common/macros.j2' as macros %}
-{% import '/admin/common/macros.j2' as admin_macros %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
 
 {% if modal == 'config' %}
     {% include 'index/config_modal.html' %}
@@ -31,6 +31,8 @@
     {% include 'players/close_check_in_modal.html' %}
 {% elif modal == 'create_papi' %}
     {% include 'tournaments/create_papi_modal.html' %}
+{% elif modal == 'players_diff' %}
+    {% include 'players/players_diff_modal.html' %}
 {% elif modal %}
     {% include modal ~ '_modal_not_found.html' %}
 {% endif %}

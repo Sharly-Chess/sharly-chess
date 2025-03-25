@@ -1,0 +1,17 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% set field_id='league' %}
+{% if field_id in field_ids %}
+    <th scope="col" class="text-nowrap text-center">
+        {% if update_enabled %}
+            <input
+                type="checkbox"
+                name="field_ids"
+                value="{{ field_id }}"
+                checked
+                class="field-id-checkbox"
+            />
+        {% endif %}
+        {{ _('League') }}
+    </th>
+{% endif %}

@@ -1,5 +1,4 @@
 import os.path
-from string import capwords
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
@@ -230,10 +229,10 @@ class FideDatabase(SQLiteDatabase):
         yield from map(lambda row: row['federation'], self.fetchall())
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+    def _get_player_from_row(row: dict[str, Any]) -> Player:
         return Player(
             id=0,
-            first_name=capwords(row['first_name']) if row['first_name'] else '',
+            first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(
                 f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
@@ -265,8 +264,7 @@ class FideDatabase(SQLiteDatabase):
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
             tournament=None,
-        ) if row else None
-
+        )
 
     def search_player(
             self,
@@ -301,11 +299,22 @@ class FideDatabase(SQLiteDatabase):
             params += [limit, ]
         self.execute(query, tuple(params), )
         return (
-            self.get_player_from_row(row)
+            self._get_player_from_row(row)
             for row in self.fetchall()
         )
 
-
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
-        return self.get_player_from_row(self.fetchone())
+        if player_row := self.fetchone():
+            return self._get_player_from_row(player_row)
+
+    def get_players_by_fide_id(self, player_fide_ids: list[int]) -> list[Player]:
+        query_array = ', '.join('?' for _ in player_fide_ids)
+        self.execute(
+            f'SELECT * FROM player WHERE fide_id IN ({query_array})',
+            tuple(player_fide_ids),
+        )
+        return [
+            self._get_player_from_row(row)
+            for row in self.fetchall()
+        ]

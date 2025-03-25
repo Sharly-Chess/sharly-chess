@@ -336,6 +336,9 @@ msgstr ""
 msgid "Black wins"
 msgstr ""
 
+msgid "Blitz"
+msgstr ""
+
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
 
@@ -651,6 +654,9 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
+msgid "Could not connect to data source [{player_updater_name}]."
+msgstr ""
+
 msgid "Could not download [{url}], error code [{code}]."
 msgstr ""
 
@@ -729,6 +735,9 @@ msgid "Data is already displayed on the FFE website."
 msgstr ""
 
 msgid "Date"
+msgstr ""
+
+msgid "Date of birth"
 msgstr ""
 
 msgid "Date of birth:"
@@ -1268,6 +1277,9 @@ msgstr "F"
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "F"
 
+msgid "FFE"
+msgstr ""
+
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
 
@@ -1280,10 +1292,16 @@ msgstr ""
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "FFE Licence"
+msgstr ""
+
 msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number (optional):"
+msgstr ""
+
+msgid "FFE database"
 msgstr ""
 
 msgid "FFE database:"
@@ -1296,6 +1314,9 @@ msgid "FFE licence B (leisure)"
 msgstr ""
 
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "FFE licence number"
 msgstr ""
 
 #, python-format
@@ -1325,6 +1346,9 @@ msgstr "Fide"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE ID"
+msgstr ""
+
 msgid "FIDE ID:"
 msgstr ""
 
@@ -1333,6 +1357,9 @@ msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "FIDE Title:"
+msgstr ""
+
+msgid "FIDE database"
 msgstr ""
 
 msgid "FIDE database:"
@@ -1379,6 +1406,9 @@ msgstr ""
 
 msgid "Fed *** FEDERATION FOR PRINT VIEW"
 msgstr "Fed."
+
+msgid "Fed."
+msgstr ""
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -1511,6 +1541,9 @@ msgid "Games won"
 msgstr ""
 
 msgid "Games won with black"
+msgstr ""
+
+msgid "Gender"
 msgstr ""
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
@@ -1779,6 +1812,9 @@ msgstr ""
 msgid "Libraries"
 msgstr ""
 
+msgid "Lic."
+msgstr ""
+
 msgid "Licence number:"
 msgstr ""
 
@@ -1950,6 +1986,9 @@ msgstr "N"
 msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
 msgstr "NW"
 
+msgid "Name"
+msgstr ""
+
 msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Name"
 
@@ -2099,6 +2138,9 @@ msgstr ""
 msgid "No players found."
 msgstr ""
 
+msgid "No players updated."
+msgstr ""
+
 msgid "No players."
 msgstr ""
 
@@ -2172,6 +2214,9 @@ msgid "No tournaments."
 msgstr ""
 
 msgid "No upcoming events."
+msgstr ""
+
+msgid "No update found."
 msgstr ""
 
 msgid "No valid hour defined."
@@ -2716,6 +2761,9 @@ msgstr ""
 msgid "Ranking screens show the players by rank."
 msgstr ""
 
+msgid "Rapid"
+msgstr ""
+
 msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
 msgstr "Rapid"
 
@@ -2759,6 +2807,10 @@ msgid "Remove the player from the event."
 msgstr ""
 
 msgid "Renaming the database failed: {ex}."
+msgstr ""
+
+#, python-format
+msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
 msgid "Request to the FFE database failed."
@@ -2967,6 +3019,9 @@ msgstr ""
 msgid "Searching..."
 msgstr ""
 
+msgid "Select the players and the data to update:"
+msgstr ""
+
 msgid "Selection"
 msgstr ""
 
@@ -2981,6 +3036,9 @@ msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...
 msgstr ""
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr ""
+
+msgid "Show all the players"
 msgstr ""
 
 msgid "Show/hide the boards screens."
@@ -3038,6 +3096,9 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr ""
 
 msgid "Split by:"
+msgstr ""
+
+msgid "Standard"
 msgstr ""
 
 msgid "Standard rating"
@@ -3805,6 +3866,20 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+msgid "Update players"
+msgstr ""
+
+#, python-format
+msgid "Update the players (data source: %(player_updater_name)s)"
+msgstr ""
+
+#, python-format
+msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)"
+msgstr ""
+
+msgid "Update the players' information from an external data source."
+msgstr ""
+
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
@@ -4098,6 +4173,11 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+msgid "{count} player updated."
+msgid_plural "{count} players updated."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "{family_type}-family"
 msgstr ""
 
@@ -4126,4 +4206,13 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Could not connect to data source [{data_source}]."
+#~ msgstr ""
+
+#~ msgid "Update players with %(data_source)s data"
+#~ msgstr ""
+
+#~ msgid "Update players with %(data_source)s data (tournament [%(tournament_uniq_id)s])"
+#~ msgstr ""
 

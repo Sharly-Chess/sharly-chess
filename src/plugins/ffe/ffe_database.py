@@ -6,7 +6,6 @@ from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError, IntegrityError
-from string import capwords
 from time import time
 from typing import Iterator, Any
 
@@ -25,7 +24,7 @@ from common.logger import (
 )
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
-from data.player import Player
+from data.player import Player, Federation, Club
 from data.util import (
     TournamentRating,
     PlayerRatingType,
@@ -142,7 +141,7 @@ class FfeDatabase(SQLiteDatabase):
             'ffe_id': None,
             'ffe_licence_number': lambda s: s.strip().upper() if s else None,
             'last_name': lambda s: s.strip().upper(),
-            'first_name': capwords,
+            'first_name': lambda s: s.strip().title() if s else '',
             'gender': PlayerGender.from_papi_value,
             'date_of_birth': lambda dt: dt.date() if dt else None,
             'federation': None,
@@ -232,7 +231,7 @@ class FfeDatabase(SQLiteDatabase):
     def get_player_from_row(row: dict[str, Any]) -> Player | None:
         return Player(
             id=0,
-            first_name=capwords(row['first_name']) if row['first_name'] else '',
+            first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(
                 row['date_of_birth'], '%Y-%m-%d'
@@ -256,9 +255,9 @@ class FfeDatabase(SQLiteDatabase):
                 TournamentRating.RAPID: PlayerRatingType(row['rapid_rating_type']),
                 TournamentRating.BLITZ: PlayerRatingType(row['blitz_rating_type']),
             },
-            fide_id=row['fide_id'],
-            federation=row['federation'],
-            club=row['club'],
+            fide_id=int(row['fide_id']) if row['fide_id'] else None,
+            federation=Federation(row['federation']),
+            club=Club(row['club']),
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             pairings={},  # Pairings are read from Papi but not used
@@ -333,3 +332,14 @@ class FfeDatabase(SQLiteDatabase):
         player_fide_id: int,
     ) -> Player | None:
         return self._get_player_by_id('fide_id', player_fide_id)
+
+    def get_players_by_ffe_licence_number(self, player_ffe_licence_numbers: list[str]) -> list[Player]:
+        query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
+        self.execute(
+            f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
+            tuple(player_ffe_licence_numbers),
+        )
+        return [
+            self.get_player_from_row(row)
+            for row in self.fetchall()
+        ]

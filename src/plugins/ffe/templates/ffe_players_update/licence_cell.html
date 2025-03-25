@@ -1,0 +1,20 @@
+{% import '/common/macros.j2' as macros %}
+{% import '/ffe_macros.j2' as ffe_macros %}
+
+{% set field_id='ffe_licence' %}
+{% if field_id in field_ids %}
+    {% set field_updated=value.diff_field_ids and field_id in value.diff_field_ids %}
+    {% set field_updated_class='text-primary fw-bold' %}
+    {% set field_unchanged_class='' %}
+    {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+    <td
+        scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=value.player.plugin_data.ffe.ffe_licence.name, new=value.match_player.plugin_data.ffe.ffe_licence.name), 'top') }}{% endif %}
+    >
+        {% if field_updated %}
+            {{ ffe_macros.ffe_licence(value.match_player.plugin_data.ffe.ffe_licence) }}
+        {% else %}
+            {{ ffe_macros.ffe_licence(value.player.plugin_data.ffe.ffe_licence) }}
+        {% endif %}
+    </td>
+{% endif %}
