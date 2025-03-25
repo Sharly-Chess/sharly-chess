@@ -331,10 +331,10 @@ msgid "Black"
 msgstr "Noirs"
 
 msgid "Black games"
-msgstr "Parties noires"
+msgstr "Parties Noirs"
 
 msgid "Black wins"
-msgstr "Victoires noires"
+msgstr "Victoires Noirs"
 
 msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
 msgstr "Blitz"
