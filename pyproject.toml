@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "Papi-web"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.12.0"
-version = "2.4.28"
+version = "2.5.0"
 
 authors = [
   {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
