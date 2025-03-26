@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _("Offline Databases")}}
+                {{ _("Offline Player Databases")}}
             </h2>
         </div>
         <div class="modal-body">
@@ -20,10 +20,10 @@
                         {{ _("Database" )}}
                     </th>
                     <th>
-                        {{ _("Enabled" )}}
+                        {{ _("Update Frequency" )}}
                     </th>
                     <th>
-                        {{ _("Auto-update" )}}
+                        {{ _("When outdated..." )}}
                     </th>
                     <th class="text-center">
                         {{ _("Last update" )}}
@@ -31,11 +31,11 @@
                     <th></th>
                 </thead>
                 <tbody>
-                    {% with database_id="fide", name="FIDE database", enabled=True, auto_update=0, age="5 days ago" %}
+                    {% with database_id="fide", name="FIDE", enabled=True, max_age=0, when_outdated=0, age="5 days ago" %}
                     {% include 'database_row.html' %}
                     {% endwith %}
                     
-                    {% with database_id="ffe", name="FFE database", enabled=True, auto_update=1, age="2 days ago" %}
+                    {% with database_id="ffe", name="FFE", enabled=True, max_age=7, when_outdated=1, age="2 days ago" %}
                     {% include 'database_row.html' %}
                     {% endwith %}
                 </tbody>

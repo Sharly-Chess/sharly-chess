@@ -1,22 +1,23 @@
 <tr>
     <th>{{ name }}</th>
     <td>
-        <div class="form-check form-switch">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                name="{{ database_id }}-enabled"
-                {% if enabled %}checked{% endif %}
-            />
-        </div>
-    </td>
-    <td>
-        {% with data={ 'auto-update': auto_update } %}
+        {% with data={ database_id ~ '_max_age': max_age } %}
             {{ admin_macros.select_input(
-                name=database_id ~ '-auto-update',
+                name=database_id ~ '_max_age',
                 label=None,
                 help_text=None,
-                select_options={ 0: "Manual updates only", 1: "Daily", 7: "Weekly" },
+                select_options={ 0: "Disabled", 1: "Daily", 7: "Weekly" },
+                data=data, errors=errors
+            ) }}
+        {% endwith %}
+    </td>
+    <td>
+        {% with data={ database_id ~ '_when_outdated': when_outdated } %}
+            {{ admin_macros.select_input(
+                name=database_id ~ '_when_outdated',
+                label=None,
+                help_text=None,
+                select_options={ 0: "Warn", 1: "Auto-update" },
                 data=data, errors=errors
             ) }}
         {% endwith %}
@@ -25,4 +26,20 @@
     <td class="text-end">
         {% include 'database_update_button.html' %}
     </td>
+    <script>
+        function rowUpdater() {
+            var ageElement = $('#{{database_id}}-max-age');
+            function doHide() {
+                var actionElement = $('#{{database_id}}-when-outdated');
+                if ($(ageElement).val() === '0') {
+                    actionElement.addClass('invisible')
+                } else {
+                    actionElement.removeClass('invisible')
+                }
+            }
+            $(ageElement).click(doHide);
+            doHide();
+        };
+        rowUpdater();
+    </script>
 </tr>
