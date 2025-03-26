@@ -20,6 +20,7 @@ from data.util import (
     PointValueType,
 )
 from database.access.access_database import AccessDatabase
+from database.access.papi.papi_template import create_empty_papi_database
 from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
@@ -48,6 +49,10 @@ class PapiDatabase(AccessDatabase):
     def __init__(self, file: Path, write: bool = False):
         super().__init__(file, write)
         self.date_of_birth_pattern: Pattern = re.compile(r'^\d{1,2}/\d{1,2}/(\d{1,4})$')
+
+    def create_empty(self):
+        assert not self.file.exists()
+        create_empty_papi_database(self.file)
 
     def commit(self):
         self._commit()

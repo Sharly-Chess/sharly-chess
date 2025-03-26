@@ -78,24 +78,44 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                    </div>
+                    <h4>
+                        {{ _('Papi file') }}
+                    </h4>
+                    <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
                                 name='path',
-                                label=_('Directory of the Papi file:'),
+                                label=_('Directory:'),
                                 placeholder=_('E.g.: c:\\chess\\tournaments\\papi'),
-                                help_text=_('The directory of the Papi file, by default %(dir)s.', dir=admin_event.path),
+                                help_text=_('The directory of the Papi file (defaults to [%(dir)s]).', dir=admin_event.path),
                                 data=data, errors=errors
                             ) }}
                         </div>
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
                                 name='filename',
-                                label=_('Name of the Papi file (with no extension):'),
+                                label=_('File name (without extension):'),
                                 placeholder=_('E.g.: main'),
-                                help_text=_('The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament).'),
+                                help_text=_('The name of the Papi file without [.papi] extension (defaults to the unique ID).'),
                                 data=data, errors=errors
                             ) }}
+                            <div id="file-status" class="mt-2">
+                                {% include 'file_status.html' %}
+                            </div>
                         </div>
+
+                        <script>
+                            $('#uniq-id,#path,#filename').on('blur', (event) => {
+                                const copyElement = $('#'+event.target.id+'-copy')[0];
+                                if(copyElement.value !== event.target.value) {
+                                    copyElement.value = event.target.value;
+                                    if(event.target.id !== 'uniq-id' || $('#filename')[0].value === "") {
+                                        $('#file-form-submit').click();
+                                    }
+                                }
+                            });
+                        </script>
                     </div>
 
                     {% for form_fields_template in plugin_form_fields_templates %}
@@ -232,41 +252,41 @@
                             ) }}
                         </div>
                     </div>
-                    {% if action == 'update' %}
-                        <h4>
-                            {{ _('Tie-breaks') }}
-                        </h4>
-                        <div class="row">
-                            <div class="col-12 col-md-4 mb-3">
+
+                    <h4>
+                        {{ _('Tie-breaks') }}
+                    </h4>
+                    <div class="row">
+                        {% for index in [1, 2, 3] %}
+                            <div class="file-exists col-12 col-md-4 mb-3" {{ macros.tooltip_attributes('info', _('Fields relying on the Papi database can\'t be updated if the file does not exist.'), 'right') }}>
                                 {{ admin_macros.select_input(
-                                    name='tie_break_1',
-                                    label=_('Tie-break #%(index)d:', index=1),
+                                    name='tie_break_' ~ index|string,
+                                    label=_('Tie-break #%(index)d:', index=index),
                                     select_options=tie_break_options,
                                     help_text='',
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-4 mb-3">
-                                {{ admin_macros.select_input(
-                                    name='tie_break_2',
-                                    label=_('Tie-break #%(index)d:', index=2),
-                                    select_options=tie_break_options,
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-4 mb-3">
-                                {{ admin_macros.select_input(
-                                    name='tie_break_3',
-                                    label=_('Tie-break #%(index)d:', index=3),
-                                    select_options=tie_break_options,
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        </div>
-                    {% endif %}
+                        {% endfor %}
+                    </div>
                 {% endif %}
+            </form>
+            <form
+                id="file-form"
+                hx-post="{{ url_for('admin-tournament-file-status', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="#file-status"
+                hx-indicator="#please-wait"
+                preload
+            >
+                {% for field in ['uniq_id', 'path', 'filename'] %}
+                    <input
+                        id="{{ field|replace('_', '-') }}-copy"
+                        type="hidden"
+                        name="{{ field }}"
+                        value="{{ data[field] }}"
+                    />
+                {% endfor %}
+                <button id="file-form-submit" type="submit" style="display:none"></button>
             </form>
         </div>
         <div class="modal-footer">
