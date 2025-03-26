@@ -9,7 +9,7 @@ from common.i18n import _
 from data.board import Board
 from data.player import Player
 from data.tournament import Tournament
-from data.util import AbstractOptionHandler, AbstractOption, StaticUtils, PlayerCategory, OptionError
+from data.util import AbstractOptionHandler, AbstractOption, StaticUtils, PlayerCategory, OptionError, IdentifiableEntity
 from plugins.manager import plugin_manager
 
 DOCUMENT_CLASSES: list[type['AbstractPrintDocument']] = []
@@ -33,11 +33,11 @@ class PrintDocumentManager:
 
     @classmethod
     def default_documents(cls) -> list['AbstractPrintDocument']:
-        return [type_()  for type_ in cls.document_types()]
+        return [type_() for type_ in cls.document_types()]
 
     @classmethod
     def document_type_by_id(cls) -> dict[str, type['AbstractPrintDocument']]:
-        return {type_().id: type_ for type_ in cls.document_types()}
+        return {type_.identifier(): type_ for type_ in cls.document_types()}
 
     @staticmethod
     def option_types() -> list[type['AbstractOption']]:
@@ -49,7 +49,7 @@ class PrintDocumentManager:
 
     @classmethod
     def option_type_by_id(cls) -> dict[str, type['AbstractOption']]:
-        return {type_().id: type_ for type_ in cls.option_types()}
+        return {type_.identifier(): type_ for type_ in cls.option_types()}
 
     @staticmethod
     def player_splitters() -> list['AbstractPlayerSplitter']:
@@ -97,16 +97,7 @@ class AbstractPrintDocument(AbstractOptionHandler, ABC):
         pass
 
 
-class AbstractPlayerSplitter(ABC):
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
+class AbstractPlayerSplitter(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
@@ -132,8 +123,8 @@ class AbstractPlayerSplitter(ABC):
 
 @register_option
 class RoundPrintOption(AbstractOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'round'
 
     @property
@@ -157,8 +148,8 @@ class RoundPrintOption(AbstractOption):
 
 @register_option
 class PlayerPrintSplitOption(AbstractOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'player-split'
 
     @property
@@ -195,8 +186,8 @@ class PlayerPrintSplitOption(AbstractOption):
 
 @register_player_splitter
 class NoSplitPlayerSplitter(AbstractPlayerSplitter):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'no-split'
 
     @property
@@ -210,8 +201,8 @@ class NoSplitPlayerSplitter(AbstractPlayerSplitter):
 
 @register_player_splitter
 class CategoryPlayerSplitter(AbstractPlayerSplitter):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'category'
 
     @property
@@ -230,8 +221,8 @@ class CategoryPlayerSplitter(AbstractPlayerSplitter):
 
 @register_player_splitter
 class ClubPlayerSplitter(AbstractPlayerSplitter):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'club'
 
     @property
@@ -245,8 +236,8 @@ class ClubPlayerSplitter(AbstractPlayerSplitter):
 
 @register_player_splitter
 class FederationPlayerSplitter(AbstractPlayerSplitter):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'federation'
 
     @property
@@ -319,8 +310,8 @@ class PlayerListPrintDocument(AbstractPlayerPrintDocument):
     def name(self) -> str:
         return _('List of players')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'player-list'
 
     @property
@@ -384,8 +375,8 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     def name(self) -> str:
         return _('Ranking')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'ranking'
 
     @property
@@ -404,8 +395,8 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     def name(self) -> str:
         return _('Crosstable')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'crosstable'
 
     @property
@@ -485,8 +476,8 @@ class PairingPrintDocument(AbstractBoardPrintDocument):
     def name(self) -> str:
         return _('Pairings')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'pairings'
 
 
@@ -500,8 +491,8 @@ class ResultPrintDocument(AbstractBoardPrintDocument):
     def name(self) -> str:
         return _('Results')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'results'
 
     @override

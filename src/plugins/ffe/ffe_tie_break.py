@@ -163,8 +163,8 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def name(self) -> str:
         return _('Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PAPI_BUCHHOLZ'
 
     @property
@@ -195,8 +195,8 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
     def name(self) -> str:
         return _('Buchholz cut bottom')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PAPI_BUCHHOLZ_CUT_BOTTOM'
 
     @property
@@ -227,8 +227,8 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
     def name(self) -> str:
         return _('Median Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PAPI_MEDIAN_BUCHHOLZ'
 
     @property
@@ -262,8 +262,8 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
     def name(self) -> str:
         return _('Performance')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PAPI_PERFORMANCE'
 
     @property
@@ -317,8 +317,8 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
     def name(self) -> str:
         return _('Sum of Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PAPI_BUCHHOLZ_SUM'
 
     @property
@@ -359,8 +359,8 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
     def name(self) -> str:
         return _('Kashdan')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PAPI_KASHDAN'
 
     @property

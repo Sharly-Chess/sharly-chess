@@ -51,7 +51,7 @@ class TieBreakManager:
     @classmethod
     def tie_break_type_by_id(cls) -> dict[str, type['AbstractTieBreak']]:
         return {
-            tie_break_type().id: tie_break_type
+            tie_break_type.identifier(): tie_break_type
             for tie_break_type in cls.tie_break_types()
         }
 
@@ -79,7 +79,7 @@ class TieBreakManager:
     @classmethod
     def option_type_by_id(cls) -> dict[str, type['AbstractTieBreakOption']]:
         return {
-            option_type().id: option_type
+            option_type.identifier(): option_type
             for option_type in cls.option_types()
         }
 
@@ -221,29 +221,29 @@ class AbstractCutTieBreakOption(AbstractTieBreakOption, ABC):
 
 @register_option
 class CutTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'CUT'
 
 
 @register_option
 class CutTopTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'CUT_TOP'
 
 
 @register_option
 class CutBottomTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'CUT_BOTTOM'
 
 
 @register_option
 class PlayedModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PLAYED_MODIFIER'
 
     @property
@@ -257,8 +257,8 @@ class PlayedModifierTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ForeModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'FORE_MODIFIER'
 
     @property
@@ -272,8 +272,8 @@ class ForeModifierTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class LimitTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'LIMIT'
 
     @property
@@ -287,8 +287,8 @@ class LimitTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ExcludeIdsTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'EXCLUDE_IDS'
 
     @property
@@ -310,8 +310,8 @@ class WinsTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Number of wins')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'WINS'
 
     @property
@@ -353,8 +353,8 @@ class GamesWonTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Number of games won')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'GAMES_WON'
 
     @property
@@ -389,8 +389,8 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Games played with black')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'GAMES_PLAYED_WITH_BLACK'
 
     @property
@@ -425,8 +425,8 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Games won with black')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'GAMES_WON_WITH_BLACK'
 
     @property
@@ -465,8 +465,8 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Progressive scores')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PROGRESSIVE_SCORES'
 
     @property
@@ -508,8 +508,8 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Rounds one Elected to Play')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'ROUNDS_ELECTED_TO_PLAY'
 
     @property
@@ -560,8 +560,8 @@ class BuchholzTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'BUCHHOLZ'
 
     @property
@@ -670,8 +670,8 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Fore Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'FORE_BUCHHOLZ'
 
     @property
@@ -762,8 +762,8 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Sum of Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'SUM_OF_BUCHHOLZ'
 
     @property
@@ -813,8 +813,8 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Average of opponents Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'AVERAGE_OF_BUCHHOLZ'
 
     @property
@@ -869,8 +869,8 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Sonnenborn-Berger')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'SONNENBORN_BERGER'
 
     @property
@@ -997,8 +997,8 @@ class KoyaTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Koya system')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'KOYA'
 
     @property
@@ -1056,8 +1056,8 @@ class KashdanTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Kashdan')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'KASHDAN'
 
     @property
@@ -1116,8 +1116,8 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Average rating of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'AVERAGE_RATING_OPPONENTS'
 
     @property
@@ -1190,8 +1190,8 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Tournament performance rating')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'TOURNAMENT_PERFORMANCE_RATING'
 
     @property
@@ -1243,8 +1243,8 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Average performance rating of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'AVERAGE_PERFORMANCE_RATING_OPPONENTS'
 
     @property
@@ -1296,8 +1296,8 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Perfect tournament performance')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'PERFECT_TOURNAMENT_PERFORMANCE'
 
     @property
@@ -1430,8 +1430,8 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Average perfect performance of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'AVERAGE_PERFECT_PERFORMANCE'
 
     @property
@@ -1486,8 +1486,8 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     def name(self) -> str:
         return _('Direct encounter')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return 'DIRECT_ENCOUNTER'
 
     @property

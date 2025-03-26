@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple, override
 
 from packaging.version import Version
 
+from data.util import IdentifiableEntity
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredPlugin
 from database.sqlite.migration import AbstractMigrationManager, AbstractMigration
@@ -81,22 +82,9 @@ class PluginContext:
                 database.commit()
 
 
-class AbstractPlugin(ABC):
+class AbstractPlugin(IdentifiableEntity, ABC):
     def __init__(self):
         self.context: PluginContext = PluginContext(self)
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """ID of the plugin in the database and in plugin_data.
-        Should be unique amongst plugins."""
-        pass
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Translated representation of the plugin."""
-        pass
 
     @property
     @abstractmethod

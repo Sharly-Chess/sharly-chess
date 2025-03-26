@@ -47,8 +47,8 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 class FfePlugin(AbstractPlugin):
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def identifier() -> str:
         return PLUGIN_NAME
 
     @property

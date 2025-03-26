@@ -8,7 +8,7 @@ from functools import lru_cache
 from logging import Logger
 from math import floor
 from types import UnionType
-from typing import Any, Self
+from typing import Any, Self, override
 
 from common.i18n import _
 from common.logger import get_logger
@@ -98,24 +98,45 @@ class SharedUtils:
         )(num)
 
 
+class IdentifiableEntity(ABC):
+    """Abstract class representing an entity which needs to be
+    identified internally and represented in the UI"""
+
+    @staticmethod
+    @abstractmethod
+    def identifier() -> str:
+        """Represents the entity in forms, databases and query params.
+        Should be unique amongst entities from the same parent class."""
+        pass
+
+    @property
+    def id(self) -> str:
+        return self.identifier()
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Represents the entity in the UI."""
+        pass
+
+
 class OptionError(ValueError):
     def __init__(self, message: str, option: 'AbstractOption'):
         super().__init__(message)
         self.option = option
 
 
-class AbstractOption(ABC):
+class AbstractOption(IdentifiableEntity, ABC):
     """Abstract class representing an option.
     Options can either be represented in the DB or in a form."""
     def __init__(self, value: Any | None = None):
         self.value = value if value is not None else self.default_value
 
+    @override
     @property
-    @abstractmethod
-    def id(self) -> str:
-        """Represents the option class in forms and databases.
-        Has to be unique."""
-        pass
+    def name(self) -> str:
+        """UI representation is handled by the template."""
+        return ''
 
     @property
     @abstractmethod
@@ -151,22 +172,10 @@ class AbstractOption(ABC):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
 
-class AbstractOptionHandler(ABC):
+class AbstractOptionHandler(IdentifiableEntity, ABC):
     """Abstract class handling options."""
     def __init__(self, options: list[AbstractOption] | None = None):
         self.options: list[AbstractOption] = options or self.default_options()
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Represents the handler in the UI."""
-        pass
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """Represents the handler in a DB or a form."""
-        pass
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:
