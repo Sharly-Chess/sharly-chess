@@ -2587,8 +2587,8 @@ msgstr "Veuillez entrer le nom de famille."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
-msgid "Please enter the number of the version to recover [{default}]: "
-msgstr "Veuillez entrer le numéro de la version à récupérer [{default}] : "
+msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
+msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}]: "
 
 msgid "Please enter the password to enter results:"
 msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
@@ -4212,16 +4212,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Storing data..."
-#~ msgstr "Enregistrement des données..."
-
-#~ msgid "{number} players written."
-#~ msgstr "{number} joueur·euses enregistré·es."
-
-#~ msgid "Error while updating the FFE database."
-#~ msgstr "Erreur pendant la mise à jour de la base de données FFE."
-
-#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-#~ msgstr "Ce programme ne devrait pas être lancé directement, utiliser les scripts server.bat, ffe.bat et chessevent.bat."
 

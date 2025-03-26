@@ -2587,7 +2587,7 @@ msgstr ""
 msgid "Please enter the name of the event."
 msgstr ""
 
-msgid "Please enter the number of the version to recover [{default}]: "
+msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
 msgstr ""
 
 msgid "Please enter the password to enter results:"
@@ -4223,5 +4223,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+#~ msgstr ""
+
+#~ msgid "Please enter the number of the version to recover [{default}]: "
 #~ msgstr ""
 
