@@ -1,0 +1,31 @@
+{% if file_exists %}
+    <div class="mt-2 pt-1">
+        <i class="text-success bi-check-circle-fill me-1"></i>
+        {{ _('File found') }}
+    </div>
+    <script>$('.file-exists').show();</script>
+{% else %}
+    <div>
+        <div class="mb-1">
+            <i class="text-danger bi-x-circle-fill me-1"></i>
+            {{ _('File not found') }}
+        </div>
+        <div class="ms-1">
+            <input id="create-file" type="checkbox" name="create_file">
+            <label for="create-file" class="form-check-label ms-1">
+                {{ _('Create file') }}
+            </label>
+        </div>
+    </div>
+    <script>
+        $('.file-exists').hide();
+        $('#create-file').on('change', (event) => {
+            if (event.target.checked) {
+                $('.file-exists').show();
+            } else {
+                $('.file-exists').hide();
+            }
+        });
+    </script>
+{% endif %}
+
