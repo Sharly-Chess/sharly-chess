@@ -578,4 +578,3 @@ class IndexAdminController(BaseAdminController):
             trigger_event="close_modal",
             after="receive",
         )
-    
