@@ -129,7 +129,7 @@ class FfePlugin(AbstractPlugin):
         return {
             'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES
-}
+        }
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
@@ -478,7 +478,7 @@ class FfePlugin(AbstractPlugin):
         )
 
     @hookimpl
-    def clear_player_filters(self,request: HTMXRequest):
+    def clear_player_filters(self, request: HTMXRequest):
         FFESessionHandler.set_session_admin_players_filter_leagues(request, [])
         FFESessionHandler.set_session_admin_players_filter_licences(request, [])
 
@@ -566,14 +566,12 @@ class FfePlugin(AbstractPlugin):
                     self.player.plugin_data[PLUGIN_NAME][field_id] = match
 
     class FfePlayerUpdater(AbstractPlayerUpdater):
-        @override
         @property
         def name(self) -> str:
             return _('FFE database')
 
-        @override
-        @property
-        def id(self) -> str:
+        @staticmethod
+        def identifier() -> str:
             return 'ffe'
 
         @override
@@ -754,8 +752,8 @@ class FfePlugin(AbstractPlugin):
     # ---------------------------------------------------------------------------------
 
     class LeaguePlayerSplitter(AbstractPlayerSplitter):
-        @property
-        def id(self) -> str:
+        @staticmethod
+        def identifier() -> str:
             return 'ffe_league'
 
         @property
@@ -832,15 +830,14 @@ class FfePlugin(AbstractPlugin):
             ffe_tie_break.PapiKashdanTieBreak,
         ]
 
-# ---------------------------------------------------------------------------------
-# Shared utils
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------
+    # Shared utils
+    # ---------------------------------------------------------------------------------
 
-@hookimpl
-def get_performance_bonus_function() -> Callable[[float], int | float]:
-    return papi_performance_bonus
+    @hookimpl
+    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
+        return papi_performance_bonus
 
-
-@hookimpl
-def get_round_ranking_function() -> Callable[[float | Decimal], int]:
-    return round
+    @hookimpl
+    def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
+        return round
