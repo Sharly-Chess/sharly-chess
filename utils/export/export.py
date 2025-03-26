@@ -176,7 +176,7 @@ def create_project():
     bin_dir: Path = PROJECT_DIR / 'bin'
     bin_dir.mkdir(parents=True, exist_ok=True)
     print_interactive_info(f'Moving {dist_exe_file} to {bin_dir}...')
-    shutil.move(dist_exe_file, bin_dir)
+    shutil.move(dist_exe_file, PROJECT_DIR)
     bbp_pairings: BbpPairings = BbpPairings()
     bbp_pairings_dir: Path = bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
     bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
@@ -188,34 +188,26 @@ def create_project():
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
-    target_file: Path = PROJECT_DIR / 'server.bat'
-    print_interactive_info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt', encoding='utf-8') as f:
-        f.write(
-            f'@echo off\n'
-            f'echo Starting Papi-web, please wait...\n'
-            f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
-            f'bin\\{EXE_FILENAME} --server\n'
-            f'pause\n'
-        )
-    target_file = PROJECT_DIR / 'ffe.bat'
+    target_file = bin_dir / 'ffe.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Papi-web FFE client, please wait...\n'
             f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
-            f'bin\\{EXE_FILENAME} --ffe\n'
+            f'cd ..\n'
+            f'{EXE_FILENAME} --chessevent\n'
             f'pause\n'
         )
-    target_file = PROJECT_DIR / 'chessevent.bat'
+    target_file = bin_dir / 'chessevent.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Papi-web ChessEvent client, please wait...\n'
             f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
-            f'bin\\{EXE_FILENAME} --chessevent\n'
+            f'cd ..\n'
+            f'{EXE_FILENAME} --chessevent\n'
             f'pause\n'
         )
 
