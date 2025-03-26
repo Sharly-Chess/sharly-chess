@@ -93,7 +93,11 @@ def build_exe():
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
     files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
+    for templates_path in plugin_manager.templates_paths:
+        files += [file for file in templates_path.glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
+    for static_path in plugin_manager.static_paths:
+        files += [file for file in static_path.glob('**/*') if file.is_file()]
     files += [
         file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
     ]
