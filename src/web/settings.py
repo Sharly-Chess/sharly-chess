@@ -161,7 +161,7 @@ class PapiWebEnvironment(Environment):
 
 template_dirs: list[Path] = [
     BASE_DIR / 'src/web/templates',
-    *[path for path in plugin_manager.templates_paths if path],
+    *[path for path in plugin_manager.templates_paths],
 ]
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(
