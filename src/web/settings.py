@@ -44,7 +44,7 @@ static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
     static_files_base_dir,
-    *[path for path in plugin_manager.static_paths if path],
+    *[path for path in plugin_manager.static_paths],
 ]
 
 static_files_router: Router = create_static_files_router(
