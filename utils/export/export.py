@@ -86,6 +86,9 @@ def build_exe():
         pyinstaller_params.append(f'--hiddenimport={module}')
     for module in ConfigMigrationManager().migration_modules:
         pyinstaller_params.append(f'--hiddenimport={module}')
+    for plugin in plugin_manager.all_plugins:
+        for module in plugin.migration_manager.migration_modules:
+            pyinstaller_params.append(f'--hiddenimport={module}')
 
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
