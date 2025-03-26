@@ -37,9 +37,6 @@ class PapiWebConfig(metaclass=Singleton):
         4. Whether a browser window opens
         5. The delay between FFE uploads."""
 
-    # The configuration file (SQLite database).
-    config_file: Path = Path('.scc')
-
     # The default log level, used by default.
     default_log_level: int = logging.INFO
 
