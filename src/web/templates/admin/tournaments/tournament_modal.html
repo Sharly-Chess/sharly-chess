@@ -252,39 +252,22 @@
                             ) }}
                         </div>
                     </div>
-                    <div class="file-exists">
-                        <h4>
-                            {{ _('Tie-breaks') }}
-                        </h4>
-                        <div class="row">
-                            <div class="col-12 col-md-4 mb-3">
+
+                    <h4>
+                        {{ _('Tie-breaks') }}
+                    </h4>
+                    <div class="row">
+                        {% for index in [1, 2, 3] %}
+                            <div class="file-exists col-12 col-md-4 mb-3" {{ macros.tooltip_attributes('info', _('Fields relying on the Papi database can\'t be updated if the file does not exist.'), 'right') }}>
                                 {{ admin_macros.select_input(
-                                    name='tie_break_1',
-                                    label=_('Tie-break #%(index)d:', index=1),
+                                    name='tie_break_' ~ index|string,
+                                    label=_('Tie-break #%(index)d:', index=index),
                                     select_options=tie_break_options,
                                     help_text='',
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-4 mb-3">
-                                {{ admin_macros.select_input(
-                                    name='tie_break_2',
-                                    label=_('Tie-break #%(index)d:', index=2),
-                                    select_options=tie_break_options,
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-4 mb-3">
-                                {{ admin_macros.select_input(
-                                    name='tie_break_3',
-                                    label=_('Tie-break #%(index)d:', index=3),
-                                    select_options=tie_break_options,
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 {% endif %}
             </form>

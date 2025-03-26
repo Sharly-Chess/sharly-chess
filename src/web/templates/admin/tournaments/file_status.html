@@ -3,7 +3,6 @@
         <i class="text-success bi-check-circle-fill me-1"></i>
         {{ _('File found') }}
     </div>
-    <script>$('.file-exists').show();</script>
 {% else %}
     <div>
         <div class="mb-1">
@@ -18,14 +17,25 @@
         </div>
     </div>
     <script>
-        $('.file-exists').hide();
         $('#create-file').on('change', (event) => {
-            if (event.target.checked) {
-                $('.file-exists').show();
-            } else {
-                $('.file-exists').hide();
-            }
+            $('.file-exists').each((_, element) => {
+                const tooltip = new bootstrap.Tooltip(element);
+                const inputElement = $(element).find('select, input')[0];
+                if (event.target.checked) {
+                    inputElement.disabled = false;
+                    tooltip.disable();
+                } else {
+                    inputElement.disabled = true;
+                    tooltip.enable();
+                }
+            });
         });
     </script>
 {% endif %}
-
+<script>
+    $('.file-exists').each((_, element) => {
+        $(element).find('select, input')[0].disabled = {% if file_exists %}false{% else %}true{% endif %};
+        const tooltip = new bootstrap.Tooltip(element);
+        tooltip.{% if file_exists %}disable(){% else %}enable(){% endif %};
+    });
+</script>
