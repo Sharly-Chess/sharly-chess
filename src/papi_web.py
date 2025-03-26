@@ -17,11 +17,8 @@ from common.logger import get_logger, print_interactive_warning
 # Has to be executed before plugin_manager to avoid initializing from the wrong path
 path_parser = argparse.ArgumentParser(add_help=False)
 path_parser.add_argument('--path', default='.')
-path_parser.add_argument('--server', action='store_true')
 args, remaining_args = path_parser.parse_known_args()
 os.chdir(args.path)
-if args.server:
-    print_interactive_warning(_('Argument --server is deprecated, ignored.'))
 
 from plugins.manager import plugin_manager  # Noqa: E402
 from web.server_engine import ServerEngine  # Noqa: E402
@@ -29,6 +26,7 @@ from web.server_engine import ServerEngine  # Noqa: E402
 logger: Logger = get_logger()
 
 parser = argparse.ArgumentParser(parents=[path_parser])
+path_parser.add_argument('--server', action='store_true')
 engine_argument_names: list[str] = []
 plugin_engine_arguments: list['PluginEngineArgument'] = (
     plugin_manager.hook.get_engine_argument()
@@ -50,6 +48,8 @@ if DEVEL_ENV:
     )
 args = parser.parse_args(remaining_args)
 
+if args.server:
+    print_interactive_warning(_('Argument --server is deprecated, ignored.'))
 try:
     plugin_engine_argument: 'PluginEngineArgument | None' = None
     for engine_argument in plugin_engine_arguments:
