@@ -1432,7 +1432,7 @@ msgid "Fide Master"
 msgstr "Maître Fide"
 
 msgid "Fields relying on the Papi database can't be updated if the file does not exist."
-msgstr "Les champs dépendant de la base de données Papi ne peuvent pas être mis à jour si le fichier n'existe pas."
+msgstr "Les champs qui dépendent de la base de données Papi ne peuvent pas être mis à jour si le fichier n'existe pas."
 
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
