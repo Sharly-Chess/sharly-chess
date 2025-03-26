@@ -2,38 +2,54 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                Test
+                {{ _("Offline Databases")}}
             </h2>
         </div>
         <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-target="body"
-                hx-indicator="#please-wait"
+            <table
+                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >
-                <h4>
-                    Bmah
-                </h4>
-                <div class="row">
+                <thead>
+                    <th>
+                        {{ _("Database" )}}
+                    </th>
+                    <th>
+                        {{ _("Enabled" )}}
+                    </th>
+                    <th>
+                        {{ _("Auto-update" )}}
+                    </th>
+                    <th class="text-center">
+                        {{ _("Last update" )}}
+                    </th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% with name="FIDE database", enabled=True, auto_update=0, age="5 days ago" %}
+                    {% include 'database_row.html' %}
+                    {% endwith %}
                     
-                </div>
-            </form>
+                    {% with name="FFE database", enabled=True, auto_update=1, age="2 days ago" %}
+                    {% include 'database_row.html' %}
+                    {% endwith %}
+                </tbody>
+            </table>
         </div>
         <div class="modal-footer">
             <button
                 type="button"
-                class="btn btn-secondary text-nowrap"
+                class="btn btn-secondary text-nowrap d-inline-flex gap-2 align-items-center"
                 data-bs-dismiss="modal"
             >
-                <i class="bi-x-circle-fill pe-1"></i>
+                <i class="bi-x-circle-fill lh-1"></i>
                 {{ _('Cancel') }}
             </button>
             <button
                 type="submit"
                 form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                class="text-nowrap white d-inline-flex gap-2 align-items-center btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
             >
-                <i class="bi-floppy-fill pe-1"></i>
+                <i class="bi-floppy-fill lh-1"></i>
                 {{ _('Update') }}
             </button>
         </div>

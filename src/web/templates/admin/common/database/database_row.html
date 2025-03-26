@@ -1,0 +1,35 @@
+<tr>
+    <th>{{ name }}</th>
+    <td>
+        <div class="form-check form-switch">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="{{ id }}"
+                {% if enabled %}checked{% endif %}
+            />
+        </div>
+    </td>
+    <td>
+        {% with data={ 'auto-update': auto_update } %}
+            {{ admin_macros.select_input(
+                name='auto-update',
+                label=None,
+                help_text=None,
+                select_options={ 0: "Manual updates only", 1: "Daily", 7: "Weekly" },
+                data=data, errors=errors
+            ) }}
+        {% endwith %}
+    </td>
+    <td class="text-center">{{ age }}</td>
+    <td class="text-end">
+        <button
+            type="button"
+            class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
+            data-bs-dismiss="modal"
+        >
+            <i class="bi bi-arrow-clockwise lh-1"></i>
+            {{ _('Update now') }}
+        </button>
+    </td>
+</tr>
