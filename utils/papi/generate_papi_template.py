@@ -1,12 +1,12 @@
 """This module is a utility script to create the papi template.
-This script re-creates the papi_template.bin file from the template.papi file.
+This script re-creates the papi_template.py file from the template.papi file.
 """
 
 import bz2
 import base64
 from pathlib import Path
 
-template_path: Path = Path() / 'utils' / 'papi' / 'template.papi'
+template_path: Path = Path() / 'utils' / 'papi' / 'template-3.3.8.papi'
 output_path = Path() / 'src' / 'database' / 'access' / 'papi' / 'papi_template.py'
 
 if not template_path.exists():

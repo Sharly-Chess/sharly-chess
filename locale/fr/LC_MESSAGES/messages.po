@@ -1431,6 +1431,9 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 msgid "Fide Master"
 msgstr "Maître Fide"
 
+msgid "Fields relying on the Papi database can't be updated if the file does not exist."
+msgstr "Les champs dépendant de la base de données Papi ne peuvent pas être mis à jour si le fichier n'existe pas."
+
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
@@ -1444,7 +1447,7 @@ msgid "File found"
 msgstr "Fichier trouvé"
 
 msgid "File name (without extension):"
-msgstr "Nom du fichier (sans extension)"
+msgstr "Nom du fichier (sans extension) :"
 
 msgid "File not found"
 msgstr "Fichier introuvable"

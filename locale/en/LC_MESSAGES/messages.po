@@ -1431,6 +1431,9 @@ msgstr ""
 msgid "Fide Master"
 msgstr ""
 
+msgid "Fields relying on the Papi database can't be updated if the file does not exist."
+msgstr ""
+
 msgid "File [{file}] not found."
 msgstr ""
 
