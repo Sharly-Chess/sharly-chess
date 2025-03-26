@@ -369,3 +369,9 @@ button.collapse-button .bi-chevron-down {
 button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     transform: rotate(-90deg);
 }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

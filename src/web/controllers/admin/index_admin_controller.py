@@ -161,7 +161,7 @@ class IndexAdminController(BaseAdminController):
         }
         if papi_web_config.force_edit:
             web_context.admin_tab = 'config'
-        if not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']:
+        if not modal and (not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']):
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
@@ -189,7 +189,7 @@ class IndexAdminController(BaseAdminController):
             'row_cycler': cls.get_cycler(['odd', 'even'])
         }
 
-        match modal: 
+        match modal:
             case None:
                 pass
             case 'config':
@@ -291,6 +291,10 @@ class IndexAdminController(BaseAdminController):
                     'action': action,
                     'data': data,
                     'errors': errors,
+                }
+            case 'database':
+                context |= {
+                    'modal': modal,
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
@@ -462,4 +466,18 @@ class IndexAdminController(BaseAdminController):
             request,
             admin_tab='config',
             modal='config',
+        )
+        
+    @get(
+        path='/admin/database-modal',
+        name='admin-database-modal',
+    )
+    async def htmx_admin_database_modal(
+        self,
+        request: HTMXRequest,
+    ) -> Template | ClientRedirect:
+        return self._admin_render(
+            request,
+            admin_tab=None,
+            modal='database',
         )

@@ -1,0 +1,41 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                Test
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <h4>
+                    Bmah
+                </h4>
+                <div class="row">
+                    
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Update') }}
+            </button>
+        </div>
+    </div>
+</div>

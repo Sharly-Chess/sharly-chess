@@ -1,0 +1,12 @@
+<button
+    class="btn btn-link fw-bold fe-3 px-0 py-0 position-relative fs-5"
+    hx-get="{{ url_for('admin-database-modal') }}"
+    hx-target="#modal-wrapper"
+    hx-indicator="#please-wait"
+    preload
+    data-bs-toggle="modal"
+    data-bs-target="#modal-wrapper"
+>
+    <i class="bi bi-database"></i>
+    {% include 'settings_badge.html' %}
+</button>
