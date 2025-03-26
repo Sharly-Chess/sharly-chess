@@ -255,13 +255,13 @@ msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
 msgid "Argument --server is deprecated, ignored."
-msgstr "L'option --server est obsolete, ignorée."
+msgstr "L'option --server est obsolète, ignorée."
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
-msgstr[1] "Au plus %(num)d coups illegaux sont enregistrés."
+msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
 msgid "Authenticating..."
 msgstr "Authentification..."
