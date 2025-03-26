@@ -254,6 +254,9 @@ msgstr ""
 msgid "Archived events ({num})"
 msgstr ""
 
+msgid "Argument --server is deprecated, ignored."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -1178,9 +1181,6 @@ msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
 msgid "Error while creating the database: {ex}."
-msgstr ""
-
-msgid "Error while updating the FFE database."
 msgstr ""
 
 msgid "Error while updating the FIDE database."
@@ -3549,9 +3549,6 @@ msgstr ""
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr ""
 
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-msgstr ""
-
 msgid "This rotator is private (not visible by the users)."
 msgstr ""
 
@@ -4220,5 +4217,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "{number} players written."
+#~ msgstr ""
+
+#~ msgid "Error while updating the FFE database."
+#~ msgstr ""
+
+#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 #~ msgstr ""
 

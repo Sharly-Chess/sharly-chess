@@ -254,6 +254,9 @@ msgstr "Évènement archivé"
 msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
+msgid "Argument --server is deprecated, ignored."
+msgstr "L'option --server est obsolete, ignorée."
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -1179,9 +1182,6 @@ msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{r
 
 msgid "Error while creating the database: {ex}."
 msgstr "Erreur à la création de la base de données : {ex}."
-
-msgid "Error while updating the FFE database."
-msgstr "Erreur pendant la mise à jour de la base de données FFE."
 
 msgid "Error while updating the FIDE database."
 msgstr "Erreur pendant la mise à jour de la base de données FIDE."
@@ -3549,9 +3549,6 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-msgstr "Ce programme ne devrait pas être lancé directement, utiliser les scripts server.bat, ffe.bat et chessevent.bat."
-
 msgid "This rotator is private (not visible by the users)."
 msgstr "Cet écran rotatif est privé (non visible des utilisateur·ices)."
 
@@ -4221,4 +4218,10 @@ msgstr "ecran-{screen_type}"
 
 #~ msgid "{number} players written."
 #~ msgstr "{number} joueur·euses enregistré·es."
+
+#~ msgid "Error while updating the FFE database."
+#~ msgstr "Erreur pendant la mise à jour de la base de données FFE."
+
+#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+#~ msgstr "Ce programme ne devrait pas être lancé directement, utiliser les scripts server.bat, ffe.bat et chessevent.bat."
 
