@@ -6,6 +6,12 @@
             </h2>
         </div>
         <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-database-options-update') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >
@@ -25,11 +31,11 @@
                     <th></th>
                 </thead>
                 <tbody>
-                    {% with name="FIDE database", enabled=True, auto_update=0, age="5 days ago" %}
+                    {% with database_id="fide", name="FIDE database", enabled=True, auto_update=0, age="5 days ago" %}
                     {% include 'database_row.html' %}
                     {% endwith %}
                     
-                    {% with name="FFE database", enabled=True, auto_update=1, age="2 days ago" %}
+                    {% with database_id="ffe", name="FFE database", enabled=True, auto_update=1, age="2 days ago" %}
                     {% include 'database_row.html' %}
                     {% endwith %}
                 </tbody>

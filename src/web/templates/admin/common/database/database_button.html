@@ -8,5 +8,10 @@
     data-bs-target="#modal-wrapper"
 >
     <i class="bi bi-database"></i>
-    {% include 'settings_badge.html' %}
+    <span
+        hx-get="{{ url_for('admin-database-status-badge') }}"
+        hx-trigger="load"
+        hx-target="this"
+        hx-swap="outerHTML"
+    ></span>
 </button>

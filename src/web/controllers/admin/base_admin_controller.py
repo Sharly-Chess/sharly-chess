@@ -657,3 +657,4 @@ class BaseAdminController(BaseController):
                 ),
             } | plugin_form_data
         )
+    

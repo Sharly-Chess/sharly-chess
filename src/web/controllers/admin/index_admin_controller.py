@@ -1,4 +1,5 @@
 from logging import Logger
+import random
 from typing import Annotated, Any
 
 from data.loader import ArchiveLoader, EventLoader
@@ -467,6 +468,25 @@ class IndexAdminController(BaseAdminController):
             admin_tab='config',
             modal='config',
         )
+
+    @get(
+        path='/admin/database-status-badge',
+        name='admin-database-status-badge',
+    )
+    async def htmx_admin_status(
+        self,
+        request: HTMXRequest,
+    ) -> Template | ClientRedirect:
+        status_templates = {
+           'ok': '/admin/common/database/settings_badge.html',
+           'old': '/admin/common/database/out_of_date_badge.html',
+           'updating': '/admin/common/database/updating_badge.html',
+        }
+        template = random.choice(list(status_templates.values()))
+        print(template)
+        return HTMXTemplate(
+            template_name=template
+        )
         
     @get(
         path='/admin/database-modal',
@@ -480,4 +500,62 @@ class IndexAdminController(BaseAdminController):
             request,
             admin_tab=None,
             modal='database',
+        )
+
+    @patch(
+        path='/admin/admin-database-options-update',
+        name='admin-database-options-update',
+    )
+    async def _database_options_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        print(data)
+
+        # Clear the modal contents, and send an event
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event="close_modal",
+            after="receive",
+        )
+
+    @get(
+        path='/admin/admin-database-update/{database_id:str}',
+        name='admin-database-status',
+    )
+    async def _database_update_status(
+        self,
+        request: HTMXRequest,
+        database_id: str,
+    ) -> Template | ClientRedirect:
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_update_button.html',
+            context={
+                "database_id": database_id,
+                "updating": False
+            }
+        )
+
+    @post(
+        path='/admin/admin-database-update/{database_id:str}',
+        name='admin-database-update',
+    )
+    async def _database_update(
+        self,
+        request: HTMXRequest,
+        database_id: str,
+    ) -> Template | ClientRedirect:
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_update_button.html',
+            trigger_event="database-update-launched",
+            after="receive",
+            context={
+                "database_id": database_id,
+                "updating": True
+            }
         )
