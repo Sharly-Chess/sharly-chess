@@ -2,6 +2,19 @@ import os
 import re
 import shutil
 from pathlib import Path
+import sys
+
+sys.path.extend(
+    map(
+        str,
+        [
+            Path(__file__).parents[2],  # The root path
+            Path(__file__).parents[2]
+            / 'src',  # The path to the sources of the application
+        ],
+    )
+)
+
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
@@ -43,7 +56,6 @@ TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
-
 
 def clean(clean_zip: bool):
     for d in [
