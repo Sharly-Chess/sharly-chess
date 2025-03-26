@@ -14,7 +14,6 @@ from packaging.version import Version
 
 from common.exception import PapiWebException
 from common.i18n import _
-from common.logger import print_interactive_error
 from common.network import NetworkMonitor
 from data.event import Event
 from data.input_output import AbstractPlayerUpdater, PlayerMatch, PlayerUpdaterField
