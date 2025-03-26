@@ -83,7 +83,7 @@
                         {{ _('Papi file') }}
                     </h4>
                     <div class="row">
-                        <div class="col-12 col-md-4 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
                                 name='path',
                                 label=_('Directory:'),
@@ -92,7 +92,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-4 mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
                                 name='filename',
                                 label=_('File name (without extension):'),
@@ -100,9 +100,9 @@
                                 help_text=_('The name of the Papi file without [.papi] extension (defaults to the unique ID).'),
                                 data=data, errors=errors
                             ) }}
-                        </div>
-                        <div id="file-status" class="col-12 col-md-4 mt-4">
-                            {% include 'file_status.html' %}
+                            <div id="file-status" class="mt-2">
+                                {% include 'file_status.html' %}
+                            </div>
                         </div>
 
                         <script>
