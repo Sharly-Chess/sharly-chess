@@ -6,13 +6,14 @@ from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
 
-from litestar import get, post, patch
+from litestar import get, post, patch, delete
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
+from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _, EXPERIMENTAL_FEATURES, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
 from common.logger import get_logger
@@ -534,7 +535,7 @@ class IndexAdminController(BaseAdminController):
         database_id: str,
     ) -> Template | ClientRedirect:
         return HTMXTemplate(
-            template_name='/admin/common/database/database_update_button.html',
+            template_name='/admin/common/database/database_update_buttons.html',
             context={
                 "database_id": database_id,
                 "updating": False
@@ -551,7 +552,7 @@ class IndexAdminController(BaseAdminController):
         database_id: str,
     ) -> Template | ClientRedirect:
         return HTMXTemplate(
-            template_name='/admin/common/database/database_update_button.html',
+            template_name='/admin/common/database/database_update_buttons.html',
             trigger_event="database-update-launched",
             after="receive",
             context={
@@ -559,3 +560,22 @@ class IndexAdminController(BaseAdminController):
                 "updating": True
             }
         )
+
+    @delete(
+        path='/admin/admin-database-update/{database_id:str}',
+        name='admin-database-delete',
+        status_code=HTTP_200_OK,
+    )
+    async def _database_delete(
+        self,
+        request: HTMXRequest,
+        database_id: str,
+    ) -> Template | ClientRedirect:
+        # Clear the modal contents, and send an event
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event="close_modal",
+            after="receive",
+        )
+    
