@@ -7,27 +7,20 @@ from typing import Annotated, Any
 import requests
 import validators
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template
 
-from common import format_timestamp_date, EXPERIMENTAL_FEATURES, REQUEST_TIMEOUT
-from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
+from common import REQUEST_TIMEOUT, format_timestamp_date
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
-from data.loader import EventLoader, ArchiveLoader
-from data.player import Federation
+from data.loader import EventLoader
 from data.tie_break import TieBreakManager
 from data.util import Result
-from database.access.access_database import access_driver, odbc_drivers
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
-from web.messages import Message
-from web.session import SessionHandler
 
 logger: Logger = get_logger()
 
@@ -541,7 +534,7 @@ class BaseAdminController(BaseController):
             for f in files
         ]
         return file_nodes + dir_nodes
-
+    
     @classmethod
     def _prepare_event_modal_data(
         cls,
@@ -664,264 +657,3 @@ class BaseAdminController(BaseController):
                 ),
             } | plugin_form_data
         )
-
-    @classmethod
-    def _admin_validate_config_update_data(
-            cls,
-            data: dict[str, str] | None = None,
-    ) -> StoredConfig:
-        papi_web_config: PapiWebConfig = PapiWebConfig()
-        if data is None:
-            data = {}
-        errors: dict[str, str] = {}
-        log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
-        if log_level and log_level not in papi_web_config.log_levels:
-            errors[field] = _('Invalid log level [{log_level}].').format(log_level=log_level)
-            data[field] = ''
-        launch_browser: bool | None = WebContext.form_data_to_bool(data, 'launch_browser')
-        federation_name: str | None = WebContext.form_data_to_str(data, field := 'federation')
-        federation: Federation | None = None
-        if federation_name:
-            if federation_name not in papi_web_config.federations:
-                errors[field] = _('Invalid federation [{federation}].').format(federation=federation_name)
-                data[field] = ''
-            else:
-                federation = Federation(federation_name)
-        locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
-        if locale and locale not in papi_web_config.locales:
-            errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
-            data[field] = ''
-        return StoredConfig(
-            version=str(papi_web_config.version),
-            log_level=log_level,
-            launch_browser=launch_browser,
-            federation=federation.name if federation else None,
-            locale=locale,
-            errors=errors,
-        )
-
-    @classmethod
-    def _admin_validate_plugins_update_data(
-        cls, data: dict[str, str] | None = None
-    ) -> list[StoredPlugin]:
-        if data is None:
-            data = {}
-        stored_plugins: list[StoredPlugin] = []
-        for plugin in plugin_manager.all_plugins:
-            if not plugin.is_state_editable:
-                continue
-            errors: dict[str, str] = {}
-            stored_plugins.append(
-                StoredPlugin(
-                    name=plugin.id,
-                    is_enabled=WebContext.form_data_to_bool(
-                        data, plugin.form_key, False
-                    ),
-                    errors=errors,
-                )
-            )
-        return stored_plugins
-
-    @classmethod
-    def _admin_render(
-        cls,
-        web_context: AdminWebContext,
-        modal: str | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
-        papi_web_config: PapiWebConfig = PapiWebConfig()
-        event_loader: EventLoader = EventLoader.get(request=web_context.request)
-        archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
-        nav_tabs: dict[str, dict[str, Any]] = {
-            'current_events': {
-                'title': _('Current events ({num})').format(
-                    num=len(event_loader.current_events) or '-'
-                ),
-                'template': 'index/events_tab.html',
-                'events': event_loader.current_events,
-                'disabled': not event_loader.current_events,
-                'empty_str': _('No current events.'),
-                'icon_class': 'bi-calendar',
-            },
-            'coming_events': {
-                'title': _('Upcoming events ({num})').format(
-                    num=len(event_loader.coming_events) or '-'
-                ),
-                'template': 'index/events_tab.html',
-                'events': event_loader.coming_events,
-                'disabled': not event_loader.coming_events,
-                'empty_str': _('No upcoming events.'),
-                'icon_class': 'bi-calendar-check',
-            },
-            'passed_events': {
-                'title': _('Passed events ({num})').format(
-                    num=len(event_loader.passed_events) or '-'
-                ),
-                'template': 'index/events_tab.html',
-                'events': event_loader.passed_events,
-                'disabled': not event_loader.passed_events,
-                'empty_str': _('No passed events.'),
-                'icon_class': 'bi-calendar-minus',
-            },
-            'archives': {
-                'title': _('Archived events ({num})').format(
-                    num=len(archive_loader.archives_sorted_by_date) or '-'
-                ),
-                'template': 'index/archives_tab.html',
-                'archives': archive_loader.archives_sorted_by_date,
-                'disabled': not archive_loader.archives_sorted_by_date,
-                'empty_str': _('No archived events.'),
-                'icon_class': 'bi-archive',
-            },
-            'config': {
-                'title': _('Papi-web settings'),
-                'template': 'index/config_tab.html',
-                'icon_class': 'bi-gear',
-                'disabled': False,
-            },
-        }
-        if papi_web_config.force_edit:
-            web_context.admin_tab = 'config'
-        if not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']:
-            web_context.admin_tab = list(nav_tabs.keys())[0]
-        for nav_index in range(len(nav_tabs)):
-            if (
-                web_context.admin_tab == list(nav_tabs.keys())[nav_index]
-                and nav_tabs[web_context.admin_tab]['disabled']
-            ):
-                web_context.admin_tab = list(nav_tabs.keys())[
-                    (nav_index + 1) % len(nav_tabs)
-                ]
-
-        event_card_blocks = plugin_manager.hook.get_event_card_block_template()
-
-        context = web_context.template_context | {
-            'odbc_drivers': odbc_drivers(),
-            'access_driver': access_driver(),
-            'plugins': plugin_manager.all_plugins,
-            'messages': Message.messages(web_context.request),
-            'nav_tabs': nav_tabs,
-            'admin_events_show_details': (
-                SessionHandler.get_session_admin_events_show_details(
-                    web_context.request
-                )
-            ),
-            'event_card_blocks': event_card_blocks,
-            'row_cycler': cls.get_cycler(['odd', 'even'])
-        }
-
-        match modal:
-            case None:
-                pass
-            case 'config':
-                if data is None:
-                    papi_web_config: PapiWebConfig = PapiWebConfig()
-                    data = {
-                        'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
-                        'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
-                        'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
-                        'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
-                    }
-                    for plugin in plugin_manager.all_plugins:
-                        data[plugin.form_key] = (
-                            WebContext.value_to_form_data(plugin.is_enabled)
-                        )
-                    stored_config: StoredConfig = (
-                        cls._admin_validate_config_update_data(data)
-                    )
-                    stored_plugins: list[StoredPlugin] = (
-                        cls._admin_validate_plugins_update_data(data)
-                    )
-                    errors = stored_config.errors
-                    for stored_plugin in stored_plugins:
-                        errors |= stored_plugin.errors
-                if errors is None:
-                    errors = {}
-                log_level_options: dict[str, str] = {
-                    '': '-',
-                } | {
-                    str(log_level): log_level_str
-                    for log_level, log_level_str in papi_web_config.log_levels.items()
-                }
-                log_level_options[''] = _('By default - {option}').format(
-                    option=log_level_options[str(PapiWebConfig.default_log_level)]
-                )
-                launch_browser_options: dict[str, str] = {
-                    '': '-',
-                    'on': _('Automatically launch a browser when starting the server'),
-                    'off': _('Do nothing'),
-                }
-                launch_browser_options[''] = _('By default - {option}').format(
-                    option=launch_browser_options['on' if PapiWebConfig.default_launch_browser else 'off']
-                )
-                locale_options: dict[str, str] = {
-                    '': '-',
-                } | {
-                    locale: locale_localized_name(locale)
-                    for locale in trusted_locales
-                }
-                if EXPERIMENTAL_FEATURES:
-                    locale_options |= {
-                        locale: locale_localized_name(locale)
-                        for locale in untrusted_locales
-                    }
-                locale_options[''] = _('By default - {option}').format(
-                    option=locale_options[DEFAULT_LOCALE]
-                )
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
-                context |= {
-                    'log_level_options': log_level_options,
-                    'launch_browser_options': launch_browser_options,
-                    'locale_options': locale_options,
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(PapiWebConfig.default_federation),
-                    'modal': modal,
-                    'data': data,
-                    'errors': errors,
-                }
-            case 'event':
-                action: str = 'create'
-                if data is None:
-                    data = cls._prepare_event_modal_data(
-                        action, web_context.request, None
-                    )
-                    stored_event: StoredEvent = cls._admin_validate_event_update_data(
-                        action, web_context.request, None, data
-                    )
-                    errors = stored_event.errors
-                if errors is None:
-                    errors = {}
-
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
-                context |= {
-                    'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        PapiWebConfig.default_record_illegal_moves_number
-                    ),
-                    'timer_color_texts': cls._get_timer_color_texts(
-                        PapiWebConfig.default_timer_delays
-                    ),
-                    'background_images_jstree_data': cls.background_images_jstree_data(
-                        data['background_image']
-                    ),
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(
-                        papi_web_config.stored_config.federation
-                        or PapiWebConfig.default_federation
-                    ),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
-                }
-            case _:
-                raise ValueError(f'modal=[{modal}]')
-        if "modal" in context:
-            return HTMXTemplate(
-                template_name='admin/modals.html',
-                context=context,
-                re_target='#modal-wrapper',
-                trigger_event="modal_opened",
-                after="settle"
-            )
-        return HTMXTemplate(template_name='admin/index.html', context=context)

@@ -33,7 +33,7 @@ from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
-from web.urls import admin_event_players_url, admin_event_tournaments_url, admin_event_config_url
+from web.urls import admin_event_players_url, admin_event_tournaments_url, admin_event_config_url, admin_url
 
 logger: Logger = get_logger()
 
@@ -311,9 +311,7 @@ class EventAdminController(BaseEventAdminController):
                         'Event [{uniq_id}] has been deleted, the database has been archived ({arch}).'
                     ).format(uniq_id=web_context.admin_event.uniq_id, arch=arch),
                 )
-                return self._admin_render(
-                    AdminWebContext(request, data=None, admin_tab=None)
-                )
+                return ClientRedirect(redirect_to=admin_url(request))
             case _:
                 raise ValueError(f'action=[{action}]')
 
