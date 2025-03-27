@@ -19,16 +19,13 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
-from data.print import PrintDocumentManager, AbstractPrintDocument
+from data.print import PrintDocumentManager, AbstractPrintDocument, PrintDocumentOptionManager
 from data.util import TournamentRating, OptionError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
-from web.controllers.admin.base_admin_controller import (
-    AdminWebContext,
-)
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
@@ -107,7 +104,7 @@ class EventAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'print':
-                print_options = PrintDocumentManager.default_options()
+                print_options = PrintDocumentOptionManager.objects()
                 if data is None:
                     event = web_context.admin_event
                     if len(event.tournaments_sorted_by_uniq_id) == 1:
@@ -124,13 +121,12 @@ class EventAdminController(BaseEventAdminController):
                     document.id: [
                         option.container_id for option
                         in document.default_options()
-                    ] for document in
-                    PrintDocumentManager.default_documents()
+                    ] for document in PrintDocumentManager.objects()
                 }
                 template_context |= {
                     'modal': 'print',
                     'tournament_options': web_context.get_tournament_options(),
-                    'document_options': web_context.get_print_document_options(),
+                    'document_options': {'': '-'} | PrintDocumentManager.options(),
                     'print_options': print_options,
                     'containers_by_document': containers_by_document,
                     'data': data,
@@ -400,9 +396,9 @@ class EventAdminController(BaseEventAdminController):
         document_type: type[AbstractPrintDocument] | None = None
         field = 'document'
         try:
-            document_type = PrintDocumentManager.document_type_by_id()[
+            document_type = PrintDocumentManager.get_type(
                 WebContext.form_data_to_str(data, field)
-            ]
+            )
         except KeyError:
             errors[field] = _('Please choose the document.')
         if tournament and document_type:

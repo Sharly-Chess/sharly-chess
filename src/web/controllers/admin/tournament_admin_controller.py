@@ -26,7 +26,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.print import PrintDocumentManager
-from data.tie_break import TieBreakManager
+from data.tie_break import TieBreakManager, AbstractTieBreak, PapiTieBreakManager
 from data.tournament import Tournament
 from data.util import TrfType
 from database.access.papi.papi_database import PapiDatabase
@@ -129,7 +129,9 @@ class TournamentAdminController(BaseEventAdminController):
                         raise ValueError(f'action=[{action}]')
 
                 tie_breaks = []
-                tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
+                tie_break_type_by_id: dict[str, type[AbstractTieBreak]] = (
+                    TieBreakManager.type_by_id()
+                )
                 used_tie_break_ids: list[str] = []
                 for index in range(1, 4):
                     field = f'tie_break_{index}'
@@ -288,7 +290,7 @@ class TournamentAdminController(BaseEventAdminController):
                     web_context.request
                 )
             ),
-            'player_updaters': PlayerUpdaterManager.updaters(),
+            'player_updater_options': PlayerUpdaterManager.options(),
         } | tournament_card_block_data
 
         match modal:
@@ -418,7 +420,7 @@ class TournamentAdminController(BaseEventAdminController):
                         admin_event.record_illegal_moves
                     ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                    'tie_break_options': cls._get_tie_break_options(),
+                    'tie_break_options': {'': _('None')} | PapiTieBreakManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'file_exists': cls._extract_papi_file_path(data, admin_event).exists(),
                     'modal': modal,
@@ -819,7 +821,7 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
         )
-        document_type = PrintDocumentManager.document_type_by_id()[document]
+        document_type = PrintDocumentManager.get_type(document)
         options = []
         for option in document_type.default_options():
             value = WebContext.form_data_to_value(
