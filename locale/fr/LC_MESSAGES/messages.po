@@ -3256,6 +3256,9 @@ msgstr "La fédération qui organise l'évènement."
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
 
+msgid "The following languages are available:"
+msgstr "Les langues suivantes sont disponibles :"
+
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
 

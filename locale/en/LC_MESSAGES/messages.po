@@ -3256,6 +3256,9 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
+msgid "The following languages are available:"
+msgstr ""
+
 msgid "The following players did not check-in:"
 msgstr ""
 

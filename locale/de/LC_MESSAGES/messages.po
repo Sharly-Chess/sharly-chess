@@ -320,6 +320,10 @@ msgstr "Archivierte Veranstaltung"
 msgid "Archived events ({num})"
 msgstr "Archivierte Veranstaltungen ({num})"
 
+#, ai_translation
+msgid "Argument --server is deprecated, ignored."
+msgstr "Argument --server ist veraltet, ignoriert."
+
 #, ai_translation, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -350,9 +354,17 @@ msgstr "Automatische Installation von BBP-Paarings für Entwickler mit PAPI_WEB_
 msgid "Automatically launch a browser when starting the server"
 msgstr "Starten Sie automatisch einen Browser beim Start des Servers"
 
+#, fuzzy
+msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
+msgstr "Average Bu."
+
 #, ai_translation
 msgid "Average of opponents Buchholz"
 msgstr "Durchschnitt der Gegner Buchholz"
+
+#, fuzzy
+msgid "Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS"
+msgstr "Average perf."
 
 #, ai_translation
 msgid "Average perfect performance of opponents"
@@ -363,8 +375,16 @@ msgid "Average performance rating of opponents"
 msgstr "Durchschnittliche Bewertung der Leistung der Einsprechenden"
 
 #, ai_translation
+msgid "Average rating"
+msgstr "Durchschnittliche Bewertung"
+
+#, ai_translation
 msgid "Average rating of opponents"
 msgstr "Durchschnittliche Bewertung der Einsprechenden"
+
+#, fuzzy
+msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
+msgstr "Avg. Perfect Perf."
 
 #, fuzzy
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
@@ -394,9 +414,21 @@ msgstr "Hintergrundbild und Farbe"
 msgid "Background image:"
 msgstr "Hintergrundbild:"
 
+#, fuzzy
+msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
+msgstr "Bd."
+
 #, ai_translation
 msgid "Black"
 msgstr "Schwarz"
+
+#, ai_translation
+msgid "Black games"
+msgstr "Schwarze Spiele"
+
+#, ai_translation
+msgid "Black wins"
+msgstr "Schwarz gewinnt"
 
 #, ai_translation
 msgid "Blitz"
@@ -457,6 +489,10 @@ msgstr "Boards Bildschirme zeigen Paarungen nach Boardnummer."
 #, fuzzy
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
+
+#, fuzzy
+msgid "Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ"
+msgstr "Bu. sum"
 
 #, ai_translation
 msgid "Buchholz"
@@ -521,10 +557,6 @@ msgstr "Cat"
 #, fuzzy
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat"
-
-#, ai_translation
-msgid "Cat."
-msgstr "Katze."
 
 #, ai_translation
 msgid "Category"
@@ -807,6 +839,10 @@ msgid "Continuously"
 msgstr "Kontinuierlich"
 
 #, ai_translation
+msgid "Could not connect to data source [{player_updater_name}]."
+msgstr "Eine Verbindung zur Datenquelle konnte nicht hergestellt werden [{player_updater_name}]."
+
+#, ai_translation
 msgid "Could not download [{url}], error code [{code}]."
 msgstr "[{url}], Fehlercode [{code}] konnte nicht heruntergeladen werden."
 
@@ -851,6 +887,10 @@ msgid "Create and add default screens"
 msgstr "Standardbildschirme erstellen und hinzufügen"
 
 #, ai_translation
+msgid "Create file"
+msgstr "Datei erstellen"
+
+#, ai_translation
 msgid "Create the Papi files"
 msgstr "Die Papi-Dateien erstellen"
 
@@ -887,18 +927,6 @@ msgid "Customization"
 msgstr "Anpassung"
 
 #, ai_translation
-msgid "Cut"
-msgstr "Ausschneiden"
-
-#, ai_translation
-msgid "Cut bottom"
-msgstr "Unterteil schneiden"
-
-#, ai_translation
-msgid "Cut top"
-msgstr "Nach oben schneiden"
-
-#, ai_translation
 msgid "DOUBLE"
 msgstr "DOPPEL"
 
@@ -921,6 +949,10 @@ msgstr "Daten werden bereits auf der FFE-Website angezeigt."
 #, ai_translation
 msgid "Date"
 msgstr "Zeitpunkt"
+
+#, ai_translation
+msgid "Date of birth"
+msgstr "Geburtsdatum"
 
 #, ai_translation
 msgid "Date of birth:"
@@ -1023,8 +1055,8 @@ msgid "Directory [{path}] not found."
 msgstr "Verzeichnis [{path}] nicht gefunden."
 
 #, ai_translation
-msgid "Directory of the Papi file:"
-msgstr "Verzeichnis der Papi-Datei:"
+msgid "Directory:"
+msgstr "Verzeichnis:"
 
 #, ai_translation
 msgid "Display"
@@ -1057,10 +1089,6 @@ msgstr "Die Schaltfläche \"Ausstieg\" anzeigen"
 #, ai_translation
 msgid "Do nothing"
 msgstr "Nichts tun"
-
-#, ai_translation
-msgid "Do you want Papi-web to create the file?"
-msgstr "Soll Papi-web die Datei erstellen?"
 
 #, ai_translation
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
@@ -1471,10 +1499,6 @@ msgid "Error while creating the database: {ex}."
 msgstr "Fehler beim Erstellen der Datenbank: {ex}."
 
 #, ai_translation
-msgid "Error while updating the FFE database."
-msgstr "Fehler beim Aktualisieren der FFE-Datenbank."
-
-#, ai_translation
 msgid "Error while updating the FIDE database."
 msgstr "Fehler beim Aktualisieren der FIDE-Datenbank."
 
@@ -1558,10 +1582,6 @@ msgstr "Veranstaltungen (öffentlicher Zugang)"
 msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr "Ereignisse wiederhergestellt: {num} (aus dem Verzeichnis [{dir}])."
 
-#, ai_translation
-msgid "Exclude players"
-msgstr "Spieler ausschließen"
-
 #, fuzzy
 msgid "Exempt *** FEMALE"
 msgstr "Exempt"
@@ -1602,6 +1622,10 @@ msgstr "F"
 msgid "F *** THE LETTER TO ANSWER FEES"
 msgstr "F"
 
+#, ai_translation
+msgid "FFE"
+msgstr "FFE"
+
 #, fuzzy
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
@@ -1619,12 +1643,20 @@ msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr "FFE ID nicht für Turniere definiert [{tournament_uniq_id}]."
 
 #, ai_translation
+msgid "FFE Licence"
+msgstr "FFE-Genehmigung"
+
+#, ai_translation
 msgid "FFE Uniq ID:"
 msgstr "FFE Uniq-ID:"
 
 #, ai_translation
 msgid "FFE certification number (optional):"
 msgstr "FFE-Qualifikationsnummer (fakultativ):"
+
+#, ai_translation
+msgid "FFE database"
+msgstr "FFE-Datenbank"
 
 #, ai_translation
 msgid "FFE database:"
@@ -1641,6 +1673,10 @@ msgstr "FFE-Genehmigung B (Freizeit)"
 #, ai_translation
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr "FFE-Lizenz [{ffe_licence_number}] bereits im Turnier vorhanden [{tournament_uniq_id}]."
+
+#, ai_translation
+msgid "FFE licence number"
+msgstr "FFE-Lizenznummer"
 
 #, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
@@ -1689,6 +1725,10 @@ msgstr "FIDE-ID: %(fide_id)s (Klicken Sie zum Kopieren in die Zwischenablage)."
 #, ai_translation
 msgid "FIDE Title:"
 msgstr "FIDE-Titel:"
+
+#, ai_translation
+msgid "FIDE database"
+msgstr "FIDE-Datenbank"
 
 #, ai_translation
 msgid "FIDE database:"
@@ -1787,12 +1827,32 @@ msgid "Fide Master"
 msgstr "Fide-Meister"
 
 #, ai_translation
+msgid "Fields relying on the Papi database can't be updated if the file does not exist."
+msgstr "Felder, die sich auf die Papi-Datenbank verlassen, können nicht aktualisiert werden, wenn die Datei nicht existiert."
+
+#, ai_translation
 msgid "File [{file}] not found."
 msgstr "Die Datei [{file}] wurde nicht gefunden."
 
 #, ai_translation
+msgid "File already exists."
+msgstr "Datei existiert bereits."
+
+#, ai_translation
 msgid "File downloaded: [{zip_file}]."
 msgstr "Datei heruntergeladen: [{zip_file}]."
+
+#, ai_translation
+msgid "File found"
+msgstr "Datei gefunden"
+
+#, ai_translation
+msgid "File name (without extension):"
+msgstr "Dateiname (ohne Erweiterung):"
+
+#, ai_translation
+msgid "File not found"
+msgstr "Datei nicht gefunden"
 
 #, ai_translation
 msgid "Files have been sent to bin {bin_name}."
@@ -1866,13 +1926,13 @@ msgstr "Festplatte:"
 msgid "Fixed boards:"
 msgstr "Festplatten:"
 
+#, fuzzy
+msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
+msgstr "Fore Bu."
+
 #, ai_translation
 msgid "Fore Buchholz"
 msgstr "Vor Buchholz"
-
-#, ai_translation
-msgid "Fore modifier"
-msgstr "Vormodifikator"
 
 #, ai_translation
 msgid "Forfeit gain"
@@ -1915,8 +1975,16 @@ msgid "Gain"
 msgstr "Gewinn"
 
 #, ai_translation
+msgid "Games played"
+msgstr "Gespielte Spiele"
+
+#, ai_translation
 msgid "Games played with black"
 msgstr "Spiele mit schwarz gespielt"
+
+#, ai_translation
+msgid "Games won"
+msgstr "Spiele gewonnen"
 
 #, ai_translation
 msgid "Games won with black"
@@ -2091,6 +2159,14 @@ msgid "Internationalization"
 msgstr "Internationalisierung"
 
 #, ai_translation
+msgid "Internet connection established"
+msgstr "Internetverbindung hergestellt"
+
+#, ai_translation
+msgid "Internet connection lost"
+msgstr "Internetverbindung verloren"
+
+#, ai_translation
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Ungültige FFE-ID [{ffe_id}]."
 
@@ -2199,6 +2275,10 @@ msgid "Koya"
 msgstr "Koya"
 
 #, ai_translation
+msgid "Koya system"
+msgstr "Koya-System"
+
+#, ai_translation
 msgid "LAN/WAN URL: {lan_url}"
 msgstr "LAN/WAN URL: {lan_url}"
 
@@ -2266,6 +2346,21 @@ msgstr "Liga:"
 msgid "Libraries"
 msgstr "Bibliotheken"
 
+# Error: translation [Lic. - Nein, nein, nein, nein, nein, nein, nein, nein,
+# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
+# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
+# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
+# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
+# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
+# nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein, nein.
+# nein, nein, nein. nein, nein, nein. nein, nein. nein, nein, nein. nein,
+# nein, nein. nein, nein, nein. nein, nein. nein. nein, nein. nein. nein,
+# nein. nein, nein. nein, nein. nein. nein!] is much too long compared to
+# initial [Lic.]
+#, ai_translation
+msgid "Lic."
+msgstr ""
+
 #, ai_translation
 msgid "Licence number:"
 msgstr "Lizenznummer:"
@@ -2273,10 +2368,6 @@ msgstr "Lizenznummer:"
 #, ai_translation
 msgid "Licence:"
 msgstr "Lizenz:"
-
-#, ai_translation
-msgid "Limit"
-msgstr "Höchstmenge"
 
 #, ai_translation
 msgid "Links displayed on the screen menu:"
@@ -2420,6 +2511,10 @@ msgstr "Maximale Anzahl der Ergebnisse: unbegrenzt"
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
 
+#, fuzzy
+msgid "Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ"
+msgstr "Me. Buchholz"
+
 #, ai_translation
 msgid "Median Buchholz"
 msgstr "Median Buchholz"
@@ -2465,10 +2560,6 @@ msgid "Minimum number of points (included):"
 msgstr "Mindestzahl der Punkte (inklusive):"
 
 #, ai_translation
-msgid "Missing Papi file"
-msgstr "Fehlende Papi-Datei"
-
-#, ai_translation
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr "Fehlender Parameter (Code: [{code}]): [{error}]."
 
@@ -2499,10 +2590,6 @@ msgstr "Name"
 #, fuzzy
 msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Name"
-
-#, ai_translation
-msgid "Name of the Papi file (with no extension):"
-msgstr "Name der Datei Papi (ohne Erweiterung):"
 
 #, ai_translation
 msgid "Name:"
@@ -2685,6 +2772,10 @@ msgid "No players found."
 msgstr "Keine Spieler gefunden."
 
 #, ai_translation
+msgid "No players updated."
+msgstr "Keine Spieler aktualisiert."
+
+#, ai_translation
 msgid "No players."
 msgstr "Keine Spieler."
 
@@ -2745,16 +2836,16 @@ msgid "No screens."
 msgstr "Keine Bildschirme."
 
 #, ai_translation
-msgid "No split"
-msgstr "Keine Spaltung"
-
-#, ai_translation
 msgid "No stable version found."
 msgstr "Keine stabile Version gefunden."
 
 #, ai_translation
 msgid "No such screens."
 msgstr "Keine solchen Bildschirme."
+
+#, ai_translation
+msgid "No tie-break defined"
+msgstr "Kein Krawattenbruch definiert"
 
 #, ai_translation
 msgid "No timer defined"
@@ -2797,10 +2888,6 @@ msgid "No warnings"
 msgstr "Keine Warnungen"
 
 #, ai_translation
-msgid "No, I will do it later"
-msgstr "Nein, ich mache es später."
-
-#, ai_translation
 msgid "None"
 msgstr "Keine"
 
@@ -2811,6 +2898,26 @@ msgstr "Noch nicht eingecheckt"
 #, ai_translation
 msgid "Not connected to internet."
 msgstr "Nicht mit Internet verbunden."
+
+#, ai_translation
+msgid "Not connected, can not check Papi-web version."
+msgstr "Nicht verbunden, kann Papi-Web-Version nicht überprüfen."
+
+#, ai_translation
+msgid "Not connected, can not create the FFE database."
+msgstr "Nicht verbunden, kann die FFE-Datenbank nicht erstellen."
+
+#, ai_translation
+msgid "Not connected, can not create the FIDE database."
+msgstr "Nicht verbunden, kann die FIDE-Datenbank nicht erstellen."
+
+#, ai_translation
+msgid "Not connected, can not update the FFE database."
+msgstr "Nicht verbunden, kann die FFE-Datenbank nicht aktualisieren."
+
+#, ai_translation
+msgid "Not connected, can not update the FIDE database."
+msgstr "Nicht verbunden, kann die FIDE-Datenbank nicht aktualisieren."
 
 # Error: tokens differ between [Not part of the selected tournament ({rounds}
 # rounds).] and [Nicht Teil des ausgewählten Turniers (%d Runden).]
@@ -2917,10 +3024,6 @@ msgid "Opponent Elo [Pts]"
 msgstr "Gegner Elo [Pts]"
 
 #, ai_translation
-msgid "Options"
-msgstr "Einstellungen"
-
-#, ai_translation
 msgid "Other ODBC drivers found on the server"
 msgstr "Andere ODBC-Treiber auf dem Server gefunden"
 
@@ -2993,12 +3096,16 @@ msgid "Pairings by player ({num})"
 msgstr "Kombinationen nach Spieler ({num})"
 
 #, ai_translation
+msgid "Pairings for round #{round}"
+msgstr "Pairings für Runde #{round}"
+
+#, ai_translation
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Kombinationen der Runde {round} generiert für Turnier [{tournament_uniq_id}]."
 
 #, ai_translation
-msgid "Papi file [{file}] created."
-msgstr "Papi-Datei [{file}] erstellt."
+msgid "Papi file"
+msgstr "Papi-Datei"
 
 #, ai_translation
 msgid "Papi file [{file}] has been created (players: {num})."
@@ -3009,20 +3116,12 @@ msgid "Papi file [{tournament_file}] not found."
 msgstr "Papi-Datei [{tournament_file}] nicht gefunden."
 
 #, ai_translation
-msgid "Papi file has not been created."
-msgstr "Papi-Datei wurde nicht erstellt."
-
-#, ai_translation
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr "Papi-Datei nicht für Turniere definiert [{tournament_uniq_id}]."
 
 #, ai_translation
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Papi-Datei nicht gefunden [{file}] für Turnier [{tournament_uniq_id}]."
-
-#, ai_translation
-msgid "Papi version: {version}"
-msgstr "Papi-Version: {version}"
 
 #, ai_translation
 msgid "Papi-web can automatically launch a web browser when starting the web server."
@@ -3080,6 +3179,10 @@ msgstr "Strafe (Handicap, Sekunden):"
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf"
 
+#, fuzzy
+msgid "Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE"
+msgstr "Perfect perf."
+
 #, ai_translation
 msgid "Perfect tournament performance"
 msgstr "Perfekte Turnierleistung"
@@ -3103,10 +3206,6 @@ msgstr "Telefonnummer:"
 #, ai_translation, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Telefon: %(phone)s (klicken, um in die Zwischenablage zu kopieren)."
-
-#, ai_translation
-msgid "Played modifier"
-msgstr "Abgespielter Modifikator"
 
 #, ai_translation
 msgid "Player / Elo"
@@ -3149,10 +3248,6 @@ msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Player-Sets des Bildschirms [%(screen_uniq_id)s]"
 
 #, ai_translation
-msgid "Player updates are possible, select the players to update:"
-msgstr "Spieler-Updates sind möglich, wählen Sie die Spieler zu aktualisieren:"
-
-#, ai_translation
 msgid "Players"
 msgstr "Spieler"
 
@@ -3187,10 +3282,6 @@ msgstr "Spielen"
 #, ai_translation
 msgid "Please ask the organizer to get the password."
 msgstr "Bitte fragen Sie den Veranstalter, um das Passwort zu erhalten."
-
-#, ai_translation
-msgid "Please choose the Papi version:"
-msgstr "Bitte wählen Sie die Papi-Version:"
 
 #, ai_translation
 msgid "Please choose the document."
@@ -3261,8 +3352,8 @@ msgid "Please enter the name of the event."
 msgstr "Bitte geben Sie den Namen des Ereignisses ein."
 
 #, ai_translation
-msgid "Please enter the number of the version to recover [{default}]: "
-msgstr "Bitte geben Sie die Nummer der zu erholenden Version ein [{default}]:"
+msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
+msgstr "Bitte geben Sie die Nummer der zu erholenden Version ein [{default_choice}: {default_version}]:"
 
 #, ai_translation
 msgid "Please enter the password to enter results:"
@@ -3375,6 +3466,10 @@ msgstr "Drucke Spieler, Ergebnisse, etc."
 #, ai_translation
 msgid "Private event"
 msgstr "Private Veranstaltung"
+
+#, ai_translation
+msgid "Progressive"
+msgstr "Progressiv"
 
 #, ai_translation
 msgid "Progressive scores"
@@ -3544,6 +3639,10 @@ msgstr "Entfernen Sie den Spieler aus dem Event."
 msgid "Renaming the database failed: {ex}."
 msgstr "Umbenennen der Datenbank fehlgeschlagen: {ex}."
 
+#, ai_translation, python-format
+msgid "Replace [%(old)s] by [%(new)s]"
+msgstr "[%(old)s] durch [%(new)s] ersetzen"
+
 #, ai_translation
 msgid "Request to the FFE database failed."
 msgstr "Die Anfrage an die FFE-Datenbank ist fehlgeschlagen."
@@ -3553,8 +3652,16 @@ msgid "Request to the FFE database failed: {error}."
 msgstr "Anfrage an die FFE-Datenbank fehlgeschlagen: {error}."
 
 #, ai_translation
+msgid "Res. ** RESULT FOR PRINT VIEW"
+msgstr "Res. ** ERGEBNIS FÜR PRINT VIEW"
+
+#, ai_translation
 msgid "Result"
 msgstr "Ergebnis"
+
+#, ai_translation
+msgid "Results"
+msgstr "Ergebnisse"
 
 #, ai_translation
 msgid "Results entry"
@@ -3563,6 +3670,10 @@ msgstr "Ergebniseintrag"
 #, ai_translation
 msgid "Results entry ({num})"
 msgstr "Ergebniseintrag ({num})"
+
+#, ai_translation
+msgid "Results for round #{round}"
+msgstr "Ergebnisse für Runde #{round}"
 
 #, ai_translation
 msgid "Results screen creation"
@@ -3651,6 +3762,10 @@ msgid "Round not finished (last finished: {round})."
 msgstr "Runde noch nicht beendet (letztes Ende: {round})."
 
 #, ai_translation
+msgid "Round not paired (last paired: {round})."
+msgstr "Runde nicht gepaart (letztes Paar: {round})."
+
+#, ai_translation
 msgid "Round number or text:"
 msgstr "Rundnummer oder -text:"
 
@@ -3705,6 +3820,10 @@ msgstr "Regeln-Dateisatz"
 #, ai_translation
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Regeln Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht als beendet auf der FFE-Website markiert ist."
+
+#, fuzzy
+msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgstr "S-Berger"
 
 #, fuzzy
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
@@ -3791,6 +3910,10 @@ msgid "Searching..."
 msgstr "Suchen..."
 
 #, ai_translation
+msgid "Select the players and the data to update:"
+msgstr "Wählen Sie die Player und die zu aktualisierenden Daten:"
+
+#, ai_translation
 msgid "Selection"
 msgstr "Auswahl"
 
@@ -3809,6 +3932,10 @@ msgstr "Senden der Turnierregeln [{ffe_id}] ({file}) an die FFE-Website..."
 #, ai_translation
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Senden des Turniers [{ffe_id}] ({file}) an die FFE-Website..."
+
+#, ai_translation
+msgid "Show all the players"
+msgstr "Alle Spieler anzeigen"
 
 #, ai_translation
 msgid "Show/hide the boards screens."
@@ -3907,8 +4034,12 @@ msgid "Starting Papi-web server, please wait..."
 msgstr "Starten des Papi-Web-Servers, bitte warten..."
 
 #, ai_translation
-msgid "Storing data..."
-msgstr "Daten speichern..."
+msgid "Storing FFE data..."
+msgstr "FFE-Daten speichern..."
+
+#, ai_translation
+msgid "Storing FIDE data..."
+msgstr "FIDE-Daten speichern..."
 
 #, ai_translation
 msgid "Sum of Buchholz"
@@ -4075,8 +4206,8 @@ msgid "The default language used."
 msgstr "Die Standardsprache, die verwendet wird."
 
 #, ai_translation, python-format
-msgid "The directory of the Papi file, by default %(dir)s."
-msgstr "Das Verzeichnis der Papi-Datei, standardmäßig %(dir)s."
+msgid "The directory of the Papi file (defaults to [%(dir)s])."
+msgstr "Das Verzeichnis der Datei Papi (Standards zu [%(dir)s])."
 
 #, ai_translation
 msgid "The end date and time of the event."
@@ -4089,6 +4220,10 @@ msgstr "Der Verband, der die Veranstaltung organisiert."
 #, ai_translation
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Das erste Turnier des Bildschirms, obligatorisch (es ist möglich, weitere Turniere später hinzuzufügen)."
+
+#, ai_translation
+msgid "The following languages are available:"
+msgstr "Folgende Sprachen stehen zur Verfügung:"
 
 #, ai_translation
 msgid "The following players did not check-in:"
@@ -4159,8 +4294,8 @@ msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Der Name der Papi-Datei ist standardmäßig nicht festgelegt [{filename}]"
 
 #, ai_translation
-msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
-msgstr "Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers)."
+msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
+msgstr "Der Name der Papi-Datei ohne [.papi]-Erweiterung (Standards zur eindeutigen ID)."
 
 #, ai_translation
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -4467,10 +4602,6 @@ msgid "This label will be used for the link to other screens to this screen. If 
 msgstr "Dieses Label wird für den Link zu anderen Bildschirmen zu diesem Bildschirm verwendet. Wenn es leer gelassen wird, wird ein Standardlabel verwendet."
 
 #, ai_translation
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-msgstr "Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie die Skripte server.bat, ffe.bat und chessevent.bat."
-
-#, ai_translation
 msgid "This rotator is private (not visible by the users)."
 msgstr "Dieser Rotator ist privat (von den Benutzern nicht sichtbar)."
 
@@ -4505,6 +4636,10 @@ msgstr "Krawattenbruch bereits in Gebrauch."
 #, ai_translation
 msgid "Tie-breaks"
 msgstr "Reißverschlüsse"
+
+#, ai_translation
+msgid "Tie-breaks:"
+msgstr "Reißverschlüsse:"
 
 #, ai_translation
 msgid "Time control"
@@ -4577,6 +4712,10 @@ msgstr "Zeitmesser ({num})"
 #, ai_translation, python-format
 msgid "Timers: %(num)d"
 msgstr "Timer: %(num)d"
+
+#, ai_translation
+msgid "Top cut must be at most equal to bottom cut."
+msgstr "Der obere Schnitt muss höchstens dem unteren Schnitt entsprechen."
 
 #, ai_translation
 msgid "Tournament"
@@ -4729,6 +4868,10 @@ msgstr "Turniere: {tournament_names}"
 #, fuzzy
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr."
+
+#, fuzzy
+msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
+msgstr "Tr. Buchholz"
 
 #, ai_translation
 msgid "Type:"
@@ -4930,6 +5073,18 @@ msgstr "Aktualisieren"
 msgid "Update players"
 msgstr "Spieler aktualisieren"
 
+#, ai_translation, python-format
+msgid "Update the players (data source: %(player_updater_name)s)"
+msgstr "Aktualisieren der Player (Datenquelle: %(player_updater_name)s)"
+
+#, ai_translation, python-format
+msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)"
+msgstr "Aktualisieren Sie die Spieler des Turniers [%(tournament_uniq_id)s] (Datenquelle: %(player_updater_name)s)"
+
+#, ai_translation
+msgid "Update the players' information from an external data source."
+msgstr "Aktualisieren Sie die Informationen der Spieler aus einer externen Datenquelle."
+
 #, ai_translation
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Upload-Link nicht gefunden, überprüfen Sie, ob das Turnier nicht als beendet auf der FFE-Website markiert ist."
@@ -4990,9 +5145,9 @@ msgstr "WEISSWEIN"
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
-#, ai_translation, python-format
-msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-msgstr "Warnung: Papi-Datei [%(path)s] nicht gefunden, viele Funktionen sind deaktiviert."
+#, ai_translation
+msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+msgstr "Warnung: Die Verbindung zur Online-FFE-Datenbank ist fehlgeschlagen, lokale Datenbank wurde verwendet. Einige Daten könnten veraltet sein (letztes Update am {date})"
 
 #, ai_translation
 msgid "Warning: the deletion of a player is permanent!"
@@ -5071,6 +5226,10 @@ msgid "White"
 msgstr "Weiß"
 
 #, ai_translation
+msgid "Wins"
+msgstr "Gewinne"
+
+#, ai_translation
 msgid "Woman Candidate Master"
 msgstr "Frau Kandidatin Master"
 
@@ -5094,10 +5253,6 @@ msgstr "Falsche Dateiendung [{ext}] ([pdf] erwartet)."
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
-#, ai_translation
-msgid "YOB"
-msgstr "YOB"
-
 #, fuzzy
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
@@ -5109,10 +5264,6 @@ msgstr "Year of birth"
 #, ai_translation
 msgid "Yes"
 msgstr "Nein"
-
-#, ai_translation
-msgid "Yes, create the file"
-msgstr "Ja, die Datei erstellen"
 
 #, ai_translation
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
@@ -5319,12 +5470,22 @@ msgid "yes"
 msgstr "Ja"
 
 #, ai_translation
+msgid "{count} player updated."
+msgid_plural "{count} players updated."
+msgstr[0] "{count} Spieler aktualisiert."
+msgstr[1] "{count} Spieler aktualisiert."
+
+#, ai_translation
 msgid "{family_type}-family"
 msgstr "{family_type}-Familie"
 
 #, ai_translation
-msgid "{number} players written."
-msgstr "{number} Spieler geschrieben."
+msgid "{number} players written to FFE database."
+msgstr "{number} Spieler geschrieben in FFE-Datenbank."
+
+#, ai_translation
+msgid "{number} players written to FIDE database."
+msgstr "{number} Spieler geschrieben in FIDE-Datenbank."
 
 #, ai_translation
 msgid "{num} illegal move max"
@@ -5560,4 +5721,94 @@ msgstr "{screen_type}-Bildschirm"
 
 #~ msgid "The FFE database is not available."
 #~ msgstr "Die FFE-Datenbank ist nicht verfügbar."
+
+#~ msgid "Cat."
+#~ msgstr "Katze."
+
+#~ msgid "Cut"
+#~ msgstr "Ausschneiden"
+
+#~ msgid "Cut bottom"
+#~ msgstr "Unterteil schneiden"
+
+#~ msgid "Cut top"
+#~ msgstr "Nach oben schneiden"
+
+#~ msgid "Directory of the Papi file:"
+#~ msgstr "Verzeichnis der Papi-Datei:"
+
+#~ msgid "Do you want Papi-web to create the file?"
+#~ msgstr "Soll Papi-web die Datei erstellen?"
+
+#~ msgid "Error while updating the FFE database."
+#~ msgstr "Fehler beim Aktualisieren der FFE-Datenbank."
+
+#~ msgid "Exclude players"
+#~ msgstr "Spieler ausschließen"
+
+#~ msgid "Fore modifier"
+#~ msgstr "Vormodifikator"
+
+#~ msgid "Limit"
+#~ msgstr "Höchstmenge"
+
+#~ msgid "Missing Papi file"
+#~ msgstr "Fehlende Papi-Datei"
+
+#~ msgid "Name of the Papi file (with no extension):"
+#~ msgstr "Name der Datei Papi (ohne Erweiterung):"
+
+#~ msgid "No split"
+#~ msgstr "Keine Spaltung"
+
+#~ msgid "No, I will do it later"
+#~ msgstr "Nein, ich mache es später."
+
+#~ msgid "Options"
+#~ msgstr "Einstellungen"
+
+#~ msgid "Papi file [{file}] created."
+#~ msgstr "Papi-Datei [{file}] erstellt."
+
+#~ msgid "Papi file has not been created."
+#~ msgstr "Papi-Datei wurde nicht erstellt."
+
+#~ msgid "Papi version: {version}"
+#~ msgstr "Papi-Version: {version}"
+
+#~ msgid "Played modifier"
+#~ msgstr "Abgespielter Modifikator"
+
+#~ msgid "Player updates are possible, select the players to update:"
+#~ msgstr "Spieler-Updates sind möglich, wählen Sie die Spieler zu aktualisieren:"
+
+#~ msgid "Please choose the Papi version:"
+#~ msgstr "Bitte wählen Sie die Papi-Version:"
+
+#~ msgid "Please enter the number of the version to recover [{default}]: "
+#~ msgstr "Bitte geben Sie die Nummer der zu erholenden Version ein [{default}]:"
+
+#~ msgid "Storing data..."
+#~ msgstr "Daten speichern..."
+
+#~ msgid "The directory of the Papi file, by default %(dir)s."
+#~ msgstr "Das Verzeichnis der Papi-Datei, standardmäßig %(dir)s."
+
+#~ msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
+#~ msgstr "Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers)."
+
+#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+#~ msgstr "Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie die Skripte server.bat, ffe.bat und chessevent.bat."
+
+#~ msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+#~ msgstr "Warnung: Papi-Datei [%(path)s] nicht gefunden, viele Funktionen sind deaktiviert."
+
+#~ msgid "YOB"
+#~ msgstr "YOB"
+
+#~ msgid "Yes, create the file"
+#~ msgstr "Ja, die Datei erstellen"
+
+#~ msgid "{number} players written."
+#~ msgstr "{number} Spieler geschrieben."
 
