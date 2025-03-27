@@ -45,6 +45,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             data=data,
             event_uniq_id=event_uniq_id,
         )
+        assert self.admin_event is not None
         self.admin_family: Family | None = None
         if self.error:
             return
@@ -80,8 +81,10 @@ class FamilyAdminController(BaseEventAdminController):
         type_: str
         match action:
             case 'create':
+                assert web_context.family_type is not None
                 type_ = web_context.family_type
             case 'update' | 'clone' | 'delete':
+                assert web_context.admin_family is not None
                 type_ = web_context.admin_family.stored_family.type
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -91,7 +94,7 @@ class FamilyAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'type=[{type_}]')
         field = 'uniq_id'
-        uniq_id: str = WebContext.form_data_to_str(data, field)
+        uniq_id: str | None = WebContext.form_data_to_str(data, field)
         name: str | None = None
         public: bool | None = None
         menu_link: bool | None = None
@@ -124,11 +127,14 @@ class FamilyAdminController(BaseEventAdminController):
             else:
                 match action:
                     case 'create' | 'clone':
+                        assert web_context.admin_event is not None
                         if uniq_id in web_context.admin_event.families_by_uniq_id:
                             errors[field] = _(
                                 'Family [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
+                        assert web_context.admin_family is not None
+                        assert web_context.admin_event is not None
                         if (
                             uniq_id != web_context.admin_family.uniq_id
                             and uniq_id in web_context.admin_event.families_by_uniq_id
@@ -139,12 +145,13 @@ class FamilyAdminController(BaseEventAdminController):
                     case _:
                         raise ValueError(f'action=[{action}]')
             name = WebContext.form_data_to_str(data, 'name')
-            public: bool = WebContext.form_data_to_bool(data, 'public')
+            public = bool(WebContext.form_data_to_bool(data, 'public'))
         match action:
             case 'delete':
                 pass
             case 'create' | 'clone' | 'update':
                 field: str = 'tournament_id'
+                assert web_context.admin_event is not None
                 try:
                     if len(web_context.admin_event.tournaments_by_id) == 1:
                         tournament_id = list(
@@ -244,9 +251,9 @@ class FamilyAdminController(BaseEventAdminController):
                     errors['parts'] = error
                     errors['number'] = error
                 field = 'message_text'
-                message_default = WebContext.form_data_to_bool(
+                message_default = bool(WebContext.form_data_to_bool(
                     data, field + '_checkbox', False
-                )
+                ))
                 if message_default and web_context.admin_family:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
@@ -255,9 +262,15 @@ class FamilyAdminController(BaseEventAdminController):
                     message_text = WebContext.form_data_to_str(data, field)
             case _:
                 raise ValueError(f'action=[{action}]')
+
+        assert tournament_id is not None
+        assert uniq_id is not None
+        assert menu_text is not None
+        assert menu is not None
+        
         return StoredFamily(
             id=web_context.admin_family.id
-            if action
+            if web_context.admin_family and action
             not in [
                 'create',
                 'clone',
@@ -265,11 +278,11 @@ class FamilyAdminController(BaseEventAdminController):
             else None,
             uniq_id=uniq_id,
             type=type_,
-            public=public,
+            public=bool(public),
             tournament_id=tournament_id,
             name=name,
             columns=columns,
-            menu_link=menu_link,
+            menu_link=bool(menu_link),
             menu_text=menu_text,
             menu=menu,
             timer_id=timer_id,
@@ -309,6 +322,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
@@ -346,6 +360,7 @@ class FamilyAdminController(BaseEventAdminController):
                     message_text: str | None = None
                     match action:
                         case 'update':
+                            assert web_context.admin_family is not None
                             uniq_id = web_context.admin_family.stored_family.uniq_id
                             name = web_context.admin_family.stored_family.name
                         case 'create':
@@ -356,6 +371,7 @@ class FamilyAdminController(BaseEventAdminController):
                                 family_type=ScreenType(family_type)
                             )
                         case 'clone':
+                            assert web_context.admin_family is not None
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
                                 base_uniq_id=web_context.admin_family.stored_family.uniq_id
                             )
@@ -371,6 +387,7 @@ class FamilyAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
+                            assert web_context.admin_family is not None
                             public = web_context.admin_family.stored_family.public
                             tournament_id = (
                                 web_context.admin_family.stored_family.tournament_id
@@ -464,6 +481,7 @@ class FamilyAdminController(BaseEventAdminController):
                     errors = stored_family.errors
                 if errors is None:
                     errors = {}
+
                 template_context |= {
                     'tournament_options': web_context.get_tournament_options(),
                     'screen_type_options': cls._get_screen_type_options(
@@ -567,6 +585,7 @@ class FamilyAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         stored_family: StoredFamily = self._admin_validate_family_update_data(
             action, web_context, data
         )
@@ -603,6 +622,7 @@ class FamilyAdminController(BaseEventAdminController):
                         )
                     )
                 case 'delete':
+                    assert web_context.admin_family is not None
                     event_database.delete_stored_family(web_context.admin_family.id)
                     event_database.commit()
                     Message.success(

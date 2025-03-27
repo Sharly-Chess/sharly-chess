@@ -2177,6 +2177,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                 screen_id=self._last_inserted_id()
             )
         else:
+            
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_screen_set.id]
             self.execute(
@@ -2195,6 +2196,8 @@ class EventDatabase(SQLiteVersionedDatabase):
         screen_id: int,
     ) -> StoredScreenSet:
         stored_screen_set = self.get_stored_screen_set(screen_set_id)
+        assert stored_screen_set is not None
+        assert stored_screen_set.id is not None
         stored_screen_set.id = None
         stored_screen_set.screen_id = screen_id
         stored_screen_set.last_update = time.time()

@@ -63,6 +63,8 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
             data=data,
         )
+        assert self.admin_event is not None
+        
         self.admin_tournament: Tournament | None = None
         if self.error:
             return

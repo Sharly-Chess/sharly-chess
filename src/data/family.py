@@ -218,7 +218,7 @@ class Family:
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)
 
-    @cache
+    @cached_property
     def _calculate_screens(self) -> bool:
         if not self.tournament.rounds:
             self.error = _(
@@ -341,7 +341,7 @@ class Family:
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = {}
-        if self._calculate_screens():
+        if self._calculate_screens:
             for family_index in range(1, self.calculated_parts + 1):
                 screen: Screen = Screen(
                     self.event, family=self, family_part=family_index
@@ -355,22 +355,22 @@ class Family:
 
     @cached_property
     def calculated_first(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_screens
         return self._calculated_first
 
     @cached_property
     def calculated_last(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_screens
         return self._calculated_last
 
     @cached_property
     def calculated_number(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_screens
         return self._calculated_number
 
     @cached_property
     def calculated_parts(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_screens
         return self._calculated_parts
 
     @property

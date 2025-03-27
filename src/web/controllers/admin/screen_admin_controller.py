@@ -50,6 +50,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
             data=data,
         )
+        assert self.admin_event is not None
         self.admin_screen: Screen | None = None
         self.admin_screen_set: ScreenSet | None = None
         if self.error:
@@ -62,6 +63,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
                 return
         self.screen_type = screen_type
         if screen_set_id:
+            assert self.admin_screen is not None
             try:
                 self.admin_screen_set = self.admin_screen.screen_sets_by_id[
                     screen_set_id
@@ -87,10 +89,11 @@ class ScreenAdminController(BaseEventAdminController):
     @classmethod
     def _admin_validate_screen_update_data(
         cls,
-        action: str,
+        action: str | None,
         web_context: ScreenAdminWebContext,
         data: dict[str, str] | None = None,
     ) -> StoredScreen:
+        assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -99,6 +102,7 @@ class ScreenAdminController(BaseEventAdminController):
         init_set_tournament_id: int | None = None
         match action:
             case 'create':
+                assert web_context.screen_type is not None
                 type_ = web_context.screen_type
                 match type_:
                     case 'boards' | 'input' | 'players' | 'ranking':
@@ -116,11 +120,13 @@ class ScreenAdminController(BaseEventAdminController):
                     case _:
                         raise ValueError(f'type=[{type_}]')
             case 'update' | 'clone' | 'delete':
+                assert web_context.admin_screen is not None
+                assert web_context.admin_screen.stored_screen is not None
                 type_ = web_context.admin_screen.stored_screen.type
             case _:
                 raise ValueError(f'action=[{action}]')
         field = 'uniq_id'
-        uniq_id: str = WebContext.form_data_to_str(data, field)
+        uniq_id: str | None = WebContext.form_data_to_str(data, field)
         name: str | None = None
         public: bool | None = None
         menu_link: bool | None = None
@@ -156,6 +162,7 @@ class ScreenAdminController(BaseEventAdminController):
                                 'Screen [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
+                        assert web_context.admin_screen is not None
                         if (
                             uniq_id != web_context.admin_screen.uniq_id
                             and uniq_id in web_context.admin_event.screens_by_uniq_id
@@ -261,9 +268,9 @@ class ScreenAdminController(BaseEventAdminController):
                     case _:
                         raise ValueError(f'type=[{web_context.admin_screen.type}]')
                 field = 'message_text'
-                message_default = WebContext.form_data_to_bool(
+                message_default = bool(WebContext.form_data_to_bool(
                     data, field + '_checkbox', False
-                )
+                ))
                 if message_default and web_context.admin_screen:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
@@ -274,6 +281,11 @@ class ScreenAdminController(BaseEventAdminController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
+            
+        assert uniq_id is not None
+        assert web_context.admin_screen is not None
+        assert results_tournament_ids is not None
+        
         return StoredScreen(
             id=web_context.admin_screen.id
             if action
@@ -284,7 +296,7 @@ class ScreenAdminController(BaseEventAdminController):
             else None,
             uniq_id=uniq_id,
             type=type_,
-            public=public,
+            public=bool(public),
             name=name,
             columns=columns,
             menu_link=menu_link,
@@ -323,6 +335,10 @@ class ScreenAdminController(BaseEventAdminController):
         field: str = 'name'
         name = WebContext.form_data_to_str(data, field)
         field: str = 'tournament_id'
+        
+        assert web_context.admin_screen is not None
+        assert web_context.admin_screen.event is not None
+
         try:
             if len(web_context.admin_screen.event.tournaments_by_id) == 1:
                 tournament_id = list(
@@ -373,6 +389,10 @@ class ScreenAdminController(BaseEventAdminController):
                                 'Invalid board number [{fixed_board_str}].'
                             ).format(fixed_board_str=fixed_board_str)
                             break
+        
+        assert web_context.admin_screen_set is not None
+        assert tournament_id is not None
+        
         return StoredScreenSet(
             id=web_context.admin_screen_set.id,
             screen_id=web_context.admin_screen.id,
@@ -408,6 +428,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
@@ -452,6 +473,8 @@ class ScreenAdminController(BaseEventAdminController):
                     init_set_tournament_id: int | None = None
                     match action:
                         case 'update':
+                            assert web_context.admin_screen is not None
+                            assert web_context.admin_screen.stored_screen is not None
                             uniq_id = web_context.admin_screen.stored_screen.uniq_id
                             name = web_context.admin_screen.stored_screen.name
                         case 'create':
@@ -478,6 +501,7 @@ class ScreenAdminController(BaseEventAdminController):
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
                         case 'clone':
+                            assert web_context.admin_screen is not None
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
                                 base_uniq_id=web_context.admin_screen.uniq_id
                             )
@@ -493,6 +517,8 @@ class ScreenAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
+                            assert web_context.admin_screen is not None
+                            assert web_context.admin_screen.stored_screen is not None
                             public = web_context.admin_screen.stored_screen.public
                             columns = web_context.admin_screen.stored_screen.columns
                             if web_context.admin_screen.type != ScreenType.IMAGE:
@@ -627,6 +653,8 @@ class ScreenAdminController(BaseEventAdminController):
             case 'screen_sets':
                 if data is None:
                     if web_context.admin_screen_set:
+                        assert web_context.admin_screen is not None
+                        assert web_context.admin_screen_set.stored_screen_set is not None
                         data = {
                             'tournament_id': WebContext.value_to_form_data(
                                 web_context.admin_screen_set.stored_screen_set.tournament_id
@@ -830,6 +858,7 @@ class ScreenAdminController(BaseEventAdminController):
                         ),
                     )
                 case 'clone':
+                    assert web_context.admin_screen is not None
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     if stored_screen.type in [
                         ScreenType.BOARDS,
@@ -1027,6 +1056,7 @@ class ScreenAdminController(BaseEventAdminController):
                     screen_set_id=screen_set_id,
                     data=data,
                 )
+                assert web_context.admin_screen is not None
             case _:
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
@@ -1043,6 +1073,7 @@ class ScreenAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         next_screen_set_id: int | None = None
+        assert web_context.admin_event is not None
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -1063,10 +1094,14 @@ class ScreenAdminController(BaseEventAdminController):
                         )
                     event_database.update_stored_screen_set(stored_screen_set)
                 case 'delete':
+                    assert web_context.admin_screen_set is not None
+                    assert web_context.admin_screen_set.id is not None
                     event_database.delete_stored_screen_set(
                         web_context.admin_screen_set.id, web_context.admin_screen.id
                     )
                 case 'clone':
+                    assert web_context.admin_screen_set is not None
+                    assert web_context.admin_screen_set.id is not None
                     stored_screen_set = event_database.clone_stored_screen_set(
                         web_context.admin_screen_set.id, web_context.admin_screen.id
                     )
