@@ -49,6 +49,23 @@ class PluginUtils:
         source_list.append(element)
 
     @classmethod
+    def insert_on_equals[T](
+        cls,
+        source_list: list[T],
+        element: T,
+        match_element: T,
+        after: bool = True,
+    ):
+        """Wrapper on insert_on_condition where the condition
+        is an element being equal to *match_element*"""
+        cls.insert_on_condition(
+            source_list,
+            element,
+            lambda elem: elem == match_element,
+            after
+        )
+
+    @classmethod
     def insert_on_isinstance[T](
         cls,
         source_list: list[T],
