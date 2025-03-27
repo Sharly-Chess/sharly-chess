@@ -39,7 +39,7 @@ class Federation:
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
-        return base64.b64decode(query_param).decode('utf-8')
+        return cls(base64.b64decode(query_param).decode('utf-8'))
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)

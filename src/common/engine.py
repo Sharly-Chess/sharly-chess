@@ -494,6 +494,9 @@ class Engine:
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
             str(last_stable_version),
         )
+        if not last_stable_matches:
+            print_interactive_warning(_('Checking the version failed.'))
+            return None
         if re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
             str(PAPI_WEB_VERSION),

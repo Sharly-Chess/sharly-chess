@@ -79,7 +79,7 @@ class EventMessage:
             return _('Timer [{timer_uniq_id}]: {text}').format(
                 timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text
             )
-        elif self.screen_set:
+        elif self.screen_set and self.screen:
             return _(
                 'Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}'
             ).format(
@@ -106,7 +106,7 @@ class Event:
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
         self.messages: list[EventMessage] = []
-        last_load_date: float = event_last_load_date_by_uniq_id.get(self.uniq_id, None)
+        last_load_date: float | None = event_last_load_date_by_uniq_id.get(self.uniq_id, None)
         self._silent = (
             last_load_date is not None
             and last_load_date > self.stored_event.last_update
@@ -343,8 +343,8 @@ class Event:
     @cached_property
     def timer_colors(self) -> dict[int, str]:
         return {
-            i: self.stored_event.timer_colors[i]
-            if i in self.stored_event.timer_colors and self.stored_event.timer_colors[i]
+            i: str(self.stored_event.timer_colors[i])
+            if self.stored_event.timer_colors and i in self.stored_event.timer_colors and self.stored_event.timer_colors[i]
             else PapiWebConfig.default_timer_colors[i]
             for i in range(1, 4)
         }
@@ -352,8 +352,8 @@ class Event:
     @cached_property
     def timer_delays(self) -> dict[int, int]:
         return {
-            i: self.stored_event.timer_delays[i]
-            if i in self.stored_event.timer_delays and self.stored_event.timer_delays[i]
+            i: int(self.stored_event.timer_delays[i] or 0)
+            if self.stored_event.timer_delays and i in self.stored_event.timer_delays and self.stored_event.timer_delays[i] is not None
             else PapiWebConfig.default_timer_delays[i]
             for i in range(1, 4)
         }
@@ -483,6 +483,7 @@ class Event:
         timers_by_id: dict[int, Timer] = {
             stored_timer.id: Timer(self, stored_timer)
             for stored_timer in self.stored_event.stored_timers
+            if stored_timer.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -513,6 +514,7 @@ class Event:
         tournaments_by_id: dict[int, Tournament] = {
             stored_tournament.id: Tournament(self, stored_tournament)
             for stored_tournament in self.stored_event.stored_tournaments
+            if stored_tournament.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -583,6 +585,7 @@ class Event:
         screens_by_id: dict[int, Screen] = {
             stored_screen.id: Screen(self, stored_screen=stored_screen)
             for stored_screen in self.stored_event.stored_screens
+            if stored_screen.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -631,6 +634,7 @@ class Event:
         families_by_id: dict[int, Family] = {
             stored_family.id: Family(self, stored_family=stored_family)
             for stored_family in self.stored_event.stored_families
+            if stored_family.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -690,6 +694,7 @@ class Event:
         rotators_by_id: dict[int, Rotator] = {
             stored_rotator.id: Rotator(self, stored_rotator)
             for stored_rotator in self.stored_event.stored_rotators
+            if stored_rotator.id is not None
         }
         if self.errors:
             self.add_warning(_('Errors have been found on rotators.'))

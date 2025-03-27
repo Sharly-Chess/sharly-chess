@@ -13,11 +13,11 @@ from packaging.version import Version
 from common import BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR
 from common.i18n import (
     DEFAULT_LOCALE,
-    _, trusted_locales, untrusted_locales, set_locale, get_locale, locale_localized_name
+    _, trusted_locales, untrusted_locales,
 )
 from common.logger import (
     get_logger,
-    configure_logger, print_interactive_input, input_interactive,
+    configure_logger,
 )
 from common.singleton import Singleton
 from data.player import Federation
@@ -36,6 +36,9 @@ class PapiWebConfig(metaclass=Singleton):
         3. The web port
         4. Whether a browser window opens
         5. The delay between FFE uploads."""
+
+    # The configuration file (SQLite database).
+    config_file: Path = Path('.scc')
 
     # The default log level, used by default.
     default_log_level: int = logging.INFO
@@ -62,9 +65,6 @@ class PapiWebConfig(metaclass=Singleton):
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
-        self.locales: list[str] = trusted_locales
-        if EXPERIMENTAL_FEATURES:
-            self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
         # If the locale is not set ask for it before other things like version recovery,
         # offline databases download, ...
@@ -101,6 +101,9 @@ class PapiWebConfig(metaclass=Singleton):
         )
         logger.debug(' - Platform: %s', platform.platform())
         logger.debug(' - Architecture: %s', " ".join(platform.architecture()))
+        self.locales: list[str] = trusted_locales
+        if EXPERIMENTAL_FEATURES:
+            self.locales += untrusted_locales
         configure_logger(self.log_level)
 
     def reload(self):

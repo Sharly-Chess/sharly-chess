@@ -37,6 +37,7 @@
     "domloup",
     "Domloupéen",
     "Echiquier",
+    "elif",
     "endfor",
     "endmacro",
     "euse",
@@ -85,6 +86,7 @@
     "morphdom",
     "mshe",
     "noconfirm",
+    "nowrap",
     "odbc",
     "ODBC",
     "onefile",
@@ -130,5 +132,8 @@
     "XAMPP",
     "XNNNNN"
   ],
-  "cSpell.language": "en,fr-FR,en-GB,fr"
+  "cSpell.language": "en,fr-FR,en-GB,fr",
+  "files.associations": {
+    "*.html": "jinja"
+  }
 }

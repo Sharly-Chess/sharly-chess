@@ -275,7 +275,7 @@ class WebContext:
                 raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)') from e
 
     @staticmethod
-    def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
+    def value_to_form_data(value: str | int | float | bool | Path | Federation | Club | None) -> str:
         if value is None:
             return ''
         if isinstance(value, str):

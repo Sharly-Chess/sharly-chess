@@ -7,8 +7,6 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from data.board import Board
-from data.player import Player
 from data.screen import Screen
 from data.util import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -16,6 +14,7 @@ from database.sqlite.event.event_store import StoredFamily
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
+    from data.timer import Timer
 
 
 class Family:
@@ -36,10 +35,14 @@ class Family:
 
     @property
     def event(self) -> 'Event':
-        return self._event_ref()
+        event = self._event_ref()
+        if event is None:
+            raise RuntimeError("Event reference has been garbage collected")
+        return event
 
     @property
     def id(self) -> int:
+        assert self.stored_family.id is not None, 'Family id is not set.'
         return self.stored_family.id
 
     @property
@@ -121,7 +124,7 @@ class Family:
         return self.stored_family.timer_id
 
     @property
-    def timer(self) -> 'Tournament | None':
+    def timer(self) -> 'Timer | None':
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
     @property
@@ -140,7 +143,7 @@ class Family:
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_family.ranking_crosstable == True
+                return bool(self.stored_family.ranking_crosstable)
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -228,7 +231,7 @@ class Family:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 if self.tournament.current_round:
                     players_instead_of_boards = False
-                    total_items_number: int = len(self.tournament.boards)
+                    total_items_number: int = len(self.tournament.boards or [])
                     if self.first:
                         if self.first > total_items_number:
                             self.error = _(
@@ -280,9 +283,9 @@ class Family:
                             player
                             for player in self.tournament.players_by_rank.values()
                             if (
-                                       self.ranking_min_points is None or player.points >= self.ranking_min_points
+                                    self.ranking_min_points is None or player.points >= float(self.ranking_min_points)
                                ) and (
-                                       self.ranking_max_points is None or player.points <= self.ranking_max_points
+                                    self.ranking_max_points is None or player.points <= float(self.ranking_max_points)
                                )
                         ]
                     )
