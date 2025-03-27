@@ -1,4 +1,5 @@
 """A file grouping all the "utility" classes/enum"""
+
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from datetime import datetime
@@ -20,10 +21,57 @@ class StaticUtils:
     """Class containing the static utils functions"""
 
     PERFORMANCE_TABLE: list[int] = [
-        0, 7, 14, 21, 29, 36, 43, 50, 57, 65, 72, 80, 87, 95, 102, 110, 117,
-        125, 133, 141, 149, 158, 166, 175, 184, 193, 202, 211, 220, 230, 240,
-        251, 262, 273, 284, 296, 309, 322, 336, 351, 366, 383, 401, 422,
-        444, 470, 501, 538, 589, 677, 800
+        0,
+        7,
+        14,
+        21,
+        29,
+        36,
+        43,
+        50,
+        57,
+        65,
+        72,
+        80,
+        87,
+        95,
+        102,
+        110,
+        117,
+        125,
+        133,
+        141,
+        149,
+        158,
+        166,
+        175,
+        184,
+        193,
+        202,
+        211,
+        220,
+        230,
+        240,
+        251,
+        262,
+        273,
+        284,
+        296,
+        309,
+        322,
+        336,
+        351,
+        366,
+        383,
+        401,
+        422,
+        444,
+        470,
+        501,
+        538,
+        589,
+        677,
+        800,
     ]
 
     @classmethod
@@ -62,28 +110,26 @@ class StaticUtils:
             else:
                 register.append(cls_)
             return cls_
+
         return decorator if cls is None else decorator(cls)
 
 
 class SharedUtils:
     """Class containing the shared utils functions,
     i.e. utils functions which can be overwritten by plugins"""
+
     @staticmethod
     def _get_function(
         plugin_function_name: str, default_function: Callable
     ) -> Callable:
         from plugins.manager import plugin_manager
 
-        return (
-            getattr(plugin_manager.hook, plugin_function_name)()
-            or default_function
-        )
+        return getattr(plugin_manager.hook, plugin_function_name)() or default_function
 
     @classmethod
     def performance_bonus(cls, fractional_score: float) -> int | float:
         return cls._get_function(
-            'get_performance_bonus_function',
-            StaticUtils.performance_bonus
+            'get_performance_bonus_function', StaticUtils.performance_bonus
         )(fractional_score)
 
     @classmethod
@@ -93,8 +139,7 @@ class SharedUtils:
     @classmethod
     def round_ranking(cls, num: float | Decimal) -> int:
         return cls._get_function(
-            'get_round_ranking_function',
-            StaticUtils.round_ranking
+            'get_round_ranking_function', StaticUtils.round_ranking
         )(num)
 
 
@@ -107,6 +152,7 @@ class OptionError(ValueError):
 class AbstractOption(ABC):
     """Abstract class representing an option.
     Options can either be represented in the DB or in a form."""
+
     def __init__(self, value: Any | None = None):
         self.value = value if value is not None else self.default_value
 
@@ -153,6 +199,7 @@ class AbstractOption(ABC):
 
 class AbstractOptionHandler(ABC):
     """Abstract class handling options."""
+
     def __init__(self, options: list[AbstractOption] | None = None):
         self.options: list[AbstractOption] = options or self.default_options()
 
@@ -195,13 +242,10 @@ class AbstractOptionHandler(ABC):
     def _get_option[AbstractOption](
         self, option_type: type[AbstractOption]
     ) -> AbstractOption:
-        """Retrieve an option from its type. If no option with this type 
+        """Retrieve an option from its type. If no option with this type
         exists in the options, returns on with the default value"""
         return next(
-            (
-                option for option in self.options
-                if isinstance(option, option_type)
-            ),
+            (option for option in self.options if isinstance(option, option_type)),
             option_type(),
         )
 
@@ -387,10 +431,14 @@ class Result(IntEnum):
         match self:
             case Result.DOUBLE_FORFEIT:
                 value = (
-                    value or values.get(Result.FORFEIT_LOSS)
-                    or values.get(Result.LOSS)
+                    value or values.get(Result.FORFEIT_LOSS) or values.get(Result.LOSS)
                 )
-            case Result.FORFEIT_LOSS | Result.UNRATED_LOSS | Result.NO_RESULT | Result.ZERO_POINT_BYE:
+            case (
+                Result.FORFEIT_LOSS
+                | Result.UNRATED_LOSS
+                | Result.NO_RESULT
+                | Result.ZERO_POINT_BYE
+            ):
                 value = value or values.get(Result.LOSS)
             case Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 value = value or values.get(Result.DRAW)
@@ -402,7 +450,6 @@ class Result(IntEnum):
             ):
                 value = value or values.get(Result.GAIN)
         return value or self.point_value
-
 
     @property
     def opposite_result(self) -> Self:
@@ -779,7 +826,7 @@ class TournamentPairing(IntEnum):
             TournamentPairing.HALEY_SOFT,
             TournamentPairing.NICOIS,
             TournamentPairing.SAD,
-            TournamentPairing.STANDARD
+            TournamentPairing.STANDARD,
         )
 
 
@@ -1400,9 +1447,9 @@ class PointValueType(Enum):
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value.upper():
-            case "NON":
+            case 'NON':
                 return PointValueType.STANDARD
-            case "OUI":
+            case 'OUI':
                 return PointValueType.PAPI_3_POINTS
             case _:
                 raise ValueError(f'Cannot convert {value=} to {cls.__class__.__name__}')
@@ -1411,6 +1458,6 @@ class PointValueType(Enum):
     def to_papi_value(self) -> str:
         match self:
             case PointValueType.PAPI_3_POINTS:
-                return "OUI"
+                return 'OUI'
             case _:
-                return "NON"
+                return 'NON'

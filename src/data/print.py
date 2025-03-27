@@ -1,4 +1,3 @@
-import itertools
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import partial, cached_property
@@ -9,7 +8,13 @@ from common.i18n import _
 from data.board import Board
 from data.player import Player
 from data.tournament import Tournament
-from data.util import AbstractOptionHandler, AbstractOption, StaticUtils, PlayerCategory, OptionError
+from data.util import (
+    AbstractOptionHandler,
+    AbstractOption,
+    StaticUtils,
+    PlayerCategory,
+    OptionError,
+)
 from plugins.manager import plugin_manager
 
 DOCUMENT_CLASSES: list[type['AbstractPrintDocument']] = []
@@ -17,9 +22,7 @@ OPTION_CLASSES: list[type['AbstractOption']] = []
 PLAYER_SPLITTER_CLASSES: list[type['AbstractPlayerSplitter']] = []
 
 
-register_document = partial(
-    StaticUtils.register_class, register=DOCUMENT_CLASSES
-)
+register_document = partial(StaticUtils.register_class, register=DOCUMENT_CLASSES)
 register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 register_player_splitter = partial(
     StaticUtils.register_class, register=PLAYER_SPLITTER_CLASSES
@@ -33,7 +36,7 @@ class PrintDocumentManager:
 
     @classmethod
     def default_documents(cls) -> list['AbstractPrintDocument']:
-        return [type_()  for type_ in cls.document_types()]
+        return [type_() for type_ in cls.document_types()]
 
     @classmethod
     def document_type_by_id(cls) -> dict[str, type['AbstractPrintDocument']]:
@@ -45,7 +48,7 @@ class PrintDocumentManager:
 
     @classmethod
     def default_options(cls) -> list['AbstractOption']:
-        return [type_()  for type_ in cls.option_types()]
+        return [type_() for type_ in cls.option_types()]
 
     @classmethod
     def option_type_by_id(cls) -> dict[str, type['AbstractOption']]:
@@ -54,9 +57,7 @@ class PrintDocumentManager:
     @staticmethod
     def player_splitters() -> list['AbstractPlayerSplitter']:
         splitters = [type_() for type_ in PLAYER_SPLITTER_CLASSES]
-        plugin_manager.hook.insert_print_player_splitters(
-            player_splitters=splitters
-        )
+        plugin_manager.hook.insert_print_player_splitters(player_splitters=splitters)
         return splitters
 
     @classmethod
@@ -182,9 +183,7 @@ class PlayerPrintSplitOption(AbstractOption):
 
     @cached_property
     def player_splitter(self) -> AbstractPlayerSplitter | None:
-        return PrintDocumentManager.player_splitter_by_id().get(
-            self.value
-        )
+        return PrintDocumentManager.player_splitter_by_id().get(self.value)
 
     @override
     def validate(self):
@@ -271,9 +270,9 @@ class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
     @property
     def ordered_splitted_players(self) -> dict[str, list[Player]]:
         split_by = self._get_option(PlayerPrintSplitOption).value
-        splitter: AbstractPlayerSplitter = (
-            PrintDocumentManager.player_splitter_by_id()[split_by]
-        )
+        splitter: AbstractPlayerSplitter = PrintDocumentManager.player_splitter_by_id()[
+            split_by
+        ]
         return splitter.split_players(self.ordered_players)
 
     @staticmethod
@@ -342,15 +341,17 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
     @property
     def ranking_round(self) -> int:
         return (
-            self._get_option(RoundPrintOption).value or
-            self.tournament.max_ranking_round
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
         )
 
     @property
     def ordered_players(self) -> list[Player]:
-        return list(self.tournament.compute_player_ranks(
-            after_round=self.ranking_round
-        ).values())
+        return list(
+            self.tournament.compute_player_ranks(
+                after_round=self.ranking_round
+            ).values()
+        )
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:
@@ -364,16 +365,16 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
             return
         if ranking_round > self.tournament.rounds:
             raise OptionError(
-                _(
-                    'Not part of the selected tournament ({rounds} rounds).'
-                ).format(rounds=self.tournament.rounds),
+                _('Not part of the selected tournament ({rounds} rounds).').format(
+                    rounds=self.tournament.rounds
+                ),
                 ranking_round,
             )
         if ranking_round > self.tournament.max_ranking_round:
             raise OptionError(
-                _(
-                    'Round not finished (last finished: {round}).'
-                ).format(round=self.tournament.max_ranking_round),
+                _('Round not finished (last finished: {round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
                 ranking_round,
             )
 
@@ -429,9 +430,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
 
     @property
     def boards(self) -> list[Board]:
-        self.tournament.calculate_points_before_round(
-            before_round=self.at_round
-        )
+        self.tournament.calculate_points_before_round(before_round=self.at_round)
         boards, _ = self.tournament.build_boards(self.at_round)
         return boards
 
@@ -444,10 +443,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
 
     @property
     def at_round(self) -> int:
-        return (
-            self._get_option(RoundPrintOption).value
-            or self.tournament.current_round
-        )
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:
@@ -461,16 +457,16 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
             return
         if at_round > self.tournament.rounds:
             raise OptionError(
-                _(
-                    'Not part of the selected tournament ({rounds} rounds).'
-                ).format(rounds=self.tournament.rounds),
+                _('Not part of the selected tournament ({rounds} rounds).').format(
+                    rounds=self.tournament.rounds
+                ),
                 at_round,
             )
         if at_round > self.tournament.current_round:
             raise OptionError(
-                _(
-                    'Round not paired (last paired: {round}).'
-                ).format(round=self.tournament.current_round),
+                _('Round not paired (last paired: {round}).').format(
+                    round=self.tournament.current_round
+                ),
                 at_round,
             )
 

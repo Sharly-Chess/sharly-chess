@@ -5563,4 +5563,3 @@ msgstr "{screen_type}- οθόνη"
 
 #~ msgid "The FFE database is not available."
 #~ msgstr "Η βάση δεδομένων FFE δεν είναι διαθέσιμη."
-

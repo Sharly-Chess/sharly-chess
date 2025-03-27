@@ -5560,4 +5560,3 @@ msgstr "{screen_type}-Bildschirm"
 
 #~ msgid "The FFE database is not available."
 #~ msgstr "Die FFE-Datenbank ist nicht verfügbar."
-

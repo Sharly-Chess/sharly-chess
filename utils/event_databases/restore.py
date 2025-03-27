@@ -73,6 +73,5 @@ if __name__ == '__main__':
     for backup in to_restore:
         backup.restore()
         print_interactive_info(
-            f'Database "{backup.name}" restored to '
-            f'version {backup.version.public}'
+            f'Database "{backup.name}" restored to version {backup.version.public}'
         )

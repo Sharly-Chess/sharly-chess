@@ -212,17 +212,25 @@ class FamilyAdminController(BaseEventAdminController):
                             data, 'players_show_unpaired'
                         )
                     case 'ranking':
-                        ranking_crosstable = WebContext.form_data_to_bool(data, field := 'ranking_crosstable')
+                        ranking_crosstable = WebContext.form_data_to_bool(
+                            data, field := 'ranking_crosstable'
+                        )
                         try:
-                            ranking_round = WebContext.form_data_to_int(data, field := 'ranking_round')
+                            ranking_round = WebContext.form_data_to_int(
+                                data, field := 'ranking_round'
+                            )
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
                         try:
-                            ranking_min_points = WebContext.form_data_to_float(data, field := 'ranking_min_points')
+                            ranking_min_points = WebContext.form_data_to_float(
+                                data, field := 'ranking_min_points'
+                            )
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
                         try:
-                            ranking_max_points = WebContext.form_data_to_float(data, field := 'ranking_max_points')
+                            ranking_max_points = WebContext.form_data_to_float(
+                                data, field := 'ranking_max_points'
+                            )
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
                     case _:
@@ -315,9 +323,9 @@ class FamilyAdminController(BaseEventAdminController):
             'admin_event_tab': 'admin-event-families-tab',
             'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
                 web_context.request,
-            )
+            ),
         }
-                        
+
         match modal:
             case None:
                 pass
@@ -360,9 +368,7 @@ class FamilyAdminController(BaseEventAdminController):
                                 base_uniq_id=web_context.admin_family.stored_family.uniq_id
                             )
                             name = web_context.admin_event.get_unused_family_name(
-                                family_type=ScreenType(
-                                    web_context.admin_family.type
-                                ),
+                                family_type=ScreenType(web_context.admin_family.type),
                                 base_name=web_context.admin_family.stored_family.name,
                             )
                         case 'delete':
@@ -451,10 +457,16 @@ class FamilyAdminController(BaseEventAdminController):
                         'players_show_unpaired': WebContext.value_to_form_data(
                             players_show_unpaired
                         ),
-                        'ranking_crosstable': WebContext.value_to_form_data(ranking_crosstable),
+                        'ranking_crosstable': WebContext.value_to_form_data(
+                            ranking_crosstable
+                        ),
                         'ranking_round': WebContext.value_to_form_data(ranking_round),
-                        'ranking_min_points': WebContext.value_to_form_data(ranking_min_points),
-                        'ranking_max_points': WebContext.value_to_form_data(ranking_max_points),
+                        'ranking_min_points': WebContext.value_to_form_data(
+                            ranking_min_points
+                        ),
+                        'ranking_max_points': WebContext.value_to_form_data(
+                            ranking_max_points
+                        ),
                     }
                     stored_family: StoredFamily = (
                         cls._admin_validate_family_update_data(
@@ -590,25 +602,28 @@ class FamilyAdminController(BaseEventAdminController):
                     stored_family = event_database.add_stored_family(stored_family)
                     event_database.commit()
                     Message.success(
-                        request, _('Family [{family_uniq_id}] has been created.').format(
+                        request,
+                        _('Family [{family_uniq_id}] has been created.').format(
                             family_uniq_id=stored_family.uniq_id
-                        )
+                        ),
                     )
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
                     event_database.commit()
                     Message.success(
-                        request, _('Family [{family_uniq_id}] has been updated.').format(
+                        request,
+                        _('Family [{family_uniq_id}] has been updated.').format(
                             family_uniq_id=stored_family.uniq_id
-                        )
+                        ),
                     )
                 case 'delete':
                     event_database.delete_stored_family(web_context.admin_family.id)
                     event_database.commit()
                     Message.success(
-                        request, _('Family [{family_uniq_id}] has been deleted.').format(
+                        request,
+                        _('Family [{family_uniq_id}] has been deleted.').format(
                             family_uniq_id=web_context.admin_family.id
-                        )
+                        ),
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')

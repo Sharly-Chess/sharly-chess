@@ -28,8 +28,7 @@ class ChessEventPlayer:
                 return PlayerFFELicence.A
             case _:
                 raise ValueError(f'Unknown value: {value}')
-            
-            
+
     def __init__(
         self,
         chessevent_player_info: dict[str, bool | str | int | dict[int, float] | None],

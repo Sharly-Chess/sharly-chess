@@ -78,6 +78,7 @@ class Club:
 
 class TournamentPlayer:
     """A class representing a player in a tournament"""
+
     def __init__(
         self,
         id: int | None,
@@ -119,11 +120,7 @@ class TournamentPlayer:
     def point_values(self) -> dict[Result, float] | None:
         return self._point_values
 
-    def points_before(
-            self,
-            before_round: int,
-            only_played: bool = False
-    ) -> float:
+    def points_before(self, before_round: int, only_played: bool = False) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
@@ -133,15 +130,10 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index < before_round and
-            (pairing.played or not only_played)
+            if round_index < before_round and (pairing.played or not only_played)
         )
 
-    def points_after(
-            self,
-            after_round: int,
-            only_played: bool = False
-    ) -> float:
+    def points_after(self, after_round: int, only_played: bool = False) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
@@ -151,8 +143,7 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index <= after_round and
-            (pairing.played or not only_played)
+            if round_index <= after_round and (pairing.played or not only_played)
         )
 
     def total_points(self, only_played: bool = False) -> float:
@@ -182,7 +173,6 @@ class Player(TournamentPlayer):
         federation: Federation,
         title: PlayerTitle,
         pairings: dict[int, Pairing],
-
         # Extra fields
         mail: str,
         phone: str,
@@ -196,9 +186,8 @@ class Player(TournamentPlayer):
         check_in: bool,
         tournament: 'Tournament | None' = None,
         errors: dict[str, str] | None = None,
-
         # Plugins can add their own player data
-        plugin_data: dict[str, dict[str, Any]] | None = None
+        plugin_data: dict[str, dict[str, Any]] | None = None,
     ):
         super().__init__(
             id,
@@ -295,16 +284,15 @@ class Player(TournamentPlayer):
     def point_values(self) -> dict[Result, float] | None:
         return self.tournament.point_values if self.tournament else None
 
-    def compute_points(
-            self,
-            *,
-            before_round: int
-    ):
+    def compute_points(self, *, before_round: int):
         """Computes and stores the points scored by the player before round `before_round` (returns None)"""
         self.points = self.points_before(before_round)
 
     def points_total(self) -> float:
-        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
+        return sum(
+            pairing.result.points(self.point_values)
+            for pairing in self.pairings.values()
+        )
 
     @staticmethod
     def _points_str(points: float | None) -> str:
@@ -445,19 +433,16 @@ class Player(TournamentPlayer):
     @property
     def tie_break_values_as_strings(self) -> list[str]:
         """Returns the player's tie-break values as strings."""
-        assert self._tie_break_values is not None, \
+        assert self._tie_break_values is not None, (
             'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
+        )
         return [
             self._points_str(float(tie_break_value))
             for tie_break_value in self._tie_break_values
             if isinstance(tie_break_value, SupportsFloat)
         ]
 
-    def compute_tie_break_values(
-        self,
-        *,
-        after_round: int | None
-    ):
+    def compute_tie_break_values(self, *, after_round: int | None):
         self._tie_break_values = [
             tie_break.compute_player_value(self, after_round=after_round)
             for tie_break in self.tournament.tie_breaks
@@ -465,7 +450,9 @@ class Player(TournamentPlayer):
 
     @property
     def rank(self) -> int:
-        assert self._rank, 'Player._rank is not set, call Tournament.compute_player_ranks() before.'
+        assert self._rank, (
+            'Player._rank is not set, call Tournament.compute_player_ranks() before.'
+        )
         return self._rank
 
     @rank.setter
@@ -475,11 +462,12 @@ class Player(TournamentPlayer):
     @cached_property
     def crosstable_strings(self) -> list[str]:
         return [
-            pairing.result.to_crosstable + (
+            pairing.result.to_crosstable
+            + (
                 f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}'
                 f'{pairing.color.to_crosstable}'
-                if pairing.opponent_id else
-                ''
+                if pairing.opponent_id
+                else ''
             )
             for pairing in self.pairings.values()
         ]
@@ -494,9 +482,7 @@ class Player(TournamentPlayer):
 
     @property
     def rank_sort_key(self) -> tuple:
-        tie_breaks = tuple(
-            (-tie_break for tie_break in self._tie_break_values)
-        )
+        tie_breaks = tuple((-tie_break for tie_break in self._tie_break_values))
         return (-self.points,) + tie_breaks + self.starting_rank_sort_key
 
     def __le__(self, other: 'Player') -> bool:
@@ -516,8 +502,7 @@ class Player(TournamentPlayer):
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
-            f'{self.ratings[rt]}{self.rating_types[rt]}'
-            for rt in TournamentRating
+            f'{self.ratings[rt]}{self.rating_types[rt]}' for rt in TournamentRating
         )
         return (
             f'(#{self.id} rank={self._rank} ratings={ratings_str} title={self.title.value} gender={self.gender.value} '

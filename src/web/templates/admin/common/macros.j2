@@ -216,10 +216,10 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
                         class="ms-2"
-                    /> 
+                    />
                 {% endif %}
             </div>
-            
+
             <div
                 class="
                     pw-input-group
@@ -617,7 +617,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
 
 {% macro extra_admin_column_cell(
     at,
-    value, 
+    value,
     extra_columns = {}
 ) %}
     {% with value=value %}

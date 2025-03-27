@@ -14,7 +14,7 @@ Il s'agit d'une incompatibilité entre Windows 7 et la version de Python utilis�
 
 Dans la version actuelle de Papi-web, Microsoft Defender SmartScreen affiche l'erreur ci-dessus.
 
-Le seul moyen de contourner cette erreur est de cliquer sur **Informations complémentaires** puis **Exécuter quand même**.  
+Le seul moyen de contourner cette erreur est de cliquer sur **Informations complémentaires** puis **Exécuter quand même**.
 
 ## Blocage du serveur web par le pare-feu du serveur
 
@@ -22,14 +22,14 @@ Par défaut, il est possible que le serveur web ne soit pas autorisé par le par
 
 ![Demande d'ouverture du pare-feu Microsoft Defender](images/faq/faq-system-defender-firewall-1.jpg)
 
-Selon votre pare-feu, le message pourra être différent et la méthode d'ouverture des ports nécessaires pourra également différer ; 
+Selon votre pare-feu, le message pourra être différent et la méthode d'ouverture des ports nécessaires pourra également différer ;
 si nécessaire, contactez votre administrateur réseau pour ouvrir les flux entrants du serveur (par défaut le port 80 en tcp/udp, ci-dessous l'autorisation ).
 
 ![Exemple d'autorisation du pare-feu Microsoft Defender pour Papi-web](images/faq/faq-system-defender-firewall-2.jpg)
 
 ## Avast refuse l'installation de Papi-web
 
-Lors de l'extraction de l'archive `papi-web-<x.y.z>.zip`, Avast refuse d'installer l'exécutable `papi-web-<x.y.z>.exe` dans le répertoire `bin` avec le message suivant : 
+Lors de l'extraction de l'archive `papi-web-<x.y.z>.zip`, Avast refuse d'installer l'exécutable `papi-web-<x.y.z>.exe` dans le répertoire `bin` avec le message suivant :
 
 ![Message de Avast à l'extraction de `papi-web-<x.y.z>.zip`](images/faq/faq-system-avast-1.jpg)
 

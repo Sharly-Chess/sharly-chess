@@ -76,7 +76,7 @@ class Pairing:
             Result.HALF_POINT_BYE,
             Result.ZERO_POINT_BYE,
             Result.FULL_POINT_BYE,
-            Result.PAIRING_ALLOCATED_BYE
+            Result.PAIRING_ALLOCATED_BYE,
         )
 
     @property
@@ -89,7 +89,7 @@ class Pairing:
             Result.FORFEIT_LOSS,
             Result.DOUBLE_FORFEIT,
             Result.HALF_POINT_BYE,
-            Result.ZERO_POINT_BYE
+            Result.ZERO_POINT_BYE,
         )
 
     @property
@@ -121,6 +121,4 @@ class Pairing:
         )
 
     def __repr__(self):
-        return (
-            f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
-        )
+        return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'

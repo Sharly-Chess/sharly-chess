@@ -1180,9 +1180,6 @@ msgstr ""
 msgid "Error while creating the database: {ex}."
 msgstr ""
 
-msgid "Error while updating the FFE database."
-msgstr ""
-
 msgid "Error while updating the FIDE database."
 msgstr ""
 
@@ -4222,3 +4219,5 @@ msgstr ""
 #~ msgid "{number} players written."
 #~ msgstr ""
 
+#~ msgid "Error while updating the FFE database."
+#~ msgstr ""

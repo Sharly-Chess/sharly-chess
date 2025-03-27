@@ -246,9 +246,7 @@ class Event:
         counter: Counter[Federation] = Counter[Federation]()
         for tournament in self.tournaments_by_id.values():
             for federation in tournament.federation_counts:
-                counter[federation] += tournament.federation_counts[
-                    federation
-                ]
+                counter[federation] += tournament.federation_counts[federation]
         return counter
 
     @cached_property

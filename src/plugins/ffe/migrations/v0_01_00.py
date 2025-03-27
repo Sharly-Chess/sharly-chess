@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from sqlite3 import OperationalError
-from typing import Literal, override
+from typing import Literal
 
 from plugins.utils import AbstractPluginMigration
 
@@ -20,9 +20,7 @@ class Column:
 class Migration(AbstractPluginMigration):
     def forward(self):
         # TODO replace by column creation once deprecated columns have been globally deleted
-        self.database.execute(
-            'ALTER TABLE `info` ADD `ffe_plugin_version` TEXT'
-        )
+        self.database.execute('ALTER TABLE `info` ADD `ffe_plugin_version` TEXT')
         columns: list[Column] = [
             Column('ffe_id', 'INTEGER'),
             Column('ffe_password', 'TEXT'),
@@ -50,18 +48,10 @@ class Migration(AbstractPluginMigration):
                 )
 
     def backward(self):
-        self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN `ffe_id`'
-        )
-        self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN `ffe_password`'
-        )
-        self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN `ffe_last_upload`'
-        )
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `ffe_id`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `ffe_password`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `ffe_last_upload`')
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `ffe_last_rules_upload`'
         )
-        self.database.execute(
-            'ALTER TABLE `info` DROP COLUMN `ffe_plugin_version`'
-        )
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `ffe_plugin_version`')

@@ -1180,9 +1180,6 @@ msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{r
 msgid "Error while creating the database: {ex}."
 msgstr "Erreur à la création de la base de données : {ex}."
 
-msgid "Error while updating the FFE database."
-msgstr "Erreur pendant la mise à jour de la base de données FFE."
-
 msgid "Error while updating the FIDE database."
 msgstr "Erreur pendant la mise à jour de la base de données FIDE."
 
@@ -4222,3 +4219,5 @@ msgstr "ecran-{screen_type}"
 #~ msgid "{number} players written."
 #~ msgstr "{number} joueur·euses enregistré·es."
 
+#~ msgid "Error while updating the FFE database."
+#~ msgstr "Erreur pendant la mise à jour de la base de données FFE."

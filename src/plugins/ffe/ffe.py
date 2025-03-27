@@ -14,14 +14,18 @@ from packaging.version import Version
 
 from common.exception import PapiWebException
 from common.i18n import _
-from common.logger import print_interactive_error
 from common.network import NetworkMonitor
 from data.event import Event
 from data.input_output import AbstractPlayerUpdater, PlayerMatch, PlayerUpdaterField
 from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
-from data.print import AbstractPlayerSplitter, ClubPlayerSplitter, AbstractPrintDocument, AbstractPlayerPrintDocument
+from data.print import (
+    AbstractPlayerSplitter,
+    ClubPlayerSplitter,
+    AbstractPrintDocument,
+    AbstractPlayerPrintDocument,
+)
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
@@ -32,7 +36,12 @@ from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_break import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
-from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginMigrationManager, PluginUtils
+from plugins.utils import (
+    AbstractPlugin,
+    PluginEngineArgument,
+    PluginMigrationManager,
+    PluginUtils,
+)
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -47,7 +56,6 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfePlugin(AbstractPlugin):
-
     @property
     def id(self) -> str:
         return PLUGIN_NAME
@@ -128,9 +136,10 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
-            'ffe_leagues': self.FFE_LEAGUES
-}
+            'ffe_search_available': FfeDatabase().exists()
+            or NetworkMonitor.connected(),
+            'ffe_leagues': self.FFE_LEAGUES,
+        }
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
@@ -160,11 +169,14 @@ class FfePlugin(AbstractPlugin):
         pd = player.plugin_data
         return {
             'RefFFE': self.get_data(
-                pd, 'ffe_id', (datetime.now() - relativedelta(years=30))  # like Papi does :-(
+                pd,
+                'ffe_id',
+                (datetime.now() - relativedelta(years=30)),  # like Papi does :-(
             ),
             'AffType': (
                 self.get_data(pd, 'ffe_licence').to_papi_value
-                if self.get_data(pd, 'ffe_licence') else ''
+                if self.get_data(pd, 'ffe_licence')
+                else ''
             ),
             'NrFFE': self.get_data(pd, 'ffe_licence_number', None),
             'Ligue': self.get_data(pd, 'league', ''),
@@ -231,11 +243,11 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def get_player_search_template(self) -> str:
-        return "/ffe_search.html"
+        return '/ffe_search.html'
 
     @hookimpl
     def get_player_form_fields_template(self) -> str:
-        return "/ffe_player_form_fields.html"
+        return '/ffe_player_form_fields.html'
 
     @hookimpl
     def get_player_form_data(
@@ -262,7 +274,7 @@ class FfePlugin(AbstractPlugin):
         action: str,
         tournament: 'Tournament',
         data: dict[str, str],
-        errors: dict[str, str]
+        errors: dict[str, str],
     ) -> dict[str, Any]:
         league: str | None = WebContext.form_data_to_str(data, field := 'ffe_league')
         if league and league not in self.FFE_LEAGUES:
@@ -274,9 +286,7 @@ class FfePlugin(AbstractPlugin):
         if tournament:
             # When adding a player, the tournament may not be chosen (in this case do not test)
             try:
-                ffe_id = WebContext.form_data_to_int(
-                    data, field := 'ffe_id', minimum=1
-                )
+                ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
                 ffe_ids = [
                     self.get_data(player.plugin_data, 'ffe_id', None)
                     for player in tournament.players_by_id.values()
@@ -286,13 +296,10 @@ class FfePlugin(AbstractPlugin):
                     errors[field] = _(
                         'The player with FFE ID [{ffe_id}] already '
                         'plays tournament [{tournament_uniq_id}].'
-                    ).format(
-                        ffe_id=ffe_id,
-                        tournament_uniq_id=tournament.uniq_id
-                    )
+                    ).format(ffe_id=ffe_id, tournament_uniq_id=tournament.uniq_id)
             except ValueError:
-                errors[field] = (
-                    _('Invalid FFE ID [{ffe_id}].').format(ffe_id=data[field])
+                errors[field] = _('Invalid FFE ID [{ffe_id}].').format(
+                    ffe_id=data[field]
                 )
         ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
         try:
@@ -323,15 +330,15 @@ class FfePlugin(AbstractPlugin):
                         'tournament [{tournament_uniq_id}].'
                     ).format(
                         ffe_licence_number=ffe_licence_number,
-                        tournament_uniq_id=tournament.uniq_id
+                        tournament_uniq_id=tournament.uniq_id,
                     )
 
         return {
             self.id: {
-                "ffe_id": ffe_id,
-                "ffe_licence": ffe_licence,
-                "ffe_licence_number": ffe_licence_number,
-                "league": league,
+                'ffe_id': ffe_id,
+                'ffe_licence': ffe_licence,
+                'ffe_licence_number': ffe_licence_number,
+                'league': league,
             }
         }
 
@@ -346,21 +353,29 @@ class FfePlugin(AbstractPlugin):
                         TournamentRating.RAPID,
                         TournamentRating.BLITZ,
                     ]:
-                        if player.rating_types[rating_type] == PlayerRatingType.ESTIMATED:
-                            player.ratings[rating_type] = ffe_player.ratings[rating_type]
-                            player.rating_types[rating_type] = ffe_player.rating_types[rating_type]
-                    if ffe_player.date_of_birth and player.year_of_birth == ffe_player.year_of_birth:
+                        if (
+                            player.rating_types[rating_type]
+                            == PlayerRatingType.ESTIMATED
+                        ):
+                            player.ratings[rating_type] = ffe_player.ratings[
+                                rating_type
+                            ]
+                            player.rating_types[rating_type] = ffe_player.rating_types[
+                                rating_type
+                            ]
+                    if (
+                        ffe_player.date_of_birth
+                        and player.year_of_birth == ffe_player.year_of_birth
+                    ):
                         player.date_of_birth = ffe_player.date_of_birth
                     player.comment = ffe_player.comment
                     player.club = ffe_player.club
                     data = ffe_player.plugin_data
                     player.plugin_data[self.id] = {
-                        "ffe_id": self.get_data(data, 'ffe_id'),
-                        "ffe_licence": self.get_data(data, 'ffe_licence'),
-                        "ffe_licence_number": self.get_data(
-                            data, 'ffe_licence_number'
-                        ),
-                        "league": self.get_data(data, 'league')
+                        'ffe_id': self.get_data(data, 'ffe_id'),
+                        'ffe_licence': self.get_data(data, 'ffe_licence'),
+                        'ffe_licence_number': self.get_data(data, 'ffe_licence_number'),
+                        'league': self.get_data(data, 'league'),
                     }
 
     @hookimpl
@@ -403,15 +418,14 @@ class FfePlugin(AbstractPlugin):
     def is_tournament_participation_possible(
         self, tournament: 'Tournament', player: Player
     ) -> str | None:
-        ffe_licence_number = player.plugin_data.get(self.id, {}).get('ffe_licence_number', None)
+        ffe_licence_number = player.plugin_data.get(self.id, {}).get(
+            'ffe_licence_number', None
+        )
         ffe_id = self.get_data(player.plugin_data, 'ffe_id', None)
-        if (
-            ffe_licence_number and any(
-                self.get_data(
-                    player_.plugin_data, 'ffe_licence_number', None
-                ) == ffe_licence_number
-                for player_ in tournament.players_by_id.values()
-            )
+        if ffe_licence_number and any(
+            self.get_data(player_.plugin_data, 'ffe_licence_number', None)
+            == ffe_licence_number
+            for player_ in tournament.players_by_id.values()
         ):
             return _(
                 'FFE licence [{ffe_licence_number}] already '
@@ -423,11 +437,9 @@ class FfePlugin(AbstractPlugin):
                 tournament_uniq_id=tournament.uniq_id,
             )
 
-        if (
-            ffe_id and any(
-                self.get_data(player_.plugin_data, 'ffe_id', None) == ffe_id
-                for player_ in tournament.players_by_id.values()
-            )
+        if ffe_id and any(
+            self.get_data(player_.plugin_data, 'ffe_id', None) == ffe_id
+            for player_ in tournament.players_by_id.values()
         ):
             # This string is not translated because the error should never happen
             return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].'
@@ -438,15 +450,15 @@ class FfePlugin(AbstractPlugin):
     def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
         return [
             ExtraAdminColumn(
-                at="club",
-                header_template="/ffe_player_league_header.html",
-                cell_template="/ffe_player_league_cell.html",
+                at='club',
+                header_template='/ffe_player_league_header.html',
+                cell_template='/ffe_player_league_cell.html',
             ),
             ExtraAdminColumn(
-                at="owed",
-                header_template="/ffe_player_licence_header.html",
-                cell_template="/ffe_player_licence_cell.html",
-            )
+                at='owed',
+                header_template='/ffe_player_licence_header.html',
+                cell_template='/ffe_player_licence_cell.html',
+            ),
         ]
 
     @hookimpl
@@ -479,7 +491,7 @@ class FfePlugin(AbstractPlugin):
         )
 
     @hookimpl
-    def clear_player_filters(self,request: HTMXRequest):
+    def clear_player_filters(self, request: HTMXRequest):
         FFESessionHandler.set_session_admin_players_filter_leagues(request, [])
         FFESessionHandler.set_session_admin_players_filter_licences(request, [])
 
@@ -497,44 +509,48 @@ class FfePlugin(AbstractPlugin):
     def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
         return [
             ExtraColumn(
-                at="tournament",
-                title="ffe_id",
+                at='tournament',
+                title='ffe_id',
                 value=lambda player: self.get_data(player.plugin_data, 'ffe_id'),
             ),
             ExtraColumn(
-                at="tournament",
-                title="ffe_licence_number",
-                value=lambda player: self.get_data(player.plugin_data, 'ffe_licence_number'),
+                at='tournament',
+                title='ffe_licence_number',
+                value=lambda player: self.get_data(
+                    player.plugin_data, 'ffe_licence_number'
+                ),
             ),
             ExtraColumn(
-                at="tournament",
-                title="ffe_licence",
-                value=lambda player: self.get_data(player.plugin_data, 'ffe_licence').short_name,
+                at='tournament',
+                title='ffe_licence',
+                value=lambda player: self.get_data(
+                    player.plugin_data, 'ffe_licence'
+                ).short_name,
             ),
             ExtraColumn(
-                at="club",
-                title="league",
+                at='club',
+                title='league',
                 value=lambda player: self.get_data(player.plugin_data, 'league'),
-            )
+            ),
         ]
 
     @hookimpl
     def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
         return [
             ExtraAdminColumn(
-                at="fide_id",
-                header_template="/ffe_players_update/licence_number_header.html",
-                cell_template="/ffe_players_update/licence_number_cell.html",
+                at='fide_id',
+                header_template='/ffe_players_update/licence_number_header.html',
+                cell_template='/ffe_players_update/licence_number_cell.html',
             ),
             ExtraAdminColumn(
-                at="fide_id",
-                header_template="/ffe_players_update/licence_header.html",
-                cell_template="/ffe_players_update/licence_cell.html",
+                at='fide_id',
+                header_template='/ffe_players_update/licence_header.html',
+                cell_template='/ffe_players_update/licence_cell.html',
             ),
             ExtraAdminColumn(
-                at="club",
-                header_template="/ffe_players_update/league_header.html",
-                cell_template="/ffe_players_update/league_cell.html",
+                at='club',
+                header_template='/ffe_players_update/league_header.html',
+                cell_template='/ffe_players_update/league_cell.html',
             ),
         ]
 
@@ -545,11 +561,9 @@ class FfePlugin(AbstractPlugin):
                 return None
             diff_field_ids = super().diff_field_ids
             for field_id in ('league', 'ffe_licence'):
-                if (
-                    field_id in self.field_ids and
-                    get_data(self.player.plugin_data, field_id) !=
-                    get_data(self.match_player.plugin_data, field_id)
-                ):
+                if field_id in self.field_ids and get_data(
+                    self.player.plugin_data, field_id
+                ) != get_data(self.match_player.plugin_data, field_id):
                     diff_field_ids.append(field_id)
             return diff_field_ids
 
@@ -559,11 +573,9 @@ class FfePlugin(AbstractPlugin):
                 return
             super().update_player_from_match(field_ids)
             for field_id in ('league', 'ffe_licence'):
-                if (
-                    field_id in self.field_ids and
-                    get_data(self.player.plugin_data, field_id) !=
-                    (match := get_data(self.match_player.plugin_data, field_id))
-                ):
+                if field_id in self.field_ids and get_data(
+                    self.player.plugin_data, field_id
+                ) != (match := get_data(self.match_player.plugin_data, field_id)):
                     self.player.plugin_data[PLUGIN_NAME][field_id] = match
 
     class FfePlayerUpdater(AbstractPlayerUpdater):
@@ -580,11 +592,11 @@ class FfePlugin(AbstractPlugin):
         @override
         def fields(self) -> list[PlayerUpdaterField]:
             return (
-                self._ratings_fields() + 
-                self._identity_fields() + 
-                self._federation_fields() + 
-                self._club_fields() + 
-                self._fide_fields()
+                self._ratings_fields()
+                + self._identity_fields()
+                + self._federation_fields()
+                + self._club_fields()
+                + self._fide_fields()
             ) + [
                 PlayerUpdaterField(_('League'), 'league'),
                 PlayerUpdaterField(_('FFE licence number'), 'ffe_licence_number'),
@@ -610,8 +622,8 @@ class FfePlugin(AbstractPlugin):
             try:
                 async with FFESqlServer() as server:
                     match_players = [
-                        player async for player in await
-                        server.get_players_by_ffe_licence_number(
+                        player
+                        async for player in await server.get_players_by_ffe_licence_number(
                             ffe_licence_numbers
                         )
                     ]
@@ -624,10 +636,8 @@ class FfePlugin(AbstractPlugin):
                         '(last update on {date})'
                     ).format(date=database.updated_at.strftime('%d-%m-%Y'))
                     with database:
-                        match_players = (
-                            database.get_players_by_ffe_licence_number(
-                                ffe_licence_numbers
-                            )
+                        match_players = database.get_players_by_ffe_licence_number(
+                            ffe_licence_numbers
                         )
                 else:
                     return None
@@ -635,8 +645,9 @@ class FfePlugin(AbstractPlugin):
                 players,
                 match_players,
                 lambda p1, p2: (
-                   self._get_ffe_licence_number(p1) and
-                   self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
+                    self._get_ffe_licence_number(p1)
+                    and self._get_ffe_licence_number(p1)
+                    == self._get_ffe_licence_number(p2)
                 ),
                 field_ids,
                 diff_only,
@@ -679,10 +690,7 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def on_tournament_init(self, tournament: 'Tournament'):
         data = tournament.stored_tournament.plugin_data
-        if (
-            not self.get_data(data, 'ffe_id') or
-            not self.get_data(data, 'ffe_password')
-        ):
+        if not self.get_data(data, 'ffe_id') or not self.get_data(data, 'ffe_password'):
             tournament.event.add_debug(
                 _(
                     'Certification number and FFE password not set, '
@@ -693,17 +701,14 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def get_tournament_form_fields_template(self) -> str:
-        return "/ffe_tournament_form_fields.html"
+        return '/ffe_tournament_form_fields.html'
 
     @hookimpl
     def get_tournament_form_data(
         self, tournament: 'Tournament | None'
     ) -> dict[str, Any]:
         if not tournament:
-            return {
-                'ffe_id': '',
-                'ffe_password': ''
-            }
+            return {'ffe_id': '', 'ffe_password': ''}
 
         return {
             'ffe_id': WebContext.value_to_form_data(
@@ -720,7 +725,7 @@ class FfePlugin(AbstractPlugin):
         action: str,
         tournament: 'Tournament | None',
         data: dict[str, str],
-        errors: dict[str, str]
+        errors: dict[str, str],
     ) -> dict[str, Any]:
         ffe_id = None
         try:
@@ -737,18 +742,16 @@ class FfePlugin(AbstractPlugin):
         previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
 
         return {
-            self.id: previous_data | {
-                "ffe_id": ffe_id,
-                "ffe_password": ffe_password,
+            self.id: previous_data
+            | {
+                'ffe_id': ffe_id,
+                'ffe_password': ffe_password,
             }
         }
 
     @hookimpl
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
-        return (
-            "/ffe_tournament_card_block.html",
-            {}
-        )
+        return ('/ffe_tournament_card_block.html', {})
 
     # ---------------------------------------------------------------------------------
     # Printing
@@ -784,9 +787,9 @@ class FfePlugin(AbstractPlugin):
         if isinstance(document, AbstractPlayerPrintDocument):
             return [
                 ExtraColumn(
-                    at="first-round" if document.is_crosstable else "club",
+                    at='first-round' if document.is_crosstable else 'club',
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
-                    classes="center",
+                    classes='center',
                     value=lambda player: self.get_data(player.plugin_data, 'league'),
                 )
             ]
@@ -808,10 +811,12 @@ class FfePlugin(AbstractPlugin):
             case ScreenType.RANKING:
                 return [
                     ExtraColumn(
-                        at="club",
+                        at='club',
                         title=_('League *** LEAGUE FOR PRINT VIEW'),
-                        classes="center",
-                        value=lambda player: self.get_data(player.plugin_data, 'league'),
+                        classes='center',
+                        value=lambda player: self.get_data(
+                            player.plugin_data, 'league'
+                        ),
                     )
                 ]
 
@@ -833,9 +838,11 @@ class FfePlugin(AbstractPlugin):
             ffe_tie_break.PapiKashdanTieBreak,
         ]
 
+
 # ---------------------------------------------------------------------------------
 # Shared utils
 # ---------------------------------------------------------------------------------
+
 
 @hookimpl
 def get_performance_bonus_function() -> Callable[[float], int | float]:

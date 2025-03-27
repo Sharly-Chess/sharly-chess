@@ -209,8 +209,8 @@ class CheckInUserController(BaseInputUserController):
             template_name='user/modals.html',
             context=web_context.template_context | {},
             re_target='#modal-wrapper',
-            trigger_event="modal_opened",
-            after="settle"
+            trigger_event='modal_opened',
+            after='settle',
         )
 
     @patch(
@@ -377,8 +377,8 @@ class ResultUserController(BaseInputUserController):
             template_name='user/modals.html',
             context=web_context.template_context | {},
             re_target='#modal-wrapper',
-            trigger_event="modal_opened",
-            after="settle"
+            trigger_event='modal_opened',
+            after='settle',
         )
 
     def _user_update_result(

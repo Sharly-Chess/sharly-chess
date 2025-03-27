@@ -16,7 +16,8 @@ from common.i18n import _, set_locale
 from common.logger import (
     get_logger,
     print_interactive_info,
-    print_interactive_error, print_interactive_warning,
+    print_interactive_error,
+    print_interactive_warning,
 )
 from common.papi_web_config import PapiWebConfig
 from common.network import NetworkMonitor
@@ -48,7 +49,7 @@ def launch_browser(url: str):
 
 
 class ServerEngine(Engine):
-    def __init__(self, debug: bool=False):
+    def __init__(self, debug: bool = False):
         super().__init__()
         self.debug = debug
         if self.updated:
@@ -70,7 +71,9 @@ class ServerEngine(Engine):
         if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
             if DEVEL_ENV:
                 print_interactive_info(
-                    _('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.')
+                    _(
+                        'Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'
+                    )
                 )
                 BbpPairingsInstaller().install()
             else:
@@ -79,9 +82,7 @@ class ServerEngine(Engine):
         for port in papi_web_config.web_ports:
             if self.__port_in_use(port):
                 print_interactive_warning(
-                    _(
-                        'Port [{port}] already in use.'
-                    ).format(port=port)
+                    _('Port [{port}] already in use.').format(port=port)
                 )
                 continue
             papi_web_config.web_port = port
@@ -90,7 +91,9 @@ class ServerEngine(Engine):
             print_interactive_error(
                 _(
                     'All the candidate ports [{ports}] are already in use, can not start Papi-web server.'
-                ).format(ports=', '.join(str(port) for port in papi_web_config.web_ports))
+                ).format(
+                    ports=', '.join(str(port) for port in papi_web_config.web_ports)
+                )
             )
             return
 
@@ -105,9 +108,9 @@ class ServerEngine(Engine):
 
         if papi_web_config.launch_browser:
             Thread(target=launch_browser, args=(papi_web_config.local_url,)).start()
-        
+
         NetworkMonitor.start_monitoring()
-        
+
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,

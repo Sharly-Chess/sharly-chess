@@ -11,7 +11,7 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
     TournamentPairing,
-    TournamentRating
+    TournamentRating,
 )
 from data.player import TournamentPlayer, Federation, Player
 from plugins.ffe import ffe_tie_break
@@ -561,9 +561,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_cut1(self):
-        tie_break_ = tie_break.BuchholzTieBreak(
-            [tie_break.CutBottomTieBreakOption(1)]
-        )
+        tie_break_ = tie_break.BuchholzTieBreak([tie_break.CutBottomTieBreakOption(1)])
         results = {
             i: tie_break_.compute_player_value(
                 self.tournament.players_by_id[i], after_round=None
@@ -590,7 +588,8 @@ class SwissTieBreaks(unittest.TestCase):
     def test_adjusted_score(self):
         results = {
             player.id: tie_break.TieBreakUtils.adjusted_score(
-                player, after_round=self.tournament.rounds,
+                player,
+                after_round=self.tournament.rounds,
             )
             for player in self.tournament.players_by_id.values()
         }
@@ -633,11 +632,11 @@ class SwissTieBreaks(unittest.TestCase):
             11: 2,
             12: 3,
             14: 1.5,
-            15:  2.5,
+            15: 2.5,
             7: 2,
             9: 1.5,
             13: 2,
-            10: 1.5
+            10: 1.5,
         }
         self.assertEqual(results, expected)
 
@@ -663,7 +662,7 @@ class SwissTieBreaks(unittest.TestCase):
             7: 13.5,
             9: 9.5,
             13: 13.5,
-            10: 12.5
+            10: 12.5,
         }
         self.assertEqual(results, expected)
 
@@ -689,7 +688,7 @@ class SwissTieBreaks(unittest.TestCase):
             13: 15.0,
             7: 14.0,
             9: 8.5,
-            10: 12.5
+            10: 12.5,
         }
         self.assertEqual(results, expected)
 
@@ -793,14 +792,12 @@ class SwissTieBreaks(unittest.TestCase):
             13: 4.25,
             7: 3.25,
             9: 2.25,
-            10: 1.5
+            10: 1.5,
         }
         self.assertEqual(results, expected)
 
     def test_sb_cut1_swiss(self):
-        tie_break_ = tie_break.SonnebornBergerTieBreak(
-            [tie_break.CutTieBreakOption(1)]
-        )
+        tie_break_ = tie_break.SonnebornBergerTieBreak([tie_break.CutTieBreakOption(1)])
         results = {
             player.id: tie_break_.compute_player_value(player, after_round=None)
             for player in self.tournament.players_by_id.values()
@@ -960,12 +957,15 @@ class SwissTieBreaks(unittest.TestCase):
     def test_win_chances(self):
         ratings = [1700, 1950, 1850, 2050, 2150]
         results = [
-            tie_break.PerfectTournamentPerformanceTieBreak.win_chances(
-                2089, rating
-            )[0] for rating in ratings
+            tie_break.PerfectTournamentPerformanceTieBreak.win_chances(2089, rating)[0]
+            for rating in ratings
         ]
         expected = [
-            Decimal('0.91'), Decimal('0.69'), Decimal('0.80'), Decimal('0.55'), Decimal('0.42')
+            Decimal('0.91'),
+            Decimal('0.69'),
+            Decimal('0.80'),
+            Decimal('0.55'),
+            Decimal('0.42'),
         ]
         self.assertEqual(results, expected)
 
@@ -1002,13 +1002,13 @@ class SwissTieBreaks(unittest.TestCase):
             tie_break_.compute_player_value(
                 self.tournament.players_by_id[2], after_round=None
             ),
-            2217 # NOTE(Amaras): this should be 2216
+            2217,  # NOTE(Amaras): this should be 2216
         )
         self.assertEqual(
             tie_break_.compute_player_value(
                 self.tournament.players_by_id[14], after_round=None
             ),
-            1940 # NOTE(Amaras): this should be 1942
+            1940,  # NOTE(Amaras): this should be 1942
         )
 
     def test_average_perfect_performance_opponents(self):
@@ -1039,13 +1039,13 @@ class SwissTieBreaks(unittest.TestCase):
             tie_break_.compute_player_value(
                 self.tournament.players_by_id[3], after_round=None
             ),
-            1935 # NOTE(Amaras): should be 1934
+            1935,  # NOTE(Amaras): should be 1934
         )
         self.assertEqual(
             tie_break_.compute_player_value(
                 self.tournament.players_by_id[13], after_round=None
             ),
-            1908 # NOTE(Amaras): should be 1909
+            1908,  # NOTE(Amaras): should be 1909
         )
 
     def test_kashdan(self):
@@ -1127,72 +1127,114 @@ class RoundRobinTieBreaks(unittest.TestCase):
             pairing=TournamentPairing.BERGER,
             players_by_id={
                 1: TournamentPlayer(
-                    1, 'Alyx', '', None, PlayerGender.NONE, 0, Federation('FID'),
-                    PlayerTitle.NONE, estimation=2200,
-                    pairings = {
+                    1,
+                    'Alyx',
+                    '',
+                    None,
+                    PlayerGender.NONE,
+                    0,
+                    Federation('FID'),
+                    PlayerTitle.NONE,
+                    estimation=2200,
+                    pairings={
                         1: Pairing(BoardColor.WHITE, 5, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 2, Result.GAIN),
                         3: Pairing(BoardColor.BLACK, 3, Result.GAIN),
                         4: Pairing(BoardColor.WHITE, 4, Result.LOSS),
-                        5: Pairing(BoardColor.BLACK, 6, Result.GAIN)
-                    }
+                        5: Pairing(BoardColor.BLACK, 6, Result.GAIN),
+                    },
                 ),
                 2: TournamentPlayer(
-                    2, 'Bruno', '', None, PlayerGender.NONE, 0, Federation('FID'),
-                    PlayerTitle.NONE, estimation=2150,
+                    2,
+                    'Bruno',
+                    '',
+                    None,
+                    PlayerGender.NONE,
+                    0,
+                    Federation('FID'),
+                    PlayerTitle.NONE,
+                    estimation=2150,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 1, Result.LOSS),
                         3: Pairing(BoardColor.WHITE, 5, Result.GAIN),
                         4: Pairing(BoardColor.WHITE, 3, Result.DRAW),
-                        5: Pairing(BoardColor.BLACK, 4, Result.GAIN)
-                    }
+                        5: Pairing(BoardColor.BLACK, 4, Result.GAIN),
+                    },
                 ),
                 3: TournamentPlayer(
-                    3, 'Charline', '', None, PlayerGender.NONE, 0, Federation('FID'),
-                    PlayerTitle.NONE, estimation=2100,
+                    3,
+                    'Charline',
+                    '',
+                    None,
+                    PlayerGender.NONE,
+                    0,
+                    Federation('FID'),
+                    PlayerTitle.NONE,
+                    estimation=2100,
                     pairings={
                         1: Pairing(BoardColor.WHITE, 4, Result.GAIN),
                         2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
                         3: Pairing(BoardColor.WHITE, 1, Result.LOSS),
                         4: Pairing(BoardColor.BLACK, 2, Result.DRAW),
-                        5: Pairing(BoardColor.WHITE, 5, Result.GAIN)
-                    }
+                        5: Pairing(BoardColor.WHITE, 5, Result.GAIN),
+                    },
                 ),
                 4: TournamentPlayer(
-                    4, 'David', '', None, PlayerGender.NONE, 0, Federation('FID'),
-                    PlayerTitle.NONE, estimation=2050,
+                    4,
+                    'David',
+                    '',
+                    None,
+                    PlayerGender.NONE,
+                    0,
+                    Federation('FID'),
+                    PlayerTitle.NONE,
+                    estimation=2050,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 3, Result.LOSS),
                         2: Pairing(BoardColor.BLACK, 5, Result.LOSS),
                         3: Pairing(BoardColor.WHITE, 6, Result.DRAW),
                         4: Pairing(BoardColor.BLACK, 1, Result.GAIN),
-                        5: Pairing(BoardColor.WHITE, 2, Result.LOSS)
-                    }
+                        5: Pairing(BoardColor.WHITE, 2, Result.LOSS),
+                    },
                 ),
                 5: TournamentPlayer(
-                    5, 'Franck', '', None, PlayerGender.NONE, 0, Federation('FID'),
-                    PlayerTitle.NONE, estimation=1950,
+                    5,
+                    'Franck',
+                    '',
+                    None,
+                    PlayerGender.NONE,
+                    0,
+                    Federation('FID'),
+                    PlayerTitle.NONE,
+                    estimation=1950,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 1, Result.DRAW),
                         2: Pairing(BoardColor.WHITE, 4, Result.GAIN),
                         3: Pairing(BoardColor.BLACK, 2, Result.LOSS),
                         4: Pairing(BoardColor.WHITE, 6, Result.FORFEIT_LOSS),
-                        5: Pairing(BoardColor.BLACK, 3, Result.LOSS)
-                    }
+                        5: Pairing(BoardColor.BLACK, 3, Result.LOSS),
+                    },
                 ),
                 6: TournamentPlayer(
-                    6, 'Helene', '', None, PlayerGender.NONE, 0, Federation('FID'),
-                    PlayerTitle.NONE, estimation=2000,
+                    6,
+                    'Helene',
+                    '',
+                    None,
+                    PlayerGender.NONE,
+                    0,
+                    Federation('FID'),
+                    PlayerTitle.NONE,
+                    estimation=2000,
                     pairings={
                         1: Pairing(BoardColor.BLACK, 2, Result.LOSS),
                         2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
                         3: Pairing(BoardColor.BLACK, 4, Result.DRAW),
                         4: Pairing(BoardColor.BLACK, 5, Result.FORFEIT_GAIN),
-                        5: Pairing(BoardColor.WHITE, 1, Result.LOSS)
-                    }
-                )
-            }
+                        5: Pairing(BoardColor.WHITE, 1, Result.LOSS),
+                    },
+                ),
+            },
         )
         for player in self.tournament.players_by_id.values():
             player.tournament = self.tournament
@@ -1217,9 +1259,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             player.id: player.total_points()
             for player in self.tournament.players_by_id.values()
         }
-        expected = {
-            1: 3.5, 2: 3.5, 3: 3.5, 4: 1.5, 5: 1.5, 6: 1.5
-        }
+        expected = {1: 3.5, 2: 3.5, 3: 3.5, 4: 1.5, 5: 1.5, 6: 1.5}
         self.assertEqual(results, expected)
 
     def test_sonneborn_berger_round_robin(self):
@@ -1228,24 +1268,16 @@ class RoundRobinTieBreaks(unittest.TestCase):
             player.id: tie_break_.compute_player_value(player, after_round=None)
             for player in self.tournament.players_by_id.values()
         }
-        expected = {
-            1: 9.25, 2: 6.25, 3: 6.25,
-            4: 4.25, 5: 3.25, 6: 2.25
-        }
+        expected = {1: 9.25, 2: 6.25, 3: 6.25, 4: 4.25, 5: 3.25, 6: 2.25}
         self.assertEqual(results, expected)
 
     def test_sb_cut1_round_robin(self):
-        tie_break_ = tie_break.SonnebornBergerTieBreak(
-            [tie_break.CutTieBreakOption(1)]
-        )
+        tie_break_ = tie_break.SonnebornBergerTieBreak([tie_break.CutTieBreakOption(1)])
         results = {
             player.id: tie_break_.compute_player_value(player, after_round=None)
             for player in self.tournament.players_by_id.values()
         }
-        expected = {
-            1: 9.25, 2: 4.75, 3: 4.75,
-            4: 4.25, 5: 3.25, 6: 1.5
-        }
+        expected = {1: 9.25, 2: 4.75, 3: 4.75, 4: 4.25, 5: 3.25, 6: 1.5}
         self.assertEqual(results, expected)
 
     def test_koya(self):
@@ -1254,10 +1286,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             player.id: tie_break_.compute_player_value(player, after_round=None)
             for player in self.tournament.players_by_id.values()
         }
-        expected = {
-            1: 2, 2: 0.5, 3: 0.5,
-            4: 1, 5: 0.5, 6: 0
-        }
+        expected = {1: 2, 2: 0.5, 3: 0.5, 4: 1, 5: 0.5, 6: 0}
         self.assertEqual(results, expected)
 
     def test_direct_encounter(self):
@@ -1267,7 +1296,11 @@ class RoundRobinTieBreaks(unittest.TestCase):
             for player in self.tournament.players_by_id.values()
         }
         expected = {
-            1: (2, True), 2: (0.5, True), 3: (0.5, True),
-            4: (0.5, True), 6: (1.5, True), 5: (1, True),
+            1: (2, True),
+            2: (0.5, True),
+            3: (0.5, True),
+            4: (0.5, True),
+            6: (1.5, True),
+            5: (1, True),
         }
         self.assertEqual(results, expected)

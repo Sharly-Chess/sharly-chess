@@ -4,12 +4,14 @@ from litestar_htmx import HTMXRequest, ClientRedirect
 
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.util import PlayerFFELicence
-from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminController,
+    BaseEventAdminWebContext,
+)
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 
 
 class FfeAdminEventController(BaseEventAdminController):
-    
     @get(
         path='/ffe/event/{event_uniq_id:str}/players',
         name='ffe-admin-event-players-tab',
@@ -48,7 +50,7 @@ class FfeAdminEventController(BaseEventAdminController):
                     if query_param >= 0  # -1 must be ignored
                 ],
             )
-            
+
         return PlayerAdminController._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,

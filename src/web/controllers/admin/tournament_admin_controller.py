@@ -1,8 +1,7 @@
 import itertools
 from logging import Logger
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any, Callable
-from collections import defaultdict
+from typing import Annotated, Any
 
 from data.input_output import (
     AbstractTournamentExporter,
@@ -172,9 +171,7 @@ class TournamentAdminController(BaseEventAdminController):
                 paired_bye_result = WebContext.form_data_to_int(
                     data, 'paired_bye_result'
                 )
-                max_byes = WebContext.form_data_to_int(
-                    data, 'max_byes'
-                )
+                max_byes = WebContext.form_data_to_int(data, 'max_byes')
                 last_rounds_no_byes = WebContext.form_data_to_int(
                     data, 'last_rounds_no_byes'
                 )
@@ -196,14 +193,23 @@ class TournamentAdminController(BaseEventAdminController):
                     errors[field] = _('Tie-break already in use.')
                     break
                 used_tie_break_ids.append(tie_break_id)
-                if tie_break_type := (
-                    tie_break_type_by_id.get(tie_break_id, None)
-                ):
+                if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
                     tie_breaks.append(tie_break_type().to_dict())
 
         # Have plugins validate their fields and return private plugin data
-        per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
-        plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
+        per_plugin_tournament_data = (
+            plugin_manager.hook.get_validated_tournament_form_fields(
+                action=action,
+                tournament=web_context.admin_tournament,
+                data=data,
+                errors=errors,
+            )
+        )
+        plugin_data = {
+            key: value
+            for data in per_plugin_tournament_data
+            for key, value in data.items()
+        }
 
         return StoredTournament(
             id=web_context.admin_tournament.id
@@ -231,7 +237,7 @@ class TournamentAdminController(BaseEventAdminController):
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
             errors=errors,
-            plugin_data=plugin_data
+            plugin_data=plugin_data,
         )
 
     @classmethod
@@ -259,15 +265,21 @@ class TournamentAdminController(BaseEventAdminController):
             web_context
         )
 
-        tournament_card_blocks_and_data = plugin_manager.hook.get_tournament_card_block_template_and_data()
+        tournament_card_blocks_and_data = (
+            plugin_manager.hook.get_tournament_card_block_template_and_data()
+        )
         tournament_exporters: list[AbstractTournamentExporter] = [
             Trf16TournamentExporter(),
-            TrfBxTournamentExporter()
-        ] + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tournament_exporters()
-        ))
+            TrfBxTournamentExporter(),
+        ] + list(
+            itertools.chain.from_iterable(
+                plugin_manager.hook.get_extra_tournament_exporters()
+            )
+        )
 
-        tournament_card_blocks = [block_template for (block_template, data) in tournament_card_blocks_and_data]
+        tournament_card_blocks = [
+            block_template for (block_template, data) in tournament_card_blocks_and_data
+        ]
         tournament_card_block_data = {
             key: value
             for (block_template, data) in tournament_card_blocks_and_data
@@ -340,10 +352,16 @@ class TournamentAdminController(BaseEventAdminController):
                                 admin_tournament.stored_tournament.record_illegal_moves
                             )
                             rules = admin_tournament.stored_tournament.rules
-                            first_board_number = admin_tournament.stored_tournament.first_board_number
-                            paired_bye_result = admin_tournament.stored_tournament.paired_bye_result
+                            first_board_number = (
+                                admin_tournament.stored_tournament.first_board_number
+                            )
+                            paired_bye_result = (
+                                admin_tournament.stored_tournament.paired_bye_result
+                            )
                             max_byes = admin_tournament.stored_tournament.max_byes
-                            last_rounds_no_byes = admin_tournament.stored_tournament.last_rounds_no_byes
+                            last_rounds_no_byes = (
+                                admin_tournament.stored_tournament.last_rounds_no_byes
+                            )
                         case 'create' | 'delete':
                             pass
                         case _:
@@ -364,8 +382,14 @@ class TournamentAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
-                    per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
-                    plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
+                    per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
+                        tournament=web_context.admin_tournament
+                    )
+                    plugin_form_data = {
+                        key: value
+                        for data in per_plugin_form_data
+                        for key, value in data.items()
+                    }
 
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
@@ -391,10 +415,16 @@ class TournamentAdminController(BaseEventAdminController):
                             record_illegal_moves
                         ),
                         'rules': WebContext.value_to_form_data(rules),
-                        'first_board_number': WebContext.value_to_form_data(first_board_number),
-                        'paired_bye_result': WebContext.value_to_form_data(paired_bye_result),
+                        'first_board_number': WebContext.value_to_form_data(
+                            first_board_number
+                        ),
+                        'paired_bye_result': WebContext.value_to_form_data(
+                            paired_bye_result
+                        ),
                         'max_byes': WebContext.value_to_form_data(max_byes),
-                        'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
+                        'last_rounds_no_byes': WebContext.value_to_form_data(
+                            last_rounds_no_byes
+                        ),
                         'tie_break_1': WebContext.value_to_form_data(tie_break_1),
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
@@ -409,7 +439,9 @@ class TournamentAdminController(BaseEventAdminController):
                 if errors is None:
                     errors = {}
 
-                plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_tournament_form_fields_template() or []
+                )
 
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
@@ -501,9 +533,7 @@ class TournamentAdminController(BaseEventAdminController):
         usage: str,
     ) -> File:
         trf_type = TrfType(usage)
-        context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
         tournament = context.admin_tournament
         temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
         with temp_file as file:
@@ -519,9 +549,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def admin_tournament_generate_pairings(
         self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
     ) -> Template | ClientRedirect:
-        context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
         tournament = context.admin_tournament
         BbpPairings().generate_pairings(tournament)
         tournament.read_papi(True)
@@ -529,7 +557,9 @@ class TournamentAdminController(BaseEventAdminController):
             request,
             _(
                 'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
-            ).format(round=tournament.current_round, tournament_uniq_id=tournament.uniq_id),
+            ).format(
+                round=tournament.current_round, tournament_uniq_id=tournament.uniq_id
+            ),
         )
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
@@ -538,17 +568,16 @@ class TournamentAdminController(BaseEventAdminController):
         name='admin-tournament-papi-create',
     )
     async def admin_tournament_papi_create(
-        self, request: HTMXRequest, event_uniq_id: str, tournament_id: int,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
     ) -> Template | ClientRedirect:
-        context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
         file = context.admin_tournament.file
         file.parent.mkdir(parents=True, exist_ok=True)
         if create_empty_papi_database(file, PAPI_VERSIONS[-1]):
-            Message.success(
-                request, _('Papi file [{file}] created.').format(file=file)
-            )
+            Message.success(request, _('Papi file [{file}] created.').format(file=file))
         else:
             Message.error(request, _('Papi file has not been created.'))
 
@@ -815,8 +844,8 @@ class TournamentAdminController(BaseEventAdminController):
             return web_context.error
 
         admin_tournament: Tournament = web_context.admin_tournament
-        template_context: dict[str, Any] = (
-            self._get_admin_event_render_context(web_context)
+        template_context: dict[str, Any] = self._get_admin_event_render_context(
+            web_context
         )
         document_type = PrintDocumentManager.document_type_by_id()[document]
         options = []

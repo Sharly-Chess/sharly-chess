@@ -147,9 +147,7 @@ class EventUserController(BaseUserController):
                 'disabled': not results_screens,
             },
             'ranking': {
-                'title': _('Ranking ({num})').format(
-                    num=len(ranking_screens) or '-'
-                ),
+                'title': _('Ranking ({num})').format(num=len(ranking_screens) or '-'),
                 'screens': ranking_screens,
                 'disabled': not ranking_screens,
             },

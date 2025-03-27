@@ -105,7 +105,7 @@ a = os.fspath(a)
     ^^^^^^^^^^^^
 TypeError: expected str, bytes or os.PathLike object, not NoneType
 [...]
-ImportError: 
+ImportError:
 requires the protobuf library but it was not found in your environment. Checkout the instructions on the installation page of its repo: https://github.com/protocolbuffers/protobuf/tree/master/python#installation and follow the ones that match your environment. Please note that you may need to restart your runtime after installation.
 ```
 
@@ -118,7 +118,7 @@ self.encoder = load_json(vocab)
                ^^^^^^^^^^^^^^^^
 [...]
 TypeError: expected str, bytes or os.PathLike object, not NoneType
-ImportError: 
+ImportError:
  requires the protobuf library but it was not found in your environment. Checkout the instructions on the installation page of its repo: https://github.com/protocolbuffers/protobuf/tree/master/python#installation and follow the ones that match your environment. Please note that you may need to restart your runtime after installation.
 ```
 
@@ -131,7 +131,7 @@ self.spm_target = load_spm(target_spm, self.sp_model_kwargs)
 [...]
 TypeError: not a string
 [...]
-ImportError: 
+ImportError:
  requires the protobuf library but it was not found in your environment. Checkout the instructions on the
 installation page of its repo: https://github.com/protocolbuffers/protobuf/tree/master/python#installation and follow the ones
 that match your environment. Please note that you may need to restart your runtime after installation.

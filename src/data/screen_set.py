@@ -43,7 +43,9 @@ class ScreenSet:
             )
         self._screen_ref: 'ReferenceType[Screen]' = weakref.ref(screen)
         self.stored_screen_set: StoredScreenSet | None = stored_screen_set
-        self._family_ref: 'ReferenceType[Family] | None' = weakref.ref(family) if family else None
+        self._family_ref: 'ReferenceType[Family] | None' = (
+            weakref.ref(family) if family else None
+        )
         self.family_part: int | None = family_part
         self.uniq_id: str
         if self.stored_screen_set:
@@ -197,9 +199,7 @@ class ScreenSet:
 
     @property
     def ranking_round(self) -> int:
-        return self.tournament.correct_ranking_round(
-            self.screen.ranking_round
-        )
+        return self.tournament.correct_ranking_round(self.screen.ranking_round)
 
     @property
     def ranking_crosstable(self) -> bool:
@@ -285,10 +285,7 @@ class ScreenSet:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(
-                    isinstance(item, Board)
-                    for item in chain(*self.items_lists)
-                )
+                and all(isinstance(item, Board) for item in chain(*self.items_lists))
             )
         return self.items_lists
 
@@ -321,10 +318,7 @@ class ScreenSet:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(
-                    isinstance(item, Player)
-                    for item in chain(*self.items_lists)
-                )
+                and all(isinstance(item, Player) for item in chain(*self.items_lists))
             )
         return self.items_lists
 
@@ -337,10 +331,7 @@ class ScreenSet:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(
-                    isinstance(item, Player)
-                    for item in chain(*self.items_lists)
-                )
+                and all(isinstance(item, Player) for item in chain(*self.items_lists))
             )
         players_by_name_lists: list[list[Player]] = self.items_lists
         for players_by_name in players_by_name_lists:
@@ -372,9 +363,12 @@ class ScreenSet:
                     player
                     for player in self.tournament.players_by_rank.values()
                     if (
-                        self.ranking_min_points is None or player.points >= self.ranking_min_points
-                    ) and (
-                        self.ranking_max_points is None or player.points <= self.ranking_max_points
+                        self.ranking_min_points is None
+                        or player.points >= self.ranking_min_points
+                    )
+                    and (
+                        self.ranking_max_points is None
+                        or player.points <= self.ranking_max_points
                     )
                 ]
             )
@@ -386,10 +380,7 @@ class ScreenSet:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(
-                    isinstance(item, Player)
-                    for item in chain(*self.items_lists)
-                )
+                and all(isinstance(item, Player) for item in chain(*self.items_lists))
             )
         return self.items_lists
 

@@ -180,7 +180,7 @@ class RotatorAdminController(BaseEventAdminController):
                 web_context.request
             ),
         }
-        
+
         match modal:
             case None:
                 pass

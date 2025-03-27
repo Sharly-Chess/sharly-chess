@@ -18,16 +18,12 @@ logger: Logger = get_logger()
 
 
 class FFESqlServer(SqlServer):
-
     CREDENTIALS_FILE: Path = Path(__file__).parent / '.credentials'
 
     def __init__(
         self,
     ):
-        super().__init__(
-            self.CREDENTIALS_FILE,
-            timeout=3
-        )
+        super().__init__(self.CREDENTIALS_FILE, timeout=3)
         if not NetworkMonitor.connected():
             error: str = _('Not connected to internet.')
             logger.error(error)
@@ -50,8 +46,12 @@ class FFESqlServer(SqlServer):
         )
 
     PLAYER_FIELDS: tuple[str, ...] = (
-        'Ref', 'NrFFE',
-        'Nom', 'Prenom', 'Sexe', 'NeLe',
+        'Ref',
+        'NrFFE',
+        'Nom',
+        'Prenom',
+        'Sexe',
+        'NeLe',
         'Cat',
         # not allowed: 'EC', 'Adresse', 'CP', 'TelDom', 'TelBur', 'TelPort', 'Fax', 'EMail',
         'Federation',
@@ -97,62 +97,63 @@ class FFESqlServer(SqlServer):
 
     @staticmethod
     def _get_player_from_row(row: dict[str, Any]) -> Player | None:
-        return Player(
-            id=0,
-            first_name=row['Prenom'].title() if row['Prenom'] else '',
-            last_name=row['Nom'].upper(),
-            date_of_birth=row['NeLe'],
-            gender=PlayerGender.from_papi_value(row['Sexe']),
-            mail='',
-            phone='',
-            comment='',
-            owed=0.0,
-            paid=0.0,
-            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
-            ratings={
-                TournamentRating.STANDARD: row['Elo'],
-                TournamentRating.RAPID: row['Rapide'],
-                TournamentRating.BLITZ: row['Elo06'],
-            },
-            rating_types={
-                TournamentRating.STANDARD: PlayerRatingType.from_papi_value(row['Fide']),
-                TournamentRating.RAPID: PlayerRatingType.from_papi_value(row['Fide03']),
-                TournamentRating.BLITZ: PlayerRatingType.from_papi_value(row['Fide06']),
-            },
-            fide_id=int(row['FideCode']) if row['FideCode'] else 0,
-            federation=Federation(row['Federation']),
-            club=Club(row['ClubNom']),
-            fixed=0,
-            check_in=False,  # not taken into account when updating/creating/deleting the player
-            pairings={},  # Pairings are read from Papi but not used
-            tournament=None,
-            plugin_data={
-                PLUGIN_NAME: {
-                    "ffe_id": row['Ref'],
-                    "ffe_licence": PlayerFFELicence.from_papi_value(row['AffType']),
-                    "ffe_licence_number": row['NrFFE'],
-                    "league": row['ClubLigue'],
-                }
-            }
-        ) if row else None
+        return (
+            Player(
+                id=0,
+                first_name=row['Prenom'].title() if row['Prenom'] else '',
+                last_name=row['Nom'].upper(),
+                date_of_birth=row['NeLe'],
+                gender=PlayerGender.from_papi_value(row['Sexe']),
+                mail='',
+                phone='',
+                comment='',
+                owed=0.0,
+                paid=0.0,
+                title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+                ratings={
+                    TournamentRating.STANDARD: row['Elo'],
+                    TournamentRating.RAPID: row['Rapide'],
+                    TournamentRating.BLITZ: row['Elo06'],
+                },
+                rating_types={
+                    TournamentRating.STANDARD: PlayerRatingType.from_papi_value(
+                        row['Fide']
+                    ),
+                    TournamentRating.RAPID: PlayerRatingType.from_papi_value(
+                        row['Fide03']
+                    ),
+                    TournamentRating.BLITZ: PlayerRatingType.from_papi_value(
+                        row['Fide06']
+                    ),
+                },
+                fide_id=int(row['FideCode']) if row['FideCode'] else 0,
+                federation=Federation(row['Federation']),
+                club=Club(row['ClubNom']),
+                fixed=0,
+                check_in=False,  # not taken into account when updating/creating/deleting the player
+                pairings={},  # Pairings are read from Papi but not used
+                tournament=None,
+                plugin_data={
+                    PLUGIN_NAME: {
+                        'ffe_id': row['Ref'],
+                        'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType']),
+                        'ffe_licence_number': row['NrFFE'],
+                        'league': row['ClubLigue'],
+                    }
+                },
+            )
+            if row
+            else None
+        )
 
     def get_player_fields(self) -> list[str]:
-        return [
-            f'joueur.{f} AS {f}'
-            for f in self.PLAYER_FIELDS
-        ]
+        return [f'joueur.{f} AS {f}' for f in self.PLAYER_FIELDS]
 
     def get_club_fields(self) -> list[str]:
-        return [
-            f'club.{f} AS Club{f}'
-            for f in self.CLUB_FIELDS
-        ]
+        return [f'club.{f} AS Club{f}' for f in self.CLUB_FIELDS]
 
     def get_empty_club_fields(self) -> list[str]:
-        return [
-            f'\'\' AS Club{f}'
-            for f in self.CLUB_FIELDS
-        ]
+        return [f"'' AS Club{f}" for f in self.CLUB_FIELDS]
 
     async def search_player(
         self,
@@ -172,33 +173,41 @@ class FFESqlServer(SqlServer):
                     f'WHERE joueur.NrFFE = ?'
                 )
                 await self.execute(query, string)
-                return (
-                    self._get_player_from_row(row)
-                    async for row in self.fetchall()
-                )
+                return (self._get_player_from_row(row) async for row in self.fetchall())
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
             ('joueur.Prenom', '', '%'),
             ('joueur.NrFFE', '', ''),
         )
-        int_fields: tuple[str, ...] = (
-            'joueur.FideCode',
-        )
+        int_fields: tuple[str, ...] = ('joueur.FideCode',)
         conditions: list[str] = []
         params: list[Any] = []
         for token in tokens:
-            token_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in str_fields]
-            token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in str_fields]
+            token_expressions: list[str] = [
+                f'(UPPER({field[0]}) LIKE ?)' for field in str_fields
+            ]
+            token_params: list[str] = [
+                f'{field[1]}{token}{field[2]}' for field in str_fields
+            ]
             int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
                 token_expressions += [f'({field} = ?)' for field in int_fields]
-                token_params += [int_value, ] * len(int_fields)
-            conditions += [' OR '.join(token_expressions), ]
+                token_params += [
+                    int_value,
+                ] * len(int_fields)
+            conditions += [
+                ' OR '.join(token_expressions),
+            ]
             params += token_params
         condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
-        order = ' OR '.join(['(UPPER(joueur.Nom) LIKE ?)', ] * len(tokens))
+        order = ' OR '.join(
+            [
+                '(UPPER(joueur.Nom) LIKE ?)',
+            ]
+            * len(tokens)
+        )
         params += [f'{token}%' for token in tokens]
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
@@ -208,12 +217,14 @@ class FFESqlServer(SqlServer):
         )
         if limit:
             query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
-            params += [limit, ]
-        await self.execute(query, tuple(params), )
-        return (
-            self._get_player_from_row(row)
-            async for row in self.fetchall()
+            params += [
+                limit,
+            ]
+        await self.execute(
+            query,
+            tuple(params),
         )
+        return (self._get_player_from_row(row) async for row in self.fetchall())
 
     async def _get_player_by_id(
         self,
@@ -224,7 +235,10 @@ class FFESqlServer(SqlServer):
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
         )
-        await self.execute(query, (id_, ), )
+        await self.execute(
+            query,
+            (id_,),
+        )
         if row := await self.fetchone():
             return self._get_player_from_row(row)
         else:
@@ -253,7 +267,4 @@ class FFESqlServer(SqlServer):
             f'WHERE joueur.NrFFE IN ({query_array})'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
-        return (
-            self._get_player_from_row(row)
-            async for row in self.fetchall()
-        )
+        return (self._get_player_from_row(row) async for row in self.fetchall())

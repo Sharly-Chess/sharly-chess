@@ -46,7 +46,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         """Sets the version field stored in the database to `version`."""
         self.execute(
             'UPDATE `info` SET `version` = ?',
-            (f'{version.major}.{version.minor}.{version.micro}', ),
+            (f'{version.major}.{version.minor}.{version.micro}',),
         )
         self._version = version
 
@@ -57,8 +57,8 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     def insert_creation_values(self):
         version = PAPI_WEB_VERSION
         self.execute(
-            "INSERT INTO `info`(`version`, `force_edit`) VALUES(?, ?)",
-            (f'{version.major}.{version.minor}.{version.micro}', True)
+            'INSERT INTO `info`(`version`, `force_edit`) VALUES(?, ?)',
+            (f'{version.major}.{version.minor}.{version.micro}', True),
         )
 
     # ---------------------------------------------------------------------------------
@@ -125,12 +125,13 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         if row := self.fetchone():
             return self._row_to_stored_plugin(row)
 
-    def update_stored_plugin(
-        self, stored_plugin: StoredPlugin
-    ) -> StoredPlugin | None:
+    def update_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin | None:
         self.execute(
-            f'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
-            (stored_plugin.is_enabled, stored_plugin.name,),
+            'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
+            (
+                stored_plugin.is_enabled,
+                stored_plugin.name,
+            ),
         )
         return self.load_stored_plugin(stored_plugin.name)
 
@@ -146,7 +147,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(
             f'INSERT INTO `plugin` ({fields_str}) '
-            f'VALUES ({', '.join('?' for _ in params)})',
+            f'VALUES ({", ".join("?" for _ in params)})',
             params,
         )
         return self.load_stored_plugin(stored_plugin.name)

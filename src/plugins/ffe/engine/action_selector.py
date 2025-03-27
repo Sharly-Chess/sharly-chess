@@ -30,7 +30,6 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class ActionSelector(metaclass=Singleton):
-
     @staticmethod
     def check_id_and_password(tournament: Tournament) -> bool:
         pd = tournament.plugin_data
@@ -38,9 +37,9 @@ class ActionSelector(metaclass=Singleton):
         ffe_password = get_data(pd, 'ffe_password')
         if not ffe_id or not ffe_password:
             print_interactive_warning(
-                _(
-                    'FFE ID not defined for tournament [{tournament_uniq_id}].'
-                ).format(tournament_uniq_id=tournament.uniq_id)
+                _('FFE ID not defined for tournament [{tournament_uniq_id}].').format(
+                    tournament_uniq_id=tournament.uniq_id
+                )
             )
             return False
         return True
@@ -60,11 +59,7 @@ class ActionSelector(metaclass=Singleton):
             if ffe_last_upload > tournament.file.lstat().st_mtime:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
-            if (
-                time()
-                < ffe_last_upload
-                + PapiWebConfig().ffe_upload_delay
-            ):
+            if time() < ffe_last_upload + PapiWebConfig().ffe_upload_delay:
                 # last upload too recent
                 return NeedsUpload.RECENT_CHANGE
             return NeedsUpload.YES
@@ -148,7 +143,9 @@ class ActionSelector(metaclass=Singleton):
                 print_interactive_warning(
                     _(
                         'Rules file [{file}] not found for tournament [{tournament_uniq_id}].'
-                    ).format(file=tournament.rules, tournament_uniq_id=tournament.uniq_id)
+                    ).format(
+                        file=tournament.rules, tournament_uniq_id=tournament.uniq_id
+                    )
                 )
             else:
                 tournaments.append(tournament)
@@ -168,7 +165,10 @@ class ActionSelector(metaclass=Singleton):
         print_interactive_info(
             _('Tournaments: {tournament_ffe_ids}').format(
                 tournament_ffe_ids=', '.join(
-                    (str(get_data(tournament.plugin_data, 'ffe_id')) for tournament in tournaments)
+                    (
+                        str(get_data(tournament.plugin_data, 'ffe_id'))
+                        for tournament in tournaments
+                    )
                 )
             )
         )

@@ -272,7 +272,7 @@ class TimerAdminController(BaseEventAdminController):
         ) | {
             'admin_event_tab': 'admin-event-timers-tab',
         }
-        
+
         match modal:
             case None:
                 pass
@@ -287,7 +287,9 @@ class TimerAdminController(BaseEventAdminController):
                             for i in range(1, 4)
                         }
                         | {
-                            f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None)
+                            f'color_{i}_checkbox': WebContext.value_to_form_data(
+                                colors[i] is None
+                            )
                             for i in range(1, 4)
                         }
                         | {
@@ -439,7 +441,7 @@ class TimerAdminController(BaseEventAdminController):
 
     @patch(
         path='/admin/default-timers-update/{event_uniq_id:str}',
-        name='default-timers-update'
+        name='default-timers-update',
     )
     async def htmx_admin_default_timers_update(
         self,
@@ -477,9 +479,7 @@ class TimerAdminController(BaseEventAdminController):
                     ).format(color={data[field]})
             field: str = f'delay_{i}'
             try:
-                timer_delays[i] = WebContext.form_data_to_int(
-                    data, field, minimum=1
-                )
+                timer_delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
             except ValueError:
                 errors[field] = _(
                     'Invalid delay [{delay}] (positive integer expected).'
@@ -496,8 +496,8 @@ class TimerAdminController(BaseEventAdminController):
                 errors=errors,
             )
 
-        stored_event.timer_colors=timer_colors
-        stored_event.timer_delays=timer_delays
+        stored_event.timer_colors = timer_colors
+        stored_event.timer_delays = timer_delays
 
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
@@ -505,9 +505,7 @@ class TimerAdminController(BaseEventAdminController):
             event_database.update_stored_event(stored_event)
             event_database.commit()
 
-        return self._admin_event_timers_render(
-            request, event_uniq_id=event_uniq_id
-        )
+        return self._admin_event_timers_render(request, event_uniq_id=event_uniq_id)
 
     @get(
         path='/admin/timer-modal/create/{event_uniq_id:str}',

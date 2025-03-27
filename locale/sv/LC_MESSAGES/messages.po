@@ -5573,4 +5573,3 @@ msgstr "{screen_type}-skärm"
 
 #~ msgid "The FFE database is not available."
 #~ msgstr "FFE-databasen är inte tillgänglig."
-

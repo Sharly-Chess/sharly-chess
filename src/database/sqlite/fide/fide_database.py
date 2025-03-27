@@ -22,7 +22,8 @@ from common.logger import (
     input_interactive,
     print_interactive_info,
     print_interactive_error,
-    print_interactive_success, print_interactive_warning,
+    print_interactive_success,
+    print_interactive_warning,
 )
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
@@ -50,15 +51,19 @@ class FideDatabase(SQLiteDatabase):
     """
 
     def __init__(self, write: bool = False):
-        super().__init__(TMP_DIR / f'fide.{PapiWebConfig.federation_database_ext}', write)
+        super().__init__(
+            TMP_DIR / f'fide.{PapiWebConfig.federation_database_ext}', write
+        )
         self.stop_event = Event()
-        
+
     def check(self):
         """Checks if the database exists and is up to date and proposes to create it if not"""
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
         if not self.exists():
             if not NetworkMonitor.connected():
-                print_interactive_warning(_('Not connected, can not create the FIDE database.'))
+                print_interactive_warning(
+                    _('Not connected, can not create the FIDE database.')
+                )
                 return
             if (
                 input_interactive(
@@ -73,7 +78,9 @@ class FideDatabase(SQLiteDatabase):
             age: int = int(time() - self.file.lstat().st_mtime)
             if age > 2 * 24 * 60 * 60:
                 if not NetworkMonitor.connected():
-                    print_interactive_warning(_('Not connected, can not update the FIDE database.'))
+                    print_interactive_warning(
+                        _('Not connected, can not update the FIDE database.')
+                    )
                     return True
                 days: int = age // (24 * 60 * 60)
                 if (
@@ -87,7 +94,7 @@ class FideDatabase(SQLiteDatabase):
                     return
             else:
                 return
-            
+
         update_thread = Thread(target=self.create, daemon=True)
         update_thread.start()
         atexit.register(self.stop_background_thread, update_thread)
@@ -95,7 +102,7 @@ class FideDatabase(SQLiteDatabase):
     def stop_background_thread(self, thread):
         self.stop_event.set()
         thread.join()
-        
+
     def create(self) -> bool:
         """Create the FIDE database, returns True if the database is available after the call, False otherwise."""
         print_interactive_info(_('Downloading the FIDE database...'))
@@ -142,7 +149,7 @@ class FideDatabase(SQLiteDatabase):
         new_database = SQLiteDatabase(tmp_file, True)
         if self.stop_event.is_set():
             return False
-        
+
         try:
             with open(
                 PapiWebConfig.database_sql_path / 'create_fide.sql', encoding='utf-8'
@@ -165,7 +172,7 @@ class FideDatabase(SQLiteDatabase):
             }
             db_columns = [field[0] for field in fields.values() if field[0] != 'name']
             db_columns += ['first_name', 'last_name']
-            query = f'''INSERT INTO player({", ".join(db_columns)}) VALUES({", ".join([f':{c}' for c in db_columns])})'''
+            query = f"""INSERT INTO player({', '.join(db_columns)}) VALUES({', '.join([f':{c}' for c in db_columns])})"""
             player_count: int = 0
             new_database.write = True
             to_write = []
@@ -198,7 +205,9 @@ class FideDatabase(SQLiteDatabase):
 
                         if field_name == 'name':
                             if ',' in data['name']:
-                                last_name, first_name = data['name'].split(',', maxsplit=1)
+                                last_name, first_name = data['name'].split(
+                                    ',', maxsplit=1
+                                )
                                 data['last_name'] = last_name.strip()
                                 data['first_name'] = first_name.strip()
                             else:
@@ -214,13 +223,13 @@ class FideDatabase(SQLiteDatabase):
             )
             tmp_file.unlink(missing_ok=True)
             return False
-        
+
         # Copy the new database to it's proper location
         self.acquire_lock()
         self.file.unlink(missing_ok=True)
         tmp_file.rename(self.file)
         self.release_lock()
-        
+
         print_interactive_success(
             _('{number} players written to FIDE database.').format(number=player_count)
         )
@@ -230,8 +239,12 @@ class FideDatabase(SQLiteDatabase):
     def create_indexes(self) -> None:
         self.write = True
         with self:
-            self.execute('CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)')
-            self.execute('CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)')
+            self.execute(
+                'CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
+            )
             self.execute('CREATE INDEX `player_fide_id` ON `player` (`fide_id`)')
             self.commit()
 
@@ -264,12 +277,15 @@ class FideDatabase(SQLiteDatabase):
                 TournamentRating.BLITZ: row['blitz_rating'],
             },
             rating_types={
-                TournamentRating.STANDARD:
-                    PlayerRatingType.FIDE if row['standard_rating'] else PlayerRatingType.ESTIMATED,
-                TournamentRating.RAPID:
-                    PlayerRatingType.FIDE if row['rapid_rating'] else PlayerRatingType.ESTIMATED,
-                TournamentRating.BLITZ:
-                    PlayerRatingType.FIDE if row['blitz_rating'] else PlayerRatingType.ESTIMATED,
+                TournamentRating.STANDARD: PlayerRatingType.FIDE
+                if row['standard_rating']
+                else PlayerRatingType.ESTIMATED,
+                TournamentRating.RAPID: PlayerRatingType.FIDE
+                if row['rapid_rating']
+                else PlayerRatingType.ESTIMATED,
+                TournamentRating.BLITZ: PlayerRatingType.FIDE
+                if row['blitz_rating']
+                else PlayerRatingType.ESTIMATED,
             },
             fide_id=row['fide_id'],
             federation=Federation(row['federation']),
@@ -281,9 +297,9 @@ class FideDatabase(SQLiteDatabase):
         )
 
     def search_player(
-            self,
-            string: str,
-            limit: int = 0,  # no limit set if no param or null param passed
+        self,
+        string: str,
+        limit: int = 0,  # no limit set if no param or null param passed
     ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
@@ -300,25 +316,34 @@ class FideDatabase(SQLiteDatabase):
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
-                params += [int_value, ] * len(int_fields)
+                params += [
+                    int_value,
+                ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
+        order_conditions = ' OR '.join(
+            [
+                '(last_name LIKE ?)',
+            ]
+            * len(tokens)
+        )
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
-            params += [limit, ]
-        self.execute(query, tuple(params), )
-        return (
-            self._get_player_from_row(row)
-            for row in self.fetchall()
+            params += [
+                limit,
+            ]
+        self.execute(
+            query,
+            tuple(params),
         )
+        return (self._get_player_from_row(row) for row in self.fetchall())
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
 
@@ -328,7 +353,4 @@ class FideDatabase(SQLiteDatabase):
             f'SELECT * FROM player WHERE fide_id IN ({query_array})',
             tuple(player_fide_ids),
         )
-        return [
-            self._get_player_from_row(row)
-            for row in self.fetchall()
-        ]
+        return [self._get_player_from_row(row) for row in self.fetchall()]

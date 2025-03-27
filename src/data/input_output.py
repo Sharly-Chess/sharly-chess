@@ -15,6 +15,7 @@ from database.sqlite.fide.fide_database import FideDatabase
 # Tournament exporters
 # ---------------------------------------------------------------------------------
 
+
 class AbstractTournamentExporter(ABC):
     @property
     @abstractmethod
@@ -65,6 +66,7 @@ class TrfBxTournamentExporter(AbstractTournamentExporter):
 # Player Updater
 # ---------------------------------------------------------------------------------
 
+
 @dataclass
 class PlayerMatch:
     player: Player
@@ -78,7 +80,7 @@ class PlayerMatch:
     @cached_property
     def diff_field_ids(self) -> list[str] | None:
         """Returns the list of fields amongst the selected fields on which
-         the 2 players have a diff. If match is unset, returns None."""
+        the 2 players have a diff. If match is unset, returns None."""
         if not self.match_player:
             return None
         diff_field_ids: list[str] = []
@@ -91,9 +93,9 @@ class PlayerMatch:
                     diff_field_ids.append(field_id)
         field_id: str = 'name'
         if field_id in self.field_ids:
-            if (
-                (self.player.first_name, self.player.last_name) !=
-                (self.match_player.first_name, self.match_player.last_name)
+            if (self.player.first_name, self.player.last_name) != (
+                self.match_player.first_name,
+                self.match_player.last_name,
             ):
                 diff_field_ids.append(field_id)
         field_id: str = 'federation'
@@ -112,17 +114,17 @@ class PlayerMatch:
         if field_id in self.field_ids:
             src_date = self.player.date_of_birth
             match_date = self.match_player.date_of_birth
-            if (
-                src_date.year != match_date.year
-            ) or (
+            if (src_date.year != match_date.year) or (
                 (match_date.month, match_date.day) != (1, 1)
-                and
-                (src_date.month, src_date.day) != (match_date.month, match_date.day)
+                and (src_date.month, src_date.day) != (match_date.month, match_date.day)
             ):
                 diff_field_ids.append(field_id)
         field_id: str = 'fide_id'
         if field_id in self.field_ids:
-            if self.match_player.fide_id and self.player.fide_id != self.match_player.fide_id:
+            if (
+                self.match_player.fide_id
+                and self.player.fide_id != self.match_player.fide_id
+            ):
                 diff_field_ids.append(field_id)
         return diff_field_ids
 
@@ -141,9 +143,9 @@ class PlayerMatch:
                     self.player.rating_types[rating] = rating_type
         field_id: str = 'name'
         if field_id in field_ids:
-            if (
-                (self.player.first_name, self.player.last_name) !=
-                (self.match_player.first_name, self.match_player.last_name)
+            if (self.player.first_name, self.player.last_name) != (
+                self.match_player.first_name,
+                self.match_player.last_name,
             ):
                 self.player.last_name = self.match_player.last_name
                 self.player.first_name = self.match_player.first_name
@@ -163,12 +165,9 @@ class PlayerMatch:
         if field_id in field_ids:
             src_date = self.player.date_of_birth
             match_date = self.match_player.date_of_birth
-            if (
-                src_date.year != match_date.year
-            ) or (
+            if (src_date.year != match_date.year) or (
                 (match_date.month, match_date.day) != (1, 1)
-                and
-                (src_date.month, src_date.day) != (match_date.month, match_date.day)
+                and (src_date.month, src_date.day) != (match_date.month, match_date.day)
             ):
                 self.player.date_of_birth = match_date
         field_id: str = 'fide_id'
@@ -207,8 +206,7 @@ class AbstractPlayerUpdater(ABC):
     @staticmethod
     def _ratings_fields() -> list[PlayerUpdaterField]:
         return [
-            PlayerUpdaterField(rt.name, f'rating_{rt.value}')
-            for rt in TournamentRating
+            PlayerUpdaterField(rt.name, f'rating_{rt.value}') for rt in TournamentRating
         ]
 
     @staticmethod
@@ -274,10 +272,11 @@ class AbstractPlayerUpdater(ABC):
                 player,
                 next(
                     (
-                        match_player for match_player in match_players
+                        match_player
+                        for match_player in match_players
                         if match_condition(player, match_player)
                     ),
-                    None
+                    None,
                 ),
                 field_ids,
             )
@@ -299,7 +298,9 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
 
     @override
     def fields(self) -> list[PlayerUpdaterField]:
-        return self._ratings_fields() + self._identity_fields() + self._federation_fields()
+        return (
+            self._ratings_fields() + self._identity_fields() + self._federation_fields()
+        )
 
     @override
     async def get_player_matches(
@@ -328,9 +329,7 @@ class PlayerUpdaterManager:
         from plugins.manager import plugin_manager
 
         return [FidePlayerUpdater()] + list(
-            itertools.chain.from_iterable(
-                plugin_manager.hook.get_player_updaters()
-            )
+            itertools.chain.from_iterable(plugin_manager.hook.get_player_updaters())
         )
 
     @classmethod

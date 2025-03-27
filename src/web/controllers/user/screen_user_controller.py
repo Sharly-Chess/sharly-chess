@@ -19,12 +19,13 @@ from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
     RotatorUserWebContext,
-    ScreenUserWebContext
+    ScreenUserWebContext,
 )
 from web.messages import Message
 from web.session import SessionHandler
 
 logger: Logger = get_logger()
+
 
 class LoginUserWebContext(ScreenUserWebContext):
     def __init__(
@@ -126,7 +127,12 @@ class ScreenUserController(BaseScreenUserController):
             match web_context.screen.type:
                 case ScreenType.IMAGE:
                     pass
-                case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
+                case (
+                    ScreenType.BOARDS
+                    | ScreenType.INPUT
+                    | ScreenType.PLAYERS
+                    | ScreenType.RANKING
+                ):
                     for screen_set in web_context.screen.screen_sets_by_id.values():
                         if cls._user_screen_set_refresh_needed(screen_set, date):
                             return True

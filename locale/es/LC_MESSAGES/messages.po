@@ -5499,4 +5499,3 @@ msgstr "{screen_type}-pantalla"
 
 #~ msgid "The FFE database is not available."
 #~ msgstr "La base de datos FFE no está disponible."
-

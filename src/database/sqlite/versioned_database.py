@@ -18,9 +18,7 @@ logger: Logger = get_logger()
 
 
 class SQLiteVersionedDatabase(SQLiteDatabase):
-    def __init__(
-        self, file: Path, write: bool = False, auto_upgrade: bool = True
-    ):
+    def __init__(self, file: Path, write: bool = False, auto_upgrade: bool = True):
         super().__init__(file, write)
         self._version: Version | None = None
         self.auto_upgrade = auto_upgrade
@@ -107,16 +105,11 @@ class SQLiteVersionedDatabase(SQLiteDatabase):
             )
         super().__enter__()
 
-        if (
-            self.auto_upgrade and
-            self.version < self.migration_manager.latest_version
-        ):
+        if self.auto_upgrade and self.version < self.migration_manager.latest_version:
             if self.write:
                 self.upgrade()
             else:
-                with self.from_parent(
-                    SQLiteVersionedDatabase(self.file, True)
-                ):
+                with self.from_parent(SQLiteVersionedDatabase(self.file, True)):
                     # reopening the database in r/w mode forces the upgrade
                     pass
                 # force self.version() to reload the new version number

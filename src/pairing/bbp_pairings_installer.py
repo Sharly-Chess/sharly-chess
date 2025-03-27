@@ -8,6 +8,7 @@ from pairing.bbp_pairings import BbpPairings
 from common import REQUEST_TIMEOUT
 from common.logger import print_interactive_info, print_interactive_success
 
+
 class BbpPairingsInstaller(BbpPairings):
     project_url: str = 'https://github.com/BieremaBoyzProgramming/bbpPairings'
     windows_build_filename: str = 'x86_64-pc-windows.zip'
@@ -22,11 +23,11 @@ class BbpPairingsInstaller(BbpPairings):
         elif system == 'Linux':
             build_filename = cls.linux_build_filename
         else:
-            raise OSError(f'BBP Pairings is not available for the current system: {system}')
+            raise OSError(
+                f'BBP Pairings is not available for the current system: {system}'
+            )
 
-        build_url: str = (
-            f'{cls.project_url}/releases/download/v{cls.version}/bbpPairings-v{cls.version}-{build_filename}'
-        )
+        build_url: str = f'{cls.project_url}/releases/download/v{cls.version}/bbpPairings-v{cls.version}-{build_filename}'
         cls.bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
         archive_path: Path = cls.bbp_pairings_dir / build_filename
         print_interactive_info(f'Downloading {build_url}...')

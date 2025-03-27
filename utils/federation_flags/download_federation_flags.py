@@ -30,7 +30,9 @@ def download_federation_flags(federation_ids: set[str]):
             case 'NON':
                 flag_url = 'https://www.svgrepo.com/download/448108/question.svg'
             case 'FID':
-                flag_url = 'https://upload.wikimedia.org/wikipedia/de/2/26/Logo_FIDE.svg'
+                flag_url = (
+                    'https://upload.wikimedia.org/wikipedia/de/2/26/Logo_FIDE.svg'
+                )
             case _:
                 flag_url = f'https://ratings.fide.com/svg/{federation_id}.svg'
         if not download_federation_url(federation_id, flag_file, flag_url):
@@ -47,9 +49,7 @@ def download_federation_flags(federation_ids: set[str]):
 
 def run():
     if not FideDatabase(write=True).check():
-        print_interactive_error(
-            _('Error while updating the FIDE database.')
-        )
+        print_interactive_error(_('Error while updating the FIDE database.'))
         return
     with FideDatabase() as fide_database:
         federation_ids: set[str] = {

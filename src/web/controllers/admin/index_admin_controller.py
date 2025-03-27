@@ -16,7 +16,10 @@ from database.sqlite.config.config_store import StoredConfig, StoredPlugin
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
-from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
+from web.controllers.admin.base_admin_controller import (
+    AdminWebContext,
+    BaseAdminController,
+)
 from web.messages import Message
 from web.session import SessionHandler
 from web.urls import admin_event_url
@@ -166,11 +169,9 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_config: StoredConfig = (
-            self._admin_validate_config_update_data(data)
-        )
-        stored_plugins: list[StoredPlugin] = (
-            self._admin_validate_plugins_update_data(data)
+        stored_config: StoredConfig = self._admin_validate_config_update_data(data)
+        stored_plugins: list[StoredPlugin] = self._admin_validate_plugins_update_data(
+            data
         )
         errors = stored_config.errors
         for plugin in stored_plugins:

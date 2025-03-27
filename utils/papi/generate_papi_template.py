@@ -8,7 +8,7 @@ import base64
 from pathlib import Path
 
 script_dir: Path = Path() / 'utils' / 'papi'
-output_dir = Path() / 'src'/ 'database' / 'access' / 'papi'
+output_dir = Path() / 'src' / 'database' / 'access' / 'papi'
 
 papi_versions = [
     path.stem.replace('template-', '').replace('.papi', '')
@@ -57,11 +57,11 @@ with open(output_dir / 'papi_template.py', 'wt', encoding='utf-8') as output_fil
     output_file.write(
         '    if not file.parents[0].is_dir():\n'
         '        logger.warning(\n'
-        '            \'Directory [%s] not found, could not generate the Papi file.\',\n'
+        "            'Directory [%s] not found, could not generate the Papi file.',\n"
         '            file.parents[0],\n'
         '        )\n'
         '        return False\n'
-        '    with open(file, \'wb\') as f:\n'
+        "    with open(file, 'wb') as f:\n"
         '        f.write(bz2.decompress(base64.decodebytes(b64)))\n'
         '    return True\n'
     )

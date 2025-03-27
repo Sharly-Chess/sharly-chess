@@ -79,7 +79,9 @@ class PapiDatabase(AccessDatabase):
             papi_id = self._read_var(f'Dep{index}')
             if tie_break := tie_break_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break)
-        point_value_type: PointValueType = PointValueType.from_papi_value(self._read_var('DecomptePoints'))
+        point_value_type: PointValueType = PointValueType.from_papi_value(
+            self._read_var('DecomptePoints')
+        )
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')
         end_date: str = self._read_var('DateFin')
@@ -133,16 +135,18 @@ class PapiDatabase(AccessDatabase):
         params: tuple = tuple([data[field] for field in field_names])
         fields = ', '.join(f'`{f}`' for f in field_names)
         values = ', '.join(['?'] * len(field_names))
-        self._execute(
-            f'INSERT INTO `joueur`({fields}) VALUES ({values})', params
-        )
+        self._execute(f'INSERT INTO `joueur`({fields}) VALUES ({values})', params)
         return data['Ref']
 
     def update_player(self, player: Player):
         """Updates the event database with the information in the provided player."""
 
-        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(player=player)
-        plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
+        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
+            player=player
+        )
+        plugin_data = {
+            key: value for data in per_plugin_player_data for key, value in data.items()
+        }
 
         fields: list[str] = (
             [
@@ -216,12 +220,9 @@ class PapiDatabase(AccessDatabase):
         for key in ('Dep1', 'Dep2', 'Dep3'):
             while tie_breaks and tie_breaks[0].papi_id is None:
                 tie_breaks.pop(0)
-            self._update_var(
-                key, tie_breaks.pop(0).papi_id if tie_breaks else ''
-            )
-    def update_point_values(
-        self, point_value_type: PointValueType
-    ):
+            self._update_var(key, tie_breaks.pop(0).papi_id if tie_breaks else '')
+
+    def update_point_values(self, point_value_type: PointValueType):
         self._update_var('DecomptePoints', point_value_type.to_papi_value)
 
     def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
@@ -335,7 +336,12 @@ class PapiDatabase(AccessDatabase):
                 data[f'Rd{round_:0>2}Cl'] = 'F'
         actions: str = ', '.join([f'`{key}` = ?' for key in data])
         query: str = f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?'
-        params: tuple = tuple(list(data.values()) + [player_papi_id, ])
+        params: tuple = tuple(
+            list(data.values())
+            + [
+                player_papi_id,
+            ]
+        )
         self._execute(query, params)
 
     def reset_player_result(self, player_papi_id: int, round_: int):

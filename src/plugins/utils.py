@@ -58,12 +58,8 @@ class PluginUtils:
         """Wrapper on insert_on_condition where the condition
         is an element being an instance of *insert_type*"""
         cls.insert_on_condition(
-            source_list,
-            element,
-            lambda elem: isinstance(elem, insert_type),
-            after
+            source_list, element, lambda elem: isinstance(elem, insert_type), after
         )
-
 
 
 class PluginContext:
@@ -74,9 +70,7 @@ class PluginContext:
         if not self.stored_plugin:
             with ConfigDatabase(True) as database:
                 self.stored_plugin = database.insert_stored_plugin(
-                    StoredPlugin(
-                        name=plugin.id, is_enabled=plugin.default_is_enabled
-                    )
+                    StoredPlugin(name=plugin.id, is_enabled=plugin.default_is_enabled)
                 )
                 database.commit()
 
@@ -144,9 +138,7 @@ class AbstractPlugin(ABC):
     def on_disable(self):
         """Method called when the plugin is disabled."""
         if self.migration_manager is not None:
-            self._migrate_all_events(
-                PluginMigrationManager.EMPTY_DATABASE_VERSION
-            )
+            self._migrate_all_events(PluginMigrationManager.EMPTY_DATABASE_VERSION)
 
     def _migrate_all_events(self, target_version: Version | None = None):
         """Migrates all the event databases to version *target_version*."""
@@ -193,8 +185,7 @@ class PluginMigrationManager(AbstractMigrationManager):
     @override
     def get_version(self, database: 'EventDatabase') -> Version:
         return (
-            database.get_plugin_version(self.plugin_id)
-            or self.EMPTY_DATABASE_VERSION
+            database.get_plugin_version(self.plugin_id) or self.EMPTY_DATABASE_VERSION
         )
 
     @override
@@ -226,14 +217,11 @@ class PluginEngineArgument:
 class ExtraColumn:
     at: str
     title: str
-    value: Callable[
-        [Any], str
-    ]
-    classes: str = ""
+    value: Callable[[Any], str]
+    classes: str = ''
 
 
 class ExtraAdminColumn(NamedTuple):
     at: str
     header_template: str
     cell_template: str
-

@@ -13,7 +13,10 @@ from data.util import PlayerRatingType, TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
-from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminController,
+    BaseEventAdminWebContext,
+)
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 
 if TYPE_CHECKING:
@@ -21,7 +24,6 @@ if TYPE_CHECKING:
 
 
 class FfeSearchController(BaseEventAdminController):
-
     MAX_RESULTS: int = 10
 
     @get(
@@ -29,10 +31,10 @@ class FfeSearchController(BaseEventAdminController):
         name='ffe-search',
     )
     async def htmx_ffe_search(
-            self,
-            request: HTMXRequest,
-            event_uniq_id: str,
-            search_ffe: str,
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        search_ffe: str,
     ) -> Template | ClientRedirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
@@ -53,7 +55,8 @@ class FfeSearchController(BaseEventAdminController):
             try:
                 async with FFESqlServer() as ffe_sql_server:
                     search_results: list['Player'] = [
-                        player async for player in await ffe_sql_server.search_player(
+                        player
+                        async for player in await ffe_sql_server.search_player(
                             unicode_normalize(search_ffe), limit=self.MAX_RESULTS
                         )
                     ]
@@ -63,16 +66,18 @@ class FfeSearchController(BaseEventAdminController):
                             message: str = ngettext(
                                 '{num} player found in {seconds:.2f} seconds.',
                                 '{num} players found in {seconds:.2f} seconds.',
-                                len(search_results)
+                                len(search_results),
                             ).format(num=len(search_results), seconds=seconds)
                         else:
-                            message: str = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
+                            message: str = _(
+                                'No players found in {seconds:.2f} seconds.'
+                            ).format(seconds=seconds)
                     else:
                         if len(search_results):
                             message: str = ngettext(
                                 '{num} player found.',
                                 '{num} players found.',
-                                len(search_results)
+                                len(search_results),
                             ).format(num=len(search_results))
                         else:
                             message: str = _('No players found.')
@@ -89,12 +94,16 @@ class FfeSearchController(BaseEventAdminController):
                 if DEVEL_ENV:
                     start = time.perf_counter()
                 if not FfeDatabase().exists():
-                    search_messages.append(('bi-database-slash', '', _('No local database.')))
+                    search_messages.append(
+                        ('bi-database-slash', '', _('No local database.'))
+                    )
                 else:
                     with FfeDatabase() as ffe_database:
                         search_results: list['Player'] = [
-                            player for player in ffe_database.search_player(
-                                unicode_normalize(search_ffe), limit=self.MAX_RESULTS)
+                            player
+                            for player in ffe_database.search_player(
+                                unicode_normalize(search_ffe), limit=self.MAX_RESULTS
+                            )
                         ]
                         if DEVEL_ENV:
                             seconds: float = time.perf_counter() - start
@@ -105,7 +114,9 @@ class FfeSearchController(BaseEventAdminController):
                                     len(search_results),
                                 ).format(num=len(search_results), seconds=seconds)
                             else:
-                                message: str = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
+                                message: str = _(
+                                    'No players found in {seconds:.2f} seconds.'
+                                ).format(seconds=seconds)
                         else:
                             if len(search_results):
                                 message: str = ngettext(
@@ -124,10 +135,11 @@ class FfeSearchController(BaseEventAdminController):
                         )
         return HTMXTemplate(
             template_name='/ffe_search_results.html',
-            context= template_context | {
+            context=template_context
+            | {
                 'search_results': search_results,
                 'search_messages': search_messages,
-            }
+            },
         )
 
     @get(
@@ -144,14 +156,20 @@ class FfeSearchController(BaseEventAdminController):
         if player_ffe_id:
             if NetworkMonitor.connected():
                 async with FFESqlServer() as ffe_sql_server:
-                    ffe_player: Player = await ffe_sql_server.get_player_by_ffe_id(player_ffe_id)
+                    ffe_player: Player = await ffe_sql_server.get_player_by_ffe_id(
+                        player_ffe_id
+                    )
             else:
                 with FfeDatabase() as ffe_database:
-                    ffe_player: Player = ffe_database.get_player_by_ffe_id(player_ffe_id)
+                    ffe_player: Player = ffe_database.get_player_by_ffe_id(
+                        player_ffe_id
+                    )
             # Try to get more information by requesting the FIDE database
             if ffe_player and FideDatabase().exists():
                 with FideDatabase() as fide_database:
-                    if fide_player := fide_database.get_player_by_fide_id(ffe_player.fide_id):
+                    if fide_player := fide_database.get_player_by_fide_id(
+                        ffe_player.fide_id
+                    ):
                         ffe_player.federation = fide_player.federation
                         ffe_player.title = fide_player.title
                         for rating_type in [
@@ -160,11 +178,17 @@ class FfeSearchController(BaseEventAdminController):
                             TournamentRating.BLITZ,
                         ]:
                             if (
-                                ffe_player.rating_types[rating_type] == PlayerRatingType.ESTIMATED and
-                                fide_player.rating_types[rating_type] != PlayerRatingType.ESTIMATED
+                                ffe_player.rating_types[rating_type]
+                                == PlayerRatingType.ESTIMATED
+                                and fide_player.rating_types[rating_type]
+                                != PlayerRatingType.ESTIMATED
                             ):
-                                ffe_player.ratings[rating_type] = fide_player.ratings[rating_type]
-                                ffe_player.rating_types[rating_type] = fide_player.rating_types[rating_type]
+                                ffe_player.ratings[rating_type] = fide_player.ratings[
+                                    rating_type
+                                ]
+                                ffe_player.rating_types[rating_type] = (
+                                    fide_player.rating_types[rating_type]
+                                )
 
         return PlayerAdminController._admin_event_players_render(
             request,

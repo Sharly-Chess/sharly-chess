@@ -6,12 +6,8 @@ class Migration(AbstractMigration):
         self.database.execute(
             'ALTER TABLE `tournament` ADD `first_board_number` INTEGER'
         )
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT'
-        )
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `max_byes` INTEGER'
-        )
+        self.database.execute('ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT')
+        self.database.execute('ALTER TABLE `tournament` ADD `max_byes` INTEGER')
         self.database.execute(
             'ALTER TABLE `tournament` ADD `last_rounds_no_byes` INTEGER'
         )
@@ -26,9 +22,7 @@ class Migration(AbstractMigration):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `paired_bye_points`'
         )
-        self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN `max_byes`'
-        )
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `max_byes`')
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `last_rounds_no_byes`'
         )

@@ -50,6 +50,7 @@ FEES_DIR: Path = Path('fees')
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
+
 class FFESession(Session):
     """A requests session specialized for communication with the FFE website.
     Currently, it relies on hacks, because no API is available."""
@@ -82,7 +83,10 @@ class FFESession(Session):
                     if data:
                         logger.info('- data:')
                         for field_id, field in data.items():
-                            if 'password' in field_id.lower() or 'passwd' in field_id.lower():
+                            if (
+                                'password' in field_id.lower()
+                                or 'passwd' in field_id.lower()
+                            ):
                                 logger.info('  - %s: [********]', field_id)
                             else:
                                 logger.info(
@@ -290,9 +294,7 @@ class FFESession(Session):
 
         """Downloads the fees for the tournament."""
         print_interactive_info(
-            _('Getting fees for tournament [{ffe_id}]...').format(
-                ffe_id=ffe_id
-            )
+            _('Getting fees for tournament [{ffe_id}]...').format(ffe_id=ffe_id)
         )
         if not self._ffe_init():
             return
@@ -341,7 +343,10 @@ class FFESession(Session):
             return False
         head: AdvancedTag = parser.getElementsByTagName('head')[0]
         head.insertBefore(base, head.getChildren()[0])
-        file: Path = Path(FEES_DIR, str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html')
+        file: Path = Path(
+            FEES_DIR,
+            str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html',
+        )
         with open(file, 'w', encoding='utf-8') as f:
             f.write(parser.getHTML())
         webbrowser.open(f'file://{file.resolve()}', new=2)
@@ -350,7 +355,9 @@ class FFESession(Session):
         )
         return
 
-    def get_id_and_password(self, do_log: bool = False) -> tuple[str | None, str | None]:
+    def get_id_and_password(
+        self, do_log: bool = False
+    ) -> tuple[str | None, str | None]:
         pd = self.tournament.plugin_data
         ffe_id = get_data(pd, 'ffe_id')
         ffe_password = get_data(pd, 'ffe_password')

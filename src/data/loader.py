@@ -70,7 +70,9 @@ class EventLoader:
     def event_uniq_ids(self) -> list[str]:
         return [
             file.stem
-            for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_database_ext}')
+            for file in PapiWebConfig.event_path.glob(
+                f'*.{PapiWebConfig.event_database_ext}'
+            )
         ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -260,7 +262,9 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, file.lstat().st_ctime)
-                for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_archive_ext}')
+                for file in PapiWebConfig.event_path.glob(
+                    f'*.{PapiWebConfig.event_archive_ext}'
+                )
             ],
             key=lambda archive: archive.date,
         )
@@ -276,9 +280,9 @@ class EventBackup:
     @property
     def file(self) -> Path:
         return (
-            PapiWebConfig.event_backup_base_path /
-            self.version.public /
-            f'{self.name}.{PapiWebConfig.event_backup_ext}'
+            PapiWebConfig.event_backup_base_path
+            / self.version.public
+            / f'{self.name}.{PapiWebConfig.event_backup_ext}'
         )
 
     @property
@@ -286,14 +290,14 @@ class EventBackup:
         return self.file.exists()
 
     def restore(self):
-        """ Restores the backup of the event. If another event
-        with the same name exists, overwrites it """
+        """Restores the backup of the event. If another event
+        with the same name exists, overwrites it"""
         assert self.exists
         shutil.copy(self.file, EventDatabase.event_database_path(self.name))
 
 
 class EventBackupLoader:
-    """This class helps loading backups (copied events). """
+    """This class helps loading backups (copied events)."""
 
     def __init__(self):
         PapiWebConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
@@ -311,12 +315,10 @@ class EventBackupLoader:
 
     @staticmethod
     def version_backups(version: Version) -> list[EventBackup]:
-        version_dir: Path = (
-            PapiWebConfig.event_backup_base_path / version.public
-        )
+        version_dir: Path = PapiWebConfig.event_backup_base_path / version.public
         return [
-            EventBackup(file.stem, version) for file in
-            version_dir.glob(f'*.{PapiWebConfig.event_backup_ext}')
+            EventBackup(file.stem, version)
+            for file in version_dir.glob(f'*.{PapiWebConfig.event_backup_ext}')
         ]
 
     def versions(self, event_id: str | None = None) -> list[Version]:
@@ -325,17 +327,15 @@ class EventBackupLoader:
         if event_id:
             return [backup.version for backup in self.event_backups(event_id)]
         return [
-            Version(version_dir.name) for version_dir in
-            PapiWebConfig.event_backup_base_path.iterdir()
+            Version(version_dir.name)
+            for version_dir in PapiWebConfig.event_backup_base_path.iterdir()
             if version_dir.is_dir()
         ]
 
-    def latest_compatible_version(
-        self, event_id: str | None = None
-    ) -> Version | None:
-
+    def latest_compatible_version(self, event_id: str | None = None) -> Version | None:
         compatible_versions = [
-            version for version in self.versions(event_id)
+            version
+            for version in self.versions(event_id)
             if version <= PapiWebConfig().version
         ]
         if not compatible_versions:

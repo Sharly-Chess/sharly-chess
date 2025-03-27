@@ -9,4 +9,3 @@ Cet espace est dédié à de possibles évolutions de Papi-web.
 - [Communication vers les joueur·euses](93-communication.md)
 - [Moteurs d'appariement](92-pairing-engines.md)
 - [Rôles et autorisations](95-auth.md)
-

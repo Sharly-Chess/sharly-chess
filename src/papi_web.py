@@ -25,9 +25,7 @@ from web.server_engine import ServerEngine  # Noqa: E402
 logger: Logger = get_logger()
 
 parser = argparse.ArgumentParser(parents=[path_parser])
-parser.add_argument(
-    '-s', '--server', help='start the web server', action='store_true'
-)
+parser.add_argument('-s', '--server', help='start the web server', action='store_true')
 engine_argument_names: list[str] = ['server']
 plugin_engine_arguments: list['PluginEngineArgument'] = (
     plugin_manager.hook.get_engine_argument()

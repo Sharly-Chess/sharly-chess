@@ -7,8 +7,6 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from data.board import Board
-from data.player import Player
 from data.screen import Screen
 from data.util import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -92,13 +90,21 @@ class Family:
         single_tournament: bool = len(self.event.tournaments_by_id) == 1
         text: str
         if (
-                self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]
-                and self.tournament.current_round
+            self.type
+            in [
+                ScreenType.INPUT,
+                ScreenType.BOARDS,
+            ]
+            and self.tournament.current_round
         ):
             text = self.menu_text or Screen.default_boards_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
-        elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+        elif self.type in [
+            ScreenType.PLAYERS,
+            ScreenType.INPUT,
+            ScreenType.BOARDS,
+        ]:
             text = self.menu_text or Screen.default_players_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
@@ -140,7 +146,7 @@ class Family:
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_family.ranking_crosstable == True
+                return self.stored_family.ranking_crosstable
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -176,7 +182,7 @@ class Family:
     def type_str(self) -> str:
         return Screen.screen_type_str(
             self.type,
-            self.ranking_crosstable if self.type == ScreenType.RANKING else None
+            self.ranking_crosstable if self.type == ScreenType.RANKING else None,
         )
 
     @property
@@ -280,10 +286,13 @@ class Family:
                             player
                             for player in self.tournament.players_by_rank.values()
                             if (
-                                       self.ranking_min_points is None or player.points >= self.ranking_min_points
-                               ) and (
-                                       self.ranking_max_points is None or player.points <= self.ranking_max_points
-                               )
+                                self.ranking_min_points is None
+                                or player.points >= self.ranking_min_points
+                            )
+                            and (
+                                self.ranking_max_points is None
+                                or player.points <= self.ranking_max_points
+                            )
                         ]
                     )
                 if self.first:

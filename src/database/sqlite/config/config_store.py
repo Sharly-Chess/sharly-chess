@@ -1,6 +1,7 @@
 """
 All the classes of this module are basic data classes stored in the config database.
 """
+
 from dataclasses import dataclass, field
 
 

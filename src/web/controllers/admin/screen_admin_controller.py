@@ -218,17 +218,25 @@ class ScreenAdminController(BaseEventAdminController):
                             if WebContext.form_data_to_bool(data, field):
                                 results_tournament_ids.append(tournament_id)
                     case ScreenType.RANKING:
-                        ranking_crosstable = WebContext.form_data_to_bool(data, field := 'ranking_crosstable')
+                        ranking_crosstable = WebContext.form_data_to_bool(
+                            data, field := 'ranking_crosstable'
+                        )
                         try:
-                            ranking_round = WebContext.form_data_to_int(data, field := 'ranking_round')
+                            ranking_round = WebContext.form_data_to_int(
+                                data, field := 'ranking_round'
+                            )
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
                         try:
-                            ranking_min_points = WebContext.form_data_to_float(data, field := 'ranking_min_points')
+                            ranking_min_points = WebContext.form_data_to_float(
+                                data, field := 'ranking_min_points'
+                            )
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
                         try:
-                            ranking_max_points = WebContext.form_data_to_float(data, field := 'ranking_max_points')
+                            ranking_max_points = WebContext.form_data_to_float(
+                                data, field := 'ranking_max_points'
+                            )
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
                     case ScreenType.IMAGE:
@@ -242,7 +250,9 @@ class ScreenAdminController(BaseEventAdminController):
                             ).format(background_image=background_image)
                         else:
                             try:
-                                response = requests.get(background_image, timeout=REQUEST_TIMEOUT)
+                                response = requests.get(
+                                    background_image, timeout=REQUEST_TIMEOUT
+                                )
                                 if response.status_code != 200:
                                     errors[field] = _(
                                         'URL [{url}] responded code [{code}].'
@@ -422,7 +432,7 @@ class ScreenAdminController(BaseEventAdminController):
                 web_context.request
             ),
         }
-        
+
         match modal:
             case None:
                 pass
@@ -473,7 +483,14 @@ class ScreenAdminController(BaseEventAdminController):
                             match screen_type:
                                 case 'ranking':
                                     ranking_crosstable = False
-                                case 'input' | 'boards' | 'players' | 'ranking' | 'results' | 'image':
+                                case (
+                                    'input'
+                                    | 'boards'
+                                    | 'players'
+                                    | 'ranking'
+                                    | 'results'
+                                    | 'image'
+                                ):
                                     pass
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
@@ -483,9 +500,7 @@ class ScreenAdminController(BaseEventAdminController):
                             )
                             name = web_context.admin_event.get_unused_screen_name(
                                 base_name=web_context.admin_screen.name,
-                                screen_type=ScreenType(
-                                    web_context.admin_screen.type
-                                ),
+                                screen_type=ScreenType(web_context.admin_screen.type),
                             )
                         case 'delete':
                             pass
@@ -576,10 +591,16 @@ class ScreenAdminController(BaseEventAdminController):
                         'results_max_age': WebContext.value_to_form_data(
                             results_max_age
                         ),
-                        'ranking_crosstable': WebContext.value_to_form_data(ranking_crosstable),
+                        'ranking_crosstable': WebContext.value_to_form_data(
+                            ranking_crosstable
+                        ),
                         'ranking_round': WebContext.value_to_form_data(ranking_round),
-                        'ranking_min_points': WebContext.value_to_form_data(ranking_min_points),
-                        'ranking_max_points': WebContext.value_to_form_data(ranking_max_points),
+                        'ranking_min_points': WebContext.value_to_form_data(
+                            ranking_min_points
+                        ),
+                        'ranking_max_points': WebContext.value_to_form_data(
+                            ranking_max_points
+                        ),
                         'background_image': WebContext.value_to_form_data(
                             background_image
                         ),
@@ -696,8 +717,8 @@ class ScreenAdminController(BaseEventAdminController):
             SessionHandler.set_session_admin_screens_show_details(
                 request, admin_screens_show_details
             )
-        screen_types: set[str] = (
-            SessionHandler.get_session_admin_screens_screen_types(request)
+        screen_types: set[str] = SessionHandler.get_session_admin_screens_screen_types(
+            request
         )
         for screen_type, param in {
             'boards': admin_screens_show_boards,

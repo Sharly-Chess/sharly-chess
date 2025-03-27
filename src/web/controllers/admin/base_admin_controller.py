@@ -13,7 +13,14 @@ from litestar.params import Body
 from litestar.response import Template
 
 from common import format_timestamp_date, EXPERIMENTAL_FEATURES, REQUEST_TIMEOUT
-from common.i18n import _, ngettext, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
+from common.i18n import (
+    _,
+    ngettext,
+    locale_localized_name,
+    trusted_locales,
+    untrusted_locales,
+    DEFAULT_LOCALE,
+)
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
@@ -80,11 +87,19 @@ class AdminWebContext(WebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         per_plugin_context = plugin_manager.hook.get_base_admin_template_context()
-        plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
+        plugin_context = {
+            key: value
+            for context in per_plugin_context
+            for key, value in context.items()
+        }
 
-        return super().template_context | {
-            'admin_tab': self.admin_tab,
-        } | plugin_context
+        return (
+            super().template_context
+            | {
+                'admin_tab': self.admin_tab,
+            }
+            | plugin_context
+        )
 
 
 class BaseAdminController(BaseController):
@@ -130,11 +145,19 @@ class BaseAdminController(BaseController):
     def _get_paired_bye_result_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.GAIN.value): _('Points for gain (full-point bye)'),
-            WebContext.value_to_form_data(Result.DRAW.value): _('Points for draw (half-point bye)'),
-            WebContext.value_to_form_data(Result.LOSS.value): _('Points for loss (zero-point bye)'),
+            WebContext.value_to_form_data(Result.GAIN.value): _(
+                'Points for gain (full-point bye)'
+            ),
+            WebContext.value_to_form_data(Result.DRAW.value): _(
+                'Points for draw (half-point bye)'
+            ),
+            WebContext.value_to_form_data(Result.LOSS.value): _(
+                'Points for loss (zero-point bye)'
+            ),
         }
-        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_result.value)
+        default_option: str = WebContext.value_to_form_data(
+            PapiWebConfig.default_paired_bye_result.value
+        )
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
 
@@ -178,9 +201,9 @@ class BaseAdminController(BaseController):
             '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
         }
         for timer in event.timers_by_id.values():
-            options[WebContext.value_to_form_data(timer.id)] = _('Timer {timer_uniq_id}').format(
-                timer_uniq_id=timer.uniq_id
-            )
+            options[WebContext.value_to_form_data(timer.id)] = _(
+                'Timer {timer_uniq_id}'
+            ).format(timer_uniq_id=timer.uniq_id)
         return options
 
     @staticmethod
@@ -383,7 +406,9 @@ class BaseAdminController(BaseController):
                     if background_image := WebContext.form_data_to_str(data, field, ''):
                         if validators.url(background_image):
                             try:
-                                response = requests.get(background_image, timeout=REQUEST_TIMEOUT)
+                                response = requests.get(
+                                    background_image, timeout=REQUEST_TIMEOUT
+                                )
                                 if response.status_code != 200:
                                     errors[field] = _(
                                         'URL [{url}] responded code [{code}].'
@@ -451,8 +476,16 @@ class BaseAdminController(BaseController):
                 raise ValueError(f'action=[{action}]')
 
         # Have plugins validate their fields and return private plugin data
-        per_plugin_tournament_data = plugin_manager.hook.get_validated_event_form_fields(action=action, event=admin_event, data=data, errors=errors)
-        plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
+        per_plugin_tournament_data = (
+            plugin_manager.hook.get_validated_event_form_fields(
+                action=action, event=admin_event, data=data, errors=errors
+            )
+        )
+        plugin_data = {
+            key: value
+            for data in per_plugin_tournament_data
+            for key, value in data.items()
+        }
 
         return StoredEvent(
             uniq_id=uniq_id,
@@ -472,12 +505,14 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             errors=errors,
-
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
-            timer_colors = admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
-            timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
-
-            plugin_data=plugin_data
+            timer_colors=admin_event.timer_colors
+            if admin_event
+            else {i: None for i in range(1, 4)},
+            timer_delays=admin_event.timer_delays
+            if admin_event
+            else {i: None for i in range(1, 4)},
+            plugin_data=plugin_data,
         )
 
     @staticmethod
@@ -626,49 +661,49 @@ class BaseAdminController(BaseController):
             case _:
                 raise ValueError(f'action=[{action}]')
 
-        per_plugin_form_data = plugin_manager.hook.get_event_form_data(event=admin_event)
-        plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
-
-        return (
-            {
-                'uniq_id': WebContext.value_to_form_data(uniq_id),
-                'name': WebContext.value_to_form_data(name),
-                'public': WebContext.value_to_form_data(public),
-                'federation': WebContext.value_to_form_data(federation),
-                'start': WebContext.value_to_datetime_form_data(start),
-                'stop': WebContext.value_to_datetime_form_data(stop),
-                'background_image_checkbox': WebContext.value_to_form_data(
-                    hide_background_image
-                ),
-                'background_image': WebContext.value_to_form_data(background_image),
-                'background_color': WebContext.value_to_form_data(background_color),
-                'background_color_checkbox': WebContext.value_to_form_data(
-                    background_color is None
-                ),
-                'path': WebContext.value_to_form_data(path),
-                'update_password': WebContext.value_to_form_data(update_password),
-                'record_illegal_moves': WebContext.value_to_form_data(
-                    record_illegal_moves
-                ),
-                'rules': WebContext.value_to_form_data(rules),
-                'message_text': WebContext.value_to_form_data(message_text),
-                'message_color_checkbox': WebContext.value_to_form_data(
-                    message_color is None
-                ),
-                'message_color': WebContext.value_to_form_data(message_color),
-                'message_background_color_checkbox': WebContext.value_to_form_data(
-                    message_background_color is None
-                ),
-                'message_background_color': WebContext.value_to_form_data(
-                    message_background_color
-                ),
-            } | plugin_form_data
+        per_plugin_form_data = plugin_manager.hook.get_event_form_data(
+            event=admin_event
         )
+        plugin_form_data = {
+            key: value for data in per_plugin_form_data for key, value in data.items()
+        }
+
+        return {
+            'uniq_id': WebContext.value_to_form_data(uniq_id),
+            'name': WebContext.value_to_form_data(name),
+            'public': WebContext.value_to_form_data(public),
+            'federation': WebContext.value_to_form_data(federation),
+            'start': WebContext.value_to_datetime_form_data(start),
+            'stop': WebContext.value_to_datetime_form_data(stop),
+            'background_image_checkbox': WebContext.value_to_form_data(
+                hide_background_image
+            ),
+            'background_image': WebContext.value_to_form_data(background_image),
+            'background_color': WebContext.value_to_form_data(background_color),
+            'background_color_checkbox': WebContext.value_to_form_data(
+                background_color is None
+            ),
+            'path': WebContext.value_to_form_data(path),
+            'update_password': WebContext.value_to_form_data(update_password),
+            'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
+            'rules': WebContext.value_to_form_data(rules),
+            'message_text': WebContext.value_to_form_data(message_text),
+            'message_color_checkbox': WebContext.value_to_form_data(
+                message_color is None
+            ),
+            'message_color': WebContext.value_to_form_data(message_color),
+            'message_background_color_checkbox': WebContext.value_to_form_data(
+                message_background_color is None
+            ),
+            'message_background_color': WebContext.value_to_form_data(
+                message_background_color
+            ),
+        } | plugin_form_data
 
     @classmethod
     def _admin_validate_config_update_data(
-            cls,
-            data: dict[str, str] | None = None,
+        cls,
+        data: dict[str, str] | None = None,
     ) -> StoredConfig:
         papi_web_config: PapiWebConfig = PapiWebConfig()
         if data is None:
@@ -676,14 +711,22 @@ class BaseAdminController(BaseController):
         errors: dict[str, str] = {}
         log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
         if log_level and log_level not in papi_web_config.log_levels:
-            errors[field] = _('Invalid log level [{log_level}].').format(log_level=log_level)
+            errors[field] = _('Invalid log level [{log_level}].').format(
+                log_level=log_level
+            )
             data[field] = ''
-        launch_browser: bool | None = WebContext.form_data_to_bool(data, 'launch_browser')
-        federation_name: str | None = WebContext.form_data_to_str(data, field := 'federation')
+        launch_browser: bool | None = WebContext.form_data_to_bool(
+            data, 'launch_browser'
+        )
+        federation_name: str | None = WebContext.form_data_to_str(
+            data, field := 'federation'
+        )
         federation: Federation | None = None
         if federation_name:
             if federation_name not in papi_web_config.federations:
-                errors[field] = _('Invalid federation [{federation}].').format(federation=federation_name)
+                errors[field] = _('Invalid federation [{federation}].').format(
+                    federation=federation_name
+                )
                 data[field] = ''
             else:
                 federation = Federation(federation_name)
@@ -808,7 +851,7 @@ class BaseAdminController(BaseController):
                 )
             ),
             'event_card_blocks': event_card_blocks,
-            'row_cycler': cls.get_cycler(['odd', 'even'])
+            'row_cycler': cls.get_cycler(['odd', 'even']),
         }
 
         match modal:
@@ -818,14 +861,22 @@ class BaseAdminController(BaseController):
                 if data is None:
                     papi_web_config: PapiWebConfig = PapiWebConfig()
                     data = {
-                        'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
-                        'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
-                        'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
-                        'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
+                        'log_level': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.log_level
+                        ),
+                        'launch_browser': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.launch_browser
+                        ),
+                        'federation': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.federation
+                        ),
+                        'locale': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.locale
+                        ),
                     }
                     for plugin in plugin_manager.all_plugins:
-                        data[plugin.form_key] = (
-                            WebContext.value_to_form_data(plugin.is_enabled)
+                        data[plugin.form_key] = WebContext.value_to_form_data(
+                            plugin.is_enabled
                         )
                     stored_config: StoredConfig = (
                         cls._admin_validate_config_update_data(data)
@@ -853,13 +904,14 @@ class BaseAdminController(BaseController):
                     'off': _('Do nothing'),
                 }
                 launch_browser_options[''] = _('By default - {option}').format(
-                    option=launch_browser_options['on' if PapiWebConfig.default_launch_browser else 'off']
+                    option=launch_browser_options[
+                        'on' if PapiWebConfig.default_launch_browser else 'off'
+                    ]
                 )
                 locale_options: dict[str, str] = {
                     '': '-',
                 } | {
-                    locale: locale_localized_name(locale)
-                    for locale in trusted_locales
+                    locale: locale_localized_name(locale) for locale in trusted_locales
                 }
                 if EXPERIMENTAL_FEATURES:
                     locale_options |= {
@@ -869,13 +921,17 @@ class BaseAdminController(BaseController):
                 locale_options[''] = _('By default - {option}').format(
                     option=locale_options[DEFAULT_LOCALE]
                 )
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_event_form_fields_template() or []
+                )
                 context |= {
                     'log_level_options': log_level_options,
                     'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(PapiWebConfig.default_federation),
+                    'federation_options': cls._get_federation_options(
+                        PapiWebConfig.default_federation
+                    ),
                     'modal': modal,
                     'data': data,
                     'errors': errors,
@@ -893,7 +949,9 @@ class BaseAdminController(BaseController):
                 if errors is None:
                     errors = {}
 
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_event_form_fields_template() or []
+                )
                 context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number
@@ -916,12 +974,12 @@ class BaseAdminController(BaseController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
-        if "modal" in context:
+        if 'modal' in context:
             return HTMXTemplate(
                 template_name='admin/modals.html',
                 context=context,
                 re_target='#modal-wrapper',
-                trigger_event="modal_opened",
-                after="settle"
+                trigger_event='modal_opened',
+                after='settle',
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)

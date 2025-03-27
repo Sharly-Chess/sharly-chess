@@ -6,7 +6,7 @@ class Migration(AbstractMigration):
         self.database.execute(
             'CREATE TABLE `info` ('
             '    `version` TEXT NOT NULL,'
-            '    `name` TEXT NOT NULL DEFAULT \'?\','
+            "    `name` TEXT NOT NULL DEFAULT '?',"
             '    `start` FLOAT NOT NULL,'
             '    `stop` FLOAT NOT NULL,'
             '    `public` INTEGER,'

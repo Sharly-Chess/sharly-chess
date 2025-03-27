@@ -92,20 +92,18 @@ class ChessEventPlugin(AbstractPlugin):
 
     @hookimpl
     def get_event_info_rows_template(self) -> str:
-        return "/chessevent_event_info_rows.html"
+        return '/chessevent_event_info_rows.html'
 
     @hookimpl
     def get_event_card_block_template(self) -> str:
-        return "/chessevent_event_card_block.html"
+        return '/chessevent_event_card_block.html'
 
     @hookimpl
     def get_event_form_fields_template(self) -> str:
-        return "/chessevent_event_form_fields.html"
+        return '/chessevent_event_form_fields.html'
 
     @hookimpl
-    def get_event_form_data(
-        self, event: 'Event | None'
-    ) -> dict[str, Any]:
+    def get_event_form_data(self, event: 'Event | None') -> dict[str, Any]:  # noqa: F821
         if not event:
             return {
                 'chessevent_user_id': '',
@@ -129,32 +127,27 @@ class ChessEventPlugin(AbstractPlugin):
     def get_validated_event_form_fields(
         self,
         action: str,
-        event: 'Event | None',
+        event: 'Event | None',  # noqa: F821
         data: dict[str, str],
-        errors: dict[str, str]
+        errors: dict[str, str],
     ) -> dict[str, Any]:
-        chessevent_user_id = WebContext.form_data_to_str(
-            data, 'chessevent_user_id'
-        )
+        chessevent_user_id = WebContext.form_data_to_str(data, 'chessevent_user_id')
         chessevent_password = WebContext.form_data_to_str(
             data, field := 'chessevent_password'
         )
         if chessevent_user_id and not chessevent_password:
-            errors[field] = _(
-                'Please enter a password for the ChessEvent connection.'
-            )
-        chessevent_event_id = WebContext.form_data_to_str(
-            data, 'chessevent_event_id'
-        )
+            errors[field] = _('Please enter a password for the ChessEvent connection.')
+        chessevent_event_id = WebContext.form_data_to_str(data, 'chessevent_event_id')
 
         # Keep data other than these two fields (such as file upload times)
         previous_data = event.plugin_data.get(self.id, {}) if event else {}
 
         return {
-            self.id: previous_data | {
-                "chessevent_user_id": chessevent_user_id,
-                "chessevent_password": chessevent_password,
-                "chessevent_event_id": chessevent_event_id,
+            self.id: previous_data
+            | {
+                'chessevent_user_id': chessevent_user_id,
+                'chessevent_password': chessevent_password,
+                'chessevent_event_id': chessevent_event_id,
             }
         }
 
@@ -170,8 +163,8 @@ class ChessEventPlugin(AbstractPlugin):
             stored_tournament.plugin_data = {}
         stored_tournament.plugin_data[self.id] = {
             'chessevent_user_id': row.get('chessevent_user_id', ''),
-            'chessevent_password': row.get('chessevent_password' ''),
-            'chessevent_event_id': row.get('chessevent_event_id' ''),
+            'chessevent_password': row.get('chessevent_password'),
+            'chessevent_event_id': row.get('chessevent_event_id'),
             'chessevent_tournament_name': row['chessevent_tournament_name'],
             'chessevent_last_download_md5': row['chessevent_last_download_md5'],
         }
@@ -185,22 +178,27 @@ class ChessEventPlugin(AbstractPlugin):
             'chessevent_user_id': self.get_data(td, 'chessevent_user_id', None),
             'chessevent_password': self.get_data(td, 'chessevent_password', None),
             'chessevent_event_id': self.get_data(td, 'chessevent_event_id', None),
-            'chessevent_tournament_name': self.get_data(td, 'chessevent_tournament_name', ''),
-            'chessevent_last_download_md5': self.get_data(td, 'chessevent_last_download_md5', ''),
+            'chessevent_tournament_name': self.get_data(
+                td, 'chessevent_tournament_name', ''
+            ),
+            'chessevent_last_download_md5': self.get_data(
+                td, 'chessevent_last_download_md5', ''
+            ),
         }
 
     @hookimpl
     def on_tournament_init(self, tournament: 'Tournament'):
         pd = tournament.stored_tournament.plugin_data
-        if (
-            not self.get_data(pd, 'chessevent_user_id')
-            or not self.get_data(pd, 'chessevent_password')
+        if not self.get_data(pd, 'chessevent_user_id') or not self.get_data(
+            pd, 'chessevent_password'
         ):
             tournament.event.add_debug(
                 _('ChessEvent connection not defined.'), tournament=tournament
             )
         elif not self.get_data(pd, 'chessevent_event_id'):
-            tournament.event.add_warning(_('ChessEvent event not set.'), tournament=tournament)
+            tournament.event.add_warning(
+                _('ChessEvent event not set.'), tournament=tournament
+            )
         elif not self.get_data(pd, 'chessevent_tournament_name'):
             tournament.event.add_warning(
                 _('ChessEvent tournament name not set.'), tournament=tournament
@@ -208,7 +206,7 @@ class ChessEventPlugin(AbstractPlugin):
 
     @hookimpl
     def get_tournament_form_fields_template(self) -> str:
-        return "/chessevent_tournament_form_fields.html"
+        return '/chessevent_tournament_form_fields.html'
 
     @hookimpl
     def get_tournament_form_data(
@@ -243,18 +241,11 @@ class ChessEventPlugin(AbstractPlugin):
         action: str,
         tournament: 'Tournament | None',
         data: dict[str, str],
-        errors: dict[str, str]
+        errors: dict[str, str],
     ) -> dict[str, Any]:
-
-        chessevent_user_id = WebContext.form_data_to_str(
-            data, 'chessevent_user_id'
-        )
-        chessevent_password = WebContext.form_data_to_str(
-            data, 'chessevent_password'
-        )
-        chessevent_event_id = WebContext.form_data_to_str(
-            data, 'chessevent_event_id'
-        )
+        chessevent_user_id = WebContext.form_data_to_str(data, 'chessevent_user_id')
+        chessevent_password = WebContext.form_data_to_str(data, 'chessevent_password')
+        chessevent_event_id = WebContext.form_data_to_str(data, 'chessevent_event_id')
         chessevent_tournament_name = WebContext.form_data_to_str(
             data, 'chessevent_tournament_name'
         )
@@ -263,19 +254,18 @@ class ChessEventPlugin(AbstractPlugin):
         previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
 
         return {
-            self.id: previous_data | {
-                "chessevent_user_id": chessevent_user_id,
-                "chessevent_password": chessevent_password,
-                "chessevent_event_id": chessevent_event_id,
-                "chessevent_tournament_name": chessevent_tournament_name
+            self.id: previous_data
+            | {
+                'chessevent_user_id': chessevent_user_id,
+                'chessevent_password': chessevent_password,
+                'chessevent_event_id': chessevent_event_id,
+                'chessevent_tournament_name': chessevent_tournament_name,
             }
         }
 
     @hookimpl
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
         return (
-            "/chessevent_tournament_card_block.html",
-            {
-                "chessevent_utils": ChessEventUtils
-            }
+            '/chessevent_tournament_card_block.html',
+            {'chessevent_utils': ChessEventUtils},
         )

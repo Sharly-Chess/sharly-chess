@@ -14,7 +14,12 @@ from typing import Any
 
 from packaging.version import Version
 from requests import Response, get, request
-from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
+from requests.exceptions import (
+    ConnectionError,
+    Timeout,
+    RequestException,
+    HTTPError,
+)  # pylint: disable=redefined-builtin
 
 from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT
 from common.i18n import _
@@ -52,7 +57,9 @@ class Engine:
             print_interactive_info(_('Checking Papi-web version...'))
             new_stable_version: Version | None = self._check_version()
         else:
-            print_interactive_warning(_('Not connected, can not check Papi-web version.'))
+            print_interactive_warning(
+                _('Not connected, can not check Papi-web version.')
+            )
         # Engines inheriting from this class should not do anything if property updated is true.
         self.updated: bool = False
         if new_stable_version:
@@ -299,7 +306,7 @@ class Engine:
                 )
             )
             for custom_file in custom_files:
-                logger.info('- %s' , str(custom_file).replace(str(custom_dir), ""))
+                logger.info('- %s', str(custom_file).replace(str(custom_dir), ''))
             yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
             no_answer: str = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -371,16 +378,24 @@ class Engine:
                     for field_id, file in files.items():
                         logger.info('  - %s: [%s]', field_id, file)
             if not data and not files:
-                response: Response = request(method=method, url=url, timeout=REQUEST_TIMEOUT)
+                response: Response = request(
+                    method=method, url=url, timeout=REQUEST_TIMEOUT
+                )
             elif not files:
-                response: Response = request(method=method, url=url, data=data, timeout=REQUEST_TIMEOUT)
+                response: Response = request(
+                    method=method, url=url, data=data, timeout=REQUEST_TIMEOUT
+                )
             else:
                 handlers = {
                     file_id: open(file_name, 'rb')
                     for file_id, file_name in files.items()
                 }
                 response: Response = request(
-                    method=method, url=url, data=data, files=handlers, timeout=REQUEST_TIMEOUT,
+                    method=method,
+                    url=url,
+                    data=data,
+                    files=handlers,
+                    timeout=REQUEST_TIMEOUT,
                 )
                 for handler in handlers.values():
                     handler.close()
@@ -452,7 +467,13 @@ class Engine:
                 '[Papi-web {version}] Request for the integration of custom files'
             ).format(version=PAPI_WEB_VERSION)
             body: str = '<p>' + _('Hello,') + '</p>'
-            body += '<p>' + _('I would like the following custom files to be added to a future version of Papi-web:') + '/p>'
+            body += (
+                '<p>'
+                + _(
+                    'I would like the following custom files to be added to a future version of Papi-web:'
+                )
+                + '/p>'
+            )
             body += '<ul>'
             for filename in custom_files:
                 body += f'<li>{filename}</li>'
@@ -460,11 +481,23 @@ class Engine:
             body += '<p>' + _('Thanks :-)') + '/p>'
             body += '<ul>'
             body += (
-                f'<li><a href="{bin_url}">' + _('View the files on filebin.net') + '</a></li>'
+                f'<li><a href="{bin_url}">'
+                + _('View the files on filebin.net')
+                + '</a></li>'
             )
-            body += f'<li><a href="{bin_zip_url}">' + _('Download the files (ZIP archive)') + '</a></li>'
+            body += (
+                f'<li><a href="{bin_zip_url}">'
+                + _('Download the files (ZIP archive)')
+                + '</a></li>'
+            )
             body += '</ul>'
-            body += '<p>' + _('Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!') + '</p>'
+            body += (
+                '<p>'
+                + _(
+                    'Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!'
+                )
+                + '</p>'
+            )
             body += '<p>' + _('First name LAST NAME') + '/p>'
             mail_url: str = (
                 f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
@@ -525,9 +558,7 @@ class Engine:
             print_interactive_warning(
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
-                ).format(
-                    new_version=last_stable_version, old_version=PAPI_WEB_VERSION
-                )
+                ).format(new_version=last_stable_version, old_version=PAPI_WEB_VERSION)
             )
             return None
         print_interactive_info(

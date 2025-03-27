@@ -59,9 +59,9 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
                 continue
             if pairing.requested_bye:
                 if all(
-                        p.voluntary_unplayed
-                        for index, p in player.pairings.items()
-                        if round_index < index <= after_round
+                    p.voluntary_unplayed
+                    for index, p in player.pairings.items()
+                    if round_index < index <= after_round
                 ):
                     score += Result.DRAW.points(tournament.point_values)
                 else:
@@ -79,14 +79,24 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         round_index: int = 1,
     ) -> float:
         """Legacy: uses round_index for the computation"""
-        dummy = player.points_before(round_index) + Result.DRAW.points(player.point_values) * (
-                after_round - round_index)
+        dummy = player.points_before(round_index) + Result.DRAW.points(
+            player.point_values
+        ) * (after_round - round_index)
         match pairing.result:
-            case Result.FORFEIT_GAIN | Result.PAIRING_ALLOCATED_BYE | Result.FULL_POINT_BYE:
+            case (
+                Result.FORFEIT_GAIN
+                | Result.PAIRING_ALLOCATED_BYE
+                | Result.FULL_POINT_BYE
+            ):
                 return dummy + Result.LOSS.points(player.point_values)
             case Result.HALF_POINT_BYE:
                 return dummy + Result.DRAW.points(player.point_values)
-            case Result.ZERO_POINT_BYE | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT | Result.NO_RESULT:
+            case (
+                Result.ZERO_POINT_BYE
+                | Result.FORFEIT_LOSS
+                | Result.DOUBLE_FORFEIT
+                | Result.NO_RESULT
+            ):
                 return dummy + Result.GAIN.points(player.point_values)
             case _:
                 raise ValueError(f'{pairing.result=}')
@@ -185,9 +195,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         *,
         after_round: int | None,
     ) -> float:
-        return self.compute_papi_buchholz_player_value(
-            player, after_round=after_round
-        )
+        return self.compute_papi_buchholz_player_value(player, after_round=after_round)
 
 
 class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
@@ -212,10 +220,10 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
         return _('Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value(
             player, after_round=after_round, use_cut_btm=True
@@ -244,10 +252,10 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         return _('Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> float:
         return self.compute_papi_buchholz_player_value(
             player,
@@ -279,10 +287,10 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
         return _('Performance')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         if after_round is None:
@@ -299,8 +307,8 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
             with suppress(KeyError):
                 rating = min(
                     player.estimation + 400,
-                    max(player.estimation - 400,
-                        opponent.estimation))
+                    max(player.estimation - 400, opponent.estimation),
+                )
                 ratings.append(rating)
                 score += pairing.result.points(tournament.point_values)
         if not ratings:
@@ -334,10 +342,10 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
         return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> float:
         tournament: 'Tournament' = player.tournament
         if after_round is None:
@@ -350,7 +358,8 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
         tie_break = PapiBuchholzTieBreak()
         return sum(
             tie_break.compute_player_value(opponent, after_round=after_round)
-            for opponent in opponents if opponent is not None
+            for opponent in opponents
+            if opponent is not None
         )
 
 
@@ -376,10 +385,10 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
         return _('Kashdan')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
     ) -> float:
         """Legacy: unplayed rounds are counted"""
         if after_round is None:

@@ -46,7 +46,9 @@ class Screen:
             )
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_screen: StoredScreen | None = stored_screen
-        self._family_ref: 'ReferenceType[Family] | None' = weakref.ref(family) if family else None
+        self._family_ref: 'ReferenceType[Family] | None' = (
+            weakref.ref(family) if family else None
+        )
         self.family_part: int | None = family_part
 
     @property
@@ -60,7 +62,12 @@ class Screen:
     @cached_property
     def screen_sets_by_id(self) -> dict[int | None, ScreenSet]:
         match self.type:
-            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
+            case (
+                ScreenType.BOARDS
+                | ScreenType.INPUT
+                | ScreenType.PLAYERS
+                | ScreenType.RANKING
+            ):
                 if self.stored_screen:
                     return {
                         stored_screen_set.id: ScreenSet(
@@ -185,8 +192,8 @@ class Screen:
     @staticmethod
     def default_ranking_screen_menu_text(
         single_tournament: bool,
-            first_last: bool,
-            crosstable: bool,
+        first_last: bool,
+        crosstable: bool,
     ) -> str:
         if single_tournament:
             if first_last:
@@ -216,34 +223,53 @@ class Screen:
         if not self.menu_link:
             return None
         match self.type:
-            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
+            case (
+                ScreenType.BOARDS
+                | ScreenType.INPUT
+                | ScreenType.PLAYERS
+                | ScreenType.RANKING
+            ):
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
                 first_last = screen_set.first is not None or screen_set.last is not None
                 text: str
                 if (
-                    self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]
+                    self.type
+                    in [
+                        ScreenType.INPUT,
+                        ScreenType.BOARDS,
+                    ]
                     and screen_set.tournament.current_round
                 ):
                     text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
-                elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+                elif self.type in [
+                    ScreenType.PLAYERS,
+                    ScreenType.INPUT,
+                    ScreenType.BOARDS,
+                ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
                         single_tournament=single_tournament, first_last=first_last
                     )
                 elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
-                        single_tournament=single_tournament, first_last=first_last, crosstable=self.ranking_crosstable
+                        single_tournament=single_tournament,
+                        first_last=first_last,
+                        crosstable=self.ranking_crosstable,
                     )
                 else:
                     text = self.menu_text
                 text = text.replace('%t', screen_set.tournament.name)
                 if self.type == ScreenType.RANKING:
                     if '%f' in text:
-                        text = text.replace('%f', str(screen_set.first_player_by_rank.rank))
+                        text = text.replace(
+                            '%f', str(screen_set.first_player_by_rank.rank)
+                        )
                     if '%l' in text:
-                        text = text.replace('%l', str(screen_set.last_player_by_rank.rank))
+                        text = text.replace(
+                            '%l', str(screen_set.last_player_by_rank.rank)
+                        )
                 elif (
                     self.type == ScreenType.PLAYERS
                     or not screen_set.tournament.current_round
@@ -258,7 +284,10 @@ class Screen:
                             '%l',
                             str(screen_set.last_player_by_name.last_name[:3]).upper(),
                         )
-                elif self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]:
+                elif self.type in [
+                    ScreenType.INPUT,
+                    ScreenType.BOARDS,
+                ]:
                     if '%f' in text:
                         text = text.replace('%f', str(screen_set.first_board.id))
                     if '%l' in text:
@@ -457,8 +486,8 @@ class Screen:
 
     @staticmethod
     def screen_type_str(
-            type_: ScreenType,
-            crosstable: bool | None,
+        type_: ScreenType,
+        crosstable: bool | None,
     ) -> str:
         if type_ == ScreenType.RANKING:
             if crosstable:
@@ -472,7 +501,7 @@ class Screen:
     def type_str(self) -> str:
         return self.screen_type_str(
             self.type,
-            self.ranking_crosstable if self.type == ScreenType.RANKING else None
+            self.ranking_crosstable if self.type == ScreenType.RANKING else None,
         )
 
     @cached_property
@@ -554,7 +583,7 @@ class Screen:
         match self.type:
             case ScreenType.RANKING:
                 if self.stored_screen:
-                    return self.stored_screen.ranking_crosstable == True
+                    return self.stored_screen.ranking_crosstable
                 else:
                     return self.family.ranking_crosstable
             case _:

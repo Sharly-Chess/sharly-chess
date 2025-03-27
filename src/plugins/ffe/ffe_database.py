@@ -3,12 +3,11 @@ import os.path
 import types
 import zipfile
 from contextlib import suppress
-from datetime import datetime, timedelta
+from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError, IntegrityError
 from threading import Event, Thread
-from time import time
 from typing import Iterator, Any
 
 from requests import Response, get
@@ -55,7 +54,9 @@ class FfeDatabase(SQLiteDatabase):
     """
 
     def __init__(self, write: bool = False):
-        super().__init__(TMP_DIR / f'ffe.{PapiWebConfig.federation_database_ext}', write)
+        super().__init__(
+            TMP_DIR / f'ffe.{PapiWebConfig.federation_database_ext}', write
+        )
         self.stop_event = Event()
 
     @property
@@ -68,7 +69,9 @@ class FfeDatabase(SQLiteDatabase):
         yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
         if not self.exists():
             if not NetworkMonitor.connected():
-                print_interactive_warning(_('Not connected, can not create the FFE database.'))
+                print_interactive_warning(
+                    _('Not connected, can not create the FFE database.')
+                )
                 return
             if (
                 input_interactive(
@@ -83,7 +86,9 @@ class FfeDatabase(SQLiteDatabase):
             days_since_update = (datetime.now() - self.updated_at).days
             if days_since_update >= 2:
                 if not NetworkMonitor.connected():
-                    print_interactive_warning(_('Not connected, can not update the FFE database.'))
+                    print_interactive_warning(
+                        _('Not connected, can not update the FFE database.')
+                    )
                     return
                 if (
                     input_interactive(
@@ -96,11 +101,11 @@ class FfeDatabase(SQLiteDatabase):
                     return
             else:
                 return
-            
+
         update_thread = Thread(target=self.create, daemon=True)
         update_thread.start()
         atexit.register(self.stop_background_thread, update_thread)
-    
+
     def stop_background_thread(self, thread):
         self.stop_event.set()
         thread.join()
@@ -143,7 +148,7 @@ class FfeDatabase(SQLiteDatabase):
             print_interactive_error(_('Could not unzip data.'))
             return self.exists()
         print_interactive_info(_('Storing FFE data...'))
-        
+
         tmp_file = self.file.with_suffix('.tmp')
         tmp_file.unlink(missing_ok=True)
         new_database = SQLiteDatabase(tmp_file, True)
@@ -171,15 +176,13 @@ class FfeDatabase(SQLiteDatabase):
         }
         column_names: list[str] = list(translations.keys())
         bindings: list[str] = [f':{column_name}' for column_name in column_names]
-        escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
+        escaped_column_names: list[str] = list(map(lambda s: f'`{s}`', column_names))
         query: str = f'INSERT INTO player({", ".join(escaped_column_names)}) VALUES({", ".join(bindings)})'
         if self.stop_event.is_set():
             return False
-        
+
         try:
-            with open(
-                PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8'
-            ) as f:
+            with open(PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8') as f:
                 new_database._create(f.read())
             with FfeAccessDatabase(local_mdb_file) as ffe_access_database:
                 new_database.write = True
@@ -220,14 +223,14 @@ class FfeDatabase(SQLiteDatabase):
             )
             tmp_file.unlink(missing_ok=True)
             return False
-        
+
         # Copy the new database to it's proper location
-        
+
         self.acquire_lock()
         self.file.unlink(missing_ok=True)
         tmp_file.rename(self.file)
         self.release_lock()
-        
+
         print_interactive_success(
             _('{number} players written to FFE database.').format(number=player_count)
         )
@@ -237,56 +240,66 @@ class FfeDatabase(SQLiteDatabase):
     def create_indexes(self) -> None:
         self.write = True
         with self:
-            self.execute('CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)')
-            self.execute('CREATE INDEX `player_first_name` ON `player`(`first_name` COLLATE NOCASE)')
+            self.execute(
+                'CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+            )
             self.execute('CREATE INDEX `player_fide_id` ON `player`(`fide_id`)')
-            self.execute('CREATE INDEX `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)')
+            self.execute(
+                'CREATE INDEX `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+            )
             self.commit()
 
     @staticmethod
     def get_player_from_row(row: dict[str, Any]) -> Player | None:
-        return Player(
-            id=0,
-            first_name=row['first_name'].title() if row['first_name'] else '',
-            last_name=row['last_name'].upper(),
-            date_of_birth=datetime.strptime(
-                row['date_of_birth'], '%Y-%m-%d'
-            ).date(),
-            gender=PlayerGender(row['gender']),
-            mail='',
-            phone='',
-            comment='',
-            owed=0.0,
-            paid=0.0,
-            title=PlayerTitle(row['fide_title']),
-            ratings={
-                TournamentRating.STANDARD: row['standard_rating'],
-                TournamentRating.RAPID: row['rapid_rating'],
-                TournamentRating.BLITZ: row['blitz_rating'],
-            },
-            rating_types={
-                TournamentRating.STANDARD: PlayerRatingType(
-                    row['standard_rating_type']
-                ),
-                TournamentRating.RAPID: PlayerRatingType(row['rapid_rating_type']),
-                TournamentRating.BLITZ: PlayerRatingType(row['blitz_rating_type']),
-            },
-            fide_id=int(row['fide_id']) if row['fide_id'] else None,
-            federation=Federation(row['federation']),
-            club=Club(row['club']),
-            fixed=0,
-            check_in=False,  # not taken into account when updating/creating/deleting the player
-            pairings={},  # Pairings are read from Papi but not used
-            tournament=None,
-            plugin_data={
-                PLUGIN_NAME: {
-                    "ffe_id": row['ffe_id'],
-                    "ffe_licence": PlayerFFELicence(row['ffe_licence']),
-                    "ffe_licence_number": row['ffe_licence_number'],
-                    "league": row['league'],
-                }
-            }
-        ) if row else None
+        return (
+            Player(
+                id=0,
+                first_name=row['first_name'].title() if row['first_name'] else '',
+                last_name=row['last_name'].upper(),
+                date_of_birth=datetime.strptime(
+                    row['date_of_birth'], '%Y-%m-%d'
+                ).date(),
+                gender=PlayerGender(row['gender']),
+                mail='',
+                phone='',
+                comment='',
+                owed=0.0,
+                paid=0.0,
+                title=PlayerTitle(row['fide_title']),
+                ratings={
+                    TournamentRating.STANDARD: row['standard_rating'],
+                    TournamentRating.RAPID: row['rapid_rating'],
+                    TournamentRating.BLITZ: row['blitz_rating'],
+                },
+                rating_types={
+                    TournamentRating.STANDARD: PlayerRatingType(
+                        row['standard_rating_type']
+                    ),
+                    TournamentRating.RAPID: PlayerRatingType(row['rapid_rating_type']),
+                    TournamentRating.BLITZ: PlayerRatingType(row['blitz_rating_type']),
+                },
+                fide_id=int(row['fide_id']) if row['fide_id'] else None,
+                federation=Federation(row['federation']),
+                club=Club(row['club']),
+                fixed=0,
+                check_in=False,  # not taken into account when updating/creating/deleting the player
+                pairings={},  # Pairings are read from Papi but not used
+                tournament=None,
+                plugin_data={
+                    PLUGIN_NAME: {
+                        'ffe_id': row['ffe_id'],
+                        'ffe_licence': PlayerFFELicence(row['ffe_licence']),
+                        'ffe_licence_number': row['ffe_licence_number'],
+                        'league': row['league'],
+                    }
+                },
+            )
+            if row
+            else None
+        )
 
     def search_player(
         self,
@@ -297,7 +310,7 @@ class FfeDatabase(SQLiteDatabase):
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '', '%'),
-            ('ffe_licence_number', '', '')
+            ('ffe_licence_number', '', ''),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
@@ -309,29 +322,38 @@ class FfeDatabase(SQLiteDatabase):
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
-                params += [int_value, ] * len(int_fields)
+                params += [
+                    int_value,
+                ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
+        order_conditions = ' OR '.join(
+            [
+                '(last_name LIKE ?)',
+            ]
+            * len(tokens)
+        )
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
-            params += [limit, ]
-        self.execute(query, tuple(params), )
-        return (
-            self.get_player_from_row(row)
-            for row in self.fetchall()
+            params += [
+                limit,
+            ]
+        self.execute(
+            query,
+            tuple(params),
         )
+        return (self.get_player_from_row(row) for row in self.fetchall())
 
     def _get_player_by_id(
         self,
         field: str,
         id_: int,
     ) -> Player | None:
-        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_, ))
+        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_,))
         if row := self.fetchone():
             return self.get_player_from_row(row)
         else:
@@ -349,13 +371,12 @@ class FfeDatabase(SQLiteDatabase):
     ) -> Player | None:
         return self._get_player_by_id('fide_id', player_fide_id)
 
-    def get_players_by_ffe_licence_number(self, player_ffe_licence_numbers: list[str]) -> list[Player]:
+    def get_players_by_ffe_licence_number(
+        self, player_ffe_licence_numbers: list[str]
+    ) -> list[Player]:
         query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
         self.execute(
             f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
             tuple(player_ffe_licence_numbers),
         )
-        return [
-            self.get_player_from_row(row)
-            for row in self.fetchall()
-        ]
+        return [self.get_player_from_row(row) for row in self.fetchall()]

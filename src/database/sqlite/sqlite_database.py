@@ -14,6 +14,7 @@ logger: Logger = get_logger()
 
 locks: defaultdict[Path, RLock] = defaultdict(RLock)
 
+
 @dataclass
 class SQLiteDatabase:
     """

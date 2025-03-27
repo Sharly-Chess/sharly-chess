@@ -11,9 +11,7 @@ class Migration(AbstractMigration):
         )
 
     def backward(self):
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT'
-        )
+        self.database.execute('ALTER TABLE `tournament` ADD `paired_bye_points` FLOAT')
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `paired_bye_result`'
         )

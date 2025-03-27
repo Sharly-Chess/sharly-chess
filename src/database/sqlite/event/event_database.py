@@ -62,9 +62,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         auto_upgrade: bool = True,
     ):
         self.uniq_id = uniq_id
-        super().__init__(
-            self.event_database_path(self.uniq_id), write, auto_upgrade
-        )
+        super().__init__(self.event_database_path(self.uniq_id), write, auto_upgrade)
         self.plugin_versions: dict[str, Version] = {}
 
     @classmethod
@@ -97,21 +95,23 @@ class EventDatabase(SQLiteVersionedDatabase):
             datetime.strptime(f'{today_str} 23:59', format_).timetuple()
         )
         self.execute(
-            "INSERT INTO `info` "
-            "(`version`, `name`, `start`, `stop`, `last_update`) "
-            "VALUES(?, ?, ?, ?, ?)",
+            'INSERT INTO `info` '
+            '(`version`, `name`, `start`, `stop`, `last_update`) '
+            'VALUES(?, ?, ?, ?, ?)',
             (
                 f'{version.major}.{version.minor}.{version.micro}',
                 self.uniq_id,
                 event_start,
                 event_stop,
                 time.time(),
-            )
+            ),
         )
 
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
-        return PapiWebConfig.event_path / f'{uniq_id}.{PapiWebConfig.event_database_ext}'
+        return (
+            PapiWebConfig.event_path / f'{uniq_id}.{PapiWebConfig.event_database_ext}'
+        )
 
     @staticmethod
     def _check_populate_dict(
@@ -270,10 +270,14 @@ class EventDatabase(SQLiteVersionedDatabase):
                     }
                 today_str: str = format_timestamp_date()
                 event_start: float = time.mktime(
-                    datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple()
+                    datetime.strptime(
+                        f'{today_str} 00:00', '%Y-%m-%d %H:%M'
+                    ).timetuple()
                 )
                 event_stop: float = time.mktime(
-                    datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
+                    datetime.strptime(
+                        f'{today_str} 23:59', '%Y-%m-%d %H:%M'
+                    ).timetuple()
                 )
                 if 'start' in event_dict:
                     event_start = time.mktime(
@@ -313,9 +317,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
                 if 'timers' in event_dict and event_dict['timers'] is not None:
-                    self._check_populate_dict(
-                        yml_file, '/timers', event_dict['timers']
-                    )
+                    self._check_populate_dict(yml_file, '/timers', event_dict['timers'])
                     for timer_uniq_id, timer_dict in event_dict['timers'].items():
                         self._check_populate_dict(
                             yml_file,
@@ -386,9 +388,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 ],
                             )
                             stored_timer_hour: StoredTimerHour = (
-                                event_database.add_stored_timer_hour(
-                                    stored_timer.id
-                                )
+                                event_database.add_stored_timer_hour(stored_timer.id)
                             )
                             stored_timer_hour.uniq_id = timer_hour_uniq_id
                             stored_timer_hour.date_str = timer_hour_dict.get(
@@ -403,9 +403,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 stored_timer_hour.text_after = timer_hour_dict.get(
                                     'text_after', None
                                 )
-                            event_database.update_stored_timer_hour(
-                                stored_timer_hour
-                            )
+                            event_database.update_stored_timer_hour(stored_timer_hour)
                 tournament_ids_by_uniq_id: dict[str, int] = {}
                 if (
                     'tournaments' in event_dict
@@ -477,9 +475,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     self._check_populate_dict(
                         yml_file, '/screens', event_dict['screens']
                     )
-                    for screen_uniq_id, screen_dict in event_dict[
-                        'screens'
-                    ].items():
+                    for screen_uniq_id, screen_dict in event_dict['screens'].items():
                         self._check_populate_dict(
                             yml_file,
                             f'/screens/{screen_uniq_id}',
@@ -550,9 +546,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                         screen_dict['results_tournament_uniq_ids'],
                                     )
                                     results_tournament_ids = [
-                                        tournament_ids_by_uniq_id[
-                                            tournament_uniq_id
-                                        ]
+                                        tournament_ids_by_uniq_id[tournament_uniq_id]
                                         for tournament_uniq_id in screen_dict[
                                             'results_tournament_uniq_ids'
                                         ]
@@ -589,28 +583,26 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 )
                             case _:
                                 raise ValueError
-                        stored_screen: StoredScreen = (
-                            event_database.add_stored_screen(
-                                StoredScreen(
-                                    id=None,
-                                    uniq_id=screen_uniq_id,
-                                    name=screen_dict.get('name', None),
-                                    type=type_,
-                                    public=screen_dict.get('public', True),
-                                    columns=screen_dict.get('columns', None),
-                                    menu_link=menu_link,
-                                    menu_text=menu_text,
-                                    menu=menu,
-                                    timer_id=timer_id,
-                                    input_exit_button=input_exit_button,
-                                    players_show_unpaired=players_show_unpaired,
-                                    results_limit=results_limit,
-                                    results_max_age=results_max_age,
-                                    results_tournament_ids=results_tournament_ids,
-                                    ranking_crosstable=ranking_crosstable,
-                                    background_image=background_image,
-                                    background_color=background_color,
-                                )
+                        stored_screen: StoredScreen = event_database.add_stored_screen(
+                            StoredScreen(
+                                id=None,
+                                uniq_id=screen_uniq_id,
+                                name=screen_dict.get('name', None),
+                                type=type_,
+                                public=screen_dict.get('public', True),
+                                columns=screen_dict.get('columns', None),
+                                menu_link=menu_link,
+                                menu_text=menu_text,
+                                menu=menu,
+                                timer_id=timer_id,
+                                input_exit_button=input_exit_button,
+                                players_show_unpaired=players_show_unpaired,
+                                results_limit=results_limit,
+                                results_max_age=results_max_age,
+                                results_tournament_ids=results_tournament_ids,
+                                ranking_crosstable=ranking_crosstable,
+                                background_image=background_image,
+                                background_color=background_color,
                             )
                         )
                         screen_ids_by_uniq_id[screen_uniq_id] = stored_screen.id
@@ -676,9 +668,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     self._check_populate_dict(
                         yml_file, '/families', event_dict['families']
                     )
-                    for family_uniq_id, family_dict in event_dict[
-                        'families'
-                    ].items():
+                    for family_uniq_id, family_dict in event_dict['families'].items():
                         self._check_populate_dict(
                             yml_file,
                             f'/families/{family_uniq_id}',
@@ -748,31 +738,29 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 menu: str = family_dict.get('menu', '')
                             case _:
                                 raise ValueError(f'type={type_}')
-                        stored_family: StoredFamily = (
-                            event_database.add_stored_family(
-                                StoredFamily(
-                                    id=None,
-                                    uniq_id=family_uniq_id,
-                                    name=family_dict.get('name', None),
-                                    tournament_id=tournament_id,
-                                    type=type_,
-                                    public=family_dict.get('public', True),
-                                    columns=family_dict.get('columns', None),
-                                    menu_link=menu_link,
-                                    menu_text=menu_text,
-                                    menu=menu,
-                                    timer_id=timer_id,
-                                    input_exit_button=input_exit_button,
-                                    players_show_unpaired=players_show_unpaired,
-                                    ranking_crosstable=ranking_crosstable,
-                                    ranking_round=None,
-                                    ranking_min_points=None,
-                                    ranking_max_points=None,
-                                    first=family_dict.get('first', None),
-                                    last=family_dict.get('last', None),
-                                    parts=family_dict.get('parts', None),
-                                    number=family_dict.get('number', None),
-                                )
+                        stored_family: StoredFamily = event_database.add_stored_family(
+                            StoredFamily(
+                                id=None,
+                                uniq_id=family_uniq_id,
+                                name=family_dict.get('name', None),
+                                tournament_id=tournament_id,
+                                type=type_,
+                                public=family_dict.get('public', True),
+                                columns=family_dict.get('columns', None),
+                                menu_link=menu_link,
+                                menu_text=menu_text,
+                                menu=menu,
+                                timer_id=timer_id,
+                                input_exit_button=input_exit_button,
+                                players_show_unpaired=players_show_unpaired,
+                                ranking_crosstable=ranking_crosstable,
+                                ranking_round=None,
+                                ranking_min_points=None,
+                                ranking_max_points=None,
+                                first=family_dict.get('first', None),
+                                last=family_dict.get('last', None),
+                                parts=family_dict.get('parts', None),
+                                number=family_dict.get('number', None),
                             )
                         )
                         family_ids_by_uniq_id[family_uniq_id] = stored_family.id
@@ -780,9 +768,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     self._check_populate_dict(
                         yml_file, '/rotators', event_dict['rotators']
                     )
-                    for rotator_uniq_id, rotator_dict in event_dict[
-                        'rotators'
-                    ].items():
+                    for rotator_uniq_id, rotator_dict in event_dict['rotators'].items():
                         self._check_populate_dict(
                             yml_file,
                             f'/rotators/{rotator_uniq_id}',
@@ -804,9 +790,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             )
                             screen_ids = [
                                 screen_ids_by_uniq_id[screen_uniq_id]
-                                for screen_uniq_id in rotator_dict[
-                                    'screen_uniq_ids'
-                                ]
+                                for screen_uniq_id in rotator_dict['screen_uniq_ids']
                             ]
                         else:
                             screen_ids = []
@@ -818,9 +802,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                             )
                             family_ids = [
                                 family_ids_by_uniq_id[family_uniq_id]
-                                for family_uniq_id in rotator_dict[
-                                    'family_uniq_ids'
-                                ]
+                                for family_uniq_id in rotator_dict['family_uniq_ids']
                             ]
                         else:
                             family_ids = []
@@ -846,7 +828,9 @@ class EventDatabase(SQLiteVersionedDatabase):
         file: Path = EventDatabase(self.uniq_id).file
         index: int = 0
         date_str: str = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
-        arch: Path = file.parent / f'{file.stem}_{date_str}.{PapiWebConfig.event_archive_ext}'
+        arch: Path = (
+            file.parent / f'{file.stem}_{date_str}.{PapiWebConfig.event_archive_ext}'
+        )
         while True:
             try:
                 file.rename(arch)
@@ -884,7 +868,7 @@ class EventDatabase(SQLiteVersionedDatabase):
 
     def create_backup(self) -> 'EventBackup':
         """Creates a backup of the event database.
-        If a backup already exists for the same version, overwrite it. """
+        If a backup already exists for the same version, overwrite it."""
         from data.loader import EventBackup
 
         backup = EventBackup(self.uniq_id, self.version)
@@ -913,7 +897,7 @@ class EventDatabase(SQLiteVersionedDatabase):
             (
                 f'{version.major}.{version.minor}.{version.micro}',
                 time.time(),
-            )
+            ),
         )
         self.plugin_versions[plugin_id] = version
 
@@ -981,7 +965,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             message_background_color=row.get('message_background_color', None),
             last_update=row['last_update'],
         )
-        plugin_manager.hook.augment_event_after_db_fetch(stored_event=stored_event, row=row)
+        plugin_manager.hook.augment_event_after_db_fetch(
+            stored_event=stored_event, row=row
+        )
         return stored_event
 
     def _get_stored_event(self) -> StoredEvent:
@@ -1011,8 +997,12 @@ class EventDatabase(SQLiteVersionedDatabase):
         """Updates the event database with the information in the provided
         `stored_event`."""
 
-        per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(stored_event=stored_event)
-        plugin_data = { key: value for data in per_plugin_event_data for key, value in data.items() }
+        per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(
+            stored_event=stored_event
+        )
+        plugin_data = {
+            key: value for data in per_plugin_event_data for key, value in data.items()
+        }
 
         fields: list[str] = [
             'name',
@@ -1383,7 +1373,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             # needed to open event databases when version < 2.4.23 before checking the version
             tie_breaks=cls.load_json_from_database_field(row.get('tie_breaks', None)),
         )
-        plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
+        plugin_manager.hook.augment_tournament_after_db_fetch(
+            stored_tournament=stored_tournament, row=row
+        )
         return stored_tournament
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -1407,8 +1399,14 @@ class EventDatabase(SQLiteVersionedDatabase):
         self,
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
-        per_plugin_tournament_data = plugin_manager.hook.tournament_data_for_db_write(stored_tournament=stored_tournament)
-        plugin_data = { key: value for data in per_plugin_tournament_data for key, value in data.items() }
+        per_plugin_tournament_data = plugin_manager.hook.tournament_data_for_db_write(
+            stored_tournament=stored_tournament
+        )
+        plugin_data = {
+            key: value
+            for data in per_plugin_tournament_data
+            for key, value in data.items()
+        }
 
         # check_in_open is not updated here but in set_tournament_check_in()
         fields: list[str] = [
@@ -2022,10 +2020,16 @@ class EventDatabase(SQLiteVersionedDatabase):
             self.dump_to_json_database_field(stored_screen.results_tournament_ids, [])
             if stored_screen.type == 'results'
             else None,
-            stored_screen.ranking_crosstable if stored_screen.type == 'ranking' else None,
+            stored_screen.ranking_crosstable
+            if stored_screen.type == 'ranking'
+            else None,
             stored_screen.ranking_round if stored_screen.type == 'ranking' else None,
-            stored_screen.ranking_min_points if stored_screen.type == 'ranking' else None,
-            stored_screen.ranking_max_points if stored_screen.type == 'ranking' else None,
+            stored_screen.ranking_min_points
+            if stored_screen.type == 'ranking'
+            else None,
+            stored_screen.ranking_max_points
+            if stored_screen.type == 'ranking'
+            else None,
             stored_screen.background_image if stored_screen.type == 'image' else None,
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,

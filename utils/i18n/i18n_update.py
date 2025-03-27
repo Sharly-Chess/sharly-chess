@@ -546,9 +546,7 @@ class I18nUpdater:
 if __name__ == '__main__':
     untrusted_locales: list[str] = []
     if (
-        input_interactive(
-            'Do you want to update the untrusted locales (y/N)? '
-        ).upper()
+        input_interactive('Do you want to update the untrusted locales (y/N)? ').upper()
         or 'N'
     ) == 'Y':
         untrusted_locales = [

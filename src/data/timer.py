@@ -30,9 +30,9 @@ class TimerHour:
     """A data wrapper around a stored timer hour."""
 
     def __init__(
-            self,
-            timer: 'Timer',
-            stored_timer_hour: StoredTimerHour,
+        self,
+        timer: 'Timer',
+        stored_timer_hour: StoredTimerHour,
     ):
         self._timer_ref: 'ReferenceType[Timer]' = weakref.ref(timer)
         self.stored_timer_hour: StoredTimerHour = stored_timer_hour

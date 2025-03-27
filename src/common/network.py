@@ -1,4 +1,5 @@
 """Common network code"""
+
 import socket
 import random
 from logging import Logger
@@ -12,9 +13,10 @@ logger: Logger = get_logger()
 
 SLEEP_TIME = 15
 
+
 class NetworkMonitor:
     """Class for monitoring internet connectivity"""
-    
+
     # We assume we're connected to the internet on startup
     connected_status = True
 
@@ -54,11 +56,11 @@ class NetworkMonitor:
         selected_servers: list[str] = random.sample(root_dns_servers, 2)
         if any(cls._test_dns_server(server) for server in selected_servers):
             if not cls.connected_status:
-                logger.info(_("Internet connection established"))
+                logger.info(_('Internet connection established'))
             cls.connected_status = True
         else:
             if cls.connected_status:
-                logger.info(_("Internet connection lost"))
+                logger.info(_('Internet connection lost'))
             cls.connected_status = False
 
     # ---------------------------------------------------------------------------------
@@ -84,8 +86,8 @@ class NetworkMonitor:
             while True:
                 cls._test_for_internet_connection()
                 time.sleep(SLEEP_TIME)
-            
-        connection_checker = Thread(target=_check_connected, args=(cls, ), daemon=True)
+
+        connection_checker = Thread(target=_check_connected, args=(cls,), daemon=True)
         connection_checker.start()
 
     @classmethod
@@ -94,7 +96,7 @@ class NetworkMonitor:
         cls.connected_status = status
 
     @classmethod
-    def connected(cls, use_cached = True) -> bool:
+    def connected(cls, use_cached=True) -> bool:
         """Checks if the program is connected to the internet.
         This relies on a background thread checking every few seconds,
         and so the returned value isn't 100% sure"""

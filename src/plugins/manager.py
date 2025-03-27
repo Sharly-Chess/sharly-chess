@@ -33,7 +33,8 @@ class AppPluginManager(PluginManager):
         """Template paths of all plugins (even disabled ones)
         need to be added to the jinja engine."""
         return [
-            plugin.templates_path for plugin in self.all_plugins
+            plugin.templates_path
+            for plugin in self.all_plugins
             if plugin.templates_path.exists()
         ]
 

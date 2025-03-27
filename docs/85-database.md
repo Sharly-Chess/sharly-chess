@@ -210,4 +210,3 @@
 | `delay`                 | `INTEGER` |                                            | Le délai de rotation des écrans en secondes, facultatif (par défaut 15).                                                                                                                                                                  |
 | `message_default`       | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Booléen :<br/>- `1` : le message d'alerte de l'évènement est utilisé (sauf si un message est défini pour les écrans) ;<br/>- `0` : le message d'alerte des écrans de l'écran rotatif est utilisé en remplacement de celui de l'évènement. |
 | `message_text`          | `TEXT`    |                                            | Le texte du message d'alerte de l'écran (par défaut aucun message d'alerte n'est affiché).                                                                                                                                                |
-

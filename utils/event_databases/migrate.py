@@ -5,10 +5,17 @@ from typing import Iterator
 from packaging.version import Version
 
 from common import PAPI_WEB_VERSION
-from common.logger import print_interactive_info, print_interactive_error, print_interactive_success, \
-    print_interactive_warning
+from common.logger import (
+    print_interactive_info,
+    print_interactive_error,
+    print_interactive_success,
+    print_interactive_warning,
+)
 from data.loader import EventLoader
-from database.sqlite.config.config_database import ConfigMigrationManager, ConfigDatabase
+from database.sqlite.config.config_database import (
+    ConfigMigrationManager,
+    ConfigDatabase,
+)
 from database.sqlite.event.event_database import EventDatabase, EventMigrationManager
 from database.sqlite.migration import AbstractMigrationManager
 
@@ -17,8 +24,7 @@ if __name__ == '__main__':
     def parse_args() -> (list[str], bool, list[str]):
         parser = ArgumentParser(
             description=(
-                'Command migrating one or more '
-                'event databases to a specific version.'
+                'Command migrating one or more event databases to a specific version.'
             )
         )
         parser.add_argument(
@@ -73,20 +79,29 @@ if __name__ == '__main__':
         if args.event and args.all_events:
             print_interactive_info(
                 'Options "--event EVENT" and "--all-events" '
-                'can\'t be used at the same time.'
+                "can't be used at the same time."
             )
             sys.exit(1)
         args_event_ids: list[str] | None = None
         if args.event:
-            args_event_ids = [args.event, ]
+            args_event_ids = [
+                args.event,
+            ]
         elif args.all_events:
             args_event_ids = EventLoader().event_uniq_ids
-        return args_event_ids, args.config == True, args.version or ['current', ]
+        return (
+            args_event_ids,
+            args.config,
+            args.version
+            or [
+                'current',
+            ],
+        )
 
     def database_correct_version(
-            migration_manager: AbstractMigrationManager,
-            version_string: str,
-            warning: str,
+        migration_manager: AbstractMigrationManager,
+        version_string: str,
+        warning: str,
     ) -> Version:
         version: Version
         if version_string == 'current':
@@ -94,15 +109,12 @@ if __name__ == '__main__':
         else:
             version = Version(version_string)
         correct_version: Version = max(
-            min(
-                version,
-                PAPI_WEB_VERSION,
-                migration_manager.last_migration_version
-            ),
+            min(version, PAPI_WEB_VERSION, migration_manager.last_migration_version),
             migration_manager.first_migration_version,
         )
         if version != correct_version:
-            print_interactive_warning(warning.format(
+            print_interactive_warning(
+                warning.format(
                     version=version,
                     correct_version=correct_version,
                 )
@@ -110,8 +122,8 @@ if __name__ == '__main__':
         return correct_version
 
     def config_database_correct_version(
-            migration_manager: ConfigMigrationManager,
-            version_string: str,
+        migration_manager: ConfigMigrationManager,
+        version_string: str,
     ) -> Version:
         return database_correct_version(
             migration_manager,
@@ -121,8 +133,8 @@ if __name__ == '__main__':
         )
 
     def event_database_correct_version(
-            migration_manager: EventMigrationManager,
-            version_string: str,
+        migration_manager: EventMigrationManager,
+        version_string: str,
     ) -> Version:
         return database_correct_version(
             migration_manager,

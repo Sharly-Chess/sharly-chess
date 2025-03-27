@@ -2,7 +2,12 @@ import json
 
 from logging import Logger
 from requests import Session, Response
-from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
+from requests.exceptions import (
+    ConnectionError,
+    Timeout,
+    RequestException,
+    HTTPError,
+)  # pylint: disable=redefined-builtin
 
 from common.i18n import _
 from common.logger import get_logger, print_interactive_error
@@ -30,10 +35,13 @@ class ChessEventSession(Session):
         url: str = self.CHESSEVENT_DOWNLOAD_URL
         try:
             post: dict[str, str] = {
-                'user_id':  ChessEventUtils.resolve_user_id(self._tournament) or '',
+                'user_id': ChessEventUtils.resolve_user_id(self._tournament) or '',
                 'password': ChessEventUtils.resolve_password(self._tournament) or '',
                 'event_id': ChessEventUtils.resolve_event_id(self._tournament) or '',
-                'tournament_name': ChessEventUtils.resolve_tournament_name(self._tournament) or '',
+                'tournament_name': ChessEventUtils.resolve_tournament_name(
+                    self._tournament
+                )
+                or '',
             }
             chessevent_string: str = (
                 f'{post["user_id"]}:{"*" * 8}'

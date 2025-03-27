@@ -44,7 +44,7 @@ Papi-web - © Projet Papi-web 2013-2025 - https://github.com/papi-web-org/papi-w
 
 ## [Annexes techniques](docs/80-technical-annexes.md)
 
-- URLs utilisées par le serveur web 
+- URLs utilisées par le serveur web
 - Interface avec Chess Event
 - Installation d'un environnement de développement
 - Distribution du logiciel

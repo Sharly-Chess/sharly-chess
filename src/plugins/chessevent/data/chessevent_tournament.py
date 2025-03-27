@@ -101,14 +101,16 @@ class ChessEventTournament:
             10: tie_break.SonnebornBergerTieBreak(),
         }
         return [
-            tie_break_ for tie_break_ in [
+            tie_break_
+            for tie_break_ in [
                 tie_break_by_chessevent_id.get(
                     tournament_info[f'tie_break_{index}'], None
                 )
                 for index in range(1, 4)
-            ] if tie_break_ is not None
+            ]
+            if tie_break_ is not None
         ]
-        
+
     def __str__(self) -> str:
         return '\n'.join(
             [

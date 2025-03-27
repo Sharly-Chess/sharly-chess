@@ -13,7 +13,7 @@ Un ordinateur sous Windows avec :
 
 ## Téléchargement et installation
 
-Téléchargez la dernière version de Papi-web, décompressez et installez-la 
+Téléchargez la dernière version de Papi-web, décompressez et installez-la
 sur l'ordinateur qui jouera le rôle de serveur (sur lequel seront également les fichiers Papi).
 
 - **[Télécharger la dernière version stable](https://github.com/papi-web-org/papi-web/releases)**
