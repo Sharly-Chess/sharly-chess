@@ -5,6 +5,7 @@ from common.exception import PapiWebException
 from common.i18n import _
 from data.input_output import AbstractPlayerUpdater, PlayerUpdaterField, PlayerMatch
 from data.player import Player
+from data.print import AbstractPlayerSplitter
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -117,3 +118,17 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
             diff_only,
             FfePlayerMatch,
         )
+
+
+class LeaguePlayerSplitter(AbstractPlayerSplitter):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe_league'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('League')
+
+    @staticmethod
+    def get_split_key(player: Player) -> str:
+        return get_data(player.plugin_data, 'league', '')

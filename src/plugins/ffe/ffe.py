@@ -23,7 +23,7 @@ from data.print import AbstractPlayerSplitter, ClubPlayerSplitter, AbstractPrint
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
-from plugins.ffe.ffe_entity import FfePlayerUpdater
+from plugins.ffe.ffe_entity import FfePlayerUpdater, LeaguePlayerSplitter
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -646,27 +646,12 @@ class FfePlugin(AbstractPlugin):
     # Printing
     # ---------------------------------------------------------------------------------
 
-    class LeaguePlayerSplitter(AbstractPlayerSplitter):
-        @staticmethod
-        def static_id() -> str:
-            return 'ffe_league'
-
-        @staticmethod
-        def static_name() -> str:
-            return _('League')
-
-        @staticmethod
-        def get_split_key(player: Player) -> str:
-            return PluginUtils.get_plugin_data(
-                PLUGIN_NAME, player.plugin_data, 'league', ''
-            )
-
     @hookimpl
     def insert_print_player_splitter_types(
         self, player_splitter_types: list[type['AbstractPlayerSplitter']]
     ):
         PluginUtils.insert_on_equals(
-            player_splitter_types, self.LeaguePlayerSplitter, ClubPlayerSplitter
+            player_splitter_types, LeaguePlayerSplitter, ClubPlayerSplitter
         )
 
     @hookimpl
