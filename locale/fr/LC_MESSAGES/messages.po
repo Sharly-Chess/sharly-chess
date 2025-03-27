@@ -254,11 +254,14 @@ msgstr "Évènement archivé"
 msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
+msgid "Argument --server is deprecated, ignored."
+msgstr "L'option --server est obsolète, ignorée."
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
-msgstr[1] "Au plus %(num)d coups illegaux sont enregistrés."
+msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
 msgid "Authenticating..."
 msgstr "Authentification..."
@@ -2581,8 +2584,8 @@ msgstr "Veuillez entrer le nom de famille."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
-msgid "Please enter the number of the version to recover [{default}]: "
-msgstr "Veuillez entrer le numéro de la version à récupérer [{default}] : "
+msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
+msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}]: "
 
 msgid "Please enter the password to enter results:"
 msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
@@ -3542,9 +3545,6 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-msgstr "Ce programme ne devrait pas être lancé directement, utiliser les scripts server.bat, ffe.bat et chessevent.bat."
 
 msgid "This rotator is private (not visible by the users)."
 msgstr "Cet écran rotatif est privé (non visible des utilisateur·ices)."

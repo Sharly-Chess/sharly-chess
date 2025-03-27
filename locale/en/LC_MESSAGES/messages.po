@@ -254,6 +254,9 @@ msgstr ""
 msgid "Archived events ({num})"
 msgstr ""
 
+msgid "Argument --server is deprecated, ignored."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -2581,7 +2584,7 @@ msgstr ""
 msgid "Please enter the name of the event."
 msgstr ""
 
-msgid "Please enter the number of the version to recover [{default}]: "
+msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
 msgstr ""
 
 msgid "Please enter the password to enter results:"
@@ -3541,9 +3544,6 @@ msgid "This label will be used for the link to other screens to the screens of t
 msgstr ""
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr ""
-
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr ""
 
 msgid "This rotator is private (not visible by the users)."

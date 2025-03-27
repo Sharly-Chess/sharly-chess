@@ -136,6 +136,10 @@ class AbstractPlugin(ABC):
     def templates_path(self) -> Path:
         return PLUGINS_DIR / self.id / 'templates'
 
+    @property
+    def static_path(self) -> Path:
+        return PLUGINS_DIR / self.id / 'static'
+
     def on_enable(self):
         """Method called when the plugin is enabled."""
         if self.migration_manager is not None:
