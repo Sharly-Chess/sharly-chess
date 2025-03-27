@@ -254,6 +254,9 @@ msgstr ""
 msgid "Archived events ({num})"
 msgstr ""
 
+msgid "Argument --server is deprecated, ignored."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -690,6 +693,9 @@ msgstr ""
 msgid "Create and add default screens"
 msgstr ""
 
+msgid "Create file"
+msgstr ""
+
 msgid "Create the Papi files"
 msgstr ""
 
@@ -823,7 +829,7 @@ msgstr ""
 msgid "Directory [{path}] not found."
 msgstr ""
 
-msgid "Directory of the Papi file:"
+msgid "Directory:"
 msgstr ""
 
 msgid "Display"
@@ -848,9 +854,6 @@ msgid "Display the exit button"
 msgstr ""
 
 msgid "Do nothing"
-msgstr ""
-
-msgid "Do you want Papi-web to create the file?"
 msgstr ""
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
@@ -1180,9 +1183,6 @@ msgstr ""
 msgid "Error while creating the database: {ex}."
 msgstr ""
 
-msgid "Error while updating the FFE database."
-msgstr ""
-
 msgid "Error while updating the FIDE database."
 msgstr ""
 
@@ -1434,10 +1434,25 @@ msgstr ""
 msgid "Fide Master"
 msgstr ""
 
+msgid "Fields relying on the Papi database can't be updated if the file does not exist."
+msgstr ""
+
 msgid "File [{file}] not found."
 msgstr ""
 
+msgid "File already exists."
+msgstr ""
+
 msgid "File downloaded: [{zip_file}]."
+msgstr ""
+
+msgid "File found"
+msgstr ""
+
+msgid "File name (without extension):"
+msgstr ""
+
+msgid "File not found"
 msgstr ""
 
 msgid "Files have been sent to bin {bin_name}."
@@ -1971,9 +1986,6 @@ msgstr ""
 msgid "Minimum number of points (included):"
 msgstr ""
 
-msgid "Missing Papi file"
-msgstr ""
-
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
@@ -1997,9 +2009,6 @@ msgstr "Name"
 
 msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Name"
-
-msgid "Name of the Papi file (with no extension):"
-msgstr ""
 
 msgid "Name:"
 msgstr ""
@@ -2225,9 +2234,6 @@ msgstr ""
 msgid "No warnings"
 msgstr ""
 
-msgid "No, I will do it later"
-msgstr ""
-
 msgid "None"
 msgstr ""
 
@@ -2387,7 +2393,7 @@ msgstr ""
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Papi file [{file}] created."
+msgid "Papi file"
 msgstr ""
 
 msgid "Papi file [{file}] has been created (players: {num})."
@@ -2396,16 +2402,10 @@ msgstr ""
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
-msgid "Papi file has not been created."
-msgstr ""
-
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Papi version: {version}"
 msgstr ""
 
 msgid "Papi-web can automatically launch a web browser when starting the web server."
@@ -2533,9 +2533,6 @@ msgstr ""
 msgid "Please ask the organizer to get the password."
 msgstr ""
 
-msgid "Please choose the Papi version:"
-msgstr ""
-
 msgid "Please choose the document."
 msgstr ""
 
@@ -2587,7 +2584,7 @@ msgstr ""
 msgid "Please enter the name of the event."
 msgstr ""
 
-msgid "Please enter the number of the version to recover [{default}]: "
+msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
 msgstr ""
 
 msgid "Please enter the password to enter results:"
@@ -3247,7 +3244,7 @@ msgid "The default language used."
 msgstr ""
 
 #, python-format
-msgid "The directory of the Papi file, by default %(dir)s."
+msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr ""
 
 msgid "The end date and time of the event."
@@ -3257,6 +3254,9 @@ msgid "The federation that organizes the event."
 msgstr ""
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgstr ""
+
+msgid "The following languages are available:"
 msgstr ""
 
 msgid "The following players did not check-in:"
@@ -3314,7 +3314,7 @@ msgstr ""
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
-msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
+msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr ""
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3547,9 +3547,6 @@ msgid "This label will be used for the link to other screens to the screens of t
 msgstr ""
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr ""
-
-msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
 msgstr ""
 
 msgid "This rotator is private (not visible by the users)."
@@ -3928,10 +3925,6 @@ msgstr ""
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
-#, python-format
-msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-msgstr ""
-
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""
 
@@ -4021,9 +4014,6 @@ msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
 
 msgid "Yes"
-msgstr ""
-
-msgid "Yes, create the file"
 msgstr ""
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
@@ -4215,10 +4205,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Storing data..."
-#~ msgstr ""
-
-#~ msgid "{number} players written."
-#~ msgstr ""
 

@@ -132,13 +132,6 @@ class BaseAdminController(BaseController):
         return options
 
     @staticmethod
-    def _get_tie_break_options() -> dict[str, str]:
-        return {'': _('None')} | {
-            WebContext.value_to_form_data(tie_break.id): tie_break.name
-            for tie_break in TieBreakManager.papi_compatible_tie_breaks()
-        }
-
-    @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(

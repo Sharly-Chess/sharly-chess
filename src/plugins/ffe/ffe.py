@@ -5,19 +5,17 @@ from collections.abc import Callable
 
 from datetime import datetime
 from decimal import Decimal
-from functools import cached_property, partial
+from functools import cached_property
 from typing import Any, TYPE_CHECKING, Iterable, override
 
 from litestar.contrib.htmx.request import HTMXRequest
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
-from common.exception import PapiWebException
 from common.i18n import _
-from common.logger import print_interactive_error
 from common.network import NetworkMonitor
 from data.event import Event
-from data.input_output import AbstractPlayerUpdater, PlayerMatch, PlayerUpdaterField
+from data.input_output import AbstractPlayerUpdater
 from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
@@ -25,10 +23,10 @@ from data.print import AbstractPlayerSplitter, ClubPlayerSplitter, AbstractPrint
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
+from plugins.ffe.ffe_entity import FfePlayerUpdater, LeaguePlayerSplitter
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_break import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
@@ -43,17 +41,14 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
 
 
-get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
-
-
 class FfePlugin(AbstractPlugin):
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return PLUGIN_NAME
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return 'FFE'
 
     @property
@@ -130,7 +125,7 @@ class FfePlugin(AbstractPlugin):
         return {
             'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES
-}
+        }
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
@@ -479,7 +474,7 @@ class FfePlugin(AbstractPlugin):
         )
 
     @hookimpl
-    def clear_player_filters(self,request: HTMXRequest):
+    def clear_player_filters(self, request: HTMXRequest):
         FFESessionHandler.set_session_admin_players_filter_leagues(request, [])
         FFESessionHandler.set_session_admin_players_filter_licences(request, [])
 
@@ -538,114 +533,11 @@ class FfePlugin(AbstractPlugin):
             ),
         ]
 
-    class FfePlayerMatch(PlayerMatch):
-        @cached_property
-        def diff_field_ids(self) -> list[str] | None:
-            if not self.match_player:
-                return None
-            diff_field_ids = super().diff_field_ids
-            for field_id in ('league', 'ffe_licence'):
-                if (
-                    field_id in self.field_ids and
-                    get_data(self.player.plugin_data, field_id) !=
-                    get_data(self.match_player.plugin_data, field_id)
-                ):
-                    diff_field_ids.append(field_id)
-            return diff_field_ids
-
-        @override
-        def update_player_from_match(self, field_ids: list[str]):
-            if not self.match_player:
-                return
-            super().update_player_from_match(field_ids)
-            for field_id in ('league', 'ffe_licence'):
-                if (
-                    field_id in self.field_ids and
-                    get_data(self.player.plugin_data, field_id) !=
-                    (match := get_data(self.match_player.plugin_data, field_id))
-                ):
-                    self.player.plugin_data[PLUGIN_NAME][field_id] = match
-
-    class FfePlayerUpdater(AbstractPlayerUpdater):
-        @override
-        @property
-        def name(self) -> str:
-            return _('FFE database')
-
-        @override
-        @property
-        def id(self) -> str:
-            return 'ffe'
-
-        @override
-        def fields(self) -> list[PlayerUpdaterField]:
-            return (
-                self._ratings_fields() + 
-                self._identity_fields() + 
-                self._federation_fields() + 
-                self._club_fields() + 
-                self._fide_fields()
-            ) + [
-                PlayerUpdaterField(_('League'), 'league'),
-                PlayerUpdaterField(_('FFE licence number'), 'ffe_licence_number'),
-                PlayerUpdaterField(_('FFE Licence'), 'ffe_licence'),
-            ]
-
-        @staticmethod
-        def _get_ffe_licence_number(player) -> str | None:
-            return get_data(player.plugin_data, 'ffe_licence_number')
-
-        @override
-        async def get_player_matches(
-            self,
-            players: list[Player],
-            field_ids: list[str],
-            diff_only: bool,
-        ) -> list[PlayerMatch] | None:
-            ffe_licence_numbers: list[str] = []
-            for player in players:
-                if ffe_licence_number := self._get_ffe_licence_number(player):
-                    ffe_licence_numbers.append(ffe_licence_number)
-            match_players: list[Player]
-            try:
-                async with FFESqlServer() as server:
-                    match_players = [
-                        player async for player in await
-                        server.get_players_by_ffe_licence_number(
-                            ffe_licence_numbers
-                        )
-                    ]
-            except PapiWebException:
-                database = FfeDatabase()
-                if database.exists():
-                    self.warning_message = _(
-                        'Warning: connection to the online FFE database failed, '
-                        'local database was used. Some data might be outdated '
-                        '(last update on {date})'
-                    ).format(date=database.updated_at.strftime('%d-%m-%Y'))
-                    with database:
-                        match_players = (
-                            database.get_players_by_ffe_licence_number(
-                                ffe_licence_numbers
-                            )
-                        )
-                else:
-                    return None
-            return self._create_player_matches(
-                players,
-                match_players,
-                lambda p1, p2: (
-                   self._get_ffe_licence_number(p1) and
-                   self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
-                ),
-                field_ids,
-                diff_only,
-                FfePlugin.FfePlayerMatch,
-            )
-
     @hookimpl
-    def get_player_updaters(self) -> list[AbstractPlayerUpdater]:
-        return [self.FfePlayerUpdater()]
+    def insert_player_updater_types(
+        self, updater_types: list[type[AbstractPlayerUpdater]]
+    ):
+        updater_types.append(FfePlayerUpdater)
 
     # ---------------------------------------------------------------------------------
     # Tournaments
@@ -754,27 +646,12 @@ class FfePlugin(AbstractPlugin):
     # Printing
     # ---------------------------------------------------------------------------------
 
-    class LeaguePlayerSplitter(AbstractPlayerSplitter):
-        @property
-        def id(self) -> str:
-            return 'ffe_league'
-
-        @property
-        def name(self) -> str:
-            return _('League')
-
-        @staticmethod
-        def get_split_key(player: Player) -> str:
-            return PluginUtils.get_plugin_data(
-                PLUGIN_NAME, player.plugin_data, 'league', ''
-            )
-
     @hookimpl
-    def insert_print_player_splitters(
-        self, player_splitters: list['AbstractPlayerSplitter']
+    def insert_print_player_splitter_types(
+        self, player_splitter_types: list[type['AbstractPlayerSplitter']]
     ):
-        PluginUtils.insert_on_isinstance(
-            player_splitters, self.LeaguePlayerSplitter(), ClubPlayerSplitter
+        PluginUtils.insert_on_equals(
+            player_splitter_types, LeaguePlayerSplitter, ClubPlayerSplitter
         )
 
     @hookimpl
@@ -833,15 +710,14 @@ class FfePlugin(AbstractPlugin):
             ffe_tie_break.PapiKashdanTieBreak,
         ]
 
-# ---------------------------------------------------------------------------------
-# Shared utils
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------
+    # Shared utils
+    # ---------------------------------------------------------------------------------
 
-@hookimpl
-def get_performance_bonus_function() -> Callable[[float], int | float]:
-    return papi_performance_bonus
+    @hookimpl
+    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
+        return papi_performance_bonus
 
-
-@hookimpl
-def get_round_ranking_function() -> Callable[[float | Decimal], int]:
-    return round
+    @hookimpl
+    def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
+        return round
