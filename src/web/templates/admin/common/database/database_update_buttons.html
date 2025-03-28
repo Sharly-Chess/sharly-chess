@@ -1,37 +1,56 @@
 <div class="d-flex gap-2 justify-content-end">
-    <button
-        type="button"
-        class="btn btn-outline-danger btn-sm d-inline-flex gap-2 align-items-center"
-        {% if updating %}
+    {% if database.exists() and not database.is_updating %}
+        <button
+            type="button"
+            class="btn btn-outline-danger btn-sm d-inline-flex gap-2 align-items-center"
+            hx-delete="{{ url_for('admin-database-delete', database_id=database.id) }}"
+            hx-target="closest div"
+            hx-swap="outerHTML"
+        >
+            <i class="bi-trash-fill"></i>
+        </button>
+    {% endif %}
+    {% if database.is_updating %}
+        <button
+            type="button"
+            class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
             disabled
-        {% endif %}
-        hx-get="{{ url_for('admin-database-delete', database_id=database_id) }}"
-        hx-target="closest div"
-        hx-swap="outerHTML"
-    >
-        <i class="bi-trash-fill"></i>
-    </button>
-    <button
-        type="button"
-        class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
-        {% if updating %}
-            disabled
-            hx-get="{{ url_for('admin-database-status', database_id=database_id) }}"
+            hx-get="{{ url_for('admin-database-status', database_id=database.id) }}"
             hx-trigger="every 10s"
-        {% else %}
-            hx-post="{{ url_for('admin-database-update', database_id=database_id) }}"
-        {% endif %}
-        hx-target="closest div"
-        hx-swap="outerHTML"
-    >
-        <i
-            class="bi bi-arrow-clockwise lh-1"
-            {% if updating %}
+            hx-target="closest div"
+            hx-swap="outerHTML"
+        >
+            <i
+                class="bi bi-arrow-clockwise lh-1"
                 style="
                     animation: spin 1s infinite;
                     animation-timing-function: linear;"
+            ></i>
+            {{ _('Updating') }}
+        </button>
+    {% else %}
+        <button
+            type="button"
+            class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
+            hx-post="{{ url_for('admin-database-update', database_id=database.id) }}"
+            hx-target="closest div"
+            hx-swap="outerHTML"
+        >
+            {% if database.exists() %}
+                <i class="bi bi-arrow-clockwise lh-1"></i>
+                {{ _('Update *** BUTTON FOR DATABASE MODAL') }}
+            {% else %}
+                <i class="bi bi-plus-circle lh-1"></i>
+                {{ _('Create') }}
             {% endif %}
-        ></i>
-        {{ _('Update now') }}
-    </button>
+        </button>
+    {% endif %}
+    <script>
+        {% with id=database.id %}
+            $('#{{id}}-is-enabled, #{{id}}-outdate-delay, #{{id}}-outdate-action').prop(
+                'disabled', {% if database.exists() %}false{% else %}true{%endif%}
+            );
+            $('#{{id}}-updated-at').text({{ database.updated_at_str|tojson }});
+        {% endwith %}
+    </script>
 </div>

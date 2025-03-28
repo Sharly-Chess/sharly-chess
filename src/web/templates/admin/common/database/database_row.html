@@ -1,43 +1,51 @@
 <tr>
-    <th>{{ name }}</th>
     <td>
-        {% with data={ database_id ~ '_max_age': max_age } %}
-            {{ admin_macros.select_input(
-                name=database_id ~ '_max_age',
-                label=None,
-                help_text=None,
-                select_options={ 0: "Disabled", 1: "Daily", 7: "Weekly" },
-                data=data, errors=errors
-            ) }}
-        {% endwith %}
+        {{ admin_macros.switch_input(
+            name=database.id ~ '_is_enabled',
+            label=None,
+            help_text=None,
+            placeholder='',
+            disabled=not database.exists(),
+            data=data, errors=errors
+        ) }}
+    </td>
+    <th >{{ database.name }}</th>
+    <td>
+        {{ admin_macros.select_input(
+            name=database.id ~ '_outdate_delay',
+            label=None,
+            help_text=None,
+            disabled=not database.exists(),
+            select_options=outdate_delay_options,
+            data=data, errors=errors
+        ) }}
     </td>
     <td>
-        {% with data={ database_id ~ '_when_outdated': when_outdated } %}
-            {{ admin_macros.select_input(
-                name=database_id ~ '_when_outdated',
-                label=None,
-                help_text=None,
-                select_options={ 0: "Warn", 1: "Auto-update" },
-                data=data, errors=errors
-            ) }}
-        {% endwith %}
+        {{ admin_macros.select_input(
+            name=database.id ~ '_outdate_action',
+            label=None,
+            help_text=None,
+            disabled=not database.exists(),
+            select_options=outdate_action_options,
+            data=data, errors=errors
+        ) }}
     </td>
-    <td class="text-center">{{ age }}</td>
+    <td id="{{ database.id }}-updated-at" class="text-center"></td>
     <td class="text-end">
         {% include 'database_update_buttons.html' %}
     </td>
     <script>
         function rowUpdater() {
-            var ageElement = $('#{{database_id}}-max-age');
+            var delayElement = $('#{{database.id}}-outdate-delay');
             function doHide() {
-                var actionElement = $('#{{database_id}}-when-outdated');
-                if ($(ageElement).val() === '0') {
+                var actionElement = $('#{{database.id}}-outdate-action');
+                if ($(delayElement).val() === 'disabled') {
                     actionElement.addClass('invisible')
                 } else {
                     actionElement.removeClass('invisible')
                 }
             }
-            $(ageElement).click(doHide);
+            $(delayElement).click(doHide);
             doHide();
         };
         rowUpdater();

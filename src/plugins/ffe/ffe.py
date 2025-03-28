@@ -20,6 +20,7 @@ from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
 from data.print import AbstractPlayerSplitter, ClubPlayerSplitter, AbstractPrintDocument, AbstractPlayerPrintDocument
+from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
@@ -123,13 +124,23 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
+            'ffe_search_available': FfeDatabase().is_enabled or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES
         }
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
         return PluginEngineArgument('f', 'ffe', 'run the FFE utilities', FFEEngine)
+
+    # ---------------------------------------------------------------------------------
+    # Data sources
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_local_source_database_types(
+        self, database_types: list[type[LocalSourceDatabase]]
+    ):
+        database_types.append(FfeDatabase)
 
     # ---------------------------------------------------------------------------------
     # Players
@@ -333,8 +344,8 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def augment_player_after_search(self, player: Player):
         # Try to get more information by requesting the FFE database
-        if FfeDatabase().exists():
-            with FfeDatabase() as ffe_database:
+        if (ffe_database := FfeDatabase()).is_enabled:
+            with ffe_database:
                 if ffe_player := ffe_database.get_player_by_fide_id(player.fide_id):
                     for rating_type in [
                         TournamentRating.STANDARD,
