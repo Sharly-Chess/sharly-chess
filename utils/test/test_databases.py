@@ -12,7 +12,6 @@ test_ffe: bool = False
 test_names: bool = True
 test_ids: bool = True
 
-
 def random_search_token() -> str:
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(3))
 
@@ -40,7 +39,7 @@ if test_fide:
         start: float = time.perf_counter()
         print('Creating the FIDE database... ')
         duration: float = time.perf_counter() - start
-        if FideDatabase().update():
+        if FideDatabase().create():
             print(f'Done in {duration:.2f} seconds.')
             if sql_commands:
                 print(f'Adding indices ({", ".join(sql_commands.keys())})... ', end='')
@@ -95,7 +94,7 @@ if test_ffe:
     print(f'Done in {duration:.2f} seconds.')
     print('Creating the FFE database...')
     start: float = time.perf_counter()
-    if FfeDatabase().update():
+    if FfeDatabase().create():
         duration: float = time.perf_counter() - start
         print(f'Done in {duration} seconds.')
         print(f'Performing {searches} searches on the FFE database...')

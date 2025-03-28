@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _("Local Source Databases")}}
+                {{ _("Offline Player Databases")}}
             </h2>
         </div>
         <div class="modal-body">
@@ -16,25 +16,28 @@
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >
                 <thead>
-                    <th></th>
                     <th>
-                        {{ _('Database') }}
+                        {{ _("Database" )}}
+                    </th>
+                    <th>
+                        {{ _("Update Frequency" )}}
+                    </th>
+                    <th>
+                        {{ _("When outdated..." )}}
                     </th>
                     <th class="text-center">
-                        {{ _('Action delay') }}
-                    </th>
-                    <th class="text-center">
-                        {{ _('Action') }}
-                    </th>
-                    <th class="text-center">
-                        {{ _('Last update') }}
+                        {{ _("Last update" )}}
                     </th>
                     <th></th>
                 </thead>
                 <tbody>
-                    {% for database in databases %}
-                        {% include 'database_row.html' %}
-                    {% endfor %}
+                    {% with database_id="fide", name="FIDE", enabled=True, max_age=0, when_outdated=0, age="5 days ago" %}
+                    {% include 'database_row.html' %}
+                    {% endwith %}
+                    
+                    {% with database_id="ffe", name="FFE", enabled=True, max_age=7, when_outdated=1, age="2 days ago" %}
+                    {% include 'database_row.html' %}
+                    {% endwith %}
                 </tbody>
             </table>
         </div>

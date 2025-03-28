@@ -10,7 +10,6 @@ from common import APP_NAME
 from data.player import Player
 from data.input_output import AbstractTournamentExporter, AbstractPlayerUpdater
 from data.util import ScreenType
-from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.utils import (
     PluginMigrationManager,
     ExtraAdminColumn,
@@ -58,17 +57,7 @@ class AppHookSpecs:
     @hookspec
     def get_engine_argument(self) -> PluginEngineArgument:
         """Provide an engine argument"""
-
-    # ---------------------------------------------------------------------------------
-    # Data sources
-    # ---------------------------------------------------------------------------------
-
-    @hookspec
-    def insert_local_source_database_types(
-        self, database_types: list[type[LocalSourceDatabase]]
-    ):
-        """Provide extra local database sources."""
-
+        
     # ---------------------------------------------------------------------------------
     # Players
     # ---------------------------------------------------------------------------------

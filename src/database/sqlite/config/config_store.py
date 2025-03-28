@@ -20,13 +20,3 @@ class StoredPlugin:
     name: str
     is_enabled: bool
     errors: dict[str, str] = field(default_factory=dict[str, str])
-
-
-@dataclass
-class StoredLocalSourceDatabase:
-    name: str
-    is_enabled: bool
-    outdate_delay: str
-    outdate_action: str | None = None
-    updated_at: float | None = None
-    errors: dict[str, str] = field(default_factory=dict[str, str])

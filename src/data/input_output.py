@@ -293,11 +293,10 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
         field_ids: list[str],
         diff_only: bool,
     ) -> list[PlayerMatch] | None:
-        database = FideDatabase()
-        if not database.is_enabled:
+        if not FideDatabase().exists():
             return None
         fide_ids = [player.fide_id for player in players if player.fide_id]
-        with database:
+        with FideDatabase() as database:
             match_players = database.get_players_by_fide_id(fide_ids)
             return self._create_player_matches(
                 players,

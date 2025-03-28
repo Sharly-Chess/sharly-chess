@@ -1,3 +1,4 @@
+import atexit
 import os.path
 from xml.etree import ElementTree
 import zipfile
@@ -5,6 +6,9 @@ from contextlib import suppress
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
+from sqlite3 import OperationalError, IntegrityError
+from threading import Event, Thread
+from time import time
 from types import FunctionType
 from typing import Iterator, Any
 
@@ -15,9 +19,12 @@ from common import TMP_DIR
 from common.i18n import _
 from common.logger import (
     get_logger,
+    input_interactive,
+    print_interactive_info,
     print_interactive_error,
-    print_interactive_success,
+    print_interactive_success, print_interactive_warning,
 )
+from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
 from data.player import Player, Federation, Club
 from data.util import (
@@ -26,17 +33,15 @@ from data.util import (
     TournamentRating,
     PlayerRatingType,
 )
-from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
 
 
-class FideDatabase(LocalSourceDatabase):
+class FideDatabase(SQLiteDatabase):
     """
     The SQLite database class for FIDE players. Usage:
-    1. Check if the database exists and is up-to-date.
-        If outdated, the outdate action is executed:
+    1. Check if the database exists and is up-to-date and update is requested (from an interactive script):
     FideDatabase().check()
     2. Search the database:
     with FideDatabase() as fide_database:
@@ -44,23 +49,56 @@ class FideDatabase(LocalSourceDatabase):
             ...
     """
 
-    @staticmethod
-    def static_id() -> str:
-        return 'fide'
+    def __init__(self, write: bool = False):
+        super().__init__(TMP_DIR / f'fide.{PapiWebConfig.federation_database_ext}', write)
+        self.stop_event = Event()
+        
+    def check(self):
+        """Checks if the database exists and is up to date and proposes to create it if not"""
+        yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
+        if not self.exists():
+            if not NetworkMonitor.connected():
+                print_interactive_warning(_('Not connected, can not create the FIDE database.'))
+                return
+            if (
+                input_interactive(
+                    _(
+                        'The FIDE database [{file}] was not found, do you want to create it (Y/n)? '
+                    ).format(file=self.file)
+                ).upper()
+                or yes_answer
+            ) != yes_answer:
+                return
+        else:
+            age: int = int(time() - self.file.lstat().st_mtime)
+            if age > 2 * 24 * 60 * 60:
+                if not NetworkMonitor.connected():
+                    print_interactive_warning(_('Not connected, can not update the FIDE database.'))
+                    return True
+                days: int = age // (24 * 60 * 60)
+                if (
+                    input_interactive(
+                        _(
+                            'The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? '
+                        ).format(file=self.file, days=days)
+                    ).upper()
+                    or yes_answer
+                ) != yes_answer:
+                    return
+            else:
+                return
+            
+        update_thread = Thread(target=self.create, daemon=True)
+        update_thread.start()
+        atexit.register(self.stop_background_thread, update_thread)
 
-    @staticmethod
-    def static_name() -> str:
-        return 'FIDE'
-
-    @property
-    def _schema_file_path(self) -> Path:
-        return PapiWebConfig.database_sql_path / 'create_fide.sql'
-
-    @property
-    def _source_file_path(self) -> Path:
-        return TMP_DIR / 'players_list_xml.xml'
-
-    def _download_source_file(self) -> bool:
+    def stop_background_thread(self, thread):
+        self.stop_event.set()
+        thread.join()
+        
+    def create(self) -> bool:
+        """Create the FIDE database, returns True if the database is available after the call, False otherwise."""
+        print_interactive_info(_('Downloading the FIDE database...'))
         fide_database_url: str = (
             'https://ratings.fide.com/download/players_list_xml_legacy.zip'
         )
@@ -71,109 +109,125 @@ class FideDatabase(LocalSourceDatabase):
             response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 print_interactive_error(
-                    self.log_prefix + _(
-                        'Could not download [{url}], error code [{code}].'
-                    ).format(
+                    _('Could not download [{url}], error code [{code}].').format(
                         url=fide_database_url, code=response.status_code
                     )
                 )
-                return False
+                return self.exists()
         except ConnectionError as ex:
             print_interactive_error(
-                self.log_prefix + _(
-                    'Could not download [{url}]: {error}.'
-                ).format(url=fide_database_url, error=ex)
+                _('Could not download [{url}]: {ex}.').format(
+                    url=fide_database_url, ex=ex
+                )
             )
-            return False
+            return self.exists()
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             print_interactive_error(
-                self.log_prefix + _(
-                    'No data received from [{url}].'
-                ).format(url=fide_database_url)
+                _('No data received from [{url}].').format(url=fide_database_url)
             )
-            return False
-
-        self._source_file_path.unlink(missing_ok=True)
+            return True
+        local_xml_file: Path = TMP_DIR / 'players_list_xml.xml'
+        with suppress(FileNotFoundError):
+            local_xml_file.unlink()
         with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
             zip_ref.extractall(TMP_DIR)
-        local_zip_file.unlink()
-        if not self._source_file_path.exists():
-            print_interactive_error(
-                self.log_prefix + _('Could not unzip data.')
-            )
+        if not local_xml_file.exists():
+            print_interactive_error(_('Could not unzip data.'))
+            return self.exists()
+        print_interactive_info(_('Storing FIDE data...'))
+
+        tmp_file = self.file.with_suffix('.tmp')
+        tmp_file.unlink(missing_ok=True)
+        new_database = SQLiteDatabase(tmp_file, True)
+        if self.stop_event.is_set():
             return False
-        return True
+        
+        try:
+            with open(
+                PapiWebConfig.database_sql_path / 'create_fide.sql', encoding='utf-8'
+            ) as f:
+                new_database._create(f.read())
+            fields: dict[str, tuple[str, FunctionType | None]] = {
+                'fideid': ('fide_id', lambda s: int(s.strip())),
+                'name': ('name', None),
+                'country': ('federation', lambda s: s.upper()),
+                'sex': ('gender', PlayerGender.from_fide_value),
+                # exception for 1001710 Vreeken, Corry
+                'title': (
+                    'fide_title',
+                    lambda s: PlayerTitle.from_fide_value('' if s == 'WH' else s),
+                ),
+                'rating': ('standard_rating', int),
+                'rapid_rating': ('rapid_rating', int),
+                'blitz_rating': ('blitz_rating', int),
+                'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
+            }
+            db_columns = [field[0] for field in fields.values() if field[0] != 'name']
+            db_columns += ['first_name', 'last_name']
+            query = f'''INSERT INTO player({", ".join(db_columns)}) VALUES({", ".join([f':{c}' for c in db_columns])})'''
+            player_count: int = 0
+            new_database.write = True
+            to_write = []
+            data: dict[str, Any] = {}
+            context = ElementTree.iterparse(local_xml_file, events=('start', 'end'))
+            root = next(context)[1]
+            with new_database:
+                for event, elem in context:
+                    if event == 'start' and elem.tag == 'player':
+                        data = {}
 
-    def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
-        fields: dict[str, tuple[str, FunctionType | None]] = {
-            'fideid': ('fide_id', lambda s: int(s.strip())),
-            'name': ('name', None),
-            'country': ('federation', lambda s: s.upper()),
-            'sex': ('gender', PlayerGender.from_fide_value),
-            # exception for 1001710 Vreeken, Corry
-            'title': (
-                'fide_title',
-                lambda s: PlayerTitle.from_fide_value('' if s == 'WH' else s),
-            ),
-            'rating': ('standard_rating', int),
-            'rapid_rating': ('rapid_rating', int),
-            'blitz_rating': ('blitz_rating', int),
-            'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
-        }
-        db_columns = [field[0] for field in fields.values() if field[0] != 'name']
-        db_columns += ['first_name', 'last_name']
-        query = f'''INSERT INTO player({", ".join(db_columns)}) VALUES({", ".join([f':{c}' for c in db_columns])})'''
-        player_count: int = 0
-        to_write = []
-        data: dict[str, Any] = {}
-        context = ElementTree.iterparse(self._source_file_path, events=('start', 'end'))
-        root = next(context)[1]
-        with database:
-            for event, elem in context:
-                if event == 'start' and elem.tag == 'player':
-                    data = {}
+                    if event == 'end' and elem.tag == 'player':
+                        to_write.append(data)
+                        player_count += 1
+                        if player_count % 1000 == 0:
+                            new_database.executemany(query, to_write)
+                            to_write.clear()
+                            if self.stop_event.is_set():
+                                return False
+                        if player_count % 100_000 == 0:
+                            new_database.commit()
 
-                if event == 'end' and elem.tag == 'player':
-                    to_write.append(data)
-                    player_count += 1
-                    if player_count % 1000 == 0:
-                        database.executemany(query, to_write)
-                        to_write.clear()
-                        if self.stop_event.is_set():
-                            return False
-                    if player_count % 100_000 == 0:
-                        database.commit()
+                    elif event == 'end' and elem.tag in fields:
+                        (field_name, field_function) = fields[elem.tag]
+                        data[field_name] = elem.text or ''
+                        elem.clear()
+                        root.clear()
+                        if field_function:
+                            data[field_name] = field_function(data[field_name])
 
-                elif event == 'end' and elem.tag in fields:
-                    (field_name, field_function) = fields[elem.tag]
-                    data[field_name] = elem.text or ''
-                    elem.clear()
-                    root.clear()
-                    if field_function:
-                        data[field_name] = field_function(data[field_name])
-
-                    if field_name == 'name':
-                        if ',' in data['name']:
-                            last_name, first_name = data['name'].split(',', maxsplit=1)
-                            data['last_name'] = last_name.strip()
-                            data['first_name'] = first_name.strip()
-                        else:
-                            data['last_name'] = data['name'].strip()
-                            data['first_name'] = None
-                        del data['name']
-            if to_write:
-                database.executemany(query, to_write)
-                database.commit()
-
+                        if field_name == 'name':
+                            if ',' in data['name']:
+                                last_name, first_name = data['name'].split(',', maxsplit=1)
+                                data['last_name'] = last_name.strip()
+                                data['first_name'] = first_name.strip()
+                            else:
+                                data['last_name'] = data['name'].strip()
+                                data['first_name'] = None
+                            del data['name']
+                if to_write:
+                    new_database.executemany(query, to_write)
+                    new_database.commit()
+        except (OperationalError, IntegrityError) as ex:
+            print_interactive_error(
+                _('Error while creating the database: {ex}.').format(ex=ex)
+            )
+            tmp_file.unlink(missing_ok=True)
+            return False
+        
+        # Copy the new database to it's proper location
+        self.acquire_lock()
+        self.file.unlink(missing_ok=True)
+        tmp_file.rename(self.file)
+        self.release_lock()
+        
         print_interactive_success(
-            self.log_prefix + _(
-                '{number} players written to the database.'
-            ).format(number=player_count)
+            _('{number} players written to FIDE database.').format(number=player_count)
         )
+        self.create_indexes()
         return True
 
-    def _create_indexes(self):
+    def create_indexes(self) -> None:
         self.write = True
         with self:
             self.execute('CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)')

@@ -15,28 +15,13 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 
-from common.i18n import (
-    _,
-    EXPERIMENTAL_FEATURES,
-    locale_localized_name,
-    trusted_locales,
-    untrusted_locales,
-    DEFAULT_LOCALE,
-)
+from common.i18n import _, EXPERIMENTAL_FEATURES, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from database.sqlite.local_source_database import (
-    LocalSourceDatabaseManager,
-    LocalSourceDatabase,
-    DisabledOutdateDelay,
-    NotifOutdateAction,
-    OutdateDelayManager,
-    OutdateActionManager,
-)
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
 from web.controllers.base_controller import WebContext
@@ -310,33 +295,8 @@ class IndexAdminController(BaseAdminController):
                     'errors': errors,
                 }
             case 'database':
-                databases: list[LocalSourceDatabase] = (
-                    LocalSourceDatabaseManager.objects()
-                )
-                if data is None:
-                    data = {}
-                    for database in databases:
-                        prefix = f'{database.id}_'
-                        data |= {
-                            f'{prefix}is_enabled': (
-                                WebContext.value_to_form_data(
-                                    database.is_enabled
-                                )
-                            ),
-                            f'{prefix}outdate_delay': (
-                                database.outdate_delay.id
-                            ),
-                            f'{prefix}outdate_action': (
-                                database.outdate_action.id
-                            )
-                        }
                 context |= {
-                    'databases': databases,
-                    'outdate_delay_options': OutdateDelayManager.options(),
-                    'outdate_action_options': OutdateActionManager.options(),
                     'modal': modal,
-                    'data': data,
-                    'errors': {},
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
@@ -518,20 +478,15 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect:
-
-        source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager.objects()
-        )
-        for database in source_databases:
-            database.check()
-        if any([database.outdated_warning for database in source_databases]):
-            template_name = '/admin/common/database/out_of_date_badge.html'
-        elif any([database.is_updating for database in source_databases]):
-            template_name = '/admin/common/database/updating_badge.html'
-        else:
-            template_name = '/admin/common/database/settings_badge.html'
+        status_templates = {
+           'ok': '/admin/common/database/settings_badge.html',
+           'old': '/admin/common/database/out_of_date_badge.html',
+           'updating': '/admin/common/database/updating_badge.html',
+        }
+        template = random.choice(list(status_templates.values()))
+        print(template)
         return HTMXTemplate(
-            template_name=template_name
+            template_name=template
         )
         
     @get(
@@ -549,7 +504,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/admin/database-options-update',
+        path='/admin/admin-database-options-update',
         name='admin-database-options-update',
     )
     async def _database_options_update(
@@ -560,38 +515,7 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager.objects()
-        )
-        with ConfigDatabase(write=True) as config_database:
-            for source_database in source_databases:
-                prefix = f'{source_database.id}_'
-                is_enabled = WebContext.form_data_to_bool(
-                    data, f'{prefix}is_enabled', False
-                )
-                outdate_delay = WebContext.form_data_to_str(
-                    data,
-                    f'{prefix}outdate_delay',
-                    DisabledOutdateDelay.static_id(),
-                )
-                outdate_action = WebContext.form_data_to_str(
-                    data,
-                    f'{prefix}outdate_action',
-                    NotifOutdateAction.static_id(),
-                )
-                config_database.update_stored_local_source_database(
-                    StoredLocalSourceDatabase(
-                        name=source_database.id,
-                        is_enabled=is_enabled,
-                        outdate_delay=outdate_delay,
-                        outdate_action=outdate_action,
-                        updated_at=source_database.updated_at,
-                    )
-                )
-            config_database.commit()
-        Message.success(
-            request, _('Local source databases settings have been updated.')
-        )
+        print(data)
 
         # Clear the modal contents, and send an event
         return HTMXTemplate(
@@ -602,7 +526,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @get(
-        path='/admin/database-status/{database_id:str}',
+        path='/admin/admin-database-update/{database_id:str}',
         name='admin-database-status',
     )
     async def _database_update_status(
@@ -610,14 +534,16 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         database_id: str,
     ) -> Template | ClientRedirect:
-        database = LocalSourceDatabaseManager.get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
-            context={"database": database}
+            context={
+                "database_id": database_id,
+                "updating": False
+            }
         )
 
     @post(
-        path='/admin/database-update/{database_id:str}',
+        path='/admin/admin-database-update/{database_id:str}',
         name='admin-database-update',
     )
     async def _database_update(
@@ -625,17 +551,18 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         database_id: str,
     ) -> Template | ClientRedirect:
-        database = LocalSourceDatabaseManager.get_object(database_id)
-        database.update()
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             trigger_event="database-update-launched",
             after="receive",
-            context={"database": database}
+            context={
+                "database_id": database_id,
+                "updating": True
+            }
         )
 
     @delete(
-        path='/admin/database-delete/{database_id:str}',
+        path='/admin/admin-database-update/{database_id:str}',
         name='admin-database-delete',
         status_code=HTTP_200_OK,
     )
@@ -644,9 +571,10 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         database_id: str,
     ) -> Template | ClientRedirect:
-        database = LocalSourceDatabaseManager.get_object(database_id)
-        database.delete()
+        # Clear the modal contents, and send an event
         return HTMXTemplate(
-            template_name='/admin/common/database/database_update_buttons.html',
-            context={"database": database}
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event="close_modal",
+            after="receive",
         )

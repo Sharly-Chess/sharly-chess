@@ -97,9 +97,6 @@ msgstr ""
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
 
-msgid "1st day of the month"
-msgstr ""
-
 msgid "20+"
 msgstr ""
 
@@ -153,12 +150,6 @@ msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
 msgid "Access to the arbiter interface is not allowed from this client."
-msgstr ""
-
-msgid "Action"
-msgstr ""
-
-msgid "Action delay"
 msgstr ""
 
 msgid "Action: {action}"
@@ -282,9 +273,6 @@ msgid "Authentication failed."
 msgstr ""
 
 msgid "Authentication successful!"
-msgstr ""
-
-msgid "Auto-update"
 msgstr ""
 
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
@@ -675,7 +663,7 @@ msgstr ""
 msgid "Could not download [{url}], error code [{code}]."
 msgstr ""
 
-msgid "Could not download [{url}]: {error}."
+msgid "Could not download [{url}]: {ex}."
 msgstr ""
 
 msgid "Could not unzip data."
@@ -743,9 +731,6 @@ msgstr ""
 msgid "DRAW"
 msgstr ""
 
-msgid "Daily"
-msgstr ""
-
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr ""
 
@@ -753,18 +738,6 @@ msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding
 msgstr ""
 
 msgid "Data is already displayed on the FFE website."
-msgstr ""
-
-msgid "Database"
-msgstr ""
-
-msgid "Database [{database}] - "
-msgstr ""
-
-msgid "Database [{database}] unexpectedly not found at path [{path}]."
-msgstr ""
-
-msgid "Database successfully updated."
 msgstr ""
 
 msgid "Date"
@@ -859,9 +832,6 @@ msgstr ""
 msgid "Directory:"
 msgstr ""
 
-msgid "Disabled"
-msgstr ""
-
 msgid "Display"
 msgstr ""
 
@@ -925,7 +895,10 @@ msgstr ""
 msgid "Downloading failed with code [{code}]."
 msgstr ""
 
-msgid "Downloading source file..."
+msgid "Downloading the FFE database..."
+msgstr ""
+
+msgid "Downloading the FIDE database..."
 msgstr ""
 
 msgid "Downloading version {version} from GitHub ([{url}])..."
@@ -1207,7 +1180,7 @@ msgstr ""
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
-msgid "Error while creating the database: {error}."
+msgid "Error while creating the database: {ex}."
 msgstr ""
 
 msgid "Error while updating the FIDE database."
@@ -1872,13 +1845,7 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
-msgid "Local Source Databases"
-msgstr ""
-
 msgid "Local URL: {local_url}"
-msgstr ""
-
-msgid "Local source databases settings have been updated."
 msgstr ""
 
 msgid "Log level"
@@ -2279,16 +2246,22 @@ msgstr ""
 msgid "Not connected, can not check Papi-web version."
 msgstr ""
 
-msgid "Not connected, impossible to update."
+msgid "Not connected, can not create the FFE database."
+msgstr ""
+
+msgid "Not connected, can not create the FIDE database."
+msgstr ""
+
+msgid "Not connected, can not update the FFE database."
+msgstr ""
+
+msgid "Not connected, can not update the FIDE database."
 msgstr ""
 
 msgid "Not part of the selected tournament ({rounds} rounds)."
 msgstr ""
 
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
-msgstr ""
-
-msgid "Notification"
 msgstr ""
 
 #, python-format
@@ -2327,9 +2300,6 @@ msgid "Once"
 msgstr ""
 
 msgid "One event found, press Enter (Q to quit): "
-msgstr ""
-
-msgid "Ongoing"
 msgstr ""
 
 msgid "Only arbiters can see private events."
@@ -3140,7 +3110,10 @@ msgstr ""
 msgid "Starting Papi-web server, please wait..."
 msgstr ""
 
-msgid "Storing data..."
+msgid "Storing FFE data..."
+msgstr ""
+
+msgid "Storing FIDE data..."
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -3174,6 +3147,18 @@ msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq
 msgstr ""
 
 msgid "The FFE ID is a positive integer."
+msgstr ""
+
+msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr ""
+
+msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+msgstr ""
+
+msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+msgstr ""
+
+msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
 msgstr ""
 
 msgid "The FIDE database is not available."
@@ -3651,9 +3636,6 @@ msgstr ""
 msgid "Timers: %(num)d"
 msgstr ""
 
-msgid "Today"
-msgstr ""
-
 msgid "Top cut must be at most equal to bottom cut."
 msgstr ""
 
@@ -3884,9 +3866,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-msgid "Update *** BUTTON FOR DATABASE MODAL"
-msgstr "Update"
-
 msgid "Update players"
 msgstr ""
 
@@ -3899,9 +3878,6 @@ msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %
 msgstr ""
 
 msgid "Update the players' information from an external data source."
-msgstr ""
-
-msgid "Updating"
 msgstr ""
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
@@ -3983,9 +3959,6 @@ msgstr ""
 msgid "Web server not started yet ({ex}), waiting..."
 msgstr ""
 
-msgid "Weekly"
-msgstr ""
-
 msgid "Welcome to Papi-web!"
 msgstr ""
 
@@ -4041,9 +4014,6 @@ msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
 
 msgid "Yes"
-msgstr ""
-
-msgid "Yesterday"
 msgstr ""
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
@@ -4204,16 +4174,13 @@ msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "{days} days"
-msgstr ""
-
-msgid "{days} days ago"
-msgstr ""
-
 msgid "{family_type}-family"
 msgstr ""
 
-msgid "{number} players written to the database."
+msgid "{number} players written to FFE database."
+msgstr ""
+
+msgid "{number} players written to FIDE database."
 msgstr ""
 
 msgid "{num} illegal move max"
