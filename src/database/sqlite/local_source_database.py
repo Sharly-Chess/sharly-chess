@@ -203,6 +203,9 @@ class AutoUpdateOutdateAction(OutdateAction):
 class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     """Represents the databases used as data sources for an offline usage."""
 
+    is_updating: bool = False
+    update_status: bool | None = None
+
     def __init__(self, write: bool = False):
         super().__init__(
             TMP_DIR / f'{self.id}.{PapiWebConfig.federation_database_ext}',
@@ -221,7 +224,6 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                     database.insert_stored_local_source_database(
                         StoredLocalSourceDatabase(
                             name=self.id,
-                            is_enabled=False,
                             outdate_delay=DisabledOutdateDelay.static_id(),
                             outdate_action=AutoUpdateOutdateAction.static_id(),
                             updated_at=None,
@@ -255,10 +257,6 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         """Create the indexes for the databases."""
 
     @property
-    def is_enabled(self) -> bool:
-        return self.exists() and self.stored_source_database.is_enabled
-
-    @property
     def outdate_delay(self) -> OutdateDelay:
         return OutdateDelayManager.get_object(
             self.stored_source_database.outdate_delay
@@ -280,11 +278,6 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         return (
             self.updated_at and self.outdate_delay.is_expired(self.updated_at)
         )
-
-    @property
-    def is_updating(self) -> bool:
-        # TODO define from thread
-        return False
 
     @property
     def log_prefix(self) -> str:
@@ -309,11 +302,15 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             case _:
                 return _('{days} days ago').format(days=days_since_update)
 
+    @classmethod
+    def stop_update(cls, status: bool) -> None:
+        cls.is_updating = False
+        cls.update_status = status
+
     @override
     def delete(self):
         super().delete()
         self.stored_source_database.updated_at = None
-        self.stored_source_database.is_enabled = False
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(
                 self.stored_source_database
@@ -334,41 +331,41 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 )
                 self.delete()
             return False
-        if self.is_enabled and self.is_outdated:
+        if self.is_outdated:
             self.outdate_action.on_outdated(self)
+        return True
 
     def update(self):
         """Start a thread updating the database."""
         update_thread = threading.Thread(target=self._update, daemon=True)
         update_thread.start()
         atexit.register(self._stop_background_thread, update_thread)
-        # TODO display a success/error message depending on the result of _update
 
     def _stop_background_thread(self, thread: threading.Thread):
         self.stop_event.set()
         thread.join()
 
-    def _update(self) -> bool:
+    def _update(self):
         """Update the source database:
             1. Download the source file
             2. Create a temp database
             3. Populate the temp database from the source file
-            4. Copy the temp file to the correct file location
-        Returns True if the process succeeds, False otherwise."""
+            4. Copy the temp file to the correct file location"""
+        self.__class__.is_updating = True
         if not NetworkMonitor.connected():
             print_interactive_warning(
                 self.log_prefix + _(
                     'Not connected, impossible to update.'
                 )
             )
-            return False
+            return self.stop_update(False)
         print_interactive_info(
             self.log_prefix + _('Downloading source file...')
         )
         if not self._download_source_file():
-            return False
+            return self.stop_update(False)
         if self.stop_event.is_set():
-            return False
+            return self.stop_update(False)
         print_interactive_info(
             self.log_prefix + _('Storing data...')
         )
@@ -381,7 +378,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 new_database._create(file.read())
             if not self._populate_from_source_file(new_database):
                 tmp_file.unlink(missing_ok=True)
-                return False
+                return self.stop_update(False)
         except (OperationalError, IntegrityError) as ex:
             print_interactive_error(
                 self.log_prefix + _(
@@ -389,7 +386,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 ).format(error=ex)
             )
             tmp_file.unlink(missing_ok=True)
-            return False
+            return self.stop_update(False)
         finally:
             self._source_file_path.unlink(missing_ok=True)
 
@@ -409,7 +406,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         print_interactive_success(
             self.log_prefix + _('Database successfully updated.')
         )
-        return True
+        return self.stop_update(True)
 
 
 class LocalSourceDatabaseManager(AbstractEntityManager[LocalSourceDatabase]):

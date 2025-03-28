@@ -6,7 +6,6 @@ class Migration(AbstractMigration):
         self.database.execute(
             'CREATE TABLE `local_source_database` ('
             '   `name` TEXT NOT NULL,'
-            '   `is_enabled` INTEGER NOT NULL DEFAULT 0,'
             '   `outdate_delay` TEXT NOT NULL,'
             '   `outdate_action` TEXT NOT NULL,'
             '   `updated_at` FLOAT,'

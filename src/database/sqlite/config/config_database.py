@@ -160,7 +160,6 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     ) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=row['name'],
-            is_enabled=self.load_bool_from_database_field(row['is_enabled']),
             outdate_delay=row['outdate_delay'],
             outdate_action=row['outdate_action'],
             updated_at=row['updated_at'],
@@ -180,13 +179,11 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             self, stored_database: StoredLocalSourceDatabase
     ) -> StoredPlugin | None:
         fields: list[str] = [
-            'is_enabled',
             'outdate_delay',
             'outdate_action',
             'updated_at',
         ]
         params: tuple = (
-            stored_database.is_enabled,
             stored_database.outdate_delay,
             stored_database.outdate_action,
             stored_database.updated_at,
@@ -206,14 +203,12 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     ) -> StoredLocalSourceDatabase:
         fields: list[str] = [
             'name',
-            'is_enabled',
             'outdate_delay',
             'outdate_action',
             'updated_at',
         ]
         params: tuple = (
             stored_database.name,
-            stored_database.is_enabled,
             stored_database.outdate_delay,
             stored_database.outdate_action,
             stored_database.updated_at,

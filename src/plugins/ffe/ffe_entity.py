@@ -93,7 +93,7 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
                 ]
         except PapiWebException:
             database = FfeDatabase()
-            if database.is_enabled:
+            if database.exists():
                 self.warning_message = _(
                     'Warning: connection to the online FFE database failed, '
                     'local database was used. Some data might be outdated '

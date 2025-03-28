@@ -1,5 +1,4 @@
 from logging import Logger
-import random
 from typing import Annotated, Any
 
 from data.loader import ArchiveLoader, EventLoader
@@ -8,7 +7,7 @@ from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch, delete
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
+from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -316,17 +315,11 @@ class IndexAdminController(BaseAdminController):
                 if data is None:
                     data = {}
                     for database in databases:
-                        prefix = f'{database.id}_'
                         data |= {
-                            f'{prefix}is_enabled': (
-                                WebContext.value_to_form_data(
-                                    database.is_enabled
-                                )
-                            ),
-                            f'{prefix}outdate_delay': (
+                            f'{database.id}_outdate_delay': (
                                 database.outdate_delay.id
                             ),
-                            f'{prefix}outdate_action': (
+                            f'{database.id}_outdate_action': (
                                 database.outdate_action.id
                             )
                         }
@@ -524,10 +517,25 @@ class IndexAdminController(BaseAdminController):
         )
         for database in source_databases:
             database.check()
-        if any([database.outdated_warning for database in source_databases]):
-            template_name = '/admin/common/database/out_of_date_badge.html'
-        elif any([database.is_updating for database in source_databases]):
+            if database.update_status is not None:
+                if database.update_status:
+                    Message.success(
+                        request, _(
+                            'Database [{database}] successfully updated.'
+                        ).format(database=database.name)
+                    )
+                else:
+                    Message.error(
+                        request, _(
+                            'Error when updating database [{database}].'
+                        ).format(database=database.name)
+                    )
+                database.__class__.update_status = None
+
+        if any([database.is_updating for database in source_databases]):
             template_name = '/admin/common/database/updating_badge.html'
+        elif any([database.outdated_warning for database in source_databases]):
+            template_name = '/admin/common/database/out_of_date_badge.html'
         else:
             template_name = '/admin/common/database/settings_badge.html'
         return HTMXTemplate(
@@ -565,24 +573,19 @@ class IndexAdminController(BaseAdminController):
         )
         with ConfigDatabase(write=True) as config_database:
             for source_database in source_databases:
-                prefix = f'{source_database.id}_'
-                is_enabled = WebContext.form_data_to_bool(
-                    data, f'{prefix}is_enabled', False
-                )
                 outdate_delay = WebContext.form_data_to_str(
                     data,
-                    f'{prefix}outdate_delay',
+                    f'{source_database.id}_outdate_delay',
                     DisabledOutdateDelay.static_id(),
                 )
                 outdate_action = WebContext.form_data_to_str(
                     data,
-                    f'{prefix}outdate_action',
+                    f'{source_database.id}_outdate_action',
                     NotifOutdateAction.static_id(),
                 )
                 config_database.update_stored_local_source_database(
                     StoredLocalSourceDatabase(
                         name=source_database.id,
-                        is_enabled=is_enabled,
                         outdate_delay=outdate_delay,
                         outdate_action=outdate_action,
                         updated_at=source_database.updated_at,

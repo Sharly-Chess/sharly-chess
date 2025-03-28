@@ -75,7 +75,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
                 return
         elif player_fide_id:
             # player_fide_id is set when is a player is to be imported from the FIDE database
-            if (fide_database := FideDatabase()).is_enabled:
+            if (fide_database := FideDatabase()).exists():
                 with fide_database:
                     self.admin_player = fide_database.get_player_by_fide_id(player_fide_id)
             plugin_manager.hook.augment_player_after_search(player=self.admin_player)
@@ -755,7 +755,7 @@ class PlayerAdminController(BaseEventAdminController):
                     },
                     'federation_options': federation_options,
                     'tournament_options': tournament_options,
-                    'fide_search_available': FideDatabase().is_enabled,
+                    'fide_search_available': FideDatabase().exists(),
                     'plugin_search_templates': plugin_search_templates,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'modal': modal,

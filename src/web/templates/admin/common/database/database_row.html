@@ -1,14 +1,4 @@
 <tr>
-    <td>
-        {{ admin_macros.switch_input(
-            name=database.id ~ '_is_enabled',
-            label=None,
-            help_text=None,
-            placeholder='',
-            disabled=not database.exists(),
-            data=data, errors=errors
-        ) }}
-    </td>
     <th >{{ database.name }}</th>
     <td>
         {{ admin_macros.select_input(
