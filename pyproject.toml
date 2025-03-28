@@ -48,6 +48,7 @@ lint = [
   "ruff",
   "validate-pyproject",
   "pipdeptree",
+  "mypy",
 ]
 
 translate = [
