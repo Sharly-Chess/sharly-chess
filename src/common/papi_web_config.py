@@ -280,14 +280,14 @@ class PapiWebConfig(metaclass=Singleton):
     default_record_illegal_moves_number: int = 0
 
     # The default colors for the timers.
-    default_timer_colors: dict[int, str] = {
+    default_timer_colors: dict[int, str | None] = {
         1: '#00FF00',
         2: '#FF7700',
         3: '#FF0000',
     }
 
     # The default delays for the timers.
-    default_timer_delays: dict[int, int] = {
+    default_timer_delays: dict[int, int | None] = {
         1: 15,
         2: 5,
         3: 10,

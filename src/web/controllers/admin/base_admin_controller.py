@@ -131,7 +131,7 @@ class BaseAdminController(BaseController):
         return options
 
     @staticmethod
-    def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
+    def _get_timer_color_texts(delays: dict[int, int | None]) -> dict[int, str]:
         return {
             1: _(
                 'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'

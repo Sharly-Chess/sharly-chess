@@ -75,6 +75,7 @@ class ActionSelector(metaclass=Singleton):
     def ffe_rules_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
         try:
             if (
+                tournament.rules and 
                 cls.ffe_last_rules_upload(tournament)
                 > Path(tournament.rules).lstat().st_mtime
             ):

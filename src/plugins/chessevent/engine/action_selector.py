@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from json import JSONDecodeError
 from logging import Logger
 from pathlib import Path
+from typing import Any
 
 import chardet
 
@@ -304,10 +305,7 @@ class ActionSelector(metaclass=Singleton):
                                     'MacRoman encoding detected, assuming utf-8.'
                                 )
                                 encoding = 'utf-8'
-                            chessevent_tournament_info: dict[
-                                str,
-                                str | int | list[dict[bool | str, str | int | None]],
-                            ]
+                            chessevent_tournament_info: dict[str, Any]
                             # NOTE(Amaras) what does this accomplish?
                             data = '\n'.join([line for line in data.split('\n')])
                             try:
