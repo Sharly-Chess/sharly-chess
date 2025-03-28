@@ -66,3 +66,7 @@ tests = [
 
 [tool.ruff.format]
 quote-style = "single"
+
+[tool.mypy]
+check_untyped_defs = true
+disable_error_code = ["import-untyped", "no-redef"]
