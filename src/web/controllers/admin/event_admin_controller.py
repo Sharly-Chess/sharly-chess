@@ -119,7 +119,7 @@ class EventAdminController(BaseEventAdminController):
                         option.id: WebContext.value_to_form_data(option.default_value)
                         for option in print_options
                     }
-                containers_by_document = {'': []} | {
+                containers_by_document: dict[str, list[str]] = {'': []} | {
                     document.id: [
                         option.container_id for option
                         in document.default_options()

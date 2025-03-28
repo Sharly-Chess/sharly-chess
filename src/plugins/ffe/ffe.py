@@ -305,9 +305,8 @@ class FfePlugin(AbstractPlugin):
                 )
         ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
         try:
-            ffe_licence = PlayerFFELicence(
-                WebContext.form_data_to_int(data, field := 'ffe_licence')
-            )
+            if value := WebContext.form_data_to_int(data, field := 'ffe_licence'):
+                ffe_licence = PlayerFFELicence(value)
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 

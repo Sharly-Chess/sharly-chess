@@ -151,7 +151,8 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Please enter the date of birth.')
         gender: PlayerGender | None = PlayerGender.NONE
         try:
-            gender = PlayerGender(WebContext.form_data_to_int(data, field := 'gender'))
+            if value := WebContext.form_data_to_int(data, field := 'gender'):
+                gender = PlayerGender(value)
         except ValueError:
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
@@ -159,7 +160,7 @@ class PlayerAdminController(BaseEventAdminController):
         field = 'rating_type'
         rating_types: dict[TournamentRating, PlayerRatingType] = {
             tr: PlayerRatingType(
-                WebContext.form_data_to_int(data, f'{field}_{tr.value}')
+                WebContext.form_data_to_int(data, f'{field}_{tr.value}') or PlayerRatingType.ESTIMATED.value
             )
             for tr in TournamentRating
         }
@@ -175,7 +176,8 @@ class PlayerAdminController(BaseEventAdminController):
                 )
         title: PlayerTitle | None = PlayerTitle.NONE
         try:
-            title = PlayerTitle(WebContext.form_data_to_int(data, field := 'title'))
+            if value := WebContext.form_data_to_int(data, field := 'title'):
+                title = PlayerTitle(value)
         except ValueError:
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
@@ -246,6 +248,8 @@ class PlayerAdminController(BaseEventAdminController):
         assert first_name is not None
         assert last_name is not None
         assert federation is not None
+        assert gender is not None
+        assert title is not None
 
         return Player(
             id=web_context.admin_player.id if action != 'create' and web_context.admin_player else None,
@@ -310,7 +314,7 @@ class PlayerAdminController(BaseEventAdminController):
         papi_web_config: PapiWebConfig = PapiWebConfig()
         
         # Allow plugin to provide extra columns
-        per_plugin_columns: Iterable[ExtraAdminColumn] = plugin_manager.hook.get_extra_player_columns()
+        per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = plugin_manager.hook.get_extra_player_columns()
         extra_columns: dict[str, list[ExtraAdminColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
@@ -1656,7 +1660,7 @@ class PlayerAdminController(BaseEventAdminController):
                 request, event_uniq_id=event_uniq_id
             )
 
-        per_plugin_columns: Iterable[ExtraAdminColumn] = plugin_manager.hook.get_extra_players_update_columns()
+        per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = plugin_manager.hook.get_extra_players_update_columns()
         extra_columns: dict[str, list[ExtraAdminColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:

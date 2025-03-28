@@ -178,7 +178,7 @@ class PapiDatabase(AccessDatabase):
                 player.title.to_papi_value,
                 player.fide_id,
                 player.federation.name,
-                player.club.name,
+                player.club.name if player.club else '',
                 player.mail,
                 player.phone,
                 player.comment,

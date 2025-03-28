@@ -467,8 +467,8 @@ class BaseAdminController(BaseController):
             errors=errors,
 
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
-            timer_colors=dict[int, str | None](admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)}),
-            timer_delays=dict[int, int | None](admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)}),
+            timer_colors=admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
+            timer_delays=admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
 
             plugin_data=plugin_data
         )
@@ -541,7 +541,7 @@ class BaseAdminController(BaseController):
         action: str,
         request: HTMXRequest,
         admin_event: Event | None,
-    ) -> dict[str, str]:
+    ) -> dict[str, Any]:
         uniq_id: str | None = None
         name: str | None = None
         match action:
