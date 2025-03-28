@@ -50,16 +50,16 @@ class Engine:
         new_stable_version: Version | None = None
         if NetworkMonitor.connected(use_cached=False):
             print_interactive_info(_('Checking Papi-web version...'))
-            new_stable_version: Version | None = self._check_version()
+            new_stable_version = self._check_version()
         else:
             print_interactive_warning(_('Not connected, can not check Papi-web version.'))
         # Engines inheriting from this class should not do anything if property updated is true.
         self.updated: bool = False
         if new_stable_version:
-            yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-            no_answer: str = _('N *** THE LETTER TO ANSWER NO')
+            yes_answer = _('Y *** THE LETTER TO ANSWER YES')
+            no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
-                choice: str = input_interactive(
+                choice = input_interactive(
                     _(
                         'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? '
                     ).format(
@@ -137,10 +137,10 @@ class Engine:
                 previous_versions.sort()
                 version_num: int | None = None
                 if len(previous_databases) == 1:
-                    yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-                    no_answer: str = _('N *** THE LETTER TO ANSWER NO')
+                    yes_answer = _('Y *** THE LETTER TO ANSWER YES')
+                    no_answer = _('N *** THE LETTER TO ANSWER NO')
                     while True:
-                        choice: str = input_interactive(
+                        choice = input_interactive(
                             _(
                                 'Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?'
                             ).format(
@@ -171,7 +171,7 @@ class Engine:
                         _('  - [{q_uc}] Do not recover').format(q_uc=quit_answer)
                     )
                     while True:
-                        choice: str = input_interactive(
+                        choice = input_interactive(
                             _(
                                 'Please enter the number of the version to recover [{default_choice}: {default_version}]: '
                             ).format(default_choice=len(previous_versions), default_version=previous_versions[-1])
@@ -194,10 +194,10 @@ class Engine:
                         recovered_version, previous_databases[recovered_version]
                     )
             if not recovered_version:
-                yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-                no_answer: str = _('N *** THE LETTER TO ANSWER NO')
+                yes_answer = _('Y *** THE LETTER TO ANSWER YES')
+                no_answer = _('N *** THE LETTER TO ANSWER NO')
                 while True:
-                    choice: str = input_interactive(
+                    choice = input_interactive(
                         _(
                             'Do you want to install example event databases [{y_uc}/{n_lc}]?'
                         ).format(y_uc=yes_answer.upper(), n_lc=no_answer.lower())
@@ -301,10 +301,10 @@ class Engine:
             )
             for custom_file in custom_files:
                 logger.info('- %s' , str(custom_file).replace(str(custom_dir), ""))
-            yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-            no_answer: str = _('N *** THE LETTER TO ANSWER NO')
+            yes_answer = _('Y *** THE LETTER TO ANSWER YES')
+            no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
-                choice: str = input_interactive(
+                choice = input_interactive(
                     _(
                         'Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?'
                     ).format(y_uc=yes_answer, n_lc=no_answer)

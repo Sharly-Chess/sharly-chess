@@ -4,6 +4,7 @@ from typing import Any, TYPE_CHECKING, override
 from packaging.version import Version
 
 from common.i18n import _
+from data.event import Event
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.chessevent.utils import ChessEventUtils

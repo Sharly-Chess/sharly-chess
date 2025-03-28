@@ -76,6 +76,7 @@ class EventMessage:
                 text=self.text,
             )
         elif self.timer:
+            assert self.timer_hour is not None
             return _('Timer [{timer_uniq_id}]: {text}').format(
                 timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text
             )
@@ -607,7 +608,7 @@ class Event:
         """Returns the first unused screen uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
-        assert base_uniq_id is not None or screen_type is not None
+        assert screen_type is not None
         return self._get_unused_item_uniq_id(
             base_uniq_id
             or _('{screen_type}-screen').format(screen_type=screen_type.value),
@@ -654,6 +655,7 @@ class Event:
         """Returns the first unused family uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         family_type is used when the given ID is empty to set an ID that corresponds to the family type."""
+        assert family_type is not None
         return self._get_unused_item_uniq_id(
             base_uniq_id
             or _('{family_type}-family').format(family_type=family_type.value),

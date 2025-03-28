@@ -3,7 +3,6 @@ import weakref
 from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
-from typing import Self
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
@@ -81,7 +80,7 @@ class Screen:
 
     @property
     def id(self) -> int:
-        return self.stored_screen.id if self.stored_screen else -1
+        return self.stored_screen.id if self.stored_screen and self.stored_screen.id else -1
 
     @property
     def family_id(self) -> int | None:
@@ -89,26 +88,27 @@ class Screen:
 
     @property
     def type(self) -> ScreenType:
-        return (
-            ScreenType(self.stored_screen.type)
-            if self.stored_screen
-            else self.family.type
-        )
+        if self.stored_screen:
+            return ScreenType(self.stored_screen.type)
+        assert self.family is not None, "Family reference has been garbage collected"
+        return self.family.type
 
     @property
     def public(self) -> bool:
-        return self.stored_screen.public if self.stored_screen else self.family.public
+        if self.stored_screen:
+            return self.stored_screen.public
+        assert self.family is not None, "Family reference has been garbage collected"
+        return self.family.public
 
     @property
     def uniq_id(self) -> str:
-        return (
-            self.stored_screen.uniq_id
-            if self.stored_screen
-            else f'{self.family.uniq_id}:{self.family_part:03}'
-        )
+        if self.stored_screen:
+            return self.stored_screen.uniq_id
+        assert self.family is not None, "Family reference has been garbage collected"
+        return f'{self.family.uniq_id}:{self.family_part:03}'
 
     @property
-    def name(self) -> str:
+    def name(self) -> str | None:
         if self.stored_screen:
             if self.stored_screen.name:
                 return self.stored_screen.name
@@ -134,23 +134,24 @@ class Screen:
             else:
                 return 1
         else:
+            assert self.family is not None, "Family reference has been garbage collected"
             return self.family.columns
 
     @property
-    def menu_link(self) -> str | None:
-        return (
-            self.stored_screen.menu_link
-            if self.stored_screen
-            else self.family.menu_link
-        )
+    def menu_link(self) -> bool | None:
+        if self.stored_screen:
+            return self.stored_screen.menu_link
+        if self.family:
+            return self.family.menu_link
+        return None
 
     @property
     def menu_text(self) -> str | None:
-        return (
-            self.stored_screen.menu_text
-            if self.stored_screen
-            else self.family.menu_text
-        )
+        if self.stored_screen:
+            return self.stored_screen.menu_text
+        if self.family:
+            return self.family.menu_text
+        return None
 
     @staticmethod
     def default_boards_screen_menu_text(
@@ -217,6 +218,7 @@ class Screen:
             return None
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
+                assert self.event is not None
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
                 first_last = screen_set.first is not None or screen_set.last is not None
@@ -237,7 +239,7 @@ class Screen:
                         single_tournament=single_tournament, first_last=first_last, crosstable=self.ranking_crosstable
                     )
                 else:
-                    text = self.menu_text
+                    text = self.menu_text or ''
                 text = text.replace('%t', screen_set.tournament.name)
                 if self.type == ScreenType.RANKING:
                     if '%f' in text:
@@ -265,18 +267,20 @@ class Screen:
                         text = text.replace('%l', str(screen_set.last_board.id))
                 return text
             case ScreenType.RESULTS:
+                assert self.stored_screen is not None
                 return self.stored_screen.menu_text or _('Last results')
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
-    def _menu_screens(self, admin: bool) -> list[Self]:
-        menu_screens: list[Self] = []
+    def _menu_screens(self, admin: bool) -> list['Screen']:
+        menu_screens: list['Screen'] = []
+        assert self.event is not None
         if self.menu is not None:
             for menu_part in map(str.strip, self.menu.split(',')):
                 if not menu_part:
                     continue
                 if menu_part == '@boards':
-                    part_menu_screens: list[Screen] = (
+                    part_menu_screens = (
                         self.event.boards_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_boards_screens_sorted_by_uniq_id
@@ -291,7 +295,7 @@ class Screen:
                         menu_screens += part_menu_screens
                     continue
                 if menu_part == '@input':
-                    part_menu_screens: list[Screen] = (
+                    part_menu_screens = (
                         self.event.input_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_input_screens_sorted_by_uniq_id
@@ -306,7 +310,7 @@ class Screen:
                         menu_screens += part_menu_screens
                     continue
                 if menu_part == '@players':
-                    part_menu_screens: list[Screen] = (
+                    part_menu_screens = (
                         self.event.players_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_players_screens_sorted_by_uniq_id
@@ -321,7 +325,7 @@ class Screen:
                         menu_screens += part_menu_screens
                     continue
                 if menu_part == '@results':
-                    part_menu_screens: list[Screen] = (
+                    part_menu_screens = (
                         self.event.results_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_results_screens_sorted_by_uniq_id
@@ -336,7 +340,7 @@ class Screen:
                         menu_screens += part_menu_screens
                     continue
                 if menu_part == '@ranking':
-                    part_menu_screens: list[Screen] = (
+                    part_menu_screens = (
                         self.event.ranking_screens_sorted_by_uniq_id
                         if admin
                         else self.event.public_ranking_screens_sorted_by_uniq_id
@@ -389,21 +393,27 @@ class Screen:
         return menu_screens
 
     @cached_property
-    def public_menu_screens(self) -> list[Self]:
+    def public_menu_screens(self) -> list['Screen']:
         return self._menu_screens(False)
 
     @cached_property
-    def admin_menu_screens(self) -> list[Self]:
+    def admin_menu_screens(self) -> list['Screen']:
         return self._menu_screens(True)
 
     @property
     def menu(self) -> str:
-        return self.stored_screen.menu if self.stored_screen else self.family.menu
+        if self.stored_screen:
+            return self.stored_screen.menu or ''
+        assert self.family is not None, "Family reference has been garbage collected"
+        return self.family.menu or ''
 
     @property
     def timer(self) -> Timer | None:
+        assert self.event is not None
         timer_id: int | None = (
-            self.stored_screen.timer_id if self.stored_screen else self.family.timer_id
+            self.stored_screen.timer_id if self.stored_screen
+            else self.family.timer_id if self.family
+            else None
         )
         return self.event.timers_by_id[timer_id] if timer_id else None
 
@@ -417,7 +427,7 @@ class Screen:
     @cached_property
     def screen_sets_sorted_by_order(self) -> list[ScreenSet]:
         return sorted(
-            self.screen_sets_by_id.values(), key=lambda screen_set: screen_set.order
+            self.screen_sets_by_id.values(), key=lambda screen_set: screen_set.order or 0
         )
 
     @property
@@ -430,6 +440,7 @@ class Screen:
                     else:
                         return PapiWebConfig.default_input_exit_button
                 else:
+                    assert self.family is not None, "Family reference has been garbage collected"
                     return self.family.input_exit_button
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -447,6 +458,7 @@ class Screen:
                     else:
                         return PapiWebConfig.default_players_show_unpaired
                 else:
+                    assert self.family is not None, "Family reference has been garbage collected"
                     return self.family.players_show_unpaired
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -479,6 +491,8 @@ class Screen:
     def results_limit(self) -> int:
         match self.type:
             case ScreenType.RESULTS:
+                assert self.stored_screen is not None
+                assert self.event is not None
                 if not self.stored_screen.results_limit:
                     return PapiWebConfig.default_results_screen_limit
                 elif (
@@ -504,6 +518,7 @@ class Screen:
     def results_max_age(self) -> int:
         match self.type:
             case ScreenType.RESULTS:
+                assert self.stored_screen is not None
                 return (
                     self.stored_screen.results_max_age
                     or PapiWebConfig.default_results_screen_max_age
@@ -515,6 +530,8 @@ class Screen:
     def results_tournament_ids(self) -> list[int]:
         match self.type:
             case ScreenType.RESULTS:
+                assert self.stored_screen is not None
+                assert self.event is not None
                 return [
                     tournament_id
                     for tournament_id in self.stored_screen.results_tournament_ids
@@ -525,6 +542,7 @@ class Screen:
 
     @cached_property
     def results_tournament_names(self) -> str:
+        assert self.event is not None
         return ', '.join(
             sorted(
                 [
@@ -536,6 +554,7 @@ class Screen:
 
     @cached_property
     def _results(self) -> list[Result]:
+        assert self.event is not None
         with EventDatabase(self.event.uniq_id) as event_database:
             return event_database.get_stored_results(
                 self.results_limit, self.results_tournament_ids, self.results_max_age
@@ -554,8 +573,9 @@ class Screen:
         match self.type:
             case ScreenType.RANKING:
                 if self.stored_screen:
-                    return self.stored_screen.ranking_crosstable == True
+                    return bool(self.stored_screen.ranking_crosstable)
                 else:
+                    assert self.family is not None, "Family reference has been garbage collected"
                     return self.family.ranking_crosstable
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -567,45 +587,48 @@ class Screen:
                 if self.stored_screen:
                     return self.stored_screen.ranking_round
                 else:
+                    assert self.family is not None, "Family reference has been garbage collected"
                     return self.family.ranking_round
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def ranking_min_points(self) -> int | None:
+    def ranking_min_points(self) -> float | None:
         match self.type:
             case ScreenType.RANKING:
                 if self.stored_screen:
                     return self.stored_screen.ranking_min_points
                 else:
+                    assert self.family is not None, "Family reference has been garbage collected"
                     return self.family.ranking_min_points
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def ranking_max_points(self) -> int | None:
+    def ranking_max_points(self) -> float | None:
         match self.type:
             case ScreenType.RANKING:
                 if self.stored_screen:
                     return self.stored_screen.ranking_max_points
                 else:
+                    assert self.family is not None, "Family reference has been garbage collected"
                     return self.family.ranking_max_points
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
     def last_update(self) -> float:
-        return (
-            self.stored_screen.last_update
-            if self.stored_screen
-            else self.family.last_update
-        )
+        if self.stored_screen:
+            return self.stored_screen.last_update or 0.0
+        assert self.family is not None, "Family reference has been garbage collected"
+        return self.family.last_update or 0.0
 
     @property
     def background_image(self) -> str:
         if self.stored_screen and self.stored_screen.background_image:
             return self.stored_screen.background_image
         else:
+            assert self.event is not None
             return self.event.background_image
 
     @cached_property
@@ -617,26 +640,25 @@ class Screen:
         if self.stored_screen and self.stored_screen.background_color:
             return self.stored_screen.background_color
         else:
+            assert self.event is not None
             return self.event.background_color
 
     @property
     def message_default(self) -> bool:
-        return (
-            self.stored_screen.message_default
-            if self.stored_screen
-            else self.family.message_default
-        )
+        if self.stored_screen:
+            return self.stored_screen.message_default
+        assert self.family is not None, "Family reference has been garbage collected"
+        return self.family.message_default
 
     @property
     def message_text(self) -> str | None:
+        assert self.event is not None
         if self.message_default:
             return self.event.message_text
-        else:
-            return (
-                self.stored_screen.message_text
-                if self.stored_screen
-                else self.family.message_text
-            )
+        if self.stored_screen:
+            return self.stored_screen.message_text
+        assert self.family is not None, "Family reference has been garbage collected"
+        return self.family.message_text
 
     @property
     def last_update_str(self) -> str | None:

@@ -113,7 +113,7 @@ class PlayerAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        field: str = ''
+        field = ''
         if action in [
             'delete',
         ]:
@@ -156,14 +156,14 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
             data[field] = ''
-        field: str = 'rating_type'
+        field = 'rating_type'
         rating_types: dict[TournamentRating, PlayerRatingType] = {
             tr: PlayerRatingType(
                 WebContext.form_data_to_int(data, f'{field}_{tr.value}')
             )
             for tr in TournamentRating
         }
-        field: str = 'rating'
+        field = 'rating'
         ratings: dict[TournamentRating, int | None] = {
             tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
             for tr in TournamentRating
@@ -337,6 +337,7 @@ class PlayerAdminController(BaseEventAdminController):
             {
                 player.club
                 for player in web_context.admin_event.players_by_id.values()
+                if player.club is not None
             }
         )
         # The clubs that will be selected on the club select list and used to filter the players
@@ -1011,9 +1012,9 @@ class PlayerAdminController(BaseEventAdminController):
                     federation=web_context.admin_event.federation,
                     player=player
                 )
-                tournament: Tournament = player.tournament
+                tournament = player.tournament
                 tournament.update_player(player)
-                event_loader: EventLoader = EventLoader.get(request=request)
+                event_loader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'create':
                 assert player.tournament is not None
@@ -1021,7 +1022,7 @@ class PlayerAdminController(BaseEventAdminController):
                     federation=web_context.admin_event.federation,
                     player=player
                 )
-                tournament: Tournament = player.tournament
+                tournament = player.tournament
                 if tournament.finished:
                     Message.error(
                         request,
@@ -1050,11 +1051,11 @@ class PlayerAdminController(BaseEventAdminController):
                         data=data,
                     )
                 tournament.add_player(player)
-                event_loader: EventLoader = EventLoader.get(request=request)
+                event_loader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'delete':
                 assert player.tournament is not None
-                tournament: Tournament = player.tournament
+                tournament = player.tournament
                 if player.has_real_pairings:
                     Message.error(
                         request,
@@ -1068,7 +1069,7 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 else:
                     tournament.delete_player(player)
-                    event_loader: EventLoader = EventLoader.get(request=request)
+                    event_loader = EventLoader.get(request=request)
                     event_loader.clear_cache(event_uniq_id)
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -1219,7 +1220,7 @@ class PlayerAdminController(BaseEventAdminController):
             max(1, admin_player.tournament.current_round),
             admin_player.tournament.rounds + 1
         ):
-            field: str = f'round_{round_}_result'
+            field = f'round_{round_}_result'
             if field in data:
                 pairing: Pairing = pairings[round_]
                 if not(pairing.not_paired or pairing.result in [

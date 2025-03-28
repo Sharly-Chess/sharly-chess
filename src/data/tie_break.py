@@ -124,8 +124,9 @@ class PapiTieBreakManager(AbstractEntityManager[AbstractTieBreak]):
     @classmethod
     def type_by_papi_id(cls) -> dict[str, type[AbstractTieBreak]]:
         return {
-            entity_type.static_papi_id(): entity_type
+            str(entity_type.static_papi_id()): entity_type
             for entity_type in cls.entity_types()
+            if entity_type.static_papi_id() is not None
         }
 
 
@@ -143,6 +144,7 @@ class TieBreakUtils:
         Only adjusts them in case of requested byes followed by all VUR.
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games for the last round not determined over the board are considered as draws."""
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if tournament.pairing == TournamentPairing.BERGER:
             return player.points_after(after_round)
@@ -326,12 +328,13 @@ class WinsTieBreak(AbstractTieBreak):
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
+        assert player.tournament is not None
         point_values = player.tournament.point_values
         return sum(
             pairing.result.points(point_values) == Result.GAIN.points(
                 point_values
             ) for round_index, pairing in player.pairings.items()
-            if round_index <= after_round
+            if pairing.result and round_index <= after_round
         )
 
 
@@ -474,7 +477,7 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         return _('Progressive')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[AbstractOption]]:
         return [CutTieBreakOption]
 
     def compute_player_value(

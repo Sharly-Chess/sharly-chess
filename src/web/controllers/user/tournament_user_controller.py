@@ -59,8 +59,9 @@ class TournamentUserWebContext(ScreenUserWebContext):
         self.tournament: Tournament | None = None
         if self.error:
             return
+        assert self.user_event is not None
         try:
-            self.tournament: Tournament = self.user_event.tournaments_by_id[
+            self.tournament = self.user_event.tournaments_by_id[
                 tournament_id
             ]
         except KeyError:
@@ -114,10 +115,12 @@ class BoardUserWebContext(TournamentUserWebContext):
             tournament_id=tournament_id,
             tournament_started=True,
         )
+        assert self.tournament is not None
         self.board: Board | None = None
         if self.error:
             return
         try:
+            assert self.tournament.boards is not None
             self.board = self.tournament.boards[board_id - 1]
         except KeyError:
             self._redirect_error(f'Board [{board_id}] not found.')
@@ -154,6 +157,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
             tournament_id=tournament_id,
             tournament_started=tournament_started,
         )
+        assert self.tournament is not None
         self.player: Player | None = None
         self.board: Board | None = None
         if self.error:
@@ -163,6 +167,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
         except KeyError:
             self._redirect_error(f'Player [{player_id}] not found.')
             return
+        assert self.tournament.boards is not None
         self.board = (
             self.tournament.boards[self.player.board_id - 1]
             if self.player.board_id
@@ -225,7 +230,7 @@ class CheckInUserController(BaseInputUserController):
         tournament_id: int,
         player_id: int,
     ) -> Template | ClientRedirect:
-        web_context: PlayerUserWebContext = PlayerUserWebContext(
+        player_web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
             data=None,
             event_uniq_id=event_uniq_id,
@@ -234,15 +239,19 @@ class CheckInUserController(BaseInputUserController):
             player_id=player_id,
             tournament_started=False,
         )
-        if web_context.error:
-            return web_context.error
-        web_context.tournament.check_in_player(
-            web_context.player, not web_context.player.check_in
+        if player_web_context.error:
+            return player_web_context.error
+        assert player_web_context.player is not None
+        assert player_web_context.player.id is not None
+        assert player_web_context.user_event is not None
+        assert player_web_context.tournament is not None
+        player_web_context.tournament.check_in_player(
+            player_web_context.player, not player_web_context.player.check_in
         )
         SessionHandler.set_session_user_last_check_in_updated(
-            request, web_context.tournament.id, web_context.player.id
+            request, player_web_context.tournament.id, player_web_context.player.id
         )
-        EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
+        EventLoader.get(request=request).clear_cache(player_web_context.user_event.uniq_id)
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -266,7 +275,7 @@ class IllegalMoveUserController(BaseInputUserController):
         player_id: int,
         add: bool,
     ) -> Template | ClientRedirect:
-        web_context: PlayerUserWebContext = PlayerUserWebContext(
+        player_web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
             data=None,
             event_uniq_id=event_uniq_id,
@@ -275,24 +284,29 @@ class IllegalMoveUserController(BaseInputUserController):
             player_id=player_id,
             tournament_started=True,
         )
-        if web_context.error:
-            return web_context.error
+        if player_web_context.error:
+            return player_web_context.error
+        assert player_web_context.tournament is not None
+        assert player_web_context.player is not None
+        assert player_web_context.player.id is not None
+        assert player_web_context.user_event is not None
+    
         if add:
-            web_context.tournament.store_illegal_move(web_context.player)
+            player_web_context.tournament.store_illegal_move(player_web_context.player)
             SessionHandler.set_session_user_last_illegal_move_updated(
-                request, web_context.tournament.id, web_context.player.id
+                request, player_web_context.tournament.id, player_web_context.player.id
             )
         else:
-            if not web_context.tournament.delete_illegal_move(web_context.player):
+            if not player_web_context.tournament.delete_illegal_move(player_web_context.player):
                 Message.error(
                     request,
-                    f'Player [{web_context.player.id}] has no illegal move recorded.',
+                    f'Player [{player_web_context.player.id}] has no illegal move recorded.',
                 )
             else:
                 SessionHandler.set_session_user_last_illegal_move_updated(
-                    request, web_context.tournament.id, web_context.player.id
+                    request, player_web_context.tournament.id, player_web_context.player.id
                 )
-        EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
+        EventLoader.get(request=request).clear_cache(player_web_context.user_event.uniq_id)
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -391,7 +405,7 @@ class ResultUserController(BaseInputUserController):
         board_id: int,
         result: int | None,
     ) -> Template | ClientRedirect:
-        web_context: BoardUserWebContext = BoardUserWebContext(
+        board_web_context: BoardUserWebContext = BoardUserWebContext(
             request,
             data=None,
             event_uniq_id=event_uniq_id,
@@ -399,35 +413,39 @@ class ResultUserController(BaseInputUserController):
             tournament_id=tournament_id,
             board_id=board_id,
         )
-        if web_context.error:
-            return web_context.error
-        if round_ not in range(1, web_context.tournament.rounds + 1):
+        if board_web_context.error:
+            return board_web_context.error
+        assert board_web_context.tournament is not None
+        assert board_web_context.board is not None
+        assert board_web_context.board.id is not None
+        assert board_web_context.user_event is not None
+        if round_ not in range(1, board_web_context.tournament.rounds + 1):
             return BaseController.redirect_error(
                 request, f'Invalid round number [{round_}].'
             )
         if result is None:
-            if not web_context.admin_auth:
+            if not board_web_context.admin_auth:
                 return BaseController.redirect_error(
                     request, 'Result deletion is not allowed.'
                 )
             with suppress(ValueError):
-                web_context.tournament.delete_result(web_context.board)
+                board_web_context.tournament.delete_result(board_web_context.board)
         else:
             if result not in (
                 Result.admin_imputable_results()
-                if web_context.admin_auth
+                if board_web_context.admin_auth
                 else Result.user_imputable_results()
             ):
                 return BaseController.redirect_error(
                     request, f'Invalid result [{result}].'
                 )
-            web_context.tournament.add_result(
-                web_context.board, Result.from_papi_value(result)
+            board_web_context.tournament.add_result(
+                board_web_context.board, Result.from_papi_value(result)
             )
         SessionHandler.set_session_last_result_updated(
-            request, web_context.tournament.id, round_, web_context.board.id
+            request, board_web_context.tournament.id, round_, board_web_context.board.id
         )
-        EventLoader.get(request=request).clear_cache(web_context.user_event.uniq_id)
+        EventLoader.get(request=request).clear_cache(board_web_context.user_event.uniq_id)
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -506,6 +524,7 @@ class DownloadUserController(BaseUserController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.user_event is not None
         tournament_files: list[Path] = [
             tournament.file
             for tournament in web_context.user_event.tournaments_by_id.values()
@@ -546,6 +565,7 @@ class DownloadUserController(BaseUserController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.tournament is not None
         if not web_context.tournament.file_exists:
             return BaseController.redirect_error(
                 request, f'Papi file [{web_context.tournament.file}] not found.'

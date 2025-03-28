@@ -132,6 +132,7 @@ class ScreenSet:
 
     @property
     def event(self) -> 'Event':
+        assert self.screen.event is not None
         return self.screen.event
 
     @property
@@ -158,11 +159,11 @@ class ScreenSet:
     def name_for_boards(self) -> str | None:
         if self.tournament.current_round:
             self._extract_boards()
-            name: str | None = (
-                self.stored_screen_set.name
-                if self.stored_screen_set
-                else self.family.name
-            )
+            if self.stored_screen_set:
+                name = self.stored_screen_set.name
+            else:
+                assert self.family is not None, "Family reference has been garbage collected"
+                name = self.family.name
             if name is None:
                 if self.first or self.last:
                     name = _('Boards %f-%l')

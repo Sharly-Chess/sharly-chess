@@ -207,7 +207,7 @@ class BaseAdminController(BaseController):
         data: dict[str, str],
         errors: dict[str, str],
     ) -> int | None:
-        field: str = 'record_illegal_moves'
+        field = 'record_illegal_moves'
         record_illegal_moves: int | None
         try:
             record_illegal_moves = WebContext.form_data_to_int(data, field)
@@ -224,7 +224,7 @@ class BaseAdminController(BaseController):
         data: dict[str, str],
         errors: dict[str, str],
     ) -> str | None:
-        field: str = 'rules'
+        field = 'rules'
         rules: str | None = WebContext.form_data_to_str(data, field)
         if rules:
             if validators.url(rules):
@@ -257,7 +257,7 @@ class BaseAdminController(BaseController):
         data: dict[str, str],
         errors: dict[str, str],
     ) -> str | None:
-        field: str = 'background_color'
+        field = 'background_color'
         background_color: str | None = None
         color_checkbox = WebContext.form_data_to_bool(data, field + '_checkbox')
         if not color_checkbox:
@@ -411,9 +411,9 @@ class BaseAdminController(BaseController):
                     cls._admin_validate_record_illegal_moves_update_data(data, errors)
                 )
                 rules = cls._admin_validate_rules_update_data(data, errors)
-                field: str = 'message_text'
+                field = 'message_text'
                 message_text = WebContext.form_data_to_str(data, field)
-                field: str = 'message_color'
+                field= 'message_color'
                 if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                     try:
                         message_color = WebContext.form_data_to_rgb(data, field)
@@ -421,7 +421,7 @@ class BaseAdminController(BaseController):
                         errors[field] = _(
                             'Invalid color [{color}] ([#RRGGBB] expected).'
                         ).format(color={data[field]})
-                field: str = 'message_background_color'
+                field = 'message_background_color'
                 if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                     try:
                         message_background_color = WebContext.form_data_to_rgb(

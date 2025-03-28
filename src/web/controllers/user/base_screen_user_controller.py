@@ -39,6 +39,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         super().__init__(
             request, data=data, event_uniq_id=event_uniq_id, user_event_tab=None
         )
+        assert self.user_event is not None
         self.screen: Screen | None = None
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = rotator_screen_index or 0
@@ -57,6 +58,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
                 return
             self.user_event_tab = self.screen.type.value
         else:
+            assert rotator_id is not None
             try:
                 self.rotator = self.user_event.rotators_by_id[rotator_id]
             except KeyError:
@@ -75,6 +77,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
 
     @property
     def login_needed(self) -> bool:
+        assert self.user_event is not None
         if self.screen is not None:
             if self.screen.type != ScreenType.INPUT:
                 return False
@@ -97,10 +100,12 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
 
     @property
     def background_image(self) -> str | None:
+        assert self.screen is not None
         return self.screen.background_image
 
     @property
     def background_color(self) -> str:
+        assert self.screen is not None
         return self.screen.background_color
 
     @property
@@ -179,6 +184,8 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
             screen_uniq_id=screen_uniq_id,
             screen_needed=True,
         )
+        assert self.screen is not None
+        assert self.user_event is not None
         self.family: Family | None = None
         if self.error:
             return
@@ -202,6 +209,7 @@ class BaseScreenUserController(BaseUserController):
         cls,
         web_context: ScreenOrRotatorUserWebContext,
     ) -> Template | ClientRedirect:
+        assert web_context.screen is not None
         # Allow plugin to provide extra columns
         per_plugin_columns = plugin_manager.hook.get_extra_screen_columns(
             screen=web_context.screen.type

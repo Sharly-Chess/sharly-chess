@@ -33,10 +33,13 @@ class Rotator:
 
     @property
     def event(self) -> 'Event':
-        return self._event_ref()
+        event = self._event_ref()
+        assert event is not None, "Event reference has been garbage collected"
+        return event
 
     @property
     def id(self) -> int:
+        assert self.stored_rotator.id is not None
         return self.stored_rotator.id
 
     @property

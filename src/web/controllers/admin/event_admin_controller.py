@@ -391,7 +391,7 @@ class EventAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
 
         tournament: Tournament | None = None
-        field: str = 'tournament_id'
+        field = 'tournament_id'
         
         try:
             tournament_id = WebContext.form_data_to_int(data, field)

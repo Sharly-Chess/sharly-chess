@@ -283,9 +283,9 @@ class Family:
                             player
                             for player in self.tournament.players_by_rank.values()
                             if (
-                                    self.ranking_min_points is None or player.points >= float(self.ranking_min_points)
+                                    self.ranking_min_points is None or (player.points or 0) >= float(self.ranking_min_points)
                                ) and (
-                                    self.ranking_max_points is None or player.points <= float(self.ranking_max_points)
+                                    self.ranking_max_points is None or (player.points or 0) <= float(self.ranking_max_points)
                                )
                         ]
                     )
@@ -342,7 +342,7 @@ class Family:
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = {}
         if self._calculate_screens:
-            for family_index in range(1, self.calculated_parts + 1):
+            for family_index in range(1, (self.calculated_parts or 1) + 1):
                 screen: Screen = Screen(
                     self.event, family=self, family_part=family_index
                 )

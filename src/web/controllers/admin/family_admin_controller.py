@@ -150,7 +150,7 @@ class FamilyAdminController(BaseEventAdminController):
             case 'delete':
                 pass
             case 'create' | 'clone' | 'update':
-                field: str = 'tournament_id'
+                field = 'tournament_id'
                 assert web_context.admin_event is not None
                 try:
                     if len(web_context.admin_event.tournaments_by_id) == 1:
@@ -191,12 +191,12 @@ class FamilyAdminController(BaseEventAdminController):
                         )
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                field: str = 'first'
+                field = 'first'
                 try:
                     first = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                field: str = 'last'
+                field = 'last'
                 try:
                     last = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
@@ -234,18 +234,18 @@ class FamilyAdminController(BaseEventAdminController):
                             errors[field] = _('A positive integer is expected.')
                     case _:
                         raise ValueError(f'type=[{type_}]')
-                field: str = 'parts'
+                field = 'parts'
                 try:
                     parts = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                field: str = 'number'
+                field = 'number'
                 try:
                     number = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if parts and number:
-                    error: str = _(
+                    error = _(
                         'Specifying the number of parts and the number of items per part is not possible.'
                     )
                     errors['parts'] = error
@@ -364,6 +364,7 @@ class FamilyAdminController(BaseEventAdminController):
                             uniq_id = web_context.admin_family.stored_family.uniq_id
                             name = web_context.admin_family.stored_family.name
                         case 'create':
+                            assert family_type is not None
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
                                 family_type=ScreenType(family_type)
                             )
@@ -444,7 +445,7 @@ class FamilyAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    data: dict[str, str] = {
+                    data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),

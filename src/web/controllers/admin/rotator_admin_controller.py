@@ -72,7 +72,7 @@ class RotatorAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        field: str = 'uniq_id'
+        field = 'uniq_id'
         uniq_id: str | None = WebContext.form_data_to_str(data, field)
         public: bool | None = None
         delay: int | None = None
@@ -242,7 +242,7 @@ class RotatorAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    data: dict[str, str] = {
+                    data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'delay': WebContext.value_to_form_data(delay),

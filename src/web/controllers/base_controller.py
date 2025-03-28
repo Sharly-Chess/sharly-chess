@@ -167,7 +167,7 @@ class WebContext:
 
     @staticmethod
     def form_data_to_float(
-        data: dict[str, str],
+        data: dict[str, str] | None,
         field: str,
         empty_value: float | None = None,
         minimum: float | None = None,
@@ -212,7 +212,9 @@ class WebContext:
 
     @staticmethod
     def form_data_to_rgb(
-        data: dict[str, str] | None, field: str, empty_value: RGB | None = None
+        data: dict[str, str] | None,
+        field: str,
+        empty_value: RGB | None = None
     ) -> str | None:
         if data is None:
             return empty_value

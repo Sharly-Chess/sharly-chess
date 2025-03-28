@@ -160,8 +160,8 @@ class EventDatabase(SQLiteVersionedDatabase):
         yml_file: Path,
         list_path: str,
         supposed_list: list,
-        item_type: type = None,
-        items_number: int = None,
+        item_type: type | None = None,
+        items_number: int | None = None,
         empty_allowed: bool = True,
     ):
         """Checks that the given list follows assumptions.
@@ -240,7 +240,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                     ],
                     empty_allowed=False,
                 )
-                timer_delays: dict[int, int] | None = None
+                timer_delays: dict[int, int | None] | None = None
                 if 'timer_delays' in event_dict:
                     self._check_populate_list(
                         yml_file,
@@ -253,7 +253,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                         i + 1: event_dict['timer_delays'][i]
                         for i in range(0, len(event_dict['timer_delays']))
                     }
-                timer_colors: dict[int, str] | None = None
+                timer_colors: dict[int, str | None] | None = None
                 if 'timer_colors' in event_dict:
                     self._check_populate_list(
                         yml_file,
@@ -327,7 +327,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 'colors',
                             ],
                         )
-                        delays: dict[int, int] | None = None
+                        delays: dict[int, int | None] | None = None
                         if 'delays' in timer_dict:
                             self._check_populate_list(
                                 yml_file,
@@ -340,7 +340,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                                 i + 1: timer_dict['delays'][i]
                                 for i in range(0, len(timer_dict['delays']))
                             }
-                        colors: dict[int, str] | None = None
+                        colors: dict[int, str | None] | None = None
                         if 'colors' in timer_dict:
                             self._check_populate_list(
                                 yml_file,

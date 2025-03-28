@@ -182,7 +182,8 @@ class FfePlugin(AbstractPlugin):
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
         assert web_context.admin_event is not None
-        admin_event = web_context.admin_event
+        admin_event: Event = web_context.admin_event
+        
         # The leagues that will be shown on the league select list
         players_leagues: list[str] = sorted(
             {
@@ -346,7 +347,7 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def augment_player_after_search(self, player: Player):
         # Try to get more information by requesting the FFE database
-        if (ffe_database := FfeDatabase()).exists():
+        if player.fide_id and (ffe_database := FfeDatabase()).exists():
             with ffe_database:
                 if ffe_player := ffe_database.get_player_by_fide_id(player.fide_id):
                     for rating_type in [

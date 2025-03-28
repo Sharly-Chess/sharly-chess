@@ -201,7 +201,7 @@ class Tournament:
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
         if self.finished or self.playing or not self.check_in_open:
             return {
-                None: self.players_by_id.values(),
+                None: list(self.players_by_id.values()),
                 True: [],
                 False: [],
             }

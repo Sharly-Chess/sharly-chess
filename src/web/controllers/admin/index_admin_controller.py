@@ -210,7 +210,7 @@ class IndexAdminController(BaseAdminController):
                 pass
             case 'config':
                 if data is None:
-                    papi_web_config: PapiWebConfig = PapiWebConfig()
+                    papi_web_config = PapiWebConfig()
                     data = {
                         'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
                         'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),

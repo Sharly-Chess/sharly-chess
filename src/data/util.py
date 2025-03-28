@@ -4,11 +4,11 @@ from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum
-from functools import lru_cache, cache
+from functools import lru_cache
 from logging import Logger
 from math import floor
 from types import UnionType
-from typing import Any, Self, override
+from typing import Any, override
 
 from common.i18n import _
 from common.logger import get_logger
@@ -326,7 +326,7 @@ class Result(IntEnum):
         is_pairing_bye: bool = False,
         is_zero_point_bye: bool = False,
         is_unrated: bool = False,
-    ) -> Self:
+    ) -> 'Result':
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
@@ -455,7 +455,7 @@ class Result(IntEnum):
 
 
     @property
-    def opposite_result(self) -> Self:
+    def opposite_result(self) -> 'Result':
         """Given a `Result` instance (white result), returns the result of the
         opponent.
 
@@ -615,13 +615,13 @@ class Result(IntEnum):
         )
 
     @classmethod
-    def user_imputable_results(cls) -> tuple[Self, ...]:
+    def user_imputable_results(cls) -> tuple['Result', ...]:
         """Imputable results are the ones that a player can
         input by themselves, namely a win, a draw, or a loss or forfeits."""
         return cls.GAIN, cls.DRAW, cls.LOSS
 
     @classmethod
-    def admin_imputable_results(cls) -> tuple[Self, ...]:
+    def admin_imputable_results(cls) -> tuple['Result', ...]:
         """Admin imputable results are the ones that only arbiters can input."""
         return cls.user_imputable_results() + (
             cls.FORFEIT_GAIN,
@@ -638,7 +638,7 @@ class TournamentType(IntEnum):
     CHAMPIONSHIP = 2
 
     @classmethod
-    def from_papi_value(cls, value) -> Self:
+    def from_papi_value(cls, value) -> 'TournamentType':
         match value:
             case 'Suisse':
                 return cls.SWISS
@@ -678,7 +678,7 @@ class TournamentRating(IntEnum):
     BLITZ = 3
 
     @classmethod
-    def from_papi_value(cls, value) -> Self:
+    def from_papi_value(cls, value) -> 'TournamentRating':
         match value:
             case 'Elo':
                 return cls.STANDARD
@@ -767,7 +767,7 @@ class TournamentPairing(IntEnum):
     BERGER = 6
 
     @classmethod
-    def from_papi_value(cls, value) -> Self:
+    def from_papi_value(cls, value) -> 'TournamentPairing':
         match value:
             case 'Standard':
                 return cls.STANDARD
@@ -843,7 +843,7 @@ class PlayerGender(IntEnum):
         return tuple(item.value for item in cls)
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerGender':
         match value:
             case '':
                 return cls.NONE
@@ -867,7 +867,7 @@ class PlayerGender(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @classmethod
-    def from_fide_value(cls, value: str) -> Self:
+    def from_fide_value(cls, value: str) -> 'PlayerGender':
         match value:
             case 'F' | 'f':
                 return cls.FEMALE
@@ -927,7 +927,7 @@ class PlayerCategory(IntEnum):
     O65 = 10
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerCategory':
         match value:
             case '':
                 return cls.NONE
@@ -1076,7 +1076,7 @@ class PlayerRatingType(IntEnum):
     FIDE = 3
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerRatingType':
         match value:
             case 'E' | None:
                 return cls.ESTIMATED
@@ -1143,7 +1143,7 @@ class PlayerTitle(IntEnum):
     GRANDMASTER = 8
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerTitle':
         match value.strip():
             case '':
                 return PlayerTitle.NONE
@@ -1187,7 +1187,7 @@ class PlayerTitle(IntEnum):
                 raise ValueError(f'Unknown title: {self}')
 
     @classmethod
-    def from_fide_value(cls, value: str) -> Self:
+    def from_fide_value(cls, value: str) -> 'PlayerTitle':
         match value.strip():
             case '':
                 return PlayerTitle.NONE
@@ -1291,7 +1291,7 @@ class BoardColor(StrEnum):
     BLACK = 'B'
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'BoardColor':
         """Decode the database value"""
         match value:
             case 'B':
@@ -1448,7 +1448,7 @@ class PointValueType(Enum):
                 raise ValueError(f'{self=}')
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PointValueType':
         match value.upper():
             case "NON":
                 return PointValueType.STANDARD

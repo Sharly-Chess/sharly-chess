@@ -63,7 +63,7 @@ class Club:
 
     @classmethod
     def from_query_param(cls, query_param: str) -> Self:
-        return base64.b64decode(query_param).decode('utf-8')
+        return cls(base64.b64decode(query_param).decode('utf-8'))
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
@@ -103,16 +103,16 @@ class TournamentPlayer:
         self.title: PlayerTitle = title
         self._estimation: int | None = estimation
         self.pairings: dict[int, Pairing] = pairings
-        self._point_values: dict[Result, float] = point_values
+        self._point_values: dict[Result, float] | None = point_values
         self._tournament_ref: 'ReferenceType[Tournament] | None' = None
         self.tournament: 'Tournament | None' = tournament
 
     @property
-    def tournament(self) -> 'Tournament | None':
+    def tournament(self) -> 'Tournament | None': # type: ignore
         return self._tournament_ref() if self._tournament_ref else None
 
     @tournament.setter
-    def tournament(self, tournament: 'Tournament | None'):
+    def tournament(self, tournament: 'Tournament | None'): # type: ignore
         self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @property
@@ -138,9 +138,9 @@ class TournamentPlayer:
         )
 
     def points_after(
-            self,
-            after_round: int,
-            only_played: bool = False
+        self,
+        after_round: int,
+        only_played: bool = False
     ) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
@@ -152,6 +152,7 @@ class TournamentPlayer:
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= after_round and
+            pairing.result and
             (pairing.played or not only_played)
         )
 
@@ -159,7 +160,7 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
-            if pairing.played or not only_played
+            if (pairing.played or not only_played) and pairing.result
         )
 
     @property
@@ -252,10 +253,12 @@ class Player(TournamentPlayer):
     @property
     def ref_id(self) -> int:
         """Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
+        assert self.id is not None
         return self.player_papi_id_from_papi_web_id(self.id)
 
     @property
     def tournament_id(self) -> int:
+        assert self.id is not None
         return self.player_tournament_id_from_papi_web_id(self.id)
 
     @property
@@ -309,7 +312,11 @@ class Player(TournamentPlayer):
         self.points = self.points_before(before_round)
 
     def points_total(self) -> float:
-        return sum(pairing.result.points(self.point_values) for pairing in self.pairings.values())
+        return sum(
+            pairing.result.points(self.point_values)
+            for pairing in self.pairings.values()
+            if pairing.result
+        )
 
     @staticmethod
     def _points_str(points: float | None) -> str:
@@ -322,7 +329,7 @@ class Player(TournamentPlayer):
     def add_points(self, points: float):
         """If `self.points` is set, add `points` to it.
         Otherwise, leave `self.points` as None."""
-        with suppress(TypeError):
+        if self.points is not None:
             self.points += points
 
     def to_trf(
@@ -332,6 +339,7 @@ class Player(TournamentPlayer):
         *,
         after_round: int,
     ) -> TrfPlayer:
+        assert self.id is not None
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
             name=f'{self.last_name}, {self.first_name}',
@@ -401,6 +409,7 @@ class Player(TournamentPlayer):
 
     @cached_property
     def can_check_in_out(self) -> bool:
+        assert self.tournament is not None
         """Returns True if the player can check-in/out, i.e. it is not forfeit for the next round."""
         if self.tournament.finished:
             return False
