@@ -29,12 +29,21 @@ class AppPluginManager(PluginManager):
         return [plugin for plugin in self.all_plugins if plugin.is_enabled]
 
     @property
-    def template_paths(self) -> list[Path]:
+    def templates_paths(self) -> list[Path]:
         """Template paths of all plugins (even disabled ones)
         need to be added to the jinja engine."""
         return [
             plugin.templates_path for plugin in self.all_plugins
             if plugin.templates_path.exists()
+        ]
+
+    @property
+    def static_paths(self) -> list[Path]:
+        """Static paths of all plugins (even disabled ones)
+        need to be added to the jinja engine."""
+        return [
+            plugin.static_path for plugin in self.all_plugins
+            if plugin.static_path.exists()
         ]
 
     def load_register(self):

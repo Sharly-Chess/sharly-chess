@@ -61,14 +61,6 @@ class BaseEventAdminWebContext(AdminWebContext):
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
 
-    @staticmethod
-    def get_print_document_options() -> dict[str, str]:
-        options = {'': '-'}
-        for document_type in PrintDocumentManager.document_types():
-            document = document_type()
-            options[document.id] = document.name
-        return options
-
 
 class BaseEventAdminController(BaseAdminController):
     @classmethod

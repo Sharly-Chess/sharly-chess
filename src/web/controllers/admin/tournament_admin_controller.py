@@ -1,9 +1,10 @@
 import itertools
 from logging import Logger
+from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any, Callable
-from collections import defaultdict
+from typing import Annotated, Any
 
+from common.papi_web_config import PapiWebConfig
 from data.input_output import (
     AbstractTournamentExporter,
     Trf16TournamentExporter,
@@ -25,10 +26,10 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.print import PrintDocumentManager
-from data.tie_break import TieBreakManager
+from data.tie_break import TieBreakManager, AbstractTieBreak, PapiTieBreakManager
 from data.tournament import Tournament
 from data.util import TrfType
-from database.access.papi.papi_template import PAPI_VERSIONS, create_empty_papi_database
+from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from pairing.bbp_pairings import BbpPairings
@@ -94,6 +95,7 @@ class TournamentAdminController(BaseEventAdminController):
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
         check_in_open: bool = False
+        tie_breaks: list[dict] | None = None
         if action == 'delete':
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
@@ -125,6 +127,31 @@ class TournamentAdminController(BaseEventAdminController):
                         check_in_open = web_context.admin_tournament.check_in_open
                     case _:
                         raise ValueError(f'action=[{action}]')
+
+                tie_breaks = []
+                tie_break_type_by_id: dict[str, type[AbstractTieBreak]] = (
+                    TieBreakManager.type_by_id()
+                )
+                used_tie_break_ids: list[str] = []
+                for index in range(1, 4):
+                    field = f'tie_break_{index}'
+                    tie_break_id = WebContext.form_data_to_str(data, field)
+                    if not tie_break_id:
+                        continue
+                    if tie_break_id in used_tie_break_ids:
+                        errors[field] = _('Tie-break already in use.')
+                        break
+                    used_tie_break_ids.append(tie_break_id)
+                    if tie_break_type := (
+                        tie_break_type_by_id.get(tie_break_id, None)
+                    ):
+                        tie_breaks.append(tie_break_type().to_dict())
+
+                create_file = WebContext.form_data_to_bool(data, 'create_file')
+                file_path = cls._extract_papi_file_path(data, web_context.admin_event)
+                if create_file and file_path.exists():
+                    errors['create_file'] = _('File already exists.')
+
         name: str | None = None
         path: str | None = None
         filename: str | None = None
@@ -139,7 +166,6 @@ class TournamentAdminController(BaseEventAdminController):
         paired_bye_result: int | None = None
         max_byes: int | None = None
         last_rounds_no_byes: int | None = None
-        tie_breaks: list[dict] | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name')
@@ -182,24 +208,6 @@ class TournamentAdminController(BaseEventAdminController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
-
-        if action == 'update':
-            tie_breaks = []
-            tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
-            used_tie_break_ids: list[str] = []
-            for index in range(1, 4):
-                field = f'tie_break_{index}'
-                tie_break_id = WebContext.form_data_to_str(data, field)
-                if not tie_break_id:
-                    continue
-                if tie_break_id in used_tie_break_ids:
-                    errors[field] = _('Tie-break already in use.')
-                    break
-                used_tie_break_ids.append(tie_break_id)
-                if tie_break_type := (
-                    tie_break_type_by_id.get(tie_break_id, None)
-                ):
-                    tie_breaks.append(tie_break_type().to_dict())
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
@@ -260,20 +268,18 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
         tournament_card_blocks_and_data = plugin_manager.hook.get_tournament_card_block_template_and_data()
-        tournament_exporters: list[AbstractTournamentExporter] = [
-            Trf16TournamentExporter(),
-            TrfBxTournamentExporter()
-        ] + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tournament_exporters()
-        ))
-
         tournament_card_blocks = [block_template for (block_template, data) in tournament_card_blocks_and_data]
         tournament_card_block_data = {
             key: value
             for (block_template, data) in tournament_card_blocks_and_data
             for key, value in data.items()
         }
-
+        tournament_exporters: list[AbstractTournamentExporter] = [
+            Trf16TournamentExporter(),
+            TrfBxTournamentExporter()
+        ] + list(itertools.chain.from_iterable(
+            plugin_manager.hook.get_extra_tournament_exporters()
+        ))
         template_context |= {
             'admin_event_tab': 'admin-event-tournaments-tab',
             'paired_bye_result_options': cls._get_paired_bye_result_options(),
@@ -284,7 +290,7 @@ class TournamentAdminController(BaseEventAdminController):
                     web_context.request
                 )
             ),
-            'player_updaters': PlayerUpdaterManager.updaters(),
+            'player_updater_options': PlayerUpdaterManager.options(),
         } | tournament_card_block_data
 
         match modal:
@@ -366,7 +372,6 @@ class TournamentAdminController(BaseEventAdminController):
 
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
                     plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
-
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'name': WebContext.value_to_form_data(name),
@@ -399,7 +404,6 @@ class TournamentAdminController(BaseEventAdminController):
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
                     } | plugin_form_data
-
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
                             action, web_context, data
@@ -416,16 +420,13 @@ class TournamentAdminController(BaseEventAdminController):
                         admin_event.record_illegal_moves
                     ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                    'tie_break_options': cls._get_tie_break_options(),
+                    'tie_break_options': {'': _('None')} | PapiTieBreakManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
+                    'file_exists': cls._extract_papi_file_path(data, admin_event).exists(),
                     'modal': modal,
                     'action': action,
                     'data': data,
                     'errors': errors,
-                }
-            case 'create_papi':
-                template_context |= {
-                    'modal': modal,
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
@@ -534,25 +535,41 @@ class TournamentAdminController(BaseEventAdminController):
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
     @post(
-        path='/admin/tournament-papi-create/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-papi-create',
+        path='/admin/tournament-file-status/{event_uniq_id:str}',
+        name='admin-tournament-file-status',
     )
-    async def admin_tournament_papi_create(
-        self, request: HTMXRequest, event_uniq_id: str, tournament_id: int,
+    async def admin_tournament_file_status(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
+        web_context = TournamentAdminWebContext(
+            request, event_uniq_id, None, data
         )
-        file = context.admin_tournament.file
-        file.parent.mkdir(parents=True, exist_ok=True)
-        if create_empty_papi_database(file, PAPI_VERSIONS[-1]):
-            Message.success(
-                request, _('Papi file [{file}] created.').format(file=file)
-            )
-        else:
-            Message.error(request, _('Papi file has not been created.'))
+        template_context: dict[str, Any] = self._get_admin_event_render_context(
+            web_context
+        )
+        return HTMXTemplate(
+            template_name='admin/tournaments/file_status.html',
+            context=template_context | {
+                'file_exists': self._extract_papi_file_path(
+                    data, web_context.admin_event
+                ).exists(),
+            }
+        )
 
-        return self._admin_event_tournaments_render(request, event_uniq_id)
+    @staticmethod
+    def _extract_papi_file_path(data: [str, str], event: Event) -> Path:
+        dir_path = Path(WebContext.form_data_to_str(data, 'path') or event.path)
+        file_name = (
+            WebContext.form_data_to_str(data, 'filename') or
+            WebContext.form_data_to_str(data, 'uniq_id', '')
+        )
+        return dir_path / f'{file_name}.{PapiWebConfig.papi_ext}'
 
     def _admin_tournament_update(
         self,
@@ -590,6 +607,10 @@ class TournamentAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_tournament.errors,
             )
+        if WebContext.form_data_to_bool(data, 'create_file'):
+            file_path = self._extract_papi_file_path(data, web_context.admin_event)
+            PapiDatabase(file_path).create_empty()
+
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
@@ -667,15 +688,6 @@ class TournamentAdminController(BaseEventAdminController):
                             ).format(tournament_uniq_id=stored_tournament.uniq_id),
                         )
                     event_loader.clear_cache(event_uniq_id)
-                    if not Tournament(
-                        web_context.admin_event, stored_tournament
-                    ).file_exists:
-                        return self._admin_event_tournaments_render(
-                            request,
-                            event_uniq_id=event_uniq_id,
-                            tournament_id=stored_tournament.id,
-                            modal='create_papi',
-                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -694,15 +706,6 @@ class TournamentAdminController(BaseEventAdminController):
                         ),
                     )
                     event_loader.clear_cache(event_uniq_id)
-                    if not Tournament(
-                        web_context.admin_event, stored_tournament
-                    ).file_exists:
-                        return self._admin_event_tournaments_render(
-                            request,
-                            event_uniq_id=event_uniq_id,
-                            tournament_id=tournament_id,
-                            modal='create_papi',
-                        )
                     return self._admin_event_tournaments_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -818,7 +821,7 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
         )
-        document_type = PrintDocumentManager.document_type_by_id()[document]
+        document_type = PrintDocumentManager.get_type(document)
         options = []
         for option in document_type.default_options():
             value = WebContext.form_data_to_value(

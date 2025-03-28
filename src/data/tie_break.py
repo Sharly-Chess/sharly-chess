@@ -13,13 +13,14 @@ from typing import Any, TYPE_CHECKING, override
 from common.i18n import _
 from data.pairing import Pairing
 from data.util import (
-    Result,
-    BoardColor,
-    TournamentPairing,
-    StaticUtils,
+    AbstractEntityManager,
     AbstractOption,
     AbstractOptionHandler,
+    BoardColor,
     OptionError,
+    Result,
+    StaticUtils,
+    TournamentPairing,
 )
 from plugins.manager import plugin_manager
 
@@ -39,57 +40,18 @@ register_tie_break = partial(
 register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 
 
-class TieBreakManager:
-    """Entry class for interacting with tie-breaks"""
-
-    @staticmethod
-    def tie_break_types() -> list[type['AbstractTieBreak']]:
-        return TIE_BREAK_CLASSES + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tie_break_classes()
-        ))
-
-    @classmethod
-    def tie_break_type_by_id(cls) -> dict[str, type['AbstractTieBreak']]:
-        return {
-            tie_break_type().id: tie_break_type
-            for tie_break_type in cls.tie_break_types()
-        }
-
-    @classmethod
-    def tie_break_by_papi_id(cls) -> dict[str, 'AbstractTieBreak']:
-        papi_tie_breaks: dict[str, 'AbstractTieBreak'] = {}
-        for tie_break_type in cls.tie_break_types():
-            tie_break = tie_break_type()
-            if tie_break.papi_id:
-                papi_tie_breaks[tie_break.papi_id] = tie_break
-        return papi_tie_breaks
-
-    @classmethod
-    def papi_compatible_tie_breaks(cls) -> list['AbstractTieBreak']:
-        """List of tie-breaks that can be used in papi"""
-        return [
-            tie_break_type() for tie_break_type in cls.tie_break_types()
-            if tie_break_type().papi_id is not None
-        ]
-
-    @staticmethod
-    def option_types() -> list[type['AbstractTieBreakOption']]:
-        return OPTION_CLASSES
-
-    @classmethod
-    def option_type_by_id(cls) -> dict[str, type['AbstractTieBreakOption']]:
-        return {
-            option_type().id: option_type
-            for option_type in cls.option_types()
-        }
-
-
 class AbstractTieBreakOption(AbstractOption, ABC):
     """Abstract class representing an option of a tie-break"""
     @property
     def template_name(self) -> str:
         # TODO Implement templates for tie-break options
         return ''
+
+
+class TieBreakOptionManager(AbstractEntityManager[AbstractTieBreakOption]):
+    @staticmethod
+    def entity_types() -> list[type[AbstractTieBreakOption]]:
+        return OPTION_CLASSES
 
 
 class AbstractTieBreak(AbstractOptionHandler, ABC):
@@ -117,17 +79,21 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
         the return type need to support rich comparison with himself"""
         pass
 
+    @staticmethod
+    def static_papi_id() -> str | None:
+        """Represents the tie-break in a Papi database.
+        If None, the tie-break will not appear in the database"""
+        pass
+
+    @property
+    def papi_id(self) -> str | None:
+        return self.static_papi_id()
+
     @property
     def is_displayable(self) -> bool:
         """Defines if the tie-break can be displayed
         in a print view or a ranking screen"""
         return True
-
-    @property
-    def papi_id(self) -> str | None:
-        """Represents the tie-break in a Papi database.
-        If None, the tie-break will not appear in the database"""
-        return None
 
     def to_dict(self) -> dict:
         return {
@@ -135,6 +101,31 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
             'options': {
                 option.id: option.value for option in self.options
             }
+        }
+
+
+class TieBreakManager(AbstractEntityManager[AbstractTieBreak]):
+    """Entry class for interacting with tie-breaks"""
+    @staticmethod
+    def entity_types() -> list[type[AbstractTieBreak]]:
+        return TIE_BREAK_CLASSES + list(itertools.chain.from_iterable(
+            plugin_manager.hook.get_extra_tie_break_classes()
+        ))
+
+
+class PapiTieBreakManager(AbstractEntityManager[AbstractTieBreak]):
+    @staticmethod
+    def entity_types() -> list[type[AbstractTieBreak]]:
+        return [
+            tie_break_type for tie_break_type in TieBreakManager.entity_types()
+            if tie_break_type().papi_id is not None
+        ]
+
+    @classmethod
+    def type_by_papi_id(cls) -> dict[str, type[AbstractTieBreak]]:
+        return {
+            entity_type.static_papi_id(): entity_type
+            for entity_type in cls.entity_types()
         }
 
 
@@ -221,29 +212,29 @@ class AbstractCutTieBreakOption(AbstractTieBreakOption, ABC):
 
 @register_option
 class CutTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'CUT'
 
 
 @register_option
 class CutTopTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'CUT_TOP'
 
 
 @register_option
 class CutBottomTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'CUT_BOTTOM'
 
 
 @register_option
 class PlayedModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PLAYED_MODIFIER'
 
     @property
@@ -257,8 +248,8 @@ class PlayedModifierTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ForeModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'FORE_MODIFIER'
 
     @property
@@ -272,8 +263,8 @@ class ForeModifierTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class LimitTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'LIMIT'
 
     @property
@@ -287,8 +278,8 @@ class LimitTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ExcludeIdsTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'EXCLUDE_IDS'
 
     @property
@@ -306,16 +297,16 @@ class WinsTieBreak(AbstractTieBreak):
     with or without playing, as many points as awarded for a win.
     See FIDE Handbook C.07.7.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Number of wins')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'WINS'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Nombre de Victoires'
 
     @property
@@ -349,12 +340,12 @@ class GamesWonTieBreak(AbstractTieBreak):
     """The number of games a participant won 'over the board'.
     See FIDE Handbook C.07.7.2"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Number of games won')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'GAMES_WON'
 
     @property
@@ -385,12 +376,12 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
     """The number of games played over the board with the black pieces.
     See FIDE Handbook C.07.7.3"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Games played with black')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'GAMES_PLAYED_WITH_BLACK'
 
     @property
@@ -421,12 +412,12 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
     """The number of games won over the board with the black pieces.
     See FIDE Handbook C.07.7.4"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Games won with black')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'GAMES_WON_WITH_BLACK'
 
     @property
@@ -461,16 +452,16 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
       - CUT: exclude the score achieved after the first *CUT* rounds
     See FIDE Handbook C.07.7.5 and C.07.14.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Progressive scores')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PROGRESSIVE_SCORES'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Cumulatif'
 
     @property
@@ -504,12 +495,12 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
     did not lose by forfeit, nor elected to take a bye (ZPB, HPB, or FPB)
     See FIDE Handbook C.07.7.6"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Rounds one Elected to Play')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'ROUNDS_ELECTED_TO_PLAY'
 
     @property
@@ -556,12 +547,12 @@ class BuchholzTieBreak(AbstractTieBreak):
     played against the scheduled opponent.
     See FIDE Handbook C.07.8.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'BUCHHOLZ'
 
     @property
@@ -666,12 +657,12 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     played against the scheduled opponent.
     See FIDE Handbook C.07.8.3"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Fore Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'FORE_BUCHHOLZ'
 
     @property
@@ -758,12 +749,12 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
     """
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Sum of Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'SUM_OF_BUCHHOLZ'
 
     @property
@@ -809,12 +800,12 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
     See FIDE Handbook C.07.8.2."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average of opponents Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_OF_BUCHHOLZ'
 
     @property
@@ -865,16 +856,16 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     as played games (only relevant in Swiss tournaments).
     See FIDE Handbook C.07.9.1."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Sonnenborn-Berger')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'SONNENBORN_BERGER'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Sonnenborn-Berger'
 
     @property
@@ -993,16 +984,16 @@ class KoyaTieBreak(AbstractTieBreak):
     against opponents who have at least *limit* points.
     See FIDE Handbook C.07.9.2."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Koya system')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'KOYA'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Koya'
 
     @property
@@ -1052,12 +1043,12 @@ class KashdanTieBreak(AbstractTieBreak):
     and 0 for an unplayed game.
     See USCF Handbook section 34E7."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Kashdan')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'KASHDAN'
 
     @property
@@ -1112,12 +1103,12 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
       - CUT_BOTTOM: remove the lowest *cut_bottom* ratings.
     See FIDE Handbook C.07.10.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average rating of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_RATING_OPPONENTS'
 
     @property
@@ -1186,12 +1177,12 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
     into RD (see FIDE Rating Regulations for the Conversion Table).
     See FIDE Handbook C.07.10.2."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Tournament performance rating')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'TOURNAMENT_PERFORMANCE_RATING'
 
     @property
@@ -1239,12 +1230,12 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
     opponents, only taking played games into account.
     See FIDE Handbook C.07.10.4."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average performance rating of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_PERFORMANCE_RATING_OPPONENTS'
 
     @property
@@ -1292,12 +1283,12 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
     This assumes that all players are rated, or at least have an estimation.
     See FIDE Handbook C.07.10.3."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Perfect tournament performance')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PERFECT_TOURNAMENT_PERFORMANCE'
 
     @property
@@ -1426,12 +1417,12 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
     of the opponents (only those who played).
     See FIDE Hand book C.07.10.5."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average perfect performance of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_PERFECT_PERFORMANCE'
 
     @property
@@ -1482,12 +1473,12 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     will be excluded from consideration.
     See FIDE Handbook C.07.6."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Direct encounter')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'DIRECT_ENCOUNTER'
 
     @property

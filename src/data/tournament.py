@@ -20,7 +20,7 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_break import AbstractTieBreak, TieBreakManager, AbstractTieBreakOption
+from data.tie_break import AbstractTieBreak, TieBreakManager, AbstractTieBreakOption, TieBreakOptionManager
 from data.util import (
     BoardColor,
     PlayerGender,
@@ -255,8 +255,12 @@ class Tournament:
         if not self.stored_tournament.tie_breaks:
             return None
         tie_breaks: list[AbstractTieBreak] = []
-        tie_break_type_by_id = TieBreakManager.tie_break_type_by_id()
-        option_type_by_id = TieBreakManager.option_type_by_id()
+        tie_break_type_by_id: dict[str, type[AbstractTieBreak]] = (
+            TieBreakManager.type_by_id()
+        )
+        option_type_by_id: dict[str, type[AbstractTieBreakOption]] = (
+            TieBreakOptionManager.type_by_id()
+        )
         for tie_break_dict in self.stored_tournament.tie_breaks:
             tie_break_id = tie_break_dict['type']
             options: list[AbstractTieBreakOption] = []

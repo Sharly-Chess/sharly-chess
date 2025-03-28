@@ -25,7 +25,7 @@ from data.loader import EventLoader
 from data.tournament import Tournament
 from data.util import Result
 from database.access.papi.papi_database import PapiDatabase
-from database.access.papi.papi_template import create_empty_papi_database, PAPI_VERSIONS
+from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import PLUGIN_NAME
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
@@ -276,36 +276,6 @@ class ActionSelector(metaclass=Singleton):
                 once_answer,
                 always_answer,
             ]:
-                if len(PAPI_VERSIONS) > 1:
-                    default_papi_version = PAPI_VERSIONS[-1]
-                    print_interactive_input(_('Please choose the Papi version:'))
-                    quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
-                    version_choices = {
-                        str(i + 1): PAPI_VERSIONS[i] for i in range(len(PAPI_VERSIONS))
-                    } | {
-                        quit_answer: _('Quit'),
-                    }
-                    default_answer: str = str(len(PAPI_VERSIONS))
-                    for letter, text in version_choices.items():
-                        print_interactive_input(f'  - [{letter}] {text}')
-                    version_choice: str | None = None
-                    while version_choice not in version_choices:
-                        version_choice = (
-                            input_interactive(
-                                _('Your choice (by default {default}): ').format(
-                                    default=default_papi_version
-                                )
-                            ).upper()
-                            or default_answer
-                        )
-                    if version_choice == quit_answer:
-                        return False
-                    papi_version = PAPI_VERSIONS[int(version_choice) - 1]
-                else:
-                    papi_version = PAPI_VERSIONS[-1]
-                print_interactive_info(
-                    _('Papi version: {version}').format(version=papi_version)
-                )
                 try:
                     chessevent_timeout_min: int = 10
                     chessevent_timeout_max: int = 180
@@ -388,9 +358,7 @@ class ActionSelector(metaclass=Singleton):
                                 continue
                             chessevent_timeout = chessevent_timeout_min
                             tournament.file.unlink(missing_ok=True)
-                            if create_empty_papi_database(
-                                tournament.file, papi_version
-                            ):
+                            if create_empty_papi_database(tournament.file):
                                 player_count: int = (
                                     self.write_chessevent_info_to_database(
                                         tournament, chessevent_tournament, data_md5
