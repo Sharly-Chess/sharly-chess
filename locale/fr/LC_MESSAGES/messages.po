@@ -254,14 +254,11 @@ msgstr "Évènement archivé"
 msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
-msgid "Argument --server is deprecated, ignored."
-msgstr "L'option --server est obsolète, ignorée."
-
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
-msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
+msgstr[1] "Au plus %(num)d coups illegaux sont enregistrés."
 
 msgid "Authenticating..."
 msgstr "Authentification..."
@@ -693,9 +690,6 @@ msgstr "Créer un évènement"
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
 
-msgid "Create file"
-msgstr "Créer le fichier"
-
 msgid "Create the Papi files"
 msgstr "Créer les fichiers Papi"
 
@@ -829,8 +823,8 @@ msgstr "Rencontre directe"
 msgid "Directory [{path}] not found."
 msgstr "Répertoire [{path}] non trouvé."
 
-msgid "Directory:"
-msgstr "Répertoire :"
+msgid "Directory of the Papi file:"
+msgstr "Répertoire du fichier Papi :"
 
 msgid "Display"
 msgstr "Affichage"
@@ -855,6 +849,9 @@ msgstr "Afficher un bouton de sortie d'écran"
 
 msgid "Do nothing"
 msgstr "Ne rien faire"
+
+msgid "Do you want Papi-web to create the file?"
+msgstr "Voulez-vous que Papi-Web crée ce fichier ?"
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ?"
@@ -1183,6 +1180,9 @@ msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{r
 msgid "Error while creating the database: {ex}."
 msgstr "Erreur à la création de la base de données : {ex}."
 
+msgid "Error while updating the FFE database."
+msgstr "Erreur pendant la mise à jour de la base de données FFE."
+
 msgid "Error while updating the FIDE database."
 msgstr "Erreur pendant la mise à jour de la base de données FIDE."
 
@@ -1434,26 +1434,11 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 msgid "Fide Master"
 msgstr "Maître Fide"
 
-msgid "Fields relying on the Papi database can't be updated if the file does not exist."
-msgstr "Les champs qui dépendent de la base de données Papi ne peuvent pas être mis à jour si le fichier n'existe pas."
-
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
-msgid "File already exists."
-msgstr "Le fichier existe déjà."
-
 msgid "File downloaded: [{zip_file}]."
 msgstr "Fichier téléchargé : [{zip_file}]."
-
-msgid "File found"
-msgstr "Fichier trouvé"
-
-msgid "File name (without extension):"
-msgstr "Nom du fichier (sans extension) :"
-
-msgid "File not found"
-msgstr "Fichier introuvable"
 
 msgid "Files have been sent to bin {bin_name}."
 msgstr "Les fichiers ont été envoyés dans la corbeille {bin_name}."
@@ -1986,6 +1971,9 @@ msgstr "Temps minimal (handicap, en secondes) :"
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
+msgid "Missing Papi file"
+msgstr "Fichier Papi manquant"
+
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr "Paramètre manquant (code : [{code}]) : [{error}]."
 
@@ -2009,6 +1997,9 @@ msgstr "Nom"
 
 msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Nom"
+
+msgid "Name of the Papi file (with no extension):"
+msgstr "Nom du fichier Papi (sans l'extension) :"
 
 msgid "Name:"
 msgstr "Nom :"
@@ -2234,6 +2225,9 @@ msgstr "Aucun horaire valide défini."
 msgid "No warnings"
 msgstr "Aucun avertissement"
 
+msgid "No, I will do it later"
+msgstr "Non, je le ferai plus tard"
+
 msgid "None"
 msgstr "Aucun"
 
@@ -2393,8 +2387,8 @@ msgstr "Appariements de la ronde {round}"
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Papi file"
-msgstr "Fichier Papi"
+msgid "Papi file [{file}] created."
+msgstr "Fichier Papi [{file}] créé."
 
 msgid "Papi file [{file}] has been created (players: {num})."
 msgstr "Le fichier Papi [{file}] a été créé (joueur·euses : {num})."
@@ -2402,11 +2396,17 @@ msgstr "Le fichier Papi [{file}] a été créé (joueur·euses : {num})."
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
+msgid "Papi file has not been created."
+msgstr "Le fichier Papi n'a pas pu être créé."
+
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
+
+msgid "Papi version: {version}"
+msgstr "Version de Papi : {version}"
 
 msgid "Papi-web can automatically launch a web browser when starting the web server."
 msgstr "Papi-web peut automatiquement lancer la navigateur au démarrage du serveur web."
@@ -2533,6 +2533,9 @@ msgstr "En cours"
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
 
+msgid "Please choose the Papi version:"
+msgstr "Veuillez choisir la version de Papi :"
+
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -2584,8 +2587,8 @@ msgstr "Veuillez entrer le nom de famille."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
-msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
-msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}]: "
+msgid "Please enter the number of the version to recover [{default}]: "
+msgstr "Veuillez entrer le numéro de la version à récupérer [{default}] : "
 
 msgid "Please enter the password to enter results:"
 msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
@@ -3244,8 +3247,8 @@ msgid "The default language used."
 msgstr "Le langage par défaut utilisé."
 
 #, python-format
-msgid "The directory of the Papi file (defaults to [%(dir)s])."
-msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
+msgid "The directory of the Papi file, by default %(dir)s."
+msgstr "Le répertoire du fichier Papi, par défaut %(dir)s."
 
 msgid "The end date and time of the event."
 msgstr "La date et l'heure de fin de l'évènement."
@@ -3255,9 +3258,6 @@ msgstr "La fédération qui organise l'évènement."
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
-
-msgid "The following languages are available:"
-msgstr "Les langues suivantes sont disponibles :"
 
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
@@ -3314,8 +3314,8 @@ msgstr "La temps minimal, quelle que soit la différence de classement entre les
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
-msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
-msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
+msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
+msgstr "Le nom du fichier papi, sans l'extension Papi (par défaut le numéro d'homologation FFE, puis l'identifiant de l'évènement)."
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le nom de l'évènement sur la plateforme ChessEvent (par défaut, peut être modifié pour chaque tournoi)."
@@ -3548,6 +3548,9 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
+
+msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
+msgstr "Ce programme ne devrait pas être lancé directement, utiliser les scripts server.bat, ffe.bat et chessevent.bat."
 
 msgid "This rotator is private (not visible by the users)."
 msgstr "Cet écran rotatif est privé (non visible des utilisateur·ices)."
@@ -3925,6 +3928,10 @@ msgstr "GAIN BLANCS"
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
 
+#, python-format
+msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
+msgstr "Attention: Fichier Papi [%(path)s] introuvable, de nombreuses fonctionnalités sont désactivées."
+
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
 
@@ -4015,6 +4022,9 @@ msgstr "Année de naissance"
 
 msgid "Yes"
 msgstr "Oui"
+
+msgid "Yes, create the file"
+msgstr "Oui, créer le fichier"
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr "Vous utilisez une version plus récente que la dernière version stable disponible ([{version}]), vous ne seriez pas développeur·euse ? ;-)"
@@ -4205,4 +4215,10 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "Storing data..."
+#~ msgstr "Enregistrement des données..."
+
+#~ msgid "{number} players written."
+#~ msgstr "{number} joueur·euses enregistré·es."
 

@@ -2,19 +2,6 @@ import os
 import re
 import shutil
 from pathlib import Path
-import sys
-
-sys.path.extend(
-    map(
-        str,
-        [
-            Path(__file__).parents[2],  # The root path
-            Path(__file__).parents[2]
-            / 'src',  # The path to the sources of the application
-        ],
-    )
-)
-
 from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
@@ -55,7 +42,7 @@ SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
-FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
+
 
 def clean(clean_zip: bool):
     for d in [
@@ -81,12 +68,11 @@ def build_exe():
         '--noconfirm',
         '--name=' + basename,
         '--onefile',
-        '--copy-metadata', 'papi_web',
+        '--hiddenimport=chessevent',
         '--hiddenimport=common',
         '--hiddenimport=data',
         '--hiddenimport=database',
-        '--hiddenimport=pairing',
-        '--hiddenimport=plugins',
+        '--hiddenimport=ffe',
         '--hiddenimport=web',
         '--hiddenimport=babel.numbers',
         '--hiddenimport=pyexcel_io.writers',
@@ -98,18 +84,11 @@ def build_exe():
         pyinstaller_params.append(f'--hiddenimport={module}')
     for module in ConfigMigrationManager().migration_modules:
         pyinstaller_params.append(f'--hiddenimport={module}')
-    for plugin in plugin_manager.all_plugins:
-        for module in plugin.migration_manager.migration_modules:
-            pyinstaller_params.append(f'--hiddenimport={module}')
 
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
     files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
-    for templates_path in plugin_manager.templates_paths:
-        files += [file for file in templates_path.glob('**/*') if file.is_file()]
     static_dir = web_dir / 'static'
-    for static_path in plugin_manager.static_paths:
-        files += [file for file in static_path.glob('**/*') if file.is_file()]
     files += [
         file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
     ]
@@ -166,7 +145,6 @@ def build_exe():
     files += [file for file in custom_dir.glob('**/*') if file.is_file()]
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
     files += [BbpPairings().executable_path]
-    files += [FFE_SQL_SERVER_CREDENTIALS_FILE, ]
     for file in files:
         print(file)
         pyinstaller_params.append(
@@ -195,7 +173,7 @@ def create_project():
     bin_dir: Path = PROJECT_DIR / 'bin'
     bin_dir.mkdir(parents=True, exist_ok=True)
     print_interactive_info(f'Moving {dist_exe_file} to {bin_dir}...')
-    shutil.move(dist_exe_file, PROJECT_DIR)
+    shutil.move(dist_exe_file, bin_dir)
     bbp_pairings: BbpPairings = BbpPairings()
     bbp_pairings_dir: Path = bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
     bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
@@ -207,26 +185,34 @@ def create_project():
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
-    target_file = bin_dir / 'ffe.bat'
+    target_file: Path = PROJECT_DIR / 'server.bat'
+    print_interactive_info(f'Creating batch file {target_file}...')
+    with open(target_file, 'wt', encoding='utf-8') as f:
+        f.write(
+            f'@echo off\n'
+            f'echo Starting Papi-web, please wait...\n'
+            f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
+            f'bin\\{EXE_FILENAME} --server\n'
+            f'pause\n'
+        )
+    target_file = PROJECT_DIR / 'ffe.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Papi-web FFE client, please wait...\n'
             f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
-            f'cd ..\n'
-            f'{EXE_FILENAME} --chessevent\n'
+            f'bin\\{EXE_FILENAME} --ffe\n'
             f'pause\n'
         )
-    target_file = bin_dir / 'chessevent.bat'
+    target_file = PROJECT_DIR / 'chessevent.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Papi-web ChessEvent client, please wait...\n'
             f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
-            f'cd ..\n'
-            f'{EXE_FILENAME} --chessevent\n'
+            f'bin\\{EXE_FILENAME} --chessevent\n'
             f'pause\n'
         )
 
@@ -305,6 +291,19 @@ def update_readme():
     print_interactive_success(f'Successfully updated {readme}.')
 
 
+def update_pyproject():
+    pyproject_file: Path = Path('pyproject.toml')
+    print_interactive_info(f'Updating {pyproject_file}...')
+    with open(pyproject_file, 'r') as file:
+        content = file.read()
+    content = re.sub(
+        r'version\s*=\s*"[\d\\.]+"', f'version = "{PAPI_WEB_VERSION}"', content
+    )
+    with open(pyproject_file, 'w') as file:
+        file.write(content)
+    print_interactive_success(f'Successfully updated {pyproject_file}.')
+
+
 def main():
     clean(clean_zip=True)
     bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
@@ -325,6 +324,7 @@ def main():
     build_test()
     clean(clean_zip=False)
     update_readme()
+    update_pyproject()
 
 
 main()

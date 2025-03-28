@@ -19,12 +19,12 @@ if TYPE_CHECKING:
 
 
 class ChessEventPlugin(AbstractPlugin):
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return PLUGIN_NAME
 
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return 'ChessEvent'
 
     @property

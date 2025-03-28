@@ -31,9 +31,9 @@ class AbstractPapiTieBreak(AbstractTieBreak, ABC):
     """Implementation of the tie-breaks as in Papi.
     Computation inaccuracies are reproduced"""
 
-    @staticmethod
+    @property
     @abstractmethod  # AS the usage is for Papi, papi_id has to be implemented
-    def static_papi_id() -> str:
+    def papi_id(self) -> str:
         pass
 
 
@@ -159,16 +159,16 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
 
 
 class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return _('Buchholz')
 
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return 'PAPI_BUCHHOLZ'
 
-    @staticmethod
-    def static_papi_id() -> str:
+    @property
+    def papi_id(self) -> str:
         return 'Solkoff'
 
     @property
@@ -191,16 +191,16 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
 
 class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return _('Buchholz cut bottom')
 
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return 'PAPI_BUCHHOLZ_CUT_BOTTOM'
 
-    @staticmethod
-    def static_papi_id() -> str:
+    @property
+    def papi_id(self) -> str:
         return 'Brésilien'
 
     @property
@@ -223,16 +223,16 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
 
 
 class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return _('Median Buchholz')
 
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return 'PAPI_MEDIAN_BUCHHOLZ'
 
-    @staticmethod
-    def static_papi_id() -> str:
+    @property
+    def papi_id(self) -> str:
         return 'Harkness'
 
     @property
@@ -258,16 +258,16 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
 
 class PapiPerformanceTieBreak(AbstractPapiTieBreak):
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return _('Performance')
 
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return 'PAPI_PERFORMANCE'
 
-    @staticmethod
-    def static_papi_id() -> str:
+    @property
+    def papi_id(self) -> str:
         return 'Performance'
 
     @property
@@ -313,16 +313,16 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
 
 
 class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return _('Sum of Buchholz')
 
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return 'PAPI_BUCHHOLZ_SUM'
 
-    @staticmethod
-    def static_papi_id() -> str:
+    @property
+    def papi_id(self) -> str:
         return 'SommeDesBuchholz'
 
     @property
@@ -355,16 +355,16 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
 
 
 class PapiKashdanTieBreak(AbstractPapiTieBreak):
-    @staticmethod
-    def static_name() -> str:
+    @property
+    def name(self) -> str:
         return _('Kashdan')
 
-    @staticmethod
-    def static_id() -> str:
+    @property
+    def id(self) -> str:
         return 'PAPI_KASHDAN'
 
-    @staticmethod
-    def static_papi_id() -> str:
+    @property
+    def papi_id(self) -> str:
         return 'Kashdan'
 
     @property

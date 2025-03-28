@@ -594,7 +594,7 @@ class PlayerAdminController(BaseEventAdminController):
                 web_context.request
             ),
             'admin_players_extra_columns': extra_columns,
-            'player_updater_options': PlayerUpdaterManager.options(),
+            'player_updaters': PlayerUpdaterManager.updaters(),
         }
         
         match modal:
@@ -1549,9 +1549,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         try:
-            player_updater: AbstractPlayerUpdater = (
-                PlayerUpdaterManager.get_object(player_updater_id)
-            )
+            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.updaters_by_id()[player_updater_id]
         except KeyError:
             return self.redirect_error(request, f'Unknown data source [{player_updater_id}].')
         plugin_updater_field_ids: list[str] = [
@@ -1623,9 +1621,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         try:
-            player_updater: AbstractPlayerUpdater = (
-                PlayerUpdaterManager.get_object(player_updater_id)
-            )
+            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.updaters_by_id()[player_updater_id]
         except KeyError:
             # should never happen, not translated
             return self.redirect_error(request, f'Unknown data source [{player_updater_id}].')

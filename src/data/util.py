@@ -4,11 +4,11 @@ from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum
-from functools import lru_cache, cache
+from functools import lru_cache
 from logging import Logger
 from math import floor
 from types import UnionType
-from typing import Any, Self, override
+from typing import Any, Self
 
 from common.i18n import _
 from common.logger import get_logger
@@ -98,86 +98,24 @@ class SharedUtils:
         )(num)
 
 
-class IdentifiableEntity(ABC):
-    """Abstract class representing an entity which needs to be
-    identified internally and represented in the UI"""
-
-    @staticmethod
-    @abstractmethod
-    def static_id() -> str:
-        """Represents the entity in forms, databases and query params.
-        Should be unique amongst entities from the same parent class."""
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def static_name() -> str:
-        """Represents the entity in the UI."""
-        pass
-
-    @property
-    def id(self) -> str:
-        return self.static_id()
-
-    @property
-    def name(self) -> str:
-        return self.static_name()
-
-
-class AbstractEntityManager[IdentifiableEntity](ABC):
-    @staticmethod
-    @abstractmethod
-    def entity_types() -> list[type[IdentifiableEntity]]:
-        pass
-
-    @classmethod
-    def options(cls) -> dict[str, str]:
-        return {
-            entity_type.static_id(): entity_type.static_name()
-            for entity_type in cls.entity_types()
-        }
-
-    @classmethod
-    def type_by_id(cls) -> dict[str, type[IdentifiableEntity]]:
-        return {
-            entity_type.static_id(): entity_type
-            for entity_type in cls.entity_types()
-        }
-
-    @classmethod
-    def get_type(cls, id_: str) -> type[IdentifiableEntity]:
-        """Get an object by its ID.
-        Raises a KeyError if the ID is unknown."""
-        return cls.type_by_id()[id_]
-
-    @classmethod
-    def get_object(cls, id_: str) -> IdentifiableEntity:
-        """Get an object by its ID.
-        Raises a KeyError if the ID is unknown."""
-        return cls.type_by_id()[id_]()
-
-    @classmethod
-    def objects(cls) -> list[IdentifiableEntity]:
-        return [type_() for type_ in cls.entity_types()]
-
-
 class OptionError(ValueError):
     def __init__(self, message: str, option: 'AbstractOption'):
         super().__init__(message)
         self.option = option
 
 
-class AbstractOption(IdentifiableEntity, ABC):
+class AbstractOption(ABC):
     """Abstract class representing an option.
     Options can either be represented in the DB or in a form."""
     def __init__(self, value: Any | None = None):
         self.value = value if value is not None else self.default_value
 
-    @override
-    @staticmethod
-    def static_name() -> str:
-        """UI representation is handled by the template."""
-        return ''
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """Represents the option class in forms and databases.
+        Has to be unique."""
+        pass
 
     @property
     @abstractmethod
@@ -213,10 +151,22 @@ class AbstractOption(IdentifiableEntity, ABC):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
 
-class AbstractOptionHandler(IdentifiableEntity, ABC):
+class AbstractOptionHandler(ABC):
     """Abstract class handling options."""
     def __init__(self, options: list[AbstractOption] | None = None):
         self.options: list[AbstractOption] = options or self.default_options()
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Represents the handler in the UI."""
+        pass
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """Represents the handler in a DB or a form."""
+        pass
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:

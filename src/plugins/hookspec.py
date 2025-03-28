@@ -139,9 +139,7 @@ class AppHookSpecs:
         """Provide extra columns for the player download datasheets """
 
     @hookspec
-    def insert_player_updater_types(
-            self, updater_types: list[type[AbstractPlayerUpdater]]
-    ):
+    def get_player_updaters(self) -> list[AbstractPlayerUpdater]:
         """Provide extra player updaters."""
 
     @hookspec
@@ -230,8 +228,8 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------  
 
     @hookspec
-    def insert_print_player_splitter_types(
-        self, player_splitter_types: list[type['AbstractPlayerSplitter']]
+    def insert_print_player_splitters(
+        self, player_splitters: list['AbstractPlayerSplitter']
     ):
         """Provide print player splitting options"""
 

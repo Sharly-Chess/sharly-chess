@@ -44,13 +44,14 @@ static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
     static_files_base_dir,
-    *[path for path in plugin_manager.static_paths],
 ]
 
 static_files_router: Router = create_static_files_router(
     path='/static',
     directories=static_files_folders,
     name='static',
+    # TODO using cache_control did not cache, make it work!
+    # https://github.com/litestar-org/litestar/issues/3129
     cache_control=CacheControlHeader(max_age=3600),
 )
 
@@ -161,7 +162,7 @@ class PapiWebEnvironment(Environment):
 
 template_dirs: list[Path] = [
     BASE_DIR / 'src/web/templates',
-    *[path for path in plugin_manager.templates_paths],
+    *[path for path in plugin_manager.template_paths],
 ]
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(

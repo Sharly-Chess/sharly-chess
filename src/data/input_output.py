@@ -1,3 +1,4 @@
+import itertools
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -6,7 +7,7 @@ from typing import Any, override
 
 from common.i18n import _
 from data.player import Player
-from data.util import TrfType, TournamentRating, IdentifiableEntity, AbstractEntityManager
+from data.util import TrfType, TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
 
 
@@ -183,13 +184,25 @@ class PlayerUpdaterField:
     id: str
 
 
-class AbstractPlayerUpdater(IdentifiableEntity, ABC):
+class AbstractPlayerUpdater(ABC):
     """Abstract class representing a tool
     updating a player from a data source."""
 
     def __init__(self):
         # Message displayed in the diff modal if something does wrong
         self.warning_message: str | None = None
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Represents the updater in the UI."""
+        pass
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """Represents the updater as a query parameter."""
+        pass
 
     @staticmethod
     def _ratings_fields() -> list[PlayerUpdaterField]:
@@ -274,12 +287,14 @@ class AbstractPlayerUpdater(IdentifiableEntity, ABC):
 
 
 class FidePlayerUpdater(AbstractPlayerUpdater):
-    @staticmethod
-    def static_name() -> str:
+    @override
+    @property
+    def name(self) -> str:
         return _('FIDE database')
 
-    @staticmethod
-    def static_id() -> str:
+    @override
+    @property
+    def id(self) -> str:
         return 'fide'
 
     @override
@@ -307,13 +322,17 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
             )
 
 
-class PlayerUpdaterManager(AbstractEntityManager[AbstractPlayerUpdater]):
+class PlayerUpdaterManager:
     @staticmethod
-    def entity_types() -> list[type[AbstractPlayerUpdater]]:
+    def updaters() -> list[AbstractPlayerUpdater]:
         from plugins.manager import plugin_manager
 
-        player_updaters = [FidePlayerUpdater]
-        plugin_manager.hook.insert_player_updater_types(
-            updater_types=player_updaters
+        return [FidePlayerUpdater()] + list(
+            itertools.chain.from_iterable(
+                plugin_manager.hook.get_player_updaters()
+            )
         )
-        return player_updaters
+
+    @classmethod
+    def updaters_by_id(cls) -> dict[str, AbstractPlayerUpdater]:
+        return {updater.id: updater for updater in cls.updaters()}

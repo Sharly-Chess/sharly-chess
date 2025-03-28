@@ -173,8 +173,8 @@ class Engine:
                     while True:
                         choice: str = input_interactive(
                             _(
-                                'Please enter the number of the version to recover [{default_choice}: {default_version}]: '
-                            ).format(default_choice=len(previous_versions), default_version=previous_versions[-1])
+                                'Please enter the number of the version to recover [{default}]: '
+                            ).format(default=previous_versions[-1])
                         )
                         if choice == quit_answer:
                             break

@@ -8,7 +8,7 @@ from typing import NamedTuple, Pattern
 from common.logger import get_logger
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-from data.tie_break import AbstractTieBreak, TieBreakManager, PapiTieBreakManager
+from data.tie_break import AbstractTieBreak, TieBreakManager
 from data.util import (
     Result,
     TournamentPairing,
@@ -20,7 +20,6 @@ from data.util import (
     PointValueType,
 )
 from database.access.access_database import AccessDatabase
-from database.access.papi.papi_template import create_empty_papi_database
 from plugins.manager import plugin_manager
 
 logger: Logger = get_logger()
@@ -50,10 +49,6 @@ class PapiDatabase(AccessDatabase):
         super().__init__(file, write)
         self.date_of_birth_pattern: Pattern = re.compile(r'^\d{1,2}/\d{1,2}/(\d{1,4})$')
 
-    def create_empty(self):
-        assert not self.file.exists()
-        create_empty_papi_database(self.file)
-
     def commit(self):
         self._commit()
 
@@ -78,12 +73,12 @@ class PapiDatabase(AccessDatabase):
         )
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
-        tie_break_type_by_id = PapiTieBreakManager.type_by_papi_id()
+        tie_break_by_id = TieBreakManager.tie_break_by_papi_id()
         tie_breaks: list[AbstractTieBreak] = []
         for index in range(1, 4):
             papi_id = self._read_var(f'Dep{index}')
-            if tie_break_type := tie_break_type_by_id.get(papi_id, None):
-                tie_breaks.append(tie_break_type())
+            if tie_break := tie_break_by_id.get(papi_id, None):
+                tie_breaks.append(tie_break)
         point_value_type: PointValueType = PointValueType.from_papi_value(self._read_var('DecomptePoints'))
         location: str = self._read_var('Lieu')
         start_date: str = self._read_var('DateDebut')

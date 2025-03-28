@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, NamedTuple, override
 
 from packaging.version import Version
 
-from data.util import IdentifiableEntity
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredPlugin
 from database.sqlite.migration import AbstractMigrationManager, AbstractMigration
@@ -49,23 +48,6 @@ class PluginUtils:
         source_list.append(element)
 
     @classmethod
-    def insert_on_equals[T](
-        cls,
-        source_list: list[T],
-        element: T,
-        match_element: T,
-        after: bool = True,
-    ):
-        """Wrapper on insert_on_condition where the condition
-        is an element being equal to *match_element*"""
-        cls.insert_on_condition(
-            source_list,
-            element,
-            lambda elem: elem == match_element,
-            after
-        )
-
-    @classmethod
     def insert_on_isinstance[T](
         cls,
         source_list: list[T],
@@ -99,9 +81,22 @@ class PluginContext:
                 database.commit()
 
 
-class AbstractPlugin(IdentifiableEntity, ABC):
+class AbstractPlugin(ABC):
     def __init__(self):
         self.context: PluginContext = PluginContext(self)
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """ID of the plugin in the database and in plugin_data.
+        Should be unique amongst plugins."""
+        pass
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Translated representation of the plugin."""
+        pass
 
     @property
     @abstractmethod
@@ -140,10 +135,6 @@ class AbstractPlugin(IdentifiableEntity, ABC):
     @property
     def templates_path(self) -> Path:
         return PLUGINS_DIR / self.id / 'templates'
-
-    @property
-    def static_path(self) -> Path:
-        return PLUGINS_DIR / self.id / 'static'
 
     def on_enable(self):
         """Method called when the plugin is enabled."""
