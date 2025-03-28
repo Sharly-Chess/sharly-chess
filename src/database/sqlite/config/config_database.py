@@ -8,7 +8,7 @@ from packaging.version import Version
 from common import PAPI_WEB_VERSION
 from common.logger import get_logger
 from database.sqlite.config import migrations
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
 from database.sqlite.migration import AbstractMigrationManager
 from database.sqlite.versioned_database import SQLiteVersionedDatabase
 
@@ -129,7 +129,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         self, stored_plugin: StoredPlugin
     ) -> StoredPlugin | None:
         self.execute(
-            f'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
+            'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
             (stored_plugin.is_enabled, stored_plugin.name,),
         )
         return self.load_stored_plugin(stored_plugin.name)
@@ -150,3 +150,80 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             params,
         )
         return self.load_stored_plugin(stored_plugin.name)
+
+    # ---------------------------------------------------------------------------------
+    # StoredLocalSourceDatabase
+    # ---------------------------------------------------------------------------------
+
+    def _row_to_stored_local_source_database(
+        self, row: dict[str, Any]
+    ) -> StoredLocalSourceDatabase:
+        return StoredLocalSourceDatabase(
+            name=row['name'],
+            is_enabled=self.load_bool_from_database_field(row['is_enabled']),
+            outdate_delay=row['outdate_delay'],
+            outdate_action=row['outdate_action'],
+            updated_at=row['updated_at'],
+        )
+
+    def load_stored_local_source_database(
+        self, database_name: str
+    ) -> StoredLocalSourceDatabase | None:
+        self.execute(
+            'SELECT * FROM `local_source_database` WHERE `name` = ?',
+            (database_name,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_local_source_database(row)
+
+    def update_stored_local_source_database(
+            self, stored_database: StoredLocalSourceDatabase
+    ) -> StoredPlugin | None:
+        fields: list[str] = [
+            'is_enabled',
+            'outdate_delay',
+            'outdate_action',
+            'updated_at',
+        ]
+        params: tuple = (
+            stored_database.is_enabled,
+            stored_database.outdate_delay,
+            stored_database.outdate_action,
+            stored_database.updated_at,
+        )
+        field_sets = (f'`{f}` = ?' for f in fields)
+        query = (
+            f'UPDATE `local_source_database` '
+            f'SET {', '.join(field_sets)} WHERE `name` = ?'
+        )
+        self.execute(query, params + (stored_database.name,))
+        return self.load_stored_local_source_database(
+            stored_database.name
+        )
+
+    def insert_stored_local_source_database(
+        self, stored_database: StoredLocalSourceDatabase
+    ) -> StoredLocalSourceDatabase:
+        fields: list[str] = [
+            'name',
+            'is_enabled',
+            'outdate_delay',
+            'outdate_action',
+            'updated_at',
+        ]
+        params: tuple = (
+            stored_database.name,
+            stored_database.is_enabled,
+            stored_database.outdate_delay,
+            stored_database.outdate_action,
+            stored_database.updated_at,
+        )
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        self.execute(
+            f'INSERT INTO `local_source_database` ({fields_str}) '
+            f'VALUES ({', '.join('?' for _ in params)})',
+            params,
+        )
+        return self.load_stored_local_source_database(
+            stored_database.name
+        )

@@ -88,7 +88,7 @@ class FfeSearchController(BaseEventAdminController):
                 start: float = 0.0
                 if DEVEL_ENV:
                     start = time.perf_counter()
-                if not FfeDatabase().exists():
+                if not FfeDatabase().is_enabled:
                     search_messages.append(('bi-database-slash', '', _('No local database.')))
                 else:
                     with FfeDatabase() as ffe_database:
@@ -145,12 +145,13 @@ class FfeSearchController(BaseEventAdminController):
             if NetworkMonitor.connected():
                 async with FFESqlServer() as ffe_sql_server:
                     ffe_player: Player = await ffe_sql_server.get_player_by_ffe_id(player_ffe_id)
-            else:
-                with FfeDatabase() as ffe_database:
+            elif (ffe_database := FfeDatabase()).is_enabled:
+                with ffe_database:
                     ffe_player: Player = ffe_database.get_player_by_ffe_id(player_ffe_id)
+
             # Try to get more information by requesting the FIDE database
-            if ffe_player and FideDatabase().exists():
-                with FideDatabase() as fide_database:
+            if ffe_player and (fide_database := FideDatabase()).is_enabled:
+                with fide_database:
                     if fide_player := fide_database.get_player_by_fide_id(ffe_player.fide_id):
                         ffe_player.federation = fide_player.federation
                         ffe_player.title = fide_player.title
