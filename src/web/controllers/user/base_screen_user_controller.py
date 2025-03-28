@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import Annotated, Any
+from typing import Annotated, Any, Iterable
 
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
@@ -14,6 +14,7 @@ from data.rotator import Rotator
 from data.screen import Screen
 from data.util import ScreenType
 from plugins.manager import plugin_manager
+from plugins.utils import ExtraColumn
 from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.base_user_controller import BaseUserController
 from web.messages import Message
@@ -211,10 +212,10 @@ class BaseScreenUserController(BaseUserController):
     ) -> Template | ClientRedirect:
         assert web_context.screen is not None
         # Allow plugin to provide extra columns
-        per_plugin_columns = plugin_manager.hook.get_extra_screen_columns(
+        per_plugin_columns: Iterable[Iterable[ExtraColumn]] = plugin_manager.hook.get_extra_screen_columns(
             screen=web_context.screen.type
         )
-        extra_columns = {}
+        extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
