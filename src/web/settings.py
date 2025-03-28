@@ -45,16 +45,15 @@ static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
     static_files_base_dir,
-    *[path for path in plugin_manager.static_paths],
+    *plugin_manager.static_paths,
 ]
 
 static_files_router: Router = create_static_files_router(
     path='/static',
-    directories=static_files_folders,
+    directories=list(static_files_folders),
     name='static',
     cache_control=CacheControlHeader(max_age=3600),
 )
-
 
 route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
@@ -152,7 +151,7 @@ class PapiWebEnvironment(Environment):
             trim_blocks=True,
         )
         self.add_extension('jinja2.ext.i18n')
-        self.install_gettext_callables(
+        self.install_gettext_callables(  # type: ignore
             gettext=gettext, ngettext=ngettext, newstyle=True
         )
 
