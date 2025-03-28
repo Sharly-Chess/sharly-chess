@@ -16,7 +16,6 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
-from data.tie_break import TieBreakManager
 from data.util import Result
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
@@ -205,7 +204,7 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _admin_validate_record_illegal_moves_update_data(
-        data: dict[str, str] | None,
+        data: dict[str, str],
         errors: dict[str, str],
     ) -> int | None:
         field: str = 'record_illegal_moves'
@@ -222,7 +221,7 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _admin_validate_rules_update_data(
-        data: dict[str, str] | None,
+        data: dict[str, str],
         errors: dict[str, str],
     ) -> str | None:
         field: str = 'rules'
@@ -255,7 +254,7 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _admin_validate_background_color_update_data(
-        data: dict[str, str] | None,
+        data: dict[str, str],
         errors: dict[str, str],
     ) -> str | None:
         field: str = 'background_color'
@@ -283,6 +282,7 @@ class BaseAdminController(BaseController):
         errors: dict[str, str] = {}
         uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
         if action == 'delete':
+            assert admin_event is not None
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
@@ -305,6 +305,7 @@ class BaseAdminController(BaseController):
                                 'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
+                        assert admin_event is not None
                         if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
                             errors['uniq_id'] = _(
                                 'Event [{uniq_id}] already exists.'
@@ -356,7 +357,7 @@ class BaseAdminController(BaseController):
                     stop = time.mktime(
                         datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
                     )
-                if 'start' not in errors and 'stop' not in errors and start > stop:
+                if start and stop and 'start' not in errors and 'stop' not in errors and start > stop:
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
                 path = WebContext.form_data_to_str(data, 'path')
@@ -440,15 +441,21 @@ class BaseAdminController(BaseController):
         per_plugin_tournament_data = plugin_manager.hook.get_validated_event_form_fields(action=action, event=admin_event, data=data, errors=errors)
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
 
+        assert uniq_id is not None
+        assert name is not None
+        assert federation is not None
+        assert start is not None
+        assert stop is not None
+
         return StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
             start=start,
             stop=stop,
-            public=public,
+            public=bool(public),
             path=path,
-            hide_background_image=hide_background_image,
+            hide_background_image=bool(hide_background_image),
             background_image=background_image,
             background_color=background_color,
             update_password=update_password,
@@ -460,8 +467,8 @@ class BaseAdminController(BaseController):
             errors=errors,
 
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
-            timer_colors = admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
-            timer_delays = admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
+            timer_colors=dict[int, str | None](admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)}),
+            timer_delays=dict[int, int | None](admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)}),
 
             plugin_data=plugin_data
         )
@@ -487,7 +494,7 @@ class BaseAdminController(BaseController):
                 else:
                     if item_str not in files:
                         files.append(item_str)
-        dir_nodes: list[dict[str, str]] = [
+        dir_nodes: list[dict[str, Any]] = [
             {
                 'id': d or '#',
                 'parent': '/'.join(d.split('/')[:-1]) or '#',
@@ -497,7 +504,7 @@ class BaseAdminController(BaseController):
             }
             for d in dirs
         ]
-        file_nodes: list[dict[str, str]] = [
+        file_nodes: list[dict[str, Any]] = [
             {
                 'id': f or '#',
                 'parent': '/'.join(f.split('/')[:-1]) or '#',
@@ -539,9 +546,11 @@ class BaseAdminController(BaseController):
         name: str | None = None
         match action:
             case 'update':
+                assert admin_event is not None
                 name = admin_event.stored_event.name
                 uniq_id = admin_event.stored_event.uniq_id
             case 'clone':
+                assert admin_event is not None
                 name = EventLoader.get(request).get_unused_event_name(
                     admin_event.stored_event.name
                 )
@@ -559,6 +568,7 @@ class BaseAdminController(BaseController):
         stop: float | None = None
         match action:
             case 'update' | 'clone':
+                assert admin_event is not None
                 start = admin_event.stored_event.start
                 stop = admin_event.stored_event.stop
             case 'create':
@@ -591,6 +601,7 @@ class BaseAdminController(BaseController):
         message_background_color: str | None = None
         match action:
             case 'update' | 'clone':
+                assert admin_event is not None
                 public = admin_event.stored_event.public
                 federation = admin_event.stored_event.federation
                 hide_background_image = admin_event.stored_event.hide_background_image

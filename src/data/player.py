@@ -173,7 +173,7 @@ class Player(TournamentPlayer):
 
     def __init__(
         self,
-        id: int,
+        id: int | None,
         last_name: str,
         first_name: str,
         date_of_birth: date | None,
@@ -184,15 +184,15 @@ class Player(TournamentPlayer):
         pairings: dict[int, Pairing],
 
         # Extra fields
-        mail: str,
-        phone: str,
-        comment: str,
-        owed: float,
-        paid: float,
-        ratings: dict[TournamentRating, int],
+        mail: str | None,
+        phone: str | None,
+        comment: str | None,
+        owed: float | None,
+        paid: float | None,
+        ratings: dict[TournamentRating, int | None],
         rating_types: dict[TournamentRating, PlayerRatingType],
-        club: Club,
-        fixed: int,
+        club: Club | None,
+        fixed: int | None,
         check_in: bool,
         tournament: 'Tournament | None' = None,
         errors: dict[str, str] | None = None,
@@ -212,16 +212,16 @@ class Player(TournamentPlayer):
             pairings,
             tournament=tournament,
         )
-        self.mail: str = mail
-        self.phone: str = phone
-        self.comment: str = comment
-        self.owed: float = owed
-        self.paid: float = paid
-        self.ratings: dict[TournamentRating, int] = ratings
+        self.mail: str | None = mail
+        self.phone: str | None = phone
+        self.comment: str | None = comment
+        self.owed: float | None = owed
+        self.paid: float | None = paid
+        self.ratings: dict[TournamentRating, int | None] = ratings
         self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
         self.federation: Federation = federation
-        self.club: Club = club
-        self.fixed: int = fixed
+        self.club: Club | None = club
+        self.fixed: int | None = fixed
         self.check_in: bool = check_in
         self.points: float | None = None
         self.vpoints: float | None = None
@@ -261,18 +261,21 @@ class Player(TournamentPlayer):
     @property
     def estimation(self) -> int:
         if not self.estimated:
-            return self.ratings[self.tournament.rating]
+            assert self.tournament is not None
+            return self.ratings[self.tournament.rating] or 0
         return self._estimation or 0
 
     @estimation.setter
     def estimation(self, value: int):
         if not self.estimated:
-            self._estimation = self.ratings[self.tournament.rating]
+            assert self.tournament is not None
+            self._estimation = self.ratings[self.tournament.rating] or 0
         else:
             self._estimation = value
 
     @property
     def estimated(self) -> bool:
+        assert self.tournament is not None
         return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED
 
     @property
@@ -285,10 +288,12 @@ class Player(TournamentPlayer):
 
     @property
     def rating(self) -> int:
-        return self.ratings[self.tournament.rating]
+        assert self.tournament is not None
+        return self.ratings[self.tournament.rating] or 0
 
     @property
     def rating_type(self) -> PlayerRatingType:
+        assert self.tournament is not None
         return self.rating_types[self.tournament.rating]
 
     @property

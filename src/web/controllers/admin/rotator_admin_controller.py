@@ -43,6 +43,7 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
             data=data,
             event_uniq_id=event_uniq_id,
         )
+        assert self.admin_event is not None 
         self.admin_rotator: Rotator | None = None
         if self.error:
             return
@@ -67,14 +68,15 @@ class RotatorAdminController(BaseEventAdminController):
         web_context: RotatorAdminWebContext,
         data: dict[str, str] | None = None,
     ) -> StoredRotator:
+        assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
             data = {}
         field: str = 'uniq_id'
-        uniq_id: str = WebContext.form_data_to_str(data, field)
+        uniq_id: str | None = WebContext.form_data_to_str(data, field)
         public: bool | None = None
         delay: int | None = None
-        message_default: bool = True
+        message_default: bool | None = True
         message_text: str | None = None
         screen_ids: list[int] | None = None
         family_ids: list[int] | None = None
@@ -93,6 +95,7 @@ class RotatorAdminController(BaseEventAdminController):
                                 'Rotator [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
+                        assert web_context.admin_rotator is not None
                         if (
                             uniq_id != web_context.admin_rotator.uniq_id
                             and uniq_id in web_context.admin_event.rotators_by_uniq_id
@@ -102,10 +105,10 @@ class RotatorAdminController(BaseEventAdminController):
                             ).format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
-            public: bool = WebContext.form_data_to_bool(data, 'public')
+            public = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'update' | 'clone':
-                public: bool = WebContext.form_data_to_bool(data, 'public')
+                public = WebContext.form_data_to_bool(data, 'public')
                 field = 'delay'
                 try:
                     delay = WebContext.form_data_to_int(data, field, minimum=1)
@@ -135,20 +138,22 @@ class RotatorAdminController(BaseEventAdminController):
                 pass
             case _:
                 raise ValueError(f'action=[{action}]')
+            
+        assert uniq_id is not None
         return StoredRotator(
             id=web_context.admin_rotator.id
-            if action
+            if web_context.admin_rotator and action
             not in [
                 'create',
                 'clone',
             ]
             else None,
             uniq_id=uniq_id,
-            public=public,
+            public=bool(public),
             delay=delay,
             screen_ids=screen_ids,
             family_ids=family_ids,
-            message_default=message_default,
+            message_default=bool(message_default),
             message_text=message_text,
             errors=errors,
         )
@@ -161,7 +166,7 @@ class RotatorAdminController(BaseEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         rotator_id: int | None = None,
-        data: dict[str, str] | None = None,
+        data: dict[str, str] | None = None, # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: RotatorAdminWebContext = RotatorAdminWebContext(
@@ -172,6 +177,7 @@ class RotatorAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
@@ -195,12 +201,14 @@ class RotatorAdminController(BaseEventAdminController):
                     family_ids: list[int] | None = None
                     match action:
                         case 'update':
+                            assert web_context.admin_rotator is not None
                             uniq_id = web_context.admin_rotator.stored_rotator.uniq_id
                         case 'create':
                             uniq_id = (
                                 web_context.admin_event.get_unused_rotator_uniq_id()
                             )
                         case 'clone':
+                            assert web_context.admin_rotator is not None
                             uniq_id = (
                                 web_context.admin_event.get_unused_rotator_uniq_id(
                                     web_context.admin_rotator.stored_rotator.uniq_id
@@ -212,6 +220,7 @@ class RotatorAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
+                            assert web_context.admin_rotator is not None
                             public = web_context.admin_rotator.stored_rotator.public
                             delay = web_context.admin_rotator.stored_rotator.delay
                             message_default = (
@@ -355,6 +364,7 @@ class RotatorAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         stored_rotator: StoredRotator = self._admin_validate_rotator_update_data(
             action, web_context, data
         )
@@ -394,6 +404,7 @@ class RotatorAdminController(BaseEventAdminController):
                         ),
                     )
                 case 'delete':
+                    assert web_context.admin_rotator is not None
                     event_database.delete_stored_rotator(web_context.admin_rotator.id)
                     event_database.commit()
                     Message.success(

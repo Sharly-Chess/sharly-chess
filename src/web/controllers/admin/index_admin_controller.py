@@ -96,9 +96,9 @@ class IndexAdminController(BaseAdminController):
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=WebContext.form_data_to_bool(
+                    is_enabled=bool(WebContext.form_data_to_bool(
                         data, plugin.form_key, False
-                    ),
+                    )),
                     errors=errors,
                 )
             )
@@ -436,7 +436,7 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         admin_tab: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_create(
             request,
             admin_tab=admin_tab,

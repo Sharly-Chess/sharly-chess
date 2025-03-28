@@ -63,6 +63,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         super().__init__(
             request, event_uniq_id=event_uniq_id, data=data
         )
+        assert self.admin_event is not None
         self.admin_player: Player | None = None
         self.admin_tournament: Tournament | None = None
         if self.error:
@@ -108,6 +109,7 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         data: dict[str, str] | None = None,
     ) -> Player:
+        assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -115,17 +117,20 @@ class PlayerAdminController(BaseEventAdminController):
         if action in [
             'delete',
         ]:
+            assert web_context.admin_player is not None
             return web_context.admin_player
         tournament: Tournament | None = None
         match action:
             case 'create':
                 try:
-                    tournament = web_context.admin_event.tournaments_by_id[
-                        WebContext.form_data_to_int(data, field := 'tournament_id')
-                    ]
+                    tournament_id = WebContext.form_data_to_int(data, field := 'tournament_id')
+                    if not tournament_id:
+                        raise ValueError()
+                    tournament = web_context.admin_event.tournaments_by_id[tournament_id]
                 except (ValueError, KeyError):
                     errors[field] = _('Please choose the tournament.')
             case 'update':
+                assert web_context.admin_player is not None
                 tournament = web_context.admin_player.tournament
             case _:
                 raise ValueError(f'action={action}')
@@ -159,7 +164,7 @@ class PlayerAdminController(BaseEventAdminController):
             for tr in TournamentRating
         }
         field: str = 'rating'
-        ratings: dict[TournamentRating, int] = {
+        ratings: dict[TournamentRating, int | None] = {
             tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
             for tr in TournamentRating
         }
@@ -186,7 +191,7 @@ class PlayerAdminController(BaseEventAdminController):
         else:
             federation = Federation(federation_name)
         club_name: str | None = WebContext.form_data_to_str(data, field := 'club')
-        club: Club = Club(club_name) if club_name else None
+        club: Club | None = Club(club_name) if club_name else None
         fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
@@ -238,8 +243,12 @@ class PlayerAdminController(BaseEventAdminController):
         )
         plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
 
+        assert first_name is not None
+        assert last_name is not None
+        assert federation is not None
+
         return Player(
-            id=web_context.admin_player.id if action != 'create' else None,
+            id=web_context.admin_player.id if action != 'create' and web_context.admin_player else None,
             first_name=first_name,
             last_name=last_name,
             date_of_birth=date_of_birth,
@@ -292,11 +301,12 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
         admin_event: Event = web_context.admin_event
-        admin_player: Player = web_context.admin_player
+        admin_player: Player | None = web_context.admin_player
         papi_web_config: PapiWebConfig = PapiWebConfig()
         
         # Allow plugin to provide extra columns
@@ -401,68 +411,36 @@ class PlayerAdminController(BaseEventAdminController):
 
         template_context |= plugin_context
         
-        match SessionHandler.get_session_admin_players_sort(
-            web_context.request
-        ):
-            case 'alpha':
-                def sort_key(player: Player):
-                    return player.last_name, player.first_name
-
-            case 'rating_desc':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return -player.rating, player.last_name, player.first_name
-
-            case 'rating_asc':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return player.rating, player.last_name, player.first_name
-
-            case 'yob_desc':
-                def sort_key(player: Player): # pylint: disable=function-redefined
+        sort_type = SessionHandler.get_session_admin_players_sort(web_context.request)
+        def get_sort_key(player: Player) -> tuple:
+            match sort_type:
+                case 'alpha':
+                    return (player.last_name, player.first_name)
+                case 'rating_desc':
+                    return (-player.rating, player.last_name, player.first_name)
+                case 'rating_asc':
+                    return (player.rating, player.last_name, player.first_name)
+                case 'yob_desc':
+                    return (-player.year_of_birth, player.last_name, player.first_name)
+                case 'yob_asc':
+                    return (player.year_of_birth, player.last_name, player.first_name)
+                case 'category_desc':
+                    return (-player.category, player.last_name, player.first_name)
+                case 'category_asc':
+                    return (player.category, player.last_name, player.first_name)
+                case 'club':
+                    return plugin_manager.hook.player_club_sort_key(player=player) or (player.club, player.last_name, player.first_name)
+                case 'tournament':
+                    assert web_context.admin_event is not None
                     return (
-                        -player.year_of_birth,
-                        player.last_name,
-                        player.first_name,
-                    )
-
-            case 'yob_asc':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return (
-                        player.year_of_birth,
-                        player.last_name,
-                        player.first_name,
-                    )
-
-            case 'category_desc':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return -player.category, player.last_name, player.first_name
-
-            case 'category_asc':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return player.category, player.last_name, player.first_name
-
-            case 'club':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return plugin_manager.hook.player_club_sort_key(player=player) or (
-                        player.club,
-                        player.last_name,
-                        player.first_name,
-                    )
-
-            case 'tournament':
-                def sort_key(player: Player): # pylint: disable=function-redefined
-                    return (
-                        web_context.admin_event.tournaments_by_id[
-                            player.tournament_id
-                        ].uniq_id,
+                        web_context.admin_event.tournaments_by_id[player.tournament_id].uniq_id,
                         -player.rating,
                         player.last_name,
-                        player.first_name,
+                        player.first_name
                     )
+                case _:
+                    raise ValueError(f'sort={sort_type}')
 
-            case _:
-                raise ValueError(
-                    f'sort={SessionHandler.get_session_admin_players_sort(web_context.request)}'
-                )
         # 0 real players only
         # 1 all or no genders selected, or player matches
         # 2 all or no licences selected, or player matches
@@ -471,72 +449,72 @@ class PlayerAdminController(BaseEventAdminController):
         # 5 less than two federations, all or no federations selected, or player matches
         # 6 less than two clubs, all or no clubs selected, or player matches
 
-        players: dict[int, Player] = {
-            p.id: p
-            for p in sorted(
-                [
-                    player
-                    for player in web_context.admin_event.players_by_id.values()
-                    if (
-                        player.ref_id > 1
-                        and len(filter_genders) in [0, 3]
-                        or player.gender.value in filter_genders
-                    )
-                    and (
-                        len(filter_categories) in [0, len(players_categories)]
-                        or player.category in filter_categories
-                    )
-                    and (
-                        len(filter_check_ins) in [0, 3]
-                        or (
-                            player.can_check_in_out
-                            and player.check_in in filter_check_ins
-                        )
-                        or (
-                            not player.can_check_in_out and None in filter_check_ins
-                        )
-                    )
-                    and (
-                        len(filter_tournaments)
-                        in [0, len(web_context.admin_event.tournaments_by_id)]
-                        or player.tournament_id in filter_tournaments
-                    )
-                    and (
-                        len(filter_federations) in [0, len(players_federations)]
-                        or player.federation in filter_federations
-                    )
-                    and (
-                        len(filter_clubs) in [0, len(players_clubs)]
-                        or player.club in filter_clubs
-                    )
-                    and all(
-                        {
-                            filter_name_part
-                            in unicode_normalize(
-                                f'{player.last_name} {player.first_name}'.lower()
-                            )
-                            for filter_name_part in filter_name_parts
-                        }
-                    )
-                    and all(
-                        {
-                            filter_origin_part
-                            in unicode_normalize(
-                                f'{player.federation} {player.club}'.lower()
-                            )
-                            for filter_origin_part in filter_origin_parts
-                        }
-                    )
-                    and all(plugin_manager.hook.filter_player(
-                        web_context=web_context,
-                        template_context=template_context,
-                        player=player
-                    ))
-                ],
-                key=sort_key,
+        filtered_players = [
+            player
+            for player in web_context.admin_event.players_by_id.values()
+            if (
+                player.id is not None
+                and player.ref_id > 1
+                and len(filter_genders) in [0, 3]
+                or player.gender.value in filter_genders
             )
-        }
+            and (
+                len(filter_categories) in [0, len(players_categories)]
+                or player.category in filter_categories
+            )
+            and (
+                len(filter_check_ins) in [0, 3]
+                or (
+                    player.can_check_in_out
+                    and player.check_in in filter_check_ins
+                )
+                or (
+                    not player.can_check_in_out and None in filter_check_ins
+                )
+            )
+            and (
+                len(filter_tournaments)
+                in [0, len(web_context.admin_event.tournaments_by_id)]
+                or player.tournament_id in filter_tournaments
+            )
+            and (
+                len(filter_federations) in [0, len(players_federations)]
+                or player.federation in filter_federations
+            )
+            and (
+                len(filter_clubs) in [0, len(players_clubs)]
+                or player.club in filter_clubs
+            )
+            and all(
+                {
+                    filter_name_part
+                    in unicode_normalize(
+                        f'{player.last_name} {player.first_name}'.lower()
+                    )
+                    for filter_name_part in filter_name_parts
+                }
+            )
+            and all(
+                {
+                    filter_origin_part
+                    in unicode_normalize(
+                        f'{player.federation} {player.club}'.lower()
+                    )
+                    for filter_origin_part in filter_origin_parts
+                }
+            )
+            and all(plugin_manager.hook.filter_player(
+                web_context=web_context,
+                template_context=template_context,
+                player=player
+            ))
+        ]
         
+        players: dict[int, Player] = {}
+        for player in sorted(filtered_players, key=get_sort_key):
+            if player.id is not None:
+                players[player.id] = player
+
         template_context |= {
             'admin_event_tab': 'admin-event-players-tab',
             'admin_players': players,
@@ -609,9 +587,9 @@ class PlayerAdminController(BaseEventAdminController):
                 if data is None:
                     first_name: str | None = None
                     last_name: str | None = None
-                    date_of_birth: float | None = None
+                    date_of_birth: date | None = None
                     gender: PlayerGender = PlayerGender.NONE
-                    ratings: dict[TournamentRating, int] = {
+                    ratings: dict[TournamentRating, int | None] = {
                         tr: 0 for tr in TournamentRating
                     }
                     rating_types: dict[TournamentRating, PlayerRatingType] = {
@@ -626,7 +604,7 @@ class PlayerAdminController(BaseEventAdminController):
                     comment: str | None = None
                     owed: float = 0.0
                     paid: float = 0.0
-                    fixed: int = 0
+                    fixed: int | None = None
                     plugin_data = {}
                     if admin_player:
                         first_name = admin_player.first_name
@@ -642,12 +620,14 @@ class PlayerAdminController(BaseEventAdminController):
                         mail = admin_player.mail
                         phone = admin_player.phone
                         comment = admin_player.comment
-                        owed = admin_player.owed
-                        paid = admin_player.paid
+                        owed = admin_player.owed or 0.0
+                        paid = admin_player.paid or 0.0
                         fixed = admin_player.fixed
                         plugin_data = admin_player.plugin_data or {}
                     match action:
                         case 'update' | 'delete':
+                            assert admin_player is not None
+                            assert admin_player.tournament is not None
                             tournament_id = admin_player.tournament.id
                         case 'create':
                             if len(admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id) == 1:
@@ -764,9 +744,11 @@ class PlayerAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'record':
+                assert admin_player is not None
+                assert admin_player.tournament is not None
                 data = {
                     f'round_{round_}_result': WebContext.value_to_form_data(
-                        admin_player.pairings[round_].result.value)
+                        admin_player.pairings[round_].result.value) # type: ignore
                     for round_ in range(
                         max(1, admin_player.tournament.current_round),
                         admin_player.tournament.rounds + 1)
@@ -1006,6 +988,7 @@ class PlayerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         player: Player = self._admin_validate_player_update_data(
             action, web_context, data
         )
@@ -1023,6 +1006,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
         match action:
             case 'update':
+                assert player.tournament is not None
                 plugin_manager.hook.set_player_default_ratings(
                     federation=web_context.admin_event.federation,
                     player=player
@@ -1032,6 +1016,7 @@ class PlayerAdminController(BaseEventAdminController):
                 event_loader: EventLoader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'create':
+                assert player.tournament is not None
                 plugin_manager.hook.set_player_default_ratings(
                     federation=web_context.admin_event.federation,
                     player=player
@@ -1068,6 +1053,7 @@ class PlayerAdminController(BaseEventAdminController):
                 event_loader: EventLoader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'delete':
+                assert player.tournament is not None
                 tournament: Tournament = player.tournament
                 if player.has_real_pairings:
                     Message.error(
@@ -1114,7 +1100,10 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_player is not None
+        assert web_context.admin_tournament is not None
         admin_player: Player = web_context.admin_player
+        assert admin_player.tournament is not None
         src_tournament: Tournament = admin_player.tournament
 
         if admin_player.has_real_pairings:
@@ -1219,8 +1208,11 @@ class PlayerAdminController(BaseEventAdminController):
             ],
     ) -> dict[int, Result]:
         """Returns a dict containing the byes that should be saved (changes only)."""
-        new_byes: dict[int, Result] = {}
+        new_byes: dict[int, Result] = {}    
+        assert web_context.admin_player is not None
+        assert web_context.admin_tournament is not None
         admin_player: Player = web_context.admin_player
+        assert admin_player.tournament is not None
         admin_tournament: Tournament = admin_player.tournament
         pairings: dict[int, Pairing] = admin_player.pairings
         for round_ in range(
@@ -1291,6 +1283,8 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_player is not None
+        assert web_context.admin_player.tournament is not None
         if new_byes := self._new_byes(web_context, data):
             web_context.admin_player.tournament.set_player_byes(web_context.admin_player, new_byes)
             event_loader: EventLoader = EventLoader.get(request=request)
@@ -1345,6 +1339,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_tournament is not None
         admin_tournament: Tournament = web_context.admin_tournament
         admin_tournament.open_check_in()
         Message.success(
@@ -1401,6 +1396,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_tournament is not None
         admin_tournament: Tournament = web_context.admin_tournament
         admin_tournament.close_check_in(forfeit_all_rounds)
         Message.success(
@@ -1479,7 +1475,9 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_player is not None
         admin_player: Player = web_context.admin_player
+        assert admin_player.tournament is not None
         admin_player.tournament.check_in_player(admin_player, check_in)
         event_loader: EventLoader = EventLoader.get(request=request)
         event_loader.clear_cache(event_uniq_id)
@@ -1549,6 +1547,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         try:
             player_updater: AbstractPlayerUpdater = (
                 PlayerUpdaterManager.get_object(player_updater_id)
@@ -1623,6 +1622,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         try:
             player_updater: AbstractPlayerUpdater = (
                 PlayerUpdaterManager.get_object(player_updater_id)

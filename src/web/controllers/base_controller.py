@@ -305,10 +305,10 @@ class WebContext:
         raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
-    def value_to_date_form_data(value: datetime | None) -> str | None:
+    def value_to_date_form_data(value: date | None) -> str | None:
         if value is None:
             return ''
-        return datetime.strftime(value, '%Y-%m-%d')
+        return f'{value.year}-{value.month:02d}-{value.day:02d}'
 
     def _redirect_error(self, errors: str | list[str]):
         self.error = BaseController.redirect_error(self.request, errors)

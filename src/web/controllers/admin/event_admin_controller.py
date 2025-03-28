@@ -41,7 +41,7 @@ class EventAdminController(BaseEventAdminController):
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
-        tournament_id: str | None = None,
+        tournament_id: int | None = None,
         modal: str | None = None,
         action: str | None = None,
         data: dict[str, str] | None = None,
@@ -54,6 +54,7 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
@@ -68,6 +69,7 @@ class EventAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'event':
+                assert action is not None
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
@@ -153,6 +155,7 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         if web_context.admin_event.player_count:
             return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
         if web_context.admin_event.tournaments_by_uniq_id:
@@ -200,7 +203,7 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        tournament_id: str | None = None,
+        tournament_id: int | None = None,
     ) -> Template | ClientRedirect:
         return self._admin_event_config_render(
             request,
@@ -234,6 +237,7 @@ class EventAdminController(BaseEventAdminController):
             action, request, web_context.admin_event, data
         )
         if stored_event.errors:
+            assert event_uniq_id is not None
             return self._admin_event_config_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -246,6 +250,7 @@ class EventAdminController(BaseEventAdminController):
         event_loader = EventLoader.get(request=request)
         match action:
             case 'update':
+                assert web_context.admin_event is not None
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -281,6 +286,7 @@ class EventAdminController(BaseEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
+                assert web_context.admin_event is not None
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
                 )
@@ -294,6 +300,7 @@ class EventAdminController(BaseEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
+                assert web_context.admin_event is not None
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as ex:
@@ -323,7 +330,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_update(
             request, data=data, action='clone', event_uniq_id=event_uniq_id
         )
@@ -341,7 +348,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_update(
             request, data=data, action='delete', event_uniq_id=event_uniq_id
         )
@@ -355,7 +362,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_update(
             request, data=data, action='update', event_uniq_id=event_uniq_id
         )
@@ -372,7 +379,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -380,16 +387,17 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         errors: dict[str, str] = {}
-        if data is None:
-            data = {}
 
         tournament: Tournament | None = None
         field: str = 'tournament_id'
+        
         try:
-            tournament = web_context.admin_event.tournaments_by_id[
-                WebContext.form_data_to_int(data, field)
-            ]
+            tournament_id = WebContext.form_data_to_int(data, field)
+            if not tournament_id:
+                raise ValueError()
+            tournament = web_context.admin_event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
 
@@ -397,11 +405,12 @@ class EventAdminController(BaseEventAdminController):
         field = 'document'
         try:
             document_type = PrintDocumentManager.get_type(
-                WebContext.form_data_to_str(data, field)
+                WebContext.form_data_to_str(data, field) or ''
             )
         except KeyError:
             errors[field] = _('Please choose the document.')
-        if tournament and document_type:
+        assert document_type is not None
+        if tournament:
             options = []
             for option in document_type.default_options():
                 value = WebContext.form_data_to_value(
@@ -434,7 +443,7 @@ class EventAdminController(BaseEventAdminController):
             after="receive",
             params={
                 "event_uniq_id": event_uniq_id,
-                "tournament_id": tournament.id,
+                "tournament_id": tournament.id if tournament else None,
                 "document": data['document'],
                 "options": {
                     option.id: data[option.id]
@@ -558,9 +567,9 @@ class EventAdminController(BaseEventAdminController):
                 player.phone,
                 player.gender.short_name,
                 player.fide_id,
-                player.tournament.uniq_id,
+                player.tournament.uniq_id if player.tournament else '',
                 player.federation.name,
-                player.club.name,
+                player.club.name if player.club else '',
                 player.ratings[TournamentRating.STANDARD],
                 player.rating_types[TournamentRating.STANDARD].short_name,
                 player.ratings[TournamentRating.RAPID],
@@ -644,9 +653,10 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
         players: list[Player] = [
             web_context.admin_event.players_by_id[player_id]
-            for player_id in player_ids
+            for player_id in player_ids or []
             if player_id
         ]
         if not players:

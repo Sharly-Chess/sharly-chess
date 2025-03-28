@@ -310,7 +310,7 @@ class FamilyAdminController(BaseEventAdminController):
         action: str | None = None,
         family_id: int | None = None,
         family_type: str | None = None,
-        data: dict[str, str] | None = None,
+        data: dict[str, str] | None = None, # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: FamilyAdminWebContext = FamilyAdminWebContext(
