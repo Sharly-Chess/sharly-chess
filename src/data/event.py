@@ -76,9 +76,8 @@ class EventMessage:
                 text=self.text,
             )
         elif self.timer:
-            assert self.timer_hour is not None
             return _('Timer [{timer_uniq_id}]: {text}').format(
-                timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text
+                timer_uniq_id=self.timer.uniq_id, text=self.text
             )
         elif self.screen_set and self.screen:
             return _(
