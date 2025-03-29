@@ -3863,9 +3863,6 @@ msgstr ""
 msgid "Upcoming events ({num})"
 msgstr ""
 
-msgid "Update"
-msgstr ""
-
 msgid "Update players"
 msgstr ""
 

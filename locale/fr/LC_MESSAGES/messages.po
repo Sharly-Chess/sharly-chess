@@ -3863,9 +3863,6 @@ msgstr "Non apparié·es : caché·es"
 msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
 
-msgid "Update"
-msgstr "Modifier"
-
 msgid "Update players"
 msgstr "Mettre à jour les joueur·euses"
 
