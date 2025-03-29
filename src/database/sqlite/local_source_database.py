@@ -141,7 +141,7 @@ class MonthFirstDayOutdateDelay(OutdateDelay):
     def is_expired(self, start_time: datetime) -> bool:
         now = datetime.now()
         first_day = date(now.year, now.month, 1)
-        return start_time < first_day
+        return start_time < datetime.combine(first_day, datetime.min.time())
 
 # ---------------------------------------------------------------------------------
 # Outdate Actions
