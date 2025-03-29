@@ -131,7 +131,7 @@ class BaseAdminController(BaseController):
         return options
 
     @staticmethod
-    def _get_timer_color_texts(delays: dict[int, int | None]) -> dict[int, str]:
+    def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(
                 'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
@@ -467,8 +467,8 @@ class BaseAdminController(BaseController):
             errors=errors,
 
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
-            timer_colors=admin_event.timer_colors if admin_event else {i: None for i in range(1, 4)},
-            timer_delays=admin_event.timer_delays if admin_event else {i: None for i in range(1, 4)},
+            timer_colors={i: admin_event.timer_colors[i] if admin_event else None for i in range(1, 4)} if admin_event else None,
+            timer_delays={i: admin_event.timer_delays[i] if admin_event else None for i in range(1, 4)} if admin_event else None,
 
             plugin_data=plugin_data
         )

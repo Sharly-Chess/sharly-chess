@@ -341,7 +341,7 @@ class Event:
         return self.stored_event.rules
 
     @cached_property
-    def timer_colors(self) -> dict[int, str | None]:
+    def timer_colors(self) -> dict[int, str]:
         return {
             i: str(self.stored_event.timer_colors[i])
             if self.stored_event.timer_colors and i in self.stored_event.timer_colors and self.stored_event.timer_colors[i]
@@ -350,7 +350,7 @@ class Event:
         }
 
     @cached_property
-    def timer_delays(self) -> dict[int, int | None]:
+    def timer_delays(self) -> dict[int, int]:
         return {
             i: int(self.stored_event.timer_delays[i] or 0)
             if self.stored_event.timer_delays and i in self.stored_event.timer_delays and self.stored_event.timer_delays[i] is not None
