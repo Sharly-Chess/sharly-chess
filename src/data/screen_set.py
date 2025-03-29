@@ -162,7 +162,8 @@ class ScreenSet:
             if self.stored_screen_set:
                 name = self.stored_screen_set.name
             else:
-                assert self.family is not None, "Family reference has been garbage collected"
+                if self.family is None:
+                    raise RuntimeError("Family reference unexpectedly None")
                 name = self.family.name
             if name is None:
                 if self.first or self.last:

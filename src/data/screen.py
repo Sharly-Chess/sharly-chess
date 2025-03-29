@@ -90,21 +90,24 @@ class Screen:
     def type(self) -> ScreenType:
         if self.stored_screen:
             return ScreenType(self.stored_screen.type)
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return self.family.type
 
     @property
     def public(self) -> bool:
         if self.stored_screen:
             return self.stored_screen.public
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return self.family.public
 
     @property
     def uniq_id(self) -> str:
         if self.stored_screen:
             return self.stored_screen.uniq_id
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return f'{self.family.uniq_id}:{self.family_part:03}'
 
     @property
@@ -134,7 +137,8 @@ class Screen:
             else:
                 return 1
         else:
-            assert self.family is not None, "Family reference has been garbage collected"
+            if self.family is None:
+                raise RuntimeError("Family reference unexpectedly None")
             return self.family.columns
 
     @property
@@ -404,7 +408,8 @@ class Screen:
     def menu(self) -> str:
         if self.stored_screen:
             return self.stored_screen.menu or ''
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return self.family.menu or ''
 
     @property
@@ -440,7 +445,8 @@ class Screen:
                     else:
                         return PapiWebConfig.default_input_exit_button
                 else:
-                    assert self.family is not None, "Family reference has been garbage collected"
+                    if self.family is None:
+                        raise RuntimeError("Family reference unexpectedly None")
                     return self.family.input_exit_button
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -458,7 +464,8 @@ class Screen:
                     else:
                         return PapiWebConfig.default_players_show_unpaired
                 else:
-                    assert self.family is not None, "Family reference has been garbage collected"
+                    if self.family is None:
+                        raise RuntimeError("Family reference unexpectedly None")
                     return self.family.players_show_unpaired
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -575,7 +582,8 @@ class Screen:
                 if self.stored_screen:
                     return bool(self.stored_screen.ranking_crosstable)
                 else:
-                    assert self.family is not None, "Family reference has been garbage collected"
+                    if self.family is None:
+                        raise RuntimeError("Family reference unexpectedly None")
                     return self.family.ranking_crosstable
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -587,7 +595,8 @@ class Screen:
                 if self.stored_screen:
                     return self.stored_screen.ranking_round
                 else:
-                    assert self.family is not None, "Family reference has been garbage collected"
+                    if self.family is None:
+                        raise RuntimeError("Family reference unexpectedly None")
                     return self.family.ranking_round
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -599,7 +608,8 @@ class Screen:
                 if self.stored_screen:
                     return self.stored_screen.ranking_min_points
                 else:
-                    assert self.family is not None, "Family reference has been garbage collected"
+                    if self.family is None:
+                        raise RuntimeError("Family reference unexpectedly None")
                     return self.family.ranking_min_points
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -611,7 +621,8 @@ class Screen:
                 if self.stored_screen:
                     return self.stored_screen.ranking_max_points
                 else:
-                    assert self.family is not None, "Family reference has been garbage collected"
+                    if self.family is None:
+                        raise RuntimeError("Family reference unexpectedly None")
                     return self.family.ranking_max_points
             case _:
                 raise ValueError(f'type=[{self.type}]')
@@ -620,7 +631,8 @@ class Screen:
     def last_update(self) -> float:
         if self.stored_screen:
             return self.stored_screen.last_update or 0.0
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return self.family.last_update or 0.0
 
     @property
@@ -647,7 +659,8 @@ class Screen:
     def message_default(self) -> bool:
         if self.stored_screen:
             return self.stored_screen.message_default
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return self.family.message_default
 
     @property
@@ -657,7 +670,8 @@ class Screen:
             return self.event.message_text
         if self.stored_screen:
             return self.stored_screen.message_text
-        assert self.family is not None, "Family reference has been garbage collected"
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
         return self.family.message_text
 
     @property

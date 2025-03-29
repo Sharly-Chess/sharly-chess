@@ -43,7 +43,8 @@ class TimerHour:
     @property
     def timer(self) -> 'Timer':
         timer = self._timer_ref()
-        assert timer is not None, "Timer reference has been garbage collected"
+        if timer is None:
+            raise RuntimeError("Timer reference has been garbage collected")
         return timer
 
     @property
@@ -158,7 +159,8 @@ class Timer:
     @property
     def event(self) -> 'Event':
         event = self._event_ref()
-        assert event is not None, "Event reference has been garbage collected"
+        if event is None:
+            raise RuntimeError("Event reference has been garbage collected")
         return event
 
     @property
