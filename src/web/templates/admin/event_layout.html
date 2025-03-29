@@ -52,7 +52,7 @@
 
 {% block admin_header_action_buttons %}
     <button
-        class="btn btn-link fw-bold fe-3 px-0 py-0"
+        class="btn btn-link fw-bold fe-3 px-0 py-0 fs-5"
         hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
         hx-target="#modal-wrapper"
         hx-indicator="#please-wait"
@@ -62,6 +62,7 @@
     >
         <i class="bi bi-printer-fill"></i>
     </button>
+    {% include '/admin/common/database/database_button.html' %}
 {% endblock admin_header_action_buttons %}
 
 {% block admin_content %}

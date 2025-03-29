@@ -31,6 +31,8 @@
     {% include 'players/close_check_in_modal.html' %}
 {% elif modal == 'players_diff' %}
     {% include 'players/players_diff_modal.html' %}
+{% elif modal == 'database' %}
+    {% include 'common/database/database_modal.html' %}
 {% elif modal %}
     {% include modal ~ '_modal_not_found.html' %}
 {% endif %}

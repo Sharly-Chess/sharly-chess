@@ -348,6 +348,14 @@ body[data-bs-theme=light] .btn-primary {
     outline: 0.15rem solid rgba(var(--bs-body-bg-rgb), 0.70);
 }
 
+[data-bs-theme=dark] table.prominent th {
+    vertical-align: middle;
+}
+
+[data-bs-theme=dark] table.prominent td {
+    vertical-align: middle;
+}
+
 table > tbody > tr.odd > * {
     --bs-table-color-type: var(--bs-table-striped-color);
     --bs-table-bg-type: var(--bs-table-striped-bg);
@@ -368,4 +376,10 @@ button.collapse-button .bi-chevron-down {
 
 button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     transform: rotate(-90deg);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

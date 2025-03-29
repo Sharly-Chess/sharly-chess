@@ -1,0 +1,12 @@
+<span
+    class="database-badge position-absolute p-0 rounded-circle bg-warning text-dark"
+    style="
+        animation: spin 1s infinite;
+        animation-timing-function: linear;"
+    hx-get="{{ url_for('admin-database-status-badge') }}"
+    hx-trigger="every 10s"
+    hx-target="this"
+    hx-swap="outerHTML"
+>
+    <i class="bi bi-arrow-clockwise"></i>
+</span>

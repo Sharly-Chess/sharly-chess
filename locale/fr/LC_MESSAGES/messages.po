@@ -97,6 +97,9 @@ msgstr "/cp"
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
 
+msgid "1st day of the month"
+msgstr "1er jour du mois"
+
 msgid "20+"
 msgstr "20+"
 
@@ -151,6 +154,12 @@ msgstr "Accès depuis le réseau local (LAN/WAN)"
 
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Action delay"
+msgstr "Délai d'action"
 
 msgid "Action: {action}"
 msgstr "Action : {action}"
@@ -274,6 +283,9 @@ msgstr "L'authentification a échoué."
 
 msgid "Authentication successful!"
 msgstr "Authentification réussie !"
+
+msgid "Auto-update"
+msgstr "Mise à jour"
 
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
 msgstr "Installation automatique de BBP Pairings pour les développeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
@@ -663,8 +675,8 @@ msgstr "Connexion impossible à la source de données [{player_updater_name}]."
 msgid "Could not download [{url}], error code [{code}]."
 msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
 
-msgid "Could not download [{url}]: {ex}."
-msgstr "Impossible de lire [{url}] : {ex}."
+msgid "Could not download [{url}]: {error}."
+msgstr "Échec du téléchargement de [{url}]: {error}."
 
 msgid "Could not unzip data."
 msgstr "Impossible de décompresser les données."
@@ -731,6 +743,9 @@ msgstr "DOUBLE"
 msgid "DRAW"
 msgstr "NULLE"
 
+msgid "Daily"
+msgstr "Un jour"
+
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr "Les données du tournoi [{tournament_name}] sur ChessEvent sont inchangées."
 
@@ -739,6 +754,21 @@ msgstr "Les données pour le tournoi [{tournament_uniq_id}] n'ont pas pu être d
 
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
+
+msgid "Database"
+msgstr "Base de données"
+
+msgid "Database [{database}] - "
+msgstr "Base de données [{database}] - "
+
+msgid "Database [{database}] successfully updated."
+msgstr "Base de données [{database}] mise à jour avec succès."
+
+msgid "Database [{database}] unexpectedly not found at path [{path}]."
+msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
+
+msgid "Database successfully updated."
+msgstr "Base de données mise à jour avec succès."
 
 msgid "Date"
 msgstr "Date"
@@ -832,6 +862,9 @@ msgstr "Répertoire [{path}] non trouvé."
 msgid "Directory:"
 msgstr "Répertoire :"
 
+msgid "Disabled"
+msgstr "Désactivé"
+
 msgid "Display"
 msgstr "Affichage"
 
@@ -895,11 +928,8 @@ msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les 
 msgid "Downloading failed with code [{code}]."
 msgstr "Le téléchargement a échoué avec le code [{code}]."
 
-msgid "Downloading the FFE database..."
-msgstr "Téléchargement de la base de données de la FFE..."
-
-msgid "Downloading the FIDE database..."
-msgstr "Téléchargement de la base de données de la FIDE..."
+msgid "Downloading source file..."
+msgstr "Téléchargement du fichier source..."
 
 msgid "Downloading version {version} from GitHub ([{url}])..."
 msgstr "Téléchargement de la version {version} depuis GitHub ([{url}])..."
@@ -1180,8 +1210,11 @@ msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
 
-msgid "Error while creating the database: {ex}."
-msgstr "Erreur à la création de la base de données : {ex}."
+msgid "Error when updating database [{database}]."
+msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
+
+msgid "Error while creating the database: {error}."
+msgstr "Erreur lors de la création de la base de données: {error}."
 
 msgid "Error while updating the FIDE database."
 msgstr "Erreur pendant la mise à jour de la base de données FIDE."
@@ -1845,8 +1878,14 @@ msgstr "Liens vers cet écran :"
 msgid "List of players"
 msgstr "Liste des participant·es"
 
+msgid "Local Source Databases"
+msgstr "Bases de données locales de sources"
+
 msgid "Local URL: {local_url}"
 msgstr "URL locale : {local_url}"
+
+msgid "Local source databases settings have been updated."
+msgstr "les paramètres des bases de données locales ont été mis à jour."
 
 msgid "Log level"
 msgstr "Niveau de log"
@@ -2246,23 +2285,17 @@ msgstr "Aucune connection à internet."
 msgid "Not connected, can not check Papi-web version."
 msgstr "Hors-ligne, impossible de vérifier la version de Papi-web."
 
-msgid "Not connected, can not create the FFE database."
-msgstr "Hors-ligne, impossible de créer la base de données de la FFE."
-
-msgid "Not connected, can not create the FIDE database."
-msgstr "Hors-ligne, impossible de créer la base de données de la FIDE."
-
-msgid "Not connected, can not update the FFE database."
-msgstr "Hors-ligne, impossible de mettre à jour la base de données de la FFE."
-
-msgid "Not connected, can not update the FIDE database."
-msgstr "Hors-ligne, impossible de mettre à jour la base de données de la FIDE."
+msgid "Not connected, impossible to update."
+msgstr "Échec de la connexion, mise à jour impossible."
 
 msgid "Not part of the selected tournament ({rounds} rounds)."
 msgstr "Ne fait pas partie du tournoi sélectionné ({rounds} rondes)."
 
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], famille ignorée."
+
+msgid "Notification"
+msgstr "Notification"
 
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
@@ -2301,6 +2334,9 @@ msgstr "Une fois"
 
 msgid "One event found, press Enter (Q to quit): "
 msgstr "Un unique évènement trouvé, tapez Entrée (Q pour quitter) : "
+
+msgid "Ongoing"
+msgstr "En cours"
 
 msgid "Only arbiters can see private events."
 msgstr "Seuls les arbitres peuvent voir les évènements privés."
@@ -3110,11 +3146,8 @@ msgstr "Début :"
 msgid "Starting Papi-web server, please wait..."
 msgstr "Démarrage du serveur Papi-web, veuillez patienter..."
 
-msgid "Storing FFE data..."
-msgstr "Enregistrement des données FFE"
-
-msgid "Storing FIDE data..."
-msgstr "Enregistrement des données FIDE"
+msgid "Storing data..."
+msgstr "Stockage des données..."
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
@@ -3148,18 +3181,6 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
-
-msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "La base de données FFE [{file}] est osbolète ({days} jours), voulez-vous la mettre à jour (O/n) ? "
-
-msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "La base de données FFE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
-
-msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "La base de données FIDE [{file}] est osbolète ({days} jours), voulez-vous la mettre à jour (O/n) ? "
-
-msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "La base de données FIDE [{file}] est introuvable, voulez-vous la créer (O/n) ? "
 
 msgid "The FIDE database is not available."
 msgstr "La base de données FIDE n'est pas disponible."
@@ -3636,6 +3657,9 @@ msgstr "Chronomètres ({num})"
 msgid "Timers: %(num)d"
 msgstr "Chronomètres : %(num)d"
 
+msgid "Today"
+msgstr "Aujourd'hui"
+
 msgid "Top cut must be at most equal to bottom cut."
 msgstr "La troncature haute doit au moins être égale à la troncature basse."
 
@@ -3864,7 +3888,7 @@ msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
 
 msgid "Update"
-msgstr "Modifier"
+msgstr "Mettre à jour"
 
 msgid "Update players"
 msgstr "Mettre à jour les joueur·euses"
@@ -3879,6 +3903,9 @@ msgstr "Mettre à jour les joueur·euses du tournoi [%(tournament_uniq_id)s] (so
 
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
+
+msgid "Updating"
+msgstr "Mise à jour"
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
@@ -3959,6 +3986,9 @@ msgstr "Accès web"
 msgid "Web server not started yet ({ex}), waiting..."
 msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter..."
 
+msgid "Weekly"
+msgstr "Une semaine"
+
 msgid "Welcome to Papi-web!"
 msgstr "Bienvenue dans Papi-web !"
 
@@ -4015,6 +4045,9 @@ msgstr "Année de naissance"
 
 msgid "Yes"
 msgstr "Oui"
+
+msgid "Yesterday"
+msgstr "Hier"
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr "Vous utilisez une version plus récente que la dernière version stable disponible ([{version}]), vous ne seriez pas développeur·euse ? ;-)"
@@ -4174,14 +4207,17 @@ msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
 
+msgid "{days} days"
+msgstr "{days} jours"
+
+msgid "{days} days ago"
+msgstr "Il y a {days} jours"
+
 msgid "{family_type}-family"
 msgstr "famille-{family_type}"
 
-msgid "{number} players written to FFE database."
-msgstr "{number} joueur·euses enregistré·es dans la base de données FFE."
-
-msgid "{number} players written to FIDE database."
-msgstr "{number} joueur·euses enregistré·es dans la base de données FIDE."
+msgid "{number} players written to the database."
+msgstr "{number} joueur·euses écrit·es dans la base de données."
 
 msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
@@ -4205,4 +4241,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "Update *** BUTTON FOR DATABASE MODAL"
+#~ msgstr "Mettre à jour"
 

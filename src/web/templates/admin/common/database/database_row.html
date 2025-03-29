@@ -1,0 +1,41 @@
+<tr>
+    <th >{{ database.name }}</th>
+    <td>
+        {{ admin_macros.select_input(
+            name=database.id ~ '_outdate_delay',
+            label=None,
+            help_text=None,
+            select_options=outdate_delay_options,
+            data=data, errors=errors
+        ) }}
+    </td>
+    <td>
+        {{ admin_macros.select_input(
+            name=database.id ~ '_outdate_action',
+            label=None,
+            help_text=None,
+            select_options=outdate_action_options,
+            data=data, errors=errors
+        ) }}
+    </td>
+    <td id="{{ database.id }}-updated-at" class="text-center"></td>
+    <td class="text-end">
+        {% include 'database_update_buttons.html' %}
+    </td>
+    <script>
+        function rowUpdater() {
+            var delayElement = $('#{{database.id}}-outdate-delay');
+            function doHide() {
+                var actionElement = $('#{{database.id}}-outdate-action');
+                if ($(delayElement).val() === 'disabled') {
+                    actionElement.addClass('invisible')
+                } else {
+                    actionElement.removeClass('invisible')
+                }
+            }
+            $(delayElement).click(doHide);
+            doHide();
+        };
+        rowUpdater();
+    </script>
+</tr>
