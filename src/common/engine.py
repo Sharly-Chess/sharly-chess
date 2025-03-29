@@ -264,13 +264,9 @@ class Engine:
         print_interactive_info(_('Recovering custom files...'))
         custom_files: list[Path] = []
         custom_dir: Path = version_dir / PapiWebConfig.custom_folder
-        print(f'{custom_dir=}')
         if custom_dir.is_dir():
-            print('dir!')
             for item in custom_dir.glob('**/*'):
-                print(f'{item=}')
                 if item.is_file():
-                    print('IS FILE')
                     embedded_item: Path = Path(
                         str(item).replace(
                             str(custom_dir), str(PapiWebConfig.embedded_custom_path)
@@ -279,7 +275,6 @@ class Engine:
                     if not embedded_item.exists() or not filecmp.cmp(
                         item, embedded_item
                     ):
-                        print('NEW')
                         target_item: Path = Path(
                             str(item).replace(
                                 str(custom_dir), str(PapiWebConfig.custom_path)
@@ -288,10 +283,6 @@ class Engine:
                         target_item.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copy(item, target_item)
                         custom_files.append(item)
-                    else:
-                        print('ALREADY EXISTS')
-        else:
-            print('not a dir!')
         print_interactive_info(
             _('Events recovered: {num} (from directory [{dir}]).').format(
                 num=len(files), dir=events_dir
