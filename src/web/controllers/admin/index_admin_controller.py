@@ -7,13 +7,13 @@ from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
-from litestar.contrib.htmx.response import ClientRedirect
+from litestar.contrib.htmx.response import ClientRedirect, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
 
-from common.i18n import _, EXPERIMENTAL_FEATURES, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
+from common.i18n import _, EXPERIMENTAL_FEATURES, locale_localized_name, trusted_locales, untrusted_locales, \
+    DEFAULT_LOCALE
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
@@ -407,7 +407,6 @@ class IndexAdminController(BaseAdminController):
     @patch(
         path='/admin/config-update',
         name='admin-config-update',
-        cache=1,
     )
     async def htmx_admin_config_update(
         self,
@@ -443,6 +442,29 @@ class IndexAdminController(BaseAdminController):
         PapiWebConfig().reload()
         plugin_manager.reload_register()
         Message.success(request, _('Papi-web settings has been updated.'))
+        return self._admin_render(
+            request=request,
+            data=None,
+            admin_tab='config'
+        )
+
+    @patch(
+        path='/admin/locale-update/{locale:str}',
+        name='admin-locale-update',
+    )
+    async def htmx_admin_locale_update(
+        self,
+        request: HTMXRequest,
+        locale: str,
+    ) -> Template | ClientRedirect:
+        papi_web_config: PapiWebConfig = PapiWebConfig()
+        if locale in papi_web_config.locales:
+            stored_config: StoredConfig = papi_web_config.stored_config
+            stored_config.locale = locale
+            with ConfigDatabase(write=True) as config_database:
+                config_database.update_stored_config(papi_web_config.stored_config)
+                config_database.commit()
+            papi_web_config.reload()
         return self._admin_render(
             request=request,
             data=None,

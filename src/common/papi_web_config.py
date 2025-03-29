@@ -13,11 +13,11 @@ from packaging.version import Version
 from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES
 from common.i18n import (
     DEFAULT_LOCALE,
-    _, trusted_locales, untrusted_locales, set_locale, get_locale, locale_localized_name
+    _, trusted_locales, untrusted_locales, set_locale,
 )
 from common.logger import (
     get_logger,
-    configure_logger, print_interactive_input, input_interactive,
+    configure_logger,
 )
 from common.singleton import Singleton
 from data.player import Federation
@@ -66,30 +66,6 @@ class PapiWebConfig(metaclass=Singleton):
         if EXPERIMENTAL_FEATURES:
             self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
-        # If the locale is not set ask for it before other things like version recovery,
-        # offline databases download, ...
-        if not self.stored_config.locale:
-            set_locale(get_locale())
-            print_interactive_input(_('The following languages are available:'))
-            locale_range = range(1, len(self.locales) + 1)
-            for num in locale_range:
-                locale: str = self.locales[num - 1]
-                print_interactive_input(
-                    f'  - [{num}] {locale} ({locale_localized_name(locale)})'
-                )
-            locale_num: int | None = None
-            while locale_num is None:
-                choice: str = input_interactive(_('Your choice: '))
-                try:
-                 locale_num = int(choice)
-                 if locale_num not in locale_range:
-                     locale_num = None
-                except ValueError:
-                 pass
-            with ConfigDatabase(write=True) as config_database:
-                self.stored_config.locale = self.locales[locale_num - 1]
-                config_database.update_stored_config(self.stored_config)
-                config_database.commit()
         set_locale(self.locale)
         # Once the configuration is read, make sure that important directories can be used
         try:
