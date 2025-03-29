@@ -4217,7 +4217,7 @@ msgid "{family_type}-family"
 msgstr "famille-{family_type}"
 
 msgid "{number} players written to the database."
-msgstr "{number} joueurs écrits dans la base de données."
+msgstr "{number} joueur·euses écrit·es dans la base de données."
 
 msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"

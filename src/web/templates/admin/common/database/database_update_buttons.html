@@ -47,9 +47,6 @@
     {% endif %}
     <script>
         {% with id=database.id %}
-            $('#{{id}}-outdate-delay, #{{id}}-outdate-action').prop(
-                'disabled', {% if database.exists() %}false{% else %}true{%endif%}
-            );
             $('#{{id}}-updated-at').text({{ database.updated_at_str|tojson }});
         {% endwith %}
     </script>

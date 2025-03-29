@@ -12,11 +12,7 @@ from requests.exceptions import ConnectionError
 
 from common import TMP_DIR
 from common.i18n import _
-from common.logger import (
-    get_logger,
-    print_interactive_error,
-    print_interactive_success,
-)
+from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.player import Player, Federation, Club
 from data.util import (
@@ -79,7 +75,7 @@ class FideDatabase(LocalSourceDatabase):
         try:
             response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
-                print_interactive_error(
+                logger.error(
                     self.log_prefix + _(
                         'Could not download [{url}], error code [{code}].'
                     ).format(
@@ -88,7 +84,7 @@ class FideDatabase(LocalSourceDatabase):
                 )
                 return False
         except ConnectionError as ex:
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _(
                     'Could not download [{url}]: {error}.'
                 ).format(url=fide_database_url, error=ex)
@@ -96,7 +92,7 @@ class FideDatabase(LocalSourceDatabase):
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _(
                     'No data received from [{url}].'
                 ).format(url=fide_database_url)
@@ -108,7 +104,7 @@ class FideDatabase(LocalSourceDatabase):
             zip_ref.extractall(TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _('Could not unzip data.')
             )
             return False
@@ -175,7 +171,7 @@ class FideDatabase(LocalSourceDatabase):
                 database.executemany(query, to_write)
                 database.commit()
 
-        print_interactive_success(
+        logger.info(
             self.log_prefix + _(
                 '{number} players written to the database.'
             ).format(number=player_count)

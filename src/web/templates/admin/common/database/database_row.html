@@ -5,7 +5,6 @@
             name=database.id ~ '_outdate_delay',
             label=None,
             help_text=None,
-            disabled=not database.exists(),
             select_options=outdate_delay_options,
             data=data, errors=errors
         ) }}
@@ -15,7 +14,6 @@
             name=database.id ~ '_outdate_action',
             label=None,
             help_text=None,
-            disabled=not database.exists(),
             select_options=outdate_action_options,
             data=data, errors=errors
         ) }}

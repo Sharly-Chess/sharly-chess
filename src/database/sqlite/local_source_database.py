@@ -8,20 +8,18 @@ import threading
 from sqlite3 import OperationalError, IntegrityError
 from typing import override
 
-from common import TMP_DIR
+from common import TMP_DIR, get_logger
 from common.i18n import _
-from common.logger import (
-    print_interactive_error,
-    print_interactive_warning,
-    print_interactive_info,
-    print_interactive_success,
-)
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
 from data.util import IdentifiableEntity, StaticUtils, AbstractEntityManager
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
+
+
+logger = get_logger()
+
 
 # ---------------------------------------------------------------------------------
 # Outdate delay
@@ -333,7 +331,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         Returns True if the database is available after the call."""
         if not self.exists():
             if self.updated_at:
-                print_interactive_error(
+                logger.error(
                     _(
                         'Database [{database}] unexpectedly '
                         'not found at path [{path}].'
@@ -363,20 +361,20 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             4. Copy the temp file to the correct file location"""
         self.__class__.is_updating = True
         if not NetworkMonitor.connected():
-            print_interactive_warning(
+            logger.warning(
                 self.log_prefix + _(
                     'Not connected, impossible to update.'
                 )
             )
             return self.stop_update(False)
-        print_interactive_info(
+        logger.info(
             self.log_prefix + _('Downloading source file...')
         )
         if not self._download_source_file():
             return self.stop_update(False)
         if self.stop_event.is_set():
             return self.stop_update(False)
-        print_interactive_info(
+        logger.info(
             self.log_prefix + _('Storing data...')
         )
         tmp_file = self.file.with_suffix('.tmp')
@@ -390,7 +388,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 tmp_file.unlink(missing_ok=True)
                 return self.stop_update(False)
         except (OperationalError, IntegrityError) as ex:
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _(
                     'Error while creating the database: {error}.'
                 ).format(error=ex)
@@ -413,7 +411,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 self.stored_source_database
             )
             database.commit()
-        print_interactive_success(
+        logger.info(
             self.log_prefix + _('Database successfully updated.')
         )
         return self.stop_update(True)

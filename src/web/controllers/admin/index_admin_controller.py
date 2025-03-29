@@ -14,9 +14,9 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 
+from common import EXPERIMENTAL_FEATURES
 from common.i18n import (
     _,
-    EXPERIMENTAL_FEATURES,
     locale_localized_name,
     trusted_locales,
     untrusted_locales,

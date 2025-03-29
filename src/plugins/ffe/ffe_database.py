@@ -10,14 +10,8 @@ from typing import Iterator, Any, override
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR
+from common import TMP_DIR, get_logger
 from common.i18n import _
-from common.logger import (
-    get_logger,
-    print_interactive_error,
-    print_interactive_success,
-    print_interactive_warning,
-)
 from data.player import Player, Federation, Club
 from data.util import (
     TournamentRating,
@@ -81,7 +75,7 @@ class FfeDatabase(LocalSourceDatabase):
         try:
             response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
-                print_interactive_error(
+                logger.error(
                     self.log_prefix + _(
                         'Could not download [{url}], error code [{code}].'
                     ).format(
@@ -90,7 +84,7 @@ class FfeDatabase(LocalSourceDatabase):
                 )
                 return False
         except ConnectionError as ex:
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _(
                     'Could not download [{url}]: {error}.'
                 ).format(url=ffe_database_url, error=ex)
@@ -98,7 +92,7 @@ class FfeDatabase(LocalSourceDatabase):
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _(
                     'No data received from [{url}].'
                 ).format(url=ffe_database_url)
@@ -109,7 +103,7 @@ class FfeDatabase(LocalSourceDatabase):
             zip_ref.extractall(TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            print_interactive_error(
+            logger.error(
                 self.log_prefix + _('Could not unzip data.')
             )
             return False
@@ -168,7 +162,7 @@ class FfeDatabase(LocalSourceDatabase):
                             database.commit()
 
                     except ValueError:
-                        print_interactive_warning(
+                        logger.warning(
                             _(
                                 'Error reading the following row '
                                 '(player ignored): [{row}].'
@@ -177,7 +171,7 @@ class FfeDatabase(LocalSourceDatabase):
                 if to_write:
                     database.executemany(query, to_write)
                     database.commit()
-        print_interactive_success(
+        logger.info(
             self.log_prefix + _(
                 '{number} players written to the database.'
             ).format(number=player_count)
