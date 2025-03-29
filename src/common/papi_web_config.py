@@ -10,7 +10,7 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
-from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES
+from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR
 from common.i18n import (
     DEFAULT_LOCALE,
     _, trusted_locales, untrusted_locales, set_locale, get_locale, locale_localized_name
@@ -91,16 +91,6 @@ class PapiWebConfig(metaclass=Singleton):
                 config_database.update_stored_config(self.stored_config)
                 config_database.commit()
         set_locale(self.locale)
-        # Once the configuration is read, make sure that important directories can be used
-        try:
-            self.event_path.mkdir(parents=True, exist_ok=True)
-        except PermissionError as pe:
-            logger.critical(
-                'Could not create directory [%s]: %s',
-                TMP_DIR.absolute(),
-                pe,
-            )
-            raise pe
         logger.debug('ODBC drivers found:')
         for driver in pyodbc.drivers():
             logger.debug(' - %s', driver)
@@ -173,9 +163,6 @@ class PapiWebConfig(metaclass=Singleton):
         """The project of the application."""
         return _('Papi-web project')
 
-    # The path where event databases are stored.
-    event_path: Path = Path() / 'events'
-
     # The extension of event databases.
     event_database_ext: str = 'db'
 
@@ -183,7 +170,7 @@ class PapiWebConfig(metaclass=Singleton):
     event_archive_ext: str = 'arch'
 
     # The base path where event database backups are stored.
-    event_backup_base_path: Path = event_path / 'backups'
+    event_backup_base_path: Path = EVENTS_DIR / 'backups'
 
     # The extension of backup event databases.
     event_backup_ext: str = 'backup'
@@ -191,14 +178,22 @@ class PapiWebConfig(metaclass=Singleton):
     # The extension of federation databases.
     federation_database_ext: str = 'db'
 
+    # The name of the folder for the custom files, used to
+    # recover custom files from previously installed releases.
+    custom_folder: str = 'custom'
+
     # The path to the user custom files.
-    custom_path: Path = Path().absolute() / 'custom'
+    custom_path: Path = Path().absolute() / custom_folder
 
     # The path to the embedded custom files.
-    embedded_custom_path: Path = BASE_DIR / 'src/custom'
+    embedded_custom_path: Path = BASE_DIR / 'src' / custom_folder
+
+    # The name of the default folder for the Papi files,
+    # used to recover Papi files from previous releases.
+    default_papi_folder: str = 'papi'
 
     # The default path to the Papi files.
-    default_papi_path: Path = Path() / 'papi'
+    default_papi_path: Path = Path() / default_papi_folder
 
     # The extension of Papi files.
     papi_ext: str = 'papi'

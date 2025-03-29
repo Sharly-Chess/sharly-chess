@@ -16,7 +16,7 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT
+from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -226,6 +226,8 @@ class Engine:
         )
         tournaments_number: int = 0
         version_dir = Path('..') / f'papi-web-{version}'
+        events_dir: Path = version_dir / EVENTS_FOLDER
+        papi_dir: Path = version_dir / PapiWebConfig.default_papi_folder
         for file in files:
             event_uniq_id: str = file.stem
             print_interactive_info(
@@ -240,8 +242,7 @@ class Engine:
             event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
             for tournament in event.tournaments_by_id.values():
                 src_file: Path = (
-                    version_dir
-                    / 'papi'
+                    papi_dir
                     / f'{tournament.filename}.{PapiWebConfig.papi_ext}'
                 )
                 if (
@@ -262,10 +263,14 @@ class Engine:
                     tournaments_number += 1
         print_interactive_info(_('Recovering custom files...'))
         custom_files: list[Path] = []
-        custom_dir: Path = version_dir / 'custom'
+        custom_dir: Path = version_dir / PapiWebConfig.custom_folder
+        print(f'{custom_dir=}')
         if custom_dir.is_dir():
+            print('dir!')
             for item in custom_dir.glob('**/*'):
+                print(f'{item=}')
                 if item.is_file():
+                    print('IS FILE')
                     embedded_item: Path = Path(
                         str(item).replace(
                             str(custom_dir), str(PapiWebConfig.embedded_custom_path)
@@ -274,6 +279,7 @@ class Engine:
                     if not embedded_item.exists() or not filecmp.cmp(
                         item, embedded_item
                     ):
+                        print('NEW')
                         target_item: Path = Path(
                             str(item).replace(
                                 str(custom_dir), str(PapiWebConfig.custom_path)
@@ -282,20 +288,24 @@ class Engine:
                         target_item.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copy(item, target_item)
                         custom_files.append(item)
+                    else:
+                        print('ALREADY EXISTS')
+        else:
+            print('not a dir!')
         print_interactive_info(
             _('Events recovered: {num} (from directory [{dir}]).').format(
-                num=len(files), dir=PapiWebConfig.event_path
+                num=len(files), dir=events_dir
             )
         )
         print_interactive_info(
             _('Tournaments recovered: {num} (from directory [{dir}]).').format(
-                num=tournaments_number, dir=PapiWebConfig.default_papi_path
+                num=tournaments_number, dir=papi_dir
             )
         )
         if custom_files:
             logger.info(
                 _('Custom files recovered: {num} (from directory [{dir}]).').format(
-                    num=len(custom_files), dir=PapiWebConfig.custom_path
+                    num=len(custom_files), dir=custom_dir
                 )
             )
             for custom_file in custom_files:

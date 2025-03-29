@@ -11,7 +11,7 @@ from pathlib import Path
 from litestar.contrib.htmx.request import HTMXRequest
 from packaging.version import Version
 
-from common import format_timestamp_date_time, unicode_normalize
+from common import format_timestamp_date_time, unicode_normalize, EVENTS_DIR
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
@@ -70,7 +70,7 @@ class EventLoader:
     def event_uniq_ids(self) -> list[str]:
         return [
             file.stem
-            for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_database_ext}')
+            for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_database_ext}')
         ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -260,7 +260,7 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, file.lstat().st_ctime)
-                for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_archive_ext}')
+                for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_archive_ext}')
             ],
             key=lambda archive: archive.date,
         )

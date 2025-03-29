@@ -14,7 +14,7 @@ from typing import Any, TYPE_CHECKING, Self
 import yaml
 from packaging.version import Version
 
-from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV
+from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
@@ -111,7 +111,7 @@ class EventDatabase(SQLiteVersionedDatabase):
 
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
-        return PapiWebConfig.event_path / f'{uniq_id}.{PapiWebConfig.event_database_ext}'
+        return EVENTS_DIR / f'{uniq_id}.{PapiWebConfig.event_database_ext}'
 
     @staticmethod
     def _check_populate_dict(
@@ -196,7 +196,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         """
 
         papi_web_config: PapiWebConfig = PapiWebConfig()
-        papi_web_config.event_path.mkdir(parents=True, exist_ok=True)
         super().create()
         if populate:
             self._populate()

@@ -5,7 +5,7 @@ from typing import Any, Self
 
 from packaging.version import Version
 
-from common import PAPI_WEB_VERSION
+from common import PAPI_WEB_VERSION, EVENTS_DIR
 from common.logger import get_logger
 from database.sqlite.config import migrations
 from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
@@ -27,7 +27,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     """
 
     # The file holding the configuration of the application.
-    config_database_path: Path = Path('.scc')
+    config_database_path: Path = EVENTS_DIR / '.scc'
 
     def __init__(self, write: bool = False, auto_upgrade: bool = True):
         super().__init__(self.config_database_path, write, auto_upgrade)

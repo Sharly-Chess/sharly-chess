@@ -52,8 +52,6 @@ REQUEST_TIMEOUT: int = 10
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 
 
-
-
 """ The temporary directory. """
 TMP_DIR: Path = Path('tmp')
 
@@ -68,6 +66,18 @@ except PermissionError as pe:
 BASE_DIR: Path = (
     Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS) # type: ignore
 )
+
+
+"""The events folder name, used to recover events from previous releases."""
+EVENTS_FOLDER: str = 'events'
+""" The event directory. """
+EVENTS_DIR: Path = Path(EVENTS_FOLDER)
+
+try:
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
+except PermissionError as pe:
+    logger.critical('Could not create directory [%s]: %s', EVENTS_DIR.absolute(), pe)
+    sys.exit()
 
 
 def check_rgb_str(color: str) -> str:
