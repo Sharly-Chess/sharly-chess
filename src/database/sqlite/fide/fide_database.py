@@ -5,8 +5,7 @@ from contextlib import suppress
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from types import FunctionType
-from typing import Iterator, Any
+from typing import Iterator, Any, Callable, override
 
 from requests import Response, get
 from requests.exceptions import ConnectionError
@@ -26,7 +25,8 @@ from data.util import (
     TournamentRating,
     PlayerRatingType,
 )
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourceDatabase, NotifOutdateAction, MonthFirstDayOutdateDelay
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
@@ -59,6 +59,15 @@ class FideDatabase(LocalSourceDatabase):
     @property
     def _source_file_path(self) -> Path:
         return TMP_DIR / 'players_list_xml.xml'
+
+    @override
+    @property
+    def default_stored_database(self) -> StoredLocalSourceDatabase:
+        return StoredLocalSourceDatabase(
+            name=self.id,
+            outdate_delay=MonthFirstDayOutdateDelay.static_id(),
+            outdate_action=NotifOutdateAction.static_id(),
+        )
 
     def _download_source_file(self) -> bool:
         fide_database_url: str = (
@@ -106,7 +115,7 @@ class FideDatabase(LocalSourceDatabase):
         return True
 
     def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
-        fields: dict[str, tuple[str, FunctionType | None]] = {
+        fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
             'fideid': ('fide_id', lambda s: int(s.strip())),
             'name': ('name', None),
             'country': ('federation', lambda s: s.upper()),
@@ -267,6 +276,7 @@ class FideDatabase(LocalSourceDatabase):
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
+        return None
 
     def get_players_by_fide_id(self, player_fide_ids: list[int]) -> list[Player]:
         query_array = ', '.join('?' for _ in player_fide_ids)

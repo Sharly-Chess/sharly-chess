@@ -1,11 +1,11 @@
 import os.path
-import types
 import zipfile
+from collections.abc import Callable
 from contextlib import suppress
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from typing import Iterator, Any
+from typing import Iterator, Any, override
 
 from requests import Response, get
 from requests.exceptions import ConnectionError
@@ -25,7 +25,8 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
 )
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourceDatabase, Days2OutdateDelay, NotifOutdateAction
 from plugins import PLUGINS_DIR
 
 from plugins.ffe import PLUGIN_NAME
@@ -62,6 +63,15 @@ class FfeDatabase(LocalSourceDatabase):
     @property
     def _source_file_path(self) -> Path:
         return TMP_DIR / 'Data.mdb'
+
+    @override
+    @property
+    def default_stored_database(self) -> StoredLocalSourceDatabase:
+        return StoredLocalSourceDatabase(
+            name=self.id,
+            outdate_delay=Days2OutdateDelay.static_id(),
+            outdate_action=NotifOutdateAction.static_id(),
+        )
 
     def _download_source_file(self) -> bool:
         ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
@@ -106,7 +116,7 @@ class FfeDatabase(LocalSourceDatabase):
         return True
 
     def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
-        translations: dict[str, types.FunctionType] = {
+        translations: dict[str, Callable[[Any], Any] | None] = {
             'ffe_id': None,
             'ffe_licence_number': lambda s: s.strip().upper() if s else None,
             'last_name': lambda s: s.strip().upper(),
@@ -184,7 +194,7 @@ class FfeDatabase(LocalSourceDatabase):
             self.commit()
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+    def get_player_from_row(row: dict[str, Any]) -> Player:
         return Player(
             id=0,
             first_name=row['first_name'].title() if row['first_name'] else '',
@@ -226,7 +236,7 @@ class FfeDatabase(LocalSourceDatabase):
                     "league": row['league'],
                 }
             }
-        ) if row else None
+        )
 
     def search_player(
         self,

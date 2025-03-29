@@ -761,6 +761,9 @@ msgstr "Base de données"
 msgid "Database [{database}] - "
 msgstr "Base de données [{database}] - "
 
+msgid "Database [{database}] successfully updated."
+msgstr "Base de données [{database}] mise à jour avec succès."
+
 msgid "Database [{database}] unexpectedly not found at path [{path}]."
 msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
 
@@ -1206,6 +1209,9 @@ msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
+
+msgid "Error when updating database [{database}]."
+msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
 msgid "Error while creating the database: {error}."
 msgstr "Erreur lors de la création de la base de données: {error}."
@@ -3882,9 +3888,6 @@ msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
 
 msgid "Update"
-msgstr "Modifier"
-
-msgid "Update *** BUTTON FOR DATABASE MODAL"
 msgstr "Mettre à jour"
 
 msgid "Update players"
@@ -4238,4 +4241,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "Update *** BUTTON FOR DATABASE MODAL"
+#~ msgstr "Mettre à jour"
 

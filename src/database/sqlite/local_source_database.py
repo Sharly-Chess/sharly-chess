@@ -41,7 +41,7 @@ class OutdateDelay(IdentifiableEntity, ABC):
 
 class OutdateDelayManager(AbstractEntityManager[OutdateDelay]):
     @staticmethod
-    def entity_types() -> list[type[IdentifiableEntity]]:
+    def entity_types() -> list[type[OutdateDelay]]:
         return DELAY_CLASSES
 
 
@@ -213,22 +213,19 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         )
         self.stop_event = threading.Event()
         self.outdated_warning: bool = False
-        self.stored_source_database: StoredLocalSourceDatabase | None
+        self.stored_source_database: StoredLocalSourceDatabase
         with ConfigDatabase() as database:
-            self.stored_source_database = (
+            stored_source_database = (
                 database.load_stored_local_source_database(self.id)
             )
-        if self.stored_source_database is None:
+        if stored_source_database:
+            self.stored_source_database = stored_source_database
+        else:
+            self.file.unlink(missing_ok=True)
             with ConfigDatabase(write=True) as database:
-                self.stored_source_database = (
-                    database.insert_stored_local_source_database(
-                        StoredLocalSourceDatabase(
-                            name=self.id,
-                            outdate_delay=DisabledOutdateDelay.static_id(),
-                            outdate_action=AutoUpdateOutdateAction.static_id(),
-                            updated_at=None,
-                        )
-                    )
+                self.stored_source_database = self.default_stored_database
+                database.insert_stored_local_source_database(
+                    self.stored_source_database
                 )
                 database.commit()
 
@@ -269,14 +266,27 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         )
 
     @property
+    def updated_at_timestamp(self) -> float | None:
+        return self.stored_source_database.updated_at
+
+    @property
     def updated_at(self) -> datetime | None:
-        if updated_at := self.stored_source_database.updated_at:
-            return datetime.fromtimestamp(updated_at)
+        if self.updated_at_timestamp:
+            return datetime.fromtimestamp(self.updated_at_timestamp)
+        return None
 
     @property
     def is_outdated(self) -> bool:
-        return (
-            self.updated_at and self.outdate_delay.is_expired(self.updated_at)
+        if not self.updated_at:
+            return False
+        return self.outdate_delay.is_expired(self.updated_at)
+
+    @property
+    def default_stored_database(self) -> StoredLocalSourceDatabase:
+        return StoredLocalSourceDatabase(
+            name=self.id,
+            outdate_delay=DisabledOutdateDelay.static_id(),
+            outdate_action=NotifOutdateAction.static_id(),
         )
 
     @property
@@ -290,10 +300,10 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def updated_at_str(self) -> str:
         if self.is_updating:
             return _('Ongoing')
-        updated_at = self.updated_at
-        if not updated_at:
+        if not self.updated_at:
             return ''
-        days_since_update = (datetime.now() - updated_at).days
+
+        days_since_update = (datetime.now() - self.updated_at).days
         match days_since_update:
             case 0:
                 return _('Today')
@@ -310,10 +320,10 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     @override
     def delete(self):
         super().delete()
-        self.stored_source_database.updated_at = None
+        self.stored_source_database = self.default_stored_database
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(
-                self.stored_source_database
+                self.default_stored_database
             )
             database.commit()
 
@@ -415,7 +425,9 @@ class LocalSourceDatabaseManager(AbstractEntityManager[LocalSourceDatabase]):
         from database.sqlite.fide.fide_database import FideDatabase
         from plugins.manager import plugin_manager
 
-        database_types = [FideDatabase]
+        database_types: list[type[LocalSourceDatabase]] = [
+            FideDatabase
+        ]
         plugin_manager.hook.insert_local_source_database_types(
             database_types=database_types
         )

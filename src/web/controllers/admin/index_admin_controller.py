@@ -574,21 +574,17 @@ class IndexAdminController(BaseAdminController):
         with ConfigDatabase(write=True) as config_database:
             for source_database in source_databases:
                 outdate_delay = WebContext.form_data_to_str(
-                    data,
-                    f'{source_database.id}_outdate_delay',
-                    DisabledOutdateDelay.static_id(),
-                )
+                    data, f'{source_database.id}_outdate_delay',
+                ) or DisabledOutdateDelay.static_id()
                 outdate_action = WebContext.form_data_to_str(
-                    data,
-                    f'{source_database.id}_outdate_action',
-                    NotifOutdateAction.static_id(),
-                )
+                    data, f'{source_database.id}_outdate_action'
+                ) or NotifOutdateAction.static_id()
                 config_database.update_stored_local_source_database(
                     StoredLocalSourceDatabase(
                         name=source_database.id,
                         outdate_delay=outdate_delay,
                         outdate_action=outdate_action,
-                        updated_at=source_database.updated_at,
+                        updated_at=source_database.updated_at_timestamp,
                     )
                 )
             config_database.commit()

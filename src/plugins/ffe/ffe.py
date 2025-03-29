@@ -180,7 +180,8 @@ class FfePlugin(AbstractPlugin):
     def get_player_admin_template_context(
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
-        admin_event: Event = web_context.admin_event
+        assert web_context.admin_event is not None
+        admin_event = web_context.admin_event
         # The leagues that will be shown on the league select list
         players_leagues: list[str] = sorted(
             {

@@ -124,6 +124,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         )
         if row := self.fetchone():
             return self._row_to_stored_plugin(row)
+        return None
 
     def update_stored_plugin(
         self, stored_plugin: StoredPlugin
@@ -134,7 +135,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         )
         return self.load_stored_plugin(stored_plugin.name)
 
-    def insert_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin:
+    def insert_stored_plugin(self, stored_plugin: StoredPlugin):
         fields: list[str] = [
             'name',
             'is_enabled',
@@ -149,7 +150,6 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             f'VALUES ({', '.join('?' for _ in params)})',
             params,
         )
-        return self.load_stored_plugin(stored_plugin.name)
 
     # ---------------------------------------------------------------------------------
     # StoredLocalSourceDatabase
@@ -174,10 +174,11 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         )
         if row := self.fetchone():
             return self._row_to_stored_local_source_database(row)
+        return None
 
     def update_stored_local_source_database(
-            self, stored_database: StoredLocalSourceDatabase
-    ) -> StoredPlugin | None:
+        self, stored_database: StoredLocalSourceDatabase
+    ):
         fields: list[str] = [
             'outdate_delay',
             'outdate_action',
@@ -194,13 +195,10 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             f'SET {', '.join(field_sets)} WHERE `name` = ?'
         )
         self.execute(query, params + (stored_database.name,))
-        return self.load_stored_local_source_database(
-            stored_database.name
-        )
 
     def insert_stored_local_source_database(
         self, stored_database: StoredLocalSourceDatabase
-    ) -> StoredLocalSourceDatabase:
+    ):
         fields: list[str] = [
             'name',
             'outdate_delay',
@@ -218,7 +216,4 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             f'INSERT INTO `local_source_database` ({fields_str}) '
             f'VALUES ({', '.join('?' for _ in params)})',
             params,
-        )
-        return self.load_stored_local_source_database(
-            stored_database.name
         )

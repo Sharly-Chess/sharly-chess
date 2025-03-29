@@ -761,6 +761,9 @@ msgstr ""
 msgid "Database [{database}] - "
 msgstr ""
 
+msgid "Database [{database}] successfully updated."
+msgstr ""
+
 msgid "Database [{database}] unexpectedly not found at path [{path}]."
 msgstr ""
 
@@ -1205,6 +1208,9 @@ msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
 msgid "Error reading the following row (player ignored): [{row}]."
+msgstr ""
+
+msgid "Error when updating database [{database}]."
 msgstr ""
 
 msgid "Error while creating the database: {error}."
@@ -3884,9 +3890,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-msgid "Update *** BUTTON FOR DATABASE MODAL"
-msgstr "Update"
-
 msgid "Update players"
 msgstr ""
 
@@ -4238,4 +4241,7 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Update *** BUTTON FOR DATABASE MODAL"
+#~ msgstr "Update"
 

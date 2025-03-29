@@ -20,7 +20,7 @@ class FfePlayerMatch(PlayerMatch):
     def diff_field_ids(self) -> list[str] | None:
         if not self.match_player:
             return None
-        diff_field_ids = super().diff_field_ids
+        diff_field_ids = super().diff_field_ids or []
         for field_id in ('league', 'ffe_licence'):
             if (
                 field_id in self.field_ids and
@@ -94,6 +94,7 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
         except PapiWebException:
             database = FfeDatabase()
             if database.exists():
+                assert database.updated_at is not None
                 self.warning_message = _(
                     'Warning: connection to the online FFE database failed, '
                     'local database was used. Some data might be outdated '
@@ -111,7 +112,7 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
             players,
             match_players,
             lambda p1, p2: (
-                self._get_ffe_licence_number(p1) and
+                self._get_ffe_licence_number(p1) is not None and
                 self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
             ),
             field_ids,

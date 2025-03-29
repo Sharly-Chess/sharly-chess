@@ -90,11 +90,10 @@ class PluginContext:
             self.stored_plugin = database.load_stored_plugin(plugin.id)
         if not self.stored_plugin:
             with ConfigDatabase(True) as database:
-                self.stored_plugin = database.insert_stored_plugin(
-                    StoredPlugin(
-                        name=plugin.id, is_enabled=plugin.default_is_enabled
-                    )
+                self.stored_plugin = StoredPlugin(
+                    name=plugin.id, is_enabled=plugin.default_is_enabled
                 )
+                database.insert_stored_plugin(self.stored_plugin)
                 database.commit()
 
 
