@@ -59,6 +59,7 @@ try:
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', TMP_DIR.absolute(), pe)
+    input()
     sys.exit(1)
 
 # The base directory, differs for developers. base_dir must be used when looking for application files
@@ -77,6 +78,7 @@ try:
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', EVENTS_DIR.absolute(), pe)
+    input()
     sys.exit(1)
 
 
