@@ -75,7 +75,7 @@ EVENTS_FOLDER: str = 'events'
 EVENTS_DIR: Path = Path(EVENTS_FOLDER)
 
 try:
-    TMP_DIR.mkdir(parents=True, exist_ok=True)
+    EVENTS_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', EVENTS_DIR.absolute(), pe)
     input()
