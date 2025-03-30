@@ -282,7 +282,8 @@ class BaseAdminController(BaseController):
         errors: dict[str, str] = {}
         uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
         if action == 'delete':
-            assert admin_event is not None
+            if admin_event is None:
+                raise RuntimeError(f'{admin_event=} for [{action=}]')
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
@@ -305,7 +306,8 @@ class BaseAdminController(BaseController):
                                 'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
-                        assert admin_event is not None
+                        if admin_event is None:
+                            raise RuntimeError(f'{admin_event=} for [{action=}]')
                         if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
                             errors['uniq_id'] = _(
                                 'Event [{uniq_id}] already exists.'
@@ -546,11 +548,13 @@ class BaseAdminController(BaseController):
         name: str | None = None
         match action:
             case 'update':
-                assert admin_event is not None
+                if admin_event is None:
+                    raise RuntimeError(f'{admin_event=} for [{action=}]')
                 name = admin_event.stored_event.name
                 uniq_id = admin_event.stored_event.uniq_id
             case 'clone':
-                assert admin_event is not None
+                if admin_event is None:
+                    raise RuntimeError(f'{admin_event=} for [{action=}]')
                 name = EventLoader.get(request).get_unused_event_name(
                     admin_event.stored_event.name
                 )
@@ -601,7 +605,8 @@ class BaseAdminController(BaseController):
         message_background_color: str | None = None
         match action:
             case 'update' | 'clone':
-                assert admin_event is not None
+                if admin_event is None:
+                    raise RuntimeError(f'{admin_event=} for [{action=}]')
                 public = admin_event.stored_event.public
                 federation = admin_event.stored_event.federation
                 hide_background_image = admin_event.stored_event.hide_background_image

@@ -49,8 +49,11 @@ class Screen:
         self.family_part: int | None = family_part
 
     @property
-    def event(self) -> 'Event | None':
-        return self._event_ref()
+    def event(self) -> 'Event':
+        event = self._event_ref()
+        if event is None:
+            raise RuntimeError("Event reference has been garbage collected")
+        return event
 
     @property
     def family(self) -> 'Family | None':
@@ -132,10 +135,7 @@ class Screen:
     @property
     def columns(self) -> int:
         if self.stored_screen:
-            if self.stored_screen.columns:
-                return self.stored_screen.columns
-            else:
-                return 1
+            return self.stored_screen.columns or 1
         else:
             if self.family is None:
                 raise RuntimeError("Family reference unexpectedly None")
@@ -222,7 +222,6 @@ class Screen:
             return None
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
-                assert self.event is not None
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
                 first_last = screen_set.first is not None or screen_set.last is not None
@@ -278,7 +277,6 @@ class Screen:
 
     def _menu_screens(self, admin: bool) -> list['Screen']:
         menu_screens: list['Screen'] = []
-        assert self.event is not None
         if self.menu is not None:
             for menu_part in map(str.strip, self.menu.split(',')):
                 if not menu_part:
@@ -414,12 +412,14 @@ class Screen:
 
     @property
     def timer(self) -> Timer | None:
-        assert self.event is not None
-        timer_id: int | None = (
-            self.stored_screen.timer_id if self.stored_screen
-            else self.family.timer_id if self.family
-            else None
-        )
+        timer_id: int | None = None
+        if self.stored_screen:
+            timer_id = self.stored_screen.timer_id
+        elif self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
+        else:
+            timer_id = self.family.timer_id
+
         return self.event.timers_by_id[timer_id] if timer_id else None
 
     @cached_property
@@ -499,7 +499,6 @@ class Screen:
         match self.type:
             case ScreenType.RESULTS:
                 assert self.stored_screen is not None
-                assert self.event is not None
                 if not self.stored_screen.results_limit:
                     return PapiWebConfig.default_results_screen_limit
                 elif (
@@ -538,7 +537,6 @@ class Screen:
         match self.type:
             case ScreenType.RESULTS:
                 assert self.stored_screen is not None
-                assert self.event is not None
                 return [
                     tournament_id
                     for tournament_id in self.stored_screen.results_tournament_ids
@@ -549,7 +547,6 @@ class Screen:
 
     @cached_property
     def results_tournament_names(self) -> str:
-        assert self.event is not None
         return ', '.join(
             sorted(
                 [
@@ -561,7 +558,6 @@ class Screen:
 
     @cached_property
     def _results(self) -> list[Result]:
-        assert self.event is not None
         with EventDatabase(self.event.uniq_id) as event_database:
             return event_database.get_stored_results(
                 self.results_limit, self.results_tournament_ids, self.results_max_age
@@ -640,7 +636,6 @@ class Screen:
         if self.stored_screen and self.stored_screen.background_image:
             return self.stored_screen.background_image
         else:
-            assert self.event is not None
             return self.event.background_image
 
     @cached_property
@@ -652,7 +647,6 @@ class Screen:
         if self.stored_screen and self.stored_screen.background_color:
             return self.stored_screen.background_color
         else:
-            assert self.event is not None
             return self.event.background_color
 
     @property
@@ -665,7 +659,6 @@ class Screen:
 
     @property
     def message_text(self) -> str | None:
-        assert self.event is not None
         if self.message_default:
             return self.event.message_text
         if self.stored_screen:

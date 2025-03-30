@@ -73,7 +73,8 @@ class ScreenUserController(BaseScreenUserController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.user_event is not None
+        if web_context.user_event is None:
+            raise RuntimeError("user_event not defined")
         if data['password'] == web_context.user_event.update_password:
             Message.success(request, _('Authentication successful!'))
             SessionHandler.store_password(

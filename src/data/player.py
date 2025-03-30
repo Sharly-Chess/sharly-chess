@@ -152,7 +152,7 @@ class TournamentPlayer:
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= after_round and
-            pairing.result and
+            pairing.result is not None and
             (pairing.played or not only_played)
         )
 
@@ -160,7 +160,7 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
-            if (pairing.played or not only_played) and pairing.result
+            if (pairing.played or not only_played) and pairing.result is not None
         )
 
     @property
@@ -315,7 +315,7 @@ class Player(TournamentPlayer):
         return sum(
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
-            if pairing.result
+            if pairing.result is not None
         )
 
     @staticmethod

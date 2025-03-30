@@ -45,7 +45,8 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             data=data,
             event_uniq_id=event_uniq_id,
         )
-        assert self.admin_event is not None
+        if self.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         self.admin_family: Family | None = None
         if self.error:
             return
@@ -78,13 +79,13 @@ class FamilyAdminController(BaseEventAdminController):
         if data is None:
             data = {}
         field: str
-        type_: str
+        type_: str | None = None
         match action:
             case 'create':
-                assert web_context.family_type is not None
                 type_ = web_context.family_type
             case 'update' | 'clone' | 'delete':
-                assert web_context.admin_family is not None
+                if web_context.admin_family is None:
+                    raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
                 type_ = web_context.admin_family.stored_family.type
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -127,14 +128,17 @@ class FamilyAdminController(BaseEventAdminController):
             else:
                 match action:
                     case 'create' | 'clone':
-                        assert web_context.admin_event is not None
+                        if web_context.admin_event is None:
+                            raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                         if uniq_id in web_context.admin_event.families_by_uniq_id:
                             errors[field] = _(
                                 'Family [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
-                        assert web_context.admin_family is not None
-                        assert web_context.admin_event is not None
+                        if web_context.admin_family is None:
+                            raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
+                        if web_context.admin_event is None:
+                            raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                         if (
                             uniq_id != web_context.admin_family.uniq_id
                             and uniq_id in web_context.admin_event.families_by_uniq_id
@@ -151,7 +155,8 @@ class FamilyAdminController(BaseEventAdminController):
                 pass
             case 'create' | 'clone' | 'update':
                 field = 'tournament_id'
-                assert web_context.admin_event is not None
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 try:
                     if len(web_context.admin_event.tournaments_by_id) == 1:
                         tournament_id = list(
@@ -322,7 +327,8 @@ class FamilyAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
@@ -388,7 +394,8 @@ class FamilyAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            assert web_context.admin_family is not None
+                            if web_context.admin_family is None:
+                                raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
                             public = web_context.admin_family.stored_family.public
                             tournament_id = (
                                 web_context.admin_family.stored_family.tournament_id
@@ -586,7 +593,8 @@ class FamilyAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         stored_family: StoredFamily = self._admin_validate_family_update_data(
             action, web_context, data
         )

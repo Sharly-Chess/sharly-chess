@@ -2197,7 +2197,6 @@ class EventDatabase(SQLiteVersionedDatabase):
     ) -> StoredScreenSet:
         stored_screen_set = self.get_stored_screen_set(screen_set_id)
         assert stored_screen_set is not None
-        assert stored_screen_set.id is not None
         stored_screen_set.id = None
         stored_screen_set.screen_id = screen_id
         stored_screen_set.last_update = time.time()

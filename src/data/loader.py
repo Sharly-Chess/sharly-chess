@@ -58,8 +58,7 @@ class EventLoader:
 
     def load_stored_event(self, uniq_id: str) -> StoredEvent:
         try:
-            event = self._loaded_stored_events_by_id[uniq_id] 
-            return event
+            return self._loaded_stored_events_by_id[uniq_id] 
         except KeyError:
             with EventDatabase(uniq_id) as event_database:
                 self._loaded_stored_events_by_id[uniq_id] = (

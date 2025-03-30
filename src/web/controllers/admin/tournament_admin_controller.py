@@ -271,7 +271,8 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament | None = web_context.admin_tournament
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
@@ -523,7 +524,8 @@ class TournamentAdminController(BaseEventAdminController):
             request, event_uniq_id, tournament_id, None
         )
         tournament = context.admin_tournament
-        assert tournament is not None
+        if tournament is None:
+            raise RuntimeError("tournament not defined")
         temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
         with temp_file as file:
             trf.dump(file, tournament.to_trf(trf_type))
@@ -614,7 +616,8 @@ class TournamentAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         stored_tournament: StoredTournament = (
             self._admin_validate_tournament_update_data(action, web_context, data)
         )
@@ -840,7 +843,8 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_tournament is not None
+        if web_context.admin_tournament is None:
+            raise RuntimeError("admin_tournament not defined")
         admin_tournament: Tournament = web_context.admin_tournament
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)

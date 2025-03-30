@@ -30,9 +30,9 @@ class TimerHour:
     """A data wrapper around a stored timer hour."""
 
     def __init__(
-            self,
-            timer: 'Timer',
-            stored_timer_hour: StoredTimerHour,
+        self,
+        timer: 'Timer',
+        stored_timer_hour: StoredTimerHour,
     ):
         self._timer_ref: 'ReferenceType[Timer]' = weakref.ref(timer)
         self.stored_timer_hour: StoredTimerHour = stored_timer_hour
@@ -42,10 +42,10 @@ class TimerHour:
 
     @property
     def timer(self) -> 'Timer':
-        timer = self._timer_ref()
-        if timer is None:
+        _timer = self._timer_ref()
+        if _timer is None:
             raise RuntimeError("Timer reference has been garbage collected")
-        return timer
+        return _timer
 
     @property
     def datetime(self) -> datetime | None:
@@ -108,19 +108,27 @@ class TimerHour:
 
     @property
     def timestamp_1(self) -> int:
-        return (self.timestamp or 0) - self.timer.delays[1] * 60 - self.timer.delays[2] * 60
+        if self.timestamp is None:
+            raise RuntimeError("Timestamp is not defined")
+        return self.timestamp - self.timer.delays[1] * 60 - self.timer.delays[2] * 60
 
     @property
     def timestamp_2(self) -> int:
-        return (self.timestamp or 0) - self.timer.delays[2] * 60
+        if self.timestamp is None:
+            raise RuntimeError("Timestamp is not defined")
+        return self.timestamp - self.timer.delays[2] * 60
 
     @property
     def timestamp_3(self) -> int:
-        return (self.timestamp or 0)
+        if self.timestamp is None:
+            raise RuntimeError("Timestamp is not defined")
+        return self.timestamp
 
     @property
     def timestamp_next(self) -> int:
-        return (self.timestamp or 0) + self.timer.delays[3] * 60
+        if self.timestamp is None:
+            raise RuntimeError("Timestamp is not defined")
+        return self.timestamp + self.timer.delays[3] * 60
 
     @property
     def datetime_str_1(self) -> str:

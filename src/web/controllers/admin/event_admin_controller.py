@@ -54,7 +54,8 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
@@ -69,7 +70,8 @@ class EventAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'event':
-                assert action is not None
+                if action is None:
+                    raise RuntimeError("action not defined")
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
@@ -155,7 +157,8 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         if web_context.admin_event.player_count:
             return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
         if web_context.admin_event.tournaments_by_uniq_id:
@@ -250,7 +253,8 @@ class EventAdminController(BaseEventAdminController):
         event_loader = EventLoader.get(request=request)
         match action:
             case 'update':
-                assert web_context.admin_event is not None
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -286,7 +290,8 @@ class EventAdminController(BaseEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
-                assert web_context.admin_event is not None
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
                 )
@@ -300,7 +305,8 @@ class EventAdminController(BaseEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
-                assert web_context.admin_event is not None
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as ex:
@@ -387,7 +393,8 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         errors: dict[str, str] = {}
 
         tournament: Tournament | None = None
@@ -409,7 +416,6 @@ class EventAdminController(BaseEventAdminController):
             )
         except KeyError:
             errors[field] = _('Please choose the document.')
-        assert document_type is not None
         if tournament:
             options = []
             for option in document_type.default_options():
@@ -653,7 +659,8 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         players: list[Player] = [
             web_context.admin_event.players_by_id[player_id]
             for player_id in player_ids or []

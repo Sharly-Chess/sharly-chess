@@ -428,7 +428,8 @@ class ScreenAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
@@ -502,7 +503,8 @@ class ScreenAdminController(BaseEventAdminController):
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
                         case 'clone':
-                            assert web_context.admin_screen is not None
+                            if web_context.admin_screen is None:
+                                raise RuntimeError(f'{web_context.admin_screen=} for [{action=}]')
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
                                 base_uniq_id=web_context.admin_screen.uniq_id
                             )
@@ -820,7 +822,8 @@ class ScreenAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         stored_screen: StoredScreen = self._admin_validate_screen_update_data(
             action, web_context, data
         )
@@ -1063,11 +1066,14 @@ class ScreenAdminController(BaseEventAdminController):
                     screen_set_id=screen_set_id,
                     data=data,
                 )
-                assert web_context.admin_screen is not None
             case _:
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
+        if web_context.admin_screen is None:
+            raise RuntimeError("admin_screen not defined")
         event_loader: EventLoader = EventLoader.get(request=request)
         match action:
             case 'delete':
@@ -1080,7 +1086,6 @@ class ScreenAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         next_screen_set_id: int | None = None
-        assert web_context.admin_event is not None
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:

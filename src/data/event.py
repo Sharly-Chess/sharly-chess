@@ -342,21 +342,23 @@ class Event:
 
     @cached_property
     def timer_colors(self) -> dict[int, str]:
-        return {
-            i: str(self.stored_event.timer_colors[i])
-            if self.stored_event.timer_colors and i in self.stored_event.timer_colors and self.stored_event.timer_colors[i]
-            else PapiWebConfig.default_timer_colors[i]
-            for i in range(1, 4)
-        }
+        colors = PapiWebConfig.default_timer_colors
+        stored_colors = self.stored_event.timer_colors
+        if stored_colors is not None:
+            for i in range(1, 4):
+                if i in stored_colors and (color := stored_colors[i]) is not None:
+                    colors[i] = color
+        return colors
 
     @cached_property
     def timer_delays(self) -> dict[int, int]:
-        return {
-            i: int(self.stored_event.timer_delays[i] or 0)
-            if self.stored_event.timer_delays and i in self.stored_event.timer_delays and self.stored_event.timer_delays[i] is not None
-            else PapiWebConfig.default_timer_delays[i]
-            for i in range(1, 4)
-        }
+        delays = PapiWebConfig.default_timer_delays
+        stored_delays = self.stored_event.timer_delays
+        if stored_delays is not None:
+            for i in range(1, 4):
+                if i in stored_delays and (delay := stored_delays[i]) is not None:
+                    delays[i] = delay 
+        return delays
 
     @property
     def public(self) -> bool:
@@ -607,10 +609,14 @@ class Event:
         """Returns the first unused screen uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
-        assert screen_type is not None
+        screen_uniq_id = base_uniq_id
+        if screen_uniq_id is None:
+            if screen_type is None:
+                raise ValueError('Either screen_type or base_uniq_id must be provided.')
+            screen_uniq_id = _('{screen_type}-screen').format(screen_type=screen_type.value)
+        
         return self._get_unused_item_uniq_id(
-            base_uniq_id
-            or _('{screen_type}-screen').format(screen_type=screen_type.value),
+            screen_uniq_id,
             self.basic_screens_by_uniq_id,
         )
 
@@ -654,10 +660,13 @@ class Event:
         """Returns the first unused family uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         family_type is used when the given ID is empty to set an ID that corresponds to the family type."""
-        assert family_type is not None
+        family_uniq_id = base_uniq_id
+        if family_uniq_id is None:
+            if family_type is None:
+                raise ValueError('Either family_type or base_uniq_id must be provided.')
+            family_uniq_id = _('{family_type}-screen').format(screen_type=family_type.value)
         return self._get_unused_item_uniq_id(
-            base_uniq_id
-            or _('{family_type}-family').format(family_type=family_type.value),
+            family_uniq_id,
             self.families_by_uniq_id,
         )
 

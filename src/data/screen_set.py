@@ -132,16 +132,15 @@ class ScreenSet:
 
     @property
     def event(self) -> 'Event':
-        assert self.screen.event is not None
         return self.screen.event
 
     @property
     def tournament_id(self) -> int:
-        return (
-            self.stored_screen_set.tournament_id
-            if self.stored_screen_set
-            else self.family.tournament_id
-        )
+        if self.stored_screen_set:
+            return self.stored_screen_set.tournament_id
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
+        return self.family.tournament_id
 
     @property
     def tournament(self) -> 'Tournament':

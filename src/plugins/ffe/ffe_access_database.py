@@ -19,7 +19,7 @@ class FfeAccessDatabase(AccessDatabase):
 
     def read_player_dicts(self) -> Iterator[dict[str, str | int | datetime | None]]:
         # the fields common to players with a club or not
-        common_fields: dict[str, str | int | datetime | None] = {
+        common_fields: dict[str, str] = {
             'ffe_id': 'joueur.Ref',  # int
             'ffe_licence_number': 'joueur.NrFFE',  # str
             'last_name': 'joueur.Nom',  # str
@@ -38,14 +38,14 @@ class FfeAccessDatabase(AccessDatabase):
             'ffe_licence': 'joueur.AffType',  # str
         }
         # the fields for players with a club
-        club_fields: dict[str, str | int | datetime | None] = common_fields | {
+        club_fields: dict[str, str] = common_fields | {
             # '': 'club.NrFFE',
             'club': 'club.Nom',  # str
             'league': 'club.Ligue',  # str
             'city': 'club.Commune',  # str
         }
         # the fields for players without a club
-        no_club_fields: dict[str, str | int | datetime | None] = common_fields | {
+        no_club_fields: dict[str, str] = common_fields | {
             'club': "''",  # str
             'league': "''",  # str
             'city': "''",  # str

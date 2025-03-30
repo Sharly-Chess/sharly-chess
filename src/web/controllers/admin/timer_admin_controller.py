@@ -282,7 +282,8 @@ class TimerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
@@ -595,7 +596,8 @@ class TimerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         stored_timer: StoredTimer | None = self._admin_validate_timer_update_data(
             action, web_context, data
         )
@@ -696,9 +698,10 @@ class TimerAdminController(BaseEventAdminController):
                         request, event_uniq_id=event_uniq_id
                     )
                 case 'clone':
-                    assert web_context.admin_timer is not None
+                    if web_context.admin_timer is None:
+                        raise RuntimeError(f'{web_context.admin_timer=} for [{action=}]')
                     stored_timer = event_database.add_stored_timer(stored_timer)
-                    assert stored_timer and stored_timer.id is not None
+                    assert stored_timer is not None and stored_timer.id is not None
                     for (
                         timer_hour
                     ) in web_context.admin_timer.timer_hours_sorted_by_order:
@@ -872,7 +875,8 @@ class TimerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         event_loader: EventLoader = EventLoader.get(request=request)
         match action:
             case 'delete':

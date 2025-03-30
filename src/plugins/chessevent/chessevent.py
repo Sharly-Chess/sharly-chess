@@ -4,7 +4,6 @@ from typing import Any, TYPE_CHECKING, override
 from packaging.version import Version
 
 from common.i18n import _
-from data.event import Event
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.chessevent.utils import ChessEventUtils
@@ -14,6 +13,7 @@ from plugins.utils import PluginMigrationManager, PluginEngineArgument, Abstract
 from web.controllers.base_controller import WebContext
 
 if TYPE_CHECKING:
+    from data.event import Event
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament

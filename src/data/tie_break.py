@@ -334,7 +334,7 @@ class WinsTieBreak(AbstractTieBreak):
             pairing.result.points(point_values) == Result.GAIN.points(
                 point_values
             ) for round_index, pairing in player.pairings.items()
-            if pairing.result and round_index <= after_round
+            if pairing.result is not None and round_index <= after_round
         )
 
 

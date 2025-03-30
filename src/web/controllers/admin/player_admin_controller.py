@@ -63,7 +63,8 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         super().__init__(
             request, event_uniq_id=event_uniq_id, data=data
         )
-        assert self.admin_event is not None
+        if self.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         self.admin_player: Player | None = None
         self.admin_tournament: Tournament | None = None
         if self.error:
@@ -305,7 +306,8 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
@@ -993,7 +995,8 @@ class PlayerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         player: Player = self._admin_validate_player_update_data(
             action, web_context, data
         )
@@ -1105,8 +1108,10 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_player is not None
-        assert web_context.admin_tournament is not None
+        if web_context.admin_player is None:
+            raise RuntimeError("admin_player not defined")
+        if web_context.admin_tournament is None:
+            raise RuntimeError("admin_tournament not defined")
         admin_player: Player = web_context.admin_player
         assert admin_player.tournament is not None
         src_tournament: Tournament = admin_player.tournament
@@ -1288,8 +1293,10 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_player is not None
-        assert web_context.admin_player.tournament is not None
+        if web_context.admin_player is None:
+            raise RuntimeError("admin_player not defined")
+        if web_context.admin_player.tournament is None:
+            raise RuntimeError("admin_player.tournament not defined")
         if new_byes := self._new_byes(web_context, data):
             web_context.admin_player.tournament.set_player_byes(web_context.admin_player, new_byes)
             event_loader: EventLoader = EventLoader.get(request=request)
@@ -1344,7 +1351,8 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_tournament is not None
+        if web_context.admin_tournament is None:
+            raise RuntimeError("admin_tournament not defined")
         admin_tournament: Tournament = web_context.admin_tournament
         admin_tournament.open_check_in()
         Message.success(
@@ -1401,7 +1409,8 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_tournament is not None
+        if web_context.admin_tournament is None:
+            raise RuntimeError("admin_tournament not defined")
         admin_tournament: Tournament = web_context.admin_tournament
         admin_tournament.close_check_in(forfeit_all_rounds)
         Message.success(
@@ -1480,9 +1489,11 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_player is not None
+        if web_context.admin_player is None:
+            raise RuntimeError("admin_player not defined")
         admin_player: Player = web_context.admin_player
-        assert admin_player.tournament is not None
+        if admin_player.tournament is None:
+            raise RuntimeError("admin_player.tournament not defined")
         admin_player.tournament.check_in_player(admin_player, check_in)
         event_loader: EventLoader = EventLoader.get(request=request)
         event_loader.clear_cache(event_uniq_id)
@@ -1552,7 +1563,8 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         try:
             player_updater: AbstractPlayerUpdater = (
                 PlayerUpdaterManager.get_object(player_updater_id)
@@ -1627,7 +1639,8 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_event is not None
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         try:
             player_updater: AbstractPlayerUpdater = (
                 PlayerUpdaterManager.get_object(player_updater_id)

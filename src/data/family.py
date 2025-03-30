@@ -32,7 +32,7 @@ class Family:
         self._calculated_last: int | None = None
         self._calculated_number: int | None = None
         self._calculated_parts: int | None = None
-        self.error = None
+        self.error: str | None = None
 
         # http://rednafi.com/python/lru_cache_on_methods/
         self._calculate_and_cache_screens = functools.lru_cache()(self._calculate_screens)
@@ -227,6 +227,7 @@ class Family:
             self.error = _(
                 'Tournament [{tournament_uniq_id}] can not be read, family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
+            self.error = str(self.error) if self.error else _('Tournament can not be read, family ignored.')
             self.event.add_warning(self.error, family=self)
             return False
         players_instead_of_boards: bool
@@ -244,6 +245,7 @@ class Family:
                                 tournament_uniq_id=self.tournament.uniq_id,
                                 first=self.first,
                             )
+                            self.error = str(self.error) if self.error else _('Invalid board number range.')
                             self.event.add_warning(self.error, family=self)
                             return False
                         self._calculated_first = self.first
@@ -286,21 +288,15 @@ class Family:
                             player
                             for player in self.tournament.players_by_rank.values()
                             if (
-                                    self.ranking_min_points is None or (player.points or 0) >= float(self.ranking_min_points)
+                                    self.ranking_min_points is None or (player.points or 0) >= self.ranking_min_points
                                ) and (
-                                    self.ranking_max_points is None or (player.points or 0) <= float(self.ranking_max_points)
+                                    self.ranking_max_points is None or (player.points or 0) <= self.ranking_max_points
                                )
                         ]
                     )
                 if self.first:
                     if self.first > total_items_number:
-                        self.error = _(
-                            'Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored.'
-                        ).format(
-                            player_count=total_items_number,
-                            tournament_uniq_id=self.tournament.uniq_id,
-                            first=self.first,
-                        )
+                        self.error = str(self.error) if self.error else _('Invalid player number range.')
                         self.event.add_warning(self.error, family=self)
                         return False
                     self._calculated_first = self.first
@@ -317,6 +313,7 @@ class Family:
             self.error = _(
                 'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
+            self.error = str(self.error) if self.error else _('Tournament can not be read, family ignored.')
             self.event.add_warning(self.error, family=self)
             return False
         # OK now we know the number of items and the number of the first item to take
@@ -345,7 +342,7 @@ class Family:
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = {}
         if self._calculate_and_cache_screens():
-            for family_index in range(1, (self.calculated_parts or 1) + 1):
+            for family_index in range(1, self.calculated_parts + 1):
                 screen: Screen = Screen(
                     self.event, family=self, family_part=family_index
                 )
@@ -372,9 +369,9 @@ class Family:
         return self._calculated_number
 
     @cached_property
-    def calculated_parts(self) -> int | None:
+    def calculated_parts(self) -> int:
         self._calculate_and_cache_screens()
-        return self._calculated_parts
+        return self._calculated_parts or 1
 
     @property
     def numbers_str(self):
