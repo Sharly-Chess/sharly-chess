@@ -59,7 +59,7 @@ try:
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', TMP_DIR.absolute(), pe)
-    sys.exit()
+    sys.exit(1)
 
 # The base directory, differs for developers. base_dir must be used when looking for application files
 # (images, templates, ...) while user file should be search in the current directory.
@@ -77,7 +77,7 @@ try:
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', EVENTS_DIR.absolute(), pe)
-    sys.exit()
+    sys.exit(1)
 
 
 def check_rgb_str(color: str) -> str:
