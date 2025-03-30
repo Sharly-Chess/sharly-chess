@@ -195,7 +195,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         example databases are created when no event database is found).
         """
 
-        papi_web_config: PapiWebConfig = PapiWebConfig()
         super().create()
         if populate:
             self._populate()
