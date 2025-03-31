@@ -416,7 +416,7 @@ class EventAdminController(BaseEventAdminController):
             )
         except KeyError:
             errors[field] = _('Please choose the document.')
-        if tournament:
+        if tournament and document_type:
             options = []
             for option in document_type.default_options():
                 value = WebContext.form_data_to_value(
@@ -432,31 +432,31 @@ class EventAdminController(BaseEventAdminController):
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
-        if len(errors):
-            return self._admin_event_config_render(
-                request,
-                modal='print',
-                event_uniq_id=event_uniq_id,
-                data=data,
-                errors=errors,
-            )
-
-        # Clear the modal contents, and send an event
-        return HTMXTemplate(
-            template_name='common/empty_modal.html',
-            re_target='#modal-wrapper',
-            trigger_event="do_print",
-            after="receive",
-            params={
-                "event_uniq_id": event_uniq_id,
-                "tournament_id": tournament.id if tournament else None,
-                "document": data['document'],
-                "options": {
-                    option.id: data[option.id]
-                    for option in document_type.default_options()
+        if tournament and document_type and not errors:
+            # Clear the modal contents, and send an event
+            return HTMXTemplate(
+                template_name='common/empty_modal.html',
+                re_target='#modal-wrapper',
+                trigger_event="do_print",
+                after="receive",
+                params={
+                    "event_uniq_id": event_uniq_id,
+                    "tournament_id": tournament.id if tournament else None,
+                    "document": data['document'],
+                    "options": {
+                        option.id: data[option.id]
+                        for option in document_type.default_options()
+                    }
                 }
-            }
+            )
+        return self._admin_event_config_render(
+            request,
+            modal='print',
+            event_uniq_id=event_uniq_id,
+            data=data,
+            errors=errors,
         )
+
 
     @staticmethod
     def download_players_as_vcf(
