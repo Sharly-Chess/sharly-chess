@@ -4,7 +4,7 @@ from typing import Any, Self
 from logging import Logger
 from dataclasses import dataclass, field
 from collections.abc import Iterator
-import pyodbc
+import pyodbc  # type: ignore
 
 from common.exception import PapiWebException
 from common.logger import get_logger
@@ -52,20 +52,30 @@ class AccessDatabase:
 
     def __exit__(self, exc_type, exc_value, tb):
         if self.database is not None:
-            self.cursor.close()
-            del self.cursor
-            self.cursor = None
+            if self.cursor is not None:
+                self.cursor.close()
+                del self.cursor
+                self.cursor = None
             self.database.close()
             del self.database
             self.database = None
 
+    def _check_cursor(self):
+        """Check that the cursor is available."""
+        if self.cursor is None:
+            raise RuntimeError("Database connection not established")
+
     def _execute(self, query: str, params: tuple = ()):
         """Executes the prepare query with the given parameters."""
+        self._check_cursor()
+        assert self.cursor is not None
         self.cursor.execute(query, params)
 
     def _fetchall(self) -> Iterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
+        self._check_cursor()
+        assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         while row := self.cursor.fetchone():
             yield dict(zip(columns, row))
@@ -75,15 +85,21 @@ class AccessDatabase:
         {column_name: value, ...}.
         Repeated applications of this method will advance the database cursor
         and return different row data."""
+        self._check_cursor()
+        assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         return dict(zip(columns, self.cursor.fetchone()))
 
     def _fetchval(self) -> Any:
         """Returns the next database cursor value."""
+        self._check_cursor()
+        assert self.cursor is not None
         return self.cursor.fetchval()
 
     def _commit(self):
         """Commits the pending transaction."""
+        self._check_cursor()
+        assert self.cursor is not None
         self.cursor.commit()
 
 
