@@ -29,6 +29,16 @@ Set environment variable ``PAPI_WEB_EXPERIMENTAL`` to ``1`` to enable expérimen
 
 ## Création d'un exécutable Windows pour diffusion
 
+PyInstaller inclut dans l'exécutable Windows tous les paquets trouvés dans l'environnement virtuel, qu'ils soient utilisés ou non.
+
+Un environnement virtuel dédié est donc utilisé ne comprenant que les paquets strictement nécessaires à l'exportation :
+
+```
+python -m venv .venv-export
+.venv-export\Scripts\python.exe -m pip install --upgrade pip
+.venv-export\Scripts\pip.exe install .[export]
+```
+
 ![](images/dev-export.jpg)
 
 L'exécutable est créé dans le répertoire `/export` et un environnement de test est créé dans `/export-test`.
