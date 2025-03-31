@@ -39,7 +39,6 @@ from common.logger import (
     input_interactive,
     print_interactive_input,
 )
-from utils.i18n.i18n_translate import I18nTranslator
 
 
 def run_babel_command(
@@ -385,6 +384,13 @@ class I18nUpdater:
                 ).upper()
                 or 'N'
             ) == 'Y':
+                # import here not to create a dependency from export.py to translate stuff
+                try:
+                    from utils.i18n.i18n_translate import I18nTranslator
+                except ModuleNotFoundError as error:
+                    print_interactive_error(f'Could not import I18nTranslator: {error}.')
+                    print_interactive_error(f'Make sure all the needed modules for translation are installed by running \'pip install -e .[translate]\'.')
+                    sys.exit(1)
                 for locale in untrusted_locales_with_missing_translations:
                     I18nTranslator(locale).add_missing_translations()
                 print_interactive_info('Inspecting PO files...')

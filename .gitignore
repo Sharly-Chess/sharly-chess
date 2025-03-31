@@ -43,3 +43,6 @@ __pycache__/
 /mprofile_*.dat
 
 .credentials
+/.venv-dev
+/.venv-export
+
