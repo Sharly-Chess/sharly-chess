@@ -246,16 +246,14 @@ class PlayerAdminController(BaseEventAdminController):
         )
         plugin_data = { key: value for data in per_plugin_player_data for key, value in data.items() }
 
-        assert first_name is not None
-        assert last_name is not None
         assert federation is not None
         assert gender is not None
         assert title is not None
 
         return Player(
             id=web_context.admin_player.id if action != 'create' and web_context.admin_player else None,
-            first_name=first_name,
-            last_name=last_name,
+            first_name=first_name or '',
+            last_name=last_name or '',
             date_of_birth=date_of_birth,
             gender=gender,
             mail=mail,

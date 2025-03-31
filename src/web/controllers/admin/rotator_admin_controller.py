@@ -135,19 +135,21 @@ class RotatorAdminController(BaseEventAdminController):
                 else:
                     message_text = WebContext.form_data_to_str(data, field)
             case 'delete':
-                pass
+                uniq_id = uniq_id or ''
             case _:
                 raise ValueError(f'action=[{action}]')
             
         assert uniq_id is not None
+        
+        id: int | None = None
+        if web_context.admin_rotator and action not in [
+            'create',
+            'clone',
+        ]:
+            id = web_context.admin_rotator.id
+            
         return StoredRotator(
-            id=web_context.admin_rotator.id
-            if web_context.admin_rotator and action
-            not in [
-                'create',
-                'clone',
-            ]
-            else None,
+            id=id,
             uniq_id=uniq_id,
             public=bool(public),
             delay=delay,

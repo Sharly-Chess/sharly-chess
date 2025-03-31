@@ -142,20 +142,20 @@ class TimerAdminController(BaseEventAdminController):
                             'Invalid delay [{delay}] (positive integer expected).'
                         ).format(delay=data[field])
             case 'delete':
-                pass
+                uniq_id = uniq_id or ''
             case _:
                 raise ValueError(f'action=[{action}]')
+        
+        id: int | None = None
+        if web_context.admin_timer and action not in [
+            'create',
+            'clone',
+        ]:
+            id = web_context.admin_timer.id
             
-        assert web_context.admin_timer is not None
         assert uniq_id is not None
         return StoredTimer(
-            id=web_context.admin_timer.id
-            if action
-            not in [
-                'create',
-                'clone',
-            ]
-            else None,
+            id=id,
             uniq_id=uniq_id,
             colors=colors,
             delays=delays,

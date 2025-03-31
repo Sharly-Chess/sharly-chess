@@ -100,7 +100,8 @@ class TournamentAdminController(BaseEventAdminController):
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
         if action == 'delete':
-            assert web_context.admin_tournament is not None
+            if web_context.admin_tournament is None:
+                raise RuntimeError("admin_tournament not defined")
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
             elif uniq_id != web_context.admin_tournament.uniq_id:
@@ -210,7 +211,10 @@ class TournamentAdminController(BaseEventAdminController):
                     data, 'last_rounds_no_byes'
                 )
             case 'delete':
-                pass
+                if web_context.admin_tournament is None:
+                    raise RuntimeError(f'{web_context.admin_tournament=} for [{action=}')
+                uniq_id = web_context.admin_tournament.uniq_id
+                name = web_context.admin_tournament.name
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -220,8 +224,6 @@ class TournamentAdminController(BaseEventAdminController):
 
         assert uniq_id is not None
         assert name is not None
-        assert path is not None
-        assert filename is not None
 
         return StoredTournament(
             id=web_context.admin_tournament.id

@@ -435,7 +435,14 @@ class BaseAdminController(BaseController):
                         ).format(color={data[field]})
                 pass
             case 'delete':
-                pass
+                if admin_event is None:
+                    raise RuntimeError(f'{admin_event=} for [{action=}]')
+                # Provide the value needed to create a valid StoredEvent
+                uniq_id = uniq_id or ''
+                name = admin_event.stored_event.name
+                federation = admin_event.stored_event.federation
+                start = admin_event.stored_event.start
+                stop = admin_event.stored_event.stop                
             case _:
                 raise ValueError(f'action=[{action}]')
 

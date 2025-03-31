@@ -278,15 +278,21 @@ class ScreenAdminController(BaseEventAdminController):
                 else:
                     message_text = WebContext.form_data_to_str(data, field)
             case 'delete':
-                pass
+                uniq_id = uniq_id or ''
             case _:
                 raise ValueError(f'action=[{action}]')
             
         assert uniq_id is not None
-        assert web_context.admin_screen is not None
+        
+        id: int | None = None
+        if web_context.admin_screen and action not in [
+            'create',
+            'clone',
+        ]:
+            id = web_context.admin_screen.id
         
         return StoredScreen(
-            id=web_context.admin_screen.id
+            id=id
             if action
             not in [
                 'create',

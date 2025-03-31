@@ -664,7 +664,7 @@ class Event:
         if family_uniq_id is None:
             if family_type is None:
                 raise ValueError('Either family_type or base_uniq_id must be provided.')
-            family_uniq_id = _('{family_type}-screen').format(screen_type=family_type.value)
+            family_uniq_id = _('{family_type}-screen').format(family_type=family_type.value)
         return self._get_unused_item_uniq_id(
             family_uniq_id,
             self.families_by_uniq_id,
