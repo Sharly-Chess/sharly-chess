@@ -158,7 +158,6 @@ class TournamentAdminController(BaseEventAdminController):
                 if create_file and file_path.exists():
                     errors['create_file'] = _('File already exists.')
 
-        name: str | None = None
         path: str | None = None
         filename: str | None = None
         time_control_initial_time: int | None = None
@@ -174,7 +173,7 @@ class TournamentAdminController(BaseEventAdminController):
         last_rounds_no_byes: int | None = None
         match action:
             case 'create' | 'update' | 'clone':
-                name = WebContext.form_data_to_str(data, 'name')
+                name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
                     errors['name'] = _('Please enter the tournament name.')
                 path = WebContext.form_data_to_str(data, 'path')
@@ -223,7 +222,6 @@ class TournamentAdminController(BaseEventAdminController):
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
 
         assert uniq_id is not None
-        assert name is not None
 
         return StoredTournament(
             id=web_context.admin_tournament.id
@@ -434,7 +432,6 @@ class TournamentAdminController(BaseEventAdminController):
                     errors = {}
 
                 plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
-
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
