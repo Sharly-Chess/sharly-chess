@@ -78,7 +78,7 @@ class TimerHour:
     @cached_property
     def round(self) -> int:
         try:
-            return max(int(self.uniq_id), 0)
+            return max(int(self.uniq_id or 0), 0)
         except ValueError:
             return 0
 
