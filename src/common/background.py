@@ -34,5 +34,4 @@ def inline_image_url(image: str | None) -> str:
     if image_type == 'svg':
         return f'data:image/{image_type}+xml;base64,{encoded_data}'
     else:
-        encoded_data = base64.b64encode(data).decode('utf-8')
         return f'data:image/{image_type};base64,{encoded_data}'
