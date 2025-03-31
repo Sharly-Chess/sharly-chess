@@ -1,6 +1,6 @@
 import functools
 import weakref
-from functools import cached_property, cache
+from functools import cached_property
 from math import ceil
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
