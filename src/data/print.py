@@ -308,6 +308,7 @@ class PlayerListPrintDocument(AbstractPlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
         return self.tournament.players_by_name_with_unpaired
 
     @override
@@ -320,6 +321,7 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
     @override
     @property
     def ranking_round(self) -> int:
+        assert self.tournament is not None
         return (
             self._get_option(RoundPrintOption).value or
             self.tournament.max_ranking_round
@@ -327,6 +329,7 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
 
     @property
     def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
         return list(self.tournament.compute_player_ranks(
             after_round=self.ranking_round
         ).values())
