@@ -3,7 +3,7 @@ class Singleton(type):
     Allows the use of class attributes, contrary to the previous solution
     using a class decorator."""
 
-    _instances = {}
+    _instances: dict = {}
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
