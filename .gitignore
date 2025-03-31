@@ -12,6 +12,7 @@ db/
 __pycache__/
 
 /build/
+/dist/
 /export/
 /test/
 /export-test/
