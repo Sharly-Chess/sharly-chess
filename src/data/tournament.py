@@ -587,8 +587,8 @@ class Tournament:
             self._rounds = 0
             self._players_by_id = {}
             self._current_round = 0
-            self._rating_limit1 = None
-            self._rating_limit2 = None
+            self._rating_limit1 = 0
+            self._rating_limit2 = 0
             self._tie_breaks = []
             self._location = ''
             self._start_date = ''
@@ -653,6 +653,7 @@ class Tournament:
                 player, at_round=before_round
             )
             player.compute_points(before_round=before_round)
+            assert player.points is not None
             player.vpoints = player.points + vpoints
 
     def _calculate_player_virtual_points(
