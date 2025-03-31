@@ -138,7 +138,7 @@ class ScreenAdminController(BaseEventAdminController):
         players_show_unpaired: bool | None = None
         results_limit: int | None = None
         results_max_age: int | None = None
-        results_tournament_ids: list[int] | None = None
+        results_tournament_ids: list[int] = []
         ranking_crosstable: bool | None = None
         ranking_round: int | None = None
         ranking_min_points: float | None = None
@@ -284,7 +284,6 @@ class ScreenAdminController(BaseEventAdminController):
             
         assert uniq_id is not None
         assert web_context.admin_screen is not None
-        assert results_tournament_ids is not None
         
         return StoredScreen(
             id=web_context.admin_screen.id
