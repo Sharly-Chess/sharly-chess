@@ -17,7 +17,7 @@ from litestar.params import Body
 from litestar.response import Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import RGB, check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.i18n import (
     set_locale,
     locale_localized_name,
@@ -214,7 +214,7 @@ class WebContext:
     def form_data_to_rgb(
         data: dict[str, str] | None,
         field: str,
-        empty_value: RGB | None = None
+        empty_value: str | None = None
     ) -> str | None:
         if data is None:
             return empty_value
@@ -226,7 +226,7 @@ class WebContext:
         return check_rgb_str(data[field])
 
     def _form_data_to_rgb(
-        self, field: str, empty_value: RGB | None = None
+        self, field: str, empty_value: str | None = None
     ) -> str | None:
         return self.form_data_to_rgb(self.data, field, empty_value)
 
