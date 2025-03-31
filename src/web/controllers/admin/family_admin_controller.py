@@ -269,16 +269,12 @@ class FamilyAdminController(BaseEventAdminController):
                 uniq_id = uniq_id or ''
                 tournament_id = web_context.admin_family.stored_family.tournament_id
                 name = web_context.admin_family.stored_family.name
-                menu_text = web_context.admin_family.stored_family.menu_text
-                menu = web_context.admin_family.stored_family.menu
             case _:
                 raise ValueError(f'action=[{action}]')
 
         assert tournament_id is not None
         assert uniq_id is not None
-        assert menu_text is not None
-        assert menu is not None
-        
+
         id: int | None = None
         if web_context.admin_family and action not in [
             'create',
@@ -295,8 +291,8 @@ class FamilyAdminController(BaseEventAdminController):
             name=name,
             columns=columns,
             menu_link=bool(menu_link),
-            menu_text=menu_text,
-            menu=menu,
+            menu_text=menu_text or '',
+            menu=menu or '',
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
