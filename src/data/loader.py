@@ -11,7 +11,7 @@ from pathlib import Path
 from litestar.contrib.htmx.request import HTMXRequest
 from packaging.version import Version
 
-from common import format_timestamp_date_time, unicode_normalize
+from common import format_timestamp_date_time, unicode_normalize, PAPI_WEB_VERSION
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
@@ -336,7 +336,7 @@ class EventBackupLoader:
 
         compatible_versions = [
             version for version in self.versions(event_id)
-            if version <= PapiWebConfig().version
+            if version <= PAPI_WEB_VERSION
         ]
         if not compatible_versions:
             return None

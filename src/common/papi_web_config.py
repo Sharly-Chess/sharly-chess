@@ -10,7 +10,7 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
-from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES
+from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
     _, trusted_locales, untrusted_locales, set_locale, get_locale, locale_localized_name
@@ -158,10 +158,7 @@ class PapiWebConfig(metaclass=Singleton):
     """ The contact email. """
     mail: str = 'papi-web@echecs-bretagne.fr'
 
-    @property
-    def version(self) -> Version:
-        """The version of the application."""
-        return Version(self.stored_config.version)
+    version = PAPI_WEB_VERSION
 
     @property
     def copyright(self) -> str:

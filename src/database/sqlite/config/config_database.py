@@ -1,30 +1,23 @@
+from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from types import ModuleType
-from typing import Any, Self
+from typing import Any, Self, override, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import PAPI_WEB_VERSION
 from common.logger import get_logger
 from database.sqlite.config import migrations
 from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
-from database.sqlite.migration import AbstractMigrationManager
-from database.sqlite.versioned_database import SQLiteVersionedDatabase
+from database.sqlite.migration_database import MigrationDatabase
+
+if TYPE_CHECKING:
+    from database.sqlite.migration import MigrationManager
 
 logger: Logger = get_logger()
 
 
-class ConfigMigrationManager(AbstractMigrationManager):
-    @property
-    def base_module(self) -> ModuleType:
-        return migrations
-
-
-class ConfigDatabase(SQLiteVersionedDatabase):
-    """
-    The SQLite database class for Papi-web config.
-    """
+class ConfigDatabase(MigrationDatabase):
+    """The SQLite database class for Papi-web config."""
 
     # The file holding the configuration of the application.
     config_database_path: Path = Path('.scc')
@@ -35,31 +28,25 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             self.create()
 
     @classmethod
-    def from_parent(cls, parent: SQLiteVersionedDatabase) -> Self:
-        return cls(parent.write, parent.auto_upgrade)
+    @override
+    def create_instance(
+        cls, file: Path, write: bool = False, auto_upgrade: bool = True
+    ) -> Self:
+        return cls(write, auto_upgrade)
+
+    @cached_property
+    def migration_managers(self) -> list['MigrationManager']:
+        from database.sqlite.migration import DatabaseMigrationManager
+
+        return [DatabaseMigrationManager(self, migrations)]
 
     @property
-    def stored_version(self) -> Version:
-        return Version(self._get_stored_config().version)
-
-    def set_version(self, version: Version):
-        """Sets the version field stored in the database to `version`."""
-        self.execute(
-            'UPDATE `info` SET `version` = ?',
-            (f'{version.major}.{version.minor}.{version.micro}', ),
-        )
-        self._version = version
-
-    @property
-    def migration_manager(self) -> AbstractMigrationManager:
-        return ConfigMigrationManager()
-
-    def insert_creation_values(self):
-        version = PAPI_WEB_VERSION
-        self.execute(
-            "INSERT INTO `info`(`version`, `force_edit`) VALUES(?, ?)",
-            (f'{version.major}.{version.minor}.{version.micro}', True)
-        )
+    def migration_by_legacy_version(self) -> dict[Version, str]:
+        return {
+            Version('2.4.24'): 'm001_create_info_table',
+            Version('2.4.28'): 'm002_create_plugin_table',
+            Version('2.4.30'): 'm003_create_local_source_database_table',
+        }
 
     # ---------------------------------------------------------------------------------
     # StoredConfig
@@ -68,7 +55,6 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     def _row_to_stored_config(self, row: dict[str, Any]) -> StoredConfig:
         """Convert a row to a StoredConfig record."""
         return StoredConfig(
-            version=row['version'],
             force_edit=self.load_bool_from_database_field(row['force_edit']),
             log_level=row['log_level'],
             federation=row['federation'],

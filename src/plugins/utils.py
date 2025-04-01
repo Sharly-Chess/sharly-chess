@@ -4,19 +4,18 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple, override
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from packaging.version import Version
 
 from data.util import IdentifiableEntity
-from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredPlugin
-from database.sqlite.migration import AbstractMigrationManager, AbstractMigration
+
 from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
     from common.engine import Engine
     from database.sqlite.event.event_database import EventDatabase
+    from plugins.migration import PluginMigrationManager
 
 
 class PluginUtils:
@@ -85,6 +84,9 @@ class PluginUtils:
 
 class PluginContext:
     def __init__(self, plugin: 'AbstractPlugin'):
+        from database.sqlite.config.config_database import ConfigDatabase
+        from database.sqlite.config.config_store import StoredPlugin
+
         self.stored_plugin: StoredPlugin | None = None
         with ConfigDatabase() as database:
             self.stored_plugin = database.load_stored_plugin(plugin.id)
@@ -105,15 +107,16 @@ class AbstractPlugin(IdentifiableEntity, ABC):
     @abstractmethod
     def description(self) -> str:
         """Briefly describes the features of the plugin."""
-        pass
 
     @property
     @abstractmethod
     def version(self) -> Version:
-        pass
+        """Version of the plugin."""
 
     @cached_property
-    def migration_manager(self) -> 'PluginMigrationManager | None':
+    def base_migration_module(self) -> ModuleType | None:
+        """Module containing the migration timeline of the module.
+        None if the plugin does not have migrations."""
         return None
 
     @property
@@ -143,26 +146,40 @@ class AbstractPlugin(IdentifiableEntity, ABC):
     def static_path(self) -> Path:
         return PLUGINS_DIR / self.id / 'static'
 
+    def get_migration_manager(
+        self, database: 'EventDatabase'
+    ) -> 'PluginMigrationManager':
+        from plugins.migration import PluginMigrationManager
+
+        assert self.base_migration_module is not None
+        return PluginMigrationManager(
+            database, self.base_migration_module, self
+        )
+
+
     def on_enable(self):
         """Method called when the plugin is enabled."""
-        if self.migration_manager is not None:
+        if self.base_migration_module is not None:
             self._migrate_all_events()
 
     def on_disable(self):
         """Method called when the plugin is disabled."""
-        if self.migration_manager is not None:
+        from plugins.migration import PluginMigrationManager
+
+        if self.base_migration_module is not None:
             self._migrate_all_events(
-                PluginMigrationManager.EMPTY_DATABASE_VERSION
+                PluginMigrationManager.MIGRATION_ZERO
             )
 
-    def _migrate_all_events(self, target_version: Version | None = None):
-        """Migrates all the event databases to version *target_version*."""
+    def _migrate_all_events(self, target_migration: str | None = None):
+        """Migrates all the event databases to migration."""
         from data.loader import EventLoader
         from database.sqlite.event.event_database import EventDatabase
 
         for uniq_id in EventLoader().events_by_id:
             with EventDatabase(uniq_id, True, auto_upgrade=False) as database:
-                self.migration_manager.migrate(database, target_version)
+                if migration_manager := self.get_migration_manager(database):
+                    migration_manager.migrate(target_migration)
 
     def reload_context(self):
         self.context = PluginContext(self)
@@ -174,48 +191,6 @@ class AbstractPlugin(IdentifiableEntity, ABC):
         default: Any = None,
     ) -> Any:
         return PluginUtils.get_plugin_data(self.id, plugin_data, field, default)
-
-
-class PluginMigrationManager(AbstractMigrationManager):
-    def __init__(
-        self,
-        plugin: AbstractPlugin,
-        migration_module: ModuleType,
-        cli_usage: bool = False,
-    ):
-        super().__init__(cli_usage)
-        self._latest_version = plugin.version
-        self.plugin_id = plugin.id
-        self._migration_module = migration_module
-
-    @property
-    def base_module(self) -> ModuleType:
-        return self._migration_module
-
-    @override
-    @property
-    def latest_version(self) -> Version:
-        return self._latest_version
-
-    @override
-    def get_version(self, database: 'EventDatabase') -> Version:
-        return (
-            database.get_plugin_version(self.plugin_id)
-            or self.EMPTY_DATABASE_VERSION
-        )
-
-    @override
-    def set_version(self, database: 'EventDatabase', version: Version):
-        database.set_plugin_version(self.plugin_id, version)
-
-
-class AbstractPluginMigration(AbstractMigration, ABC):
-    @override
-    @abstractmethod
-    def backward(self):
-        """As plugins are meant to be removable,
-        all migrations need to be reversible."""
-        pass
 
 
 @dataclass

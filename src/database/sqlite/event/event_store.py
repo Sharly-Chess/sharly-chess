@@ -165,7 +165,6 @@ class StoredEvent:
     update_password: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
-    version: str | None = None
     timer_colors: dict[int, str | None] = None
     timer_delays: dict[int, int | None] = None
     message_text: str | None = None

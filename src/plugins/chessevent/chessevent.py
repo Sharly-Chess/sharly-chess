@@ -1,14 +1,16 @@
-from functools import cached_property
+from types import ModuleType
 from typing import Any, TYPE_CHECKING, override
 
 from packaging.version import Version
 
 from common.i18n import _
+from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.chessevent.utils import ChessEventUtils
 from plugins.hookspec import hookimpl
-from plugins.utils import PluginMigrationManager, PluginEngineArgument, AbstractPlugin
+from plugins.migration import PluginMigrationManager
+from plugins.utils import PluginEngineArgument, AbstractPlugin
 
 from web.controllers.base_controller import WebContext
 
@@ -44,17 +46,19 @@ class ChessEventPlugin(AbstractPlugin):
         return True
 
     @override
-    @cached_property
-    def migration_manager(self) -> PluginMigrationManager:
-        return PluginMigrationManager(self, migrations)
+    @property
+    def base_migration_module(self) -> ModuleType:
+        return migrations
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_event_migration_manager(self) -> PluginMigrationManager:
-        return self.migration_manager
+    def get_event_migration_manager(
+        self, event_database: EventDatabase
+    ) -> PluginMigrationManager:
+        return self.get_migration_manager(event_database)
 
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
