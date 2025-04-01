@@ -35,7 +35,7 @@ class Migration(BaseMigration):
         self.database.execute(
             "INSERT INTO `info` "
             "(`name`, `start`, `stop`, `last_update`) "
-            "VALUES(?, ?, ?, ?, ?)",
+            "VALUES(?, ?, ?, ?)",
             (
                 self.database.file.stem,
                 event_start,

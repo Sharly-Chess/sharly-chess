@@ -61,8 +61,8 @@ class MigrationDatabase(SQLiteDatabase, ABC):
 
     def is_metadata_table_installed(self) -> bool:
         try:
-            self.execute('SELECT * FROM `metadata`')
-            return self.fetchone() != {}
+            self.execute('SELECT 1 FROM `metadata`')
+            return '1' in self.fetchone()
         except OperationalError:
             return False
 
