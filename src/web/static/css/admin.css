@@ -24,14 +24,3 @@
 .fide-id-none {
     opacity: 0.3;
 }
-.database-badge {
-    bottom: 1px;
-    display: flex;
-    right: -3px;
-    font-size: 10px;
-    width: 14px;
-    height: 14px;
-    align-items: center;
-    justify-content: center;
-    line-height: 0;
-}

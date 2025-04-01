@@ -1,6 +1,15 @@
 <span
-    class="database-badge position-absolute p-0 rounded-circle bg-danger"
-    style="font-size: 15px"
+    class="position-absolute p-0 rounded-circle bg-danger"
+    style="
+        bottom: 1px;
+        display: flex;
+        right: -3px;
+        font-size: 15px;
+        width: 14px;
+        height: 14px;
+        align-items: center;
+        justify-content: center;
+        line-height: 0;"
     hx-get="{{ url_for('admin-database-status-badge') }}"
     hx-trigger="database-update-launched from:body"
     hx-target="this"
