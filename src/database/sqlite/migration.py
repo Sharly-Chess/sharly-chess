@@ -130,7 +130,7 @@ class MigrationManager[MigrationDatabase](ABC):
         if version > self.latest_version:
             raise PapiWebException(
                 f'Database version [{version}] is after current app version '
-                f'{self.latest_version}, please consider upgrading.'
+                f'{self.latest_version}.'
             )
         status = True
         if version < self.latest_version:
@@ -139,8 +139,7 @@ class MigrationManager[MigrationDatabase](ABC):
         if migration not in self.migrations + [self.MIGRATION_ZERO]:
             if migration > self.migrations[-1]:
                 message = (
-                    'Database can only be opened by a next version '
-                    'of Papi-Web, please consider upgrading.'
+                    'Database can only be opened by a next version of Papi-Web'
                 )
             elif migration < self.migrations[0]:
                 message = (
