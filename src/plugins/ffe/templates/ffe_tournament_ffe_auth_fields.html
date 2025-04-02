@@ -11,6 +11,9 @@
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
+            hx_vals='js:{ffe_password_visible: $("#ffe-password").attr("type") === "text"}',
+            hx_sync="closest .auth-fields:replace",
+            hx_indicator="unset",
             data=data, errors=errors
         ) }}
     </div>
@@ -27,6 +30,8 @@
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
             hx_vals='js:{ffe_password_visible: $("#ffe-password").attr("type") === "text"}',
+            hx_sync="closest .auth-fields:replace",
+            hx_indicator="unset",
             data=data, errors=errors
         ) }}
     </div>

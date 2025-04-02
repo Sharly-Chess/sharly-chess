@@ -187,6 +187,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     hx_get='',
     hx_post='',
     hx_target='',
+    hx_indicator='',
     hx_indicator_img='',
     hx_trigger='',
     hx_include='',
@@ -305,6 +306,9 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                         {% if hx_target %}
                             hx-target="{{ hx_target }}"
                         {% endif %}
+                        {% if hx_indicator %}
+                            hx-indicator="{{ hx_indicator }}"
+                        {% endif %}
                         {% if hx_indicator_img %}
                             hx-indicator="#{{ id }}_indicator"
                         {% endif %}
@@ -402,6 +406,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     hx_include='',
     hx_target='',
     hx_swap='',
+    hx_indicator='',
     hx_indicator_img='',
     hx_on_before_request='',
     hx_on_after_request='',
@@ -428,6 +433,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         hx_target=hx_target,
         hx_swap=hx_swap,
         hx_include=hx_include,
+        hx_indicator=hx_indicator,
         hx_indicator_img=hx_indicator_img,
         hx_on_before_request=hx_on_before_request,
         hx_on_after_request=hx_on_after_request,
@@ -457,7 +463,11 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     hx_include='',
     hx_target='',
     hx_swap='',
+    hx_indicator='',
     hx_indicator_img='',
+    hx_on_before_request='',
+    hx_on_after_request='',
+    hx_sync='',
     hx_vals=''
 ) %}
     {{ _generic_input(
@@ -476,13 +486,17 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         number_max=max,
         number_step=step,
         disabled=disabled,
-            hx_get=hx_get,
+        hx_get=hx_get,
         hx_post=hx_post,
         hx_trigger=hx_trigger,
         hx_target=hx_target,
         hx_swap=hx_swap,
         hx_include=hx_include,
+        hx_indicator=hx_indicator,
         hx_indicator_img=hx_indicator_img,
+        hx_on_before_request=hx_on_before_request,
+        hx_on_after_request=hx_on_after_request,
+        hx_sync=hx_sync,
         hx_vals=hx_vals
     ) }}
 {% endmacro %}
@@ -504,7 +518,11 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     hx_include='',
     hx_target='',
     hx_swap='',
+    hx_indicator='',
     hx_indicator_img='',
+    hx_on_before_request='',
+    hx_on_after_request='',
+    hx_sync='',
     hx_vals=''
 ) %}
     {{ _generic_input(
@@ -525,7 +543,11 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         hx_target=hx_target,
         hx_swap=hx_swap,
         hx_include=hx_include,
+        hx_indicator=hx_indicator,
         hx_indicator_img=hx_indicator_img,
+        hx_on_before_request=hx_on_before_request,
+        hx_on_after_request=hx_on_after_request,
+        hx_sync=hx_sync,
         hx_vals=hx_vals
     ) }}
 {% endmacro %}
