@@ -280,7 +280,9 @@ class FFESession(Session):
     
 
     def test_auth(self, ffe_id: str | None, ffe_password: str | None):
-        """Tries to authenticate on the FFE admin website for the tournament."""
+        """Tries to authenticate on the FFE admin website for the tournament.
+        Returns True on success, False if the credentials are incorrect, or
+        None if they couldn't be tested"""
 
         logger.info(_('Tournament [{ffe_id}]:').format(ffe_id=ffe_id))
         if not self._ffe_init():

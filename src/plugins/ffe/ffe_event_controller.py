@@ -64,7 +64,7 @@ class FfeAdminEventController(BaseEventAdminController):
         path='/ffe/test-auth',
         name='ffe-test-auth',
     )
-    async def htmx_admin_timer_clone(
+    async def htmx_ffe_test_auth(
         self,
         request: HTMXRequest,
         data: Annotated[
