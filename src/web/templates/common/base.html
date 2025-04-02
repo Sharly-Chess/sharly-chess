@@ -127,8 +127,10 @@
                         var parent = target.closest('*[data-bs-toggle="tooltip"]')
                         if (parent) {
                             parent.tooltip('disable');
-                            target.one('blur', function() {
+                            target.one('blur mouseover', function() {
                                 parent.tooltip('enable');
+                                target.blur();
+                                target.focus();
                             })
                         }
 
