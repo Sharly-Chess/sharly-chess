@@ -169,7 +169,6 @@ class TieBreakUtils:
                 ):
                     score += Result.DRAW.points(tournament.point_values)
                 else:
-                    assert pairing.result is not None
                     score += pairing.result.points(tournament.point_values)
             else:
                 assert pairing.result is not None
