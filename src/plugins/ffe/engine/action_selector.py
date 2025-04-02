@@ -206,7 +206,9 @@ class ActionSelector(metaclass=Singleton):
                 )
                 return True
             for tournament in tournaments:
-                FFESession(tournament, debug=False).test_auth()
+                ffe_session: FFESession = FFESession(tournament, debug=False)
+                (ffe_id, ffe_password) = ffe_session.get_id_and_password(True)
+                ffe_session.test_auth(ffe_id=ffe_id, ffe_password=ffe_password)
             return True
         if choice == visible_answer:
             tournaments = self.__get_qualified_tournaments_with_existing_file(

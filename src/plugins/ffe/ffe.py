@@ -125,7 +125,8 @@ class FfePlugin(AbstractPlugin):
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
             'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
-            'ffe_leagues': self.FFE_LEAGUES
+            'ffe_leagues': self.FFE_LEAGUES,
+            'ffe_auth_valid': "",
         }
 
     @hookimpl
