@@ -45,22 +45,13 @@ logger: Logger = get_logger()
 class EventDatabase(MigrationDatabase):
     """The SQLite database class for Papi-web events."""
 
-    def __init__(
-        self,
-        uniq_id: str,
-        write: bool = False,
-        auto_upgrade: bool = True,
-    ):
+    def __init__(self, uniq_id: str, write: bool = False):
         self.uniq_id = uniq_id
-        super().__init__(
-            self.event_database_path(self.uniq_id), write, auto_upgrade
-        )
+        super().__init__(self.event_database_path(self.uniq_id), write)
 
     @classmethod
-    def create_instance(
-        cls, file: Path, write: bool = False, auto_upgrade: bool = True
-    ) -> Self:
-        return cls(file.stem, write, auto_upgrade)
+    def create_instance(cls, file: Path, write: bool = False) -> Self:
+        return cls(file.stem, write)
 
     @cached_property
     def migration_managers(self) -> list['MigrationManager']:

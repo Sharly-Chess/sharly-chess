@@ -5,6 +5,7 @@ from typing import Any, Self, override, TYPE_CHECKING
 
 from packaging.version import Version
 
+from common.exception import PapiWebException
 from common.logger import get_logger
 from database.sqlite.config import migrations
 from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
@@ -21,18 +22,19 @@ class ConfigDatabase(MigrationDatabase):
 
     # The file holding the configuration of the application.
     config_database_path: Path = Path('.scc')
+    is_setup = False
 
-    def __init__(self, write: bool = False, auto_upgrade: bool = True):
-        super().__init__(self.config_database_path, write, auto_upgrade)
-        if not self.exists():
-            self.create()
+    def __init__(self, write: bool = False):
+        super().__init__(self.config_database_path, write)
+        if not self.is_setup:
+            self.__class__.is_setup = True
+            self.setup()
+
 
     @classmethod
     @override
-    def create_instance(
-        cls, file: Path, write: bool = False, auto_upgrade: bool = True
-    ) -> Self:
-        return cls(write, auto_upgrade)
+    def create_instance(cls, file: Path, write: bool = False) -> Self:
+        return cls(write)
 
     @cached_property
     def migration_managers(self) -> list['MigrationManager']:
@@ -47,6 +49,24 @@ class ConfigDatabase(MigrationDatabase):
             Version('2.4.28'): 'm002_create_plugin_table',
             Version('2.4.30'): 'm003_create_local_source_database_table',
         }
+
+    @classmethod
+    def setup(cls):
+        """Setup the config database. If it does not exist, create it.
+        If it is not up to date, update it."""
+        database = cls()
+        if not database.exists():
+            database.create()
+        else:
+            try:
+                with database:
+                    status = database.check_status()
+                if not status:
+                    with cls(True) as write_database:
+                        write_database.upgrade()
+            except PapiWebException as e:
+                logger.error(e)
+                database.create()
 
     # ---------------------------------------------------------------------------------
     # StoredConfig
