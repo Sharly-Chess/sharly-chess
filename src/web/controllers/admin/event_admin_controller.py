@@ -403,7 +403,7 @@ class EventAdminController(BaseEventAdminController):
         try:
             tournament_id = WebContext.form_data_to_int(data, field)
             if not tournament_id:
-                raise ValueError()
+                raise ValueError("Tournament ID not supplied")
             tournament = web_context.admin_event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
