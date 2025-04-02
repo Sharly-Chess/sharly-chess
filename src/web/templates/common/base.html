@@ -156,6 +156,26 @@
                     closeTooltips();
                 }
 
+                window.addEventListener('show.bs.modal', function(event) {
+                    var target = $(event.relatedTarget);
+                    if (!target) return;
+                    
+                    {# After a modal closes, bootstrap refocusses the element causing the tooltip to reopen.
+                       We disable the tooltip until the button loses focus.  #}
+                    target.one("focus", function(event) {
+                        var parent = target.closest('*[data-bs-toggle="tooltip"]')
+                        if (parent) {
+                            parent.tooltip('disable');
+                            target.one('blur mouseover', function() {
+                                parent.tooltip('enable');
+                                target.blur();
+                                target.focus();
+                            })
+                        }
+
+                    })
+                });
+
                 window.addEventListener("modal_opened", function(event) {
                     closeTooltips();
                     activateTooltips();
