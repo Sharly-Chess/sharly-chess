@@ -82,6 +82,7 @@ class EventUserController(BaseUserController):
     def _user_event_render(
         web_context: EventUserWebContext,
     ) -> Template:
+        assert web_context.user_event is not None
         input_screens: list[Screen]
         boards_screens: list[Screen]
         players_screens: list[Screen]
@@ -191,13 +192,13 @@ class EventUserController(BaseUserController):
         event: Event,
         date: float,
     ) -> bool:
-        if event.last_update > date:
+        if event.last_update and event.last_update > date:
             return True
         for screen in event.basic_screens_by_id.values():
             if screen.last_update > date:
                 return True
             for screen_set in screen.screen_sets_by_id.values():
-                if screen_set.last_update > date:
+                if screen_set.last_update and screen_set.last_update > date:
                     return True
                 if screen_set.tournament.last_update > date:
                     return True
@@ -215,10 +216,11 @@ class EventUserController(BaseUserController):
                 if screen_set.tournament.last_check_in_update > date:
                     return True
             if screen.type == ScreenType.RESULTS:
+                assert screen.event is not None
                 results_tournament_ids: list[int] = (
                     screen.results_tournament_ids
                     if screen.results_tournament_ids
-                    else event.tournaments_by_id.keys()
+                    else list(event.tournaments_by_id.keys())
                 )
                 for tournament_id in results_tournament_ids:
                     with suppress(KeyError):
@@ -230,7 +232,7 @@ class EventUserController(BaseUserController):
                         ):
                             return True
         for family in event.families_by_id.values():
-            if family.last_update > date:
+            if family.last_update and family.last_update > date:
                 return True
             if family.tournament.last_update > date:
                 return True
@@ -265,6 +267,8 @@ class EventUserController(BaseUserController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.user_event is None:
+            raise RuntimeError("user_event not defined")
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_event_refresh_needed(
             web_context.user_event, date

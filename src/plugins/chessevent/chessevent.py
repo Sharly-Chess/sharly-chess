@@ -13,6 +13,7 @@ from plugins.utils import PluginMigrationManager, PluginEngineArgument, Abstract
 from web.controllers.base_controller import WebContext
 
 if TYPE_CHECKING:
+    from data.event import Event
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament

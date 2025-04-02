@@ -37,6 +37,7 @@
     "domloup",
     "Domloupéen",
     "Echiquier",
+    "elif",
     "endfor",
     "endmacro",
     "euse",
@@ -84,7 +85,9 @@
     "mktime",
     "morphdom",
     "mshe",
+    "newstyle",
     "noconfirm",
+    "nowrap",
     "odbc",
     "ODBC",
     "onefile",
@@ -96,6 +99,7 @@
     "Prenom",
     "pyinstaller",
     "pyodbc",
+    "Rapide",
     "REGAUD",
     "Regle",
     "Reswap",
@@ -130,5 +134,8 @@
     "XAMPP",
     "XNNNNN"
   ],
-  "cSpell.language": "en,fr-FR,en-GB,fr"
+  "cSpell.language": "en,fr-FR,en-GB,fr",
+  "files.associations": {
+    "*.html": "jinja"
+  }
 }

@@ -101,10 +101,14 @@ class Tournament:
 
     @property
     def event(self) -> 'Event':
-        return self._event_ref()
+        event = self._event_ref()
+        if event is None:
+            raise RuntimeError("Event reference has been garbage collected")
+        return event
 
     @property
     def id(self) -> int:
+        assert self.stored_tournament.id is not None
         return self.stored_tournament.id
 
     @property
@@ -198,7 +202,7 @@ class Tournament:
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
         if self.finished or self.playing or not self.check_in_open:
             return {
-                None: self.players_by_id.values(),
+                None: list(self.players_by_id.values()),
                 True: [],
                 False: [],
             }
@@ -583,8 +587,8 @@ class Tournament:
             self._rounds = 0
             self._players_by_id = {}
             self._current_round = 0
-            self._rating_limit1 = None
-            self._rating_limit2 = None
+            self._rating_limit1 = 0
+            self._rating_limit2 = 0
             self._tie_breaks = []
             self._location = ''
             self._start_date = ''
@@ -649,6 +653,7 @@ class Tournament:
                 player, at_round=before_round
             )
             player.compute_points(before_round=before_round)
+            assert player.points is not None
             player.vpoints = player.points + vpoints
 
     def _calculate_player_virtual_points(

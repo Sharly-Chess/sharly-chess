@@ -6,7 +6,7 @@ from typing import Any, Self
 from logging import Logger
 from collections.abc import AsyncIterator
 from common.network import NetworkMonitor
-import pyodbc
+import pyodbc  # type: ignore
 import aioodbc
 
 from common import DEVEL_ENV
@@ -124,6 +124,7 @@ class SqlServer:
             logger.error(error)
             raise PapiWebException(error or _('Connection to the FFE server failed.')) from e
 
+        assert self.database is not None
         try:
             self.cursor = await self.database.cursor()
         except pyodbc.Error as e:
@@ -139,15 +140,23 @@ class SqlServer:
     async def __aexit__(self, exc_type, exc_value, tb):
         """Closes the database connection."""
         if self.database is not None:
-            await self.cursor.close()
-            del self.cursor
-            self.cursor = None
+            if self.cursor is not None:
+                await self.cursor.close()
+                del self.cursor
+                self.cursor = None
             await self.database.close()
             del self.database
             self.database = None
 
+    def _check_cursor(self):
+        """Check that the cursor is available."""
+        if self.cursor is None:
+            raise RuntimeError("Database connection not established")
+
     async def execute(self, query: str, params: tuple = ()):
         """Executes the prepare query with the given parameters."""
+        self._check_cursor()
+        assert self.cursor is not None
         try:
             await self.cursor.execute(query, params)
         except pyodbc.Error as e:
@@ -161,6 +170,8 @@ class SqlServer:
     async def fetchall(self) -> AsyncIterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
+        self._check_cursor()
+        assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         while row := await self.cursor.fetchone():
             yield dict(zip(columns, row))
@@ -170,13 +181,19 @@ class SqlServer:
         {column_name: value, ...}.
         Repeated applications of this method will advance the database cursor
         and return different row data."""
+        self._check_cursor()
+        assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         return dict(zip(columns, await self.cursor.fetchone()))
 
     async def fetchval(self) -> Any:
         """Returns the next database cursor value."""
+        self._check_cursor()
+        assert self.cursor is not None
         return await self.cursor.fetchval()
 
     async def commit(self):
         """Commits the pending transaction."""
+        self._check_cursor()
+        assert self.cursor is not None
         await self.cursor.commit()

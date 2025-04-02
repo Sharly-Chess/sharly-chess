@@ -1,3 +1,4 @@
+
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
@@ -31,7 +32,8 @@ if TYPE_CHECKING:
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
 
-
+# pylint: disable=empty-body
+# mypy: disable-error-code=empty-body
 class AppHookSpecs:
     """Holds all hookspecs for this application"""
     

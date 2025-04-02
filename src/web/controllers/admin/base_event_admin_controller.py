@@ -13,7 +13,6 @@ from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
-from data.print import PrintDocumentManager
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -56,6 +55,8 @@ class BaseEventAdminWebContext(AdminWebContext):
         }
 
     def get_tournament_options(self) -> dict[str, str]:
+        if self.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         return {
             self.value_to_form_data(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
@@ -68,6 +69,8 @@ class BaseEventAdminController(BaseAdminController):
         cls,
         web_context: BaseEventAdminWebContext,
     ) -> dict[str, Any]:
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         admin_event: Event = web_context.admin_event
         logging_levels: dict[int, dict[str, str]] = {
             logging.DEBUG: {

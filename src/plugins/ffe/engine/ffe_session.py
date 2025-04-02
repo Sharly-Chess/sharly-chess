@@ -76,7 +76,7 @@ class FFESession(Session):
                     'read_url(%s), method=%s', url, 'POST' if data or files else 'GET'
                 )
             if not data and not files:
-                response: Response = self.get(url)
+                response = self.get(url)
             else:
                 if self.debug:
                     if data:
@@ -141,7 +141,7 @@ class FFESession(Session):
         return None
 
     def _parse_html_content(
-        self, html: str
+        self, html
     ) -> tuple[AdvancedHTMLParser | None, str | None]:
         """Parses any HTML content received and returns the parsed content
         (as an HTML parser) and an error (as a string) if any (or None)"""
@@ -155,7 +155,7 @@ class FFESession(Session):
             )
             debug_file = (
                 TMP_DIR
-                / f'{self.last_url_read.replace("/", "_")}-{date_str}-parsed.html'
+                / f'{(self.last_url_read or "").replace("/", "_")}-{date_str}-parsed.html'
             )
             with open(debug_file, 'w', encoding='utf-8') as file:
                 file.write(parser.getHTML())

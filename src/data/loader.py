@@ -24,8 +24,8 @@ logger: Logger = get_logger()
 
 class EventLoader:
     def __init__(self):
-        self._loaded_stored_events_by_id: dict[str, StoredEvent | None] = {}
-        self._loaded_events_by_id: dict[str, Event | None] = {}
+        self._loaded_stored_events_by_id: dict[str, StoredEvent] = {}
+        self._loaded_events_by_id: dict[str, Event] = {}
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -58,7 +58,7 @@ class EventLoader:
 
     def load_stored_event(self, uniq_id: str) -> StoredEvent:
         try:
-            return self._loaded_stored_events_by_id[uniq_id]
+            return self._loaded_stored_events_by_id[uniq_id] 
         except KeyError:
             with EventDatabase(uniq_id) as event_database:
                 self._loaded_stored_events_by_id[uniq_id] = (

@@ -85,7 +85,7 @@ except PermissionError as pe:
 def check_rgb_str(color: str) -> str:
     """Checks if a string is in #rrggbb format
     returns it back if it is, raises ValueError otherwise."""
-    rgb: RGB = hexa_to_rgb(color)
+    rgb: RGB | None = hexa_to_rgb(color)
     if rgb:
         return rgb_to_hexa(rgb)
     raise ValueError(f'check_rgb_str(color={color})')
@@ -97,7 +97,7 @@ def hexa_to_rgb(color: str) -> RGB | None:
         '^#?(?P<R>[0-9a-f]{2})(?P<G>[0-9a-f]{2})(?P<B>[0-9a-f]{2})$'
     )
     if matches := hex_pattern.match(color.strip().lower()):
-        return (
+        return RGB(
             int(matches.group('R'), 16),
             int(matches.group('G'), 16),
             int(matches.group('B'), 16),

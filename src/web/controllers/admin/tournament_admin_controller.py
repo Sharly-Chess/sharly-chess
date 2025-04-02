@@ -63,6 +63,8 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
             data=data,
         )
+        assert self.admin_event is not None
+        
         self.admin_tournament: Tournament | None = None
         if self.error:
             return
@@ -90,13 +92,16 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext,
         data: dict[str, str] | None = None,
     ) -> StoredTournament:
+        assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id')
+        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
         if action == 'delete':
+            if web_context.admin_tournament is None:
+                raise RuntimeError("admin_tournament not defined")
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
             elif uniq_id != web_context.admin_tournament.uniq_id:
@@ -116,6 +121,7 @@ class TournamentAdminController(BaseEventAdminController):
                                 'Tournament [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
+                        assert web_context.admin_tournament is not None
                         if (
                             uniq_id != web_context.admin_tournament.uniq_id
                             and uniq_id
@@ -152,7 +158,6 @@ class TournamentAdminController(BaseEventAdminController):
                 if create_file and file_path.exists():
                     errors['create_file'] = _('File already exists.')
 
-        name: str | None = None
         path: str | None = None
         filename: str | None = None
         time_control_initial_time: int | None = None
@@ -168,7 +173,7 @@ class TournamentAdminController(BaseEventAdminController):
         last_rounds_no_byes: int | None = None
         match action:
             case 'create' | 'update' | 'clone':
-                name = WebContext.form_data_to_str(data, 'name')
+                name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
                     errors['name'] = _('Please enter the tournament name.')
                 path = WebContext.form_data_to_str(data, 'path')
@@ -205,7 +210,10 @@ class TournamentAdminController(BaseEventAdminController):
                     data, 'last_rounds_no_byes'
                 )
             case 'delete':
-                pass
+                if web_context.admin_tournament is None:
+                    raise RuntimeError(f'{web_context.admin_tournament=} for [{action=}')
+                uniq_id = web_context.admin_tournament.uniq_id
+                name = web_context.admin_tournament.name
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -213,9 +221,11 @@ class TournamentAdminController(BaseEventAdminController):
         per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
         plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
 
+        assert uniq_id is not None
+
         return StoredTournament(
             id=web_context.admin_tournament.id
-            if action
+            if web_context.admin_tournament and action
             not in [
                 'create',
                 'clone',
@@ -261,8 +271,10 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         admin_event: Event = web_context.admin_event
-        admin_tournament: Tournament = web_context.admin_tournament
+        admin_tournament: Tournament | None = web_context.admin_tournament
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
@@ -302,12 +314,14 @@ class TournamentAdminController(BaseEventAdminController):
                     name: str | None = None
                     match action:
                         case 'update':
+                            assert admin_tournament is not None
                             uniq_id = admin_tournament.stored_tournament.uniq_id
                             name = admin_tournament.stored_tournament.name
                         case 'create':
                             uniq_id = admin_event.get_unused_tournament_uniq_id()
                             name = admin_event.get_unused_tournament_name()
                         case 'clone':
+                            assert admin_tournament is not None
                             uniq_id = admin_event.get_unused_tournament_uniq_id(
                                 admin_tournament.stored_tournament.uniq_id
                             )
@@ -336,7 +350,9 @@ class TournamentAdminController(BaseEventAdminController):
                     tie_break_3: str | None = None
                     match action:
                         case 'update' | 'clone':
-                            path = web_context.admin_tournament.stored_tournament.path
+                            assert admin_tournament is not None
+                            assert admin_tournament.stored_tournament is not None
+                            path = admin_tournament.stored_tournament.path
                             time_control_initial_time = admin_tournament.stored_tournament.time_control_initial_time
                             time_control_increment = admin_tournament.stored_tournament.time_control_increment
                             time_control_handicap_penalty_value = admin_tournament.stored_tournament.time_control_handicap_penalty_value
@@ -356,11 +372,13 @@ class TournamentAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update':
+                            assert admin_tournament is not None
+                            assert admin_tournament.stored_tournament is not None
                             filename = (
-                                web_context.admin_tournament.stored_tournament.filename
+                                admin_tournament.stored_tournament.filename
                             )
-                            if web_context.admin_tournament.file_exists:
-                                tie_breaks = web_context.admin_tournament.tie_breaks
+                            if admin_tournament.file_exists:
+                                tie_breaks = admin_tournament.tie_breaks
                                 tie_break_1, tie_break_2, tie_break_3 = (
                                     tie_breaks.pop(0).id if tie_breaks else None
                                     for _ in range(3)
@@ -414,7 +432,6 @@ class TournamentAdminController(BaseEventAdminController):
                     errors = {}
 
                 plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
-
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
@@ -506,6 +523,8 @@ class TournamentAdminController(BaseEventAdminController):
             request, event_uniq_id, tournament_id, None
         )
         tournament = context.admin_tournament
+        if tournament is None:
+            raise RuntimeError("tournament not defined")
         temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
         with temp_file as file:
             trf.dump(file, tournament.to_trf(trf_type))
@@ -524,6 +543,7 @@ class TournamentAdminController(BaseEventAdminController):
             request, event_uniq_id, tournament_id, None
         )
         tournament = context.admin_tournament
+        assert tournament is not None
         BbpPairings().generate_pairings(tournament)
         tournament.read_papi(True)
         Message.success(
@@ -550,6 +570,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, None, data
         )
+        assert web_context.admin_event is not None
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
@@ -563,7 +584,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _extract_papi_file_path(data: [str, str], event: Event) -> Path:
+    def _extract_papi_file_path(data: dict[str, str], event: Event) -> Path:
         dir_path = Path(WebContext.form_data_to_str(data, 'path') or event.path)
         file_name = (
             WebContext.form_data_to_str(data, 'filename') or
@@ -594,6 +615,8 @@ class TournamentAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         stored_tournament: StoredTournament = (
             self._admin_validate_tournament_update_data(action, web_context, data)
         )
@@ -668,6 +691,8 @@ class TournamentAdminController(BaseEventAdminController):
                                     message_text=None,
                                 )
                             )
+                            assert stored_screen.id is not None
+                            assert stored_tournament.id is not None
                             event_database.add_stored_screen_set(
                                 stored_screen.id, stored_tournament.id
                             )
@@ -710,6 +735,7 @@ class TournamentAdminController(BaseEventAdminController):
                         request, event_uniq_id=event_uniq_id
                     )
                 case 'delete':
+                    assert web_context.admin_tournament is not None
                     event_database.delete_stored_tournament(
                         web_context.admin_tournament.id
                     )
@@ -816,7 +842,8 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-
+        if web_context.admin_tournament is None:
+            raise RuntimeError("admin_tournament not defined")
         admin_tournament: Tournament = web_context.admin_tournament
         template_context: dict[str, Any] = (
             self._get_admin_event_render_context(web_context)
@@ -831,7 +858,7 @@ class TournamentAdminController(BaseEventAdminController):
                 option.default_value,
             )
             options.append(type(option)(value))
-        document = document_type(options, admin_tournament)
+        print_document = document_type(options, admin_tournament)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=document
@@ -842,15 +869,15 @@ class TournamentAdminController(BaseEventAdminController):
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
         per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
-            document=document
+            document=print_document
         )
         extra_css: str = '\n'.join(per_plugin_css)
 
         template_context |= {
-            'document': document,
+            'document': print_document,
             'extra_columns': extra_columns,
             'extra_css': extra_css,
-        } | document.template_context
+        } | print_document.template_context
         return HTMXTemplate(
-            template_name=document.template_name, context=template_context
+            template_name=print_document.template_name, context=template_context
         )
