@@ -9,7 +9,7 @@ from types import ModuleType
 
 from packaging.version import Version
 
-from common import DEVEL_ENV, PAPI_WEB_VERSION
+from common import DEVEL_ENV, PAPI_WEB_VERSION, APP_NAME
 from common.exception import PapiWebException
 from common.logger import get_logger
 from database.sqlite.migration_database import MigrationDatabase
@@ -139,12 +139,13 @@ class MigrationManager[MigrationDatabase](ABC):
         if migration not in self.migrations + [self.MIGRATION_ZERO]:
             if migration > self.migrations[-1]:
                 message = (
-                    'Database can only be opened by a next version of Papi-Web'
+                    'Database can only be opened by a '
+                    f'next version of {APP_NAME}.'
                 )
             elif migration < self.migrations[0]:
                 message = (
                     'Database can only be opened by a '
-                    'previous version of Papi-Web.'
+                    f'previous version of {APP_NAME}.'
                 )
             else:
                 message = 'A migration was most likely renamed.'
