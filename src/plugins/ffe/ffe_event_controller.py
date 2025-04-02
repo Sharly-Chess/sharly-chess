@@ -61,8 +61,8 @@ class FfeAdminEventController(BaseEventAdminController):
         )
     
     @post(
-        path='/ffe/test-password',
-        name='ffe-admin-tournament-test-auth',
+        path='/ffe/test-auth',
+        name='ffe-test-auth',
     )
     async def htmx_admin_timer_clone(
         self,
