@@ -112,8 +112,8 @@ class FFESession(Session):
                     datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
                 )
                 debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
-                with open(debug_file, 'w', encoding='utf-8') as file:
-                    file.write(content)
+                with open(debug_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
                 logger.info('Raw content stored to %s.', debug_file)
             return content
         except ConnectionError as ex:

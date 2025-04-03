@@ -102,6 +102,7 @@ class FamilyAdminController(BaseEventAdminController):
         menu_text: str | None = None
         menu: str | None = None
         columns: int | None = None
+        font_size: int | None = None
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
@@ -177,6 +178,11 @@ class FamilyAdminController(BaseEventAdminController):
                 field = 'columns'
                 try:
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
+                except ValueError:
+                    errors[field] = _('A positive integer is expected.')
+                field = 'font_size'
+                try:
+                    font_size = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
@@ -290,6 +296,7 @@ class FamilyAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             name=name,
             columns=columns,
+            font_size=font_size,
             menu_link=bool(menu_link),
             menu_text=menu_text or '',
             menu=menu or '',
@@ -353,6 +360,7 @@ class FamilyAdminController(BaseEventAdminController):
                     menu_text: str | None = None
                     menu: str | None = None
                     columns: int | None = None
+                    font_size: int | None = None
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
@@ -404,6 +412,7 @@ class FamilyAdminController(BaseEventAdminController):
                                 web_context.admin_family.stored_family.tournament_id
                             )
                             columns = web_context.admin_family.stored_family.columns
+                            font_size = web_context.admin_family.stored_family.font_size
                             menu_link = web_context.admin_family.stored_family.menu_link
                             menu_text = web_context.admin_family.stored_family.menu_text
                             menu = web_context.admin_family.stored_family.menu
@@ -461,6 +470,7 @@ class FamilyAdminController(BaseEventAdminController):
                         'name': WebContext.value_to_form_data(name),
                         'tournament_id': WebContext.value_to_form_data(tournament_id),
                         'columns': WebContext.value_to_form_data(columns),
+                        'font_size': WebContext.value_to_form_data(font_size),
                         'menu_link': WebContext.value_to_form_data(menu_link),
                         'menu_text': WebContext.value_to_form_data(menu_text),
                         'menu': WebContext.value_to_form_data(menu),
