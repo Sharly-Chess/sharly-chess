@@ -127,18 +127,14 @@ class LocaleInfo:
         print_interactive_info(f'- {self.mo_file}...')
         run_babel_command(
             'compile',
-            (
-                [
-                    '--use-fuzzy',
-                ]
-                if self.trusted
-                else []
-            )
+            [
+                '--use-fuzzy',
+            ]
             + [
                 f'--directory={self.locale_dir}',
                 f'--locale={self.id}',
             ],
-            quiet=True,
+            quiet=False,
         )
 
     @staticmethod
