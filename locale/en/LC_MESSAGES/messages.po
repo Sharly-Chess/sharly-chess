@@ -1731,6 +1731,9 @@ msgstr ""
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
+msgid "Invalid FFE ID or password."
+msgstr ""
+
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 

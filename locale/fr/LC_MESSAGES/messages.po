@@ -1731,6 +1731,9 @@ msgstr "Connexion Internet perdue"
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identifiant FFE [{ffe_id}] non valide."
 
+msgid "Invalid FFE ID or password."
+msgstr "Identifiant FFE ou mot de passe invalide."
+
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 

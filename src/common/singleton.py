@@ -1,9 +1,12 @@
+from typing import Any
+
+
 class Singleton(type):
     """A metaclass for singletons.
     Allows the use of class attributes, contrary to the previous solution
     using a class decorator."""
 
-    _instances = {}
+    _instances: dict[type, Any] = {}
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:

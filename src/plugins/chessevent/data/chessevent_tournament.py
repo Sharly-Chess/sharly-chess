@@ -1,4 +1,5 @@
 from logging import Logger
+from typing import Any
 
 from common.logger import get_logger
 from data import tie_break
@@ -19,13 +20,7 @@ class ChessEventTournament:
 
     def __init__(
         self,
-        chessevent_tournament_info: dict[
-            str,
-            str
-            | int
-            | float
-            | list[dict[str, bool | str | int | dict[int, float] | None]],
-        ],
+        chessevent_tournament_info: dict[str, Any],
     ):
         self.name: str = ''
         self.type: TournamentType = TournamentType.UNKNOWN
@@ -45,25 +40,25 @@ class ChessEventTournament:
         key: str = ''
         try:
             self.name = str(chessevent_tournament_info[key := 'name'])
-            self.type = TournamentType(int(chessevent_tournament_info[key := 'type']))
-            self.rounds = int(chessevent_tournament_info[key := 'rounds'])
+            self.type = TournamentType(int(str(chessevent_tournament_info[key := 'type'])))
+            self.rounds = int(str(chessevent_tournament_info[key := 'rounds']))
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError
             self.pairing = TournamentPairing(
-                int(chessevent_tournament_info[key := 'pairing'])
+                int(str(chessevent_tournament_info[key := 'pairing']))
             )
             self.time_control = str(chessevent_tournament_info[key := 'time_control'])
             self.location = str(chessevent_tournament_info[key := 'location'])
             self.arbiter = str(chessevent_tournament_info[key := 'arbiter'])
-            self.start = float(chessevent_tournament_info[key := 'start'])
-            self.end = float(chessevent_tournament_info[key := 'end'])
+            self.start = float(str(chessevent_tournament_info[key := 'start']))
+            self.end = float(str(chessevent_tournament_info[key := 'end']))
             self.tie_breaks = self._load_tie_breaks(chessevent_tournament_info)
             self.rating = TournamentRating(
-                int(chessevent_tournament_info[key := 'rating'])
+                int(str(chessevent_tournament_info[key := 'rating']))
             )
             ffe_id = chessevent_tournament_info[key := 'ffe_id']
             if ffe_id:
-                self.ffe_id = int(ffe_id)
+                self.ffe_id = int(str(ffe_id))
             key = 'players'
             for chessevent_player_info in chessevent_tournament_info[key]:
                 chessevent_player: ChessEventPlayer = ChessEventPlayer(

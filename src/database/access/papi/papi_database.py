@@ -8,7 +8,7 @@ from typing import NamedTuple, Pattern
 from common.logger import get_logger
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-from data.tie_break import AbstractTieBreak, TieBreakManager, PapiTieBreakManager
+from data.tie_break import AbstractTieBreak, PapiTieBreakManager
 from data.util import (
     Result,
     TournamentPairing,
@@ -62,7 +62,7 @@ class PapiDatabase(AccessDatabase):
         self._execute(query, (name,))
         return self._fetchval()
 
-    def _update_var(self, name: str, value: str):
+    def _update_var(self, name: str, value: str | int):
         query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
         self._execute(query, (value, name))
 
@@ -141,6 +141,7 @@ class PapiDatabase(AccessDatabase):
         self._execute(
             f'INSERT INTO `joueur`({fields}) VALUES ({values})', params
         )
+        assert isinstance(data['Ref'], int)
         return data['Ref']
 
     def update_player(self, player: Player):
@@ -178,7 +179,7 @@ class PapiDatabase(AccessDatabase):
                 player.title.to_papi_value,
                 player.fide_id,
                 player.federation.name,
-                player.club.name,
+                player.club.name if player.club else '',
                 player.mail,
                 player.phone,
                 player.comment,
@@ -222,7 +223,7 @@ class PapiDatabase(AccessDatabase):
             while tie_breaks and tie_breaks[0].papi_id is None:
                 tie_breaks.pop(0)
             self._update_var(
-                key, tie_breaks.pop(0).papi_id if tie_breaks else ''
+                key, (tie_breaks.pop(0).papi_id or '') if tie_breaks else ''
             )
     def update_point_values(
         self, point_value_type: PointValueType

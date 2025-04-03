@@ -1,3 +1,4 @@
+
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
@@ -10,9 +11,7 @@ from common import APP_NAME
 from data.player import Player
 from data.input_output import AbstractTournamentExporter, AbstractPlayerUpdater
 from data.util import ScreenType
-from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.utils import (
-    PluginMigrationManager,
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
@@ -22,16 +21,18 @@ if TYPE_CHECKING:
     from data.print import AbstractPlayerSplitter, AbstractPrintDocument
     from data.tie_break import AbstractTieBreak
     from data.tournament import Tournament
-    from database.sqlite.event.event_store import StoredEvent
-    from database.sqlite.event.event_store import StoredTournament
-    from plugins.utils import PluginMigrationManager, PluginEngineArgument
+    from database.sqlite.event.event_database import EventDatabase
+    from database.sqlite.event.event_store import StoredEvent, StoredTournament
+    from database.sqlite.local_source_database import LocalSourceDatabase
+    from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
 
-
+# pylint: disable=empty-body
+# mypy: disable-error-code=empty-body
 class AppHookSpecs:
     """Holds all hookspecs for this application"""
     
@@ -44,7 +45,9 @@ class AppHookSpecs:
         """Provide any initialisation""" 
 
     @hookspec
-    def get_event_migration_manager(self) -> PluginMigrationManager:
+    def get_event_migration_manager(
+        self, event_database: 'EventDatabase'
+    ) -> 'PluginMigrationManager':
         """Provide a migration manager for event databases"""
         
     @hookspec
@@ -65,7 +68,7 @@ class AppHookSpecs:
 
     @hookspec
     def insert_local_source_database_types(
-        self, database_types: list[type[LocalSourceDatabase]]
+        self, database_types: list[type['LocalSourceDatabase']]
     ):
         """Provide extra local database sources."""
 

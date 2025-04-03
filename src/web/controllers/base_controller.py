@@ -17,7 +17,7 @@ from litestar.params import Body
 from litestar.response import Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import RGB, check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.i18n import (
     set_locale,
     locale_localized_name,
@@ -52,7 +52,7 @@ class WebContext:
         | None = None,
     ):
         self.request: HTMXRequest = request
-        self.data: dict[str, str] = data
+        self.data: dict[str, str] | None = data
         self.error: ClientRedirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
@@ -117,7 +117,7 @@ class WebContext:
 
     @staticmethod
     def form_data_to_str(
-        data: dict[str, str], field: str, empty_value: str | None = None
+        data: dict[str, str] | None, field: str, empty_value: str | None = None
     ) -> str | None:
         """Transforms given `data`'s value in `field` into a stripped
         str. If it is empty, returns `empty_value`."""
@@ -137,10 +137,10 @@ class WebContext:
 
     @staticmethod
     def form_data_to_int(
-        data: dict[str, str],
+        data: dict[str, str] | None,
         field: str,
         empty_value: int | None = None,
-        minimum: int = None,
+        minimum: int | None = None,
     ) -> int | None:
         """Transforms `data`'s value in `field` into a base-10 integer.
         If the value is empty, returns `empty_value`.
@@ -161,16 +161,16 @@ class WebContext:
         return int_val
 
     def _form_data_to_int(
-        self, field: str, empty_value: int | None = None, minimum: int = None
+        self, field: str, empty_value: int | None = None, minimum: int | None = None
     ) -> int | None:
         return self.form_data_to_int(self.data, field, empty_value, minimum)
 
     @staticmethod
     def form_data_to_float(
-        data: dict[str, str],
+        data: dict[str, str] | None,
         field: str,
         empty_value: float | None = None,
-        minimum: float = None,
+        minimum: float | None = None,
     ) -> float | None:
         if data is None:
             return empty_value
@@ -185,13 +185,13 @@ class WebContext:
         return float_val
 
     def _form_data_to_float(
-        self, field: str, empty_value: str | None = None, minimum: float = None
+        self, field: str, empty_value: float | None = None, minimum: float | None = None
     ) -> float | None:
         return self.form_data_to_float(self.data, field, empty_value, minimum)
 
     @staticmethod
     def form_data_to_bool(
-        data: dict[str, str], field: str, empty_value: bool | None = None
+        data: dict[str, str] | None, field: str, empty_value: bool | None = None
     ) -> bool | None:
         if data is None:
             return empty_value
@@ -206,13 +206,15 @@ class WebContext:
         ]
 
     def _form_data_to_bool(
-        self, field: str, empty_value: str | None = None
+        self, field: str, empty_value: bool | None = None
     ) -> bool | None:
         return self.form_data_to_bool(self.data, field, empty_value)
 
     @staticmethod
     def form_data_to_rgb(
-        data: dict[str, str], field: str, empty_value: RGB | None = None
+        data: dict[str, str] | None,
+        field: str,
+        empty_value: str | None = None
     ) -> str | None:
         if data is None:
             return empty_value
@@ -224,13 +226,13 @@ class WebContext:
         return check_rgb_str(data[field])
 
     def _form_data_to_rgb(
-        self, field: str, empty_value: RGB | None = None
+        self, field: str, empty_value: str | None = None
     ) -> str | None:
         return self.form_data_to_rgb(self.data, field, empty_value)
 
     @staticmethod
     def form_data_to_date(
-        data: dict[str, str], field: str, empty_value: RGB | None = None
+        data: dict[str, str] | None, field: str, empty_value: datetime | None = None
     ) -> date | None:
         if data is None:
             return empty_value
@@ -242,7 +244,7 @@ class WebContext:
         return datetime.strptime(data[field], '%Y-%m-%d').date()
 
     @classmethod
-    def form_data_to_mail(cls, data: dict[str, str], field: str) -> str | None:
+    def form_data_to_mail(cls, data: dict[str, str] | None, field: str) -> str | None:
         if data is None:
             return None
         data[field] = data.get(field, '')
@@ -255,7 +257,7 @@ class WebContext:
         raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 
     @classmethod
-    def form_data_to_phone(cls, data: dict[str, str], field: str) -> str | None:
+    def form_data_to_phone(cls, data: dict[str, str] | None, field: str) -> str | None:
         if data is None:
             return None
         data[field] = data.get(field, '')
@@ -275,7 +277,7 @@ class WebContext:
                 raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)') from e
 
     @staticmethod
-    def value_to_form_data(value: str | int | float | bool | Path | None) -> str | None:
+    def value_to_form_data(value: str | int | float | bool | Path | Federation | Club | None) -> str:
         if value is None:
             return ''
         if isinstance(value, str):
@@ -308,7 +310,7 @@ class WebContext:
     def value_to_date_form_data(value: date | None) -> str | None:
         if value is None:
             return ''
-        return datetime.strftime(value, '%Y-%m-%d')
+        return f'{value.year}-{value.month:02d}-{value.day:02d}'
 
     def _redirect_error(self, errors: str | list[str]):
         self.error = BaseController.redirect_error(self.request, errors)
@@ -323,7 +325,7 @@ class WebContext:
         """
         # NOTE(Amaras): see https://docs.litestar.dev/2/usage/security/index.html
         # for security considerations in Litestar
-        if self.request.client.host == '127.0.0.1':
+        if self.request.client and self.request.client.host == '127.0.0.1':
             return True
         return False
 

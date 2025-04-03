@@ -6,6 +6,7 @@ from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from functools import cached_property
+from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, override
 
 from litestar.contrib.htmx.request import HTMXRequest
@@ -14,12 +15,12 @@ from packaging.version import Version
 
 from common.i18n import _
 from common.network import NetworkMonitor
-from data.event import Event
 from data.input_output import AbstractPlayerUpdater
 from data.tie_break import AbstractTieBreak
 from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
 from data.print import AbstractPlayerSplitter, ClubPlayerSplitter, AbstractPrintDocument, AbstractPlayerPrintDocument
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
 from plugins.ffe.engine.ffe_engine import FFEEngine
@@ -31,7 +32,8 @@ from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_break import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
-from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginMigrationManager, PluginUtils
+from plugins.migration import PluginMigrationManager
+from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginUtils
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -74,9 +76,9 @@ class FfePlugin(AbstractPlugin):
         return False
 
     @override
-    @cached_property
-    def migration_manager(self) -> PluginMigrationManager:
-        return PluginMigrationManager(self, migrations)
+    @property
+    def base_migration_module(self) -> ModuleType:
+        return migrations
 
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
@@ -111,8 +113,10 @@ class FfePlugin(AbstractPlugin):
         FfeDatabase().check()
 
     @hookimpl
-    def get_event_migration_manager(self) -> PluginMigrationManager:
-        return self.migration_manager
+    def get_event_migration_manager(
+            self, event_database: EventDatabase
+    ) -> PluginMigrationManager:
+        return self.get_migration_manager(event_database)
 
     @hookimpl
     def get_controllers(self) -> Iterable[type[BaseController]]:
@@ -125,7 +129,8 @@ class FfePlugin(AbstractPlugin):
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
             'ffe_search_available': FfeDatabase().exists() or NetworkMonitor.connected(),
-            'ffe_leagues': self.FFE_LEAGUES
+            'ffe_leagues': self.FFE_LEAGUES,
+            'ffe_auth_valid': "",
         }
 
     @hookimpl
@@ -181,7 +186,8 @@ class FfePlugin(AbstractPlugin):
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
         assert web_context.admin_event is not None
-        admin_event = web_context.admin_event
+        admin_event: Event = web_context.admin_event
+        
         # The leagues that will be shown on the league select list
         players_leagues: list[str] = sorted(
             {
@@ -303,9 +309,8 @@ class FfePlugin(AbstractPlugin):
                 )
         ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
         try:
-            ffe_licence = PlayerFFELicence(
-                WebContext.form_data_to_int(data, field := 'ffe_licence')
-            )
+            if value := WebContext.form_data_to_int(data, field := 'ffe_licence'):
+                ffe_licence = PlayerFFELicence(value)
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
@@ -345,7 +350,7 @@ class FfePlugin(AbstractPlugin):
     @hookimpl
     def augment_player_after_search(self, player: Player):
         # Try to get more information by requesting the FFE database
-        if (ffe_database := FfeDatabase()).exists():
+        if player.fide_id and (ffe_database := FfeDatabase()).exists():
             with ffe_database:
                 if ffe_player := ffe_database.get_player_by_fide_id(player.fide_id):
                     for rating_type in [

@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 
 @dataclass
 class StoredConfig:
-    version: str
     force_edit: bool = True
     log_level: int | None = None
     launch_browser: bool | None = None

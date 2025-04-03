@@ -86,6 +86,7 @@ class ScreenSet:
                 self.first = self.stored_screen_set.first
                 self.last = self.stored_screen_set.last
         else:
+            assert self.family is not None
             self.fixed_board_numbers = []
             self.first = (
                 self.family.calculated_first
@@ -112,7 +113,10 @@ class ScreenSet:
 
     @property
     def screen(self) -> 'Screen':
-        return self._screen_ref()
+        screen = self._screen_ref()
+        if screen is None:
+            raise RuntimeError("Screen reference has been garbage collected")
+        return screen
 
     @property
     def family(self) -> 'Family | None':
@@ -136,11 +140,11 @@ class ScreenSet:
 
     @property
     def tournament_id(self) -> int:
-        return (
-            self.stored_screen_set.tournament_id
-            if self.stored_screen_set
-            else self.family.tournament_id
-        )
+        if self.stored_screen_set:
+            return self.stored_screen_set.tournament_id
+        if self.family is None:
+            raise RuntimeError("Family reference unexpectedly None")
+        return self.family.tournament_id
 
     @property
     def tournament(self) -> 'Tournament':
@@ -158,11 +162,12 @@ class ScreenSet:
     def name_for_boards(self) -> str | None:
         if self.tournament.current_round:
             self._extract_boards()
-            name: str | None = (
-                self.stored_screen_set.name
-                if self.stored_screen_set
-                else self.family.name
-            )
+            if self.stored_screen_set:
+                name = self.stored_screen_set.name
+            else:
+                if self.family is None:
+                    raise RuntimeError("Family reference unexpectedly None")
+                name = self.family.name
             if name is None:
                 if self.first or self.last:
                     name = _('Boards %f-%l')
@@ -180,9 +185,11 @@ class ScreenSet:
     @property
     def name_for_players(self) -> str | None:
         self._extract_players_by_name()
-        name: str | None = (
-            self.stored_screen_set.name if self.stored_screen_set else self.family.name
-        )
+        if self.stored_screen_set:
+            name = self.stored_screen_set.name
+        else:
+            assert self.family is not None
+            name = self.family.name
         if name is None:
             if self.first or self.last:
                 name = _('%f to %l')
@@ -206,19 +213,21 @@ class ScreenSet:
         return self.screen.ranking_crosstable
 
     @property
-    def ranking_min_points(self) -> int | None:
+    def ranking_min_points(self) -> float | None:
         return self.screen.ranking_min_points
 
     @property
-    def ranking_max_points(self) -> int | None:
+    def ranking_max_points(self) -> float | None:
         return self.screen.ranking_max_points
 
     @property
     def name_for_ranking(self) -> str | None:
         self._extract_players_by_rank()
-        name: str | None = (
-            self.stored_screen_set.name if self.stored_screen_set else self.family.name
-        )
+        if self.stored_screen_set:
+            name = self.stored_screen_set.name
+        else:
+            assert self.family is not None
+            name = self.family.name
         if name is None:
             if self.first or self.last:
                 if self.screen.ranking_crosstable:
@@ -276,6 +285,7 @@ class ScreenSet:
 
     def _extract_boards(self):
         if self.items_lists is None:
+            assert self.tournament.boards is not None
             self._extract_data(self.tournament.boards)
 
     @property
@@ -410,12 +420,12 @@ class ScreenSet:
         return self.last_item
 
     @property
-    def last_update(self) -> int | None:
-        return (
-            self.stored_screen_set.last_update
-            if self.stored_screen_set
-            else self.family.last_update
-        )
+    def last_update(self) -> float | None:
+        if self.stored_screen_set:
+            return self.stored_screen_set.last_update
+        else:
+            assert self.family is not None
+            return self.family.last_update
 
     @property
     def last_update_str(self) -> str | None:

@@ -34,7 +34,7 @@ class FideSearchController(BaseEventAdminController):
         players: list[Player] | None = None
         if search_fide:
             with FideDatabase() as fide_database:
-                players: list[Player] = [player for player in fide_database.search_player(search_fide, limit=8)]
+                players = [player for player in fide_database.search_player(search_fide, limit=8)]
         return HTMXTemplate(
             template_name='admin/players/fide_search_results.html',
             context= template_context | {

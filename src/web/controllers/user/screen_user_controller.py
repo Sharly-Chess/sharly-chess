@@ -44,8 +44,8 @@ class LoginUserWebContext(ScreenUserWebContext):
             screen_uniq_id=screen_uniq_id,
             screen_needed=True,
         )
-        field: str = 'password'
-        self.password: str = self._form_data_to_str(field, None)
+        field = 'password'
+        self.password: str = self._form_data_to_str(field, None) or ''
         if self.password is None:
             self._redirect_error('Missing password.')
 
@@ -73,6 +73,8 @@ class ScreenUserController(BaseScreenUserController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.user_event is None:
+            raise RuntimeError("user_event not defined")
         if data['password'] == web_context.user_event.update_password:
             Message.success(request, _('Authentication successful!'))
             SessionHandler.store_password(
@@ -119,7 +121,8 @@ class ScreenUserController(BaseScreenUserController):
         date: float,
     ) -> bool:
         if web_context.screen:
-            if web_context.screen.event.last_update > date:
+            assert web_context.screen.event is not None
+            if web_context.screen.event.last_update and web_context.screen.event.last_update > date:
                 return True
             if web_context.screen.last_update > date:
                 return True
@@ -131,10 +134,11 @@ class ScreenUserController(BaseScreenUserController):
                         if cls._user_screen_set_refresh_needed(screen_set, date):
                             return True
                 case ScreenType.RESULTS:
+                    assert web_context.screen.event is not None
                     results_tournament_ids: list[int] = (
                         web_context.screen.results_tournament_ids
                         if web_context.screen.results_tournament_ids
-                        else web_context.screen.event.tournaments_by_id.keys()
+                        else list(web_context.screen.event.tournaments_by_id.keys())
                     )
                     for tournament_id in results_tournament_ids:
                         with suppress(KeyError):
@@ -150,9 +154,11 @@ class ScreenUserController(BaseScreenUserController):
                 case _:
                     raise ValueError(f'type={web_context.screen.type}')
         else:
-            if web_context.family.event.last_update > date:
+            assert web_context.family is not None
+            assert web_context.family.event is not None
+            if web_context.family.event.last_update and web_context.family.event.last_update > date:
                 return True
-            if web_context.family.last_update > date:
+            if web_context.family.last_update and web_context.family.last_update > date:
                 return True
         return False
 
@@ -176,7 +182,7 @@ class ScreenUserController(BaseScreenUserController):
         )
         if web_context.error:
             return web_context.error
-        date: float = self.get_if_modified_since(request)
+        date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
         else:
