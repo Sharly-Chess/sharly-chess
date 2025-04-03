@@ -12,8 +12,14 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
 
-from common.i18n import _, EXPERIMENTAL_FEATURES, locale_localized_name, trusted_locales, untrusted_locales, \
-    DEFAULT_LOCALE
+from common.i18n import (
+    _, 
+    DEFAULT_LOCALE,
+    EXPERIMENTAL_FEATURES, 
+    locale_localized_name, 
+    trusted_locales, 
+    untrusted_locales,
+)
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
