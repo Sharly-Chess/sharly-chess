@@ -96,7 +96,7 @@ class IndexUserController(BaseUserController):
         else:
             events = event_loader.public_events
         for event in events:
-            if event.last_update > date:
+            if event.last_update and event.last_update > date:
                 return True
             for tournament in event.tournaments_by_id.values():
                 if tournament.last_update > date:

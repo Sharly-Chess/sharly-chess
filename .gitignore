@@ -36,6 +36,9 @@ __pycache__/
 .scc-wal
 .scc-shm
 
+# MacOS files
+.DS_Store
+
 /locale/*/LC_MESSAGES/messages.mo
 /locale/messages.pot
 

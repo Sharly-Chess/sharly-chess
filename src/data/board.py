@@ -54,6 +54,8 @@ class Board:
         # the highest-scoring players
         self_player_1: Player
         self_player_2: Player
+        if self.white_player is None:
+            raise ValueError('The white player is not defined.')
         if self.white_player < self.black_player:
             self_player_1 = self.black_player
             self_player_2 = self.white_player
@@ -63,12 +65,21 @@ class Board:
         # Here self_player_1 is the strongest player of this board
         other_player_1: Player
         other_player_2: Player
+        if other.white_player is None:
+            raise ValueError('The white player is not defined.')
         if other.white_player < other.black_player:
             other_player_1 = other.black_player
             other_player_2 = other.white_player
         else:
             other_player_1 = other.white_player
             other_player_2 = other.black_player
+        
+        # We should have vpoints for all players at this point
+        assert self_player_1.vpoints is not None, 'Self Player 1 has no vpoints.'
+        assert other_player_1.vpoints is not None, 'Other Player 1 has no vpoints.'
+        assert self_player_2.vpoints is not None, 'Self Player 2 has no vpoints.'
+        assert other_player_2.vpoints is not None, 'Other Player 2 has no vpoints.'
+        
         # Here other_player_1 is the strongest player of the other board
         if self_player_1.vpoints < other_player_1.vpoints:
             return True
@@ -90,13 +101,13 @@ class Board:
             return NotImplemented
         if self.board_id is not None and other.board_id is not None:
             return self.board_id == other.board_id
-        assert self.black_player is not None, 'The black player is not defined.'
-        assert other.black_player is not None, 'The black player is not defined.'
-        # There is only one pairing allocated bye
-        if self.black_player is None:
-            return False
+        if self.black_player is None or other.black_player is None:
+            raise ValueError('The black player is not defined.')
+         # There is only one pairing allocated bye
         self_player_1: Player
         self_player_2: Player
+        if self.white_player is None:
+            raise ValueError('The white player is not defined.')
         if self.white_player < self.black_player:
             self_player_1 = self.black_player
             self_player_2 = self.white_player
@@ -105,6 +116,8 @@ class Board:
             self_player_2 = self.black_player
         other_player_1: Player
         other_player_2: Player
+        if other.white_player is None:
+            raise ValueError('The white player is not defined.')
         if other.white_player < other.black_player:
             other_player_1 = other.black_player
             other_player_2 = other.white_player

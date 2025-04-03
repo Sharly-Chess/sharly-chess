@@ -52,8 +52,6 @@ REQUEST_TIMEOUT: int = 10
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 
 
-
-
 """ The temporary directory. """
 TMP_DIR: Path = Path('tmp')
 
@@ -61,7 +59,8 @@ try:
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 except PermissionError as pe:
     logger.critical('Could not create directory [%s]: %s', TMP_DIR.absolute(), pe)
-    sys.exit()
+    input()
+    sys.exit(1)
 
 # The base directory, differs for developers. base_dir must be used when looking for application files
 # (images, templates, ...) while user file should be search in the current directory.
@@ -70,10 +69,23 @@ BASE_DIR: Path = (
 )
 
 
+"""The events folder name, used to recover events from previous releases."""
+EVENTS_FOLDER: str = 'events'
+""" The event directory. """
+EVENTS_DIR: Path = Path(EVENTS_FOLDER)
+
+try:
+    EVENTS_DIR.mkdir(parents=True, exist_ok=True)
+except PermissionError as pe:
+    logger.critical('Could not create directory [%s]: %s', EVENTS_DIR.absolute(), pe)
+    input()
+    sys.exit(1)
+
+
 def check_rgb_str(color: str) -> str:
     """Checks if a string is in #rrggbb format
     returns it back if it is, raises ValueError otherwise."""
-    rgb: RGB = hexa_to_rgb(color)
+    rgb: RGB | None = hexa_to_rgb(color)
     if rgb:
         return rgb_to_hexa(rgb)
     raise ValueError(f'check_rgb_str(color={color})')
@@ -85,7 +97,7 @@ def hexa_to_rgb(color: str) -> RGB | None:
         '^#?(?P<R>[0-9a-f]{2})(?P<G>[0-9a-f]{2})(?P<B>[0-9a-f]{2})$'
     )
     if matches := hex_pattern.match(color.strip().lower()):
-        return (
+        return RGB(
             int(matches.group('R'), 16),
             int(matches.group('G'), 16),
             int(matches.group('B'), 16),

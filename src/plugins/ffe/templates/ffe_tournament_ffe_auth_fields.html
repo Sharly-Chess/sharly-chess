@@ -1,0 +1,38 @@
+{% import '/admin/common/macros.j2' as admin_macros %}
+
+<div class="auth-fields row">
+    <div class="col-12 col-md-6 mb-3">
+        {{ admin_macros.number_input(
+            name='ffe_id',
+            label=_('FFE certification number (optional):'),
+            placeholder=_('E.g.: %(num)d', num=68991),
+            help_text=_('The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.'),
+            hx_post=url_for('ffe-test-auth'),
+            hx_trigger='input changed delay:500ms',
+            hx_target="closest .auth-fields",
+            hx_swap="morphdom",
+            hx_vals='js:{ffe_password_visible: $("#ffe-password").attr("type") === "text"}',
+            hx_sync="closest .auth-fields:replace",
+            hx_indicator="unset",
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+        {{ admin_macros.password_input(
+            name='ffe_password',
+            label=_('FFE password:'),
+            placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
+            help_text=_('The password is made of 10 uppercase letters, it is used to connect to the FFE website.'),
+            valid=ffe_auth_valid,
+            password_visible=ffe_password_visible,
+            hx_post=url_for('ffe-test-auth'),
+            hx_trigger='input changed delay:500ms',
+            hx_target="closest .auth-fields",
+            hx_swap="morphdom",
+            hx_vals='js:{ffe_password_visible: $("#ffe-password").attr("type") === "text"}',
+            hx_sync="closest .auth-fields:replace",
+            hx_indicator="unset",
+            data=data, errors=errors
+        ) }}
+    </div>
+</div>

@@ -52,7 +52,7 @@ class FfeSearchController(BaseEventAdminController):
                 start = time.perf_counter()
             try:
                 async with FFESqlServer() as ffe_sql_server:
-                    search_results: list['Player'] = [
+                    search_results= [
                         player async for player in await ffe_sql_server.search_player(
                             unicode_normalize(search_ffe), limit=self.MAX_RESULTS
                         )
@@ -60,22 +60,22 @@ class FfeSearchController(BaseEventAdminController):
                     if DEVEL_ENV:
                         seconds: float = time.perf_counter() - start
                         if len(search_results):
-                            message: str = ngettext(
+                            message = ngettext(
                                 '{num} player found in {seconds:.2f} seconds.',
                                 '{num} players found in {seconds:.2f} seconds.',
                                 len(search_results)
                             ).format(num=len(search_results), seconds=seconds)
                         else:
-                            message: str = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
+                            message = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
                     else:
                         if len(search_results):
-                            message: str = ngettext(
+                            message = ngettext(
                                 '{num} player found.',
                                 '{num} players found.',
                                 len(search_results)
                             ).format(num=len(search_results))
                         else:
-                            message: str = _('No players found.')
+                            message = _('No players found.')
                     search_messages.append(
                         (
                             'bi-cloud-arrow-down-fill',
@@ -85,36 +85,36 @@ class FfeSearchController(BaseEventAdminController):
                     )
             except PapiWebException as e:
                 search_messages.append(('bi-cloud-slash', '', str(e)))
-                start: float = 0.0
+                start = 0.0
                 if DEVEL_ENV:
                     start = time.perf_counter()
                 if not FfeDatabase().exists():
                     search_messages.append(('bi-database-slash', '', _('No local database.')))
                 else:
                     with FfeDatabase() as ffe_database:
-                        search_results: list['Player'] = [
+                        search_results = [
                             player for player in ffe_database.search_player(
                                 unicode_normalize(search_ffe), limit=self.MAX_RESULTS)
                         ]
                         if DEVEL_ENV:
-                            seconds: float = time.perf_counter() - start
+                            seconds = time.perf_counter() - start
                             if len(search_results):
-                                message: str = ngettext(
+                                message = ngettext(
                                     '{num} player found in {seconds:.2f} seconds.',
                                     '{num} players found in {seconds:.2f} seconds.',
                                     len(search_results),
                                 ).format(num=len(search_results), seconds=seconds)
                             else:
-                                message: str = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
+                                message = _('No players found in {seconds:.2f} seconds.').format(seconds=seconds)
                         else:
                             if len(search_results):
-                                message: str = ngettext(
+                                message = ngettext(
                                     '{num} player found.',
                                     '{num} players found.',
                                     len(search_results),
                                 ).format(num=len(search_results))
                             else:
-                                message: str = _('No players found.')
+                                message = _('No players found.')
                         search_messages.append(
                             (
                                 'bi-database-fill-check',
@@ -141,6 +141,7 @@ class FfeSearchController(BaseEventAdminController):
         event_uniq_id: str,
         player_ffe_id: int | None,
     ) -> Template | ClientRedirect:
+        ffe_player: Player | None = None
         if player_ffe_id:
             if NetworkMonitor.connected():
                 async with FFESqlServer() as ffe_sql_server:
@@ -150,7 +151,7 @@ class FfeSearchController(BaseEventAdminController):
                     ffe_player: Player = ffe_database.get_player_by_ffe_id(player_ffe_id)
 
             # Try to get more information by requesting the FIDE database
-            if ffe_player and (fide_database := FideDatabase()).exists():
+            if ffe_player and ffe_player.fide_id and (fide_database := FideDatabase()).exists():
                 with fide_database:
                     if fide_player := fide_database.get_player_by_fide_id(ffe_player.fide_id):
                         ffe_player.federation = fide_player.federation

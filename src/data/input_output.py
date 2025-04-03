@@ -101,7 +101,7 @@ class PlayerMatch:
                 diff_field_ids.append(field_id)
         field_id: str = 'club'
         if field_id in self.field_ids:
-            if self.player.club.name != self.match_player.club.name:
+            if not self.player.club or self.player.club.name != self.match_player.club.name:
                 diff_field_ids.append(field_id)
         field_id: str = 'gender'
         if field_id in self.field_ids:

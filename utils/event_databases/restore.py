@@ -3,6 +3,9 @@ from argparse import ArgumentParser
 
 from packaging.version import Version
 
+# Needs to be imported first to avoid circular import
+from plugins.manager import plugin_manager # Noqa
+
 from common import PAPI_WEB_VERSION
 from common.logger import print_interactive_error, print_interactive_info
 from data.loader import EventBackup, EventBackupLoader
