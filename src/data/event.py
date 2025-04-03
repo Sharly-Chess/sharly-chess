@@ -7,6 +7,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
+from types import NotImplementedType
 from typing import Any, Iterable
 
 from common import (
@@ -497,7 +498,7 @@ class Event:
 
     @cached_property
     def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {timer.uniq_id: timer for timer in self.timers_by_id.values()}
+        return {timer.uniq_id: timer for timer in self.timers_by_id.values() if timer.uniq_id is not None}
 
     def get_unused_timer_uniq_id(
         self,
@@ -630,7 +631,7 @@ class Event:
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
         return self._get_unused_item_name(
             base_name or screen_type.name,
-            [screen.name for screen in self.basic_screens_by_id.values()],
+            [screen.name for screen in self.basic_screens_by_id.values() if screen.name is not None],
         )
 
     @cached_property
@@ -916,8 +917,8 @@ class Event:
         # p1 < p2 calls p1.__lt__(p2)
         return self.uniq_id > other.uniq_id
 
-    def __eq__(self, other: 'Event'):
+    def __eq__(self, other: object) -> bool | NotImplementedType :
         # p1 == p2 calls p1.__eq__(p2)
-        if not isinstance(self, Event):
+        if not isinstance(other, self.__class__):
             return NotImplemented
         return self.uniq_id == other.uniq_id
