@@ -171,10 +171,11 @@ class FFESqlServer(SqlServer):
                     f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
                     f'WHERE joueur.NrFFE = ?'
                 )
-                await self.execute(query, string)
+                await self.execute(query, (string,))
                 return (
-                    self._get_player_from_row(row)
+                    player
                     async for row in self.fetchall()
+                    if (player := self._get_player_from_row(row)) is not None
                 )
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
@@ -189,7 +190,7 @@ class FFESqlServer(SqlServer):
         params: list[Any] = []
         for token in tokens:
             token_expressions: list[str] = [f'(UPPER({field[0]}) LIKE ?)' for field in str_fields]
-            token_params: list[str] = [f'{field[1]}{token}{field[2]}' for field in str_fields]
+            token_params: list[str | int] = [f'{field[1]}{token}{field[2]}' for field in str_fields]
             int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
@@ -211,8 +212,9 @@ class FFESqlServer(SqlServer):
             params += [limit, ]
         await self.execute(query, tuple(params), )
         return (
-            self._get_player_from_row(row)
+            player
             async for row in self.fetchall()
+            if (player := self._get_player_from_row(row)) is not None
         )
 
     async def _get_player_by_id(
@@ -254,6 +256,7 @@ class FFESqlServer(SqlServer):
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
         return (
-            self._get_player_from_row(row)
+            player
             async for row in self.fetchall()
+            if (player := self._get_player_from_row(row)) is not None
         )

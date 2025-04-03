@@ -33,6 +33,7 @@ hookimpl = pluggy.HookimplMarker(APP_NAME)
 
 # pylint: disable=empty-body
 # mypy: disable-error-code=empty-body
+
 class AppHookSpecs:
     """Holds all hookspecs for this application"""
     

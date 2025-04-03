@@ -208,9 +208,9 @@ class PapiWebConfig(metaclass=Singleton):
     yml_ext: str = 'yml'
 
     # The versions of the libraries for which the version can be easily extracted.
-    litestar_version: Version = litestar.__version__.formatted(short=True)
-    jinja2_version: Version = jinja2.__version__
-    uvicorn_version: Version = uvicorn.__version__
+    litestar_version: Version = Version(litestar.__version__.formatted(short=True))
+    jinja2_version: Version = Version(jinja2.__version__)
+    uvicorn_version: Version = Version(uvicorn.__version__)
     pyodbc_version: Version = Version(pyodbc.version)
 
     # Other library versions, set manually and checked.
@@ -259,17 +259,17 @@ class PapiWebConfig(metaclass=Singleton):
         return None
 
     @property
-    def local_ip(self) -> str:
+    def local_ip(self) -> str | None:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
         return '127.0.0.1'
 
     @property
-    def lan_url(self) -> str:
+    def lan_url(self) -> str | None:
         """The URL of the application on the LAN/WAN."""
         return self._url(self.lan_ip)
 
     @property
-    def local_url(self) -> str:
+    def local_url(self) -> str | None:
         """The local URL of the application (with arbiter access)."""
         return self._url(self.local_ip)
 

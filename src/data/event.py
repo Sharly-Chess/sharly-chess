@@ -631,7 +631,7 @@ class Event:
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
         return self._get_unused_item_name(
             base_name or screen_type.name,
-            [screen.name for screen in self.basic_screens_by_id.values() if screen.name is not None],
+            [str(screen.name) for screen in self.basic_screens_by_id.values() if screen.name is not None],
         )
 
     @cached_property
