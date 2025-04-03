@@ -387,7 +387,7 @@ class I18nUpdater:
             ) == 'Y':
                 # import here not to create a dependency from export.py to translate stuff
                 try:
-                    from utils.i18n.i18n_translate import I18nTranslator
+                    from scripts.i18n.i18n_translate import I18nTranslator
                 except ModuleNotFoundError as error:
                     print_interactive_error(f'Could not import I18nTranslator: {error}.')
                     print_interactive_error(f'Make sure all the needed modules for translation are installed by running \'pip install -e .[translate]\'.')
