@@ -18,17 +18,9 @@ class MigrationDatabase(SQLiteDatabase, ABC):
     """Abstract class representing databases which
     can handle one or more timelines of migrations."""
 
-    def __init__(
-        self, file: Path, write: bool = False, auto_upgrade: bool = True
-    ):
-        super().__init__(file, write)
-        self.auto_upgrade = auto_upgrade
-
     @classmethod
     @abstractmethod
-    def create_instance(
-        cls, file: Path, write: bool = False, auto_upgrade: bool = True
-    ) -> Self:
+    def create_instance(cls, file: Path, write: bool = False) -> Self:
         """Alternative constructor with base params."""
 
     @cached_property
@@ -132,7 +124,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
             )
 
         self._create()
-        with self.create_instance(self.file, True, False) as database:
+        with self.create_instance(self.file, True) as database:
             for manager in database.migration_managers:
                 manager.migrate()
 
@@ -142,15 +134,4 @@ class MigrationDatabase(SQLiteDatabase, ABC):
                 'Database could not be opened because file '
                 f'[{self.file.resolve()}] does not exist.'
             )
-        super().__enter__()
-
-        if self.auto_upgrade and not self.check_status():
-            if self.write:
-                self.upgrade()
-            else:
-                with self.create_instance(self.file, True, True):
-                    # reopening the database in r/w mode forces the upgrade
-                    pass
-        return self
-
-
+        return super().__enter__()

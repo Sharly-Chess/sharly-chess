@@ -87,14 +87,10 @@ if __name__ == '__main__':
         sys.exit(1)
     databases: list[MigrationDatabase] = []
     if args.config:
-        databases.append(ConfigDatabase(
-            write=not args.validate, auto_upgrade=False
-        ))
+        databases.append(ConfigDatabase(not args.validate))
     else:
         for event_id in args.events or EventLoader().event_uniq_ids:
-            databases.append(EventDatabase(
-                event_id, write=not args.validate, auto_upgrade=False
-            ))
+            databases.append(EventDatabase(event_id, not args.validate))
 
     if args.validate:
         for database in databases:
@@ -131,4 +127,7 @@ if __name__ == '__main__':
     configure_logger(logging.DEBUG)
     for database in databases:
         with database:
-            database.migration_managers[0].migrate(migration)
+            try:
+                database.migration_managers[0].migrate(migration)
+            except PapiWebException as e:
+                print_interactive_error(str(e))

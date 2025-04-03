@@ -28,6 +28,9 @@ logger: Logger = get_logger()
 
 
 class EventLoader:
+    _valid_event_ids: list[str] = []
+    _invalid_uniq_ids: list[str] = []
+
     def __init__(self):
         self._loaded_stored_events_by_id: dict[str, StoredEvent] = {}
         self._loaded_events_by_id: dict[str, Event] = {}
@@ -44,18 +47,19 @@ class EventLoader:
     def clear_cache(self, event_uniq_id: str | None = None):
         """If `event_uniq_id` is provided, clears the load cache regarding the
         given event."""
-        with suppress(AttributeError):
-            del self.event_uniq_ids
         if event_uniq_id:
             with suppress(KeyError):
                 del self._loaded_stored_events_by_id[event_uniq_id]
+            with suppress(KeyError):
+                del self._loaded_events_by_id[event_uniq_id]
+            with suppress(ValueError):
+                self.__class__._valid_event_ids.remove(event_uniq_id)
+        with suppress(AttributeError):
+            del self.event_uniq_ids
         with suppress(AttributeError):
             del self.stored_events_by_id
         with suppress(AttributeError):
             del self.stored_events_sorted_by_name
-        if event_uniq_id:
-            with suppress(KeyError):
-                del self._loaded_events_by_id[event_uniq_id]
         with suppress(AttributeError):
             del self.events_by_id
         with suppress(AttributeError):
@@ -71,11 +75,35 @@ class EventLoader:
                 )
             return self._loaded_stored_events_by_id[uniq_id]
 
+    @classmethod
+    def load_event_ids(cls):
+        known_event_ids = cls._valid_event_ids + cls._invalid_uniq_ids
+        for event_id in cls.all_event_ids():
+            if event_id in known_event_ids:
+                continue
+            try:
+                with EventDatabase(event_id) as database:
+                    status = database.check_status()
+                if not status:
+                    with EventDatabase(event_id, True) as database:
+                        database.upgrade()
+                cls._valid_event_ids.append(event_id)
+            except PapiWebException as e:
+                logger.error(e)
+                cls._invalid_uniq_ids.append(event_id)
+
     @cached_property
     def event_uniq_ids(self) -> list[str]:
+        self.load_event_ids()
+        return self._valid_event_ids
+
+
+    @classmethod
+    def all_event_ids(cls) -> list[str]:
         return [
-            file.stem
-            for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_database_ext}')
+            file.stem for file in EVENTS_DIR.glob(
+                f'*.{PapiWebConfig.event_database_ext}'
+            )
         ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -91,7 +119,7 @@ class EventLoader:
         else:
             index = 1
             uniq_id = base_uniq_id
-        while uniq_id in self.event_uniq_ids:
+        while uniq_id in self.all_event_ids():
             index += 1
             uniq_id = f'{base_uniq_id}-{index}'
         return uniq_id

@@ -4951,7 +4951,7 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILIZZO AI TUOI PERICOLOSI"
 
 #, ai_translation
-msgid "Unable to create Papi files since no tournaments are defined."
+msgid "Unable to create Papi files."
 msgstr "Impossibile creare file Papi poiché non sono definiti tornei."
 
 #, ai_translation
