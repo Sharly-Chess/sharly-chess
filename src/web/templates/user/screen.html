@@ -87,7 +87,11 @@
 {% endblock %}
 
 {% block content %}
-    <div id="user-screen-content" class="content user-content user-screen-content">
+    <div
+        id="user-screen-content"
+        class="content user-content user-screen-content"
+        style="font-size: {{ screen.font_size or 100 }}%"
+    >
         {% if screen.type == 'boards' %}
             <div class="screen boards-screen">
                 {% for screen_set in screen.screen_sets_sorted_by_order %}
