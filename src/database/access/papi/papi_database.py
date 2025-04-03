@@ -8,7 +8,8 @@ from typing import NamedTuple, Pattern
 from common.logger import get_logger
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-from data.tie_break import AbstractTieBreak, PapiTieBreakManager
+from data.tie_break import AbstractTieBreak
+from data.tie_break_managers import PapiTieBreakManager
 from data.util import (
     Result,
     TournamentPairing,

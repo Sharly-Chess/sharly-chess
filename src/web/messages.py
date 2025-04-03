@@ -8,7 +8,7 @@ class Message:
     text: str
     level: int
     html_class: str | None = field(default=None, init=False)
-    auto_remove: str | None = field(default=None, init=False)
+    auto_remove: bool | None = field(default=None, init=False)
 
     DEBUG = 10
     INFO = 20

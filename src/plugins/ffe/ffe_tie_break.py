@@ -2,13 +2,16 @@ from abc import ABC, abstractmethod
 from contextlib import suppress
 from functools import cache, lru_cache
 from math import floor
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairing import Pairing
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.tie_break import AbstractTieBreak
-from data.tournament import Tournament
 from data.util import TournamentPairing, Result, StaticUtils
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 
 @lru_cache(maxsize=32)
@@ -102,7 +105,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
 
     def compute_papi_buchholz_player_value(
         self,
-        player: Player,
+        player: TournamentPlayer,
         *,
         after_round: int | None,
         use_cut_top: bool = False,
@@ -110,6 +113,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     ) -> float:
         if after_round is None:
             after_round = max(player.pairings)
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         cut = self._papi_buchholz_cut(tournament.rounds)
         cut_top = cut if use_cut_top else 0
@@ -141,6 +145,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
                 )
                 scores.append(dummy_points)
                 continue
+            assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if tournament.pairing.swiss:
                 opponent_adjusted_score = self._papi_adjusted_score(
@@ -181,7 +186,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -213,7 +218,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
@@ -245,7 +250,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
@@ -280,10 +285,11 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
@@ -295,6 +301,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
         ratings = []
         score = 0
         for pairing in pairings:
+            assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
             with suppress(KeyError):
                 rating = min(
@@ -335,17 +342,18 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
             for round_index, pairing in player.pairings.items()
-            if round_index <= after_round
+            if round_index <= after_round and pairing.opponent_id is not None
         ]
         tie_break = PapiBuchholzTieBreak()
         return sum(
@@ -377,7 +385,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:

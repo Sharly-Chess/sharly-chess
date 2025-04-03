@@ -1,4 +1,3 @@
-import itertools
 from abc import ABC, abstractmethod
 from bisect import bisect_right
 from collections import namedtuple
@@ -8,10 +7,12 @@ from decimal import Decimal
 from functools import partial
 from math import isclose
 from types import UnionType
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING, Protocol, TypeVar, override
+
 
 from common.i18n import _
 from data.pairing import Pairing
+from data.player import TournamentPlayer
 from data.util import (
     AbstractEntityManager,
     AbstractOption,
@@ -22,10 +23,8 @@ from data.util import (
     StaticUtils,
     TournamentPairing,
 )
-from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
-    from _typeshed import SupportsRichComparisonT
     from data.player import Player
     from data.tournament import Tournament
 
@@ -39,6 +38,12 @@ register_tie_break = partial(
 )
 register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 
+T = TypeVar('T', bound='SupportsRichComparison')
+class SupportsRichComparison(Protocol):
+    def __lt__(self: T, other: T) -> bool: ...
+    def __le__(self: T, other: T) -> bool: ...
+    def __gt__(self: T, other: T) -> bool: ...
+    def __ge__(self: T, other: T) -> bool: ...
 
 class AbstractTieBreakOption(AbstractOption, ABC):
     """Abstract class representing an option of a tie-break"""
@@ -70,10 +75,10 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
     @abstractmethod
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
-    ) -> 'SupportsRichComparisonT':
+    ) -> 'SupportsRichComparison':
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking, 
         the return type need to support rich comparison with himself"""
@@ -104,38 +109,12 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
         }
 
 
-class TieBreakManager(AbstractEntityManager[AbstractTieBreak]):
-    """Entry class for interacting with tie-breaks"""
-    @staticmethod
-    def entity_types() -> list[type[AbstractTieBreak]]:
-        return TIE_BREAK_CLASSES + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tie_break_classes()
-        ))
-
-
-class PapiTieBreakManager(AbstractEntityManager[AbstractTieBreak]):
-    @staticmethod
-    def entity_types() -> list[type[AbstractTieBreak]]:
-        return [
-            tie_break_type for tie_break_type in TieBreakManager.entity_types()
-            if tie_break_type().papi_id is not None
-        ]
-
-    @classmethod
-    def type_by_papi_id(cls) -> dict[str, type[AbstractTieBreak]]:
-        return {
-            str(entity_type.static_papi_id()): entity_type
-            for entity_type in cls.entity_types()
-            if entity_type.static_papi_id() is not None
-        }
-
-
 class TieBreakUtils:
     """Utilities for tie-breaks"""
 
     @staticmethod
     def adjusted_score(
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int,
         adjust_fore: bool = False,
@@ -177,7 +156,7 @@ class TieBreakUtils:
 
     @staticmethod
     def buchholz_dummy_score(
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
@@ -323,7 +302,7 @@ class WinsTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -362,7 +341,7 @@ class GamesWonTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -398,7 +377,7 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -433,10 +412,10 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
         return _('Black wins')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -482,10 +461,10 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         return [CutTieBreakOption]
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> float:
         cut, = self.get_option_values()
         if after_round is None:
@@ -516,10 +495,10 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
         return _('Games played')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -587,7 +566,7 @@ class BuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -697,7 +676,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -778,7 +757,7 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -830,7 +809,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -894,7 +873,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -967,7 +946,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
 
     @staticmethod
     def _dummy_score(
-        player: 'Player',
+        player: 'TournamentPlayer',
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -1023,7 +1002,7 @@ class KoyaTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -1075,7 +1054,7 @@ class KashdanTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -1151,7 +1130,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -1210,10 +1189,10 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
         return _('Performance')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
@@ -1269,10 +1248,10 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
         )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
@@ -1324,10 +1303,10 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
         )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -1459,10 +1438,10 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
         )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -1526,7 +1505,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> tuple[float, bool]:

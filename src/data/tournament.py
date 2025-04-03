@@ -20,7 +20,8 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_break import AbstractTieBreak, TieBreakManager, AbstractTieBreakOption, TieBreakOptionManager
+from data.tie_break import AbstractTieBreak, AbstractTieBreakOption, TieBreakOptionManager
+from data.tie_break_managers import TieBreakManager
 from data.util import (
     BoardColor,
     PlayerGender,

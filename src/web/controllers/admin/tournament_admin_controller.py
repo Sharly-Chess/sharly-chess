@@ -26,7 +26,8 @@ from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from data.print import PrintDocumentManager
-from data.tie_break import TieBreakManager, AbstractTieBreak, PapiTieBreakManager
+from data.tie_break import AbstractTieBreak
+from data.tie_break_managers import PapiTieBreakManager, TieBreakManager
 from data.tournament import Tournament
 from data.util import TrfType
 from database.access.papi.papi_database import PapiDatabase
