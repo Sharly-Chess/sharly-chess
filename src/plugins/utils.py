@@ -177,7 +177,7 @@ class AbstractPlugin(IdentifiableEntity, ABC):
         from database.sqlite.event.event_database import EventDatabase
 
         for uniq_id in EventLoader().events_by_id:
-            with EventDatabase(uniq_id, True, auto_upgrade=False) as database:
+            with EventDatabase(uniq_id, True) as database:
                 if migration_manager := self.get_migration_manager(database):
                     migration_manager.migrate(target_migration)
 
