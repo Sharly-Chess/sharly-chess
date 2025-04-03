@@ -16,7 +16,7 @@
 - Calcul des départages et classement des joueur·euses
 - Impression et affichage du classement et de la grille américaine
 - Impression des appariements et résultats
-- Correction du calcul des points virtuels en Système Accéléré Dégressif 
+- Correction du calcul des points virtuels en Système Accéléré Dégressif
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois
 - Correction d'un bug empêchant l'affichage et la modification des écrans lorsque le numéro du premier échiquier est supérieur au nombre d'échiquiers

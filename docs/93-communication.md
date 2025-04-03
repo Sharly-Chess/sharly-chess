@@ -2,7 +2,7 @@
 
 # Papi-web - Communication vers les joueur·euses
 
-Cette page est dédiée à la communication vers les joueur·euses, pour une mise en œuvre rapide dans Papi-web (version 2.2 ?). 
+Cette page est dédiée à la communication vers les joueur·euses, pour une mise en œuvre rapide dans Papi-web (version 2.2 ?).
 
 ## Médias cibles
 
@@ -30,7 +30,7 @@ Le système doit être le plus souple possible et permettre les envois :
 Les arbitres doivent pouvoir s'appuyer sur des messages-types, pour par exemple :
 
 - prévenir de l'ouverture ou la fermeture imminente du pointage
-- prévenir des appariements 
+- prévenir des appariements
 - envoyer le classement
 
 Tous les messages doivent être personnalisables à l'aide des *tokens* suivants.

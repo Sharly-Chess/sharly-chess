@@ -22,7 +22,11 @@ from data.util import (
     PlayerRatingType,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
-from database.sqlite.local_source_database import LocalSourceDatabase, NotifOutdateAction, MonthFirstDayOutdateDelay
+from database.sqlite.local_source_database import (
+    LocalSourceDatabase,
+    NotifOutdateAction,
+    MonthFirstDayOutdateDelay,
+)
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
@@ -76,26 +80,25 @@ class FideDatabase(LocalSourceDatabase):
             response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 logger.error(
-                    self.log_prefix + _(
-                        'Could not download [{url}], error code [{code}].'
-                    ).format(
+                    self.log_prefix
+                    + _('Could not download [{url}], error code [{code}].').format(
                         url=fide_database_url, code=response.status_code
                     )
                 )
                 return False
         except ConnectionError as ex:
             logger.error(
-                self.log_prefix + _(
-                    'Could not download [{url}]: {error}.'
-                ).format(url=fide_database_url, error=ex)
+                self.log_prefix
+                + _('Could not download [{url}]: {error}.').format(
+                    url=fide_database_url, error=ex
+                )
             )
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             logger.error(
-                self.log_prefix + _(
-                    'No data received from [{url}].'
-                ).format(url=fide_database_url)
+                self.log_prefix
+                + _('No data received from [{url}].').format(url=fide_database_url)
             )
             return False
 
@@ -104,9 +107,7 @@ class FideDatabase(LocalSourceDatabase):
             zip_ref.extractall(TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            logger.error(
-                self.log_prefix + _('Could not unzip data.')
-            )
+            logger.error(self.log_prefix + _('Could not unzip data.'))
             return False
         return True
 
@@ -128,7 +129,7 @@ class FideDatabase(LocalSourceDatabase):
         }
         db_columns = [field[0] for field in fields.values() if field[0] != 'name']
         db_columns += ['first_name', 'last_name']
-        query = f'''INSERT INTO player({", ".join(db_columns)}) VALUES({", ".join([f':{c}' for c in db_columns])})'''
+        query = f"""INSERT INTO player({', '.join(db_columns)}) VALUES({', '.join([f':{c}' for c in db_columns])})"""
         player_count: int = 0
         to_write = []
         data: dict[str, Any] = {}
@@ -172,17 +173,20 @@ class FideDatabase(LocalSourceDatabase):
                 database.commit()
 
         logger.info(
-            self.log_prefix + _(
-                '{number} players written to the database.'
-            ).format(number=player_count)
+            self.log_prefix
+            + _('{number} players written to the database.').format(number=player_count)
         )
         return True
 
     def _create_indexes(self):
         self.write = True
         with self:
-            self.execute('CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)')
-            self.execute('CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)')
+            self.execute(
+                'CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
+            )
             self.execute('CREATE INDEX `player_fide_id` ON `player` (`fide_id`)')
             self.commit()
 
@@ -215,12 +219,15 @@ class FideDatabase(LocalSourceDatabase):
                 TournamentRating.BLITZ: row['blitz_rating'],
             },
             rating_types={
-                TournamentRating.STANDARD:
-                    PlayerRatingType.FIDE if row['standard_rating'] else PlayerRatingType.ESTIMATED,
-                TournamentRating.RAPID:
-                    PlayerRatingType.FIDE if row['rapid_rating'] else PlayerRatingType.ESTIMATED,
-                TournamentRating.BLITZ:
-                    PlayerRatingType.FIDE if row['blitz_rating'] else PlayerRatingType.ESTIMATED,
+                TournamentRating.STANDARD: PlayerRatingType.FIDE
+                if row['standard_rating']
+                else PlayerRatingType.ESTIMATED,
+                TournamentRating.RAPID: PlayerRatingType.FIDE
+                if row['rapid_rating']
+                else PlayerRatingType.ESTIMATED,
+                TournamentRating.BLITZ: PlayerRatingType.FIDE
+                if row['blitz_rating']
+                else PlayerRatingType.ESTIMATED,
             },
             fide_id=row['fide_id'],
             federation=Federation(row['federation']),
@@ -232,9 +239,9 @@ class FideDatabase(LocalSourceDatabase):
         )
 
     def search_player(
-            self,
-            string: str,
-            limit: int = 0,  # no limit set if no param or null param passed
+        self,
+        string: str,
+        limit: int = 0,  # no limit set if no param or null param passed
     ) -> Iterator[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
@@ -251,25 +258,34 @@ class FideDatabase(LocalSourceDatabase):
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
-                params += [int_value, ] * len(int_fields)
+                params += [
+                    int_value,
+                ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
+        order_conditions = ' OR '.join(
+            [
+                '(last_name LIKE ?)',
+            ]
+            * len(tokens)
+        )
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
-            params += [limit, ]
-        self.execute(query, tuple(params), )
-        return (
-            self._get_player_from_row(row)
-            for row in self.fetchall()
+            params += [
+                limit,
+            ]
+        self.execute(
+            query,
+            tuple(params),
         )
+        return (self._get_player_from_row(row) for row in self.fetchall())
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
-        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id, ))
+        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
         return None
@@ -280,7 +296,4 @@ class FideDatabase(LocalSourceDatabase):
             f'SELECT * FROM player WHERE fide_id IN ({query_array})',
             tuple(player_fide_ids),
         )
-        return [
-            self._get_player_from_row(row)
-            for row in self.fetchall()
-        ]
+        return [self._get_player_from_row(row) for row in self.fetchall()]

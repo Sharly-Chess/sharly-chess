@@ -44,7 +44,11 @@ class ActionSelector(metaclass=Singleton):
 
     @classmethod
     def add_chessevent_player(
-            cls, database: PapiDatabase, player_papi_id: int, player: ChessEventPlayer, check_in_started: bool
+        cls,
+        database: PapiDatabase,
+        player_papi_id: int,
+        player: ChessEventPlayer,
+        check_in_started: bool,
     ):
         """Creates a player in the database from the given ChessEvent player.
         If the player is not checked in when `check_in_started` is True,
@@ -102,7 +106,9 @@ class ActionSelector(metaclass=Singleton):
         database.write_player_dict(data)
 
     @classmethod
-    def write_chessevent_info(cls, database: PapiDatabase, chessevent_tournament: ChessEventTournament):
+    def write_chessevent_info(
+        cls, database: PapiDatabase, chessevent_tournament: ChessEventTournament
+    ):
         """Creates the tournament data from the ChessEvent Tournament data."""
         default_rounds: int = 7
         if not chessevent_tournament.rounds:
@@ -129,7 +135,10 @@ class ActionSelector(metaclass=Singleton):
 
     @classmethod
     def write_chessevent_info_to_database(
-        cls, tournament: Tournament, chessevent_tournament: ChessEventTournament, chessevent_download_md5: str
+        cls,
+        tournament: Tournament,
+        chessevent_tournament: ChessEventTournament,
+        chessevent_download_md5: str,
     ) -> int:
         """Stores the information from the given `chessevent_tournament` in the event database.
         For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
@@ -202,9 +211,7 @@ class ActionSelector(metaclass=Singleton):
         print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
-            print_interactive_error(
-                _('Unable to create Papi files.')
-            )
+            print_interactive_error(_('Unable to create Papi files.'))
             return False
         print_interactive_info(
             _('Tournaments: {tournament_names}').format(
@@ -336,7 +343,8 @@ class ActionSelector(metaclass=Singleton):
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
                             if (
-                                data_md5 == PluginUtils.get_plugin_data(
+                                data_md5
+                                == PluginUtils.get_plugin_data(
                                     PLUGIN_NAME,
                                     tournament.plugin_data,
                                     'chessevent_last_download_md5',
@@ -357,10 +365,8 @@ class ActionSelector(metaclass=Singleton):
                             chessevent_timeout = chessevent_timeout_min
                             tournament.file.unlink(missing_ok=True)
                             create_empty_papi_database(tournament.file)
-                            player_count: int = (
-                                self.write_chessevent_info_to_database(
-                                    tournament, chessevent_tournament, data_md5
-                                )
+                            player_count: int = self.write_chessevent_info_to_database(
+                                tournament, chessevent_tournament, data_md5
                             )
                             print_interactive_success(
                                 _(

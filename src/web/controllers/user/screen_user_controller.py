@@ -19,12 +19,13 @@ from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
     RotatorUserWebContext,
-    ScreenUserWebContext
+    ScreenUserWebContext,
 )
 from web.messages import Message
 from web.session import SessionHandler
 
 logger: Logger = get_logger()
+
 
 class LoginUserWebContext(ScreenUserWebContext):
     def __init__(
@@ -74,7 +75,7 @@ class ScreenUserController(BaseScreenUserController):
         if web_context.error:
             return web_context.error
         if web_context.user_event is None:
-            raise RuntimeError("user_event not defined")
+            raise RuntimeError('user_event not defined')
         if data['password'] == web_context.user_event.update_password:
             Message.success(request, _('Authentication successful!'))
             SessionHandler.store_password(
@@ -122,14 +123,22 @@ class ScreenUserController(BaseScreenUserController):
     ) -> bool:
         if web_context.screen:
             assert web_context.screen.event is not None
-            if web_context.screen.event.last_update and web_context.screen.event.last_update > date:
+            if (
+                web_context.screen.event.last_update
+                and web_context.screen.event.last_update > date
+            ):
                 return True
             if web_context.screen.last_update > date:
                 return True
             match web_context.screen.type:
                 case ScreenType.IMAGE:
                     pass
-                case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.PLAYERS | ScreenType.RANKING:
+                case (
+                    ScreenType.BOARDS
+                    | ScreenType.INPUT
+                    | ScreenType.PLAYERS
+                    | ScreenType.RANKING
+                ):
                     for screen_set in web_context.screen.screen_sets_by_id.values():
                         if cls._user_screen_set_refresh_needed(screen_set, date):
                             return True
@@ -156,7 +165,10 @@ class ScreenUserController(BaseScreenUserController):
         else:
             assert web_context.family is not None
             assert web_context.family.event is not None
-            if web_context.family.event.last_update and web_context.family.event.last_update > date:
+            if (
+                web_context.family.event.last_update
+                and web_context.family.event.last_update > date
+            ):
                 return True
             if web_context.family.last_update and web_context.family.last_update > date:
                 return True

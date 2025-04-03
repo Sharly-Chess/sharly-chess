@@ -32,6 +32,7 @@ register_delay = partial(StaticUtils.register_class, register=DELAY_CLASSES)
 
 class OutdateDelay(IdentifiableEntity, ABC):
     """Delay according to which a database becomes outdated."""
+
     @abstractmethod
     def is_expired(self, start_time: datetime) -> bool:
         """Determines if the delay since *start_time* is expired."""
@@ -59,6 +60,7 @@ class DisabledOutdateDelay(OutdateDelay):
 
 class DayCountOutdateDelay(OutdateDelay, ABC):
     """Represents the delays that expire after a specific amount of days."""
+
     @property
     @abstractmethod
     def days_expired(self) -> int:
@@ -143,6 +145,7 @@ class MonthFirstDayOutdateDelay(OutdateDelay):
         first_day = date(now.year, now.month, 1)
         return start_time < datetime.combine(first_day, datetime.min.time())
 
+
 # ---------------------------------------------------------------------------------
 # Outdate Actions
 # ---------------------------------------------------------------------------------
@@ -213,9 +216,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.outdated_warning: bool = False
         self.stored_source_database: StoredLocalSourceDatabase
         with ConfigDatabase() as database:
-            stored_source_database = (
-                database.load_stored_local_source_database(self.id)
-            )
+            stored_source_database = database.load_stored_local_source_database(self.id)
         if stored_source_database:
             self.stored_source_database = stored_source_database
         else:
@@ -253,9 +254,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     @property
     def outdate_delay(self) -> OutdateDelay:
-        return OutdateDelayManager.get_object(
-            self.stored_source_database.outdate_delay
-        )
+        return OutdateDelayManager.get_object(self.stored_source_database.outdate_delay)
 
     @property
     def outdate_action(self) -> OutdateAction:
@@ -320,9 +319,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         super().delete()
         self.stored_source_database = self.default_stored_database
         with ConfigDatabase(write=True) as database:
-            database.update_stored_local_source_database(
-                self.default_stored_database
-            )
+            database.update_stored_local_source_database(self.default_stored_database)
             database.commit()
 
     def check(self):
@@ -333,8 +330,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             if self.updated_at:
                 logger.error(
                     _(
-                        'Database [{database}] unexpectedly '
-                        'not found at path [{path}].'
+                        'Database [{database}] unexpectedly not found at path [{path}].'
                     ).format(database=self.name, path=self.file)
                 )
                 self.delete()
@@ -355,28 +351,20 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     def _update(self):
         """Update the source database:
-            1. Download the source file
-            2. Create a temp database
-            3. Populate the temp database from the source file
-            4. Copy the temp file to the correct file location"""
+        1. Download the source file
+        2. Create a temp database
+        3. Populate the temp database from the source file
+        4. Copy the temp file to the correct file location"""
         self.__class__.is_updating = True
         if not NetworkMonitor.connected():
-            logger.warning(
-                self.log_prefix + _(
-                    'Not connected, impossible to update.'
-                )
-            )
+            logger.warning(self.log_prefix + _('Not connected, impossible to update.'))
             return self.stop_update(False)
-        logger.info(
-            self.log_prefix + _('Downloading source file...')
-        )
+        logger.info(self.log_prefix + _('Downloading source file...'))
         if not self._download_source_file():
             return self.stop_update(False)
         if self.stop_event.is_set():
             return self.stop_update(False)
-        logger.info(
-            self.log_prefix + _('Storing data...')
-        )
+        logger.info(self.log_prefix + _('Storing data...'))
         tmp_file = self.file.with_suffix('.tmp')
         tmp_file.unlink(missing_ok=True)
         new_database = SQLiteDatabase(tmp_file, write=True)
@@ -389,9 +377,8 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 return self.stop_update(False)
         except (OperationalError, IntegrityError) as ex:
             logger.error(
-                self.log_prefix + _(
-                    'Error while creating the database: {error}.'
-                ).format(error=ex)
+                self.log_prefix
+                + _('Error while creating the database: {error}.').format(error=ex)
             )
             tmp_file.unlink(missing_ok=True)
             return self.stop_update(False)
@@ -407,13 +394,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
         self.stored_source_database.updated_at = time.time()
         with ConfigDatabase(write=True) as database:
-            database.update_stored_local_source_database(
-                self.stored_source_database
-            )
+            database.update_stored_local_source_database(self.stored_source_database)
             database.commit()
-        logger.info(
-            self.log_prefix + _('Database successfully updated.')
-        )
+        logger.info(self.log_prefix + _('Database successfully updated.'))
         return self.stop_update(True)
 
 
@@ -423,9 +406,7 @@ class LocalSourceDatabaseManager(AbstractEntityManager[LocalSourceDatabase]):
         from database.sqlite.fide.fide_database import FideDatabase
         from plugins.manager import plugin_manager
 
-        database_types: list[type[LocalSourceDatabase]] = [
-            FideDatabase
-        ]
+        database_types: list[type[LocalSourceDatabase]] = [FideDatabase]
         plugin_manager.hook.insert_local_source_database_types(
             database_types=database_types
         )

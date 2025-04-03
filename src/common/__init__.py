@@ -26,13 +26,18 @@ logger: Logger = get_logger()
 if DEVEL_ENV:
     import tomllib
     from contextlib import suppress
+
     with suppress(KeyError):
         with open('pyproject.toml', 'rb') as f:
             version = tomllib.load(f)['project']['version']
         if Version(version) != PAPI_WEB_VERSION:
             logger.critical(
                 'Installed %s version %s does not match defined version %s. Run `pip install -e .` then run %s again.',
-                APP_NAME, PAPI_WEB_VERSION, version, APP_NAME)
+                APP_NAME,
+                PAPI_WEB_VERSION,
+                version,
+                APP_NAME,
+            )
             raise ValueError(f'{PAPI_WEB_VERSION=}, {version=}')
 
 
@@ -65,7 +70,7 @@ except PermissionError as pe:
 # The base directory, differs for developers. base_dir must be used when looking for application files
 # (images, templates, ...) while user file should be search in the current directory.
 BASE_DIR: Path = (
-    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS) # type: ignore
+    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS)  # type: ignore
 )
 
 
@@ -147,7 +152,7 @@ def show_duration(func):
             args[0].__class__.__name__,
             func.__name__,
             args[1:],
-            kwargs
+            kwargs,
         )
         return result
 

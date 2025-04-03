@@ -13,7 +13,6 @@ from data.util import TrfType, Result, BoardColor
 
 
 class BbpPairings:
-
     version: Version = Version('5.0.1')
 
     @property

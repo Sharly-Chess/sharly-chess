@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentParser, Namespace
 
 # Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager # Noqa
+from plugins.manager import plugin_manager  # Noqa
 
 from common.exception import PapiWebException
 from common.logger import (
@@ -20,10 +20,7 @@ from database.sqlite.migration_database import MigrationDatabase
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        description=(
-            'Command migrating one or more '
-            'databases to a specific migration.'
-        )
+        description=('Command migrating one or more databases to a specific migration.')
     )
     parser.add_argument(
         '-e',
@@ -70,19 +67,17 @@ if __name__ == '__main__':
         sys.exit(1)
     if args.config and (args.events or args.all_events):
         print_interactive_error(
-            'config and event databases can\'t be migrated at the same time.'
+            "config and event databases can't be migrated at the same time."
         )
         sys.exit(1)
     if args.events and args.all_events:
         print_interactive_error(
-            'Options "--events" and "--all-events" '
-            'can\'t be used at the same time.'
+            'Options "--events" and "--all-events" can\'t be used at the same time.'
         )
         sys.exit(1)
     if args.migration and args.validate:
         print_interactive_error(
-            'Options "--migration" and "--validate" '
-            'can\'t be used at the same time.'
+            'Options "--migration" and "--validate" can\'t be used at the same time.'
         )
         sys.exit(1)
     databases: list[MigrationDatabase] = []

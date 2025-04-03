@@ -61,9 +61,7 @@ class TournamentUserWebContext(ScreenUserWebContext):
             return
         assert self.user_event is not None
         try:
-            self.tournament = self.user_event.tournaments_by_id[
-                tournament_id
-            ]
+            self.tournament = self.user_event.tournaments_by_id[tournament_id]
         except KeyError:
             self._redirect_error(f'Tournament [{tournament_id}] not found.')
             return
@@ -214,8 +212,8 @@ class CheckInUserController(BaseInputUserController):
             template_name='user/modals.html',
             context=web_context.template_context | {},
             re_target='#modal-wrapper',
-            trigger_event="modal_opened",
-            after="settle"
+            trigger_event='modal_opened',
+            after='settle',
         )
 
     @patch(
@@ -251,7 +249,9 @@ class CheckInUserController(BaseInputUserController):
         SessionHandler.set_session_user_last_check_in_updated(
             request, player_web_context.tournament.id, player_web_context.player.id
         )
-        EventLoader.get(request=request).clear_cache(player_web_context.user_event.uniq_id)
+        EventLoader.get(request=request).clear_cache(
+            player_web_context.user_event.uniq_id
+        )
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -290,23 +290,29 @@ class IllegalMoveUserController(BaseInputUserController):
         assert player_web_context.player is not None
         assert player_web_context.player.id is not None
         assert player_web_context.user_event is not None
-    
+
         if add:
             player_web_context.tournament.store_illegal_move(player_web_context.player)
             SessionHandler.set_session_user_last_illegal_move_updated(
                 request, player_web_context.tournament.id, player_web_context.player.id
             )
         else:
-            if not player_web_context.tournament.delete_illegal_move(player_web_context.player):
+            if not player_web_context.tournament.delete_illegal_move(
+                player_web_context.player
+            ):
                 Message.error(
                     request,
                     f'Player [{player_web_context.player.id}] has no illegal move recorded.',
                 )
             else:
                 SessionHandler.set_session_user_last_illegal_move_updated(
-                    request, player_web_context.tournament.id, player_web_context.player.id
+                    request,
+                    player_web_context.tournament.id,
+                    player_web_context.player.id,
                 )
-        EventLoader.get(request=request).clear_cache(player_web_context.user_event.uniq_id)
+        EventLoader.get(request=request).clear_cache(
+            player_web_context.user_event.uniq_id
+        )
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -391,8 +397,8 @@ class ResultUserController(BaseInputUserController):
             template_name='user/modals.html',
             context=web_context.template_context | {},
             re_target='#modal-wrapper',
-            trigger_event="modal_opened",
-            after="settle"
+            trigger_event='modal_opened',
+            after='settle',
         )
 
     def _user_update_result(
@@ -445,7 +451,9 @@ class ResultUserController(BaseInputUserController):
         SessionHandler.set_session_last_result_updated(
             request, board_web_context.tournament.id, round_, board_web_context.board.id
         )
-        EventLoader.get(request=request).clear_cache(board_web_context.user_event.uniq_id)
+        EventLoader.get(request=request).clear_cache(
+            board_web_context.user_event.uniq_id
+        )
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -525,7 +533,7 @@ class DownloadUserController(BaseUserController):
         if web_context.error:
             return web_context.error
         if web_context.user_event is None:
-            raise RuntimeError("user_event not defined")
+            raise RuntimeError('user_event not defined')
         tournament_files: list[Path] = [
             tournament.file
             for tournament in web_context.user_event.tournaments_by_id.values()
@@ -567,7 +575,7 @@ class DownloadUserController(BaseUserController):
         if web_context.error:
             return web_context.error
         if web_context.tournament is None:
-            raise RuntimeError("tournament not defined")
+            raise RuntimeError('tournament not defined')
         if not web_context.tournament.file_exists:
             return BaseController.redirect_error(
                 request, f'Papi file [{web_context.tournament.file}] not found.'

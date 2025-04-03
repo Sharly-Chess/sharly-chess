@@ -9,7 +9,7 @@ class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
             'CREATE TABLE `info` ('
-            '    `name` TEXT NOT NULL DEFAULT \'?\','
+            "    `name` TEXT NOT NULL DEFAULT '?',"
             '    `start` FLOAT NOT NULL,'
             '    `stop` FLOAT NOT NULL,'
             '    `public` INTEGER,'
@@ -33,15 +33,15 @@ class Migration(BaseMigration):
             datetime.strptime(f'{today_str} 23:59', format_).timetuple()
         )
         self.database.execute(
-            "INSERT INTO `info` "
-            "(`name`, `start`, `stop`, `last_update`) "
-            "VALUES(?, ?, ?, ?)",
+            'INSERT INTO `info` '
+            '(`name`, `start`, `stop`, `last_update`) '
+            'VALUES(?, ?, ?, ?)',
             (
                 self.database.file.stem,
                 event_start,
                 event_stop,
                 time.time(),
-            )
+            ),
         )
         self.database.execute(
             'CREATE TABLE `chessevent` ('

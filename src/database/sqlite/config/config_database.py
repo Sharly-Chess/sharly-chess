@@ -9,7 +9,11 @@ from common import EVENTS_DIR
 from common.exception import PapiWebException
 from common.logger import get_logger
 from database.sqlite.config import migrations
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
+from database.sqlite.config.config_store import (
+    StoredConfig,
+    StoredPlugin,
+    StoredLocalSourceDatabase,
+)
 from database.sqlite.migration_database import MigrationDatabase
 
 if TYPE_CHECKING:
@@ -30,7 +34,6 @@ class ConfigDatabase(MigrationDatabase):
         if not self.is_setup:
             self.__class__.is_setup = True
             self.setup()
-
 
     @classmethod
     @override
@@ -133,12 +136,13 @@ class ConfigDatabase(MigrationDatabase):
             return self._row_to_stored_plugin(row)
         return None
 
-    def update_stored_plugin(
-        self, stored_plugin: StoredPlugin
-    ) -> StoredPlugin | None:
+    def update_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin | None:
         self.execute(
             'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
-            (stored_plugin.is_enabled, stored_plugin.name,),
+            (
+                stored_plugin.is_enabled,
+                stored_plugin.name,
+            ),
         )
         return self.load_stored_plugin(stored_plugin.name)
 
@@ -154,7 +158,7 @@ class ConfigDatabase(MigrationDatabase):
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(
             f'INSERT INTO `plugin` ({fields_str}) '
-            f'VALUES ({', '.join('?' for _ in params)})',
+            f'VALUES ({", ".join("?" for _ in params)})',
             params,
         )
 
@@ -199,7 +203,7 @@ class ConfigDatabase(MigrationDatabase):
         field_sets = (f'`{f}` = ?' for f in fields)
         query = (
             f'UPDATE `local_source_database` '
-            f'SET {', '.join(field_sets)} WHERE `name` = ?'
+            f'SET {", ".join(field_sets)} WHERE `name` = ?'
         )
         self.execute(query, params + (stored_database.name,))
 
@@ -221,6 +225,6 @@ class ConfigDatabase(MigrationDatabase):
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(
             f'INSERT INTO `local_source_database` ({fields_str}) '
-            f'VALUES ({', '.join('?' for _ in params)})',
+            f'VALUES ({", ".join("?" for _ in params)})',
             params,
         )

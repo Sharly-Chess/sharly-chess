@@ -22,7 +22,7 @@ from logging import Logger
 from PyInstaller.__main__ import run
 
 # Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager # Noqa
+from plugins.manager import plugin_manager  # Noqa
 
 from common import BASE_DIR
 from pairing.bbp_pairings import BbpPairings
@@ -59,6 +59,7 @@ SOURCE_DIR: Path = BASE_DIR / 'src'
 ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
 
+
 def clean(clean_zip: bool):
     for d in [
         BUILD_DIR,
@@ -83,7 +84,8 @@ def build_exe():
         '--noconfirm',
         '--name=' + basename,
         '--onefile',
-        '--copy-metadata', 'papi_web',
+        '--copy-metadata',
+        'papi_web',
         '--hiddenimport=common',
         '--hiddenimport=data',
         '--hiddenimport=database',
@@ -94,21 +96,18 @@ def build_exe():
         '--hiddenimport=pyexcel_io.writers',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
-        '--optimize', '1',
+        '--optimize',
+        '1',
         'src/papi_web.py',
     ]
-    migration_base_modules: list[ModuleType] = [
-        config_migrations, event_migrations
-    ] + [
+    migration_base_modules: list[ModuleType] = [config_migrations, event_migrations] + [
         plugin.base_migration_module
         for plugin in plugin_manager.all_plugins
         if plugin.base_migration_module
     ]
     for base_module in migration_base_modules:
         for _, module, _ in iter_modules(base_module.__path__):
-            pyinstaller_params.append(
-                f'--hiddenimport={base_module.__name__}.{module}'
-            )
+            pyinstaller_params.append(f'--hiddenimport={base_module.__name__}.{module}')
 
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'
@@ -118,9 +117,7 @@ def build_exe():
     static_dir = web_dir / 'static'
     for static_path in plugin_manager.static_paths:
         files += [file for file in static_path.glob('**/*') if file.is_file()]
-    files += [
-        file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
-    ]
+    files += [file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()]
     files += [
         file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()
     ]
@@ -174,7 +171,9 @@ def build_exe():
     files += [file for file in custom_dir.glob('**/*') if file.is_file()]
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
     files += [BbpPairings().executable_path]
-    files += [FFE_SQL_SERVER_CREDENTIALS_FILE, ]
+    files += [
+        FFE_SQL_SERVER_CREDENTIALS_FILE,
+    ]
     for file in files:
         print(file)
         pyinstaller_params.append(
@@ -205,9 +204,13 @@ def create_project():
     print_interactive_info(f'Moving {dist_exe_file} to {bin_dir}...')
     shutil.move(dist_exe_file, PROJECT_DIR)
     bbp_pairings: BbpPairings = BbpPairings()
-    bbp_pairings_dir: Path = bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
+    bbp_pairings_dir: Path = (
+        bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
+    )
     bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
-    print_interactive_info(f'Copying {bbp_pairings.executable_dir} to {bbp_pairings_dir}...')
+    print_interactive_info(
+        f'Copying {bbp_pairings.executable_dir} to {bbp_pairings_dir}...'
+    )
     shutil.copytree(bbp_pairings.executable_dir, bbp_pairings_dir, dirs_exist_ok=True)
     # create an empty events dir
     events_dir: Path = PROJECT_DIR / 'events'

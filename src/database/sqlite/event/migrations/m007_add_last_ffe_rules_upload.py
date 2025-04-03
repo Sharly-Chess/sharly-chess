@@ -6,6 +6,4 @@ class Migration(BaseMigration):
         self.database.execute(
             'ALTER TABLE `tournament` ADD `last_ffe_rules_upload` FLOAT'
         )
-        self.database.execute(
-            'UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0'
-        )
+        self.database.execute('UPDATE `tournament` SET `last_ffe_rules_upload` = 0.0')

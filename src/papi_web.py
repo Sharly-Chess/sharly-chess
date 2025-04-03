@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from common import DEVEL_ENV
 
 if TYPE_CHECKING:
-    from common.engine import Engine
     from plugins.utils import PluginEngineArgument
 
 from common.i18n import _

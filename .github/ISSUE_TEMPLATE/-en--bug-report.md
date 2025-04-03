@@ -29,4 +29,3 @@ If pertinent, add screenshots
 - Any useful information
 
 ## Additional context
-

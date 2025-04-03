@@ -213,7 +213,7 @@ tournament = principal
 name = Échiquiers %f à %l
 ```
 
-#### Déclaration de la famille d'écrans 
+#### Déclaration de la famille d'écrans
 
 ##### 2.1 Distribution des appariements sur un nombre donné d'écrans
 

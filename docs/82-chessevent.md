@@ -83,20 +83,20 @@ Exemple de tournoi :
 `{`<br/>
 &nbsp;&nbsp;`'name': '36e open Fide de Domloup',`<br/>
 &nbsp;&nbsp;`'type': 1,`  # Suisse<br/>
-&nbsp;&nbsp;`'rounds': 5,`<br/> 
-&nbsp;&nbsp;`'pairing': 1,`  # Standard<br/> 
-&nbsp;&nbsp;`'time_control': 'G3600 + 30',`<br/> 
-&nbsp;&nbsp;`'location': 'Domloup',`<br/> 
-&nbsp;&nbsp;`'arbiter': 'AUBRY Pascal C69548',`<br/> 
-&nbsp;&nbsp;`'start': 1708767000,`  # 2024-02-24 09:30<br/> 
-&nbsp;&nbsp;`'end': 1708880400,`  # 2024-02-25 17:00<br/> 
-&nbsp;&nbsp;`'tie_break_1': 2,`  # Buchholz tronqué<br/> 
-&nbsp;&nbsp;`'tie_break_2': 3,`  # Buchholz médian<br/> 
-&nbsp;&nbsp;`'tie_break_3': 5,`  # Performance<br/> 
-&nbsp;&nbsp;`'rating': 1,`  # Standard<br/> 
-&nbsp;&nbsp;`'players': [`<br/> 
-&nbsp;&nbsp;&nbsp;&nbsp;`...`<br/> 
-&nbsp;&nbsp;`],`<br/> 
+&nbsp;&nbsp;`'rounds': 5,`<br/>
+&nbsp;&nbsp;`'pairing': 1,`  # Standard<br/>
+&nbsp;&nbsp;`'time_control': 'G3600 + 30',`<br/>
+&nbsp;&nbsp;`'location': 'Domloup',`<br/>
+&nbsp;&nbsp;`'arbiter': 'AUBRY Pascal C69548',`<br/>
+&nbsp;&nbsp;`'start': 1708767000,`  # 2024-02-24 09:30<br/>
+&nbsp;&nbsp;`'end': 1708880400,`  # 2024-02-25 17:00<br/>
+&nbsp;&nbsp;`'tie_break_1': 2,`  # Buchholz tronqué<br/>
+&nbsp;&nbsp;`'tie_break_2': 3,`  # Buchholz médian<br/>
+&nbsp;&nbsp;`'tie_break_3': 5,`  # Performance<br/>
+&nbsp;&nbsp;`'rating': 1,`  # Standard<br/>
+&nbsp;&nbsp;`'players': [`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`...`<br/>
+&nbsp;&nbsp;`],`<br/>
 `}`
 
 ### Description des joueur·euses
@@ -167,7 +167,7 @@ Exemple de joueur·euse :
 
 ## Codes d'erreur
 
-En cas d'erreur, la réponse au format JSON ne contient qu'un champ `error: str` qui précise l'erreur rencontrée. 
+En cas d'erreur, la réponse au format JSON ne contient qu'un champ `error: str` qui précise l'erreur rencontrée.
 
 Les codes d'erreur suivants sont utilisés :
 
@@ -180,5 +180,3 @@ Les codes d'erreur suivants sont utilisés :
 | 498         | Tournoi non trouvé                                                                        | `Tournament not found` |
 | 499         | Évènement non trouvé                                                                      | `Event not found`      |
 | 500         | Autres erreurs                                                                            | À préciser             |
-
-

@@ -1,6 +1,7 @@
 """
 All the classes of this module are basic data classes stored in the event databases.
 """
+
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -60,6 +61,7 @@ class StoredTournament:
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None
+
 
 @dataclass
 class StoredScreenSet:

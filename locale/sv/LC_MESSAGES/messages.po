@@ -5813,4 +5813,3 @@ msgstr "{screen_type}-skärm"
 
 #~ msgid "{number} players written."
 #~ msgstr "{number} Skrivna spelare."
-

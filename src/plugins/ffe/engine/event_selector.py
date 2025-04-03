@@ -18,7 +18,6 @@ logger: Logger = get_logger()
 
 # NOTE(Amaras): this should just be a function
 class EventSelector(metaclass=Singleton):
-
     @staticmethod
     def run() -> bool:
         events: list[Event] = EventLoader.get(

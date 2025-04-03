@@ -75,9 +75,12 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     PlayerAdminController,
     FideSearchController,
     static_files_router,
-    
     # Plugin controllers
-    *[controller for controllers in plugin_manager.hook.get_controllers() for controller in controllers],
+    *[
+        controller
+        for controllers in plugin_manager.hook.get_controllers()
+        for controller in controllers
+    ],
 ]
 
 # Keep this here for the day we need to add extra functions to templates

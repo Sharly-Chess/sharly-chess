@@ -22,11 +22,9 @@ class FfePlayerMatch(PlayerMatch):
             return None
         diff_field_ids = super().diff_field_ids or []
         for field_id in ('league', 'ffe_licence'):
-            if (
-                field_id in self.field_ids and
-                get_data(self.player.plugin_data, field_id) !=
-                get_data(self.match_player.plugin_data, field_id)
-            ):
+            if field_id in self.field_ids and get_data(
+                self.player.plugin_data, field_id
+            ) != get_data(self.match_player.plugin_data, field_id):
                 diff_field_ids.append(field_id)
         return diff_field_ids
 
@@ -36,11 +34,9 @@ class FfePlayerMatch(PlayerMatch):
             return
         super().update_player_from_match(field_ids)
         for field_id in ('league', 'ffe_licence'):
-            if (
-                field_id in self.field_ids and
-                get_data(self.player.plugin_data, field_id) !=
-                (match := get_data(self.match_player.plugin_data, field_id))
-            ):
+            if field_id in self.field_ids and get_data(
+                self.player.plugin_data, field_id
+            ) != (match := get_data(self.match_player.plugin_data, field_id)):
                 self.player.plugin_data[PLUGIN_NAME][field_id] = match
 
 
@@ -56,11 +52,11 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
     @override
     def fields(self) -> list[PlayerUpdaterField]:
         return (
-            self._ratings_fields() +
-            self._identity_fields() +
-            self._federation_fields() +
-            self._club_fields() +
-            self._fide_fields()
+            self._ratings_fields()
+            + self._identity_fields()
+            + self._federation_fields()
+            + self._club_fields()
+            + self._fide_fields()
         ) + [
             PlayerUpdaterField(_('League'), 'league'),
             PlayerUpdaterField(_('FFE licence number'), 'ffe_licence_number'),
@@ -86,8 +82,8 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
         try:
             async with FFESqlServer() as server:
                 match_players = [
-                    player async for player in await
-                    server.get_players_by_ffe_licence_number(
+                    player
+                    async for player in await server.get_players_by_ffe_licence_number(
                         ffe_licence_numbers
                     )
                 ]
@@ -101,10 +97,8 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
                     '(last update on {date})'
                 ).format(date=database.updated_at.strftime('%d-%m-%Y'))
                 with database:
-                    match_players = (
-                        database.get_players_by_ffe_licence_number(
-                            ffe_licence_numbers
-                        )
+                    match_players = database.get_players_by_ffe_licence_number(
+                        ffe_licence_numbers
                     )
             else:
                 return None
@@ -112,8 +106,8 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
             players,
             match_players,
             lambda p1, p2: (
-                self._get_ffe_licence_number(p1) is not None and
-                self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
+                self._get_ffe_licence_number(p1) is not None
+                and self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
             ),
             field_ids,
             diff_only,

@@ -10,7 +10,7 @@ Les mainteneur·euses de Papi-web sont les personnes en charge de l'évolution e
 # Papi-web - Contributeur·ices
 
 Les contributeur·ices de Papi-web sont les personnes qui ont contribué à une partie du code ou de la documentation.
- 
+
 - Pascal AUBRY ([pascalaubry](https://github.com/pascalaubry))
 - Sammy PLAT ([Amaras](https://github.com/Amaras))
 - Adrien AVENIA ([adrienave](https://github.com/adrienave))

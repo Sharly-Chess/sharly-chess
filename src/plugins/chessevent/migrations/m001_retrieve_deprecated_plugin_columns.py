@@ -47,15 +47,9 @@ class Migration(BasePluginMigration):
                 )
 
     def backward(self):
-        self.database.execute(
-            'ALTER TABLE `info` DROP COLUMN `chessevent_user_id`'
-        )
-        self.database.execute(
-            'ALTER TABLE `info` DROP COLUMN `chessevent_password`'
-        )
-        self.database.execute(
-            'ALTER TABLE `info` DROP COLUMN `chessevent_event_id`'
-        )
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `chessevent_user_id`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `chessevent_password`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `chessevent_event_id`')
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `chessevent_user_id`'
         )
@@ -69,6 +63,5 @@ class Migration(BasePluginMigration):
             'ALTER TABLE `tournament` DROP COLUMN `chessevent_tournament_name`'
         )
         self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN '
-            '`chessevent_last_download_md5`'
+            'ALTER TABLE `tournament` DROP COLUMN `chessevent_last_download_md5`'
         )

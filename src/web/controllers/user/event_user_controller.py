@@ -148,9 +148,7 @@ class EventUserController(BaseUserController):
                 'disabled': not results_screens,
             },
             'ranking': {
-                'title': _('Ranking ({num})').format(
-                    num=len(ranking_screens) or '-'
-                ),
+                'title': _('Ranking ({num})').format(num=len(ranking_screens) or '-'),
                 'screens': ranking_screens,
                 'disabled': not ranking_screens,
             },
@@ -268,7 +266,7 @@ class EventUserController(BaseUserController):
         if web_context.error:
             return web_context.error
         if web_context.user_event is None:
-            raise RuntimeError("user_event not defined")
+            raise RuntimeError('user_event not defined')
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_event_refresh_needed(
             web_context.user_event, date

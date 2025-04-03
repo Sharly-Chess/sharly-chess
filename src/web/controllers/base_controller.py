@@ -212,9 +212,7 @@ class WebContext:
 
     @staticmethod
     def form_data_to_rgb(
-        data: dict[str, str] | None,
-        field: str,
-        empty_value: str | None = None
+        data: dict[str, str] | None, field: str, empty_value: str | None = None
     ) -> str | None:
         if data is None:
             return empty_value
@@ -274,10 +272,14 @@ class WebContext:
                 phonenumbers.parse(data[field], get_locale().upper())
                 return data[field]
             except NumberParseException as e:
-                raise ValueError(f'data[{field}]=[{data[field]}] (phone expected)') from e
+                raise ValueError(
+                    f'data[{field}]=[{data[field]}] (phone expected)'
+                ) from e
 
     @staticmethod
-    def value_to_form_data(value: str | int | float | bool | Path | Federation | Club | None) -> str:
+    def value_to_form_data(
+        value: str | int | float | bool | Path | Federation | Club | None,
+    ) -> str:
         if value is None:
             return ''
         if isinstance(value, str):
@@ -415,7 +417,7 @@ class BaseController(Controller):
             logger.debug(
                 'request.headers[%s]=%s',
                 self.IF_MODIFIED_SINCE_HEADER,
-                request.headers[self.IF_MODIFIED_SINCE_HEADER]
+                request.headers[self.IF_MODIFIED_SINCE_HEADER],
             )
             logger.debug('if_modified_since=%d', if_modified_since)
             return if_modified_since
@@ -439,9 +441,11 @@ class BaseController(Controller):
     @staticmethod
     def get_cycler(items: list[str]):
         iter_ = cycle(items)
+
         def cycler(reset: bool = False):
             nonlocal iter_
             if reset:
                 iter_ = cycle(items)
             return next(iter_)
+
         return cycler

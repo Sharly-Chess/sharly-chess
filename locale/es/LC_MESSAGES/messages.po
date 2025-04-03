@@ -5737,4 +5737,3 @@ msgstr "{screen_type}-pantalla"
 
 #~ msgid "{number} players written."
 #~ msgstr "{number} jugadores escritos."
-

@@ -26,22 +26,26 @@ class ChessEventTournament:
         self.players: list[ChessEventPlayer] = []
         self.check_in_started = False
         self.error = True
-        
+
         reader = ChessEventFieldReader(chessevent_tournament_info)
-        
+
         try:
             self.name = reader.get('name', str)
             self.type = reader.get_enum('type', TournamentType, TournamentType.UNKNOWN)
             self.rounds = reader.get('rounds', int)
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError
-            self.pairing = reader.get_enum('pairing', TournamentPairing, TournamentPairing.UNKNOWN)
+            self.pairing = reader.get_enum(
+                'pairing', TournamentPairing, TournamentPairing.UNKNOWN
+            )
             self.time_control = reader.get('time_control', str)
             self.location = reader.get('location', str)
             self.arbiter = reader.get('arbiter', str)
             self.start = float(reader.get('start', int))
             self.end = float(reader.get('end', int))
-            self.rating = reader.get_enum('rating', TournamentRating, TournamentRating.STANDARD)
+            self.rating = reader.get_enum(
+                'rating', TournamentRating, TournamentRating.STANDARD
+            )
             self.ffe_id = reader.get('ffe_id', int, '')
             self.tie_breaks = self._load_tie_breaks(chessevent_tournament_info)
             for chessevent_player_info in chessevent_tournament_info['players']:
@@ -52,9 +56,11 @@ class ChessEventTournament:
                 if chessevent_player.error:
                     return
                 self.players.append(chessevent_player)
-                
+
         except KeyError:
-            logger.error('Field [%s] missing in the ChessEvent response', reader.last_key)
+            logger.error(
+                'Field [%s] missing in the ChessEvent response', reader.last_key
+            )
             return
         except (TypeError, ValueError):
             logger.error(
@@ -80,14 +86,16 @@ class ChessEventTournament:
             10: tie_break.SonnebornBergerTieBreak(),
         }
         return [
-            tie_break_ for tie_break_ in [
+            tie_break_
+            for tie_break_ in [
                 tie_break_by_chessevent_id.get(
                     tournament_info[f'tie_break_{index}'], None
                 )
                 for index in range(1, 4)
-            ] if tie_break_ is not None
+            ]
+            if tie_break_ is not None
         ]
-        
+
     def __str__(self) -> str:
         return '\n'.join(
             [

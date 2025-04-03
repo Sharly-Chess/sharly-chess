@@ -13,7 +13,10 @@ from packaging.version import Version
 from common import BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
-    _, trusted_locales, untrusted_locales, set_locale,
+    _,
+    trusted_locales,
+    untrusted_locales,
+    set_locale,
 )
 from common.logger import (
     get_logger,
@@ -44,7 +47,12 @@ class PapiWebConfig(metaclass=Singleton):
     web_host: str = '0.0.0.0'
 
     # The ports the web server tries to start on, tried one after the other.
-    web_ports: list[int] = [80, 81, 8080, 8081, ]
+    web_ports: list[int] = [
+        80,
+        81,
+        8080,
+        8081,
+    ]
 
     # The default behaviour to open a browser after the startup of the web server.
     default_launch_browser: bool = True
@@ -72,11 +80,10 @@ class PapiWebConfig(metaclass=Singleton):
             logger.debug(' - %s', driver)
         logger.debug('System information:')
         logger.debug(
-            ' - Machine/processor: %s/%s',
-            platform.machine(), platform.processor()
+            ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
         )
         logger.debug(' - Platform: %s', platform.platform())
-        logger.debug(' - Architecture: %s', " ".join(platform.architecture()))
+        logger.debug(' - Architecture: %s', ' '.join(platform.architecture()))
         configure_logger(self.log_level)
 
     def reload(self):

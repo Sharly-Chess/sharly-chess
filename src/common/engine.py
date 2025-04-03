@@ -52,7 +52,9 @@ class Engine:
             print_interactive_info(_('Checking Papi-web version...'))
             new_stable_version = self._check_version()
         else:
-            print_interactive_warning(_('Not connected, can not check Papi-web version.'))
+            print_interactive_warning(
+                _('Not connected, can not check Papi-web version.')
+            )
         # Engines inheriting from this class should not do anything if property updated is true.
         self.updated: bool = False
         if new_stable_version:
@@ -174,7 +176,10 @@ class Engine:
                         choice = input_interactive(
                             _(
                                 'Please enter the number of the version to recover [{default_choice}: {default_version}]: '
-                            ).format(default_choice=len(previous_versions), default_version=previous_versions[-1])
+                            ).format(
+                                default_choice=len(previous_versions),
+                                default_version=previous_versions[-1],
+                            )
                         )
                         if choice == quit_answer:
                             break
@@ -242,8 +247,7 @@ class Engine:
             event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
             for tournament in event.tournaments_by_id.values():
                 src_file: Path = (
-                    papi_dir
-                    / f'{tournament.filename}.{PapiWebConfig.papi_ext}'
+                    papi_dir / f'{tournament.filename}.{PapiWebConfig.papi_ext}'
                 )
                 if (
                     tournament.path == PapiWebConfig.default_papi_path
@@ -300,7 +304,7 @@ class Engine:
                 )
             )
             for custom_file in custom_files:
-                logger.info('- %s' , str(custom_file).replace(str(custom_dir), ""))
+                logger.info('- %s', str(custom_file).replace(str(custom_dir), ''))
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
             no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -372,16 +376,24 @@ class Engine:
                     for field_id, file in files.items():
                         logger.info('  - %s: [%s]', field_id, file)
             if not data and not files:
-                response: Response = request(method=method, url=url, timeout=REQUEST_TIMEOUT)
+                response: Response = request(
+                    method=method, url=url, timeout=REQUEST_TIMEOUT
+                )
             elif not files:
-                response: Response = request(method=method, url=url, data=data, timeout=REQUEST_TIMEOUT)
+                response: Response = request(
+                    method=method, url=url, data=data, timeout=REQUEST_TIMEOUT
+                )
             else:
                 handlers = {
                     file_id: open(file_name, 'rb')
                     for file_id, file_name in files.items()
                 }
                 response: Response = request(
-                    method=method, url=url, data=data, files=handlers, timeout=REQUEST_TIMEOUT,
+                    method=method,
+                    url=url,
+                    data=data,
+                    files=handlers,
+                    timeout=REQUEST_TIMEOUT,
                 )
                 for handler in handlers.values():
                     handler.close()
@@ -453,7 +465,13 @@ class Engine:
                 '[Papi-web {version}] Request for the integration of custom files'
             ).format(version=PAPI_WEB_VERSION)
             body: str = '<p>' + _('Hello,') + '</p>'
-            body += '<p>' + _('I would like the following custom files to be added to a future version of Papi-web:') + '/p>'
+            body += (
+                '<p>'
+                + _(
+                    'I would like the following custom files to be added to a future version of Papi-web:'
+                )
+                + '/p>'
+            )
             body += '<ul>'
             for filename in custom_files:
                 body += f'<li>{filename}</li>'
@@ -461,11 +479,23 @@ class Engine:
             body += '<p>' + _('Thanks :-)') + '/p>'
             body += '<ul>'
             body += (
-                f'<li><a href="{bin_url}">' + _('View the files on filebin.net') + '</a></li>'
+                f'<li><a href="{bin_url}">'
+                + _('View the files on filebin.net')
+                + '</a></li>'
             )
-            body += f'<li><a href="{bin_zip_url}">' + _('Download the files (ZIP archive)') + '</a></li>'
+            body += (
+                f'<li><a href="{bin_zip_url}">'
+                + _('Download the files (ZIP archive)')
+                + '</a></li>'
+            )
             body += '</ul>'
-            body += '<p>' + _('Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!') + '</p>'
+            body += (
+                '<p>'
+                + _(
+                    'Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!'
+                )
+                + '</p>'
+            )
             body += '<p>' + _('First name LAST NAME') + '/p>'
             mail_url: str = (
                 f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
@@ -529,9 +559,7 @@ class Engine:
             print_interactive_warning(
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
-                ).format(
-                    new_version=last_stable_version, old_version=PAPI_WEB_VERSION
-                )
+                ).format(new_version=last_stable_version, old_version=PAPI_WEB_VERSION)
             )
             return None
         print_interactive_info(

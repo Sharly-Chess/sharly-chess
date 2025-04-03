@@ -12,9 +12,7 @@ class Migration(BaseMigration):
             '    `locale` TEXT'
             ')'
         )
-        self.database.execute(
-            "INSERT INTO `info`(`force_edit`) VALUES (?)", (True,)
-        )
+        self.database.execute('INSERT INTO `info`(`force_edit`) VALUES (?)', (True,))
 
     def backward(self):
         self.database.execute('DROP TABLE `info`')

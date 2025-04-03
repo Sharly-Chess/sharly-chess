@@ -18,4 +18,3 @@ Le script `/export.py` :
 Règles (non-immuables) adoptées :
 
 - Un seul patch d'une version mineure est conservée dans les _releases_ en ligne sur GitHub
-

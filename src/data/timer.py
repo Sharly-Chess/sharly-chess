@@ -44,7 +44,7 @@ class TimerHour:
     def timer(self) -> 'Timer':
         _timer = self._timer_ref()
         if _timer is None:
-            raise RuntimeError("Timer reference has been garbage collected")
+            raise RuntimeError('Timer reference has been garbage collected')
         return _timer
 
     @property
@@ -109,25 +109,25 @@ class TimerHour:
     @property
     def timestamp_1(self) -> int:
         if self.timestamp is None:
-            raise RuntimeError("Timestamp is not defined")
+            raise RuntimeError('Timestamp is not defined')
         return self.timestamp - self.timer.delays[1] * 60 - self.timer.delays[2] * 60
 
     @property
     def timestamp_2(self) -> int:
         if self.timestamp is None:
-            raise RuntimeError("Timestamp is not defined")
+            raise RuntimeError('Timestamp is not defined')
         return self.timestamp - self.timer.delays[2] * 60
 
     @property
     def timestamp_3(self) -> int:
         if self.timestamp is None:
-            raise RuntimeError("Timestamp is not defined")
+            raise RuntimeError('Timestamp is not defined')
         return self.timestamp
 
     @property
     def timestamp_next(self) -> int:
         if self.timestamp is None:
-            raise RuntimeError("Timestamp is not defined")
+            raise RuntimeError('Timestamp is not defined')
         return self.timestamp + self.timer.delays[3] * 60
 
     @property
@@ -168,7 +168,7 @@ class Timer:
     def event(self) -> 'Event':
         event = self._event_ref()
         if event is None:
-            raise RuntimeError("Event reference has been garbage collected")
+            raise RuntimeError('Event reference has been garbage collected')
         return event
 
     @property
@@ -177,13 +177,17 @@ class Timer:
 
     @cached_property
     def timer_hour_uniq_ids(self) -> list[str]:
-        return [timer_hour.uniq_id for timer_hour in self.timer_hours_by_id.values() if timer_hour.uniq_id]
+        return [
+            timer_hour.uniq_id
+            for timer_hour in self.timer_hours_by_id.values()
+            if timer_hour.uniq_id
+        ]
 
     @cached_property
     def timer_hours_sorted_by_order(self) -> list[TimerHour]:
         return sorted(
             self.timer_hours_by_id.values(),
-            key=lambda timer_hour: timer_hour.order or 0
+            key=lambda timer_hour: timer_hour.order or 0,
         )
 
     @property

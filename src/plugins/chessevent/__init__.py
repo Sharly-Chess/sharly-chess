@@ -1,1 +1,1 @@
-PLUGIN_NAME = "chessevent"
+PLUGIN_NAME = 'chessevent'

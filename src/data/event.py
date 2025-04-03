@@ -107,7 +107,9 @@ class Event:
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
         self.messages: list[EventMessage] = []
-        last_load_date: float | None = event_last_load_date_by_uniq_id.get(self.uniq_id, None)
+        last_load_date: float | None = event_last_load_date_by_uniq_id.get(
+            self.uniq_id, None
+        )
         self._silent = (
             last_load_date is not None
             and last_load_date > self.stored_event.last_update
@@ -247,9 +249,7 @@ class Event:
         counter: Counter[Federation] = Counter[Federation]()
         for tournament in self.tournaments_by_id.values():
             for federation in tournament.federation_counts:
-                counter[federation] += tournament.federation_counts[
-                    federation
-                ]
+                counter[federation] += tournament.federation_counts[federation]
         return counter
 
     @cached_property
@@ -358,7 +358,7 @@ class Event:
         if stored_delays is not None:
             for i in range(1, 4):
                 if i in stored_delays and (delay := stored_delays[i]) is not None:
-                    delays[i] = delay 
+                    delays[i] = delay
         return delays
 
     @property
@@ -498,7 +498,11 @@ class Event:
 
     @cached_property
     def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {timer.uniq_id: timer for timer in self.timers_by_id.values() if timer.uniq_id is not None}
+        return {
+            timer.uniq_id: timer
+            for timer in self.timers_by_id.values()
+            if timer.uniq_id is not None
+        }
 
     def get_unused_timer_uniq_id(
         self,
@@ -614,8 +618,10 @@ class Event:
         if screen_uniq_id is None:
             if screen_type is None:
                 raise ValueError('Either screen_type or base_uniq_id must be provided.')
-            screen_uniq_id = _('{screen_type}-screen').format(screen_type=screen_type.value)
-        
+            screen_uniq_id = _('{screen_type}-screen').format(
+                screen_type=screen_type.value
+            )
+
         return self._get_unused_item_uniq_id(
             screen_uniq_id,
             self.basic_screens_by_uniq_id,
@@ -631,7 +637,11 @@ class Event:
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
         return self._get_unused_item_name(
             base_name or screen_type.name,
-            [str(screen.name) for screen in self.basic_screens_by_id.values() if screen.name is not None],
+            [
+                str(screen.name)
+                for screen in self.basic_screens_by_id.values()
+                if screen.name is not None
+            ],
         )
 
     @cached_property
@@ -665,7 +675,9 @@ class Event:
         if family_uniq_id is None:
             if family_type is None:
                 raise ValueError('Either family_type or base_uniq_id must be provided.')
-            family_uniq_id = _('{family_type}-screen').format(family_type=family_type.value)
+            family_uniq_id = _('{family_type}-screen').format(
+                family_type=family_type.value
+            )
         return self._get_unused_item_uniq_id(
             family_uniq_id,
             self.families_by_uniq_id,
@@ -917,7 +929,7 @@ class Event:
         # p1 < p2 calls p1.__lt__(p2)
         return self.uniq_id > other.uniq_id
 
-    def __eq__(self, other: object) -> bool | NotImplementedType :
+    def __eq__(self, other: object) -> bool | NotImplementedType:
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, self.__class__):
             return NotImplemented

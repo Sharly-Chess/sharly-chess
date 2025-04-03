@@ -13,7 +13,7 @@ On crée un fichier `amical.ini` dans le répertoire `events/` pour déclarer l'
 [event]
 name = Tournoi amical 17 juin 2023
 
-[tournament] 
+[tournament]
 name = Tournoi amical
 filename = amical-20230617
 ```

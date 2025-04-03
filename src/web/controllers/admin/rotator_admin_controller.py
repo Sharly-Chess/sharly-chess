@@ -43,7 +43,7 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
             data=data,
             event_uniq_id=event_uniq_id,
         )
-        assert self.admin_event is not None 
+        assert self.admin_event is not None
         self.admin_rotator: Rotator | None = None
         if self.error:
             return
@@ -138,16 +138,16 @@ class RotatorAdminController(BaseEventAdminController):
                 uniq_id = uniq_id or ''
             case _:
                 raise ValueError(f'action=[{action}]')
-            
+
         assert uniq_id is not None
-        
+
         id: int | None = None
         if web_context.admin_rotator and action not in [
             'create',
             'clone',
         ]:
             id = web_context.admin_rotator.id
-            
+
         return StoredRotator(
             id=id,
             uniq_id=uniq_id,
@@ -168,7 +168,7 @@ class RotatorAdminController(BaseEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         rotator_id: int | None = None,
-        data: dict[str, str] | None = None, # type: ignore
+        data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: RotatorAdminWebContext = RotatorAdminWebContext(
@@ -180,7 +180,7 @@ class RotatorAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
@@ -189,7 +189,7 @@ class RotatorAdminController(BaseEventAdminController):
                 web_context.request
             ),
         }
-        
+
         match modal:
             case None:
                 pass
@@ -368,7 +368,7 @@ class RotatorAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         stored_rotator: StoredRotator = self._admin_validate_rotator_update_data(
             action, web_context, data
         )
@@ -409,7 +409,9 @@ class RotatorAdminController(BaseEventAdminController):
                     )
                 case 'delete':
                     if web_context.admin_rotator is None:
-                        raise RuntimeError(f'{web_context.admin_rotator=} for [{action=}]')
+                        raise RuntimeError(
+                            f'{web_context.admin_rotator=} for [{action=}]'
+                        )
                     event_database.delete_stored_rotator(web_context.admin_rotator.id)
                     event_database.commit()
                     Message.success(

@@ -92,10 +92,3 @@ Dans l'exemple ci-dessous :
 | ``192.168.1.27``  |       -        |  Poste pointage   |         |      :x:       |     :x:      |        :x:        |    :x:    |   :ok:   |  :x:   |     :ok:      |
 | ``192.168.1.226`` |       -        |  Poste de saisie  |         |      :x:       |     :x:      |        :x:        |    :x:    |   :x:    |  :ok:  |     :ok:      |
 |         -         |       -        |                   |         |      :x:       |     :x:      |        :x:        |    :x:    |   :x:    |  :x:   |     :ok:      |
-
-
-
-
-
-
-
