@@ -11,7 +11,12 @@ from pathlib import Path
 from litestar.contrib.htmx.request import HTMXRequest
 from packaging.version import Version
 
-from common import format_timestamp_date_time, unicode_normalize
+from common import (
+    format_timestamp_date_time,
+    unicode_normalize,
+    PAPI_WEB_VERSION,
+    EVENTS_DIR,
+)
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
@@ -24,8 +29,8 @@ logger: Logger = get_logger()
 
 class EventLoader:
     def __init__(self):
-        self._loaded_stored_events_by_id: dict[str, StoredEvent | None] = {}
-        self._loaded_events_by_id: dict[str, Event | None] = {}
+        self._loaded_stored_events_by_id: dict[str, StoredEvent] = {}
+        self._loaded_events_by_id: dict[str, Event] = {}
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -70,7 +75,7 @@ class EventLoader:
     def event_uniq_ids(self) -> list[str]:
         return [
             file.stem
-            for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_database_ext}')
+            for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_database_ext}')
         ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -260,7 +265,7 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, file.lstat().st_ctime)
-                for file in PapiWebConfig.event_path.glob(f'*.{PapiWebConfig.event_archive_ext}')
+                for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_archive_ext}')
             ],
             key=lambda archive: archive.date,
         )
@@ -336,7 +341,7 @@ class EventBackupLoader:
 
         compatible_versions = [
             version for version in self.versions(event_id)
-            if version <= PapiWebConfig().version
+            if version <= PAPI_WEB_VERSION
         ]
         if not compatible_versions:
             return None

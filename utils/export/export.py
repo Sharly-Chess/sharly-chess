@@ -3,6 +3,8 @@ import re
 import shutil
 from pathlib import Path
 import sys
+from pkgutil import iter_modules
+from types import ModuleType
 
 sys.path.extend(
     map(
@@ -23,8 +25,6 @@ from PyInstaller.__main__ import run
 from plugins.manager import plugin_manager # Noqa
 
 from common import BASE_DIR
-from database.sqlite.config.config_database import ConfigMigrationManager
-from database.sqlite.event.event_database import EventMigrationManager
 from pairing.bbp_pairings import BbpPairings
 from common import PAPI_WEB_VERSION
 from common.i18n import trusted_locales, untrusted_locales
@@ -36,6 +36,8 @@ from common.logger import (
     print_interactive_error,
     print_interactive_success,
 )
+from database.sqlite.config import migrations as config_migrations
+from database.sqlite.event import migrations as event_migrations
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
 from utils.i18n.i18n_update import I18nUpdater
@@ -95,13 +97,18 @@ def build_exe():
         '--optimize', '1',
         'src/papi_web.py',
     ]
-    for module in EventMigrationManager().migration_modules:
-        pyinstaller_params.append(f'--hiddenimport={module}')
-    for module in ConfigMigrationManager().migration_modules:
-        pyinstaller_params.append(f'--hiddenimport={module}')
-    for plugin in plugin_manager.all_plugins:
-        for module in plugin.migration_manager.migration_modules:
-            pyinstaller_params.append(f'--hiddenimport={module}')
+    migration_base_modules: list[ModuleType] = [
+        config_migrations, event_migrations
+    ] + [
+        plugin.base_migration_module
+        for plugin in plugin_manager.all_plugins
+        if plugin.base_migration_module
+    ]
+    for base_module in migration_base_modules:
+        for _, module, _ in iter_modules(base_module.__path__):
+            pyinstaller_params.append(
+                f'--hiddenimport={base_module.__name__}.{module}'
+            )
 
     files: list[Path] = []
     web_dir = SOURCE_DIR / 'web'

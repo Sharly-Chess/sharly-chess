@@ -165,8 +165,8 @@ def locale_flag_url(locale: str):
     return f'/static/images/locales/{locale}.svg'
 
 
-def locale_localized_name(locale: str):
-    return capwords(Locale.parse(locale).get_display_name())
+def locale_localized_name(locale: str) -> str:
+    return capwords(str(Locale.parse(locale).get_display_name()))
 
 
 def gettext(message: str, locale: str | None = None):

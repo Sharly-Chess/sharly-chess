@@ -23,6 +23,13 @@ body {
   display: block;
 }
 
+.input-group-text.is-invalid {
+    border-color: var(--bs-form-invalid-border-color);
+}
+.input-group-text.is-valid {
+    border-color: var(--bs-form-valid-border-color);
+}
+
 .is-invalid {
     scroll-margin-top: 40px
 }

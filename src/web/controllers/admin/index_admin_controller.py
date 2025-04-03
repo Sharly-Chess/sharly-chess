@@ -74,7 +74,6 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
-            version=str(papi_web_config.version),
             log_level=log_level,
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
@@ -96,9 +95,9 @@ class IndexAdminController(BaseAdminController):
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=WebContext.form_data_to_bool(
+                    is_enabled=bool(WebContext.form_data_to_bool(
                         data, plugin.form_key, False
-                    ),
+                    )),
                     errors=errors,
                 )
             )
@@ -210,7 +209,7 @@ class IndexAdminController(BaseAdminController):
                 pass
             case 'config':
                 if data is None:
-                    papi_web_config: PapiWebConfig = PapiWebConfig()
+                    papi_web_config = PapiWebConfig()
                     data = {
                         'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
                         'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
@@ -436,7 +435,7 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         admin_tab: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_create(
             request,
             admin_tab=admin_tab,

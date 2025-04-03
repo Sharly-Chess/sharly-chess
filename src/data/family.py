@@ -1,5 +1,6 @@
+import functools
 import weakref
-from functools import cached_property, cache
+from functools import cached_property
 from math import ceil
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
@@ -7,8 +8,6 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from data.board import Board
-from data.player import Player
 from data.screen import Screen
 from data.util import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -16,6 +15,7 @@ from database.sqlite.event.event_store import StoredFamily
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
+    from data.timer import Timer
 
 
 class Family:
@@ -32,14 +32,21 @@ class Family:
         self._calculated_last: int | None = None
         self._calculated_number: int | None = None
         self._calculated_parts: int | None = None
-        self.error = None
+        self.error: str | None = None
 
+        # http://rednafi.com/python/lru_cache_on_methods/
+        self._calculate_and_cache_screens = functools.lru_cache()(self._calculate_screens)
+        
     @property
     def event(self) -> 'Event':
-        return self._event_ref()
+        event = self._event_ref()
+        if event is None:
+            raise RuntimeError("Event reference has been garbage collected")
+        return event
 
     @property
     def id(self) -> int:
+        assert self.stored_family.id is not None, 'Family id is not set.'
         return self.stored_family.id
 
     @property
@@ -121,7 +128,7 @@ class Family:
         return self.stored_family.timer_id
 
     @property
-    def timer(self) -> 'Tournament | None':
+    def timer(self) -> 'Timer | None':
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
     @property
@@ -140,7 +147,7 @@ class Family:
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:
-                return self.stored_family.ranking_crosstable == True
+                return bool(self.stored_family.ranking_crosstable)
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -215,12 +222,12 @@ class Family:
     def last_update_str(self) -> str | None:
         return format_timestamp_date_time(self.last_update)
 
-    @cache
     def _calculate_screens(self) -> bool:
         if not self.tournament.rounds:
             self.error = _(
                 'Tournament [{tournament_uniq_id}] can not be read, family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
+            self.error = str(self.error) if self.error else _('Tournament can not be read, family ignored.')
             self.event.add_warning(self.error, family=self)
             return False
         players_instead_of_boards: bool
@@ -228,7 +235,7 @@ class Family:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 if self.tournament.current_round:
                     players_instead_of_boards = False
-                    total_items_number: int = len(self.tournament.boards)
+                    total_items_number: int = len(self.tournament.boards or [])
                     if self.first:
                         if self.first > total_items_number:
                             self.error = _(
@@ -238,6 +245,7 @@ class Family:
                                 tournament_uniq_id=self.tournament.uniq_id,
                                 first=self.first,
                             )
+                            self.error = str(self.error) if self.error else _('Invalid board number range.')
                             self.event.add_warning(self.error, family=self)
                             return False
                         self._calculated_first = self.first
@@ -280,21 +288,15 @@ class Family:
                             player
                             for player in self.tournament.players_by_rank.values()
                             if (
-                                       self.ranking_min_points is None or player.points >= self.ranking_min_points
+                                    self.ranking_min_points is None or (player.points or 0) >= self.ranking_min_points
                                ) and (
-                                       self.ranking_max_points is None or player.points <= self.ranking_max_points
+                                    self.ranking_max_points is None or (player.points or 0) <= self.ranking_max_points
                                )
                         ]
                     )
                 if self.first:
                     if self.first > total_items_number:
-                        self.error = _(
-                            'Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored.'
-                        ).format(
-                            player_count=total_items_number,
-                            tournament_uniq_id=self.tournament.uniq_id,
-                            first=self.first,
-                        )
+                        self.error = str(self.error) if self.error else _('Invalid player number range.')
                         self.event.add_warning(self.error, family=self)
                         return False
                     self._calculated_first = self.first
@@ -311,6 +313,7 @@ class Family:
             self.error = _(
                 'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
+            self.error = str(self.error) if self.error else _('Tournament can not be read, family ignored.')
             self.event.add_warning(self.error, family=self)
             return False
         # OK now we know the number of items and the number of the first item to take
@@ -338,7 +341,7 @@ class Family:
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = {}
-        if self._calculate_screens():
+        if self._calculate_and_cache_screens():
             for family_index in range(1, self.calculated_parts + 1):
                 screen: Screen = Screen(
                     self.event, family=self, family_part=family_index
@@ -352,23 +355,23 @@ class Family:
 
     @cached_property
     def calculated_first(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_and_cache_screens()
         return self._calculated_first
 
     @cached_property
     def calculated_last(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_and_cache_screens()
         return self._calculated_last
 
     @cached_property
     def calculated_number(self) -> int | None:
-        self._calculate_screens()
+        self._calculate_and_cache_screens()
         return self._calculated_number
 
     @cached_property
-    def calculated_parts(self) -> int | None:
-        self._calculate_screens()
-        return self._calculated_parts
+    def calculated_parts(self) -> int:
+        self._calculate_and_cache_screens()
+        return self._calculated_parts or 1
 
     @property
     def numbers_str(self):

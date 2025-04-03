@@ -174,6 +174,8 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     data={},
     errors={},
     error=false,
+    valid=false,
+    password_visible=false,
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
@@ -183,12 +185,17 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     number_step='',
     disabled=false,
     hx_get='',
+    hx_post='',
     hx_target='',
+    hx_indicator='',
     hx_indicator_img='',
     hx_trigger='',
+    hx_include='',
+    hx_swap='',
     hx_on_before_request='',
     hx_on_after_request='',
-    hx_sync=''
+    hx_sync='',
+    hx_vals=''
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -199,7 +206,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         {% else %}
             {% set value=data[name] %}
         {% endif %}
-        <div>
+        <div class="input-block">
             <div class="d-flex align-items-center">
                 {% if label %}
                     <label
@@ -275,7 +282,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                     <input
                         id="{{ id }}"
                         name="{{ name }}"
-                        type="{{ input_type }}"
+                        type="{{ input_type if not password_visible else 'text' }}"
                         {% if number_min != '' %}
                             min="{{ number_min }}"
                         {% endif %}
@@ -285,7 +292,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                         {% if number_step != '' %}
                             step="{{ number_step }}"
                         {% endif %}
-                        class="form-control {% if error or (name in errors) %}is-invalid{% endif %}"
+                        class="form-control {% if error or (name in errors) %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         placeholder="{{ placeholder }}"
                         value="{{ value }}"
@@ -293,14 +300,26 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                         {% if hx_get %}
                             hx-get="{{ hx_get }}"
                         {% endif %}
+                        {% if hx_post %}
+                            hx-post="{{ hx_post }}"
+                        {% endif %}
                         {% if hx_target %}
                             hx-target="{{ hx_target }}"
+                        {% endif %}
+                        {% if hx_indicator %}
+                            hx-indicator="{{ hx_indicator }}"
                         {% endif %}
                         {% if hx_indicator_img %}
                             hx-indicator="#{{ id }}_indicator"
                         {% endif %}
                         {% if hx_trigger %}
                             hx-trigger="{{ hx_trigger }}"
+                        {% endif %}
+                        {% if hx_swap %}
+                            hx-swap="{{ hx_swap }}"
+                        {% endif %}
+                        {% if hx_include %}
+                            hx-include="{{ hx_include }}"
                         {% endif %}
                         {% if hx_on_before_request %}
                             hx-on::before-request="{{ hx_on_before_request }}"
@@ -311,11 +330,14 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                         {% if hx_sync %}
                             hx-sync="{{ hx_sync }}"
                         {% endif %}
+                        {% if hx_vals %}
+                            hx-vals="{{ hx_vals }}"
+                        {% endif %}
                     />
                     {% if input_type == 'password' %}
                         <i
                             id="{{ id }}-toggle-password"
-                            class="input-group-text bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %}"
+                            class="input-group-text {{ 'bi-eye-slash-fill' if not password_visible else 'bi-eye-fill' }} ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
                         ></i>
                     {% endif %}
                     {% if hx_indicator_img %}
@@ -373,17 +395,23 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     data={},
     errors={},
     error=false,
+    valid=false,
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
     disabled=false,
     hx_get='',
+    hx_post='',
     hx_trigger='',
+    hx_include='',
     hx_target='',
+    hx_swap='',
+    hx_indicator='',
     hx_indicator_img='',
     hx_on_before_request='',
     hx_on_after_request='',
-    hx_sync=''
+    hx_sync='',
+    hx_vals=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -394,17 +422,23 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         data=data,
         errors=errors,
         error=error,
+        valid=valid,
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
         default_value=default_value,
         disabled=disabled,
         hx_get=hx_get,
+        hx_post=hx_post,
         hx_trigger=hx_trigger,
         hx_target=hx_target,
+        hx_swap=hx_swap,
+        hx_include=hx_include,
+        hx_indicator=hx_indicator,
         hx_indicator_img=hx_indicator_img,
         hx_on_before_request=hx_on_before_request,
         hx_on_after_request=hx_on_after_request,
         hx_sync=hx_sync,
+        hx_vals=hx_vals
     ) }}
 {% endmacro %}
 
@@ -422,7 +456,19 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     min='',
     max='',
     step='',
-    disabled=false
+    disabled=false,
+    hx_get='',
+    hx_post='',
+    hx_trigger='',
+    hx_include='',
+    hx_target='',
+    hx_swap='',
+    hx_indicator='',
+    hx_indicator_img='',
+    hx_on_before_request='',
+    hx_on_after_request='',
+    hx_sync='',
+    hx_vals=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -440,6 +486,18 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         number_max=max,
         number_step=step,
         disabled=disabled,
+        hx_get=hx_get,
+        hx_post=hx_post,
+        hx_trigger=hx_trigger,
+        hx_target=hx_target,
+        hx_swap=hx_swap,
+        hx_include=hx_include,
+        hx_indicator=hx_indicator,
+        hx_indicator_img=hx_indicator_img,
+        hx_on_before_request=hx_on_before_request,
+        hx_on_after_request=hx_on_after_request,
+        hx_sync=hx_sync,
+        hx_vals=hx_vals
     ) }}
 {% endmacro %}
 
@@ -451,7 +509,21 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     data={},
     errors={},
     error=false,
-    disabled=false
+    valid=false,
+    password_visible=false,
+    disabled=false,
+    hx_get='',
+    hx_post='',
+    hx_trigger='',
+    hx_include='',
+    hx_target='',
+    hx_swap='',
+    hx_indicator='',
+    hx_indicator_img='',
+    hx_on_before_request='',
+    hx_on_after_request='',
+    hx_sync='',
+    hx_vals=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -462,7 +534,21 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         data=data,
         errors=errors,
         error=error,
+        valid=valid,
+        password_visible=password_visible,
         disabled=disabled,
+        hx_get=hx_get,
+        hx_post=hx_post,
+        hx_trigger=hx_trigger,
+        hx_target=hx_target,
+        hx_swap=hx_swap,
+        hx_include=hx_include,
+        hx_indicator=hx_indicator,
+        hx_indicator_img=hx_indicator_img,
+        hx_on_before_request=hx_on_before_request,
+        hx_on_after_request=hx_on_after_request,
+        hx_sync=hx_sync,
+        hx_vals=hx_vals
     ) }}
 {% endmacro %}
 

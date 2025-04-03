@@ -219,7 +219,7 @@ class ClubPlayerSplitter(AbstractPlayerSplitter):
 
     @staticmethod
     def get_split_key(player: Player) -> str:
-        return player.club.name
+        return player.club.name if player.club else ''
 
 
 @register_player_splitter
@@ -308,6 +308,7 @@ class PlayerListPrintDocument(AbstractPlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
         return self.tournament.players_by_name_with_unpaired
 
     @override
@@ -320,6 +321,7 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
     @override
     @property
     def ranking_round(self) -> int:
+        assert self.tournament is not None
         return (
             self._get_option(RoundPrintOption).value or
             self.tournament.max_ranking_round
@@ -327,6 +329,7 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
 
     @property
     def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
         return list(self.tournament.compute_player_ranks(
             after_round=self.ranking_round
         ).values())
@@ -341,6 +344,7 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
         ranking_round = self._get_option(RoundPrintOption).value
         if ranking_round is None:
             return
+        assert self.tournament is not None
         if ranking_round > self.tournament.rounds:
             raise OptionError(
                 _(
@@ -408,6 +412,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
 
     @property
     def boards(self) -> list[Board]:
+        assert self.tournament is not None
         self.tournament.calculate_points_before_round(
             before_round=self.at_round
         )
@@ -423,6 +428,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
 
     @property
     def at_round(self) -> int:
+        assert self.tournament is not None
         return (
             self._get_option(RoundPrintOption).value
             or self.tournament.current_round
@@ -435,6 +441,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
     @override
     def validate_options(self):
         super().validate_options()
+        assert self.tournament is not None
         at_round = self._get_option(RoundPrintOption).value
         if at_round is None:
             return

@@ -66,13 +66,13 @@ class ServerEngine(Engine):
 
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
-
-        if EXPERIMENTAL_FEATURES and not BbpPairingsInstaller.is_installed:
+        bbp_pairings = BbpPairingsInstaller()
+        if EXPERIMENTAL_FEATURES and not bbp_pairings.is_installed:
             if DEVEL_ENV:
                 print_interactive_info(
                     _('Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.')
                 )
-                BbpPairingsInstaller().install()
+                bbp_pairings.install()
             else:
                 raise FileNotFoundError('BBP Pairings not installed.')
 

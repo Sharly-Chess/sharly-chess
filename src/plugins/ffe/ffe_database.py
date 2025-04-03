@@ -266,8 +266,9 @@ class FfeDatabase(LocalSourceDatabase):
             params += [limit, ]
         self.execute(query, tuple(params), )
         return (
-            self.get_player_from_row(row)
+            player
             for row in self.fetchall()
+            if (player := self.get_player_from_row(row)) is not None
         )
 
     def _get_player_by_id(
@@ -300,6 +301,7 @@ class FfeDatabase(LocalSourceDatabase):
             tuple(player_ffe_licence_numbers),
         )
         return [
-            self.get_player_from_row(row)
+            player
             for row in self.fetchall()
+            if (player := self.get_player_from_row(row)) is not None
         ]

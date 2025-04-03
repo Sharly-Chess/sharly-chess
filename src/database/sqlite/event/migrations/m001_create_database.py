@@ -1,11 +1,14 @@
-from database.sqlite.migration import AbstractMigration
+import time
+from datetime import datetime
+
+from common import format_timestamp_date
+from database.sqlite.migration import BaseMigration
 
 
-class Migration(AbstractMigration):
+class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
             'CREATE TABLE `info` ('
-            '    `version` TEXT NOT NULL,'
             '    `name` TEXT NOT NULL DEFAULT \'?\','
             '    `start` FLOAT NOT NULL,'
             '    `stop` FLOAT NOT NULL,'
@@ -20,6 +23,25 @@ class Migration(AbstractMigration):
             '    `timer_delays` TEXT,'
             '    `last_update` FLOAT NOT NULL'
             ')'
+        )
+        today_str: str = format_timestamp_date()
+        format_: str = '%Y-%m-%d %H:%M'
+        event_start = time.mktime(
+            datetime.strptime(f'{today_str} 00:00', format_).timetuple()
+        )
+        event_stop = time.mktime(
+            datetime.strptime(f'{today_str} 23:59', format_).timetuple()
+        )
+        self.database.execute(
+            "INSERT INTO `info` "
+            "(`name`, `start`, `stop`, `last_update`) "
+            "VALUES(?, ?, ?, ?)",
+            (
+                self.database.file.stem,
+                event_start,
+                event_stop,
+                time.time(),
+            )
         )
         self.database.execute(
             'CREATE TABLE `chessevent` ('
