@@ -137,5 +137,6 @@
   "cSpell.language": "en,fr-FR,en-GB,fr",
   "files.associations": {
     "*.html": "jinja"
-  }
+  },
+  "python.analysis.typeCheckingMode": "off"
 }

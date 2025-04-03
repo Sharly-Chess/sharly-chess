@@ -221,7 +221,8 @@ class MigrationManager[MigrationDatabase](ABC):
 
     def migrate(self, target_migration: str | None = None):
         """Migrate *database* to the migration *target_migration*.
-        *target_migration* defaults to the latest migration."""
+        *target_migration* defaults to the latest migration.
+        Raises a PapiWebException if it fails."""
         if target_migration is None:
             target_migration = self.migrations[-1]
         elif target_migration not in self.migrations + [self.MIGRATION_ZERO]:
@@ -259,7 +260,7 @@ class MigrationManager[MigrationDatabase](ABC):
                 logger.info(self.log_prefix + 'Migration complete.')
             self.database.commit()
         except OperationalError as error:
-            logger.error(
+            raise PapiWebException(
                 self.log_prefix + f'Migration failed: {error}'
             )
 

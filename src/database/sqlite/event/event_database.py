@@ -45,22 +45,13 @@ logger: Logger = get_logger()
 class EventDatabase(MigrationDatabase):
     """The SQLite database class for Papi-web events."""
 
-    def __init__(
-        self,
-        uniq_id: str,
-        write: bool = False,
-        auto_upgrade: bool = True,
-    ):
+    def __init__(self, uniq_id: str, write: bool = False):
         self.uniq_id = uniq_id
-        super().__init__(
-            self.event_database_path(self.uniq_id), write, auto_upgrade
-        )
+        super().__init__(self.event_database_path(self.uniq_id), write)
 
     @classmethod
-    def create_instance(
-        cls, file: Path, write: bool = False, auto_upgrade: bool = True
-    ) -> Self:
-        return cls(file.stem, write, auto_upgrade)
+    def create_instance(cls, file: Path, write: bool = False) -> Self:
+        return cls(file.stem, write)
 
     @cached_property
     def migration_managers(self) -> list['MigrationManager']:
@@ -480,6 +471,7 @@ class EventDatabase(MigrationDatabase):
                                 'background_color',
                                 'name',
                                 'columns',
+                                'font_size',
                                 'menu_link',
                                 'menu_text',
                                 'menu',
@@ -579,6 +571,7 @@ class EventDatabase(MigrationDatabase):
                                     type=type_,
                                     public=screen_dict.get('public', True),
                                     columns=screen_dict.get('columns', None),
+                                    font_size=screen_dict.get('font_size', None),
                                     menu_link=menu_link,
                                     menu_text=menu_text,
                                     menu=menu,
@@ -676,6 +669,7 @@ class EventDatabase(MigrationDatabase):
                                 'ranking_crosstable',
                                 'name',
                                 'columns',
+                                'font_size',
                                 'menu_link',
                                 'menu_text',
                                 'menu',
@@ -739,6 +733,7 @@ class EventDatabase(MigrationDatabase):
                                     type=type_,
                                     public=family_dict.get('public', True),
                                     columns=family_dict.get('columns', None),
+                                    font_size=family_dict.get('font_size', None),
                                     menu_link=menu_link,
                                     menu_text=menu_text,
                                     menu=menu,
@@ -1738,6 +1733,7 @@ class EventDatabase(MigrationDatabase):
             ranking_min_points=row.get('ranking_min_points', None),
             ranking_max_points=row.get('ranking_max_points', None),
             columns=row['columns'],
+            font_size=row['font_size'],
             menu_link=cls.load_bool_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
             menu=row['menu'],
@@ -1781,6 +1777,7 @@ class EventDatabase(MigrationDatabase):
             'public',
             'tournament_id',
             'columns',
+            'font_size',
             'menu_link',
             'menu_text',
             'menu',
@@ -1806,6 +1803,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.public,
             stored_family.tournament_id,
             stored_family.columns,
+            stored_family.font_size,
             stored_family.menu_link,
             stored_family.menu_text,
             stored_family.menu,
@@ -1878,6 +1876,7 @@ class EventDatabase(MigrationDatabase):
             type=row['type'],
             public=cls.load_bool_from_database_field(row['public']),
             columns=row['columns'],
+            font_size=row['font_size'],
             menu_link=cls.load_bool_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
             menu=row['menu'],
@@ -1951,6 +1950,7 @@ class EventDatabase(MigrationDatabase):
             'input_exit_button',
             'players_show_unpaired',
             'columns',
+            'font_size',
             'menu_link',
             'menu_text',
             'menu',
@@ -1978,6 +1978,7 @@ class EventDatabase(MigrationDatabase):
             if stored_screen.type == 'players'
             else None,
             stored_screen.columns,
+            stored_screen.font_size,
             stored_screen.menu_link if stored_screen.type != 'image' else None,
             stored_screen.menu_text if stored_screen.type != 'image' else None,
             stored_screen.menu if stored_screen.type != 'image' else None,

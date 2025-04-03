@@ -33,7 +33,7 @@ class I18nTranslator:
             self.model_name = (
                 f'Helsinki-NLP/opus-mt-{DEFAULT_LOCALE}-{self.target_locale}'
             )
-        self.model_dir = Path() / 'utils' / 'i18n' / 'models' / self.model_name
+        self.model_dir = Path() / 'scripts' / 'i18n' / 'models' / self.model_name
         self.catalog: Catalog | None = None
         self.model: MarianMTModel | None = None
         self.tokenizer: MarianTokenizer | None = None

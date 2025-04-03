@@ -68,7 +68,7 @@ if __name__ == '__main__':
             '"--events", "--all-events", "--config".'
         )
         sys.exit(1)
-    if args.config and args.events or args.all_events:
+    if args.config and (args.events or args.all_events):
         print_interactive_error(
             'config and event databases can\'t be migrated at the same time.'
         )
@@ -87,14 +87,10 @@ if __name__ == '__main__':
         sys.exit(1)
     databases: list[MigrationDatabase] = []
     if args.config:
-        databases.append(ConfigDatabase(
-            write=not args.validate, auto_upgrade=False
-        ))
+        databases.append(ConfigDatabase(not args.validate))
     else:
         for event_id in args.events or EventLoader().event_uniq_ids:
-            databases.append(EventDatabase(
-                event_id, write=not args.validate, auto_upgrade=False
-            ))
+            databases.append(EventDatabase(event_id, not args.validate))
 
     if args.validate:
         for database in databases:
@@ -131,4 +127,7 @@ if __name__ == '__main__':
     configure_logger(logging.DEBUG)
     for database in databases:
         with database:
-            database.migration_managers[0].migrate(migration)
+            try:
+                database.migration_managers[0].migrate(migration)
+            except PapiWebException as e:
+                print_interactive_error(str(e))

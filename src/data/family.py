@@ -78,9 +78,11 @@ class Family:
 
     @property
     def columns(self) -> int:
-        if self.stored_family.columns:
-            return self.stored_family.columns
-        return 1
+        return self.stored_family.columns or 1
+    
+    @property
+    def font_size(self) -> int:
+        return self.stored_family.font_size or 100
 
     @property
     def menu_link(self) -> bool:

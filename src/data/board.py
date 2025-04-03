@@ -26,14 +26,14 @@ class Board:
     def id(self) -> int | None:
         return self.board_id
 
-    @property
-    def exempt(self) -> bool:
-        return self.result == Result.PAIRING_ALLOCATED_BYE
-
     @id.setter
     def id(self, new_id):
         self.board_id = new_id
 
+    @property
+    def exempt(self) -> bool:
+        return self.result == Result.PAIRING_ALLOCATED_BYE
+    
     @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''

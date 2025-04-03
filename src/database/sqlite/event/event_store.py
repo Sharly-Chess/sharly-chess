@@ -82,6 +82,7 @@ class StoredScreen:
     name: str | None
     type: str
     columns: int | None
+    font_size: int | None
     menu_link: bool | None
     menu_text: str | None
     menu: str | None
@@ -116,6 +117,7 @@ class StoredFamily:
     type: str
     tournament_id: int
     columns: int | None
+    font_size: int | None
     menu_link: bool
     menu_text: str
     menu: str

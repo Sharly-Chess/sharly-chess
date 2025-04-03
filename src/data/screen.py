@@ -142,6 +142,14 @@ class Screen:
             return self.family.columns
 
     @property
+    def font_size(self) -> int | None:
+        if self.stored_screen:
+            return self.stored_screen.font_size
+        if self.family:
+            return self.family.font_size
+        return None
+    
+    @property
     def menu_link(self) -> bool | None:
         if self.stored_screen:
             return self.stored_screen.menu_link

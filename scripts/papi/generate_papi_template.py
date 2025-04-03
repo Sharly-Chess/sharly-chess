@@ -6,7 +6,7 @@ import bz2
 import base64
 from pathlib import Path
 
-template_path: Path = Path() / 'utils' / 'papi' / 'template-3.3.8.papi'
+template_path: Path = Path() / 'scripts' / 'papi' / 'template-3.3.8.papi'
 output_path = Path() / 'src' / 'database' / 'access' / 'papi' / 'papi_template.py'
 
 if not template_path.exists():
