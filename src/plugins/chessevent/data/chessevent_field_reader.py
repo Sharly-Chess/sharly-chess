@@ -1,12 +1,12 @@
-from typing import Type, Union, Optional, cast
+from typing import Type, Optional, cast
 from enum import IntEnum
 
 class ChessEventFieldReader:
-    def __init__(self, data: dict[str, Union[bool, str, int, float, dict[int, float], None]]):
+    def __init__(self, data: dict[str, bool | str | int | float | dict[int, float] | None]):
         self._data = data
         self.last_key: Optional[str] = None
 
-    def get[T](self, key: str, expected_type: Union[Type[T], tuple[Type, ...]], default: Optional[T] = None) -> T:
+    def get[T](self, key: str, expected_type: Type[T] | tuple[Type, ...], default: Optional[T] = None) -> T:
         self.last_key = key
         value = self._data.get(key, default)
 
@@ -16,7 +16,7 @@ class ChessEventFieldReader:
             raise KeyError(f"Missing required key: {key}")
 
         if not isinstance(value, expected_type):
-            raise TypeError(f"Expected {expected_type} for key '{key}', got {type(value).__name__}")
+            raise TypeError(f"Expected {expected_type} for key '{key}', got {value.__class__.__name__}")
 
         return cast(T, value)
 

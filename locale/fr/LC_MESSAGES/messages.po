@@ -1747,7 +1747,7 @@ msgid "Invalid board number [{fixed_board_str}]."
 msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 
 msgid "Invalid board number range."
-msgstr ""
+msgstr "Intervalle d'échiquiers invalide"
 
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
@@ -1789,7 +1789,7 @@ msgid "Invalid phone number [{phone}]."
 msgstr "Numéro de téléphone [{phone}] non valide."
 
 msgid "Invalid player number range."
-msgstr ""
+msgstr "Intervalle de joueur·euses invalide."
 
 msgid "Invalid response from GitHub: {ex}."
 msgstr "Réponse non valide de GitHub : {ex}."
@@ -3735,7 +3735,7 @@ msgid "Tournament [{uniq_id}] already exists."
 msgstr "Le tournoi [{uniq_id}] existe déjà."
 
 msgid "Tournament can not be read, family ignored."
-msgstr ""
+msgstr "Impossible de lire le tournoi, famille ignorée."
 
 msgid "Tournament creation"
 msgstr "Création d'un tournoi"
@@ -4223,7 +4223,7 @@ msgid "{days} days ago"
 msgstr "Il y a {days} jours"
 
 msgid "{family_type}-screen"
-msgstr ""
+msgstr "ecran-{family_type}"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
