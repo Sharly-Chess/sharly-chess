@@ -35,13 +35,15 @@ class Family:
         self.error: str | None = None
 
         # http://rednafi.com/python/lru_cache_on_methods/
-        self._calculate_and_cache_screens = functools.lru_cache()(self._calculate_screens)
-        
+        self._calculate_and_cache_screens = functools.lru_cache()(
+            self._calculate_screens
+        )
+
     @property
     def event(self) -> 'Event':
         event = self._event_ref()
         if event is None:
-            raise RuntimeError("Event reference has been garbage collected")
+            raise RuntimeError('Event reference has been garbage collected')
         return event
 
     @property
@@ -79,7 +81,7 @@ class Family:
     @property
     def columns(self) -> int:
         return self.stored_family.columns or 1
-    
+
     @property
     def font_size(self) -> int:
         return self.stored_family.font_size or 100
@@ -101,13 +103,21 @@ class Family:
         single_tournament: bool = len(self.event.tournaments_by_id) == 1
         text: str
         if (
-                self.type in [ScreenType.INPUT, ScreenType.BOARDS, ]
-                and self.tournament.current_round
+            self.type
+            in [
+                ScreenType.INPUT,
+                ScreenType.BOARDS,
+            ]
+            and self.tournament.current_round
         ):
             text = self.menu_text or Screen.default_boards_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
-        elif self.type in [ScreenType.PLAYERS, ScreenType.INPUT, ScreenType.BOARDS, ]:
+        elif self.type in [
+            ScreenType.PLAYERS,
+            ScreenType.INPUT,
+            ScreenType.BOARDS,
+        ]:
             text = self.menu_text or Screen.default_players_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
@@ -185,7 +195,7 @@ class Family:
     def type_str(self) -> str:
         return Screen.screen_type_str(
             self.type,
-            self.ranking_crosstable if self.type == ScreenType.RANKING else None
+            self.ranking_crosstable if self.type == ScreenType.RANKING else None,
         )
 
     @property
@@ -229,7 +239,11 @@ class Family:
             self.error = _(
                 'Tournament [{tournament_uniq_id}] can not be read, family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
-            self.error = str(self.error) if self.error else _('Tournament can not be read, family ignored.')
+            self.error = (
+                str(self.error)
+                if self.error
+                else _('Tournament can not be read, family ignored.')
+            )
             self.event.add_warning(self.error, family=self)
             return False
         players_instead_of_boards: bool
@@ -247,7 +261,11 @@ class Family:
                                 tournament_uniq_id=self.tournament.uniq_id,
                                 first=self.first,
                             )
-                            self.error = str(self.error) if self.error else _('Invalid board number range.')
+                            self.error = (
+                                str(self.error)
+                                if self.error
+                                else _('Invalid board number range.')
+                            )
                             self.event.add_warning(self.error, family=self)
                             return False
                         self._calculated_first = self.first
@@ -290,15 +308,22 @@ class Family:
                             player
                             for player in self.tournament.players_by_rank.values()
                             if (
-                                    self.ranking_min_points is None or (player.points or 0) >= self.ranking_min_points
-                               ) and (
-                                    self.ranking_max_points is None or (player.points or 0) <= self.ranking_max_points
-                               )
+                                self.ranking_min_points is None
+                                or (player.points or 0) >= self.ranking_min_points
+                            )
+                            and (
+                                self.ranking_max_points is None
+                                or (player.points or 0) <= self.ranking_max_points
+                            )
                         ]
                     )
                 if self.first:
                     if self.first > total_items_number:
-                        self.error = str(self.error) if self.error else _('Invalid player number range.')
+                        self.error = (
+                            str(self.error)
+                            if self.error
+                            else _('Invalid player number range.')
+                        )
                         self.event.add_warning(self.error, family=self)
                         return False
                     self._calculated_first = self.first
@@ -315,7 +340,11 @@ class Family:
             self.error = _(
                 'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
-            self.error = str(self.error) if self.error else _('Tournament can not be read, family ignored.')
+            self.error = (
+                str(self.error)
+                if self.error
+                else _('Tournament can not be read, family ignored.')
+            )
             self.event.add_warning(self.error, family=self)
             return False
         # OK now we know the number of items and the number of the first item to take

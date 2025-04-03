@@ -24,9 +24,7 @@ OPTION_CLASSES: list[type['AbstractOption']] = []
 PLAYER_SPLITTER_CLASSES: list[type['AbstractPlayerSplitter']] = []
 
 
-register_document = partial(
-    StaticUtils.register_class, register=DOCUMENT_CLASSES
-)
+register_document = partial(StaticUtils.register_class, register=DOCUMENT_CLASSES)
 register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 register_player_splitter = partial(
     StaticUtils.register_class, register=PLAYER_SPLITTER_CLASSES
@@ -79,7 +77,6 @@ class PrintDocumentManager(AbstractEntityManager[AbstractPrintDocument]):
 
 
 class AbstractPlayerSplitter(IdentifiableEntity, ABC):
-
     @staticmethod
     @abstractmethod
     def get_split_key(player: Player) -> str:
@@ -250,8 +247,8 @@ class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
     @property
     def ordered_splitted_players(self) -> dict[str, list[Player]]:
         split_by = self._get_option(PlayerPrintSplitOption).value
-        splitter: AbstractPlayerSplitter = (
-            PrintPlayerSplitterManager.get_object(split_by)
+        splitter: AbstractPlayerSplitter = PrintPlayerSplitterManager.get_object(
+            split_by
         )
         return splitter.split_players(self.ordered_players)
 
@@ -323,16 +320,18 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
     def ranking_round(self) -> int:
         assert self.tournament is not None
         return (
-            self._get_option(RoundPrintOption).value or
-            self.tournament.max_ranking_round
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
         )
 
     @property
     def ordered_players(self) -> list[Player]:
         assert self.tournament is not None
-        return list(self.tournament.compute_player_ranks(
-            after_round=self.ranking_round
-        ).values())
+        return list(
+            self.tournament.compute_player_ranks(
+                after_round=self.ranking_round
+            ).values()
+        )
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:
@@ -347,16 +346,16 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
         assert self.tournament is not None
         if ranking_round > self.tournament.rounds:
             raise OptionError(
-                _(
-                    'Not part of the selected tournament ({rounds} rounds).'
-                ).format(rounds=self.tournament.rounds),
+                _('Not part of the selected tournament ({rounds} rounds).').format(
+                    rounds=self.tournament.rounds
+                ),
                 ranking_round,
             )
         if ranking_round > self.tournament.max_ranking_round:
             raise OptionError(
-                _(
-                    'Round not finished (last finished: {round}).'
-                ).format(round=self.tournament.max_ranking_round),
+                _('Round not finished (last finished: {round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
                 ranking_round,
             )
 
@@ -413,9 +412,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
     @property
     def boards(self) -> list[Board]:
         assert self.tournament is not None
-        self.tournament.calculate_points_before_round(
-            before_round=self.at_round
-        )
+        self.tournament.calculate_points_before_round(before_round=self.at_round)
         boards, _ = self.tournament.build_boards(self.at_round)
         return boards
 
@@ -429,10 +426,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
     @property
     def at_round(self) -> int:
         assert self.tournament is not None
-        return (
-            self._get_option(RoundPrintOption).value
-            or self.tournament.current_round
-        )
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:
@@ -447,16 +441,16 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
             return
         if at_round > self.tournament.rounds:
             raise OptionError(
-                _(
-                    'Not part of the selected tournament ({rounds} rounds).'
-                ).format(rounds=self.tournament.rounds),
+                _('Not part of the selected tournament ({rounds} rounds).').format(
+                    rounds=self.tournament.rounds
+                ),
                 at_round,
             )
         if at_round > self.tournament.current_round:
             raise OptionError(
-                _(
-                    'Round not paired (last paired: {round}).'
-                ).format(round=self.tournament.current_round),
+                _('Round not paired (last paired: {round}).').format(
+                    round=self.tournament.current_round
+                ),
                 at_round,
             )
 

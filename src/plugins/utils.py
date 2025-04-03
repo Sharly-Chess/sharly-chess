@@ -58,10 +58,7 @@ class PluginUtils:
         """Wrapper on insert_on_condition where the condition
         is an element being equal to *match_element*"""
         cls.insert_on_condition(
-            source_list,
-            element,
-            lambda elem: elem == match_element,
-            after
+            source_list, element, lambda elem: elem == match_element, after
         )
 
     @classmethod
@@ -75,10 +72,7 @@ class PluginUtils:
         """Wrapper on insert_on_condition where the condition
         is an element being an instance of *insert_type*"""
         cls.insert_on_condition(
-            source_list,
-            element,
-            lambda elem: isinstance(elem, insert_type),
-            after
+            source_list, element, lambda elem: isinstance(elem, insert_type), after
         )
 
 
@@ -153,10 +147,7 @@ class AbstractPlugin(IdentifiableEntity, ABC):
         from plugins.migration import PluginMigrationManager
 
         assert self.base_migration_module is not None
-        return PluginMigrationManager(
-            database, self.base_migration_module, self
-        )
-
+        return PluginMigrationManager(database, self.base_migration_module, self)
 
     def on_enable(self):
         """Method called when the plugin is enabled."""
@@ -168,9 +159,7 @@ class AbstractPlugin(IdentifiableEntity, ABC):
         from plugins.migration import PluginMigrationManager
 
         if self.base_migration_module is not None:
-            self._migrate_all_events(
-                PluginMigrationManager.MIGRATION_ZERO
-            )
+            self._migrate_all_events(PluginMigrationManager.MIGRATION_ZERO)
 
     def _migrate_all_events(self, target_migration: str | None = None):
         """Migrates all the event databases to migration."""
@@ -209,14 +198,11 @@ class PluginEngineArgument:
 class ExtraColumn:
     at: str
     title: str
-    value: Callable[
-        [Any], str
-    ]
-    classes: str = ""
+    value: Callable[[Any], str]
+    classes: str = ''
 
 
 class ExtraAdminColumn(NamedTuple):
     at: str
     header_template: str
     cell_template: str
-

@@ -83,4 +83,3 @@
 | Tombola                             |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       | :grey_question: | :grey_question: |
 | Certificats normes arbitrage        |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       | :grey_question: |
 | compétitions par équipe             |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       |       :x:       | :grey_question: |
-

@@ -72,11 +72,19 @@ class AdminWebContext(WebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         per_plugin_context = plugin_manager.hook.get_base_admin_template_context()
-        plugin_context =  {key: value for context in per_plugin_context for key, value in context.items()}
+        plugin_context = {
+            key: value
+            for context in per_plugin_context
+            for key, value in context.items()
+        }
 
-        return super().template_context | {
-            'admin_tab': self.admin_tab,
-        } | plugin_context
+        return (
+            super().template_context
+            | {
+                'admin_tab': self.admin_tab,
+            }
+            | plugin_context
+        )
 
 
 class BaseAdminController(BaseController):
@@ -122,11 +130,19 @@ class BaseAdminController(BaseController):
     def _get_paired_bye_result_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.GAIN.value): _('Points for gain (full-point bye)'),
-            WebContext.value_to_form_data(Result.DRAW.value): _('Points for draw (half-point bye)'),
-            WebContext.value_to_form_data(Result.LOSS.value): _('Points for loss (zero-point bye)'),
+            WebContext.value_to_form_data(Result.GAIN.value): _(
+                'Points for gain (full-point bye)'
+            ),
+            WebContext.value_to_form_data(Result.DRAW.value): _(
+                'Points for draw (half-point bye)'
+            ),
+            WebContext.value_to_form_data(Result.LOSS.value): _(
+                'Points for loss (zero-point bye)'
+            ),
         }
-        default_option: str = WebContext.value_to_form_data(PapiWebConfig.default_paired_bye_result.value)
+        default_option: str = WebContext.value_to_form_data(
+            PapiWebConfig.default_paired_bye_result.value
+        )
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
 
@@ -163,9 +179,9 @@ class BaseAdminController(BaseController):
             '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
         }
         for timer in event.timers_by_id.values():
-            options[WebContext.value_to_form_data(timer.id)] = _('Timer {timer_uniq_id}').format(
-                timer_uniq_id=timer.uniq_id
-            )
+            options[WebContext.value_to_form_data(timer.id)] = _(
+                'Timer {timer_uniq_id}'
+            ).format(timer_uniq_id=timer.uniq_id)
         return options
 
     @staticmethod
@@ -359,7 +375,13 @@ class BaseAdminController(BaseController):
                     stop = time.mktime(
                         datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
                     )
-                if start and stop and 'start' not in errors and 'stop' not in errors and start > stop:
+                if (
+                    start
+                    and stop
+                    and 'start' not in errors
+                    and 'stop' not in errors
+                    and start > stop
+                ):
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
                 path = WebContext.form_data_to_str(data, 'path')
@@ -372,7 +394,9 @@ class BaseAdminController(BaseController):
                     if background_image := WebContext.form_data_to_str(data, field, ''):
                         if validators.url(background_image):
                             try:
-                                response = requests.get(background_image, timeout=REQUEST_TIMEOUT)
+                                response = requests.get(
+                                    background_image, timeout=REQUEST_TIMEOUT
+                                )
                                 if response.status_code != 200:
                                     errors[field] = _(
                                         'URL [{url}] responded code [{code}].'
@@ -415,7 +439,7 @@ class BaseAdminController(BaseController):
                 rules = cls._admin_validate_rules_update_data(data, errors)
                 field = 'message_text'
                 message_text = WebContext.form_data_to_str(data, field)
-                field= 'message_color'
+                field = 'message_color'
                 if not WebContext.form_data_to_bool(data, field + '_checkbox'):
                     try:
                         message_color = WebContext.form_data_to_rgb(data, field)
@@ -442,13 +466,21 @@ class BaseAdminController(BaseController):
                 name = admin_event.stored_event.name
                 federation = admin_event.stored_event.federation
                 start = admin_event.stored_event.start
-                stop = admin_event.stored_event.stop                
+                stop = admin_event.stored_event.stop
             case _:
                 raise ValueError(f'action=[{action}]')
 
         # Have plugins validate their fields and return private plugin data
-        per_plugin_tournament_data = plugin_manager.hook.get_validated_event_form_fields(action=action, event=admin_event, data=data, errors=errors)
-        plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
+        per_plugin_tournament_data = (
+            plugin_manager.hook.get_validated_event_form_fields(
+                action=action, event=admin_event, data=data, errors=errors
+            )
+        )
+        plugin_data = {
+            key: value
+            for data in per_plugin_tournament_data
+            for key, value in data.items()
+        }
 
         assert uniq_id is not None
         assert name is not None
@@ -474,12 +506,20 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             errors=errors,
-
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
-            timer_colors={i: admin_event.timer_colors[i] if admin_event else None for i in range(1, 4)} if admin_event else None,
-            timer_delays={i: admin_event.timer_delays[i] if admin_event else None for i in range(1, 4)} if admin_event else None,
-
-            plugin_data=plugin_data
+            timer_colors={
+                i: admin_event.timer_colors[i] if admin_event else None
+                for i in range(1, 4)
+            }
+            if admin_event
+            else None,
+            timer_delays={
+                i: admin_event.timer_delays[i] if admin_event else None
+                for i in range(1, 4)
+            }
+            if admin_event
+            else None,
+            plugin_data=plugin_data,
         )
 
     @staticmethod
@@ -543,7 +583,7 @@ class BaseAdminController(BaseController):
             for f in files
         ]
         return file_nodes + dir_nodes
-    
+
     @classmethod
     def _prepare_event_modal_data(
         cls,
@@ -635,42 +675,41 @@ class BaseAdminController(BaseController):
             case _:
                 raise ValueError(f'action=[{action}]')
 
-        per_plugin_form_data = plugin_manager.hook.get_event_form_data(event=admin_event)
-        plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
-
-        return (
-            {
-                'uniq_id': WebContext.value_to_form_data(uniq_id),
-                'name': WebContext.value_to_form_data(name),
-                'public': WebContext.value_to_form_data(public),
-                'federation': WebContext.value_to_form_data(federation),
-                'start': WebContext.value_to_datetime_form_data(start),
-                'stop': WebContext.value_to_datetime_form_data(stop),
-                'background_image_checkbox': WebContext.value_to_form_data(
-                    hide_background_image
-                ),
-                'background_image': WebContext.value_to_form_data(background_image),
-                'background_color': WebContext.value_to_form_data(background_color),
-                'background_color_checkbox': WebContext.value_to_form_data(
-                    background_color is None
-                ),
-                'path': WebContext.value_to_form_data(path),
-                'update_password': WebContext.value_to_form_data(update_password),
-                'record_illegal_moves': WebContext.value_to_form_data(
-                    record_illegal_moves
-                ),
-                'rules': WebContext.value_to_form_data(rules),
-                'message_text': WebContext.value_to_form_data(message_text),
-                'message_color_checkbox': WebContext.value_to_form_data(
-                    message_color is None
-                ),
-                'message_color': WebContext.value_to_form_data(message_color),
-                'message_background_color_checkbox': WebContext.value_to_form_data(
-                    message_background_color is None
-                ),
-                'message_background_color': WebContext.value_to_form_data(
-                    message_background_color
-                ),
-            } | plugin_form_data
+        per_plugin_form_data = plugin_manager.hook.get_event_form_data(
+            event=admin_event
         )
-    
+        plugin_form_data = {
+            key: value for data in per_plugin_form_data for key, value in data.items()
+        }
+
+        return {
+            'uniq_id': WebContext.value_to_form_data(uniq_id),
+            'name': WebContext.value_to_form_data(name),
+            'public': WebContext.value_to_form_data(public),
+            'federation': WebContext.value_to_form_data(federation),
+            'start': WebContext.value_to_datetime_form_data(start),
+            'stop': WebContext.value_to_datetime_form_data(stop),
+            'background_image_checkbox': WebContext.value_to_form_data(
+                hide_background_image
+            ),
+            'background_image': WebContext.value_to_form_data(background_image),
+            'background_color': WebContext.value_to_form_data(background_color),
+            'background_color_checkbox': WebContext.value_to_form_data(
+                background_color is None
+            ),
+            'path': WebContext.value_to_form_data(path),
+            'update_password': WebContext.value_to_form_data(update_password),
+            'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
+            'rules': WebContext.value_to_form_data(rules),
+            'message_text': WebContext.value_to_form_data(message_text),
+            'message_color_checkbox': WebContext.value_to_form_data(
+                message_color is None
+            ),
+            'message_color': WebContext.value_to_form_data(message_color),
+            'message_background_color_checkbox': WebContext.value_to_form_data(
+                message_background_color is None
+            ),
+            'message_background_color': WebContext.value_to_form_data(
+                message_background_color
+            ),
+        } | plugin_form_data

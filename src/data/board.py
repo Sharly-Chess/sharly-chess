@@ -33,7 +33,7 @@ class Board:
     @property
     def exempt(self) -> bool:
         return self.result == Result.PAIRING_ALLOCATED_BYE
-    
+
     @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
@@ -73,13 +73,13 @@ class Board:
         else:
             other_player_1 = other.white_player
             other_player_2 = other.black_player
-        
+
         # We should have vpoints for all players at this point
         assert self_player_1.vpoints is not None, 'Self Player 1 has no vpoints.'
         assert other_player_1.vpoints is not None, 'Other Player 1 has no vpoints.'
         assert self_player_2.vpoints is not None, 'Self Player 2 has no vpoints.'
         assert other_player_2.vpoints is not None, 'Other Player 2 has no vpoints.'
-        
+
         # Here other_player_1 is the strongest player of the other board
         if self_player_1.vpoints < other_player_1.vpoints:
             return True
@@ -103,7 +103,7 @@ class Board:
             return self.board_id == other.board_id
         if self.black_player is None or other.black_player is None:
             raise ValueError('The black player is not defined.')
-         # There is only one pairing allocated bye
+        # There is only one pairing allocated bye
         self_player_1: Player
         self_player_2: Player
         if self.white_player is None:

@@ -26,11 +26,11 @@ name = Tournoi rapide du club
 
 [tournament.principal]
 name = Tournoi principal
-ffe_id = 59999 
+ffe_id = 59999
 
 [tournament.jeunes]
 name = Tournoi jeunes
-ffe_id = 60000 
+ffe_id = 60000
 ```
 
 > [!NOTE]

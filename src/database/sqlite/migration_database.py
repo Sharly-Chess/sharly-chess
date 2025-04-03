@@ -81,7 +81,8 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         ordered_versions = sorted(self.migration_by_legacy_version.keys())
         migration_version = next(
             (
-                version for version in reversed(ordered_versions)
+                version
+                for version in reversed(ordered_versions)
                 if version <= database_version
             ),
             None,
@@ -103,9 +104,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         in the current version the application.
         Returns True if it can, False if it needs an upgrade.
         If it can't be upgraded, raises a *PapiWebException*."""
-        return all(
-            manager.check_status() for manager in self.migration_managers
-        )
+        return all(manager.check_status() for manager in self.migration_managers)
 
     def upgrade(self):
         """Upgrades the database to the latest version.

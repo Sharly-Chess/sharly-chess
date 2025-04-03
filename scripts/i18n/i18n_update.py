@@ -39,7 +39,6 @@ from common.logger import (
     input_interactive,
     print_interactive_input,
 )
-from scripts.i18n.i18n_translate import I18nTranslator
 
 
 def run_babel_command(
@@ -389,8 +388,12 @@ class I18nUpdater:
                 try:
                     from scripts.i18n.i18n_translate import I18nTranslator
                 except ModuleNotFoundError as error:
-                    print_interactive_error(f'Could not import I18nTranslator: {error}.')
-                    print_interactive_error(f'Make sure all the needed modules for translation are installed by running \'pip install -e .[translate]\'.')
+                    print_interactive_error(
+                        f'Could not import I18nTranslator: {error}.'
+                    )
+                    print_interactive_error(
+                        "Make sure all the needed modules for translation are installed by running 'pip install -e .[translate]'."
+                    )
                     sys.exit(1)
                 for locale in untrusted_locales_with_missing_translations:
                     I18nTranslator(locale).add_missing_translations()
@@ -553,9 +556,7 @@ class I18nUpdater:
 if __name__ == '__main__':
     untrusted_locales: list[str] = []
     if (
-        input_interactive(
-            'Do you want to update the untrusted locales (y/N)? '
-        ).upper()
+        input_interactive('Do you want to update the untrusted locales (y/N)? ').upper()
         or 'N'
     ) == 'Y':
         untrusted_locales = [

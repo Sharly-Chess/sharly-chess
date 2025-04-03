@@ -13,6 +13,7 @@ from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
 
+
 class ChessEventPlayer:
     """A class representing a player information on ChessEvent."""
 
@@ -29,15 +30,14 @@ class ChessEventPlayer:
                 return PlayerFFELicence.A
             case _:
                 raise ValueError(f'Unknown value: {value}')
-            
-            
+
     def __init__(
         self,
         chessevent_player_info: dict[str, Any],
     ):
         self.error = True
         reader = ChessEventFieldReader(chessevent_player_info)
-        
+
         try:
             self.last_name = reader.get('last_name', str)
             self.first_name = reader.get('first_name', str)
@@ -47,19 +47,29 @@ class ChessEventPlayer:
             self.birth = float(reader.get('birth', int))
 
             self.ffe_id = reader.get('ffe_id', int)
-            self.ffe_license = self.ffe_license_from_chessevent_value(reader.get('ffe_license', int))
+            self.ffe_license = self.ffe_license_from_chessevent_value(
+                reader.get('ffe_license', int)
+            )
             self.ffe_license_number = reader.get('ffe_license_number', str)
             self.ffe_league = reader.get('ffe_league', str)
             self.ffe_club_id = reader.get('ffe_club_id', int, 0)
             self.ffe_club = reader.get('ffe_club', str, '')
 
-            self.category = reader.get_enum('category', PlayerCategory, PlayerCategory.NONE)
+            self.category = reader.get_enum(
+                'category', PlayerCategory, PlayerCategory.NONE
+            )
             self.standard_rating = reader.get('standard_rating', int)
-            self.standard_rating_type = reader.get_enum('standard_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED)
+            self.standard_rating_type = reader.get_enum(
+                'standard_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED
+            )
             self.rapid_rating = reader.get('rapid_rating', int)
-            self.rapide_rating_type = reader.get_enum('rapid_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED)
+            self.rapide_rating_type = reader.get_enum(
+                'rapid_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED
+            )
             self.blitz_rating = reader.get('blitz_rating', int)
-            self.blitz_rating_type = reader.get_enum('blitz_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED)
+            self.blitz_rating_type = reader.get_enum(
+                'blitz_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED
+            )
             self.title = reader.get_enum('title', PlayerTitle, PlayerTitle.NONE)
 
             self.email = reader.get('email', str)

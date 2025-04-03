@@ -35,7 +35,7 @@ class Rotator:
     def event(self) -> 'Event':
         event = self._event_ref()
         if event is None:
-            raise RuntimeError("Event reference has been garbage collected")
+            raise RuntimeError('Event reference has been garbage collected')
         return event
 
     @property

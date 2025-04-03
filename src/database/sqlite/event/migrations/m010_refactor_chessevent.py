@@ -18,15 +18,9 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')
         self.database.execute('ALTER TABLE `info` ADD `chessevent_password` TEXT')
         self.database.execute('ALTER TABLE `info` ADD `chessevent_event_id` TEXT')
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `chessevent_user_id` TEXT'
-        )
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `chessevent_password` TEXT'
-        )
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `chessevent_event_id` TEXT'
-        )
+        self.database.execute('ALTER TABLE `tournament` ADD `chessevent_user_id` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `chessevent_password` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `chessevent_event_id` TEXT')
         # Read all the ChessEvent connections
         self.database.execute('SELECT * FROM `chessevent` ORDER BY `id`')
         chessevent_connections: dict[int, dict[str, Any]] = {
@@ -52,23 +46,19 @@ class Migration(BaseMigration):
                 'SELECT `id`, `chessevent_id` FROM `tournament` WHERE `chessevent_id` IS NOT NULL'
             )
             for row in self.database.fetchall():
-                chessevent_connection: dict[str, Any] = (
-                    chessevent_connections[row['chessevent_id']]
-                )
+                chessevent_connection: dict[str, Any] = chessevent_connections[
+                    row['chessevent_id']
+                ]
                 self.database.execute(
                     f'UPDATE `tournament` SET {", ".join(f"`{field}` = ?" for field in chessevent_connection)} WHERE `id` = ?',
-                    tuple(
-                        list(chessevent_connection.values()) + [row['id']]
-                    ),
+                    tuple(list(chessevent_connection.values()) + [row['id']]),
                 )
         # Simply running ALTER TABLE `tournament` DROP COLUMN `chessevent_id` fails with sqlite3.OperationalError:
         # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition
         # Since there is no simple way in SQlite to remove a constraint (https://sqlite.org/lang_altertable.html part 7),
         # copy the table and rename:
         self.database.execute('PRAGMA foreign_keys=off')
-        self.database.execute(
-            'ALTER TABLE `tournament` RENAME TO `tournament_copy`'
-        )
+        self.database.execute('ALTER TABLE `tournament` RENAME TO `tournament_copy`')
         self.database.execute(
             'CREATE TABLE `tournament` ('
             '    `id` INTEGER NOT NULL,'

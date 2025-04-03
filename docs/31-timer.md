@@ -16,7 +16,7 @@
 
 L'article 4.4 des règles générales pour les compétitions FIDE mentionne concernant la préparation de la salle de jeu :
 
-> _Pour les événements FIDE de type L1 avec 30 joueurs ou plus, pour toute la compétition, un grand chronomètre numérique ou une horloge doit être installé dans l'aire de jeu. Pour les événements FIDE inférieurs à 30 joueurs, une annonce en bonne et due forme doit être faite 5 minutes avant le début des parties puis une autre 1 minute avant le début des parties._ 
+> _Pour les événements FIDE de type L1 avec 30 joueurs ou plus, pour toute la compétition, un grand chronomètre numérique ou une horloge doit être installé dans l'aire de jeu. Pour les événements FIDE inférieurs à 30 joueurs, une annonce en bonne et due forme doit être faite 5 minutes avant le début des parties puis une autre 1 minute avant le début des parties._
 
 Cet affichage est parfaitement pris en charge par Papi-web grâce à son chronomètre.
 

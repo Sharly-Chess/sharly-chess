@@ -56,9 +56,11 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     def get_tournament_options(self) -> dict[str, str]:
         if self.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         return {
-            self.value_to_form_data(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
+            self.value_to_form_data(
+                tournament.id
+            ): f'{tournament.name} ({tournament.uniq_id})'
             for tournament in self.admin_event.tournaments_sorted_by_uniq_id
         }
 
@@ -70,7 +72,7 @@ class BaseEventAdminController(BaseAdminController):
         web_context: BaseEventAdminWebContext,
     ) -> dict[str, Any]:
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         admin_event: Event = web_context.admin_event
         logging_levels: dict[int, dict[str, str]] = {
             logging.DEBUG: {
@@ -156,13 +158,14 @@ class BaseEventAdminController(BaseAdminController):
         cls,
         template_context: dict[str, Any],
     ) -> Template:
-        if "modal" in template_context:
+        if 'modal' in template_context:
             return HTMXTemplate(
                 template_name='admin/modals.html',
                 context=template_context,
                 re_target='#modal-wrapper',
-                trigger_event="modal_opened",
-                after="settle"
+                trigger_event='modal_opened',
+                after='settle',
             )
-        return HTMXTemplate(template_name='admin/event_layout.html', context=template_context)
-
+        return HTMXTemplate(
+            template_name='admin/event_layout.html', context=template_context
+        )

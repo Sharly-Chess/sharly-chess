@@ -16,7 +16,7 @@ Les personnalisations doivent être déposées dans le répertoire `custom/`, au
 On utilise une personnalisation en utilisation l'option `css` dans la rubrique `[event]`, par exemple :
 
 ```
-[event] 
+[event]
 css = ffe/ffe.css
 ```
 

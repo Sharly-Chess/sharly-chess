@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from packaging.version import Version
 
 # Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager # Noqa
+from plugins.manager import plugin_manager  # Noqa
 
 from common import PAPI_WEB_VERSION
 from common.logger import print_interactive_error, print_interactive_info
@@ -76,6 +76,5 @@ if __name__ == '__main__':
     for backup in to_restore:
         backup.restore()
         print_interactive_info(
-            f'Database "{backup.name}" restored to '
-            f'version {backup.version.public}'
+            f'Database "{backup.name}" restored to version {backup.version.public}'
         )

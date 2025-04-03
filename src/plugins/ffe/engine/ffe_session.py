@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
-from requests import Session, Response
+from requests import Session
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 
 from common import TMP_DIR
@@ -50,6 +50,7 @@ FEES_DIR: Path = Path('fees')
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
+
 class FFESession(Session):
     """A requests session specialized for communication with the FFE website.
     Currently, it relies on hacks, because no API is available."""
@@ -82,7 +83,10 @@ class FFESession(Session):
                     if data:
                         logger.info('- data:')
                         for field_id, field in data.items():
-                            if 'password' in field_id.lower() or 'passwd' in field_id.lower():
+                            if (
+                                'password' in field_id.lower()
+                                or 'passwd' in field_id.lower()
+                            ):
                                 logger.info('  - %s: [********]', field_id)
                             else:
                                 logger.info(
@@ -140,9 +144,7 @@ class FFESession(Session):
             handler.close()
         return None
 
-    def _parse_html_content(
-        self, html
-    ) -> tuple[AdvancedHTMLParser | None, str | None]:
+    def _parse_html_content(self, html) -> tuple[AdvancedHTMLParser | None, str | None]:
         """Parses any HTML content received and returns the parsed content
         (as an HTML parser) and an error (as a string) if any (or None)"""
         parser: AdvancedHTMLParser = AdvancedHTMLParser()
@@ -223,7 +225,7 @@ class FFESession(Session):
 
     def _ffe_auth(self, ffe_id: str | None, ffe_password: str | None) -> bool | None:
         """Authenticates on the FFE admin website."""
-        
+
         assert self.ffe_state
         if ffe_id is None or ffe_password is None:
             return False
@@ -262,8 +264,7 @@ class FFESession(Session):
                 logger.info(
                     '> auth_state[%s]=[%s]',
                     id_,
-                    inner_text[:64]
-                    + ('...' if len(inner_text) > 64 else '')
+                    inner_text[:64] + ('...' if len(inner_text) > 64 else '')
                     if self.auth_state[id_]
                     else 'None',
                 )
@@ -277,7 +278,6 @@ class FFESession(Session):
             logger.info('> tournament_ffe_url=[%s]', self.tournament_ffe_url)
         print_interactive_success(_('OK'))
         return True
-    
 
     def test_auth(self, ffe_id: str | None, ffe_password: str | None):
         """Tries to authenticate on the FFE admin website for the tournament.
@@ -297,9 +297,7 @@ class FFESession(Session):
         assert self.tournament is not None
         (ffe_id, ffe_password) = self.get_id_and_password(True)
         print_interactive_info(
-            _('Getting fees for tournament [{ffe_id}]...').format(
-                ffe_id=ffe_id
-            )
+            _('Getting fees for tournament [{ffe_id}]...').format(ffe_id=ffe_id)
         )
         if not self._ffe_init():
             return
@@ -323,9 +321,7 @@ class FFESession(Session):
             return
         if fees_link_id.lower() != 'afficher la facture':
             print_interactive_error(
-                _('Invalid fees link text [{text}].').format(
-                    text=fees_link_id
-                )
+                _('Invalid fees link text [{text}].').format(text=fees_link_id)
             )
             return
         url = FFE_URL + '/MonTournoi.aspx'
@@ -352,7 +348,10 @@ class FFESession(Session):
         if not head:
             return
         head.insertBefore(base, head.getChildren()[0])
-        file: Path = Path(FEES_DIR, str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html')
+        file: Path = Path(
+            FEES_DIR,
+            str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html',
+        )
         with open(file, 'w', encoding='utf-8') as f:
             f.write(parser.getHTML())
         webbrowser.open(f'file://{file.resolve()}', new=2)
@@ -361,7 +360,9 @@ class FFESession(Session):
         )
         return
 
-    def get_id_and_password(self, do_log: bool = False) -> tuple[str | None, str | None]:
+    def get_id_and_password(
+        self, do_log: bool = False
+    ) -> tuple[str | None, str | None]:
         """Fetches the FFE ID and password for the tournament from the plugin data."""
 
         assert self.tournament is not None

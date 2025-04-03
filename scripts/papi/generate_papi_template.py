@@ -26,15 +26,13 @@ with open(output_path, 'wt', encoding='utf-8') as output_file:
     )
     with open(template_path, 'rb') as input_file:
         b64 = base64.b64encode(bz2.compress(input_file.read()))
-        output_file.write(f"    b64 = (\n")
+        output_file.write('    b64 = (\n')
         part_len: int = 80
-        for b64_part in [
-            b64[i: i + part_len] for i in range(0, len(b64), part_len)
-        ]:
+        for b64_part in [b64[i : i + part_len] for i in range(0, len(b64), part_len)]:
             output_file.write(f'        {b64_part}\n')
     output_file.write('    )\n')
     output_file.write(
         '    file.parent.mkdir(parents=True, exist_ok=True)\n'
-        '    with open(file, \'wb\') as f:\n'
+        "    with open(file, 'wb') as f:\n"
         '        f.write(bz2.decompress(base64.decodebytes(b64)))\n'
     )

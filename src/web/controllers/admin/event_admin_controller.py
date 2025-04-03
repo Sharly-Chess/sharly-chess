@@ -19,7 +19,11 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
-from data.print import PrintDocumentManager, AbstractPrintDocument, PrintDocumentOptionManager
+from data.print import (
+    PrintDocumentManager,
+    AbstractPrintDocument,
+    PrintDocumentOptionManager,
+)
 from data.util import TournamentRating, OptionError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -29,8 +33,16 @@ from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-from web.controllers.admin.base_event_admin_controller import BaseEventAdminController, BaseEventAdminWebContext
-from web.urls import admin_event_players_url, admin_event_tournaments_url, admin_event_config_url, admin_url
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminController,
+    BaseEventAdminWebContext,
+)
+from web.urls import (
+    admin_event_players_url,
+    admin_event_tournaments_url,
+    admin_event_config_url,
+    admin_url,
+)
 
 logger: Logger = get_logger()
 
@@ -55,23 +67,23 @@ class EventAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
-        
+
         plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
         template_context |= {
             'admin_event_tab': 'admin-event-config-tab',
             'plugin_event_info_rows': plugin_event_info_rows,
         }
-                
+
         match modal:
             case None:
                 pass
             case 'event':
                 if action is None:
-                    raise RuntimeError("action not defined")
+                    raise RuntimeError('action not defined')
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
@@ -83,7 +95,9 @@ class EventAdminController(BaseEventAdminController):
                 if errors is None:
                     errors = {}
 
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_event_form_fields_template() or []
+                )
                 template_context |= {
                     'federation_options': cls._get_federation_options(None),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
@@ -112,9 +126,7 @@ class EventAdminController(BaseEventAdminController):
                 if data is None:
                     event = web_context.admin_event
                     if len(event.tournaments_sorted_by_uniq_id) == 1:
-                        tournament_id = (
-                            event.tournaments_sorted_by_uniq_id[0].id
-                        )
+                        tournament_id = event.tournaments_sorted_by_uniq_id[0].id
                     data = {
                         'tournament_id': WebContext.value_to_form_data(tournament_id)
                     } | {
@@ -123,9 +135,9 @@ class EventAdminController(BaseEventAdminController):
                     }
                 containers_by_document: dict[str, list[str]] = {'': []} | {
                     document.id: [
-                        option.container_id for option
-                        in document.default_options()
-                    ] for document in PrintDocumentManager.objects()
+                        option.container_id for option in document.default_options()
+                    ]
+                    for document in PrintDocumentManager.objects()
                 }
                 template_context |= {
                     'modal': 'print',
@@ -158,12 +170,18 @@ class EventAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         if web_context.admin_event.player_count:
-            return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
+            return Redirect(
+                admin_event_players_url(request, web_context.admin_event.uniq_id)
+            )
         if web_context.admin_event.tournaments_by_uniq_id:
-            return Redirect(admin_event_tournaments_url(request, web_context.admin_event.uniq_id))
-        return Redirect(admin_event_config_url(request, web_context.admin_event.uniq_id))
+            return Redirect(
+                admin_event_tournaments_url(request, web_context.admin_event.uniq_id)
+            )
+        return Redirect(
+            admin_event_config_url(request, web_context.admin_event.uniq_id)
+        )
 
     @get(
         path='/admin/event/{event_uniq_id:str}/config',
@@ -394,16 +412,16 @@ class EventAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         errors: dict[str, str] = {}
 
         tournament: Tournament | None = None
         field = 'tournament_id'
-        
+
         try:
             tournament_id = WebContext.form_data_to_int(data, field)
             if not tournament_id:
-                raise ValueError("Tournament ID not supplied")
+                raise ValueError('Tournament ID not supplied')
             tournament = web_context.admin_event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
@@ -437,17 +455,17 @@ class EventAdminController(BaseEventAdminController):
             return HTMXTemplate(
                 template_name='common/empty_modal.html',
                 re_target='#modal-wrapper',
-                trigger_event="do_print",
-                after="receive",
+                trigger_event='do_print',
+                after='receive',
                 params={
-                    "event_uniq_id": event_uniq_id,
-                    "tournament_id": tournament.id if tournament else None,
-                    "document": data['document'],
-                    "options": {
+                    'event_uniq_id': event_uniq_id,
+                    'tournament_id': tournament.id if tournament else None,
+                    'document': data['document'],
+                    'options': {
                         option.id: data[option.id]
                         for option in document_type.default_options()
-                    }
-                }
+                    },
+                },
             )
         return self._admin_event_config_render(
             request,
@@ -456,7 +474,6 @@ class EventAdminController(BaseEventAdminController):
             data=data,
             errors=errors,
         )
-
 
     @staticmethod
     def download_players_as_vcf(
@@ -468,27 +485,21 @@ class EventAdminController(BaseEventAdminController):
         for player in players:
             if not (player.mail or player.phone):
                 continue
-            data += (
-                'BEGIN:VCARD\n'
-                'VERSION:3.0\n'
-            )
+            data += 'BEGIN:VCARD\nVERSION:3.0\n'
             if player.first_name:
                 data += (
                     f'N:{player.last_name.title()};{player.first_name}\n'
                     f'FN:{player.first_name} {player.last_name.title()}\n'
                 )
             else:
-                data += (
-                    f'N:{player.last_name.title()}\n'
-                    f'FN:{player.last_name.title()}\n'
-                )
+                data += f'N:{player.last_name.title()}\nFN:{player.last_name.title()}\n'
             data += (
                 f'ORG:{player.club}\n'
                 f'item1.TEL:{player.phone}\n'
-                f'item1.X-ABLabel:{_('Personal')}\n'
+                f'item1.X-ABLabel:{_("Personal")}\n'
                 f'item2.EMAIL;type=INTERNET:{player.mail}\n'
-                f'item2.X-ABLabel:{_('Personal')}\n'
-                f'CATEGORIES:{_('Chess')}\n'
+                f'item2.X-ABLabel:{_("Personal")}\n'
+                f'CATEGORIES:{_("Chess")}\n'
                 'END:VCARD\n\n'
             )
         return Response(
@@ -521,7 +532,9 @@ class EventAdminController(BaseEventAdminController):
     @classmethod
     def get_players_datasheet_extra_columns(cls) -> dict[int, list[ExtraColumn]]:
         """Returns the extra data columns added by the plugins"""
-        per_plugin_columns: list[Iterable[ExtraColumn]] = plugin_manager.hook.get_extra_players_datasheet_columns()
+        per_plugin_columns: list[Iterable[ExtraColumn]] = (
+            plugin_manager.hook.get_extra_players_datasheet_columns()
+        )
         extra_columns: dict[int, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
@@ -534,7 +547,7 @@ class EventAdminController(BaseEventAdminController):
 
         # The dict has keys sorted from high to low so that we can insert them in that
         # order without affecting lower indexes
-        return { key: extra_columns[key] for key in reversed(sorted(extra_columns)) }
+        return {key: extra_columns[key] for key in reversed(sorted(extra_columns))}
 
     @classmethod
     def get_players_datasheet_columns(cls) -> list[str]:
@@ -548,7 +561,6 @@ class EventAdminController(BaseEventAdminController):
             header_columns[index:index] = [column.title for column in columns]
 
         return header_columns
-
 
     @classmethod
     def get_players_datasheet_data(
@@ -565,24 +577,27 @@ class EventAdminController(BaseEventAdminController):
             return row
 
         rows = [
-            augment_row([
-                player.last_name,
-                player.first_name,
-                player.year_of_birth,
-                player.mail,
-                player.phone,
-                player.gender.short_name,
-                player.fide_id,
-                player.tournament.uniq_id if player.tournament else '',
-                player.federation.name,
-                player.club.name if player.club else '',
-                player.ratings[TournamentRating.STANDARD],
-                player.rating_types[TournamentRating.STANDARD].short_name,
-                player.ratings[TournamentRating.RAPID],
-                player.rating_types[TournamentRating.RAPID].short_name,
-                player.ratings[TournamentRating.BLITZ],
-                player.rating_types[TournamentRating.BLITZ].short_name,
-            ], player)
+            augment_row(
+                [
+                    player.last_name,
+                    player.first_name,
+                    player.year_of_birth,
+                    player.mail,
+                    player.phone,
+                    player.gender.short_name,
+                    player.fide_id,
+                    player.tournament.uniq_id if player.tournament else '',
+                    player.federation.name,
+                    player.club.name if player.club else '',
+                    player.ratings[TournamentRating.STANDARD],
+                    player.rating_types[TournamentRating.STANDARD].short_name,
+                    player.ratings[TournamentRating.RAPID],
+                    player.rating_types[TournamentRating.RAPID].short_name,
+                    player.ratings[TournamentRating.BLITZ],
+                    player.rating_types[TournamentRating.BLITZ].short_name,
+                ],
+                player,
+            )
             for player in players
         ]
         return rows
@@ -660,7 +675,7 @@ class EventAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         players: list[Player] = [
             web_context.admin_event.players_by_id[player_id]
             for player_id in player_ids or []

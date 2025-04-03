@@ -25,9 +25,7 @@ To install the relevant packages for development, run: `pip install -e .[lint,te
 
 There are two other optional dependency groups: `translate` (for translating to locales other than French and English), and `export` (for exporting to a release format).
 
-<!-- TODO: make sure we install pre-commit hooks in the core development team before adding it in the contribution guidelines
 Before contributing code, please install our pre-commit hooks by running `pre-commit install`
--->
 
 Create a branch with a descriptive name, and start coding the changes.
 Make sure you only add one feature or solve one issue, otherwise your Pull Request will not pass code review.

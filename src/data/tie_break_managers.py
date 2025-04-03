@@ -7,18 +7,22 @@ from plugins.manager import plugin_manager
 
 class TieBreakManager(AbstractEntityManager[AbstractTieBreak]):
     """Entry class for interacting with tie-breaks"""
+
     @staticmethod
     def entity_types() -> list[type[AbstractTieBreak]]:
-        return TIE_BREAK_CLASSES + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tie_break_classes()
-        ))
+        return TIE_BREAK_CLASSES + list(
+            itertools.chain.from_iterable(
+                plugin_manager.hook.get_extra_tie_break_classes()
+            )
+        )
 
 
 class PapiTieBreakManager(AbstractEntityManager[AbstractTieBreak]):
     @staticmethod
     def entity_types() -> list[type[AbstractTieBreak]]:
         return [
-            tie_break_type for tie_break_type in TieBreakManager.entity_types()
+            tie_break_type
+            for tie_break_type in TieBreakManager.entity_types()
             if tie_break_type().papi_id is not None
         ]
 

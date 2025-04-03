@@ -15,4 +15,3 @@ Le statut (pointé·e/non pointé·e) est indiqué en temps-réel sur la liste d
 
 > [!NOTE]
 > Le pointage effectué sur la plateforme ChessEvent remplace celui fait dans les fichiers Papi, directement avec Papi ou avec Papi-web ; il est donc déconseillé d'utiliser à la fois ChessEvent et Papi-web pour le pointage.
-

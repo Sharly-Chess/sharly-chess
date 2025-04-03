@@ -20,7 +20,11 @@ from data.util import (
     PlayerTitle,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
-from database.sqlite.local_source_database import LocalSourceDatabase, Days2OutdateDelay, NotifOutdateAction
+from database.sqlite.local_source_database import (
+    LocalSourceDatabase,
+    Days2OutdateDelay,
+    NotifOutdateAction,
+)
 from plugins import PLUGINS_DIR
 
 from plugins.ffe import PLUGIN_NAME
@@ -42,6 +46,7 @@ class FfeDatabase(LocalSourceDatabase):
         for player in ffe_database.search_player('my name'):
             ...
     """
+
     @staticmethod
     def static_id() -> str:
         return 'ffe'
@@ -76,26 +81,25 @@ class FfeDatabase(LocalSourceDatabase):
             response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 logger.error(
-                    self.log_prefix + _(
-                        'Could not download [{url}], error code [{code}].'
-                    ).format(
+                    self.log_prefix
+                    + _('Could not download [{url}], error code [{code}].').format(
                         url=ffe_database_url, code=response.status_code
                     )
                 )
                 return False
         except ConnectionError as ex:
             logger.error(
-                self.log_prefix + _(
-                    'Could not download [{url}]: {error}.'
-                ).format(url=ffe_database_url, error=ex)
+                self.log_prefix
+                + _('Could not download [{url}]: {error}.').format(
+                    url=ffe_database_url, error=ex
+                )
             )
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             logger.error(
-                self.log_prefix + _(
-                    'No data received from [{url}].'
-                ).format(url=ffe_database_url)
+                self.log_prefix
+                + _('No data received from [{url}].').format(url=ffe_database_url)
             )
             return False
         self._source_file_path.unlink(missing_ok=True)
@@ -103,9 +107,7 @@ class FfeDatabase(LocalSourceDatabase):
             zip_ref.extractall(TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            logger.error(
-                self.log_prefix + _('Could not unzip data.')
-            )
+            logger.error(self.log_prefix + _('Could not unzip data.'))
             return False
         return True
 
@@ -133,7 +135,7 @@ class FfeDatabase(LocalSourceDatabase):
         }
         column_names: list[str] = list(translations.keys())
         bindings: list[str] = [f':{column_name}' for column_name in column_names]
-        escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
+        escaped_column_names: list[str] = list(map(lambda s: f'`{s}`', column_names))
         query: str = (
             f'INSERT INTO player({", ".join(escaped_column_names)}) '
             f'VALUES({", ".join(bindings)})'
@@ -172,19 +174,24 @@ class FfeDatabase(LocalSourceDatabase):
                     database.executemany(query, to_write)
                     database.commit()
         logger.info(
-            self.log_prefix + _(
-                '{number} players written to the database.'
-            ).format(number=player_count)
+            self.log_prefix
+            + _('{number} players written to the database.').format(number=player_count)
         )
         return True
 
     def _create_indexes(self):
         self.write = True
         with self:
-            self.execute('CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)')
-            self.execute('CREATE INDEX `player_first_name` ON `player`(`first_name` COLLATE NOCASE)')
+            self.execute(
+                'CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+            )
             self.execute('CREATE INDEX `player_fide_id` ON `player`(`fide_id`)')
-            self.execute('CREATE INDEX `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)')
+            self.execute(
+                'CREATE INDEX `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+            )
             self.commit()
 
     @staticmethod
@@ -193,9 +200,7 @@ class FfeDatabase(LocalSourceDatabase):
             id=0,
             first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
-            date_of_birth=datetime.strptime(
-                row['date_of_birth'], '%Y-%m-%d'
-            ).date(),
+            date_of_birth=datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date(),
             gender=PlayerGender(row['gender']),
             mail='',
             phone='',
@@ -224,12 +229,12 @@ class FfeDatabase(LocalSourceDatabase):
             tournament=None,
             plugin_data={
                 PLUGIN_NAME: {
-                    "ffe_id": row['ffe_id'],
-                    "ffe_licence": PlayerFFELicence(row['ffe_licence']),
-                    "ffe_licence_number": row['ffe_licence_number'],
-                    "league": row['league'],
+                    'ffe_id': row['ffe_id'],
+                    'ffe_licence': PlayerFFELicence(row['ffe_licence']),
+                    'ffe_licence_number': row['ffe_licence_number'],
+                    'league': row['league'],
                 }
-            }
+            },
         )
 
     def search_player(
@@ -241,7 +246,7 @@ class FfeDatabase(LocalSourceDatabase):
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '', '%'),
-            ('ffe_licence_number', '', '')
+            ('ffe_licence_number', '', ''),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
@@ -253,18 +258,30 @@ class FfeDatabase(LocalSourceDatabase):
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
-                params += [int_value, ] * len(int_fields)
+                params += [
+                    int_value,
+                ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(['(last_name LIKE ?)', ] * len(tokens))
+        order_conditions = ' OR '.join(
+            [
+                '(last_name LIKE ?)',
+            ]
+            * len(tokens)
+        )
         params += [f'{token}%' for token in tokens]
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
-            params += [limit, ]
-        self.execute(query, tuple(params), )
+            params += [
+                limit,
+            ]
+        self.execute(
+            query,
+            tuple(params),
+        )
         return (
             player
             for row in self.fetchall()
@@ -276,7 +293,7 @@ class FfeDatabase(LocalSourceDatabase):
         field: str,
         id_: int,
     ) -> Player | None:
-        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_, ))
+        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_,))
         if row := self.fetchone():
             return self.get_player_from_row(row)
         else:
@@ -294,7 +311,9 @@ class FfeDatabase(LocalSourceDatabase):
     ) -> Player | None:
         return self._get_player_by_id('fide_id', player_fide_id)
 
-    def get_players_by_ffe_licence_number(self, player_ffe_licence_numbers: list[str]) -> list[Player]:
+    def get_players_by_ffe_licence_number(
+        self, player_ffe_licence_numbers: list[str]
+    ) -> list[Player]:
         query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
         self.execute(
             f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',

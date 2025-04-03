@@ -1,1 +1,1 @@
-PLUGIN_NAME = "ffe"
+PLUGIN_NAME = 'ffe'

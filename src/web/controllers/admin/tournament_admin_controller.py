@@ -65,7 +65,7 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             data=data,
         )
         assert self.admin_event is not None
-        
+
         self.admin_tournament: Tournament | None = None
         if self.error:
             return
@@ -102,7 +102,7 @@ class TournamentAdminController(BaseEventAdminController):
         tie_breaks: list[dict] | None = None
         if action == 'delete':
             if web_context.admin_tournament is None:
-                raise RuntimeError("admin_tournament not defined")
+                raise RuntimeError('admin_tournament not defined')
             if not uniq_id:
                 errors['uniq_id'] = _('Please enter the tournament ID.')
             elif uniq_id != web_context.admin_tournament.uniq_id:
@@ -149,9 +149,7 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _('Tie-break already in use.')
                         break
                     used_tie_break_ids.append(tie_break_id)
-                    if tie_break_type := (
-                        tie_break_type_by_id.get(tie_break_id, None)
-                    ):
+                    if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
                         tie_breaks.append(tie_break_type().to_dict())
 
                 create_file = WebContext.form_data_to_bool(data, 'create_file')
@@ -204,29 +202,41 @@ class TournamentAdminController(BaseEventAdminController):
                 paired_bye_result = WebContext.form_data_to_int(
                     data, 'paired_bye_result'
                 )
-                max_byes = WebContext.form_data_to_int(
-                    data, 'max_byes'
-                )
+                max_byes = WebContext.form_data_to_int(data, 'max_byes')
                 last_rounds_no_byes = WebContext.form_data_to_int(
                     data, 'last_rounds_no_byes'
                 )
             case 'delete':
                 if web_context.admin_tournament is None:
-                    raise RuntimeError(f'{web_context.admin_tournament=} for [{action=}')
+                    raise RuntimeError(
+                        f'{web_context.admin_tournament=} for [{action=}'
+                    )
                 uniq_id = web_context.admin_tournament.uniq_id
                 name = web_context.admin_tournament.name
             case _:
                 raise ValueError(f'action=[{action}]')
 
         # Have plugins validate their fields and return private plugin data
-        per_plugin_tournament_data = plugin_manager.hook.get_validated_tournament_form_fields(action=action, tournament=web_context.admin_tournament, data=data, errors=errors)
-        plugin_data = {key: value for data in per_plugin_tournament_data for key, value in data.items()}
+        per_plugin_tournament_data = (
+            plugin_manager.hook.get_validated_tournament_form_fields(
+                action=action,
+                tournament=web_context.admin_tournament,
+                data=data,
+                errors=errors,
+            )
+        )
+        plugin_data = {
+            key: value
+            for data in per_plugin_tournament_data
+            for key, value in data.items()
+        }
 
         assert uniq_id is not None
 
         return StoredTournament(
             id=web_context.admin_tournament.id
-            if web_context.admin_tournament and action
+            if web_context.admin_tournament
+            and action
             not in [
                 'create',
                 'clone',
@@ -250,7 +260,7 @@ class TournamentAdminController(BaseEventAdminController):
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
             errors=errors,
-            plugin_data=plugin_data
+            plugin_data=plugin_data,
         )
 
     @classmethod
@@ -273,15 +283,19 @@ class TournamentAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament | None = web_context.admin_tournament
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
 
-        tournament_card_blocks_and_data = plugin_manager.hook.get_tournament_card_block_template_and_data()
-        tournament_card_blocks = [block_template for (block_template, data) in tournament_card_blocks_and_data]
+        tournament_card_blocks_and_data = (
+            plugin_manager.hook.get_tournament_card_block_template_and_data()
+        )
+        tournament_card_blocks = [
+            block_template for (block_template, data) in tournament_card_blocks_and_data
+        ]
         tournament_card_block_data = {
             key: value
             for (block_template, data) in tournament_card_blocks_and_data
@@ -289,10 +303,12 @@ class TournamentAdminController(BaseEventAdminController):
         }
         tournament_exporters: list[AbstractTournamentExporter] = [
             Trf16TournamentExporter(),
-            TrfBxTournamentExporter()
-        ] + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tournament_exporters()
-        ))
+            TrfBxTournamentExporter(),
+        ] + list(
+            itertools.chain.from_iterable(
+                plugin_manager.hook.get_extra_tournament_exporters()
+            )
+        )
         template_context |= {
             'admin_event_tab': 'admin-event-tournaments-tab',
             'paired_bye_result_options': cls._get_paired_bye_result_options(),
@@ -363,10 +379,16 @@ class TournamentAdminController(BaseEventAdminController):
                                 admin_tournament.stored_tournament.record_illegal_moves
                             )
                             rules = admin_tournament.stored_tournament.rules
-                            first_board_number = admin_tournament.stored_tournament.first_board_number
-                            paired_bye_result = admin_tournament.stored_tournament.paired_bye_result
+                            first_board_number = (
+                                admin_tournament.stored_tournament.first_board_number
+                            )
+                            paired_bye_result = (
+                                admin_tournament.stored_tournament.paired_bye_result
+                            )
                             max_byes = admin_tournament.stored_tournament.max_byes
-                            last_rounds_no_byes = admin_tournament.stored_tournament.last_rounds_no_byes
+                            last_rounds_no_byes = (
+                                admin_tournament.stored_tournament.last_rounds_no_byes
+                            )
                         case 'create' | 'delete':
                             pass
                         case _:
@@ -375,9 +397,7 @@ class TournamentAdminController(BaseEventAdminController):
                         case 'update':
                             assert admin_tournament is not None
                             assert admin_tournament.stored_tournament is not None
-                            filename = (
-                                admin_tournament.stored_tournament.filename
-                            )
+                            filename = admin_tournament.stored_tournament.filename
                             if admin_tournament.file_exists:
                                 tie_breaks = admin_tournament.tie_breaks
                                 tie_break_1, tie_break_2, tie_break_3 = (
@@ -389,8 +409,14 @@ class TournamentAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
-                    per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(tournament=web_context.admin_tournament)
-                    plugin_form_data = {key: value for data in per_plugin_form_data for key, value in data.items()}
+                    per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
+                        tournament=web_context.admin_tournament
+                    )
+                    plugin_form_data = {
+                        key: value
+                        for data in per_plugin_form_data
+                        for key, value in data.items()
+                    }
                     data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'name': WebContext.value_to_form_data(name),
@@ -415,10 +441,16 @@ class TournamentAdminController(BaseEventAdminController):
                             record_illegal_moves
                         ),
                         'rules': WebContext.value_to_form_data(rules),
-                        'first_board_number': WebContext.value_to_form_data(first_board_number),
-                        'paired_bye_result': WebContext.value_to_form_data(paired_bye_result),
+                        'first_board_number': WebContext.value_to_form_data(
+                            first_board_number
+                        ),
+                        'paired_bye_result': WebContext.value_to_form_data(
+                            paired_bye_result
+                        ),
                         'max_byes': WebContext.value_to_form_data(max_byes),
-                        'last_rounds_no_byes': WebContext.value_to_form_data(last_rounds_no_byes),
+                        'last_rounds_no_byes': WebContext.value_to_form_data(
+                            last_rounds_no_byes
+                        ),
                         'tie_break_1': WebContext.value_to_form_data(tie_break_1),
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
@@ -432,15 +464,20 @@ class TournamentAdminController(BaseEventAdminController):
                 if errors is None:
                     errors = {}
 
-                plugin_form_fields_templates = plugin_manager.hook.get_tournament_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_tournament_form_fields_template() or []
+                )
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                    'tie_break_options': {'': _('None')} | PapiTieBreakManager.options(),
+                    'tie_break_options': {'': _('None')}
+                    | PapiTieBreakManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'file_exists': cls._extract_papi_file_path(data, admin_event).exists(),
+                    'file_exists': cls._extract_papi_file_path(
+                        data, admin_event
+                    ).exists(),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -520,12 +557,10 @@ class TournamentAdminController(BaseEventAdminController):
         usage: str,
     ) -> File:
         trf_type = TrfType(usage)
-        context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
         tournament = context.admin_tournament
         if tournament is None:
-            raise RuntimeError("tournament not defined")
+            raise RuntimeError('tournament not defined')
         temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
         with temp_file as file:
             trf.dump(file, tournament.to_trf(trf_type))
@@ -540,9 +575,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def admin_tournament_generate_pairings(
         self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
     ) -> Template | ClientRedirect:
-        context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
         tournament = context.admin_tournament
         assert tournament is not None
         BbpPairings().generate_pairings(tournament)
@@ -551,7 +584,9 @@ class TournamentAdminController(BaseEventAdminController):
             request,
             _(
                 'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
-            ).format(round=tournament.current_round, tournament_uniq_id=tournament.uniq_id),
+            ).format(
+                round=tournament.current_round, tournament_uniq_id=tournament.uniq_id
+            ),
         )
         return self._admin_event_tournaments_render(request, event_uniq_id)
 
@@ -568,29 +603,27 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, None, data
-        )
+        web_context = TournamentAdminWebContext(request, event_uniq_id, None, data)
         assert web_context.admin_event is not None
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
         return HTMXTemplate(
             template_name='admin/tournaments/file_status.html',
-            context=template_context | {
+            context=template_context
+            | {
                 'file_exists': self._extract_papi_file_path(
                     data, web_context.admin_event
                 ).exists(),
-            }
+            },
         )
 
     @staticmethod
     def _extract_papi_file_path(data: dict[str, str], event: Event) -> Path:
         dir_path = Path(WebContext.form_data_to_str(data, 'path') or event.path)
-        file_name = (
-            WebContext.form_data_to_str(data, 'filename') or
-            WebContext.form_data_to_str(data, 'uniq_id', '')
-        )
+        file_name = WebContext.form_data_to_str(
+            data, 'filename'
+        ) or WebContext.form_data_to_str(data, 'uniq_id', '')
         return dir_path / f'{file_name}.{PapiWebConfig.papi_ext}'
 
     def _admin_tournament_update(
@@ -617,7 +650,7 @@ class TournamentAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         stored_tournament: StoredTournament = (
             self._admin_validate_tournament_update_data(action, web_context, data)
         )
@@ -845,10 +878,10 @@ class TournamentAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_tournament is None:
-            raise RuntimeError("admin_tournament not defined")
+            raise RuntimeError('admin_tournament not defined')
         admin_tournament: Tournament = web_context.admin_tournament
-        template_context: dict[str, Any] = (
-            self._get_admin_event_render_context(web_context)
+        template_context: dict[str, Any] = self._get_admin_event_render_context(
+            web_context
         )
         document_type = PrintDocumentManager.get_type(document)
         options = []

@@ -12,6 +12,7 @@ from plugins.utils import AbstractPlugin
 
 class BasePluginMigration(BaseMigration, ABC):
     """Base class for all plugin migrations."""
+
     @override
     @abstractmethod
     def backward(self):
@@ -56,23 +57,16 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
 
     def install_metadata(self):
         self.database.create_plugin_metadata_table()
-        self.database.insert_plugin_metadata(
-            self.plugin.id, self.plugin.version
-        )
+        self.database.insert_plugin_metadata(self.plugin.id, self.plugin.version)
 
     @override
     @property
     def log_prefix(self) -> str:
-        return (
-            f'Database [{self.database.file.name}] - '
-            f'Plugin [{self.plugin.name}] - '
-        )
+        return f'Database [{self.database.file.name}] - Plugin [{self.plugin.name}] - '
 
     def get_migration_from_legacy_version(self) -> str | None:
         try:
-            self.database.execute(
-                f'SELECT `{self._legacy_version_field}` FROM `info`'
-            )
+            self.database.execute(f'SELECT `{self._legacy_version_field}` FROM `info`')
         except OperationalError:
             return None
         return 'm001_retrieve_deprecated_plugin_columns'

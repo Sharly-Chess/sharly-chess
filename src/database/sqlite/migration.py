@@ -19,6 +19,7 @@ logger: Logger = get_logger()
 
 class BaseMigration(ABC):
     """Base class for all migrations."""
+
     def __init__(self, database: MigrationDatabase):
         self.database = database
 
@@ -29,9 +30,7 @@ class BaseMigration(ABC):
     def backward(self):
         """Rollback the migration. Does not have to be implemented,
         but raises an error on rollback if it is not."""
-        raise NotImplementedError(
-            "Rollback not implemented for this migration"
-        )
+        raise NotImplementedError('Rollback not implemented for this migration')
 
 
 class MigrationManager[MigrationDatabase](ABC):
@@ -50,9 +49,7 @@ class MigrationManager[MigrationDatabase](ABC):
     MIGRATION_CLASS_NAME: str = 'Migration'
     MIGRATION_ZERO: str = 'm000_no_migration'
 
-    def __init__(
-        self, database: MigrationDatabase, base_migration_module: ModuleType
-    ):
+    def __init__(self, database: MigrationDatabase, base_migration_module: ModuleType):
         self.database: MigrationDatabase = database
         self.base_migration_module: ModuleType = base_migration_module
 
@@ -86,7 +83,7 @@ class MigrationManager[MigrationDatabase](ABC):
     @property
     @abstractmethod
     def latest_version(self) -> Version:
-        """Latest expected version of the """
+        """Latest expected version of the"""
 
     @abstractmethod
     def get_migration_from_legacy_version(self) -> str | None:
@@ -104,17 +101,17 @@ class MigrationManager[MigrationDatabase](ABC):
     @property
     def migration_modules(self) -> list[str]:
         return [
-            self._get_migration_module_name(migration)
-            for migration in self.migrations
+            self._get_migration_module_name(migration) for migration in self.migrations
         ]
 
     @cached_property
     def migrations(self) -> list[str]:
-        return sorted([
-            module for _, module, _ in iter_modules(
-                self.base_migration_module.__path__
-            )
-        ])
+        return sorted(
+            [
+                module
+                for _, module, _ in iter_modules(self.base_migration_module.__path__)
+            ]
+        )
 
     def check_status(self) -> bool:
         """Check if the database is migrated to the latest migration.
@@ -139,13 +136,11 @@ class MigrationManager[MigrationDatabase](ABC):
         if migration not in self.migrations + [self.MIGRATION_ZERO]:
             if migration > self.migrations[-1]:
                 message = (
-                    'Database can only be opened by a '
-                    f'later version of {APP_NAME}.'
+                    f'Database can only be opened by a later version of {APP_NAME}.'
                 )
             elif migration < self.migrations[0]:
                 message = (
-                    'Database can only be opened by a '
-                    f'previous version of {APP_NAME}.'
+                    f'Database can only be opened by a previous version of {APP_NAME}.'
                 )
             else:
                 message = 'A migration was most likely renamed.'
@@ -164,14 +159,12 @@ class MigrationManager[MigrationDatabase](ABC):
                 f'Migration [{migration}] does not match expected pattern'
             )
             index = self._migration_index(migration)
-            assert index != 0, f'Prefix [m000] not allowed'
+            assert index != 0, 'Prefix [m000] not allowed'
             assert index not in indexes, (
                 f'2 migrations found with prefix [m{index:03d}]'
             )
             indexes.append(index)
-            migration_module = import_module(
-                self._get_migration_module_name(migration)
-            )
+            migration_module = import_module(self._get_migration_module_name(migration))
             assert hasattr(migration_module, self.MIGRATION_CLASS_NAME)
             migration_class = getattr(migration_module, self.MIGRATION_CLASS_NAME)
             assert issubclass(migration_class, BaseMigration)
@@ -182,7 +175,7 @@ class MigrationManager[MigrationDatabase](ABC):
     def _get_migration_object(self, migration: str) -> BaseMigration:
         migration_class = getattr(
             import_module(self._get_migration_module_name(migration)),
-            self.MIGRATION_CLASS_NAME
+            self.MIGRATION_CLASS_NAME,
         )
         return migration_class(self.database)
 
@@ -201,12 +194,11 @@ class MigrationManager[MigrationDatabase](ABC):
     def log_prefix(self) -> str:
         return f'Database [{self.database.file.name}] - '
 
-    def _next_migration(
-        self, current_migration: str, max_migration: str
-    ) -> str | None:
+    def _next_migration(self, current_migration: str, max_migration: str) -> str | None:
         return next(
             (
-                migration for migration in self.migrations
+                migration
+                for migration in self.migrations
                 if current_migration < migration <= max_migration
             ),
             None,
@@ -214,9 +206,9 @@ class MigrationManager[MigrationDatabase](ABC):
 
     def _previous_migration(self, current_migration: str) -> str:
         return next(
-            migration for migration in reversed(
-                [self.MIGRATION_ZERO] + self.migrations
-            ) if current_migration > migration
+            migration
+            for migration in reversed([self.MIGRATION_ZERO] + self.migrations)
+            if current_migration > migration
         )
 
     def migrate(self, target_migration: str | None = None):
@@ -241,8 +233,8 @@ class MigrationManager[MigrationDatabase](ABC):
             if version != self.latest_version:
                 self.set_version(version)
                 logger.debug(
-                    self.log_prefix +
-                    f'Version updated from [{version}] to [{self.latest_version}]'
+                    self.log_prefix
+                    + f'Version updated from [{version}] to [{self.latest_version}]'
                 )
 
             current_migration = self.get_migration()
@@ -250,8 +242,8 @@ class MigrationManager[MigrationDatabase](ABC):
                 logger.debug(self.log_prefix + 'No migration to run')
             else:
                 logger.info(
-                    self.log_prefix +
-                    f'Migrating from [{current_migration}] to [{target_migration}]...'
+                    self.log_prefix
+                    + f'Migrating from [{current_migration}] to [{target_migration}]...'
                 )
                 if current_migration > target_migration:
                     self._rollback(target_migration)
@@ -260,31 +252,19 @@ class MigrationManager[MigrationDatabase](ABC):
                 logger.info(self.log_prefix + 'Migration complete.')
             self.database.commit()
         except OperationalError as error:
-            raise PapiWebException(
-                self.log_prefix + f'Migration failed: {error}'
-            )
+            raise PapiWebException(self.log_prefix + f'Migration failed: {error}')
 
     def _upgrade(self, target_migration: str):
-        while (
-            migration := self._next_migration(
-                self.get_migration(), target_migration
-            )
-        ):
+        while migration := self._next_migration(self.get_migration(), target_migration):
             self._get_migration_object(migration).forward()
             self.set_migration(migration)
-            logger.debug(
-                self.log_prefix + f'\t{migration} applied'
-            )
+            logger.debug(self.log_prefix + f'\t{migration} applied')
 
     def _rollback(self, target_migration: str):
         while (migration := self.get_migration()) != target_migration:
             self._get_migration_object(migration).backward()
-            self.set_migration(
-                self._previous_migration(migration)
-            )
-            logger.debug(
-                self.log_prefix + f'\t{migration} rolled back'
-            )
+            self.set_migration(self._previous_migration(migration))
+            logger.debug(self.log_prefix + f'\t{migration} rolled back')
         self.set_migration(target_migration)
 
 
@@ -317,9 +297,7 @@ class DatabaseMigrationManager[MigrationDatabase](MigrationManager):
 
     def remove_legacy_version_field(self):
         try:
-            self.database.execute(
-                'ALTER TABLE `info` DROP COLUMN `version`'
-            )
+            self.database.execute('ALTER TABLE `info` DROP COLUMN `version`')
         except OperationalError:
             pass
 

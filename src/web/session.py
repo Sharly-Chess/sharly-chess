@@ -164,10 +164,19 @@ class SessionHandler:
 
     @classmethod
     def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> set[str]:
-        return set(request.session.get(
-            cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-            ['boards', 'input', 'players', 'results', 'ranking', 'image', ],
-        ))
+        return set(
+            request.session.get(
+                cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
+                [
+                    'boards',
+                    'input',
+                    'players',
+                    'results',
+                    'ranking',
+                    'image',
+                ],
+            )
+        )
 
     LOCALE_KEY: str = 'locale'
 
@@ -242,27 +251,23 @@ class SessionHandler:
     def set_session_admin_players_filter_clubs(
         cls, request: HTMXRequest, clubs: list[Club]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY] = (
-            clubs
-        )
+        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY] = clubs
 
     @classmethod
-    def get_session_admin_players_filter_clubs(
-        cls, request: HTMXRequest
-    ) -> list[Club]:
+    def get_session_admin_players_filter_clubs(cls, request: HTMXRequest) -> list[Club]:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d
-            if isinstance(d, Club)
-            else Club(d)
+            d if isinstance(d, Club) else Club(d)
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY: str = 'admin_players_filter_clubs_search'
 
     @classmethod
-    def set_session_admin_players_filter_clubs_search(cls, request: HTMXRequest, origin: str):
+    def set_session_admin_players_filter_clubs_search(
+        cls, request: HTMXRequest, origin: str
+    ):
         request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY] = origin
 
     @classmethod
@@ -275,9 +280,7 @@ class SessionHandler:
     def set_session_admin_players_filter_genders(
         cls, request: HTMXRequest, genders: list[PlayerGender]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY] = (
-            genders
-        )
+        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY] = genders
 
     @classmethod
     def get_session_admin_players_filter_genders(
@@ -310,9 +313,7 @@ class SessionHandler:
     def set_session_admin_players_filter_tournaments(
         cls, request: HTMXRequest, tournament_ids: list[int]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY] = (
-            tournament_ids
-        )
+        request.session[cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY] = tournament_ids
 
     @classmethod
     def get_session_admin_players_filter_tournaments(

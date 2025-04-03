@@ -24,7 +24,11 @@ from common.i18n import (
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
+from database.sqlite.config.config_store import (
+    StoredConfig,
+    StoredPlugin,
+    StoredLocalSourceDatabase,
+)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from database.sqlite.local_source_database import (
@@ -36,7 +40,10 @@ from database.sqlite.local_source_database import (
     OutdateActionManager,
 )
 from plugins.manager import plugin_manager
-from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
+from web.controllers.admin.base_admin_controller import (
+    AdminWebContext,
+    BaseAdminController,
+)
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
@@ -48,8 +55,8 @@ logger: Logger = get_logger()
 class IndexAdminController(BaseAdminController):
     @classmethod
     def _admin_validate_config_update_data(
-            cls,
-            data: dict[str, str] | None = None,
+        cls,
+        data: dict[str, str] | None = None,
     ) -> StoredConfig:
         papi_web_config: PapiWebConfig = PapiWebConfig()
         if data is None:
@@ -57,14 +64,22 @@ class IndexAdminController(BaseAdminController):
         errors: dict[str, str] = {}
         log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
         if log_level and log_level not in papi_web_config.log_levels:
-            errors[field] = _('Invalid log level [{log_level}].').format(log_level=log_level)
+            errors[field] = _('Invalid log level [{log_level}].').format(
+                log_level=log_level
+            )
             data[field] = ''
-        launch_browser: bool | None = WebContext.form_data_to_bool(data, 'launch_browser')
-        federation_name: str | None = WebContext.form_data_to_str(data, field := 'federation')
+        launch_browser: bool | None = WebContext.form_data_to_bool(
+            data, 'launch_browser'
+        )
+        federation_name: str | None = WebContext.form_data_to_str(
+            data, field := 'federation'
+        )
         federation: Federation | None = None
         if federation_name:
             if federation_name not in papi_web_config.federations:
-                errors[field] = _('Invalid federation [{federation}].').format(federation=federation_name)
+                errors[field] = _('Invalid federation [{federation}].').format(
+                    federation=federation_name
+                )
                 data[field] = ''
             else:
                 federation = Federation(federation_name)
@@ -94,9 +109,9 @@ class IndexAdminController(BaseAdminController):
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=bool(WebContext.form_data_to_bool(
-                        data, plugin.form_key, False
-                    )),
+                    is_enabled=bool(
+                        WebContext.form_data_to_bool(data, plugin.form_key, False)
+                    ),
                     errors=errors,
                 )
             )
@@ -121,7 +136,7 @@ class IndexAdminController(BaseAdminController):
             SessionHandler.set_session_admin_events_show_details(
                 request, admin_events_show_details
             )
-            
+
         papi_web_config: PapiWebConfig = PapiWebConfig()
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
@@ -175,7 +190,9 @@ class IndexAdminController(BaseAdminController):
         }
         if papi_web_config.force_edit:
             web_context.admin_tab = 'config'
-        if not modal and (not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']):
+        if not modal and (
+            not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
+        ):
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
@@ -200,7 +217,7 @@ class IndexAdminController(BaseAdminController):
                 )
             ),
             'event_card_blocks': event_card_blocks,
-            'row_cycler': cls.get_cycler(['odd', 'even'])
+            'row_cycler': cls.get_cycler(['odd', 'even']),
         }
 
         match modal:
@@ -210,14 +227,22 @@ class IndexAdminController(BaseAdminController):
                 if data is None:
                     papi_web_config = PapiWebConfig()
                     data = {
-                        'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
-                        'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
-                        'federation': WebContext.value_to_form_data(papi_web_config.stored_config.federation),
-                        'locale': WebContext.value_to_form_data(papi_web_config.stored_config.locale),
+                        'log_level': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.log_level
+                        ),
+                        'launch_browser': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.launch_browser
+                        ),
+                        'federation': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.federation
+                        ),
+                        'locale': WebContext.value_to_form_data(
+                            papi_web_config.stored_config.locale
+                        ),
                     }
                     for plugin in plugin_manager.all_plugins:
-                        data[plugin.form_key] = (
-                            WebContext.value_to_form_data(plugin.is_enabled)
+                        data[plugin.form_key] = WebContext.value_to_form_data(
+                            plugin.is_enabled
                         )
                     stored_config: StoredConfig = (
                         cls._admin_validate_config_update_data(data)
@@ -245,13 +270,14 @@ class IndexAdminController(BaseAdminController):
                     'off': _('Do nothing'),
                 }
                 launch_browser_options[''] = _('By default - {option}').format(
-                    option=launch_browser_options['on' if PapiWebConfig.default_launch_browser else 'off']
+                    option=launch_browser_options[
+                        'on' if PapiWebConfig.default_launch_browser else 'off'
+                    ]
                 )
                 locale_options: dict[str, str] = {
                     '': '-',
                 } | {
-                    locale: locale_localized_name(locale)
-                    for locale in trusted_locales
+                    locale: locale_localized_name(locale) for locale in trusted_locales
                 }
                 if EXPERIMENTAL_FEATURES:
                     locale_options |= {
@@ -261,13 +287,17 @@ class IndexAdminController(BaseAdminController):
                 locale_options[''] = _('By default - {option}').format(
                     option=locale_options[DEFAULT_LOCALE]
                 )
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_event_form_fields_template() or []
+                )
                 context |= {
                     'log_level_options': log_level_options,
                     'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(PapiWebConfig.default_federation),
+                    'federation_options': cls._get_federation_options(
+                        PapiWebConfig.default_federation
+                    ),
                     'modal': modal,
                     'data': data,
                     'errors': errors,
@@ -285,7 +315,9 @@ class IndexAdminController(BaseAdminController):
                 if errors is None:
                     errors = {}
 
-                plugin_form_fields_templates = plugin_manager.hook.get_event_form_fields_template() or []
+                plugin_form_fields_templates = (
+                    plugin_manager.hook.get_event_form_fields_template() or []
+                )
                 context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         PapiWebConfig.default_record_illegal_moves_number
@@ -314,12 +346,10 @@ class IndexAdminController(BaseAdminController):
                     data = {}
                     for database in databases:
                         data |= {
-                            f'{database.id}_outdate_delay': (
-                                database.outdate_delay.id
-                            ),
+                            f'{database.id}_outdate_delay': (database.outdate_delay.id),
                             f'{database.id}_outdate_action': (
                                 database.outdate_action.id
-                            )
+                            ),
                         }
                 context |= {
                     'databases': databases,
@@ -331,13 +361,13 @@ class IndexAdminController(BaseAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
-        if "modal" in context:
+        if 'modal' in context:
             return HTMXTemplate(
                 template_name='admin/modals.html',
                 context=context,
                 re_target='#modal-wrapper',
-                trigger_event="modal_opened",
-                after="settle"
+                trigger_event='modal_opened',
+                after='settle',
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
@@ -453,11 +483,9 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        stored_config: StoredConfig = (
-            self._admin_validate_config_update_data(data)
-        )
-        stored_plugins: list[StoredPlugin] = (
-            self._admin_validate_plugins_update_data(data)
+        stored_config: StoredConfig = self._admin_validate_config_update_data(data)
+        stored_plugins: list[StoredPlugin] = self._admin_validate_plugins_update_data(
+            data
         )
         errors = stored_config.errors
         for plugin in stored_plugins:
@@ -479,11 +507,7 @@ class IndexAdminController(BaseAdminController):
         PapiWebConfig().reload()
         plugin_manager.reload_register()
         Message.success(request, _('Papi-web settings has been updated.'))
-        return self._admin_render(
-            request=request,
-            data=None,
-            admin_tab='config'
-        )
+        return self._admin_render(request=request, data=None, admin_tab='config')
 
     @patch(
         path='/admin/locale-update/{locale:str}',
@@ -502,11 +526,7 @@ class IndexAdminController(BaseAdminController):
                 config_database.update_stored_config(papi_web_config.stored_config)
                 config_database.commit()
             papi_web_config.reload()
-        return self._admin_render(
-            request=request,
-            data=None,
-            admin_tab='config'
-        )
+        return self._admin_render(request=request, data=None, admin_tab='config')
 
     @get(
         path='/admin/config-modal',
@@ -531,7 +551,6 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect:
-
         source_databases: list[LocalSourceDatabase] = (
             LocalSourceDatabaseManager.objects()
         )
@@ -540,15 +559,17 @@ class IndexAdminController(BaseAdminController):
             if database.update_status is not None:
                 if database.update_status:
                     Message.success(
-                        request, _(
-                            'Database [{database}] successfully updated.'
-                        ).format(database=database.name)
+                        request,
+                        _('Database [{database}] successfully updated.').format(
+                            database=database.name
+                        ),
                     )
                 else:
                     Message.error(
-                        request, _(
-                            'Error when updating database [{database}].'
-                        ).format(database=database.name)
+                        request,
+                        _('Error when updating database [{database}].').format(
+                            database=database.name
+                        ),
                     )
                 database.__class__.update_status = None
 
@@ -558,9 +579,7 @@ class IndexAdminController(BaseAdminController):
             template_name = '/admin/common/database/out_of_date_badge.html'
         else:
             template_name = '/admin/common/database/settings_badge.html'
-        return HTMXTemplate(
-            template_name=template_name
-        )
+        return HTMXTemplate(template_name=template_name)
 
     @get(
         path='/admin/database-modal',
@@ -593,12 +612,19 @@ class IndexAdminController(BaseAdminController):
         )
         with ConfigDatabase(write=True) as config_database:
             for source_database in source_databases:
-                outdate_delay = WebContext.form_data_to_str(
-                    data, f'{source_database.id}_outdate_delay',
-                ) or DisabledOutdateDelay.static_id()
-                outdate_action = WebContext.form_data_to_str(
-                    data, f'{source_database.id}_outdate_action'
-                ) or NotifOutdateAction.static_id()
+                outdate_delay = (
+                    WebContext.form_data_to_str(
+                        data,
+                        f'{source_database.id}_outdate_delay',
+                    )
+                    or DisabledOutdateDelay.static_id()
+                )
+                outdate_action = (
+                    WebContext.form_data_to_str(
+                        data, f'{source_database.id}_outdate_action'
+                    )
+                    or NotifOutdateAction.static_id()
+                )
                 config_database.update_stored_local_source_database(
                     StoredLocalSourceDatabase(
                         name=source_database.id,
@@ -616,8 +642,8 @@ class IndexAdminController(BaseAdminController):
         return HTMXTemplate(
             template_name='common/empty_modal.html',
             re_target='#modal-wrapper',
-            trigger_event="close_modal",
-            after="receive",
+            trigger_event='close_modal',
+            after='receive',
         )
 
     @get(
@@ -632,7 +658,7 @@ class IndexAdminController(BaseAdminController):
         database = LocalSourceDatabaseManager.get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
-            context={"database": database}
+            context={'database': database},
         )
 
     @post(
@@ -648,9 +674,9 @@ class IndexAdminController(BaseAdminController):
         database.update()
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
-            trigger_event="database-update-launched",
-            after="receive",
-            context={"database": database}
+            trigger_event='database-update-launched',
+            after='receive',
+            context={'database': database},
         )
 
     @delete(
@@ -667,5 +693,5 @@ class IndexAdminController(BaseAdminController):
         database.delete()
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
-            context={"database": database}
+            context={'database': database},
         )

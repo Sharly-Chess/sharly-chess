@@ -63,7 +63,7 @@ class AccessDatabase:
     def _check_cursor(self):
         """Check that the cursor is available."""
         if self.cursor is None:
-            raise RuntimeError("Database connection not established")
+            raise RuntimeError('Database connection not established')
 
     def _execute(self, query: str, params: tuple = ()):
         """Executes the prepare query with the given parameters."""

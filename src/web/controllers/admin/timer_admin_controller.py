@@ -145,14 +145,14 @@ class TimerAdminController(BaseEventAdminController):
                 uniq_id = uniq_id or ''
             case _:
                 raise ValueError(f'action=[{action}]')
-        
+
         id: int | None = None
         if web_context.admin_timer and action not in [
             'create',
             'clone',
         ]:
             id = web_context.admin_timer.id
-            
+
         assert uniq_id is not None
         return StoredTimer(
             id=id,
@@ -206,7 +206,8 @@ class TimerAdminController(BaseEventAdminController):
                     )
                 )
                 if (
-                    previous_valid_timer_hour and previous_valid_timer_hour.timestamp
+                    previous_valid_timer_hour
+                    and previous_valid_timer_hour.timestamp
                     and timestamp <= previous_valid_timer_hour.timestamp
                 ):
                     errors['time_str'] = _(
@@ -221,7 +222,7 @@ class TimerAdminController(BaseEventAdminController):
                 errors['time_str'] = _('Please enter valid date and time.')
                 if date_str:
                     errors['date_str'] = errors['time_str']
-                    
+
         assert web_context.admin_timer is not None
         assert web_context.admin_timer_hour is not None
         assert uniq_id is not None
@@ -247,7 +248,7 @@ class TimerAdminController(BaseEventAdminController):
                 errors['text_after'] = _(
                     'Please enter the text to display after the hour (mandatory except for rounds).'
                 )
-        
+
         assert web_context.admin_timer and web_context.admin_timer.id is not None
         return StoredTimerHour(
             id=web_context.admin_timer_hour.id,
@@ -283,13 +284,13 @@ class TimerAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
             'admin_event_tab': 'admin-event-timers-tab',
         }
-        
+
         match modal:
             case None:
                 pass
@@ -306,7 +307,9 @@ class TimerAdminController(BaseEventAdminController):
                             for i in range(1, 4)
                         }
                         | {
-                            f'color_{i}_checkbox': WebContext.value_to_form_data(colors[i] is None)
+                            f'color_{i}_checkbox': WebContext.value_to_form_data(
+                                colors[i] is None
+                            )
                             for i in range(1, 4)
                         }
                         | {
@@ -347,8 +350,12 @@ class TimerAdminController(BaseEventAdminController):
                         case 'update' | 'clone':
                             assert web_context.admin_timer is not None
                             assert web_context.admin_timer.stored_timer is not None
-                            assert web_context.admin_timer.stored_timer.colors is not None
-                            assert web_context.admin_timer.stored_timer.delays is not None
+                            assert (
+                                web_context.admin_timer.stored_timer.colors is not None
+                            )
+                            assert (
+                                web_context.admin_timer.stored_timer.delays is not None
+                            )
                             colors = web_context.admin_timer.stored_timer.colors
                             delays = web_context.admin_timer.stored_timer.delays
                         case 'create' | 'delete':
@@ -465,7 +472,7 @@ class TimerAdminController(BaseEventAdminController):
 
     @patch(
         path='/admin/default-timers-update/{event_uniq_id:str}',
-        name='default-timers-update'
+        name='default-timers-update',
     )
     async def htmx_admin_default_timers_update(
         self,
@@ -502,9 +509,7 @@ class TimerAdminController(BaseEventAdminController):
                     ).format(color={data[field]})
             field = f'delay_{i}'
             try:
-                timer_delays[i] = WebContext.form_data_to_int(
-                    data, field, minimum=1
-                )
+                timer_delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
             except ValueError:
                 errors[field] = _(
                     'Invalid delay [{delay}] (positive integer expected).'
@@ -521,8 +526,8 @@ class TimerAdminController(BaseEventAdminController):
                 errors=errors,
             )
 
-        stored_event.timer_colors=timer_colors
-        stored_event.timer_delays=timer_delays
+        stored_event.timer_colors = timer_colors
+        stored_event.timer_delays = timer_delays
 
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
@@ -530,9 +535,7 @@ class TimerAdminController(BaseEventAdminController):
             event_database.update_stored_event(stored_event)
             event_database.commit()
 
-        return self._admin_event_timers_render(
-            request, event_uniq_id=event_uniq_id
-        )
+        return self._admin_event_timers_render(request, event_uniq_id=event_uniq_id)
 
     @get(
         path='/admin/timer-modal/create/{event_uniq_id:str}',
@@ -597,7 +600,7 @@ class TimerAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         stored_timer: StoredTimer | None = self._admin_validate_timer_update_data(
             action, web_context, data
         )
@@ -641,7 +644,10 @@ class TimerAdminController(BaseEventAdminController):
                         timer_hour_id=stored_timer_hour.id,
                     )
                 case 'update':
-                    assert web_context.admin_timer and web_context.admin_timer.id is not None
+                    assert (
+                        web_context.admin_timer
+                        and web_context.admin_timer.id is not None
+                    )
                     stored_timer = event_database.update_stored_timer(stored_timer)
                     assert stored_timer and stored_timer.id is not None
                     Message.success(
@@ -651,10 +657,8 @@ class TimerAdminController(BaseEventAdminController):
                         ),
                     )
                     if not web_context.admin_timer.timer_hours_by_id:
-                        stored_timer_hour = (
-                            event_database.add_stored_timer_hour(
-                                web_context.admin_timer.id, set_datetime=True
-                            )
+                        stored_timer_hour = event_database.add_stored_timer_hour(
+                            web_context.admin_timer.id, set_datetime=True
                         )
                         event_database.commit()
                         event_loader.clear_cache(event_uniq_id)
@@ -699,7 +703,9 @@ class TimerAdminController(BaseEventAdminController):
                     )
                 case 'clone':
                     if web_context.admin_timer is None:
-                        raise RuntimeError(f'{web_context.admin_timer=} for [{action=}]')
+                        raise RuntimeError(
+                            f'{web_context.admin_timer=} for [{action=}]'
+                        )
                     stored_timer = event_database.add_stored_timer(stored_timer)
                     assert stored_timer is not None and stored_timer.id is not None
                     for (
@@ -876,7 +882,7 @@ class TimerAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
-            raise RuntimeError("admin_event not defined")
+            raise RuntimeError('admin_event not defined')
         event_loader: EventLoader = EventLoader.get(request=request)
         match action:
             case 'delete':
@@ -918,8 +924,14 @@ class TimerAdminController(BaseEventAdminController):
                         )
                     event_database.update_stored_timer_hour(stored_timer_hour)
                 case 'delete':
-                    assert web_context.admin_timer and web_context.admin_timer.id is not None
-                    assert web_context.admin_timer_hour and web_context.admin_timer_hour.id is not None
+                    assert (
+                        web_context.admin_timer
+                        and web_context.admin_timer.id is not None
+                    )
+                    assert (
+                        web_context.admin_timer_hour
+                        and web_context.admin_timer_hour.id is not None
+                    )
                     event_database.delete_stored_timer_hour(
                         web_context.admin_timer_hour.id, web_context.admin_timer.id
                     )
@@ -932,7 +944,10 @@ class TimerAdminController(BaseEventAdminController):
                     )
                     next_timer_hour_id = stored_timer_hour.id
                 case 'add':
-                    assert web_context.admin_timer and web_context.admin_timer.id is not None
+                    assert (
+                        web_context.admin_timer
+                        and web_context.admin_timer.id is not None
+                    )
                     stored_timer_hour = event_database.add_stored_timer_hour(
                         web_context.admin_timer.id
                     )

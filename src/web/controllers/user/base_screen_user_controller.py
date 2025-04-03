@@ -118,6 +118,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             'login_needed': self.login_needed,
         }
 
+
 class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
     def __init__(
         self,
@@ -167,6 +168,7 @@ class RotatorUserWebContext(ScreenOrRotatorUserWebContext):
             rotator_screen_index=rotator_screen_index,
         )
 
+
 class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
     def __init__(
         self,
@@ -204,6 +206,7 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
             'family': self.family,
         }
 
+
 class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
@@ -212,19 +215,22 @@ class BaseScreenUserController(BaseUserController):
     ) -> Template | ClientRedirect:
         assert web_context.screen is not None
         # Allow plugin to provide extra columns
-        per_plugin_columns: Iterable[Iterable[ExtraColumn]] = plugin_manager.hook.get_extra_screen_columns(
-            screen=web_context.screen.type
+        per_plugin_columns: Iterable[Iterable[ExtraColumn]] = (
+            plugin_manager.hook.get_extra_screen_columns(screen=web_context.screen.type)
         )
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        if  web_context.screen.type == ScreenType.RANKING:
+        if web_context.screen.type == ScreenType.RANKING:
             for tournament in {
-                screen_set.tournament for screen_set in web_context.screen.screen_sets_sorted_by_order
+                screen_set.tournament
+                for screen_set in web_context.screen.screen_sets_sorted_by_order
             }:
-                tournament.compute_player_ranks(after_round=web_context.screen.ranking_round)
+                tournament.compute_player_ranks(
+                    after_round=web_context.screen.ranking_round
+                )
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context
