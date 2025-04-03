@@ -40,7 +40,7 @@ from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
-from utils.i18n.i18n_update import I18nUpdater
+from scripts.i18n.i18n_update import I18nUpdater
 
 logger: Logger = get_logger()
 

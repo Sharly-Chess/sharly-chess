@@ -1,4 +1,3 @@
-
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
@@ -21,6 +20,7 @@ if TYPE_CHECKING:
     from data.print import AbstractPlayerSplitter, AbstractPrintDocument
     from data.tie_break import AbstractTieBreak
     from data.tournament import Tournament
+    from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import StoredEvent, StoredTournament
     from database.sqlite.local_source_database import LocalSourceDatabase

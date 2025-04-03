@@ -16,8 +16,7 @@ __pycache__/
 /export/
 /test/
 /export-test/
-/utils/i18n/models
-/resources/
+/scripts/i18n/models
 /bin/bbpPairings/*/*
 
 *.egg-info/

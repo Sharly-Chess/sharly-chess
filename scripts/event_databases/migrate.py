@@ -68,7 +68,7 @@ if __name__ == '__main__':
             '"--events", "--all-events", "--config".'
         )
         sys.exit(1)
-    if args.config and args.events or args.all_events:
+    if args.config and (args.events or args.all_events):
         print_interactive_error(
             'config and event databases can\'t be migrated at the same time.'
         )

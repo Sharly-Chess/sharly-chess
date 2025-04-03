@@ -39,6 +39,7 @@ from common.logger import (
     input_interactive,
     print_interactive_input,
 )
+from scripts.i18n.i18n_translate import I18nTranslator
 
 
 def run_babel_command(
@@ -408,7 +409,7 @@ class I18nUpdater:
         self,
     ):
         """The configuration file used to extract stings from the source files."""
-        extract_config_file: Path = Path() / 'utils' / 'i18n' / 'babel.cfg'
+        extract_config_file: Path = Path() / 'scripts' / 'i18n' / 'babel.cfg'
         run_babel_command(
             'extract',
             [
