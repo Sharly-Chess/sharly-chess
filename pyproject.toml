@@ -48,6 +48,7 @@ lint = [
   "validate-pyproject",
   "pipdeptree",
   "mypy",
+  "pre-commit",
 ]
 
 translate = [
