@@ -12,6 +12,7 @@ db/
 __pycache__/
 
 /build/
+/dist/
 /export/
 /test/
 /export-test/
@@ -38,10 +39,20 @@ __pycache__/
 # MacOS files
 .DS_Store
 
+# Messages binaries
 /locale/*/LC_MESSAGES/messages.mo
 /locale/messages.pot
 
+# log and mprof files
 *.log
 /mprofile_*.dat
 
+# database credentials
 .credentials
+
+# virtual environments
+/.venv-dev
+/.venv-export
+
+# PyInstaller spec files
+/*.spec

@@ -94,6 +94,7 @@ def build_exe():
         '--hiddenimport=pyexcel_io.writers',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
+        '--optimize', '1',
         'src/papi_web.py',
     ]
     migration_base_modules: list[ModuleType] = [
@@ -316,7 +317,7 @@ def main():
     clean(clean_zip=True)
     bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
     if not bbp_pairings.is_installed:
-        print_interactive_info('Installing BBP Pairings is not installed.')
+        print_interactive_info('Installing BBP Pairings....')
         bbp_pairings.install()
     if not I18nUpdater(trusted_locales, untrusted_locales).check_trusted_locales():
         if (
