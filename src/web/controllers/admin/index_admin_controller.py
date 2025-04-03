@@ -5,21 +5,36 @@ from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
 
-from litestar import get, post, patch
+from litestar import get, post, patch, delete
 from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
-from litestar.contrib.htmx.response import ClientRedirect
+from litestar.contrib.htmx.response import ClientRedirect, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
+from litestar.status_codes import HTTP_200_OK
 
-from common.i18n import _, EXPERIMENTAL_FEATURES, locale_localized_name, trusted_locales, untrusted_locales, DEFAULT_LOCALE
+from common.i18n import (
+    _,
+    DEFAULT_LOCALE,
+    EXPERIMENTAL_FEATURES,
+    locale_localized_name,
+    trusted_locales,
+    untrusted_locales,
+)
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
+from database.sqlite.local_source_database import (
+    LocalSourceDatabaseManager,
+    LocalSourceDatabase,
+    DisabledOutdateDelay,
+    NotifOutdateAction,
+    OutdateDelayManager,
+    OutdateActionManager,
+)
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import AdminWebContext, BaseAdminController
 from web.controllers.base_controller import WebContext
@@ -58,7 +73,6 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
-            version=str(papi_web_config.version),
             log_level=log_level,
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
@@ -80,9 +94,9 @@ class IndexAdminController(BaseAdminController):
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=WebContext.form_data_to_bool(
+                    is_enabled=bool(WebContext.form_data_to_bool(
                         data, plugin.form_key, False
-                    ),
+                    )),
                     errors=errors,
                 )
             )
@@ -161,7 +175,7 @@ class IndexAdminController(BaseAdminController):
         }
         if papi_web_config.force_edit:
             web_context.admin_tab = 'config'
-        if not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']:
+        if not modal and (not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']):
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
@@ -189,12 +203,12 @@ class IndexAdminController(BaseAdminController):
             'row_cycler': cls.get_cycler(['odd', 'even'])
         }
 
-        match modal: 
+        match modal:
             case None:
                 pass
             case 'config':
                 if data is None:
-                    papi_web_config: PapiWebConfig = PapiWebConfig()
+                    papi_web_config = PapiWebConfig()
                     data = {
                         'log_level': WebContext.value_to_form_data(papi_web_config.stored_config.log_level),
                         'launch_browser': WebContext.value_to_form_data(papi_web_config.stored_config.launch_browser),
@@ -291,6 +305,29 @@ class IndexAdminController(BaseAdminController):
                     'action': action,
                     'data': data,
                     'errors': errors,
+                }
+            case 'database':
+                databases: list[LocalSourceDatabase] = (
+                    LocalSourceDatabaseManager.objects()
+                )
+                if data is None:
+                    data = {}
+                    for database in databases:
+                        data |= {
+                            f'{database.id}_outdate_delay': (
+                                database.outdate_delay.id
+                            ),
+                            f'{database.id}_outdate_action': (
+                                database.outdate_action.id
+                            )
+                        }
+                context |= {
+                    'databases': databases,
+                    'outdate_delay_options': OutdateDelayManager.options(),
+                    'outdate_action_options': OutdateActionManager.options(),
+                    'modal': modal,
+                    'data': data,
+                    'errors': {},
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
@@ -397,7 +434,7 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         admin_tab: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_create(
             request,
             admin_tab=admin_tab,
@@ -407,7 +444,6 @@ class IndexAdminController(BaseAdminController):
     @patch(
         path='/admin/config-update',
         name='admin-config-update',
-        cache=1,
     )
     async def htmx_admin_config_update(
         self,
@@ -449,6 +485,29 @@ class IndexAdminController(BaseAdminController):
             admin_tab='config'
         )
 
+    @patch(
+        path='/admin/locale-update/{locale:str}',
+        name='admin-locale-update',
+    )
+    async def htmx_admin_locale_update(
+        self,
+        request: HTMXRequest,
+        locale: str,
+    ) -> Template | ClientRedirect:
+        papi_web_config: PapiWebConfig = PapiWebConfig()
+        if locale in papi_web_config.locales:
+            stored_config: StoredConfig = papi_web_config.stored_config
+            stored_config.locale = locale
+            with ConfigDatabase(write=True) as config_database:
+                config_database.update_stored_config(papi_web_config.stored_config)
+                config_database.commit()
+            papi_web_config.reload()
+        return self._admin_render(
+            request=request,
+            data=None,
+            admin_tab='config'
+        )
+
     @get(
         path='/admin/config-modal',
         name='admin-config-modal',
@@ -462,4 +521,151 @@ class IndexAdminController(BaseAdminController):
             request,
             admin_tab='config',
             modal='config',
+        )
+
+    @get(
+        path='/admin/database-status-badge',
+        name='admin-database-status-badge',
+    )
+    async def htmx_admin_status(
+        self,
+        request: HTMXRequest,
+    ) -> Template | ClientRedirect:
+
+        source_databases: list[LocalSourceDatabase] = (
+            LocalSourceDatabaseManager.objects()
+        )
+        for database in source_databases:
+            database.check()
+            if database.update_status is not None:
+                if database.update_status:
+                    Message.success(
+                        request, _(
+                            'Database [{database}] successfully updated.'
+                        ).format(database=database.name)
+                    )
+                else:
+                    Message.error(
+                        request, _(
+                            'Error when updating database [{database}].'
+                        ).format(database=database.name)
+                    )
+                database.__class__.update_status = None
+
+        if any([database.is_updating for database in source_databases]):
+            template_name = '/admin/common/database/updating_badge.html'
+        elif any([database.outdated_warning for database in source_databases]):
+            template_name = '/admin/common/database/out_of_date_badge.html'
+        else:
+            template_name = '/admin/common/database/settings_badge.html'
+        return HTMXTemplate(
+            template_name=template_name
+        )
+
+    @get(
+        path='/admin/database-modal',
+        name='admin-database-modal',
+    )
+    async def htmx_admin_database_modal(
+        self,
+        request: HTMXRequest,
+    ) -> Template | ClientRedirect:
+        return self._admin_render(
+            request,
+            admin_tab=None,
+            modal='database',
+        )
+
+    @patch(
+        path='/admin/database-options-update',
+        name='admin-database-options-update',
+    )
+    async def _database_options_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        source_databases: list[LocalSourceDatabase] = (
+            LocalSourceDatabaseManager.objects()
+        )
+        with ConfigDatabase(write=True) as config_database:
+            for source_database in source_databases:
+                outdate_delay = WebContext.form_data_to_str(
+                    data, f'{source_database.id}_outdate_delay',
+                ) or DisabledOutdateDelay.static_id()
+                outdate_action = WebContext.form_data_to_str(
+                    data, f'{source_database.id}_outdate_action'
+                ) or NotifOutdateAction.static_id()
+                config_database.update_stored_local_source_database(
+                    StoredLocalSourceDatabase(
+                        name=source_database.id,
+                        outdate_delay=outdate_delay,
+                        outdate_action=outdate_action,
+                        updated_at=source_database.updated_at_timestamp,
+                    )
+                )
+            config_database.commit()
+        Message.success(
+            request, _('Local source databases settings have been updated.')
+        )
+
+        # Clear the modal contents, and send an event
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event="close_modal",
+            after="receive",
+        )
+
+    @get(
+        path='/admin/database-status/{database_id:str}',
+        name='admin-database-status',
+    )
+    async def _database_update_status(
+        self,
+        request: HTMXRequest,
+        database_id: str,
+    ) -> Template | ClientRedirect:
+        database = LocalSourceDatabaseManager.get_object(database_id)
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_update_buttons.html',
+            context={"database": database}
+        )
+
+    @post(
+        path='/admin/database-update/{database_id:str}',
+        name='admin-database-update',
+    )
+    async def _database_update(
+        self,
+        request: HTMXRequest,
+        database_id: str,
+    ) -> Template | ClientRedirect:
+        database = LocalSourceDatabaseManager.get_object(database_id)
+        database.update()
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_update_buttons.html',
+            trigger_event="database-update-launched",
+            after="receive",
+            context={"database": database}
+        )
+
+    @delete(
+        path='/admin/database-delete/{database_id:str}',
+        name='admin-database-delete',
+        status_code=HTTP_200_OK,
+    )
+    async def _database_delete(
+        self,
+        request: HTMXRequest,
+        database_id: str,
+    ) -> Template | ClientRedirect:
+        database = LocalSourceDatabaseManager.get_object(database_id)
+        database.delete()
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_update_buttons.html',
+            context={"database": database}
         )

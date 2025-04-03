@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "Papi-web"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.12.0"
-version = "2.4.29"
+version = "2.4.30"
 
 authors = [
   {name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr"},
@@ -36,7 +36,6 @@ dependencies = [
   "pyodbc ~= 5.2.0",
   "pywin32-ctypes ~= 0.2.3",
   "requests ~= 2.32.3",
-  "transformers ~= 4.47.1",
   "trf @ https://github.com/papi-web-org/TRF/archive/refs/tags/v1.1.3-unofficial.zip",
   "uvicorn ~= 0.34.0",
   "validators ~= 0.34.0",
@@ -48,10 +47,12 @@ lint = [
   "ruff",
   "validate-pyproject",
   "pipdeptree",
+  "mypy",
   "pre-commit",
 ]
 
 translate = [
+  "transformers",
   "torch",
   "sentencepiece",
   "sacremoses",
@@ -67,3 +68,7 @@ tests = [
 
 [tool.ruff.format]
 quote-style = "single"
+
+[tool.mypy]
+check_untyped_defs = true
+disable_error_code = ["import-untyped", "no-redef"]

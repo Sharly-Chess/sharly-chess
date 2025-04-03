@@ -10,14 +10,14 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
-from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES
+from common import BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
-    _, trusted_locales, untrusted_locales, set_locale, get_locale, locale_localized_name
+    _, trusted_locales, untrusted_locales, set_locale,
 )
 from common.logger import (
     get_logger,
-    configure_logger, print_interactive_input, input_interactive,
+    configure_logger,
 )
 from common.singleton import Singleton
 from data.player import Federation
@@ -66,41 +66,7 @@ class PapiWebConfig(metaclass=Singleton):
         if EXPERIMENTAL_FEATURES:
             self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
-        # If the locale is not set ask for it before other things like version recovery,
-        # offline databases download, ...
-        if not self.stored_config.locale:
-            set_locale(get_locale())
-            print_interactive_input(_('The following languages are available:'))
-            locale_range = range(1, len(self.locales) + 1)
-            for num in locale_range:
-                locale: str = self.locales[num - 1]
-                print_interactive_input(
-                    f'  - [{num}] {locale} ({locale_localized_name(locale)})'
-                )
-            locale_num: int | None = None
-            while locale_num is None:
-                choice: str = input_interactive(_('Your choice: '))
-                try:
-                 locale_num = int(choice)
-                 if locale_num not in locale_range:
-                     locale_num = None
-                except ValueError:
-                 pass
-            with ConfigDatabase(write=True) as config_database:
-                self.stored_config.locale = self.locales[locale_num - 1]
-                config_database.update_stored_config(self.stored_config)
-                config_database.commit()
         set_locale(self.locale)
-        # Once the configuration is read, make sure that important directories can be used
-        try:
-            self.event_path.mkdir(parents=True, exist_ok=True)
-        except PermissionError as pe:
-            logger.critical(
-                'Could not create directory [%s]: %s',
-                TMP_DIR.absolute(),
-                pe,
-            )
-            raise pe
         logger.debug('ODBC drivers found:')
         for driver in pyodbc.drivers():
             logger.debug(' - %s', driver)
@@ -158,10 +124,7 @@ class PapiWebConfig(metaclass=Singleton):
     """ The contact email. """
     mail: str = 'papi-web@echecs-bretagne.fr'
 
-    @property
-    def version(self) -> Version:
-        """The version of the application."""
-        return Version(self.stored_config.version)
+    version = PAPI_WEB_VERSION
 
     @property
     def copyright(self) -> str:
@@ -173,9 +136,6 @@ class PapiWebConfig(metaclass=Singleton):
         """The project of the application."""
         return _('Papi-web project')
 
-    # The path where event databases are stored.
-    event_path: Path = Path() / 'events'
-
     # The extension of event databases.
     event_database_ext: str = 'db'
 
@@ -183,7 +143,7 @@ class PapiWebConfig(metaclass=Singleton):
     event_archive_ext: str = 'arch'
 
     # The base path where event database backups are stored.
-    event_backup_base_path: Path = event_path / 'backups'
+    event_backup_base_path: Path = EVENTS_DIR / 'backups'
 
     # The extension of backup event databases.
     event_backup_ext: str = 'backup'
@@ -191,14 +151,22 @@ class PapiWebConfig(metaclass=Singleton):
     # The extension of federation databases.
     federation_database_ext: str = 'db'
 
+    # The name of the folder for the custom files, used to
+    # recover custom files from previously installed releases.
+    custom_folder: str = 'custom'
+
     # The path to the user custom files.
-    custom_path: Path = Path().absolute() / 'custom'
+    custom_path: Path = Path().absolute() / custom_folder
 
     # The path to the embedded custom files.
-    embedded_custom_path: Path = BASE_DIR / 'src/custom'
+    embedded_custom_path: Path = BASE_DIR / 'src' / custom_folder
+
+    # The name of the default folder for the Papi files,
+    # used to recover Papi files from previous releases.
+    default_papi_folder: str = 'papi'
 
     # The default path to the Papi files.
-    default_papi_path: Path = Path() / 'papi'
+    default_papi_path: Path = Path() / default_papi_folder
 
     # The extension of Papi files.
     papi_ext: str = 'papi'
@@ -216,9 +184,9 @@ class PapiWebConfig(metaclass=Singleton):
     yml_ext: str = 'yml'
 
     # The versions of the libraries for which the version can be easily extracted.
-    litestar_version: Version = litestar.__version__.formatted(short=True)
-    jinja2_version: Version = jinja2.__version__
-    uvicorn_version: Version = uvicorn.__version__
+    litestar_version: Version = Version(litestar.__version__.formatted(short=True))
+    jinja2_version: Version = Version(jinja2.__version__)
+    uvicorn_version: Version = Version(uvicorn.__version__)
     pyodbc_version: Version = Version(pyodbc.version)
 
     # Other library versions, set manually and checked.
@@ -267,17 +235,17 @@ class PapiWebConfig(metaclass=Singleton):
         return None
 
     @property
-    def local_ip(self) -> str:
+    def local_ip(self) -> str | None:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
         return '127.0.0.1'
 
     @property
-    def lan_url(self) -> str:
+    def lan_url(self) -> str | None:
         """The URL of the application on the LAN/WAN."""
         return self._url(self.lan_ip)
 
     @property
-    def local_url(self) -> str:
+    def local_url(self) -> str | None:
         """The local URL of the application (with arbiter access)."""
         return self._url(self.local_ip)
 

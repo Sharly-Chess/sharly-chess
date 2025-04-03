@@ -9,274 +9,319 @@ from types import ModuleType
 
 from packaging.version import Version
 
-from common import PAPI_WEB_VERSION
-from common.logger import print_interactive_error, get_logger
-from database.sqlite.versioned_database import SQLiteVersionedDatabase
+from common import DEVEL_ENV, PAPI_WEB_VERSION, APP_NAME
+from common.exception import PapiWebException
+from common.logger import get_logger
+from database.sqlite.migration_database import MigrationDatabase
 
 logger: Logger = get_logger()
 
 
-class AbstractMigration(ABC):
-    def __init__(self, database: SQLiteVersionedDatabase):
+class BaseMigration(ABC):
+    """Base class for all migrations."""
+    def __init__(self, database: MigrationDatabase):
         self.database = database
 
     @abstractmethod
     def forward(self):
-        pass
+        """Apply the migration."""
 
     def backward(self):
+        """Rollback the migration. Does not have to be implemented,
+        but raises an error on rollback if it is not."""
         raise NotImplementedError(
             "Rollback not implemented for this migration"
         )
 
 
-class AbstractMigrationManager(ABC):
-    EMPTY_DATABASE_VERSION: Version = Version('0.0.0')
-    MIGRATION_CLASS_NAME: str = 'Migration'
+class MigrationManager[MigrationDatabase](ABC):
+    """Class managing a timeline of migrations of a *MigrationDatabase*.
+    Migration classes are stored in a similar base module.
+    Each submodule of this file should implement a class named "Migration"
+    inheriting from the *BaseMigration* class.
+    A submodule should be named according the pattern [m\\d{3}_[a-z_]+]
+    Example: m001_create_info_table
+    This name is stored in the database in a *migration* field.
+    It represents the position of the database in the timeline.
+    The class also handles a *version* field.
+    Both should be stored in a *metadata* table.
+    """
 
-    def __init__(self, cli_usage: bool = False):
-        self._log_error = (
-            print_interactive_error if cli_usage else logger.error
-        )
+    MIGRATION_CLASS_NAME: str = 'Migration'
+    MIGRATION_ZERO: str = 'm000_no_migration'
+
+    def __init__(
+        self, database: MigrationDatabase, base_migration_module: ModuleType
+    ):
+        self.database: MigrationDatabase = database
+        self.base_migration_module: ModuleType = base_migration_module
 
     @property
     @abstractmethod
-    def base_module(self) -> ModuleType:
-        pass
+    def is_metadata_installed(self) -> bool:
+        """Check if the metadata fields are installed.
+        These fields are used to store the version and the migration."""
+
+    @abstractmethod
+    def install_metadata(self):
+        """Install the metadata field into the database.
+        There must be one for the version and one for the migration."""
+
+    @abstractmethod
+    def get_migration(self) -> str:
+        """Retrieve the migration from the database."""
+
+    @abstractmethod
+    def set_migration(self, migration: str):
+        """Set the migration field of the database to *migration*."""
+
+    @abstractmethod
+    def get_version(self) -> Version:
+        """Retrieve the version from the database."""
+
+    @abstractmethod
+    def set_version(self, version: Version):
+        """Set the version field of the database to *version*."""
+
+    @property
+    @abstractmethod
+    def latest_version(self) -> Version:
+        """Latest expected version of the """
+
+    @abstractmethod
+    def get_migration_from_legacy_version(self) -> str | None:
+        """Migrations used to be handled through version number.
+        This method ensures the compatibility between the two systems."""
+        # TODO remove once all legacy migrations have been squashed
+
+    @abstractmethod
+    def remove_legacy_version_field(self):
+        """Remove the version field which was used
+        as the migration field in the legacy migration system.
+        Field might not exist."""
+        # TODO remove once all legacy migrations have been squashed
 
     @property
     def migration_modules(self) -> list[str]:
         return [
-            f'{self.base_module.__name__}.{module}'
-            for module in self._migration_module_names
+            self._get_migration_module_name(migration)
+            for migration in self.migrations
         ]
 
     @cached_property
-    def migration_versions(self) -> list[Version]:
-        return [
-            self._module_name_to_version(module)
-            for module in self._migration_module_names
-        ]
+    def migrations(self) -> list[str]:
+        return sorted([
+            module for _, module, _ in iter_modules(
+                self.base_migration_module.__path__
+            )
+        ])
 
-    @property
-    def _migration_module_names(self) -> list[str]:
-        return [
-            module for _, module, _ in iter_modules(self.base_module.__path__)
-        ]
+    def check_status(self) -> bool:
+        """Check if the database is migrated to the latest migration.
+        Raise a PapiWebException if the stored migration is unknown.
+        Assert that the timeline is valid."""
+        if DEVEL_ENV:
+            self._check_timeline()
+        if not self.is_metadata_installed:
+            self.get_migration_from_legacy_version()
+            return False
 
-    @property
-    def first_migration_version(self) -> Version:
-        return self._ordered_migration_versions[0]
+        version = self.get_version()
+        if version > self.latest_version:
+            raise PapiWebException(
+                f'Database version [{version}] is after '
+                f'current app version {self.latest_version}.'
+            )
+        status = True
+        if version < self.latest_version:
+            status = False
+        migration = self.get_migration()
+        if migration not in self.migrations + [self.MIGRATION_ZERO]:
+            if migration > self.migrations[-1]:
+                message = (
+                    'Database can only be opened by a '
+                    f'later version of {APP_NAME}.'
+                )
+            elif migration < self.migrations[0]:
+                message = (
+                    'Database can only be opened by a '
+                    f'previous version of {APP_NAME}.'
+                )
+            else:
+                message = 'A migration was most likely renamed.'
+            raise PapiWebException(
+                self.log_prefix + 'unknown migration '
+                f'[{migration}] in the database. {message}'
+            )
+        elif migration != self.migrations[-1]:
+            status = False
+        return status
 
-    @property
-    def last_migration_version(self) -> Version:
-        return self._ordered_migration_versions[-1]
+    def _check_timeline(self):
+        indexes = []
+        for migration in self.migrations:
+            assert re.match(r'm\d{3}_[a-z_]+$', migration), (
+                f'Migration [{migration}] does not match expected pattern'
+            )
+            index = self._migration_index(migration)
+            assert index != 0, f'Prefix [m000] not allowed'
+            assert index not in indexes, (
+                f'2 migrations found with prefix [m{index:03d}]'
+            )
+            indexes.append(index)
+            migration_module = import_module(
+                self._get_migration_module_name(migration)
+            )
+            assert hasattr(migration_module, self.MIGRATION_CLASS_NAME)
+            migration_class = getattr(migration_module, self.MIGRATION_CLASS_NAME)
+            assert issubclass(migration_class, BaseMigration)
+
+    def _get_migration_module_name(self, migration: str) -> str:
+        return f'{self.base_migration_module.__name__}.{migration}'
+
+    def _get_migration_object(self, migration: str) -> BaseMigration:
+        migration_class = getattr(
+            import_module(self._get_migration_module_name(migration)),
+            self.MIGRATION_CLASS_NAME
+        )
+        return migration_class(self.database)
 
     @cached_property
-    def _ordered_migration_versions(self) -> list[Version]:
-        return sorted(self.migration_versions)
+    def migration_by_index(self) -> dict[int, str]:
+        return {
+            self._migration_index(module_name): module_name
+            for module_name in self.migrations
+        }
 
-    @cached_property
-    def _reverse_ordered_migration_versions(self) -> list[Version]:
-        return sorted(self.migration_versions, reverse=True)
+    @staticmethod
+    def _migration_index(migration: str) -> int:
+        return int(migration[1:4])
+
+    @property
+    def log_prefix(self) -> str:
+        return f'Database [{self.database.file.name}] - '
+
+    def _next_migration(
+        self, current_migration: str, max_migration: str
+    ) -> str | None:
+        return next(
+            (
+                migration for migration in self.migrations
+                if current_migration < migration <= max_migration
+            ),
+            None,
+        )
+
+    def _previous_migration(self, current_migration: str) -> str:
+        return next(
+            migration for migration in reversed(
+                [self.MIGRATION_ZERO] + self.migrations
+            ) if current_migration > migration
+        )
+
+    def migrate(self, target_migration: str | None = None):
+        """Migrate *database* to the migration *target_migration*.
+        *target_migration* defaults to the latest migration.
+        Raises a PapiWebException if it fails."""
+        if target_migration is None:
+            target_migration = self.migrations[-1]
+        elif target_migration not in self.migrations + [self.MIGRATION_ZERO]:
+            raise ValueError(
+                self.log_prefix + f'unknown migration [{target_migration}]'
+            )
+        try:
+            if not self.is_metadata_installed:
+                logger.debug(self.log_prefix + 'Installing metadata...')
+                self.install_metadata()
+                if migration := self.get_migration_from_legacy_version():
+                    self.set_migration(migration)
+                self.remove_legacy_version_field()
+
+            version = self.get_version()
+            if version != self.latest_version:
+                self.set_version(version)
+                logger.debug(
+                    self.log_prefix +
+                    f'Version updated from [{version}] to [{self.latest_version}]'
+                )
+
+            current_migration = self.get_migration()
+            if target_migration == current_migration:
+                logger.debug(self.log_prefix + 'No migration to run')
+            else:
+                logger.info(
+                    self.log_prefix +
+                    f'Migrating from [{current_migration}] to [{target_migration}]...'
+                )
+                if current_migration > target_migration:
+                    self._rollback(target_migration)
+                else:
+                    self._upgrade(target_migration)
+                logger.info(self.log_prefix + 'Migration complete.')
+            self.database.commit()
+        except OperationalError as error:
+            raise PapiWebException(
+                self.log_prefix + f'Migration failed: {error}'
+            )
+
+    def _upgrade(self, target_migration: str):
+        while (
+            migration := self._next_migration(
+                self.get_migration(), target_migration
+            )
+        ):
+            self._get_migration_object(migration).forward()
+            self.set_migration(migration)
+            logger.debug(
+                self.log_prefix + f'\t{migration} applied'
+            )
+
+    def _rollback(self, target_migration: str):
+        while (migration := self.get_migration()) != target_migration:
+            self._get_migration_object(migration).backward()
+            self.set_migration(
+                self._previous_migration(migration)
+            )
+            logger.debug(
+                self.log_prefix + f'\t{migration} rolled back'
+            )
+        self.set_migration(target_migration)
+
+
+class DatabaseMigrationManager[MigrationDatabase](MigrationManager):
+    """Migration manager for full databases,
+    where the migrations start from an empty database."""
+
+    def get_migration(self) -> str:
+        return self.database.get_migration()
+
+    def set_migration(self, migration: str):
+        self.database.set_migration(migration)
+
+    def get_version(self) -> Version:
+        return self.database.get_version()
+
+    def set_version(self, version: Version):
+        self.database.set_version(version)
 
     @property
     def latest_version(self) -> Version:
         return PAPI_WEB_VERSION
 
-    def get_version(self, database: SQLiteVersionedDatabase) -> Version:
-        return database.version
+    @property
+    def is_metadata_installed(self) -> bool:
+        return self.database.is_metadata_table_installed()
 
-    def set_version(self, database: SQLiteVersionedDatabase, version: Version):
-        database.set_version(version)
+    def install_metadata(self):
+        self.database.create_metadata_table()
 
-    def migrate(
-        self,
-        database: SQLiteVersionedDatabase,
-        target_version: Version | None = None,
-        skip_commits: bool = False,
-    ) -> bool:
-        """Migrate *database* to the version *target_version*.
-        *target_version* defaults to the latest version."""
-        if target_version is None:
-            target_version = self.latest_version
-        current_version = self.get_version(database)
-        if target_version == current_version:
-            return True
-        if (
-            current_version != self.EMPTY_DATABASE_VERSION
-            and current_version < self.first_migration_version
-        ):
-            self._log_error(
-                'Database %s (%s) '
-                'impossible to migrate: version is prior to the first '
-                'database version (%s)',
-                database.file.name, current_version, self.first_migration_version
+    def remove_legacy_version_field(self):
+        try:
+            self.database.execute(
+                'ALTER TABLE `info` DROP COLUMN `version`'
             )
-            return False
-        if (
-            target_version != self.EMPTY_DATABASE_VERSION
-            and target_version < self.first_migration_version
-        ):
-            self._log_error(
-                'impossible to migrate to version [%s]: '
-                'version is prior to the first database version [%s].',
-                target_version.public,
-                self.first_migration_version,
-            )
-            return False
-        if current_version > self.latest_version:
-            self._log_error(
-                'Database [%s] impossible to migrate: version [%s] '
-                'is after the latest version [%s] available '
-                'in the current Papi-web version [%s].',
-                database.file.name,
-                current_version,
-                self.latest_version.public,
-                PAPI_WEB_VERSION.public,
-            )
-            return False
-        if target_version > self.latest_version:
-            self._log_error(
-                'impossible to upgrade to version [%s]: '
-                ' version is after the latest version '
-                '[%s] available in this Papi-Web version [%s].',
-                target_version.public,
-                self.latest_version.public,
-                PAPI_WEB_VERSION.public,
-            )
-            return False
+        except OperationalError:
+            pass
 
-        migration_status = (
-            self._rollback(database, target_version, skip_commits)
-            if current_version > target_version else
-            self._upgrade(database, target_version, skip_commits)
-        )
-        if (
-            migration_status and
-            target_version != self.EMPTY_DATABASE_VERSION and
-            self.get_version(database) != target_version
-        ):
-            self.set_version(database, target_version)
-            if not skip_commits:
-                database.commit()
-        return migration_status
-
-    def _upgrade(
-        self,
-        database: SQLiteVersionedDatabase,
-        target_version: Version,
-        skip_commits: bool,
-    ) -> bool:
-        while migration_version := self._next_migration_version(
-            self.get_version(database), target_version
-        ):
-            migration_class = self._version_to_migration_class(
-                migration_version
-            )
-            try:
-                migration_class(database).forward()
-                self.set_version(database, migration_version)
-                if not skip_commits:
-                    database.commit()
-                logger.debug(
-                    'Database %s has been upgraded to version %s.',
-                    database.file.name,
-                    migration_version,
-                )
-            except OperationalError as e:
-                self._log_error(
-                    'Database %s '
-                    '(%s) could not be '
-                    'upgraded to version %s: "%s"',
-                    database.file.name, self.get_version(database), migration_version, e
-                )
-                return False
-        return True
-
-    def _rollback(
-        self,
-        database: SQLiteVersionedDatabase,
-        target_version: Version,
-        skip_commits: bool,
-    ) -> bool:
-        database_version = self.get_version(database)
-        current_version = (
-            database_version if
-            database_version in self.migration_versions
-            else self._previous_migration_version(database_version)
-        )
-        while current_version > target_version:
-            migration_class = self._version_to_migration_class(
-                current_version
-            )
-            previous_version = self._previous_migration_version(
-                current_version
-            )
-            try:
-                migration_class(database).backward()
-                if previous_version != self.EMPTY_DATABASE_VERSION:
-                    self.set_version(database, previous_version)
-                if not skip_commits:
-                    database.commit()
-                current_version = previous_version
-                logger.debug(
-                    'Database %s has been downgraded to version %s.',
-                    database.file.name,
-                    previous_version,
-                )
-            except (OperationalError, NotImplementedError) as e:
-                self._log_error(
-                    'Database %s '
-                    '(%s) could not be '
-                    'downgraded to version %s: "%s"',
-                    database.file.name, self.get_version(database), previous_version, e
-                )
-                return False
-        return True
-
-    def _next_migration_version(
-        self, current_version: Version, max_version: Version
-    ) -> Version | None:
-        return next(
-            (
-                version for version in self._ordered_migration_versions
-                if current_version < version <= max_version
-            ),
-            None,
-        )
-
-    def _previous_migration_version(
-        self, current_version: Version
-    ) -> Version:
-        return next(
-            (
-                version for version in
-                self._reverse_ordered_migration_versions
-                if version < current_version
-            ),
-            self.EMPTY_DATABASE_VERSION,
-        )
-
-    def _version_to_migration_class(
-        self, version: Version
-    ) -> type[AbstractMigration]:
-        return getattr(
-            import_module(self._version_to_module(version)),
-            self.MIGRATION_CLASS_NAME,
-        )
-
-    def _version_to_module(self, version: Version) -> str:
-        return (
-            f'{self.base_module.__name__}.'
-            f'v{version.major}_{version.minor:02d}_{version.micro:02d}'
-        )
-
-    @staticmethod
-    def _module_name_to_version(module_name: str) -> Version:
-        if not re.match(r'^v\d+_\d+_\d+$', module_name):
-            raise ValueError(
-                f'Module name "{module_name}" does '
-                'not match pattern "v{int}_{int}_{int}"'
-            )
-        return Version(module_name[1:].replace('_', '.'))
+    def get_migration_from_legacy_version(self) -> str | None:
+        return self.database.get_migration_from_legacy_version()

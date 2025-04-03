@@ -1,65 +1,73 @@
+from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from types import ModuleType
-from typing import Any, Self
+from typing import Any, Self, override, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import PAPI_WEB_VERSION
+from common import EVENTS_DIR
+from common.exception import PapiWebException
 from common.logger import get_logger
 from database.sqlite.config import migrations
-from database.sqlite.config.config_store import StoredConfig, StoredPlugin
-from database.sqlite.migration import AbstractMigrationManager
-from database.sqlite.versioned_database import SQLiteVersionedDatabase
+from database.sqlite.config.config_store import StoredConfig, StoredPlugin, StoredLocalSourceDatabase
+from database.sqlite.migration_database import MigrationDatabase
+
+if TYPE_CHECKING:
+    from database.sqlite.migration import MigrationManager
 
 logger: Logger = get_logger()
 
 
-class ConfigMigrationManager(AbstractMigrationManager):
-    @property
-    def base_module(self) -> ModuleType:
-        return migrations
-
-
-class ConfigDatabase(SQLiteVersionedDatabase):
-    """
-    The SQLite database class for Papi-web config.
-    """
+class ConfigDatabase(MigrationDatabase):
+    """The SQLite database class for Papi-web config."""
 
     # The file holding the configuration of the application.
-    config_database_path: Path = Path('.scc')
+    config_database_path: Path = EVENTS_DIR / '.scc'
+    is_setup = False
 
-    def __init__(self, write: bool = False, auto_upgrade: bool = True):
-        super().__init__(self.config_database_path, write, auto_upgrade)
-        if not self.exists():
-            self.create()
+    def __init__(self, write: bool = False):
+        super().__init__(self.config_database_path, write)
+        if not self.is_setup:
+            self.__class__.is_setup = True
+            self.setup()
+
 
     @classmethod
-    def from_parent(cls, parent: SQLiteVersionedDatabase) -> Self:
-        return cls(parent.write, parent.auto_upgrade)
+    @override
+    def create_instance(cls, file: Path, write: bool = False) -> Self:
+        return cls(write)
+
+    @cached_property
+    def migration_managers(self) -> list['MigrationManager']:
+        from database.sqlite.migration import DatabaseMigrationManager
+
+        return [DatabaseMigrationManager(self, migrations)]
 
     @property
-    def stored_version(self) -> Version:
-        return Version(self._get_stored_config().version)
+    def migration_by_legacy_version(self) -> dict[Version, str]:
+        return {
+            Version('2.4.24'): 'm001_create_info_table',
+            Version('2.4.28'): 'm002_create_plugin_table',
+            Version('2.4.30'): 'm003_create_local_source_database_table',
+        }
 
-    def set_version(self, version: Version):
-        """Sets the version field stored in the database to `version`."""
-        self.execute(
-            'UPDATE `info` SET `version` = ?',
-            (f'{version.major}.{version.minor}.{version.micro}', ),
-        )
-        self._version = version
-
-    @property
-    def migration_manager(self) -> AbstractMigrationManager:
-        return ConfigMigrationManager()
-
-    def insert_creation_values(self):
-        version = PAPI_WEB_VERSION
-        self.execute(
-            "INSERT INTO `info`(`version`, `force_edit`) VALUES(?, ?)",
-            (f'{version.major}.{version.minor}.{version.micro}', True)
-        )
+    @classmethod
+    def setup(cls):
+        """Setup the config database. If it does not exist, create it.
+        If it is not up to date, update it."""
+        database = cls()
+        if not database.exists():
+            database.create()
+        else:
+            try:
+                with database:
+                    status = database.check_status()
+                if not status:
+                    with cls(True) as write_database:
+                        write_database.upgrade()
+            except PapiWebException as e:
+                logger.error(e)
+                database.create()
 
     # ---------------------------------------------------------------------------------
     # StoredConfig
@@ -68,7 +76,6 @@ class ConfigDatabase(SQLiteVersionedDatabase):
     def _row_to_stored_config(self, row: dict[str, Any]) -> StoredConfig:
         """Convert a row to a StoredConfig record."""
         return StoredConfig(
-            version=row['version'],
             force_edit=self.load_bool_from_database_field(row['force_edit']),
             log_level=row['log_level'],
             federation=row['federation'],
@@ -97,7 +104,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             'locale',
         ]
         params: tuple = (
-            False,
+            stored_config.force_edit,
             stored_config.log_level,
             stored_config.launch_browser,
             stored_config.federation,
@@ -124,17 +131,18 @@ class ConfigDatabase(SQLiteVersionedDatabase):
         )
         if row := self.fetchone():
             return self._row_to_stored_plugin(row)
+        return None
 
     def update_stored_plugin(
         self, stored_plugin: StoredPlugin
     ) -> StoredPlugin | None:
         self.execute(
-            f'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
+            'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
             (stored_plugin.is_enabled, stored_plugin.name,),
         )
         return self.load_stored_plugin(stored_plugin.name)
 
-    def insert_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin:
+    def insert_stored_plugin(self, stored_plugin: StoredPlugin):
         fields: list[str] = [
             'name',
             'is_enabled',
@@ -149,4 +157,70 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             f'VALUES ({', '.join('?' for _ in params)})',
             params,
         )
-        return self.load_stored_plugin(stored_plugin.name)
+
+    # ---------------------------------------------------------------------------------
+    # StoredLocalSourceDatabase
+    # ---------------------------------------------------------------------------------
+
+    def _row_to_stored_local_source_database(
+        self, row: dict[str, Any]
+    ) -> StoredLocalSourceDatabase:
+        return StoredLocalSourceDatabase(
+            name=row['name'],
+            outdate_delay=row['outdate_delay'],
+            outdate_action=row['outdate_action'],
+            updated_at=row['updated_at'],
+        )
+
+    def load_stored_local_source_database(
+        self, database_name: str
+    ) -> StoredLocalSourceDatabase | None:
+        self.execute(
+            'SELECT * FROM `local_source_database` WHERE `name` = ?',
+            (database_name,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_local_source_database(row)
+        return None
+
+    def update_stored_local_source_database(
+        self, stored_database: StoredLocalSourceDatabase
+    ):
+        fields: list[str] = [
+            'outdate_delay',
+            'outdate_action',
+            'updated_at',
+        ]
+        params: tuple = (
+            stored_database.outdate_delay,
+            stored_database.outdate_action,
+            stored_database.updated_at,
+        )
+        field_sets = (f'`{f}` = ?' for f in fields)
+        query = (
+            f'UPDATE `local_source_database` '
+            f'SET {', '.join(field_sets)} WHERE `name` = ?'
+        )
+        self.execute(query, params + (stored_database.name,))
+
+    def insert_stored_local_source_database(
+        self, stored_database: StoredLocalSourceDatabase
+    ):
+        fields: list[str] = [
+            'name',
+            'outdate_delay',
+            'outdate_action',
+            'updated_at',
+        ]
+        params: tuple = (
+            stored_database.name,
+            stored_database.outdate_delay,
+            stored_database.outdate_action,
+            stored_database.updated_at,
+        )
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        self.execute(
+            f'INSERT INTO `local_source_database` ({fields_str}) '
+            f'VALUES ({', '.join('?' for _ in params)})',
+            params,
+        )

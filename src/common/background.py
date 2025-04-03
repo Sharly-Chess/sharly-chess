@@ -29,5 +29,9 @@ def inline_image_url(image: str | None) -> str:
             return PapiWebConfig.error_background_image
     with open(file, 'rb') as f:
         data: bytes = f.read()
-    encoded_data: str = base64.b64encode(data).decode('utf-8')
-    return f'data:image/{file.suffix};base64,{encoded_data}'
+    encoded_data = base64.b64encode(data).decode('utf-8')
+    image_type = file.suffix.lower().replace('.', '').replace('\\n', '')
+    if image_type == 'svg':
+        return f'data:image/{image_type}+xml;base64,{encoded_data}'
+    else:
+        return f'data:image/{image_type};base64,{encoded_data}'

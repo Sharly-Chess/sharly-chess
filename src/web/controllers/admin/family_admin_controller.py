@@ -45,6 +45,8 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             data=data,
             event_uniq_id=event_uniq_id,
         )
+        if self.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         self.admin_family: Family | None = None
         if self.error:
             return
@@ -77,11 +79,13 @@ class FamilyAdminController(BaseEventAdminController):
         if data is None:
             data = {}
         field: str
-        type_: str
+        type_: str | None = None
         match action:
             case 'create':
                 type_ = web_context.family_type
             case 'update' | 'clone' | 'delete':
+                if web_context.admin_family is None:
+                    raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
                 type_ = web_context.admin_family.stored_family.type
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -91,13 +95,14 @@ class FamilyAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'type=[{type_}]')
         field = 'uniq_id'
-        uniq_id: str = WebContext.form_data_to_str(data, field)
+        uniq_id: str | None = WebContext.form_data_to_str(data, field)
         name: str | None = None
         public: bool | None = None
         menu_link: bool | None = None
         menu_text: str | None = None
         menu: str | None = None
         columns: int | None = None
+        font_size: int | None = None
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
@@ -124,11 +129,17 @@ class FamilyAdminController(BaseEventAdminController):
             else:
                 match action:
                     case 'create' | 'clone':
+                        if web_context.admin_event is None:
+                            raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                         if uniq_id in web_context.admin_event.families_by_uniq_id:
                             errors[field] = _(
                                 'Family [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
+                        if web_context.admin_family is None:
+                            raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
+                        if web_context.admin_event is None:
+                            raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                         if (
                             uniq_id != web_context.admin_family.uniq_id
                             and uniq_id in web_context.admin_event.families_by_uniq_id
@@ -139,12 +150,12 @@ class FamilyAdminController(BaseEventAdminController):
                     case _:
                         raise ValueError(f'action=[{action}]')
             name = WebContext.form_data_to_str(data, 'name')
-            public: bool = WebContext.form_data_to_bool(data, 'public')
+            public = bool(WebContext.form_data_to_bool(data, 'public'))
         match action:
-            case 'delete':
-                pass
             case 'create' | 'clone' | 'update':
-                field: str = 'tournament_id'
+                field = 'tournament_id'
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 try:
                     if len(web_context.admin_event.tournaments_by_id) == 1:
                         tournament_id = list(
@@ -169,6 +180,11 @@ class FamilyAdminController(BaseEventAdminController):
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
+                field = 'font_size'
+                try:
+                    font_size = WebContext.form_data_to_int(data, field, minimum=1)
+                except ValueError:
+                    errors[field] = _('A positive integer is expected.')
                 menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 menu = WebContext.form_data_to_str(data, 'menu', '')
@@ -184,12 +200,12 @@ class FamilyAdminController(BaseEventAdminController):
                         )
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                field: str = 'first'
+                field = 'first'
                 try:
                     first = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                field: str = 'last'
+                field = 'last'
                 try:
                     last = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
@@ -227,51 +243,63 @@ class FamilyAdminController(BaseEventAdminController):
                             errors[field] = _('A positive integer is expected.')
                     case _:
                         raise ValueError(f'type=[{type_}]')
-                field: str = 'parts'
+                field = 'parts'
                 try:
                     parts = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                field: str = 'number'
+                field = 'number'
                 try:
                     number = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if parts and number:
-                    error: str = _(
+                    error = _(
                         'Specifying the number of parts and the number of items per part is not possible.'
                     )
                     errors['parts'] = error
                     errors['number'] = error
                 field = 'message_text'
-                message_default = WebContext.form_data_to_bool(
+                message_default = bool(WebContext.form_data_to_bool(
                     data, field + '_checkbox', False
-                )
+                ))
                 if message_default and web_context.admin_family:
                     # do not change the original value when the default message is used
                     # (needed since disabled fields are not submitted)
                     message_text = web_context.admin_family.stored_family.message_text
                 else:
                     message_text = WebContext.form_data_to_str(data, field)
+            case 'delete':
+                if web_context.admin_family is None:
+                    raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
+                uniq_id = uniq_id or ''
+                tournament_id = web_context.admin_family.stored_family.tournament_id
+                name = web_context.admin_family.stored_family.name
             case _:
                 raise ValueError(f'action=[{action}]')
+
+        assert tournament_id is not None
+        assert uniq_id is not None
+
+        id: int | None = None
+        if web_context.admin_family and action not in [
+            'create',
+            'clone',
+        ]:
+            id = web_context.admin_family.id
+            
         return StoredFamily(
-            id=web_context.admin_family.id
-            if action
-            not in [
-                'create',
-                'clone',
-            ]
-            else None,
+            id=id,
             uniq_id=uniq_id,
             type=type_,
-            public=public,
+            public=bool(public),
             tournament_id=tournament_id,
             name=name,
             columns=columns,
-            menu_link=menu_link,
-            menu_text=menu_text,
-            menu=menu,
+            font_size=font_size,
+            menu_link=bool(menu_link),
+            menu_text=menu_text or '',
+            menu=menu or '',
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
@@ -297,7 +325,7 @@ class FamilyAdminController(BaseEventAdminController):
         action: str | None = None,
         family_id: int | None = None,
         family_type: str | None = None,
-        data: dict[str, str] | None = None,
+        data: dict[str, str] | None = None, # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: FamilyAdminWebContext = FamilyAdminWebContext(
@@ -309,6 +337,8 @@ class FamilyAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
@@ -330,6 +360,7 @@ class FamilyAdminController(BaseEventAdminController):
                     menu_text: str | None = None
                     menu: str | None = None
                     columns: int | None = None
+                    font_size: int | None = None
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
@@ -346,9 +377,11 @@ class FamilyAdminController(BaseEventAdminController):
                     message_text: str | None = None
                     match action:
                         case 'update':
+                            assert web_context.admin_family is not None
                             uniq_id = web_context.admin_family.stored_family.uniq_id
                             name = web_context.admin_family.stored_family.name
                         case 'create':
+                            assert family_type is not None
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
                                 family_type=ScreenType(family_type)
                             )
@@ -356,6 +389,7 @@ class FamilyAdminController(BaseEventAdminController):
                                 family_type=ScreenType(family_type)
                             )
                         case 'clone':
+                            assert web_context.admin_family is not None
                             uniq_id = web_context.admin_event.get_unused_family_uniq_id(
                                 base_uniq_id=web_context.admin_family.stored_family.uniq_id
                             )
@@ -371,11 +405,14 @@ class FamilyAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
+                            if web_context.admin_family is None:
+                                raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
                             public = web_context.admin_family.stored_family.public
                             tournament_id = (
                                 web_context.admin_family.stored_family.tournament_id
                             )
                             columns = web_context.admin_family.stored_family.columns
+                            font_size = web_context.admin_family.stored_family.font_size
                             menu_link = web_context.admin_family.stored_family.menu_link
                             menu_text = web_context.admin_family.stored_family.menu_text
                             menu = web_context.admin_family.stored_family.menu
@@ -427,12 +464,13 @@ class FamilyAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    data: dict[str, str] = {
+                    data = {
                         'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                         'tournament_id': WebContext.value_to_form_data(tournament_id),
                         'columns': WebContext.value_to_form_data(columns),
+                        'font_size': WebContext.value_to_form_data(font_size),
                         'menu_link': WebContext.value_to_form_data(menu_link),
                         'menu_text': WebContext.value_to_form_data(menu_text),
                         'menu': WebContext.value_to_form_data(menu),
@@ -464,6 +502,7 @@ class FamilyAdminController(BaseEventAdminController):
                     errors = stored_family.errors
                 if errors is None:
                     errors = {}
+
                 template_context |= {
                     'tournament_options': web_context.get_tournament_options(),
                     'screen_type_options': cls._get_screen_type_options(
@@ -567,6 +606,8 @@ class FamilyAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         stored_family: StoredFamily = self._admin_validate_family_update_data(
             action, web_context, data
         )
@@ -603,6 +644,7 @@ class FamilyAdminController(BaseEventAdminController):
                         )
                     )
                 case 'delete':
+                    assert web_context.admin_family is not None
                     event_database.delete_stored_family(web_context.admin_family.id)
                     event_database.commit()
                     Message.success(

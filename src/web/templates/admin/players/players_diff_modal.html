@@ -4,7 +4,7 @@
 {% set player_unchanged_class='text-secondary' %}
 {% set field_updated_class='text-warning fw-bold' %}
 {% set field_unchanged_class='' %}
-<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal d-block" style="max-width: 90%;">
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal" style="max-width: 90%;">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -365,7 +365,7 @@
                 {% if not update_enabled %}disabled{% endif %}
             >
                 <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Update') }}
+                {{ _('Save') }}
             </button>
         </div>
     </div>

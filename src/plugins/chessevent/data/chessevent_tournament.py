@@ -1,4 +1,5 @@
 from logging import Logger
+from typing import Any
 
 from common.logger import get_logger
 from data import tie_break
@@ -8,6 +9,7 @@ from data.util import (
     TournamentPairing,
     TournamentRating,
 )
+from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.ffe import ffe_tie_break
 
@@ -19,69 +21,46 @@ class ChessEventTournament:
 
     def __init__(
         self,
-        chessevent_tournament_info: dict[
-            str,
-            str
-            | int
-            | float
-            | list[dict[str, bool | str | int | dict[int, float] | None]],
-        ],
+        chessevent_tournament_info: dict[str, Any],
     ):
-        self.name: str = ''
-        self.type: TournamentType = TournamentType.UNKNOWN
-        self.rounds: int = 0
-        self.pairing: TournamentPairing = TournamentPairing.UNKNOWN
-        self.time_control: str = ''
-        self.location: str = ''
-        self.arbiter: str = ''
-        self.start: float = 0.0
-        self.end: float = 0.0
-        self.tie_breaks: list[AbstractTieBreak] = []
-        self.rating: TournamentRating = TournamentRating.STANDARD
-        self.ffe_id: int = 0
         self.players: list[ChessEventPlayer] = []
+        self.check_in_started = False
         self.error = True
-        self.check_in_started: bool = False
-        key: str = ''
+        
+        reader = ChessEventFieldReader(chessevent_tournament_info)
+        
         try:
-            self.name = str(chessevent_tournament_info[key := 'name'])
-            self.type = TournamentType(int(chessevent_tournament_info[key := 'type']))
-            self.rounds = int(chessevent_tournament_info[key := 'rounds'])
+            self.name = reader.get('name', str)
+            self.type = reader.get_enum('type', TournamentType, TournamentType.UNKNOWN)
+            self.rounds = reader.get('rounds', int)
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError
-            self.pairing = TournamentPairing(
-                int(chessevent_tournament_info[key := 'pairing'])
-            )
-            self.time_control = str(chessevent_tournament_info[key := 'time_control'])
-            self.location = str(chessevent_tournament_info[key := 'location'])
-            self.arbiter = str(chessevent_tournament_info[key := 'arbiter'])
-            self.start = float(chessevent_tournament_info[key := 'start'])
-            self.end = float(chessevent_tournament_info[key := 'end'])
+            self.pairing = reader.get_enum('pairing', TournamentPairing, TournamentPairing.UNKNOWN)
+            self.time_control = reader.get('time_control', str)
+            self.location = reader.get('location', str)
+            self.arbiter = reader.get('arbiter', str)
+            self.start = float(reader.get('start', int))
+            self.end = float(reader.get('end', int))
+            self.rating = reader.get_enum('rating', TournamentRating, TournamentRating.STANDARD)
+            self.ffe_id = reader.get('ffe_id', int, '')
             self.tie_breaks = self._load_tie_breaks(chessevent_tournament_info)
-            self.rating = TournamentRating(
-                int(chessevent_tournament_info[key := 'rating'])
-            )
-            ffe_id = chessevent_tournament_info[key := 'ffe_id']
-            if ffe_id:
-                self.ffe_id = int(ffe_id)
-            key = 'players'
-            for chessevent_player_info in chessevent_tournament_info[key]:
+            for chessevent_player_info in chessevent_tournament_info['players']:
                 chessevent_player: ChessEventPlayer = ChessEventPlayer(
                     chessevent_player_info
                 )
-                if chessevent_player.check_in:
-                    self.check_in_started = True
+                self.check_in_started = True
                 if chessevent_player.error:
                     return
                 self.players.append(chessevent_player)
+                
         except KeyError:
-            logger.error('Field [%s] missing in the ChessEvent response', key)
+            logger.error('Field [%s] missing in the ChessEvent response', reader.last_key)
             return
         except (TypeError, ValueError):
             logger.error(
                 'Invalid value [%s] for field [%s] in the ChessEvent response',
-                chessevent_tournament_info[key],
-                key,
+                chessevent_tournament_info[reader.last_key or ''],
+                reader.last_key,
             )
             return
         self.error = False
@@ -122,8 +101,8 @@ class ChessEventTournament:
                 f'  - Dates: {self.start} - {self.end}',
             ]
             + [
-                f'  - Tie-break #{tie_break_index} : {self.tie_breaks[tie_break_index]}'
-                for tie_break_index in range(1, 4)
+                f'  - Tie-break #{index + 1} : {tie_break_.name}'
+                for index, tie_break_ in enumerate(self.tie_breaks)
             ]
             + [
                 f'  - Rating: {self.rating}',

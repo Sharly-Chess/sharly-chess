@@ -1,0 +1,338 @@
+import os
+import re
+import shutil
+from pathlib import Path
+import sys
+from pkgutil import iter_modules
+from types import ModuleType
+
+sys.path.extend(
+    map(
+        str,
+        [
+            Path(__file__).parents[2],  # The root path
+            Path(__file__).parents[2]
+            / 'src',  # The path to the sources of the application
+        ],
+    )
+)
+
+from zipfile import ZipFile, ZIP_DEFLATED
+from logging import Logger
+from PyInstaller.__main__ import run
+
+# Needs to be imported first to avoid circular import
+from plugins.manager import plugin_manager # Noqa
+
+from common import BASE_DIR
+from pairing.bbp_pairings import BbpPairings
+from common import PAPI_WEB_VERSION
+from common.i18n import trusted_locales, untrusted_locales
+from common.papi_web_config import PapiWebConfig
+from common.logger import (
+    get_logger,
+    print_interactive_info,
+    input_interactive,
+    print_interactive_error,
+    print_interactive_success,
+)
+from database.sqlite.config import migrations as config_migrations
+from database.sqlite.event import migrations as event_migrations
+from pairing.bbp_pairings_installer import BbpPairingsInstaller
+from plugins import PLUGINS_DIR
+from scripts.i18n.i18n_update import I18nUpdater
+
+logger: Logger = get_logger()
+
+BUILD_DIR: Path = BASE_DIR / 'build'
+DIST_DIR: Path = BASE_DIR / 'dist'
+DATA_DIR: Path = BASE_DIR / 'export-data'
+LOCALE_DIR: Path = BASE_DIR / 'locale'
+basename: str = f'papi-web-{PapiWebConfig().version}'
+EXPORT_DIR: Path = BASE_DIR / 'export'
+PROJECT_DIR: Path = EXPORT_DIR / basename
+ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
+EXE_FILENAME: str = basename + '.exe'
+SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
+TEST_DIR: Path = BASE_DIR / 'export-test'
+SOURCE_DIR: Path = BASE_DIR / 'src'
+ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
+FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
+
+def clean(clean_zip: bool):
+    for d in [
+        BUILD_DIR,
+        DIST_DIR,
+        PROJECT_DIR,
+    ]:
+        if Path(d).is_dir():
+            print_interactive_info(f'Deleting folder {d}...')
+            shutil.rmtree(d)
+    if SPEC_FILE.is_file():
+        print_interactive_info(f'Deleting file {SPEC_FILE}...')
+        SPEC_FILE.unlink()
+    if clean_zip:
+        if ZIP_FILE.is_file():
+            print_interactive_info(f'Deleting file {ZIP_FILE}...')
+            ZIP_FILE.unlink()
+
+
+def build_exe():
+    pyinstaller_params = [
+        '--clean',
+        '--noconfirm',
+        '--name=' + basename,
+        '--onefile',
+        '--copy-metadata', 'papi_web',
+        '--hiddenimport=common',
+        '--hiddenimport=data',
+        '--hiddenimport=database',
+        '--hiddenimport=pairing',
+        '--hiddenimport=plugins',
+        '--hiddenimport=web',
+        '--hiddenimport=babel.numbers',
+        '--hiddenimport=pyexcel_io.writers',
+        '--paths=.',
+        '--icon=src/web/static/images/papi-web.ico',
+        '--optimize', '1',
+        'src/papi_web.py',
+    ]
+    migration_base_modules: list[ModuleType] = [
+        config_migrations, event_migrations
+    ] + [
+        plugin.base_migration_module
+        for plugin in plugin_manager.all_plugins
+        if plugin.base_migration_module
+    ]
+    for base_module in migration_base_modules:
+        for _, module, _ in iter_modules(base_module.__path__):
+            pyinstaller_params.append(
+                f'--hiddenimport={base_module.__name__}.{module}'
+            )
+
+    files: list[Path] = []
+    web_dir = SOURCE_DIR / 'web'
+    files += [file for file in (web_dir / 'templates').glob('**/*') if file.is_file()]
+    for templates_path in plugin_manager.templates_paths:
+        files += [file for file in templates_path.glob('**/*') if file.is_file()]
+    static_dir = web_dir / 'static'
+    for static_path in plugin_manager.static_paths:
+        files += [file for file in static_path.glob('**/*') if file.is_file()]
+    files += [
+        file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
+    ]
+    files += [
+        file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()
+    ]
+    files += [file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()]
+    files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
+    lib_dir = static_dir / 'lib'
+    bootstrap_dir = (
+        lib_dir / 'bootstrap' / f'bootstrap-{PapiWebConfig.bootstrap_version}-dist'
+    )
+    files += [
+        bootstrap_dir / 'css' / 'bootstrap.min.css',
+        bootstrap_dir / 'css' / 'bootstrap.min.css.map',
+        bootstrap_dir / 'js' / 'bootstrap.bundle.min.js',
+        bootstrap_dir / 'js' / 'bootstrap.bundle.min.js.map',
+    ]
+    bootstrap_icons_dir = (
+        lib_dir
+        / 'bootstrap-icons'
+        / f'bootstrap-icons-{PapiWebConfig.bootstrap_icons_version}'
+    )
+    files += [
+        bootstrap_icons_dir / 'font' / 'bootstrap-icons.min.css',
+    ]
+    files += [
+        file
+        for file in (bootstrap_icons_dir / 'font' / 'fonts').glob('**/*')
+        if file.is_file()
+    ]
+    jquery_file = lib_dir / 'jquery' / f'jquery-{PapiWebConfig.jquery_version}.min.js'
+    files += [
+        jquery_file,
+    ]
+    htmx_dir = lib_dir / 'htmx' / f'htmx-{PapiWebConfig.htmx_version}'
+    files += [file for file in htmx_dir.glob('**/*') if file.is_file()]
+    sortable_dir = lib_dir / 'sortable' / f'sortable-{PapiWebConfig.sortable_version}'
+    files += [file for file in sortable_dir.glob('**/*') if file.is_file()]
+    htmx_sortable_file = lib_dir / 'htmx' / 'htmx-sortable.js'
+    files += [
+        htmx_sortable_file,
+    ]
+    jstree_dir = lib_dir / 'jstree' / f'jstree-{PapiWebConfig.jstree_version}-dist'
+    files += [file for file in jstree_dir.glob('**/*') if file.is_file()]
+    sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
+    files += [
+        sql_dir / 'create_fide.sql',
+        PLUGINS_DIR / 'ffe' / 'create_ffe.sql',
+    ]
+    yml_dir: Path = SOURCE_DIR / 'database' / 'yml'
+    files += list(yml_dir.glob('*.yml'))
+    custom_dir: Path = SOURCE_DIR / 'custom'
+    files += [file for file in custom_dir.glob('**/*') if file.is_file()]
+    files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
+    files += [BbpPairings().executable_path]
+    files += [FFE_SQL_SERVER_CREDENTIALS_FILE, ]
+    for file in files:
+        print(file)
+        pyinstaller_params.append(
+            f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
+        )
+    files: list[Path] = []
+    files += [
+        file
+        for file in Path(
+            BASE_DIR / 'venv/lib/site-packages/litestar/exceptions/responses/templates'
+        ).glob('**/*')
+        if file.is_file()
+    ]
+    for file in files:
+        pyinstaller_params.append(
+            f'--add-data={file};{file.parent.relative_to(BASE_DIR / "venv/lib/site-packages")}'
+        )
+    run(pyinstaller_params)
+
+
+def create_project():
+    papi_web_config: PapiWebConfig = PapiWebConfig()
+    print_interactive_info(f'Creating folder {PROJECT_DIR} from {DATA_DIR}...')
+    shutil.copytree(DATA_DIR, PROJECT_DIR)
+    dist_exe_file: Path = DIST_DIR / EXE_FILENAME
+    bin_dir: Path = PROJECT_DIR / 'bin'
+    bin_dir.mkdir(parents=True, exist_ok=True)
+    print_interactive_info(f'Moving {dist_exe_file} to {bin_dir}...')
+    shutil.move(dist_exe_file, PROJECT_DIR)
+    bbp_pairings: BbpPairings = BbpPairings()
+    bbp_pairings_dir: Path = bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
+    bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
+    print_interactive_info(f'Copying {bbp_pairings.executable_dir} to {bbp_pairings_dir}...')
+    shutil.copytree(bbp_pairings.executable_dir, bbp_pairings_dir, dirs_exist_ok=True)
+    # create an empty events dir
+    events_dir: Path = PROJECT_DIR / 'events'
+    events_dir.mkdir(exist_ok=True)
+    # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
+    custom_dir: Path = PROJECT_DIR / 'custom'
+    custom_dir.mkdir(exist_ok=True)
+    target_file = bin_dir / 'ffe.bat'
+    print_interactive_info(f'Creating batch file {target_file}...')
+    with open(target_file, 'wt', encoding='utf-8') as f:
+        f.write(
+            f'@echo off\n'
+            f'echo Starting Papi-web FFE client, please wait...\n'
+            f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
+            f'cd ..\n'
+            f'{EXE_FILENAME} --chessevent\n'
+            f'pause\n'
+        )
+    target_file = bin_dir / 'chessevent.bat'
+    print_interactive_info(f'Creating batch file {target_file}...')
+    with open(target_file, 'wt', encoding='utf-8') as f:
+        f.write(
+            f'@echo off\n'
+            f'echo Starting Papi-web ChessEvent client, please wait...\n'
+            f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
+            f'cd ..\n'
+            f'{EXE_FILENAME} --chessevent\n'
+            f'pause\n'
+        )
+
+
+def create_zip():
+    print_interactive_info(f'Creating archive {ZIP_FILE}...')
+    with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
+        os.chdir(PROJECT_DIR)
+        for folder_name, sub_folders, file_names in os.walk('.'):
+            zip_file.write(folder_name, folder_name)
+        for folder_name, sub_folders, file_names in os.walk('.'):
+            for filename in file_names:
+                file_path: Path = Path(folder_name, filename)
+                zip_file.write(file_path, file_path)
+        os.chdir(BASE_DIR)
+
+
+def build_test():
+    if not TEST_DIR.is_dir():
+        print_interactive_info(f'Creating test environment in {TEST_DIR}...')
+        TEST_DIR.mkdir(parents=True)
+    else:
+        print_interactive_info(f'Updating test environment in {TEST_DIR}...')
+    with ZipFile(ZIP_FILE, 'r') as zip_file:
+        zip_file.extractall(TEST_DIR)
+
+
+def update_readme():
+    readme: Path = Path('README.md')
+    if not re.match(r'^\d+\.\d+\.\d+$', str(PAPI_WEB_VERSION)):
+        return
+    if (
+        input_interactive(
+            f'Do you want to update {readme} with version {PAPI_WEB_VERSION} (y/N)?'
+        ).upper()
+        or 'N'
+    ) != 'Y':
+        return
+    print_interactive_info(f'Updating {readme}...')
+    lines_before_comment: list[str] = []
+    lines_after_comment: list[str] = []
+    # Read the lines until the expected comment is found
+    with open(readme, 'rt', encoding='utf-8') as f:
+        comment: str = '<!-- DO NOT EDIT! (START) -->'
+        comment_found: bool = False
+        for line in f:
+            lines_before_comment.append(line)
+            if line.startswith(comment):
+                comment_found = True
+                break
+        if not comment_found:
+            print_interactive_error(
+                f'Could not edit [{readme}] (comment [{comment}] not found).'
+            )
+            return
+        comment: str = '<!-- DO NOT EDIT! (END) -->'
+        comment_found: bool = False
+        for line in f:
+            if line.startswith(comment):
+                comment_found = True
+            if comment_found:
+                lines_after_comment.append(line)
+        if not comment_found:
+            print_interactive_error(
+                f'Could not edit [{readme}] (comment [{comment}] not found).'
+            )
+            return
+    lines: list[str] = [
+        f'- **[Télécharger la dernière version stable ({PAPI_WEB_VERSION})]'
+        '(https://github.com/papi-web-org/papi-web/releases/download/'
+        f'{PAPI_WEB_VERSION}/papi-web-{PAPI_WEB_VERSION}.zip)**\n'
+    ]
+    with open(readme, 'w', encoding='utf-8') as f:
+        for line in lines_before_comment + lines + lines_after_comment:
+            f.write(line)
+    print_interactive_success(f'Successfully updated {readme}.')
+
+
+def main():
+    clean(clean_zip=True)
+    bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
+    if not bbp_pairings.is_installed:
+        print_interactive_info('Installing BBP Pairings....')
+        bbp_pairings.install()
+    if not I18nUpdater(trusted_locales, untrusted_locales).check_trusted_locales():
+        if (
+            input_interactive(
+                'Translations are not perfect for trusted locales, do you want to continue (y/N):'
+            ).upper()
+            or 'N'
+        ) != 'Y':
+            return
+    build_exe()
+    create_project()
+    create_zip()
+    build_test()
+    clean(clean_zip=False)
+    update_readme()
+
+
+main()

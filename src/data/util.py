@@ -8,7 +8,7 @@ from functools import lru_cache
 from logging import Logger
 from math import floor
 from types import UnionType
-from typing import Any, Self
+from typing import Any, override
 
 from common.i18n import _
 from common.logger import get_logger
@@ -98,24 +98,86 @@ class SharedUtils:
         )(num)
 
 
+class IdentifiableEntity(ABC):
+    """Abstract class representing an entity which needs to be
+    identified internally and represented in the UI"""
+
+    @staticmethod
+    @abstractmethod
+    def static_id() -> str:
+        """Represents the entity in forms, databases and query params.
+        Should be unique amongst entities from the same parent class."""
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def static_name() -> str:
+        """Represents the entity in the UI."""
+        pass
+
+    @property
+    def id(self) -> str:
+        return self.static_id()
+
+    @property
+    def name(self) -> str:
+        return self.static_name()
+
+
+class AbstractEntityManager[IdentifiableEntity](ABC):
+    @staticmethod
+    @abstractmethod
+    def entity_types() -> list[type[IdentifiableEntity]]:
+        pass
+
+    @classmethod
+    def options(cls) -> dict[str, str]:
+        return {
+            entity_type.static_id(): entity_type.static_name()
+            for entity_type in cls.entity_types()
+        }
+
+    @classmethod
+    def type_by_id(cls) -> dict[str, type[IdentifiableEntity]]:
+        return {
+            entity_type.static_id(): entity_type
+            for entity_type in cls.entity_types()
+        }
+
+    @classmethod
+    def get_type(cls, id_: str) -> type[IdentifiableEntity]:
+        """Get an object by its ID.
+        Raises a KeyError if the ID is unknown."""
+        return cls.type_by_id()[id_]
+
+    @classmethod
+    def get_object(cls, id_: str) -> IdentifiableEntity:
+        """Get an object by its ID.
+        Raises a KeyError if the ID is unknown."""
+        return cls.type_by_id()[id_]()
+
+    @classmethod
+    def objects(cls) -> list[IdentifiableEntity]:
+        return [type_() for type_ in cls.entity_types()]
+
+
 class OptionError(ValueError):
     def __init__(self, message: str, option: 'AbstractOption'):
         super().__init__(message)
         self.option = option
 
 
-class AbstractOption(ABC):
+class AbstractOption(IdentifiableEntity, ABC):
     """Abstract class representing an option.
     Options can either be represented in the DB or in a form."""
     def __init__(self, value: Any | None = None):
         self.value = value if value is not None else self.default_value
 
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """Represents the option class in forms and databases.
-        Has to be unique."""
-        pass
+    @override
+    @staticmethod
+    def static_name() -> str:
+        """UI representation is handled by the template."""
+        return ''
 
     @property
     @abstractmethod
@@ -151,22 +213,10 @@ class AbstractOption(ABC):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
 
-class AbstractOptionHandler(ABC):
+class AbstractOptionHandler(IdentifiableEntity, ABC):
     """Abstract class handling options."""
     def __init__(self, options: list[AbstractOption] | None = None):
         self.options: list[AbstractOption] = options or self.default_options()
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Represents the handler in the UI."""
-        pass
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """Represents the handler in a DB or a form."""
-        pass
 
     @staticmethod
     def available_options() -> list[type[AbstractOption]]:
@@ -276,7 +326,7 @@ class Result(IntEnum):
         is_pairing_bye: bool = False,
         is_zero_point_bye: bool = False,
         is_unrated: bool = False,
-    ) -> Self:
+    ) -> 'Result':
         """Create a `Result` instance from the stored value in the
         Papi database."""
         match value:
@@ -405,7 +455,7 @@ class Result(IntEnum):
 
 
     @property
-    def opposite_result(self) -> Self:
+    def opposite_result(self) -> 'Result':
         """Given a `Result` instance (white result), returns the result of the
         opponent.
 
@@ -565,13 +615,13 @@ class Result(IntEnum):
         )
 
     @classmethod
-    def user_imputable_results(cls) -> tuple[Self, ...]:
+    def user_imputable_results(cls) -> tuple['Result', ...]:
         """Imputable results are the ones that a player can
         input by themselves, namely a win, a draw, or a loss or forfeits."""
         return cls.GAIN, cls.DRAW, cls.LOSS
 
     @classmethod
-    def admin_imputable_results(cls) -> tuple[Self, ...]:
+    def admin_imputable_results(cls) -> tuple['Result', ...]:
         """Admin imputable results are the ones that only arbiters can input."""
         return cls.user_imputable_results() + (
             cls.FORFEIT_GAIN,
@@ -588,7 +638,7 @@ class TournamentType(IntEnum):
     CHAMPIONSHIP = 2
 
     @classmethod
-    def from_papi_value(cls, value) -> Self:
+    def from_papi_value(cls, value) -> 'TournamentType':
         match value:
             case 'Suisse':
                 return cls.SWISS
@@ -628,7 +678,7 @@ class TournamentRating(IntEnum):
     BLITZ = 3
 
     @classmethod
-    def from_papi_value(cls, value) -> Self:
+    def from_papi_value(cls, value) -> 'TournamentRating':
         match value:
             case 'Elo':
                 return cls.STANDARD
@@ -717,7 +767,7 @@ class TournamentPairing(IntEnum):
     BERGER = 6
 
     @classmethod
-    def from_papi_value(cls, value) -> Self:
+    def from_papi_value(cls, value) -> 'TournamentPairing':
         match value:
             case 'Standard':
                 return cls.STANDARD
@@ -793,7 +843,7 @@ class PlayerGender(IntEnum):
         return tuple(item.value for item in cls)
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerGender':
         match value:
             case '':
                 return cls.NONE
@@ -817,7 +867,7 @@ class PlayerGender(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @classmethod
-    def from_fide_value(cls, value: str) -> Self:
+    def from_fide_value(cls, value: str) -> 'PlayerGender':
         match value:
             case 'F' | 'f':
                 return cls.FEMALE
@@ -877,7 +927,7 @@ class PlayerCategory(IntEnum):
     O65 = 10
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerCategory':
         match value:
             case '':
                 return cls.NONE
@@ -1026,7 +1076,7 @@ class PlayerRatingType(IntEnum):
     FIDE = 3
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerRatingType':
         match value:
             case 'E' | None:
                 return cls.ESTIMATED
@@ -1093,7 +1143,7 @@ class PlayerTitle(IntEnum):
     GRANDMASTER = 8
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PlayerTitle':
         match value.strip():
             case '':
                 return PlayerTitle.NONE
@@ -1137,7 +1187,7 @@ class PlayerTitle(IntEnum):
                 raise ValueError(f'Unknown title: {self}')
 
     @classmethod
-    def from_fide_value(cls, value: str) -> Self:
+    def from_fide_value(cls, value: str) -> 'PlayerTitle':
         match value.strip():
             case '':
                 return PlayerTitle.NONE
@@ -1241,7 +1291,7 @@ class BoardColor(StrEnum):
     BLACK = 'B'
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'BoardColor':
         """Decode the database value"""
         match value:
             case 'B':
@@ -1398,7 +1448,7 @@ class PointValueType(Enum):
                 raise ValueError(f'{self=}')
 
     @classmethod
-    def from_papi_value(cls, value: str) -> Self:
+    def from_papi_value(cls, value: str) -> 'PointValueType':
         match value.upper():
             case "NON":
                 return PointValueType.STANDARD

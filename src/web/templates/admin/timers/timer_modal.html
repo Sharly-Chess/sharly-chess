@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-timer-edit-modal d-block">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-timer-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -100,7 +100,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Create') }}
                 {% elif action == 'update' %}
-                    {{ _('Update') }}
+                    {{ _('Save') }}
                 {% elif action == 'delete' %}
                     {{ _('Delete') }}
                 {% else %}

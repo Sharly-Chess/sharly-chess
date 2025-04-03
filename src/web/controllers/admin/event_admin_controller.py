@@ -19,16 +19,13 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
-from data.print import PrintDocumentManager, AbstractPrintDocument
+from data.print import PrintDocumentManager, AbstractPrintDocument, PrintDocumentOptionManager
 from data.util import TournamentRating, OptionError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
-from web.controllers.admin.base_admin_controller import (
-    AdminWebContext,
-)
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
@@ -44,7 +41,7 @@ class EventAdminController(BaseEventAdminController):
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
-        tournament_id: str | None = None,
+        tournament_id: int | None = None,
         modal: str | None = None,
         action: str | None = None,
         data: dict[str, str] | None = None,
@@ -57,6 +54,8 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
@@ -71,6 +70,8 @@ class EventAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'event':
+                if action is None:
+                    raise RuntimeError("action not defined")
                 if data is None:
                     data = cls._prepare_event_modal_data(
                         action, request, web_context.admin_event
@@ -107,7 +108,7 @@ class EventAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'print':
-                print_options = PrintDocumentManager.default_options()
+                print_options = PrintDocumentOptionManager.objects()
                 if data is None:
                     event = web_context.admin_event
                     if len(event.tournaments_sorted_by_uniq_id) == 1:
@@ -120,17 +121,16 @@ class EventAdminController(BaseEventAdminController):
                         option.id: WebContext.value_to_form_data(option.default_value)
                         for option in print_options
                     }
-                containers_by_document = {'': []} | {
+                containers_by_document: dict[str, list[str]] = {'': []} | {
                     document.id: [
                         option.container_id for option
                         in document.default_options()
-                    ] for document in
-                    PrintDocumentManager.default_documents()
+                    ] for document in PrintDocumentManager.objects()
                 }
                 template_context |= {
                     'modal': 'print',
                     'tournament_options': web_context.get_tournament_options(),
-                    'document_options': web_context.get_print_document_options(),
+                    'document_options': {'': '-'} | PrintDocumentManager.options(),
                     'print_options': print_options,
                     'containers_by_document': containers_by_document,
                     'data': data,
@@ -157,6 +157,8 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         if web_context.admin_event.player_count:
             return Redirect(admin_event_players_url(request, web_context.admin_event.uniq_id))
         if web_context.admin_event.tournaments_by_uniq_id:
@@ -204,7 +206,7 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        tournament_id: str | None = None,
+        tournament_id: int | None = None,
     ) -> Template | ClientRedirect:
         return self._admin_event_config_render(
             request,
@@ -238,6 +240,7 @@ class EventAdminController(BaseEventAdminController):
             action, request, web_context.admin_event, data
         )
         if stored_event.errors:
+            assert event_uniq_id is not None
             return self._admin_event_config_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -250,6 +253,8 @@ class EventAdminController(BaseEventAdminController):
         event_loader = EventLoader.get(request=request)
         match action:
             case 'update':
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -285,6 +290,8 @@ class EventAdminController(BaseEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
                 )
@@ -298,6 +305,8 @@ class EventAdminController(BaseEventAdminController):
                 event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
+                if web_context.admin_event is None:
+                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 try:
                     arch = EventDatabase(web_context.admin_event.uniq_id).delete()
                 except PermissionError as ex:
@@ -327,7 +336,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_update(
             request, data=data, action='clone', event_uniq_id=event_uniq_id
         )
@@ -345,7 +354,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_update(
             request, data=data, action='delete', event_uniq_id=event_uniq_id
         )
@@ -359,7 +368,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_update(
             request, data=data, action='update', event_uniq_id=event_uniq_id
         )
@@ -376,7 +385,7 @@ class EventAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -384,25 +393,27 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         errors: dict[str, str] = {}
-        if data is None:
-            data = {}
 
         tournament: Tournament | None = None
-        field: str = 'tournament_id'
+        field = 'tournament_id'
+        
         try:
-            tournament = web_context.admin_event.tournaments_by_id[
-                WebContext.form_data_to_int(data, field)
-            ]
+            tournament_id = WebContext.form_data_to_int(data, field)
+            if not tournament_id:
+                raise ValueError("Tournament ID not supplied")
+            tournament = web_context.admin_event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
 
         document_type: type[AbstractPrintDocument] | None = None
         field = 'document'
         try:
-            document_type = PrintDocumentManager.document_type_by_id()[
-                WebContext.form_data_to_str(data, field)
-            ]
+            document_type = PrintDocumentManager.get_type(
+                WebContext.form_data_to_str(data, field) or ''
+            )
         except KeyError:
             errors[field] = _('Please choose the document.')
         if tournament and document_type:
@@ -421,31 +432,31 @@ class EventAdminController(BaseEventAdminController):
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
-        if len(errors):
-            return self._admin_event_config_render(
-                request,
-                modal='print',
-                event_uniq_id=event_uniq_id,
-                data=data,
-                errors=errors,
-            )
-
-        # Clear the modal contents, and send an event
-        return HTMXTemplate(
-            template_name='common/empty_modal.html',
-            re_target='#modal-wrapper',
-            trigger_event="do_print",
-            after="receive",
-            params={
-                "event_uniq_id": event_uniq_id,
-                "tournament_id": tournament.id,
-                "document": data['document'],
-                "options": {
-                    option.id: data[option.id]
-                    for option in document_type.default_options()
+        if tournament and document_type and not errors:
+            # Clear the modal contents, and send an event
+            return HTMXTemplate(
+                template_name='common/empty_modal.html',
+                re_target='#modal-wrapper',
+                trigger_event="do_print",
+                after="receive",
+                params={
+                    "event_uniq_id": event_uniq_id,
+                    "tournament_id": tournament.id if tournament else None,
+                    "document": data['document'],
+                    "options": {
+                        option.id: data[option.id]
+                        for option in document_type.default_options()
+                    }
                 }
-            }
+            )
+        return self._admin_event_config_render(
+            request,
+            modal='print',
+            event_uniq_id=event_uniq_id,
+            data=data,
+            errors=errors,
         )
+
 
     @staticmethod
     def download_players_as_vcf(
@@ -562,9 +573,9 @@ class EventAdminController(BaseEventAdminController):
                 player.phone,
                 player.gender.short_name,
                 player.fide_id,
-                player.tournament.uniq_id,
+                player.tournament.uniq_id if player.tournament else '',
                 player.federation.name,
-                player.club.name,
+                player.club.name if player.club else '',
                 player.ratings[TournamentRating.STANDARD],
                 player.rating_types[TournamentRating.STANDARD].short_name,
                 player.ratings[TournamentRating.RAPID],
@@ -648,9 +659,11 @@ class EventAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError("admin_event not defined")
         players: list[Player] = [
             web_context.admin_event.players_by_id[player_id]
-            for player_id in player_ids
+            for player_id in player_ids or []
             if player_id
         ]
         if not players:

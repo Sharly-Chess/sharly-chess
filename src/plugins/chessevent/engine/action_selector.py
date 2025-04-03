@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from json import JSONDecodeError
 from logging import Logger
 from pathlib import Path
+from typing import Any
 
 import chardet
 
@@ -202,7 +203,7 @@ class ActionSelector(metaclass=Singleton):
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
             print_interactive_error(
-                _('Unable to create Papi files since no tournaments are defined.')
+                _('Unable to create Papi files.')
             )
             return False
         print_interactive_info(
@@ -304,10 +305,7 @@ class ActionSelector(metaclass=Singleton):
                                     'MacRoman encoding detected, assuming utf-8.'
                                 )
                                 encoding = 'utf-8'
-                            chessevent_tournament_info: dict[
-                                str,
-                                str | int | list[dict[bool | str, str | int | None]],
-                            ]
+                            chessevent_tournament_info: dict[str, Any]
                             # NOTE(Amaras) what does this accomplish?
                             data = '\n'.join([line for line in data.split('\n')])
                             try:
@@ -358,17 +356,17 @@ class ActionSelector(metaclass=Singleton):
                                 continue
                             chessevent_timeout = chessevent_timeout_min
                             tournament.file.unlink(missing_ok=True)
-                            if create_empty_papi_database(tournament.file):
-                                player_count: int = (
-                                    self.write_chessevent_info_to_database(
-                                        tournament, chessevent_tournament, data_md5
-                                    )
+                            create_empty_papi_database(tournament.file)
+                            player_count: int = (
+                                self.write_chessevent_info_to_database(
+                                    tournament, chessevent_tournament, data_md5
                                 )
-                                print_interactive_success(
-                                    _(
-                                        'Papi file [{file}] has been created (players: {num}).'
-                                    ).format(file=tournament.file, num=player_count)
-                                )
+                            )
+                            print_interactive_success(
+                                _(
+                                    'Papi file [{file}] has been created (players: {num}).'
+                                ).format(file=tournament.file, num=player_count)
+                            )
                             if action_choice == upload_answer:
                                 FFESession(tournament, debug=False).upload(
                                     set_visible=True

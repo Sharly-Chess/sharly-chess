@@ -1,4 +1,3 @@
-import itertools
 from abc import ABC, abstractmethod
 from bisect import bisect_right
 from collections import namedtuple
@@ -8,23 +7,24 @@ from decimal import Decimal
 from functools import partial
 from math import isclose
 from types import UnionType
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING, Protocol, TypeVar, override
+
 
 from common.i18n import _
 from data.pairing import Pairing
+from data.player import TournamentPlayer
 from data.util import (
-    Result,
-    BoardColor,
-    TournamentPairing,
-    StaticUtils,
+    AbstractEntityManager,
     AbstractOption,
     AbstractOptionHandler,
+    BoardColor,
     OptionError,
+    Result,
+    StaticUtils,
+    TournamentPairing,
 )
-from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
-    from _typeshed import SupportsRichComparisonT
     from data.player import Player
     from data.tournament import Tournament
 
@@ -38,51 +38,12 @@ register_tie_break = partial(
 )
 register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 
-
-class TieBreakManager:
-    """Entry class for interacting with tie-breaks"""
-
-    @staticmethod
-    def tie_break_types() -> list[type['AbstractTieBreak']]:
-        return TIE_BREAK_CLASSES + list(itertools.chain.from_iterable(
-            plugin_manager.hook.get_extra_tie_break_classes()
-        ))
-
-    @classmethod
-    def tie_break_type_by_id(cls) -> dict[str, type['AbstractTieBreak']]:
-        return {
-            tie_break_type().id: tie_break_type
-            for tie_break_type in cls.tie_break_types()
-        }
-
-    @classmethod
-    def tie_break_by_papi_id(cls) -> dict[str, 'AbstractTieBreak']:
-        papi_tie_breaks: dict[str, 'AbstractTieBreak'] = {}
-        for tie_break_type in cls.tie_break_types():
-            tie_break = tie_break_type()
-            if tie_break.papi_id:
-                papi_tie_breaks[tie_break.papi_id] = tie_break
-        return papi_tie_breaks
-
-    @classmethod
-    def papi_compatible_tie_breaks(cls) -> list['AbstractTieBreak']:
-        """List of tie-breaks that can be used in papi"""
-        return [
-            tie_break_type() for tie_break_type in cls.tie_break_types()
-            if tie_break_type().papi_id is not None
-        ]
-
-    @staticmethod
-    def option_types() -> list[type['AbstractTieBreakOption']]:
-        return OPTION_CLASSES
-
-    @classmethod
-    def option_type_by_id(cls) -> dict[str, type['AbstractTieBreakOption']]:
-        return {
-            option_type().id: option_type
-            for option_type in cls.option_types()
-        }
-
+T = TypeVar('T', bound='SupportsRichComparison')
+class SupportsRichComparison(Protocol):
+    def __lt__(self: T, other: T) -> bool: ...
+    def __le__(self: T, other: T) -> bool: ...
+    def __gt__(self: T, other: T) -> bool: ...
+    def __ge__(self: T, other: T) -> bool: ...
 
 class AbstractTieBreakOption(AbstractOption, ABC):
     """Abstract class representing an option of a tie-break"""
@@ -90,6 +51,12 @@ class AbstractTieBreakOption(AbstractOption, ABC):
     def template_name(self) -> str:
         # TODO Implement templates for tie-break options
         return ''
+
+
+class TieBreakOptionManager(AbstractEntityManager[AbstractTieBreakOption]):
+    @staticmethod
+    def entity_types() -> list[type[AbstractTieBreakOption]]:
+        return OPTION_CLASSES
 
 
 class AbstractTieBreak(AbstractOptionHandler, ABC):
@@ -108,26 +75,30 @@ class AbstractTieBreak(AbstractOptionHandler, ABC):
     @abstractmethod
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
-    ) -> 'SupportsRichComparisonT':
+    ) -> 'SupportsRichComparison':
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking, 
         the return type need to support rich comparison with himself"""
         pass
+
+    @staticmethod
+    def static_papi_id() -> str | None:
+        """Represents the tie-break in a Papi database.
+        If None, the tie-break will not appear in the database"""
+        pass
+
+    @property
+    def papi_id(self) -> str | None:
+        return self.static_papi_id()
 
     @property
     def is_displayable(self) -> bool:
         """Defines if the tie-break can be displayed
         in a print view or a ranking screen"""
         return True
-
-    @property
-    def papi_id(self) -> str | None:
-        """Represents the tie-break in a Papi database.
-        If None, the tie-break will not appear in the database"""
-        return None
 
     def to_dict(self) -> dict:
         return {
@@ -143,7 +114,7 @@ class TieBreakUtils:
 
     @staticmethod
     def adjusted_score(
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int,
         adjust_fore: bool = False,
@@ -152,10 +123,11 @@ class TieBreakUtils:
         Only adjusts them in case of requested byes followed by all VUR.
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games for the last round not determined over the board are considered as draws."""
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if tournament.pairing == TournamentPairing.BERGER:
             return player.points_after(after_round)
-        score = 0
+        score = 0.0
         for round_index, pairing in player.pairings.items():
             if round_index > after_round:
                 continue
@@ -178,12 +150,13 @@ class TieBreakUtils:
                 else:
                     score += pairing.result.points(tournament.point_values)
             else:
+                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         return score
 
     @staticmethod
     def buchholz_dummy_score(
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
@@ -221,29 +194,29 @@ class AbstractCutTieBreakOption(AbstractTieBreakOption, ABC):
 
 @register_option
 class CutTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'CUT'
 
 
 @register_option
 class CutTopTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'CUT_TOP'
 
 
 @register_option
 class CutBottomTieBreakOption(AbstractCutTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'CUT_BOTTOM'
 
 
 @register_option
 class PlayedModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PLAYED_MODIFIER'
 
     @property
@@ -257,8 +230,8 @@ class PlayedModifierTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ForeModifierTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'FORE_MODIFIER'
 
     @property
@@ -272,8 +245,8 @@ class ForeModifierTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class LimitTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'LIMIT'
 
     @property
@@ -287,8 +260,8 @@ class LimitTieBreakOption(AbstractTieBreakOption):
 
 @register_option
 class ExcludeIdsTieBreakOption(AbstractTieBreakOption):
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'EXCLUDE_IDS'
 
     @property
@@ -306,16 +279,16 @@ class WinsTieBreak(AbstractTieBreak):
     with or without playing, as many points as awarded for a win.
     See FIDE Handbook C.07.7.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Number of wins')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'WINS'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Nombre de Victoires'
 
     @property
@@ -329,18 +302,19 @@ class WinsTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
+        assert player.tournament is not None
         point_values = player.tournament.point_values
         return sum(
             pairing.result.points(point_values) == Result.GAIN.points(
                 point_values
             ) for round_index, pairing in player.pairings.items()
-            if round_index <= after_round
+            if pairing.result is not None and round_index <= after_round
         )
 
 
@@ -349,12 +323,12 @@ class GamesWonTieBreak(AbstractTieBreak):
     """The number of games a participant won 'over the board'.
     See FIDE Handbook C.07.7.2"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Number of games won')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'GAMES_WON'
 
     @property
@@ -367,7 +341,7 @@ class GamesWonTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -385,12 +359,12 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
     """The number of games played over the board with the black pieces.
     See FIDE Handbook C.07.7.3"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Games played with black')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'GAMES_PLAYED_WITH_BLACK'
 
     @property
@@ -403,7 +377,7 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -421,12 +395,12 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
     """The number of games won over the board with the black pieces.
     See FIDE Handbook C.07.7.4"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Games won with black')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'GAMES_WON_WITH_BLACK'
 
     @property
@@ -438,10 +412,10 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
         return _('Black wins')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -461,16 +435,16 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
       - CUT: exclude the score achieved after the first *CUT* rounds
     See FIDE Handbook C.07.7.5 and C.07.14.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Progressive scores')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PROGRESSIVE_SCORES'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Cumulatif'
 
     @property
@@ -483,14 +457,14 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         return _('Progressive')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[AbstractOption]]:
         return [CutTieBreakOption]
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> float:
         cut, = self.get_option_values()
         if after_round is None:
@@ -504,12 +478,12 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
     did not lose by forfeit, nor elected to take a bye (ZPB, HPB, or FPB)
     See FIDE Handbook C.07.7.6"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Rounds one Elected to Play')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'ROUNDS_ELECTED_TO_PLAY'
 
     @property
@@ -521,10 +495,10 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
         return _('Games played')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -556,12 +530,12 @@ class BuchholzTieBreak(AbstractTieBreak):
     played against the scheduled opponent.
     See FIDE Handbook C.07.8.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'BUCHHOLZ'
 
     @property
@@ -592,7 +566,7 @@ class BuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -601,6 +575,7 @@ class BuchholzTieBreak(AbstractTieBreak):
             after_round = max(player.pairings)
         elif cut_top + cut_btm >= after_round:
             return 0
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -666,12 +641,12 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
     played against the scheduled opponent.
     See FIDE Handbook C.07.8.3"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Fore Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'FORE_BUCHHOLZ'
 
     @property
@@ -701,7 +676,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -720,6 +695,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
         dummy_points = TieBreakUtils.buchholz_dummy_score(
             player, after_round=after_round, fore_modifier=True
         )
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         for pairing in pairings.values():
             should_add_dummy = (
@@ -737,6 +713,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
                 else:
                     scores.append(dummy_points)
                 continue
+            assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             opponent_adjusted_score = TieBreakUtils.adjusted_score(
                 opponent, after_round=after_round, adjust_fore=True
@@ -758,12 +735,12 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
     """
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Sum of Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'SUM_OF_BUCHHOLZ'
 
     @property
@@ -780,10 +757,11 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         fore_modifier, = self.get_option_values()
         if after_round is None:
@@ -809,12 +787,12 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
     See FIDE Handbook C.07.8.2."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average of opponents Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_OF_BUCHHOLZ'
 
     @property
@@ -831,10 +809,11 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         fore_modifier, = self.get_option_values()
         if after_round is None:
@@ -865,16 +844,16 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
     as played games (only relevant in Swiss tournaments).
     See FIDE Handbook C.07.9.1."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Sonnenborn-Berger')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'SONNENBORN_BERGER'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Sonnenborn-Berger'
 
     @property
@@ -894,10 +873,11 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         cut, played_modifier = self.get_option_values()
         if after_round is None:
@@ -925,10 +905,12 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
             elif pairing.played or (
                     pairing.unplayed and pairing.opponent_id is not None and played_modifier
             ):
+                assert pairing.opponent_id is not None
                 opponent: Player = tournament.players_by_id[pairing.opponent_id]
                 opponent_score = TieBreakUtils.adjusted_score(
                     opponent, after_round=after_round
                 )
+                assert pairing.result is not None
                 contribution = pairing.result.points(tournament.point_values) * opponent_score
                 general_contributions.append(SBContribution(opponent_score, contribution))
         voluntary_unplayed = sorted(voluntary_unplayed)
@@ -964,7 +946,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
 
     @staticmethod
     def _dummy_score(
-        player: 'Player',
+        player: 'TournamentPlayer',
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -993,16 +975,16 @@ class KoyaTieBreak(AbstractTieBreak):
     against opponents who have at least *limit* points.
     See FIDE Handbook C.07.9.2."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Koya system')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'KOYA'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Koya'
 
     @property
@@ -1020,10 +1002,11 @@ class KoyaTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         limit, = self.get_option_values()
         if after_round is None:
@@ -1035,13 +1018,14 @@ class KoyaTieBreak(AbstractTieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         }
-        score = 0
+        score = 0.0
         for _round_index, pairing in pairings.items():
             if pairing.opponent_id is None:
                 continue
             opponent = tournament.players_by_id[pairing.opponent_id]
             opponent_score = opponent.points_before(after_round)
             if opponent_score >= limit:
+                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         return score
 
@@ -1052,12 +1036,12 @@ class KashdanTieBreak(AbstractTieBreak):
     and 0 for an unplayed game.
     See USCF Handbook section 34E7."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Kashdan')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'KASHDAN'
 
     @property
@@ -1070,7 +1054,7 @@ class KashdanTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
@@ -1082,7 +1066,7 @@ class KashdanTieBreak(AbstractTieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         ]
-        score_by_result: dict[Result, int] = {
+        score_by_result: dict[Result, float] = {
             Result.GAIN: 4,
             Result.UNRATED_GAIN: 4,
             Result.DRAW: 2,
@@ -1112,12 +1096,12 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
       - CUT_BOTTOM: remove the lowest *cut_bottom* ratings.
     See FIDE Handbook C.07.10.1"""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average rating of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_RATING_OPPONENTS'
 
     @property
@@ -1146,10 +1130,11 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> int:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         cut_top, cut_btm = self.get_option_values()
         if after_round is None:
@@ -1165,6 +1150,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
         for pairing in pairings:
             if pairing.unplayed:
                 continue
+            assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
             with suppress(KeyError):
                 ratings.append(opponent.estimation)
@@ -1186,12 +1172,12 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
     into RD (see FIDE Rating Regulations for the Conversion Table).
     See FIDE Handbook C.07.10.2."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Tournament performance rating')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'TOURNAMENT_PERFORMANCE_RATING'
 
     @property
@@ -1203,11 +1189,12 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
         return _('Performance')
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
@@ -1217,12 +1204,14 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
             if round_index <= after_round and pairing.played
         ]
         ratings = []
-        score = 0
+        score = 0.0
         for pairing in pairings:
+            assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
             with suppress(KeyError):
                 rating = opponent.estimation
                 ratings.append(rating)
+                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
@@ -1239,12 +1228,12 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
     opponents, only taking played games into account.
     See FIDE Handbook C.07.10.4."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average performance rating of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_PERFORMANCE_RATING_OPPONENTS'
 
     @property
@@ -1259,11 +1248,12 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
         )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
@@ -1275,6 +1265,7 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
         performance_ratings = []
         performance_tie_break = TournamentPerformanceRatingTieBreak()
         for pairing in played_games:
+            assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             opponent_tpr = performance_tie_break.compute_player_value(
                 opponent, after_round=after_round
@@ -1292,12 +1283,12 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
     This assumes that all players are rated, or at least have an estimation.
     See FIDE Handbook C.07.10.3."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Perfect tournament performance')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PERFECT_TOURNAMENT_PERFORMANCE'
 
     @property
@@ -1312,10 +1303,10 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
         )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -1326,6 +1317,7 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
         ]
         if not played_rounds:
             return 0
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         actual_score = Decimal(
             sum(
@@ -1426,12 +1418,12 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
     of the opponents (only those who played).
     See FIDE Hand book C.07.10.5."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Average perfect performance of opponents')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'AVERAGE_PERFECT_PERFORMANCE'
 
     @property
@@ -1446,10 +1438,10 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
         )
 
     def compute_player_value(
-            self,
-            player: 'Player',
-            *,
-            after_round: int | None,
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
     ) -> int:
         if after_round is None:
             after_round = max(player.pairings)
@@ -1459,6 +1451,7 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
             if round_index <= after_round and pairing.played
         ]
         ptp_tie_break = PerfectTournamentPerformanceTieBreak()
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         ptp = [
             ptp_tie_break.compute_player_value(
@@ -1482,12 +1475,12 @@ class DirectEncounterTieBreak(AbstractTieBreak):
     will be excluded from consideration.
     See FIDE Handbook C.07.6."""
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Direct encounter')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'DIRECT_ENCOUNTER'
 
     @property
@@ -1512,7 +1505,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> tuple[float, bool]:
@@ -1525,6 +1518,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
         some players cannot be untied this way.
         If the second member is False, some ties might be broken, but there is no guarantee.
         """
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         exclude_ids, played_modifier = self.get_option_values()
         if after_round is None:

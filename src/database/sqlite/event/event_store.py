@@ -82,6 +82,7 @@ class StoredScreen:
     name: str | None
     type: str
     columns: int | None
+    font_size: int | None
     menu_link: bool | None
     menu_text: str | None
     menu: str | None
@@ -116,6 +117,7 @@ class StoredFamily:
     type: str
     tournament_id: int
     columns: int | None
+    font_size: int | None
     menu_link: bool
     menu_text: str
     menu: str
@@ -165,9 +167,8 @@ class StoredEvent:
     update_password: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
-    version: str | None = None
-    timer_colors: dict[int, str | None] = None
-    timer_delays: dict[int, int | None] = None
+    timer_colors: dict[int, str | None] | None = None
+    timer_delays: dict[int, int | None] | None = None
     message_text: str | None = None
     message_color: str | None = None
     message_background_color: str | None = None

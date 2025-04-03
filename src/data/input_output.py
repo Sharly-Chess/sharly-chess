@@ -1,4 +1,3 @@
-import itertools
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -7,7 +6,7 @@ from typing import Any, override
 
 from common.i18n import _
 from data.player import Player
-from data.util import TrfType, TournamentRating
+from data.util import TrfType, TournamentRating, IdentifiableEntity, AbstractEntityManager
 from database.sqlite.fide.fide_database import FideDatabase
 
 
@@ -102,7 +101,7 @@ class PlayerMatch:
                 diff_field_ids.append(field_id)
         field_id: str = 'club'
         if field_id in self.field_ids:
-            if self.player.club.name != self.match_player.club.name:
+            if not self.player.club or self.player.club.name != self.match_player.club.name:
                 diff_field_ids.append(field_id)
         field_id: str = 'gender'
         if field_id in self.field_ids:
@@ -184,25 +183,13 @@ class PlayerUpdaterField:
     id: str
 
 
-class AbstractPlayerUpdater(ABC):
+class AbstractPlayerUpdater(IdentifiableEntity, ABC):
     """Abstract class representing a tool
     updating a player from a data source."""
 
     def __init__(self):
         # Message displayed in the diff modal if something does wrong
         self.warning_message: str | None = None
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Represents the updater in the UI."""
-        pass
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """Represents the updater as a query parameter."""
-        pass
 
     @staticmethod
     def _ratings_fields() -> list[PlayerUpdaterField]:
@@ -287,14 +274,12 @@ class AbstractPlayerUpdater(ABC):
 
 
 class FidePlayerUpdater(AbstractPlayerUpdater):
-    @override
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('FIDE database')
 
-    @override
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'fide'
 
     @override
@@ -308,10 +293,11 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
         field_ids: list[str],
         diff_only: bool,
     ) -> list[PlayerMatch] | None:
-        if not FideDatabase().exists():
+        database = FideDatabase()
+        if not database.exists():
             return None
         fide_ids = [player.fide_id for player in players if player.fide_id]
-        with FideDatabase() as database:
+        with database:
             match_players = database.get_players_by_fide_id(fide_ids)
             return self._create_player_matches(
                 players,
@@ -322,17 +308,13 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
             )
 
 
-class PlayerUpdaterManager:
+class PlayerUpdaterManager(AbstractEntityManager[AbstractPlayerUpdater]):
     @staticmethod
-    def updaters() -> list[AbstractPlayerUpdater]:
+    def entity_types() -> list[type[AbstractPlayerUpdater]]:
         from plugins.manager import plugin_manager
 
-        return [FidePlayerUpdater()] + list(
-            itertools.chain.from_iterable(
-                plugin_manager.hook.get_player_updaters()
-            )
+        player_updaters = [FidePlayerUpdater]
+        plugin_manager.hook.insert_player_updater_types(
+            updater_types=player_updaters
         )
-
-    @classmethod
-    def updaters_by_id(cls) -> dict[str, AbstractPlayerUpdater]:
-        return {updater.id: updater for updater in cls.updaters()}
+        return player_updaters

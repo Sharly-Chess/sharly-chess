@@ -11,7 +11,6 @@ from data.player import Player
 from data.input_output import AbstractTournamentExporter, AbstractPlayerUpdater
 from data.util import ScreenType
 from plugins.utils import (
-    PluginMigrationManager,
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
@@ -21,15 +20,19 @@ if TYPE_CHECKING:
     from data.print import AbstractPlayerSplitter, AbstractPrintDocument
     from data.tie_break import AbstractTieBreak
     from data.tournament import Tournament
-    from database.sqlite.event.event_store import StoredEvent
-    from database.sqlite.event.event_store import StoredTournament
-    from plugins.utils import PluginMigrationManager, PluginEngineArgument
+    from data.event import Event
+    from database.sqlite.event.event_database import EventDatabase
+    from database.sqlite.event.event_store import StoredEvent, StoredTournament
+    from database.sqlite.local_source_database import LocalSourceDatabase
+    from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
 
+# pylint: disable=empty-body
+# mypy: disable-error-code=empty-body
 
 class AppHookSpecs:
     """Holds all hookspecs for this application"""
@@ -43,7 +46,9 @@ class AppHookSpecs:
         """Provide any initialisation""" 
 
     @hookspec
-    def get_event_migration_manager(self) -> PluginMigrationManager:
+    def get_event_migration_manager(
+        self, event_database: 'EventDatabase'
+    ) -> 'PluginMigrationManager':
         """Provide a migration manager for event databases"""
         
     @hookspec
@@ -57,7 +62,17 @@ class AppHookSpecs:
     @hookspec
     def get_engine_argument(self) -> PluginEngineArgument:
         """Provide an engine argument"""
-        
+
+    # ---------------------------------------------------------------------------------
+    # Data sources
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_local_source_database_types(
+        self, database_types: list[type['LocalSourceDatabase']]
+    ):
+        """Provide extra local database sources."""
+
     # ---------------------------------------------------------------------------------
     # Players
     # ---------------------------------------------------------------------------------
@@ -139,7 +154,9 @@ class AppHookSpecs:
         """Provide extra columns for the player download datasheets """
 
     @hookspec
-    def get_player_updaters(self) -> list[AbstractPlayerUpdater]:
+    def insert_player_updater_types(
+            self, updater_types: list[type[AbstractPlayerUpdater]]
+    ):
         """Provide extra player updaters."""
 
     @hookspec
@@ -228,8 +245,8 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------  
 
     @hookspec
-    def insert_print_player_splitters(
-        self, player_splitters: list['AbstractPlayerSplitter']
+    def insert_print_player_splitter_types(
+        self, player_splitter_types: list[type['AbstractPlayerSplitter']]
     ):
         """Provide print player splitting options"""
 

@@ -14,6 +14,7 @@ logger: Logger = get_logger()
 
 locks: defaultdict[Path, RLock] = defaultdict(RLock)
 
+
 @dataclass
 class SQLiteDatabase:
     """
@@ -67,42 +68,50 @@ class SQLiteDatabase:
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        if self.database is not None:
+        if self.cursor is not None:
             self.cursor.close()
             del self.cursor
             self.cursor = None
+        if self.database is not None:
             self.database.close()
             del self.database
             self.database = None
         self.release_lock()
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
+        assert self.cursor is not None
         self.cursor.execute(query, params)
 
     def executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):
+        assert self.cursor is not None
         self.cursor.executemany(query, params)
 
     def executescript(self, sql: str):
+        assert self.cursor is not None
         self.cursor.executescript(sql)
 
     def fetchall(self) -> Iterator[dict[str, Any]]:
+        assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         for row in self.cursor.fetchall():
             yield dict(zip(columns, row))
 
     def fetchone(self) -> dict[str, Any]:
+        assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         result = self.cursor.fetchone()
         return {} if result is None else dict(zip(columns, result))
 
     def commit(self):
+        assert self.database is not None
         self.database.commit()
 
-    def _last_inserted_id(self) -> int:
+    def _last_inserted_id(self) -> int | None:
+        assert self.cursor is not None
         return self.cursor.lastrowid
 
     @staticmethod
-    def load_bool_from_database_field(data: int | None, if_none=None) -> bool:
+    def load_bool_from_database_field(data: int | None, if_none: bool | None = None) -> bool | None:
         """Returns True if `data` is 1, False if `data` is something else other
         than None, and `if_none` if `data` is None."""
         return data == 1 if data is not None else if_none

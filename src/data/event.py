@@ -7,6 +7,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from pathlib import Path
+from types import NotImplementedType
 from typing import Any, Iterable
 
 from common import (
@@ -77,9 +78,9 @@ class EventMessage:
             )
         elif self.timer:
             return _('Timer [{timer_uniq_id}]: {text}').format(
-                timer_uniq_id=self.timer_hour.timer.uniq_id, text=self.text
+                timer_uniq_id=self.timer.uniq_id, text=self.text
             )
-        elif self.screen_set:
+        elif self.screen_set and self.screen:
             return _(
                 'Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}'
             ).format(
@@ -106,7 +107,7 @@ class Event:
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
         self.messages: list[EventMessage] = []
-        last_load_date: float = event_last_load_date_by_uniq_id.get(self.uniq_id, None)
+        last_load_date: float | None = event_last_load_date_by_uniq_id.get(self.uniq_id, None)
         self._silent = (
             last_load_date is not None
             and last_load_date > self.stored_event.last_update
@@ -342,21 +343,23 @@ class Event:
 
     @cached_property
     def timer_colors(self) -> dict[int, str]:
-        return {
-            i: self.stored_event.timer_colors[i]
-            if i in self.stored_event.timer_colors and self.stored_event.timer_colors[i]
-            else PapiWebConfig.default_timer_colors[i]
-            for i in range(1, 4)
-        }
+        colors = PapiWebConfig.default_timer_colors
+        stored_colors = self.stored_event.timer_colors
+        if stored_colors is not None:
+            for i in range(1, 4):
+                if i in stored_colors and (color := stored_colors[i]) is not None:
+                    colors[i] = color
+        return colors
 
     @cached_property
     def timer_delays(self) -> dict[int, int]:
-        return {
-            i: self.stored_event.timer_delays[i]
-            if i in self.stored_event.timer_delays and self.stored_event.timer_delays[i]
-            else PapiWebConfig.default_timer_delays[i]
-            for i in range(1, 4)
-        }
+        delays = PapiWebConfig.default_timer_delays
+        stored_delays = self.stored_event.timer_delays
+        if stored_delays is not None:
+            for i in range(1, 4):
+                if i in stored_delays and (delay := stored_delays[i]) is not None:
+                    delays[i] = delay 
+        return delays
 
     @property
     def public(self) -> bool:
@@ -483,6 +486,7 @@ class Event:
         timers_by_id: dict[int, Timer] = {
             stored_timer.id: Timer(self, stored_timer)
             for stored_timer in self.stored_event.stored_timers
+            if stored_timer.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -494,7 +498,7 @@ class Event:
 
     @cached_property
     def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {timer.uniq_id: timer for timer in self.timers_by_id.values()}
+        return {timer.uniq_id: timer for timer in self.timers_by_id.values() if timer.uniq_id is not None}
 
     def get_unused_timer_uniq_id(
         self,
@@ -513,6 +517,7 @@ class Event:
         tournaments_by_id: dict[int, Tournament] = {
             stored_tournament.id: Tournament(self, stored_tournament)
             for stored_tournament in self.stored_event.stored_tournaments
+            if stored_tournament.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -583,6 +588,7 @@ class Event:
         screens_by_id: dict[int, Screen] = {
             stored_screen.id: Screen(self, stored_screen=stored_screen)
             for stored_screen in self.stored_event.stored_screens
+            if stored_screen.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -604,10 +610,14 @@ class Event:
         """Returns the first unused screen uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
-        assert base_uniq_id is not None or screen_type is not None
+        screen_uniq_id = base_uniq_id
+        if screen_uniq_id is None:
+            if screen_type is None:
+                raise ValueError('Either screen_type or base_uniq_id must be provided.')
+            screen_uniq_id = _('{screen_type}-screen').format(screen_type=screen_type.value)
+        
         return self._get_unused_item_uniq_id(
-            base_uniq_id
-            or _('{screen_type}-screen').format(screen_type=screen_type.value),
+            screen_uniq_id,
             self.basic_screens_by_uniq_id,
         )
 
@@ -621,7 +631,7 @@ class Event:
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
         return self._get_unused_item_name(
             base_name or screen_type.name,
-            [screen.name for screen in self.basic_screens_by_id.values()],
+            [str(screen.name) for screen in self.basic_screens_by_id.values() if screen.name is not None],
         )
 
     @cached_property
@@ -631,6 +641,7 @@ class Event:
         families_by_id: dict[int, Family] = {
             stored_family.id: Family(self, stored_family=stored_family)
             for stored_family in self.stored_event.stored_families
+            if stored_family.id is not None
         }
         if self.errors:
             self.add_warning(
@@ -650,9 +661,13 @@ class Event:
         """Returns the first unused family uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
         family_type is used when the given ID is empty to set an ID that corresponds to the family type."""
+        family_uniq_id = base_uniq_id
+        if family_uniq_id is None:
+            if family_type is None:
+                raise ValueError('Either family_type or base_uniq_id must be provided.')
+            family_uniq_id = _('{family_type}-screen').format(family_type=family_type.value)
         return self._get_unused_item_uniq_id(
-            base_uniq_id
-            or _('{family_type}-family').format(family_type=family_type.value),
+            family_uniq_id,
             self.families_by_uniq_id,
         )
 
@@ -690,6 +705,7 @@ class Event:
         rotators_by_id: dict[int, Rotator] = {
             stored_rotator.id: Rotator(self, stored_rotator)
             for stored_rotator in self.stored_event.stored_rotators
+            if stored_rotator.id is not None
         }
         if self.errors:
             self.add_warning(_('Errors have been found on rotators.'))
@@ -901,8 +917,8 @@ class Event:
         # p1 < p2 calls p1.__lt__(p2)
         return self.uniq_id > other.uniq_id
 
-    def __eq__(self, other: 'Event'):
+    def __eq__(self, other: object) -> bool | NotImplementedType :
         # p1 == p2 calls p1.__eq__(p2)
-        if not isinstance(self, Event):
+        if not isinstance(other, self.__class__):
             return NotImplemented
         return self.uniq_id == other.uniq_id

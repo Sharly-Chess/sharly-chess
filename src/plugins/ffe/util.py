@@ -14,13 +14,13 @@ class PlayerFFELicence(IntEnum):
     def from_papi_value(cls, value: str) -> Self:
         match value:
             case '':
-                return cls.NONE
+                return cls(cls.NONE)
             case 'N':
-                return cls.N
+                return cls(cls.N)
             case 'A':
-                return cls.A
+                return cls(cls.A)
             case 'B':
-                return cls.B
+                return cls(cls.B)
             case _:
                 raise ValueError(f'Unknown value: {value}')
 

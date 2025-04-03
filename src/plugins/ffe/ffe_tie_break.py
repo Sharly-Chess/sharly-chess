@@ -2,13 +2,16 @@ from abc import ABC, abstractmethod
 from contextlib import suppress
 from functools import cache, lru_cache
 from math import floor
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairing import Pairing
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.tie_break import AbstractTieBreak
-from data.tournament import Tournament
 from data.util import TournamentPairing, Result, StaticUtils
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 
 @lru_cache(maxsize=32)
@@ -31,9 +34,9 @@ class AbstractPapiTieBreak(AbstractTieBreak, ABC):
     """Implementation of the tie-breaks as in Papi.
     Computation inaccuracies are reproduced"""
 
-    @property
+    @staticmethod
     @abstractmethod  # AS the usage is for Papi, papi_id has to be implemented
-    def papi_id(self) -> str:
+    def static_papi_id() -> str:
         pass
 
 
@@ -102,7 +105,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
 
     def compute_papi_buchholz_player_value(
         self,
-        player: Player,
+        player: TournamentPlayer,
         *,
         after_round: int | None,
         use_cut_top: bool = False,
@@ -110,6 +113,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     ) -> float:
         if after_round is None:
             after_round = max(player.pairings)
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         cut = self._papi_buchholz_cut(tournament.rounds)
         cut_top = cut if use_cut_top else 0
@@ -141,6 +145,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
                 )
                 scores.append(dummy_points)
                 continue
+            assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if tournament.pairing.swiss:
                 opponent_adjusted_score = self._papi_adjusted_score(
@@ -159,16 +164,16 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
 
 
 class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PAPI_BUCHHOLZ'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Solkoff'
 
     @property
@@ -181,7 +186,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'Player',
+        player: 'TournamentPlayer',
         *,
         after_round: int | None,
     ) -> float:
@@ -191,16 +196,16 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
 
 class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Buchholz cut bottom')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PAPI_BUCHHOLZ_CUT_BOTTOM'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Brésilien'
 
     @property
@@ -213,7 +218,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
@@ -223,16 +228,16 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
 
 
 class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Median Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PAPI_MEDIAN_BUCHHOLZ'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Harkness'
 
     @property
@@ -245,7 +250,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
@@ -258,16 +263,16 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
 
 class PapiPerformanceTieBreak(AbstractPapiTieBreak):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Performance')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PAPI_PERFORMANCE'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Performance'
 
     @property
@@ -280,10 +285,11 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
@@ -295,6 +301,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
         ratings = []
         score = 0
         for pairing in pairings:
+            assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
             with suppress(KeyError):
                 rating = min(
@@ -313,16 +320,16 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
 
 
 class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Sum of Buchholz')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PAPI_BUCHHOLZ_SUM'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'SommeDesBuchholz'
 
     @property
@@ -335,17 +342,18 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
             for round_index, pairing in player.pairings.items()
-            if round_index <= after_round
+            if round_index <= after_round and pairing.opponent_id is not None
         ]
         tie_break = PapiBuchholzTieBreak()
         return sum(
@@ -355,16 +363,16 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
 
 
 class PapiKashdanTieBreak(AbstractPapiTieBreak):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def static_name() -> str:
         return _('Kashdan')
 
-    @property
-    def id(self) -> str:
+    @staticmethod
+    def static_id() -> str:
         return 'PAPI_KASHDAN'
 
-    @property
-    def papi_id(self) -> str:
+    @staticmethod
+    def static_papi_id() -> str:
         return 'Kashdan'
 
     @property
@@ -377,7 +385,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
             self,
-            player: 'Player',
+            player: 'TournamentPlayer',
             *,
             after_round: int | None,
     ) -> float:

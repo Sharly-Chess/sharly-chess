@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal d-block">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -258,7 +258,17 @@
                     </h4>
                     <div class="row">
                         {% for index in [1, 2, 3] %}
-                            <div class="file-exists col-12 col-md-4 mb-3" {{ macros.tooltip_attributes('info', _('Fields relying on the Papi database can\'t be updated if the file does not exist.'), 'right') }}>
+                            <div
+                                class="file-exists col-12 col-md-4 mb-3"
+                                data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
+                                {{
+                                    macros.tooltip_attributes(
+                                        'info',
+                                        _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
+                                        'right'
+                                    )
+                                }}
+                            >
                                 {{ admin_macros.select_input(
                                     name='tie_break_' ~ index|string,
                                     label=_('Tie-break #%(index)d:', index=index),
@@ -307,7 +317,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Create') }}
                 {% elif action == 'update' %}
-                    {{ _('Update') }}
+                    {{ _('Save') }}
                 {% elif action == 'delete' %}
                     {{ _('Delete') }}
                 {% else %}

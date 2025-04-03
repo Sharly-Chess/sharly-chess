@@ -54,12 +54,12 @@ class FFESession(Session):
     """A requests session specialized for communication with the FFE website.
     Currently, it relies on hacks, because no API is available."""
 
-    def __init__(self, tournament: Tournament, debug: bool):
+    def __init__(self, tournament: Tournament | None, debug: bool):
         super().__init__()
-        self.tournament: Tournament = tournament
+        self.tournament: Tournament | None = tournament
         self.debug = debug
-        self.ffe_state: dict[str, str] | None = None
-        self.auth_state: dict[str, str] | None = None
+        self.ffe_state: dict[str, str] = {}
+        self.auth_state: dict[str, str | None] = {}
         self.tournament_ffe_url: str | None = None
         self.last_url_read: str | None = None
 
@@ -76,7 +76,7 @@ class FFESession(Session):
                     'read_url(%s), method=%s', url, 'POST' if data or files else 'GET'
                 )
             if not data and not files:
-                response: Response = self.get(url)
+                response = self.get(url)
             else:
                 if self.debug:
                     if data:
@@ -97,13 +97,13 @@ class FFESession(Session):
                         for field_id, file in files.items():
                             logger.info('  - %s: [%s]', field_id, file)
                 if not files:
-                    response: Response = self.post(url, data=data)
+                    response = self.post(url, data=data)
                 else:
                     handlers = {
                         file_id: open(file_name, 'rb')
                         for file_id, file_name in files.items()
                     }
-                    response: Response = self.post(url, data=data, files=handlers)
+                    response = self.post(url, data=data, files=handlers)
                     for handler in handlers.values():
                         handler.close()
             content: str = response.content.decode()
@@ -112,8 +112,8 @@ class FFESession(Session):
                     datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
                 )
                 debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
-                with open(debug_file, 'w', encoding='utf-8') as file:
-                    file.write(content)
+                with open(debug_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
                 logger.info('Raw content stored to %s.', debug_file)
             return content
         except ConnectionError as ex:
@@ -141,7 +141,7 @@ class FFESession(Session):
         return None
 
     def _parse_html_content(
-        self, html: str
+        self, html
     ) -> tuple[AdvancedHTMLParser | None, str | None]:
         """Parses any HTML content received and returns the parsed content
         (as an HTML parser) and an error (as a string) if any (or None)"""
@@ -149,17 +149,18 @@ class FFESession(Session):
         error: str | None = None
         parser.parseStr(html)
         if self.debug:
+            assert self.last_url_read is not None
             date_str = datetime.strftime(
                 datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
             )
             debug_file = (
                 TMP_DIR
-                / f'{self.last_url_read.replace("/", "_")}-{date_str}-parsed.html'
+                / f'{(self.last_url_read or "").replace("/", "_")}-{date_str}-parsed.html'
             )
             with open(debug_file, 'w', encoding='utf-8') as file:
                 file.write(parser.getHTML())
             logger.info('Parsed content stored to %s', debug_file)
-        tag: AdvancedTag = parser.getElementById(
+        tag: AdvancedTag | None = parser.getElementById(
             'ctl00_ContentPlaceHolderMain_LabelError'
         )
         if tag:
@@ -177,13 +178,12 @@ class FFESession(Session):
     def read_ffe_state(self, parser: AdvancedHTMLParser, url: str) -> bool:
         """Reads the main state variables of a request and stores them into self.ffe_state.
         Returns True on success, False otherwise."""
-        self.ffe_state: dict[str, str] = {}
         for id_ in [
             VIEW_STATE_INPUT_ID,
             VIEW_STATE_GENERATOR_INPUT_ID,
             EVENT_VALIDATION_INPUT_ID,
         ]:
-            tag: AdvancedTag = parser.getElementById(id_)
+            tag: AdvancedTag | None = parser.getElementById(id_)
             if not tag:
                 print_interactive_error(
                     _(
@@ -191,7 +191,8 @@ class FFESession(Session):
                     ).format(url=url, id=id_)
                 )
                 return False
-            self.ffe_state[id_] = tag.attributesDict['value']
+            value = getattr(tag, 'attributesDict', {}).get('value', '')
+            self.ffe_state[id_] = str(value)
             if self.debug:
                 logger.info(
                     '> ffe_state[%s]=[%s]',
@@ -210,7 +211,7 @@ class FFESession(Session):
         print_interactive_info(
             _('Initializing a session to [{url}]...').format(url=url)
         )
-        html: str = self._read_url(url=url, data=None, files=None)
+        html: str | None = self._read_url(url=url, data=None, files=None)
         if not html:
             return False
         parser, error = self._parse_html_content(html)
@@ -220,12 +221,12 @@ class FFESession(Session):
             print_interactive_success(_('OK'))
         return result
 
-    def _ffe_auth(self) -> bool:
+    def _ffe_auth(self, ffe_id: str | None, ffe_password: str | None) -> bool | None:
         """Authenticates on the FFE admin website."""
+        
         assert self.ffe_state
-
-        (ffe_id, ffe_password) = self.get_id_and_password()
-
+        if ffe_id is None or ffe_password is None:
+            return False
         print_interactive_info(_('Authenticating...'))
         url = FFE_URL + '/Default.aspx'
         post_data: dict[str, str] = {
@@ -234,61 +235,67 @@ class FFESession(Session):
                 VIEW_STATE_GENERATOR_INPUT_ID
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
-            'ctl00$TextLogin': str(ffe_id),
-            'ctl00$TextPassword': str(ffe_password),
+            'ctl00$TextLogin': ffe_id,
+            'ctl00$TextPassword': ffe_password,
             'ctl00$CmdLogin.x': '12',
             'ctl00$CmdLogin.y': '6',
         }
-        html: str = self._read_url(url=url, data=post_data, files=None)
+        html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return False
+            return None
         parser, error = self._parse_html_content(html)
         if error:
-            return False
+            return None
+        assert parser is not None
         if not self.read_ffe_state(parser, url):
-            return False
-        self.auth_state = {}
+            return None
         for id_ in [
             SET_VISIBLE_LINK_ID,
             FEES_LINK_ID,
             UPLOAD_LINK_ID,
             UPLOAD_RULES_LINK_ID,
         ]:
-            tag: AdvancedTag = parser.getElementById(id_)
-            self.auth_state[id_] = tag.innerText if tag else None
+            tag = parser.getElementById(id_)
+            self.auth_state[id_] = (tag.innerText or None) if tag else None
             if self.debug:
+                inner_text = self.auth_state[id_] or ''
                 logger.info(
                     '> auth_state[%s]=[%s]',
                     id_,
-                    self.auth_state[id_][:64]
-                    + ('...' if len(self.auth_state[id_]) > 64 else '')
+                    inner_text[:64]
+                    + ('...' if len(inner_text) > 64 else '')
                     if self.auth_state[id_]
                     else 'None',
                 )
-        tag: AdvancedTag = parser.getElementById(VIEW_LINK_ID)
+        tag = parser.getElementById(VIEW_LINK_ID)
         if not tag:
             print_interactive_error(_('Authentication failed.'))
             return False
-        self.tournament_ffe_url = tag.attributesDict['href']
+        value = getattr(tag, 'attributesDict', {}).get('href', '')
+        self.tournament_ffe_url = value
         if self.debug:
             logger.info('> tournament_ffe_url=[%s]', self.tournament_ffe_url)
         print_interactive_success(_('OK'))
         return True
+    
 
-    def test_auth(self):
-        (ffe_id, ffe_password) = self.get_id_and_password(True)
+    def test_auth(self, ffe_id: str | None, ffe_password: str | None):
+        """Tries to authenticate on the FFE admin website for the tournament.
+        Returns True on success, False if the credentials are incorrect, or
+        None if they couldn't be tested"""
 
-        """Tries to authenticate on the FFE admin website for the tournament."""
         logger.info(_('Tournament [{ffe_id}]:').format(ffe_id=ffe_id))
         if not self._ffe_init():
-            return
-        if not self._ffe_auth():
-            return
+            return None
+        if not self._ffe_auth(ffe_id, ffe_password):
+            return False
+        return True
 
-    def get_fees(self):
-        (ffe_id, ffe_password) = self.get_id_and_password(True)
-
+    def get_fees(self) -> None:
         """Downloads the fees for the tournament."""
+
+        assert self.tournament is not None
+        (ffe_id, ffe_password) = self.get_id_and_password(True)
         print_interactive_info(
             _('Getting fees for tournament [{ffe_id}]...').format(
                 ffe_id=ffe_id
@@ -296,27 +303,28 @@ class FFESession(Session):
         )
         if not self._ffe_init():
             return
-        if not self._ffe_auth():
+        if not self._ffe_auth(ffe_id, ffe_password):
             return
         assert self.auth_state
         if self.debug:
             logger.info(
                 '> auth_state[%s]=[%s]', FEES_LINK_ID, self.auth_state[FEES_LINK_ID]
             )
-        if self.auth_state[FEES_LINK_ID] is None:
+        fees_link_id = self.auth_state[FEES_LINK_ID]
+        if fees_link_id is None:
             print_interactive_warning(
                 _(
                     'Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website.'
                 )
             )
             return
-        if self.auth_state[FEES_LINK_ID].lower() == 'tournoi exempté de droits':
+        if fees_link_id.lower() == 'tournoi exempté de droits':
             print_interactive_info(_('Tournament exempt from registration fees.'))
             return
-        if self.auth_state[FEES_LINK_ID].lower() != 'afficher la facture':
+        if fees_link_id.lower() != 'afficher la facture':
             print_interactive_error(
                 _('Invalid fees link text [{text}].').format(
-                    text=self.auth_state[FEES_LINK_ID]
+                    text=fees_link_id
                 )
             )
             return
@@ -330,16 +338,19 @@ class FFESession(Session):
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
-        html: str = self._read_url(url=url, data=post_data, files=None)
+        html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
             return
         FEES_DIR.mkdir(exist_ok=True, parents=True)
         base: AdvancedTag = AdvancedTag('base')
         base.setAttribute('href', FFE_URL)
         parser, error = self._parse_html_content(html)
+        assert parser is not None
         if error:
-            return False
-        head: AdvancedTag = parser.getElementsByTagName('head')[0]
+            return
+        head: AdvancedTag | None = parser.getElementsByTagName('head')[0]
+        if not head:
+            return
         head.insertBefore(base, head.getChildren()[0])
         file: Path = Path(FEES_DIR, str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html')
         with open(file, 'w', encoding='utf-8') as f:
@@ -351,6 +362,9 @@ class FFESession(Session):
         return
 
     def get_id_and_password(self, do_log: bool = False) -> tuple[str | None, str | None]:
+        """Fetches the FFE ID and password for the tournament from the plugin data."""
+
+        assert self.tournament is not None
         pd = self.tournament.plugin_data
         ffe_id = get_data(pd, 'ffe_id')
         ffe_password = get_data(pd, 'ffe_password')
@@ -370,6 +384,7 @@ class FFESession(Session):
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""
 
+        assert self.tournament is not None
         (ffe_id, ffe_password) = self.get_id_and_password(True)
         if not ffe_id:
             return
@@ -381,7 +396,7 @@ class FFESession(Session):
         )
         if not self._ffe_init():
             return
-        if not self._ffe_auth():
+        if not self._ffe_auth(ffe_id, ffe_password):
             return
         if self.debug:
             logger.info(
@@ -414,13 +429,12 @@ class FFESession(Session):
         logger.debug('Copie de %s vers %s...', self.tournament.file, tmp_file)
         tmp_file.write_bytes(self.tournament.file.read_bytes())
         with PapiDatabase(tmp_file, write=True) as tmp_database:
-            tmp_database: PapiDatabase
             logger.debug("Deleting personal players' data...")
             tmp_database.delete_players_personal_data()
             logger.debug('Deleting forfeits if no pairings...')
             tmp_database.remove_forfeits_if_no_pairings()
             tmp_database.commit()
-        html: str = self._read_url(
+        html: str | None = self._read_url(
             url=url,
             data=post,
             files={
@@ -430,7 +444,7 @@ class FFESession(Session):
         tmp_file.unlink()
         if not html:
             return
-        dummy, error = self._parse_html_content(html)
+        __, error = self._parse_html_content(html)
         if error:
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
@@ -459,10 +473,13 @@ class FFESession(Session):
                 )
             )
             return
-        if self.auth_state[SET_VISIBLE_LINK_ID].lower().startswith('désactiver'):
+        set_visible_link_id = self.auth_state[SET_VISIBLE_LINK_ID]
+        if set_visible_link_id is None:
+            return
+        if set_visible_link_id.lower().startswith('désactiver'):
             print_interactive_info(_('Data is already displayed on the FFE website.'))
             return
-        if not self.auth_state[SET_VISIBLE_LINK_ID].lower().startswith('activer'):
+        if not set_visible_link_id.lower().startswith('activer'):
             print_interactive_error(
                 _('Invalid display link text [{text}]').format(
                     text=self.auth_state[SET_VISIBLE_LINK_ID]
@@ -479,14 +496,16 @@ class FFESession(Session):
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
-        html: str = self._read_url(url=url, data=post_data, files=None)
+        html = self._read_url(url=url, data=post_data, files=None)
         if not html:
             return
         print_interactive_success(_('Results upload OK'))
 
-    def upload_rules(self):
+    def upload_rules(self) -> None:
         """Upload the rules of the tournament to the FFE admin website."""
 
+        assert self.tournament is not None
+        assert self.tournament.rules is not None
         (ffe_id, ffe_password) = self.get_id_and_password(True)
         if not ffe_id:
             return
@@ -498,7 +517,7 @@ class FFESession(Session):
         )
         if not self._ffe_init():
             return
-        if not self._ffe_auth():
+        if not self._ffe_auth(ffe_id, ffe_password):
             return
         if self.debug:
             logger.info(
@@ -523,7 +542,7 @@ class FFESession(Session):
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
-        html: str = self._read_url(
+        html = self._read_url(
             url=url,
             data=post,
             files={
@@ -533,7 +552,7 @@ class FFESession(Session):
         if not html:
             logger.error('html')
             return
-        dummy, error = self._parse_html_content(html)
+        __, error = self._parse_html_content(html)
         if error:
             logger.error(error)
             return
