@@ -97,7 +97,7 @@ class ConfigDatabase(SQLiteVersionedDatabase):
             'locale',
         ]
         params: tuple = (
-            False,
+            stored_config.force_edit,
             stored_config.log_level,
             stored_config.launch_browser,
             stored_config.federation,
