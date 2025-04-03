@@ -177,7 +177,6 @@ class AbstractPlugin(IdentifiableEntity, ABC):
         from data.loader import EventLoader
         from database.sqlite.event.event_database import EventDatabase
 
-        assert self.migration_manager is not None
         for uniq_id in EventLoader().events_by_id:
             with EventDatabase(uniq_id, True) as database:
                 if migration_manager := self.get_migration_manager(database):
