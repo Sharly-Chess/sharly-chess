@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from decimal import Decimal
+from typing import TYPE_CHECKING, cast
 import unittest
 
 
@@ -16,11 +17,13 @@ from data.util import (
 from data.player import TournamentPlayer, Federation, Player
 from plugins.ffe import ffe_tie_break
 
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 @dataclass
 class TieBreakTournament:
     rounds: int
-    players_by_id: dict[int, Player] = field(default_factory=dict)
+    players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
     pairing: TournamentPairing = TournamentPairing.UNKNOWN
     rating: TournamentRating = TournamentRating.STANDARD
     point_values: dict[Result, float] | None = None
@@ -323,7 +326,7 @@ class SwissTieBreaks(unittest.TestCase):
             pairing=TournamentPairing.STANDARD,
         )
         for player in self.tournament.players_by_id.values():
-            player.tournament = self.tournament
+            player.tournament = cast('Tournament', self.tournament)
 
     def test_points(self):
         results = {
@@ -566,7 +569,7 @@ class SwissTieBreaks(unittest.TestCase):
         )
         results = {
             i: tie_break_.compute_player_value(
-                self.tournament.players_by_id[i], after_round=None
+                cast(Player, self.tournament.players_by_id[i]), after_round=None
             )
             for i in (5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15)
         }
@@ -995,7 +998,7 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
         # NOTE(Amaras): the following two players do not have the
-        # correct PTP, according to the tie-break exercices.
+        # correct PTP, according to the tie-break exercises.
         # I do not know why this happens, but it's the closest I got
         # to having all correct values
         self.assertEqual(
@@ -1006,7 +1009,7 @@ class SwissTieBreaks(unittest.TestCase):
         )
         self.assertEqual(
             tie_break_.compute_player_value(
-                self.tournament.players_by_id[14], after_round=None
+                cast(Player, self.tournament.players_by_id[14]), after_round=None
             ),
             1940 # NOTE(Amaras): this should be 1942
         )
@@ -1195,7 +1198,7 @@ class RoundRobinTieBreaks(unittest.TestCase):
             }
         )
         for player in self.tournament.players_by_id.values():
-            player.tournament = self.tournament
+            player.tournament = cast('Tournament', self.tournament)
 
     def test_all_players_met_each_other(self):
         results = {
