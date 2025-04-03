@@ -7,10 +7,10 @@ from data.util import (
     PlayerRatingType,
     PlayerTitle,
 )
+from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.ffe.util import PlayerFFELicence
 
 logger: Logger = get_logger()
-
 
 class ChessEventPlayer:
     """A class representing a player information on ChessEvent."""
@@ -32,100 +32,54 @@ class ChessEventPlayer:
             
     def __init__(
         self,
-        chessevent_player_info: dict[str, bool | str | int | dict[int, float] | None],
+        chessevent_player_info: dict[str, bool | str | int | float | dict[int, float] | None],
     ):
-        self.last_name: str = ''
-        self.first_name: str = ''
-        self.federation: str = ''
-        self.fide_id: int = 0
-        self.gender: PlayerGender = PlayerGender.NONE
-        self.birth: float = 0.0
-        self.category: PlayerCategory = PlayerCategory.NONE
-        self.standard_rating: int = 0
-        self.standard_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
-        self.rapid_rating: int = 0
-        self.rapide_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
-        self.blitz_rating: int = 0
-        self.blitz_rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
-        self.title: PlayerTitle = PlayerTitle.NONE
-        self.ffe_id: int = 0
-        self.ffe_license: PlayerFFELicence = PlayerFFELicence.NONE
-        self.ffe_license_number: str = ''
-        self.ffe_league: str = ''
-        self.ffe_club_id: int = 0
-        self.ffe_club: str = ''
-        self.email: str = ''
-        self.phone: str = ''
-        self.fee: float = 0.0
-        self.paid: float = 0.0
-        self.check_in: bool = False
-        self.board: int = 0
-        self.skipped_rounds: dict[int, float] = {}
         self.error = True
-        key: str = ''
+        reader = ChessEventFieldReader(chessevent_player_info)
+        
         try:
-            self.last_name = str(chessevent_player_info[key := 'last_name'])
-            self.first_name = str(chessevent_player_info[key := 'first_name'])
-            self.federation = str(chessevent_player_info[key := 'federation'])
-            key = 'fide_id'
-            if chessevent_player_info[key]:
-                self.fide_id = int(chessevent_player_info[key])
-            key = 'gender'
-            if chessevent_player_info[key]:
-                self.gender = PlayerGender(int(chessevent_player_info[key]))
-            self.birth = float(chessevent_player_info[key := 'birth'])
-            self.ffe_id = int(chessevent_player_info[key := 'ffe_id'])
-            self.ffe_license = self.ffe_license_from_chessevent_value(
-                int(chessevent_player_info[key := 'ffe_license'])
-            )
-            self.ffe_license_number = str(
-                chessevent_player_info[key := 'ffe_license_number']
-            )
-            self.ffe_league = str(chessevent_player_info[key := 'ffe_league'])
-            key = 'ffe_club_id'
-            if chessevent_player_info[key]:
-                self.ffe_club_id = int(chessevent_player_info[key])
-                if self.ffe_club_id <= 0:
-                    raise ValueError
-            self.ffe_club = str(chessevent_player_info[key := 'ffe_club'])
-            key = 'category'
-            self.category = PlayerCategory.NONE
-            if chessevent_player_info[key]:
-                self.category = PlayerCategory(int(chessevent_player_info[key]))
-            self.standard_rating = int(chessevent_player_info[key := 'standard_rating'])
-            self.standard_rating_type = PlayerRatingType(
-                int(chessevent_player_info[key := 'standard_rating_type'])
-            )
-            self.rapid_rating = int(chessevent_player_info[key := 'rapid_rating'])
-            self.rapide_rating_type = PlayerRatingType(
-                int(chessevent_player_info[key := 'rapid_rating_type'])
-            )
-            self.blitz_rating = int(chessevent_player_info[key := 'blitz_rating'])
-            self.blitz_rating_type = PlayerRatingType(
-                int(chessevent_player_info[key := 'blitz_rating_type'])
-            )
-            self.title = PlayerTitle(int(chessevent_player_info[key := 'title']))
-            self.email = str(chessevent_player_info[key := 'email'])
-            self.phone = str(chessevent_player_info[key := 'phone'])
-            self.fee = float(chessevent_player_info[key := 'fee'])
-            self.paid = float(chessevent_player_info[key := 'paid'])
-            self.check_in = bool(chessevent_player_info[key := 'check_in'])
-            self.board = int(chessevent_player_info[key := 'board'])
+            self.last_name = reader.get('last_name', str)
+            self.first_name = reader.get('first_name', str)
+            self.federation = reader.get('federation', str)
+            self.fide_id = reader.get('fide_id', int, 0)
+            self.gender = reader.get_enum('gender', PlayerGender, PlayerGender.NONE)
+            self.birth = float(reader.get('birth', int))
+
+            self.ffe_id = reader.get('ffe_id', int)
+            self.ffe_license = self.ffe_license_from_chessevent_value(reader.get('ffe_license', int))
+            self.ffe_license_number = reader.get('ffe_license_number', str)
+            self.ffe_league = reader.get('ffe_league', str)
+            self.ffe_club_id = reader.get('ffe_club_id', int, 0)
+            self.ffe_club = reader.get('ffe_club', str, '')
+
+            self.category = reader.get_enum('category', PlayerCategory, PlayerCategory.NONE)
+            self.standard_rating = reader.get('standard_rating', int)
+            self.standard_rating_type = reader.get_enum('standard_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED)
+            self.rapid_rating = reader.get('rapid_rating', int)
+            self.rapide_rating_type = reader.get_enum('rapid_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED)
+            self.blitz_rating = reader.get('blitz_rating', int)
+            self.blitz_rating_type = reader.get_enum('blitz_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED)
+            self.title = reader.get_enum('title', PlayerTitle, PlayerTitle.NONE)
+
+            self.email = reader.get('email', str)
+            self.phone = reader.get('phone', str)
+            self.fee = float(reader.get('fee', (int, float)))
+            self.paid = float(reader.get('paid', (int, float)))
+            self.check_in = bool(reader.get('check_in', (bool, int)))
+            self.board = reader.get('board', int)
+
             self.skipped_rounds: dict[int, float] = {}
-            key = 'skipped_rounds'
-            for round_ in chessevent_player_info[key]:
-                if int(round_) in range(1, 25) and chessevent_player_info[key][
-                    round_
-                ] in [0.0, 0.5]:
-                    self.skipped_rounds[int(round_)] = chessevent_player_info[key][
-                        round_
-                    ]
+            skipped = reader.get('skipped_rounds', dict, {})
+            for round_, val in skipped.items():
+                if int(round_) in range(1, 25) and val in [0.0, 0.5]:
+                    self.skipped_rounds[int(round_)] = val
                 else:
                     raise ValueError
+
         except KeyError:
             logger.error(
                 'Field [%s] not found for player [%s %s]',
-                key,
+                reader.last_key,
                 self.last_name,
                 self.first_name,
             )
@@ -133,12 +87,13 @@ class ChessEventPlayer:
         except (TypeError, ValueError):
             logger.error(
                 'Invalid value [%s] for field [%s] for player [%s %s]',
-                chessevent_player_info[key],
-                key,
+                chessevent_player_info[reader.last_key or ''],
+                reader.last_key,
                 self.last_name,
                 self.first_name,
             )
             return
+
         self.error = False
 
     def __str__(self) -> str:

@@ -1746,6 +1746,9 @@ msgstr "Montant [{amount}] non valide."
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 
+msgid "Invalid board number range."
+msgstr ""
+
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 
@@ -1784,6 +1787,9 @@ msgstr "Mél [{mail}] non valide."
 
 msgid "Invalid phone number [{phone}]."
 msgstr "Numéro de téléphone [{phone}] non valide."
+
+msgid "Invalid player number range."
+msgstr ""
 
 msgid "Invalid response from GitHub: {ex}."
 msgstr "Réponse non valide de GitHub : {ex}."
@@ -3710,9 +3716,6 @@ msgstr "Le tournoi [{tournament_uniq_id}] a été modifié."
 msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
 msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{boards_number}] échiquiers (< [{first}]), famille ignorée."
 
-msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{player_count}] joueur·euses (< [{first}]), famille ignorée."
-
 msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr "Le tournoi [{tournament_uniq_id}] est en cours."
 
@@ -3730,6 +3733,9 @@ msgstr "Tournoi [{tournament_uniq_id}] : {text}"
 
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Le tournoi [{uniq_id}] existe déjà."
+
+msgid "Tournament can not be read, family ignored."
+msgstr ""
 
 msgid "Tournament creation"
 msgstr "Création d'un tournoi"
@@ -3831,8 +3837,8 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 msgid "USE AT YOUR OWN RISKS"
 msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
-msgid "Unable to create Papi files since no tournaments are defined."
-msgstr "Impossible de créer les fichiers Papi car aucun tournoi n'est défini."
+msgid "Unable to create Papi files."
+msgstr "Impossible de créer les fichiers Papi."
 
 msgid "Under 10"
 msgstr "Moins de 10"
@@ -4216,8 +4222,8 @@ msgstr "{days} jours"
 msgid "{days} days ago"
 msgstr "Il y a {days} jours"
 
-msgid "{family_type}-family"
-msgstr "famille-{family_type}"
+msgid "{family_type}-screen"
+msgstr ""
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
@@ -4247,4 +4253,10 @@ msgstr "ecran-{screen_type}"
 
 #~ msgid "Update *** BUTTON FOR DATABASE MODAL"
 #~ msgstr "Mettre à jour"
+
+#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+#~ msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{player_count}] joueur·euses (< [{first}]), famille ignorée."
+
+#~ msgid "{family_type}-family"
+#~ msgstr "famille-{family_type}"
 

@@ -1746,6 +1746,9 @@ msgstr ""
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
+msgid "Invalid board number range."
+msgstr ""
+
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
@@ -1783,6 +1786,9 @@ msgid "Invalid mail [{mail}]."
 msgstr ""
 
 msgid "Invalid phone number [{phone}]."
+msgstr ""
+
+msgid "Invalid player number range."
 msgstr ""
 
 msgid "Invalid response from GitHub: {ex}."
@@ -3710,9 +3716,6 @@ msgstr ""
 msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-msgstr ""
-
 msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr ""
 
@@ -3729,6 +3732,9 @@ msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Tournament can not be read, family ignored."
 msgstr ""
 
 msgid "Tournament creation"
@@ -3831,7 +3837,7 @@ msgstr ""
 msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
-msgid "Unable to create Papi files since no tournaments are defined."
+msgid "Unable to create Papi files."
 msgstr ""
 
 msgid "Under 10"
@@ -4216,7 +4222,7 @@ msgstr ""
 msgid "{days} days ago"
 msgstr ""
 
-msgid "{family_type}-family"
+msgid "{family_type}-screen"
 msgstr ""
 
 msgid "{number} players written to the database."
@@ -4247,4 +4253,10 @@ msgstr ""
 
 #~ msgid "Update *** BUTTON FOR DATABASE MODAL"
 #~ msgstr "Update"
+
+#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+#~ msgstr ""
+
+#~ msgid "{family_type}-family"
+#~ msgstr ""
 
