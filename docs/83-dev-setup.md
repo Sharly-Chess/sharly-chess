@@ -10,22 +10,26 @@ Simply checkout from https://github.com/papi-web-org/papi-web and play ;-)
 
 ### Lancement du serveur web
 
-![](images/dev-server.jpg)
+```
+python papi_web.py
+```
 
 Set environment variable ``PAPI_WEB_EXPERIMENTAL`` to ``1`` to enable expérimental features:
-
-![](images/dev-server-experimental.jpg)
 
 > [!WARNING]
 > USE EXPERIMENTAL FEATURES AT YOUR OWN RISKS!
 
 ### Lancement de l'interface avec le serveur fédéral
 
-![](images/dev-ffe.jpg)
+```
+python papi_web.py --server
+```
 
 ### Lancement de l'interface avec la plateforme ChessEvent
 
-![](images/dev-chessevent.jpg)
+```
+python papi_web.py --chessevent
+```
 
 ## Création d'un exécutable Windows pour diffusion
 
@@ -36,9 +40,7 @@ Un environnement virtuel dédié est donc utilisé ne comprenant que les paquets
 ```
 python -m venv .venv-export
 .venv-export\Scripts\python.exe -m pip install --upgrade pip
-.venv-export\Scripts\pip.exe install .[export]
+.venv-export\Scripts\pip.exe install -e .[export]
 ```
 
-![](images/dev-export.jpg)
-
-L'exécutable est créé dans le répertoire `/export` et un environnement de test est créé dans `/export-test`.
+L'archive ZIP est créée dans le répertoire `/export` et un environnement de test est créé dans `/export-test`.
