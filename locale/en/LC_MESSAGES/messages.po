@@ -542,6 +542,9 @@ msgstr ""
 msgid "Choose what to do after closing the check-in:"
 msgstr ""
 
+msgid "Choose your language"
+msgstr ""
+
 msgid "Clear all the filters."
 msgstr ""
 
@@ -3286,9 +3289,6 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
-msgid "The following languages are available:"
-msgstr ""
-
 msgid "The following players did not check-in:"
 msgstr ""
 
@@ -4250,13 +4250,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Update *** BUTTON FOR DATABASE MODAL"
-#~ msgstr "Update"
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-#~ msgstr ""
-
-#~ msgid "{family_type}-family"
-#~ msgstr ""
 

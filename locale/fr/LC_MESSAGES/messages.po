@@ -542,6 +542,9 @@ msgstr "Choisir les colonnes affichées."
 msgid "Choose what to do after closing the check-in:"
 msgstr "Choisissez quoi faire après avoir fermé le pointage :"
 
+msgid "Choose your language"
+msgstr "Veuillez choisir votre langue"
+
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
@@ -3286,9 +3289,6 @@ msgstr "La fédération qui organise l'évènement."
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
 
-msgid "The following languages are available:"
-msgstr "Les langues suivantes sont disponibles :"
-
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
 
@@ -4250,13 +4250,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Update *** BUTTON FOR DATABASE MODAL"
-#~ msgstr "Mettre à jour"
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-#~ msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{player_count}] joueur·euses (< [{first}]), famille ignorée."
-
-#~ msgid "{family_type}-family"
-#~ msgstr "famille-{family_type}"
 
