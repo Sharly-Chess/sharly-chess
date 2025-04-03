@@ -55,7 +55,7 @@ try:
     for engine_argument in plugin_engine_arguments:
         if getattr(args, engine_argument.name, False):
             plugin_engine_argument = engine_argument
-            plugin_engine: Engine = engine_argument.init_engine()
+            engine_argument.init_engine()
             break
     if plugin_engine_argument is None:
         se: ServerEngine = ServerEngine(debug=(DEVEL_ENV and args.debug))
