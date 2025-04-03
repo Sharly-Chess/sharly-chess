@@ -14,7 +14,7 @@ from data.util import (
     TournamentPairing,
     TournamentRating
 )
-from data.player import TournamentPlayer, Federation, Player
+from data.player import TournamentPlayer, Federation
 from plugins.ffe import ffe_tie_break
 
 if TYPE_CHECKING:
@@ -569,7 +569,7 @@ class SwissTieBreaks(unittest.TestCase):
         )
         results = {
             i: tie_break_.compute_player_value(
-                cast(Player, self.tournament.players_by_id[i]), after_round=None
+                self.tournament.players_by_id[i], after_round=None
             )
             for i in (5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15)
         }
@@ -1009,7 +1009,7 @@ class SwissTieBreaks(unittest.TestCase):
         )
         self.assertEqual(
             tie_break_.compute_player_value(
-                cast(Player, self.tournament.players_by_id[14]), after_round=None
+                self.tournament.players_by_id[14], after_round=None
             ),
             1940 # NOTE(Amaras): this should be 1942
         )
