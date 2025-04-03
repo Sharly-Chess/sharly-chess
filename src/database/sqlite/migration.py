@@ -228,74 +228,63 @@ class MigrationManager[MigrationDatabase](ABC):
             raise ValueError(
                 self.log_prefix + f'unknown migration [{target_migration}]'
             )
-        if not self.is_metadata_installed:
-            logger.debug(self.log_prefix + 'Installing metadata...')
-            self.install_metadata()
-            if migration := self.get_migration_from_legacy_version():
-                self.set_migration(migration)
-            self.remove_legacy_version_field()
+        try:
+            if not self.is_metadata_installed:
+                logger.debug(self.log_prefix + 'Installing metadata...')
+                self.install_metadata()
+                if migration := self.get_migration_from_legacy_version():
+                    self.set_migration(migration)
+                self.remove_legacy_version_field()
 
-        version = self.get_version()
-        if version != self.latest_version:
-            self.set_version(version)
-            logger.debug(
-                self.log_prefix +
-                f'Version updated from [{version}] to [{self.latest_version}]'
+            version = self.get_version()
+            if version != self.latest_version:
+                self.set_version(version)
+                logger.debug(
+                    self.log_prefix +
+                    f'Version updated from [{version}] to [{self.latest_version}]'
+                )
+
+            current_migration = self.get_migration()
+            if target_migration == current_migration:
+                logger.debug(self.log_prefix + 'No migration to run')
+            else:
+                logger.info(
+                    self.log_prefix +
+                    f'Migrating from [{current_migration}] to [{target_migration}]...'
+                )
+                if current_migration > target_migration:
+                    self._rollback(target_migration)
+                else:
+                    self._upgrade(target_migration)
+                logger.info(self.log_prefix + 'Migration complete.')
+            self.database.commit()
+        except OperationalError as error:
+            logger.error(
+                self.log_prefix + f'Migration failed: {error}'
             )
 
-        current_migration = self.get_migration()
-        if target_migration == current_migration:
-            logger.debug(self.log_prefix + 'No migration to run')
-            return
-        logger.info(
-            self.log_prefix +
-            f'Migrating from [{current_migration}] to [{target_migration}]...'
-        )
-        migration_status = (
-            self._rollback(target_migration)
-            if current_migration > target_migration else
-            self._upgrade(target_migration)
-        )
-        if migration_status:
-            self.database.commit()
-            logger.info(self.log_prefix + 'Migration complete.')
-
-    def _upgrade(self, target_migration: str) -> bool:
+    def _upgrade(self, target_migration: str):
         while (
             migration := self._next_migration(
                 self.get_migration(), target_migration
             )
         ):
-            try:
-                self._get_migration_object(migration).forward()
-                self.set_migration(migration)
-                logger.debug(
-                    self.log_prefix + f'\t{migration} applied'
-                )
-            except OperationalError as error:
-                logger.error(
-                    self.log_prefix + f'Migration failed: {error}'
-                )
-                return False
-        return True
+            self._get_migration_object(migration).forward()
+            self.set_migration(migration)
+            logger.debug(
+                self.log_prefix + f'\t{migration} applied'
+            )
 
-    def _rollback(self, target_migration: str) -> bool:
+    def _rollback(self, target_migration: str):
         while (migration := self.get_migration()) != target_migration:
-            try:
-                self._get_migration_object(migration).backward()
-                self.set_migration(
-                    self._previous_migration(migration)
-                )
-                logger.debug(
-                    self.log_prefix + f'\t{migration} rolled back'
-                )
-            except OperationalError as error:
-                logger.error(
-                    self.log_prefix + f'Migration failed: {error}'
-                )
-                return False
+            self._get_migration_object(migration).backward()
+            self.set_migration(
+                self._previous_migration(migration)
+            )
+            logger.debug(
+                self.log_prefix + f'\t{migration} rolled back'
+            )
         self.set_migration(target_migration)
-        return True
 
 
 class DatabaseMigrationManager[MigrationDatabase](MigrationManager):
