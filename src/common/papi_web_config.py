@@ -10,7 +10,7 @@ import pyodbc
 import uvicorn
 from packaging.version import Version
 
-from common import TMP_DIR, BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR, PAPI_WEB_VERSION
+from common import BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
     _, trusted_locales, untrusted_locales, set_locale, get_locale, locale_localized_name
