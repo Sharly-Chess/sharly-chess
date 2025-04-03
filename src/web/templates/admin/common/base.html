@@ -27,9 +27,11 @@
                     <!-- end block admin_header_nav -->
                 </div>
                 <!-- block admin_header_action_buttons -->
-                {% block admin_header_action_buttons %}
-                    ADMIN_HEADER_ACTION_BUTTONS
-                {% endblock admin_header_action_buttons %}
+                <div class="d-flex gap-2 align-items-center">
+                    {% block admin_header_action_buttons %}
+                        ADMIN_HEADER_ACTION_BUTTONS
+                    {% endblock admin_header_action_buttons %}
+                </div>
                 <!-- end block admin_header_action_buttons -->
             </nav> 
         </div>

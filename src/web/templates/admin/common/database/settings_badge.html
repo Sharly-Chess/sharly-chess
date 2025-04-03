@@ -1,0 +1,9 @@
+<span
+    class="database-badge position-absolute p-0 rounded-circle bg-success"
+    hx-get="{{ url_for('admin-database-status-badge') }}"
+    hx-trigger="database-update-launched from:body"
+    hx-target="this"
+    hx-swap="outerHTML"
+>
+    <i class="bi bi-gear-fill"></i>
+</span>

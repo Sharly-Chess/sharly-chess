@@ -1,31 +1,17 @@
-import atexit
 import os.path
-import types
 import zipfile
+from collections.abc import Callable
 from contextlib import suppress
-from datetime import datetime, timedelta
+from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from sqlite3 import OperationalError, IntegrityError
-from threading import Event, Thread
-from time import time
-from typing import Iterator, Any
+from typing import Iterator, Any, override
 
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR
+from common import TMP_DIR, get_logger
 from common.i18n import _
-from common.logger import (
-    get_logger,
-    input_interactive,
-    print_interactive_info,
-    print_interactive_error,
-    print_interactive_success,
-    print_interactive_warning,
-)
-from common.network import NetworkMonitor
-from common.papi_web_config import PapiWebConfig
 from data.player import Player, Federation, Club
 from data.util import (
     TournamentRating,
@@ -33,6 +19,8 @@ from data.util import (
     PlayerGender,
     PlayerTitle,
 )
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourceDatabase, Days2OutdateDelay, NotifOutdateAction
 from plugins import PLUGINS_DIR
 
 from plugins.ffe import PLUGIN_NAME
@@ -43,71 +31,43 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 logger: Logger = get_logger()
 
 
-class FfeDatabase(SQLiteDatabase):
+class FfeDatabase(LocalSourceDatabase):
     """
     The SQLite database class for FFE players. Usage:
-    1. Check if the database exists and is up-to-date and update is requested (from an interactive script):
+    1. Check if the database exists and is up-to-date.
+        If outdated, the outdate action is executed:
     FfeDatabase().check()
     2. Search the database:
     with FfeDatabase() as ffe_database:
         for player in ffe_database.search_player('my name'):
             ...
     """
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe'
 
-    def __init__(self, write: bool = False):
-        super().__init__(TMP_DIR / f'ffe.{PapiWebConfig.federation_database_ext}', write)
-        self.stop_event = Event()
+    @staticmethod
+    def static_name() -> str:
+        return 'FFE'
 
     @property
-    def updated_at(self) -> datetime | None:
-        if self.exists():
-            return datetime.fromtimestamp(self.file.lstat().st_mtime)
+    def _schema_file_path(self) -> Path:
+        return PLUGINS_DIR / 'ffe' / 'create_ffe.sql'
 
-    def check(self):
-        """Checks if the database exists and is up to date and proposes to create it if not"""
-        yes_answer: str = _('Y *** THE LETTER TO ANSWER YES')
-        if not self.exists():
-            if not NetworkMonitor.connected():
-                print_interactive_warning(_('Not connected, can not create the FFE database.'))
-                return
-            if (
-                input_interactive(
-                    _(
-                        'The FFE database [{file}] was not found, do you want to create it (Y/n)? '
-                    ).format(file=self.file)
-                ).upper()
-                or yes_answer
-            ) != yes_answer:
-                return
-        else:
-            days_since_update = (datetime.now() - self.updated_at).days
-            if days_since_update >= 2:
-                if not NetworkMonitor.connected():
-                    print_interactive_warning(_('Not connected, can not update the FFE database.'))
-                    return
-                if (
-                    input_interactive(
-                        _(
-                            'The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? '
-                        ).format(file=self.file, days=days_since_update)
-                    ).upper()
-                    or yes_answer
-                ) != yes_answer:
-                    return
-            else:
-                return
-            
-        update_thread = Thread(target=self.create, daemon=True)
-        update_thread.start()
-        atexit.register(self.stop_background_thread, update_thread)
-    
-    def stop_background_thread(self, thread):
-        self.stop_event.set()
-        thread.join()
+    @property
+    def _source_file_path(self) -> Path:
+        return TMP_DIR / 'Data.mdb'
 
-    def create(self) -> bool:
-        """Create the FFE database, returns True if the database is available after the call, False otherwise."""
-        print_interactive_info(_('Downloading the FFE database...'))
+    @override
+    @property
+    def default_stored_database(self) -> StoredLocalSourceDatabase:
+        return StoredLocalSourceDatabase(
+            name=self.id,
+            outdate_delay=Days2OutdateDelay.static_id(),
+            outdate_action=NotifOutdateAction.static_id(),
+        )
+
+    def _download_source_file(self) -> bool:
         ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
         local_zip_file: Path = TMP_DIR / os.path.basename(ffe_database_url)
         with suppress(FileNotFoundError):
@@ -115,40 +75,42 @@ class FfeDatabase(SQLiteDatabase):
         try:
             response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
-                print_interactive_error(
-                    _('Could not download [{url}], error code [{code}].').format(
+                logger.error(
+                    self.log_prefix + _(
+                        'Could not download [{url}], error code [{code}].'
+                    ).format(
                         url=ffe_database_url, code=response.status_code
                     )
                 )
-                return self.exists()
+                return False
         except ConnectionError as ex:
-            print_interactive_error(
-                _('Could not download [{url}]: {ex}.').format(
-                    url=ffe_database_url, ex=ex
-                )
+            logger.error(
+                self.log_prefix + _(
+                    'Could not download [{url}]: {error}.'
+                ).format(url=ffe_database_url, error=ex)
             )
-            return self.exists()
+            return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
-            print_interactive_error(
-                _('No data received from [{url}].').format(url=ffe_database_url)
+            logger.error(
+                self.log_prefix + _(
+                    'No data received from [{url}].'
+                ).format(url=ffe_database_url)
             )
-            return True
-        local_mdb_file = TMP_DIR / 'Data.mdb'
-        with suppress(FileNotFoundError):
-            local_mdb_file.unlink()
+            return False
+        self._source_file_path.unlink(missing_ok=True)
         with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
             zip_ref.extractall(TMP_DIR)
-        if not local_mdb_file.exists():
-            print_interactive_error(_('Could not unzip data.'))
-            return self.exists()
-        print_interactive_info(_('Storing FFE data...'))
-        
-        tmp_file = self.file.with_suffix('.tmp')
-        tmp_file.unlink(missing_ok=True)
-        new_database = SQLiteDatabase(tmp_file, True)
+        local_zip_file.unlink()
+        if not self._source_file_path.exists():
+            logger.error(
+                self.log_prefix + _('Could not unzip data.')
+            )
+            return False
+        return True
 
-        translations: dict[str, types.FunctionType] = {
+    def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
+        translations: dict[str, Callable[[Any], Any] | None] = {
             'ffe_id': None,
             'ffe_licence_number': lambda s: s.strip().upper() if s else None,
             'last_name': lambda s: s.strip().upper(),
@@ -172,69 +134,51 @@ class FfeDatabase(SQLiteDatabase):
         column_names: list[str] = list(translations.keys())
         bindings: list[str] = [f':{column_name}' for column_name in column_names]
         escaped_column_names: list[str] = list(map(lambda s: f"`{s}`", column_names))
-        query: str = f'INSERT INTO player({", ".join(escaped_column_names)}) VALUES({", ".join(bindings)})'
-        if self.stop_event.is_set():
-            return False
-        
-        try:
-            with open(
-                PLUGINS_DIR / 'ffe' / 'create_ffe.sql', encoding='utf-8'
-            ) as f:
-                new_database._create(f.read())
-            with FfeAccessDatabase(local_mdb_file) as ffe_access_database:
-                new_database.write = True
-                with new_database:
-                    player_count: int = 0
-                    to_write: list[dict[str, Any]] = []
-                    data: dict[str, Any]
-                    for player_dict in ffe_access_database.read_player_dicts():
-                        try:
-                            data = {
-                                field: player_dict[field]
-                                if function is None
-                                else function(player_dict[field])
-                                for field, function in translations.items()
-                            }
-                            to_write.append(data)
-                            player_count += 1
-                            if player_count % 1000 == 0:
-                                new_database.executemany(query, to_write)
-                                to_write.clear()
-                                if self.stop_event.is_set():
-                                    return False
-                            if player_count % 100_000 == 0:
-                                new_database.commit()
-
-                        except ValueError:
-                            print_interactive_warning(
-                                _(
-                                    'Error reading the following row (player ignored): [{row}].'
-                                ).format(row=player_dict)
-                            )
-                    if to_write:
-                        new_database.executemany(query, to_write)
-                        new_database.commit()
-        except (OperationalError, IntegrityError) as ex:
-            print_interactive_error(
-                _('Error while creating the database: {ex}.').format(ex=ex)
-            )
-            tmp_file.unlink(missing_ok=True)
-            return False
-        
-        # Copy the new database to it's proper location
-        
-        self.acquire_lock()
-        self.file.unlink(missing_ok=True)
-        tmp_file.rename(self.file)
-        self.release_lock()
-        
-        print_interactive_success(
-            _('{number} players written to FFE database.').format(number=player_count)
+        query: str = (
+            f'INSERT INTO player({", ".join(escaped_column_names)}) '
+            f'VALUES({", ".join(bindings)})'
         )
-        self.create_indexes()
+        with FfeAccessDatabase(self._source_file_path) as ffe_access_database:
+            with database:
+                player_count: int = 0
+                to_write: list[dict[str, Any]] = []
+                data: dict[str, Any]
+                for player_dict in ffe_access_database.read_player_dicts():
+                    try:
+                        data = {
+                            field: player_dict[field]
+                            if function is None
+                            else function(player_dict[field])
+                            for field, function in translations.items()
+                        }
+                        to_write.append(data)
+                        player_count += 1
+                        if player_count % 1000 == 0:
+                            database.executemany(query, to_write)
+                            to_write.clear()
+                            if self.stop_event.is_set():
+                                return False
+                        if player_count % 100_000 == 0:
+                            database.commit()
+
+                    except ValueError:
+                        logger.warning(
+                            _(
+                                'Error reading the following row '
+                                '(player ignored): [{row}].'
+                            ).format(row=player_dict)
+                        )
+                if to_write:
+                    database.executemany(query, to_write)
+                    database.commit()
+        logger.info(
+            self.log_prefix + _(
+                '{number} players written to the database.'
+            ).format(number=player_count)
+        )
         return True
 
-    def create_indexes(self) -> None:
+    def _create_indexes(self):
         self.write = True
         with self:
             self.execute('CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)')
@@ -244,7 +188,7 @@ class FfeDatabase(SQLiteDatabase):
             self.commit()
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player | None:
+    def get_player_from_row(row: dict[str, Any]) -> Player:
         return Player(
             id=0,
             first_name=row['first_name'].title() if row['first_name'] else '',
@@ -286,7 +230,7 @@ class FfeDatabase(SQLiteDatabase):
                     "league": row['league'],
                 }
             }
-        ) if row else None
+        )
 
     def search_player(
         self,

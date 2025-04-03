@@ -1,0 +1,59 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-database-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _("Local Source Databases")}}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-database-options-update') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+            <table
+                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+            >
+                <thead>
+                    <th>
+                        {{ _('Database') }}
+                    </th>
+                    <th class="text-center">
+                        {{ _('Action delay') }}
+                    </th>
+                    <th class="text-center">
+                        {{ _('Action') }}
+                    </th>
+                    <th class="text-center">
+                        {{ _('Last update') }}
+                    </th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% for database in databases %}
+                        {% include 'database_row.html' %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap d-inline-flex gap-2 align-items-center"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill lh-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white d-inline-flex gap-2 align-items-center btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill lh-1"></i>
+                {{ _('Save') }}
+            </button>
+        </div>
+    </div>
+</div>

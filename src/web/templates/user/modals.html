@@ -46,7 +46,7 @@
 {% elif screen.type == 'input' %}
     {% if board %}
         {% with wp=board.white_player, bp=board.black_player %}
-            <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block">
+            <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
                 <div class="modal-content bg-secondary-subtle">
                     <div class="modal-header">
                     <div class="modal-title fs-4 fw-bold">{{ _('Enter the result') }}</div>
@@ -117,7 +117,7 @@
             </div>
         {% endwith %}
     {% elif player %}
-        <div class="modal-dialog modal-dialog-centered input-screen-result-modal d-block">
+        <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
             <div class="modal-content bg-secondary-subtle">
                 <div class="modal-header">
                     <div class="modal-title fs-4 fw-bold">{{ _('Check-in') }}</div>
