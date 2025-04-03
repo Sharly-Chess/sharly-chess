@@ -112,6 +112,10 @@ msgstr "/förflyttning"
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
 
+#, ai_translation
+msgid "1st day of the month"
+msgstr "Första dagen i månaden"
+
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
@@ -198,6 +202,14 @@ msgstr "Tillträde från det lokala nätverket (LAN/WAN)"
 #, ai_translation
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "Tillgång till arbiter-gränssnittet är inte tillåtet från denna klient."
+
+#, ai_translation
+msgid "Action"
+msgstr "Åtgärd"
+
+#, ai_translation
+msgid "Action delay"
+msgstr "Åtgärdsfördröjning"
 
 #, ai_translation
 msgid "Action: {action}"
@@ -360,6 +372,10 @@ msgstr "Behörighetskontroll misslyckades."
 #, ai_translation
 msgid "Authentication successful!"
 msgstr "Behörighetskontroll lyckades!"
+
+#, ai_translation
+msgid "Auto-update"
+msgstr "Automatisk uppdatering"
 
 #, ai_translation
 msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
@@ -696,6 +712,10 @@ msgid "Choose what to do after closing the check-in:"
 msgstr "Välj vad du ska göra efter att ha avslutat incheckningen:"
 
 #, ai_translation
+msgid "Choose your language"
+msgstr "Välj ditt språk"
+
+#, ai_translation
 msgid "Clear all the filters."
 msgstr "Rensa alla filter."
 
@@ -868,8 +888,8 @@ msgid "Could not download [{url}], error code [{code}]."
 msgstr "Kunde inte ladda ner [{url}], felkod [{code}]."
 
 #, ai_translation
-msgid "Could not download [{url}]: {ex}."
-msgstr "Kunde inte ladda ner [{url}]: {ex}."
+msgid "Could not download [{url}]: {error}."
+msgstr "Kunde inte ladda ner [{url}]: {error}."
 
 #, ai_translation
 msgid "Could not unzip data."
@@ -956,6 +976,10 @@ msgid "DRAW"
 msgstr "DRÅK"
 
 #, ai_translation
+msgid "Daily"
+msgstr "Varje dag"
+
+#, ai_translation
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr "Data för turneringen [{tournament_name}] på ChessEvent är oförändrade."
 
@@ -966,6 +990,26 @@ msgstr "Uppgifter för turneringen [{tournament_uniq_id}] kunde inte avkodas (ko
 #, ai_translation
 msgid "Data is already displayed on the FFE website."
 msgstr "Data visas redan på FFE:s webbplats."
+
+#, ai_translation
+msgid "Database"
+msgstr "Databas"
+
+#, ai_translation
+msgid "Database [{database}] - "
+msgstr "Databas [{database}]"
+
+#, ai_translation
+msgid "Database [{database}] successfully updated."
+msgstr "Databasen [{database}] har uppdaterats med lyckat resultat."
+
+#, ai_translation
+msgid "Database [{database}] unexpectedly not found at path [{path}]."
+msgstr "Databas [{database}] som oväntat inte finns i sökvägen [{path}]."
+
+#, ai_translation
+msgid "Database successfully updated."
+msgstr "Databasen har uppdaterats med lyckat resultat."
 
 #, ai_translation
 msgid "Date"
@@ -1080,6 +1124,10 @@ msgid "Directory:"
 msgstr "Katalog:"
 
 #, ai_translation
+msgid "Disabled"
+msgstr "Inaktiverad"
+
+#, ai_translation
 msgid "Display"
 msgstr "Visa"
 
@@ -1164,12 +1212,8 @@ msgid "Downloading failed with code [{code}]."
 msgstr "Nedladdning misslyckades med koden [{code}]."
 
 #, ai_translation
-msgid "Downloading the FFE database..."
-msgstr "Laddar ner FFE- databasen..."
-
-#, ai_translation
-msgid "Downloading the FIDE database..."
-msgstr "Laddar ner FIDE- databasen..."
+msgid "Downloading source file..."
+msgstr "Laddar ner källfil..."
 
 #, ai_translation
 msgid "Downloading version {version} from GitHub ([{url}])..."
@@ -1202,6 +1246,10 @@ msgstr "T.ex.: %(minutes)d (minuter)"
 #, ai_translation, python-format
 msgid "E.g.: %(num)d"
 msgstr "T.ex.: %(num)d"
+
+#, ai_translation, python-format
+msgid "E.g.: %(num)d%%"
+msgstr "T.ex.: %(num)d%"
 
 #, ai_translation, python-format
 msgid "E.g.: %(screen_type)s-screen"
@@ -1516,12 +1564,12 @@ msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Fel vid läsning av följande rad (spelare ignorerad): [{row}]."
 
 #, ai_translation
-msgid "Error while creating the database: {ex}."
-msgstr "Fel när databasen skapades: {ex}."
+msgid "Error when updating database [{database}]."
+msgstr "Fel vid uppdatering av databas [{database}]."
 
 #, ai_translation
-msgid "Error while updating the FIDE database."
-msgstr "Fel vid uppdatering av FIDE- databasen."
+msgid "Error while creating the database: {error}."
+msgstr "Fel när databasen skapades: {error}."
 
 #, ai_translation
 msgid "Errors have been found on families; rotators will not be loaded."
@@ -1947,6 +1995,14 @@ msgstr "Fast bräde:"
 msgid "Fixed boards:"
 msgstr "Fasta brädor:"
 
+#, ai_translation, python-format
+msgid "Font size adjustment (%%):"
+msgstr "Inställning av teckenstorlek (% %):"
+
+#, ai_translation, python-format
+msgid "Font size adjustment for the screen where 100%% is the default font size."
+msgstr "Inställning av teckensnittsstorlek för skärmen där 100%% är den förvalda teckenstorleken."
+
 #, fuzzy
 msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
 msgstr "Fore Bu."
@@ -2192,6 +2248,10 @@ msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Ogiltigt FFE-ID [{ffe_id}]."
 
 #, ai_translation
+msgid "Invalid FFE ID or password."
+msgstr "Ogiltigt FFE-ID eller lösenord."
+
+#, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Ogiltigt FFE-tillståndsnummer [{ffe_licence_number}]."
 
@@ -2210,6 +2270,10 @@ msgstr "Ogiltigt belopp [{amount}]."
 #, ai_translation
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr "Ogiltigt styrelsenummer [{fixed_board_str}]."
+
+#, ai_translation
+msgid "Invalid board number range."
+msgstr "Ogiltigt brädnummerintervall."
 
 #, ai_translation
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
@@ -2262,6 +2326,10 @@ msgstr "Ogiltigt brev [{mail}]."
 #, ai_translation
 msgid "Invalid phone number [{phone}]."
 msgstr "Ogiltigt telefonnummer [{phone}]."
+
+#, ai_translation
+msgid "Invalid player number range."
+msgstr "Ogiltigt antal spelare."
 
 #, ai_translation
 msgid "Invalid response from GitHub: {ex}."
@@ -2392,8 +2460,16 @@ msgid "List of players"
 msgstr "Förteckning över spelare"
 
 #, ai_translation
+msgid "Local Source Databases"
+msgstr "Lokala källdatabaser"
+
+#, ai_translation
 msgid "Local URL: {local_url}"
 msgstr "Lokal webbadress: {local_url}"
+
+#, ai_translation
+msgid "Local source databases settings have been updated."
+msgstr "Lokala källdatabaser har uppdaterats."
 
 #, ai_translation
 msgid "Log level"
@@ -2918,20 +2994,8 @@ msgid "Not connected, can not check Papi-web version."
 msgstr "Inte ansluten, kan inte kontrollera Papi-webbversionen."
 
 #, ai_translation
-msgid "Not connected, can not create the FFE database."
-msgstr "Kan inte anslutas, kan inte skapa FFE-databasen."
-
-#, ai_translation
-msgid "Not connected, can not create the FIDE database."
-msgstr "Inte ansluten, kan inte skapa FIDE-databasen."
-
-#, ai_translation
-msgid "Not connected, can not update the FFE database."
-msgstr "Inte ansluten, kan inte uppdatera FFE-databasen."
-
-#, ai_translation
-msgid "Not connected, can not update the FIDE database."
-msgstr "Inte ansluten, kan inte uppdatera FIDE-databasen."
+msgid "Not connected, impossible to update."
+msgstr "Inte ansluten, omöjligt att uppdatera."
 
 #, ai_translation
 msgid "Not part of the selected tournament ({rounds} rounds)."
@@ -2940,6 +3004,10 @@ msgstr "Inte en del av den valda turneringen ({rounds} rundor)."
 #, ai_translation
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr "Inget att visa för turnering [{tournament_uniq_id}], familjen ignoreras."
+
+#, ai_translation
+msgid "Notification"
+msgstr "Anmälan"
 
 #, ai_translation, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
@@ -2988,6 +3056,10 @@ msgstr "En gång"
 #, ai_translation
 msgid "One event found, press Enter (Q to quit): "
 msgstr "En händelse hittades, tryck på Enter (Q för att avsluta):"
+
+#, ai_translation
+msgid "Ongoing"
+msgstr "Pågående"
 
 #, ai_translation
 msgid "Only arbiters can see private events."
@@ -4042,12 +4114,8 @@ msgid "Starting Papi-web server, please wait..."
 msgstr "Börjar papi-webbserver, vänta..."
 
 #, ai_translation
-msgid "Storing FFE data..."
-msgstr "Lagra FFE- data..."
-
-#, ai_translation
-msgid "Storing FIDE data..."
-msgstr "Lagra FIDE- data..."
+msgid "Storing data..."
+msgstr "Lagra data..."
 
 #, ai_translation
 msgid "Sum of Buchholz"
@@ -4092,22 +4160,6 @@ msgstr "ChessEvent-anslutningen är inte definierad för turnering [{tournament_
 #, ai_translation
 msgid "The FFE ID is a positive integer."
 msgstr "FFE ID är ett positivt heltal."
-
-#, ai_translation
-msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "FFE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
-
-#, ai_translation
-msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "FFE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
-
-#, ai_translation
-msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
-
-#, ai_translation
-msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
-msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
 
 #, ai_translation
 msgid "The FIDE database is not available."
@@ -4228,10 +4280,6 @@ msgstr "Federationen som organiserar evenemanget."
 #, ai_translation
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Den första turneringen på skärmen, obligatorisk (det är möjligt att lägga till andra turneringar senare)."
-
-#, ai_translation
-msgid "The following languages are available:"
-msgstr "Följande språk finns tillgängliga:"
 
 #, ai_translation
 msgid "The following players did not check-in:"
@@ -4722,6 +4770,10 @@ msgid "Timers: %(num)d"
 msgstr "Tidtagare: %(num)d"
 
 #, ai_translation
+msgid "Today"
+msgstr "Idag"
+
+#, ai_translation
 msgid "Top cut must be at most equal to bottom cut."
 msgstr "Toppsnittet måste vara som mest lika med bottensnittet."
 
@@ -4782,10 +4834,6 @@ msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{
 msgstr "Turneringen [{tournament_uniq_id}] har endast [{boards_number}] styrelser (< [{first}]), familjen ignorerade."
 
 #, ai_translation
-msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-msgstr "Turneringen [{tournament_uniq_id}] har endast [{player_count}] spelare (< [{first}]), familjen ignorerade."
-
-#, ai_translation
 msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr "Turneringen [{tournament_uniq_id}] har börjat."
 
@@ -4808,6 +4856,10 @@ msgstr "Turnering [{tournament_uniq_id}]: {text}"
 #, ai_translation
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Turneringen [{uniq_id}] finns redan."
+
+#, ai_translation
+msgid "Tournament can not be read, family ignored."
+msgstr "Turneringen kan inte läsas, familjen ignoreras."
 
 #, ai_translation
 msgid "Tournament creation"
@@ -5051,6 +5103,10 @@ msgid "Update the players' information from an external data source."
 msgstr "Uppdatera spelarnas information från en extern datakälla."
 
 #, ai_translation
+msgid "Updating"
+msgstr "Uppdatering"
+
+#, ai_translation
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Ladda upp länk hittades inte, kontrollera att turneringen inte är markerad som klar på FFE webbplats."
 
@@ -5155,6 +5211,10 @@ msgid "Web server not started yet ({ex}), waiting..."
 msgstr "Webbserver ännu inte startat ({ex}), väntar..."
 
 #, ai_translation
+msgid "Weekly"
+msgstr "Varje vecka"
+
+#, ai_translation
 msgid "Welcome to Papi-web!"
 msgstr "Välkommen till Papi-webben!"
 
@@ -5229,6 +5289,10 @@ msgstr "Year of birth"
 #, ai_translation
 msgid "Yes"
 msgstr "Ja, det är jag."
+
+#, ai_translation
+msgid "Yesterday"
+msgstr "Igår"
 
 #, ai_translation
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
@@ -5445,16 +5509,20 @@ msgstr[0] "{count} Spelare uppdaterad."
 msgstr[1] "{count} Spelare uppdaterade."
 
 #, ai_translation
-msgid "{family_type}-family"
-msgstr "{family_type}-familj"
+msgid "{days} days"
+msgstr "{days} dagar"
 
 #, ai_translation
-msgid "{number} players written to FFE database."
-msgstr "{number} spelare skrivna till FFE databas."
+msgid "{days} days ago"
+msgstr "{days} dagar sedan"
 
 #, ai_translation
-msgid "{number} players written to FIDE database."
-msgstr "{number} spelare skrivna till FIDE databas."
+msgid "{family_type}-screen"
+msgstr "{family_type}-skärm"
+
+#, ai_translation
+msgid "{number} players written to the database."
+msgstr "{number} spelare skrivna till databasen."
 
 #, ai_translation
 msgid "{num} illegal move max"
@@ -5813,4 +5881,61 @@ msgstr "{screen_type}-skärm"
 
 #~ msgid "{number} players written."
 #~ msgstr "{number} Skrivna spelare."
+
+#~ msgid "Could not download [{url}]: {ex}."
+#~ msgstr "Kunde inte ladda ner [{url}]: {ex}."
+
+#~ msgid "Downloading the FFE database..."
+#~ msgstr "Laddar ner FFE- databasen..."
+
+#~ msgid "Downloading the FIDE database..."
+#~ msgstr "Laddar ner FIDE- databasen..."
+
+#~ msgid "Error while creating the database: {ex}."
+#~ msgstr "Fel när databasen skapades: {ex}."
+
+#~ msgid "Error while updating the FIDE database."
+#~ msgstr "Fel vid uppdatering av FIDE- databasen."
+
+#~ msgid "Not connected, can not create the FFE database."
+#~ msgstr "Kan inte anslutas, kan inte skapa FFE-databasen."
+
+#~ msgid "Not connected, can not create the FIDE database."
+#~ msgstr "Inte ansluten, kan inte skapa FIDE-databasen."
+
+#~ msgid "Not connected, can not update the FFE database."
+#~ msgstr "Inte ansluten, kan inte uppdatera FFE-databasen."
+
+#~ msgid "Not connected, can not update the FIDE database."
+#~ msgstr "Inte ansluten, kan inte uppdatera FIDE-databasen."
+
+#~ msgid "Storing FFE data..."
+#~ msgstr "Lagra FFE- data..."
+
+#~ msgid "Storing FIDE data..."
+#~ msgstr "Lagra FIDE- data..."
+
+#~ msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+#~ msgstr "FFE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
+
+#~ msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
+#~ msgstr "FFE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
+
+#~ msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
+#~ msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
+
+#~ msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
+#~ msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
+
+#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
+#~ msgstr "Turneringen [{tournament_uniq_id}] har endast [{player_count}] spelare (< [{first}]), familjen ignorerade."
+
+#~ msgid "{family_type}-family"
+#~ msgstr "{family_type}-familj"
+
+#~ msgid "{number} players written to FFE database."
+#~ msgstr "{number} spelare skrivna till FFE databas."
+
+#~ msgid "{number} players written to FIDE database."
+#~ msgstr "{number} spelare skrivna till FIDE databas."
 

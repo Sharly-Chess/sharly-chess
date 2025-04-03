@@ -962,6 +962,10 @@ msgid "E.g.: %(num)d"
 msgstr "Exemple : %(num)d"
 
 #, python-format
+msgid "E.g.: %(num)d%%"
+msgstr "Exemple : %(num)d%%"
+
+#, python-format
 msgid "E.g.: %(screen_type)s-screen"
 msgstr "Exemple : ecran-%(screen_type)s"
 
@@ -1218,9 +1222,6 @@ msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
 msgid "Error while creating the database: {error}."
 msgstr "Erreur lors de la création de la base de données: {error}."
-
-msgid "Error while updating the FIDE database."
-msgstr "Erreur pendant la mise à jour de la base de données FIDE."
 
 msgid "Errors have been found on families; rotators will not be loaded."
 msgstr "Des erreurs ont été trouvées sur les familles ; les écrans rotatifs ne seront pas chargés."
@@ -1545,6 +1546,14 @@ msgstr "Échiquier fixe :"
 
 msgid "Fixed boards:"
 msgstr "Échiquiers fixes :"
+
+#, python-format
+msgid "Font size adjustment (%%):"
+msgstr "Ajustement de la taille de police (%%) :"
+
+#, python-format
+msgid "Font size adjustment for the screen where 100%% is the default font size."
+msgstr "Ajustement de la taille de police pour l'écran, 100%% par défaut."
 
 msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
 msgstr "Fore Bu."
