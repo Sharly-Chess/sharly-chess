@@ -676,6 +676,7 @@ class TournamentAdminController(BaseEventAdminController):
                                     public=True,
                                     name=name,
                                     columns=1,
+                                    font_size=None,
                                     menu_link=True,
                                     menu_text=None,
                                     menu=menu,

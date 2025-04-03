@@ -133,6 +133,7 @@ class ScreenAdminController(BaseEventAdminController):
         menu_text: str | None = None
         menu: str | None = None
         columns: int | None = None
+        font_size: int | None = None
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
@@ -179,6 +180,11 @@ class ScreenAdminController(BaseEventAdminController):
                 field = 'columns'
                 try:
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
+                except ValueError:
+                    errors[field] = _('A positive integer is expected.')
+                field = 'font_size'
+                try:
+                    font_size = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if type_ != ScreenType.IMAGE:
@@ -292,18 +298,13 @@ class ScreenAdminController(BaseEventAdminController):
             id = web_context.admin_screen.id
         
         return StoredScreen(
-            id=id
-            if action
-            not in [
-                'create',
-                'clone',
-            ]
-            else None,
+            id=id,
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),
             name=name,
             columns=columns,
+            font_size=font_size,
             menu_link=menu_link,
             menu_text=menu_text,
             menu=menu,
@@ -459,6 +460,7 @@ class ScreenAdminController(BaseEventAdminController):
                     public: bool | None = None
                     name: str | None = None
                     columns: int | None = None
+                    font_size: int | None = None
                     menu_link: bool | None = None
                     menu_text: str | None = None
                     menu: str | None = None
@@ -529,6 +531,7 @@ class ScreenAdminController(BaseEventAdminController):
                             assert web_context.admin_screen.stored_screen is not None
                             public = web_context.admin_screen.stored_screen.public
                             columns = web_context.admin_screen.stored_screen.columns
+                            font_size = web_context.admin_screen.stored_screen.font_size
                             if web_context.admin_screen.type != ScreenType.IMAGE:
                                 menu_link = (
                                     web_context.admin_screen.stored_screen.menu_link
@@ -596,6 +599,7 @@ class ScreenAdminController(BaseEventAdminController):
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                         'columns': WebContext.value_to_form_data(columns),
+                        'font_size': WebContext.value_to_form_data(font_size),
                         'menu_link': WebContext.value_to_form_data(menu_link),
                         'menu_text': WebContext.value_to_form_data(menu_text),
                         'menu': WebContext.value_to_form_data(menu),

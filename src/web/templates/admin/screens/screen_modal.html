@@ -229,12 +229,21 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.number_input(
+                                    name='font_size',
+                                    label=_('Font size adjustment (%%):'),
+                                    placeholder=_('E.g.: %(num)d%%', num=105),
+                                    help_text=_('Font size adjustment for the screen where 100%% is the default font size.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
                             {% if screen_type == 'input' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/exit_button.html' %}
                                 </div>
                             {% endif %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 mb-3">
                                 {% with
                                     message_help_text=_('When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).')
                                 %}
