@@ -915,7 +915,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
                 general_contributions.append(SBContribution(opponent_score, contribution))
         voluntary_unplayed = sorted(voluntary_unplayed)
         general_contributions = sorted(general_contributions)
-        for _ in range(cut):
+        for dummy_ in range(cut):
             if not voluntary_unplayed:
                 # Suppress, because both lists are empty at this point
                 with suppress(IndexError):
