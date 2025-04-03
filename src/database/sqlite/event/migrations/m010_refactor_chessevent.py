@@ -1,9 +1,9 @@
 from typing import Any
 
-from database.sqlite.migration import AbstractMigration
+from database.sqlite.migration import BaseMigration
 
 
-class Migration(AbstractMigration):
+class Migration(BaseMigration):
     def forward(self):
         # No need to store the rounds skipped by the users since pairing information is stored
         # at player-level after the ChessEvent import. IF EXISTS is used because the table is not

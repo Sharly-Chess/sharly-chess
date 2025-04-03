@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from sqlite3 import OperationalError
-from typing import Literal, override
+from typing import Literal
 
-from plugins.utils import AbstractPluginMigration
+from plugins.migration import BasePluginMigration
 
 
 @dataclass
@@ -17,12 +17,9 @@ class Column:
         return self._deprecated_name or f'deprecated_{self.name}'
 
 
-class Migration(AbstractPluginMigration):
+class Migration(BasePluginMigration):
     def forward(self):
         # TODO replace by column creation once deprecated columns have been globally deleted
-        self.database.execute(
-            'ALTER TABLE `info` ADD `chessevent_plugin_version` TEXT'
-        )
         columns: list[Column] = [
             Column('info', 'chessevent_user_id'),
             Column('info', 'chessevent_password'),
@@ -74,7 +71,4 @@ class Migration(AbstractPluginMigration):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN '
             '`chessevent_last_download_md5`'
-        )
-        self.database.execute(
-            'ALTER TABLE `info` DROP COLUMN `chessevent_plugin_version`'
         )

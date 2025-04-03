@@ -1,15 +1,14 @@
-import re
 import shutil
 import time
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import suppress
 from datetime import datetime
+from functools import cached_property
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError
-from types import ModuleType
-from typing import Any, TYPE_CHECKING, Self
+from typing import Any, TYPE_CHECKING, override, Self
 
 import yaml
 from packaging.version import Version
@@ -20,7 +19,6 @@ from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
 from data.util import Result as UtilResult
-from database.sqlite.migration import AbstractMigrationManager
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredEvent,
@@ -34,26 +32,18 @@ from database.sqlite.event.event_store import (
     StoredScreen,
 )
 from database.sqlite.event import migrations
-from database.sqlite.versioned_database import SQLiteVersionedDatabase
+from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
-    from plugins.utils import PluginMigrationManager
+    from database.sqlite.migration import MigrationManager
 
 logger: Logger = get_logger()
 
 
-class EventMigrationManager(AbstractMigrationManager):
-    @property
-    def base_module(self) -> ModuleType:
-        return migrations
-
-
-class EventDatabase(SQLiteVersionedDatabase):
-    """
-    The SQLite database class for Papi-web events.
-    """
+class EventDatabase(MigrationDatabase):
+    """The SQLite database class for Papi-web events."""
 
     def __init__(
         self,
@@ -65,49 +55,49 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().__init__(
             self.event_database_path(self.uniq_id), write, auto_upgrade
         )
-        self.plugin_versions: dict[str, Version] = {}
 
     @classmethod
-    def from_parent(cls, parent: SQLiteVersionedDatabase) -> Self:
-        return cls(parent.file.stem, parent.write, parent.auto_upgrade)
+    def create_instance(
+        cls, file: Path, write: bool = False, auto_upgrade: bool = True
+    ) -> Self:
+        return cls(file.stem, write, auto_upgrade)
+
+    @cached_property
+    def migration_managers(self) -> list['MigrationManager']:
+        from database.sqlite.migration import DatabaseMigrationManager
+
+        return [
+            DatabaseMigrationManager(self, migrations)
+        ] + (
+            plugin_manager.hook.get_event_migration_manager(event_database=self)
+        )
 
     @property
-    def stored_version(self) -> Version:
-        return Version(self._get_stored_event().version)
+    def migration_by_legacy_version(self) -> dict[Version, str]:
+        return {
+            Version('2.4.0'): 'm001_create_database',
+            Version('2.4.2'): 'm002_alter_screens',
+            Version('2.4.4'): 'm003_add_input_exit_buttons',
+            Version('2.4.5'): 'm004_drop_rotator_show_menu',
+            Version('2.4.8'): 'm005_add_hide_background_image',
+            Version('2.4.12'): 'm006_add_rules',
+            Version('2.4.13'): 'm007_add_last_ffe_rules_upload',
+            Version('2.4.16'): 'm008_add_messages',
+            Version('2.4.20'): 'm009_add_tournament_check_in_open',
+            Version('2.4.21'): 'm010_refactor_chessevent',
+            Version('2.4.22'): 'm011_add_tournament_byes',
+            Version('2.4.23'): 'm012_add_tournament_tie_breaks',
+            Version('2.4.24'): 'm013_replace_tournament_paired_bye_points',
+            Version('2.4.25'): 'm014_mark_plugin_columns_as_deprecated',
+            Version('2.4.26'): 'm015_add_screen_ranking',
+            Version('2.4.27'): 'm016_add_family_ranking',
+        }
 
-    def set_version(self, version: Version):
-        self.execute(
-            'UPDATE `info` SET `version` = ?, `last_update` = ?',
-            (f'{version.major}.{version.minor}.{version.micro}', time.time()),
-        )
-        self._version = version
-
-    @property
-    def migration_manager(self) -> AbstractMigrationManager:
-        return EventMigrationManager()
-
-    def insert_creation_values(self):
-        version = PapiWebConfig().version
-        today_str: str = format_timestamp_date()
-        format_: str = '%Y-%m-%d %H:%M'
-        event_start = time.mktime(
-            datetime.strptime(f'{today_str} 00:00', format_).timetuple()
-        )
-        event_stop = time.mktime(
-            datetime.strptime(f'{today_str} 23:59', format_).timetuple()
-        )
-        self.execute(
-            "INSERT INTO `info` "
-            "(`version`, `name`, `start`, `stop`, `last_update`) "
-            "VALUES(?, ?, ?, ?, ?)",
-            (
-                f'{version.major}.{version.minor}.{version.micro}',
-                self.uniq_id,
-                event_start,
-                event_stop,
-                time.time(),
-            )
-        )
+    @override
+    def upgrade(self):
+        if DEVEL_ENV and self.is_metadata_table_installed():
+            self.create_backup()
+        super().upgrade()
 
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
@@ -119,7 +109,7 @@ class EventDatabase(SQLiteVersionedDatabase):
         dict_path: str,
         supposed_dict: dict,
         mandatory_fields: list[str] = None,
-        optional_fields: list['str'] = None,
+        optional_fields: list[str] = None,
         field_type: type = None,
         empty_allowed: bool = True,
     ):
@@ -198,13 +188,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         super().create()
         if populate:
             self._populate()
-
-        migration_managers: list['PluginMigrationManager'] = (
-            plugin_manager.hook.get_event_migration_manager()
-        )
-        with EventDatabase(self.uniq_id, True) as database:
-            for migration_manager in migration_managers:
-                migration_manager.migrate(database)
 
     def _populate(self):
         try:
@@ -885,59 +868,63 @@ class EventDatabase(SQLiteVersionedDatabase):
         If a backup already exists for the same version, overwrite it. """
         from data.loader import EventBackup
 
-        backup = EventBackup(self.uniq_id, self.version)
+        backup = EventBackup(self.uniq_id, self.get_version())
         backup.file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(self.file, backup.file)
         return backup
 
-    def get_plugin_version(self, plugin_id: str) -> Version | None:
-        """Retrieve the version of a plugin.
-        Returns None if the plugin is not installed"""
-        if plugin_id in self.plugin_versions:
-            return self.plugin_versions[plugin_id]
-        version_field = self.plugin_version_field(plugin_id)
-        try:
-            self.execute(f'SELECT `{version_field}` FROM `info`')
-        except OperationalError:
-            return None
-        version = Version(self.fetchone()[version_field])
-        self.plugin_versions[plugin_id] = version
-        return version
+    # ---------------------------------------------------------------------------------
+    # Plugin metadata
+    # ---------------------------------------------------------------------------------
+
+    def create_plugin_metadata_table(self):
+        self.execute(
+            'CREATE TABLE IF NOT EXISTS `plugin_metadata` ('
+            '   `name` TEXT NOT NULL,'
+            '   `version` TEXT NOT NULL,'
+            "   `migration` TEXT NOT NULL DEFAULT 'm000_no_migration',"
+            '    PRIMARY KEY(`name`)'
+            ')'
+        )
+
+    def is_plugin_in_metadata_table(self, plugin_id: str) -> bool:
+        self.execute(
+            'SELECT 1 FROM `plugin_metadata` WHERE `name` = ?',
+            (plugin_id,)
+        )
+        return '1' in self.fetchone()
+
+    def insert_plugin_metadata(self, plugin_id: str, version: Version):
+        self.execute(
+            'INSERT INTO `plugin_metadata` (`name`, `version`) VALUES (?, ?)',
+            (plugin_id, str(version))
+        )
+
+    def get_plugin_migration(self, plugin_id: str) -> str:
+        self.execute(
+            'SELECT `migration` FROM `plugin_metadata` WHERE `name` = ?',
+            (plugin_id,)
+        )
+        return self.fetchone()['migration']
+
+    def set_plugin_migration(self, plugin_id: str, migration: str):
+        self.execute(
+            'UPDATE `plugin_metadata` SET `migration` = ? WHERE `name` = ?',
+            (migration, plugin_id)
+        )
+
+    def get_plugin_version(self, plugin_id: str) -> Version:
+        self.execute(
+            'SELECT `version` FROM `plugin_metadata` WHERE `name` = ?',
+            (plugin_id,)
+        )
+        return Version(self.fetchone()['version'])
 
     def set_plugin_version(self, plugin_id: str, version: Version):
-        version_field = self.plugin_version_field(plugin_id)
         self.execute(
-            f'UPDATE `info` SET `{version_field}` = ?, `last_update` = ?',
-            (
-                f'{version.major}.{version.minor}.{version.micro}',
-                time.time(),
-            )
+            'UPDATE `plugin_metadata` SET `version` = ? WHERE `name` = ?',
+            (str(version), plugin_id)
         )
-        self.plugin_versions[plugin_id] = version
-
-    @staticmethod
-    def plugin_version_field(plugin_id: str):
-        safe_plugin_id = re.sub('[^a-z]+', '_', plugin_id.lower())
-        return f'{safe_plugin_id}_plugin_version'
-
-    def __enter__(self):
-        super().__enter__()
-        if not self.auto_upgrade:
-            return self
-
-        migration_managers: list['PluginMigrationManager'] = (
-            plugin_manager.hook.get_event_migration_manager()
-        )
-        for migration_manager in migration_managers:
-            current_version = migration_manager.get_version(self)
-            latest_version = migration_manager.latest_version
-            if current_version < latest_version:
-                if not self.write:
-                    with EventDatabase(self.uniq_id, True):
-                        return self
-                migration_manager.migrate(self, latest_version)
-
-        return self
 
     # ---------------------------------------------------------------------------------
     # StoredEvent
@@ -947,15 +934,12 @@ class EventDatabase(SQLiteVersionedDatabase):
         """Convert a row to a StoredEvent record."""
         stored_event = StoredEvent(
             uniq_id=self.uniq_id,
-            version=row['version'],
             name=row['name'],
-            # needed to open event databases when version < 2.4.21 before checking the version
             federation=row.get('federation', PapiWebConfig().default_federation),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
             path=row['path'],
-            # needed to open event databases when version < 2.4.8 before checking the version
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
                     'hide_background_image', PapiWebConfig.default_hide_background_image
@@ -965,7 +949,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             background_color=row['background_color'],
             update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
-            # needed to open event databases when version < 2.4.11 before checking the version
             rules=row.get('rules', None),
             timer_colors=self.set_dict_int_keys(
                 self.load_json_from_database_field(row['timer_colors'])
@@ -973,7 +956,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             timer_delays=self.set_dict_int_keys(
                 self.load_json_from_database_field(row['timer_delays'])
             ),
-            # needed to open event databases when version < 2.4.16 before checking the version
             message_text=row.get('message_text', None),
             message_color=row.get('message_color', None),
             message_background_color=row.get('message_background_color', None),
@@ -999,11 +981,6 @@ class EventDatabase(SQLiteVersionedDatabase):
         stored_event.stored_screens = list(self.load_stored_screens())
         stored_event.stored_rotators = list(self.load_stored_rotators())
         return stored_event
-
-    def upgrade(self):
-        if DEVEL_ENV:
-            self.create_backup()
-        super().upgrade()
 
     def update_stored_event(self, stored_event: StoredEvent) -> StoredEvent:
         """Updates the event database with the information in the provided
@@ -1361,16 +1338,12 @@ class EventDatabase(SQLiteVersionedDatabase):
                 'time_control_handicap_penalty_value'
             ],
             time_control_handicap_min_time=row['time_control_handicap_min_time'],
-            # needed to open event databases when version < 2.4.21 before checking the version
             record_illegal_moves=row['record_illegal_moves'],
-            # needed to open event databases when version < 2.4.11 before checking the version
             rules=row.get('rules', None),
-            # needed to open event databases when version < 2.4.21 before checking the version
             first_board_number=row.get('first_board_number', None),
             paired_bye_result=row.get('paired_bye_result', None),
             max_byes=row.get('max_byes', None),
             last_rounds_no_byes=row.get('last_rounds_no_byes', None),
-            # needed to open event databases when version < 2.4.20 before checking the version
             check_in_open=cls.load_bool_from_database_field(
                 row.get('check_in_open', None)
             ),
@@ -1378,7 +1351,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
-            # needed to open event databases when version < 2.4.23 before checking the version
             tie_breaks=cls.load_json_from_database_field(row.get('tie_breaks', None)),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(stored_tournament=stored_tournament, row=row)
@@ -1759,7 +1731,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             players_show_unpaired=cls.load_bool_from_database_field(
                 row['players_show_unpaired']
             ),
-            # needed to open event databases when version < 2.4.25 before checking the version
             ranking_crosstable=cls.load_bool_from_database_field(
                 row.get('ranking_crosstable', None)
             ),
@@ -1775,7 +1746,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             last=row['last'],
             parts=row['parts'],
             number=row['number'],
-            # needed to open event databases when version < 2.4.16 before checking the version
             message_default=cls.load_bool_from_database_field(
                 row.get('message_default', None)
             ),
@@ -1923,7 +1893,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             results_tournament_ids=cls.load_json_from_database_field(
                 row['results_tournament_ids']
             ),
-            # needed to open event databases when version < 2.4.25 before checking the version
             ranking_crosstable=cls.load_bool_from_database_field(
                 row.get('ranking_crosstable', None)
             ),
@@ -1932,11 +1901,9 @@ class EventDatabase(SQLiteVersionedDatabase):
             ranking_max_points=row.get('ranking_max_points', None),
             background_image=row['background_image'],
             background_color=row['background_color'],
-            # needed to open event databases when version < 2.4.16 before checking the version
             message_default=cls.load_bool_from_database_field(
                 row.get('message_default', None)
             ),
-            # needed to open event databases when version < 2.4.16 before checking the version
             message_text=row.get('message_text', None),
             last_update=row['last_update'],
         )
@@ -2177,7 +2144,7 @@ class EventDatabase(SQLiteVersionedDatabase):
                 screen_id=self._last_inserted_id()
             )
         else:
-            
+
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_screen_set.id]
             self.execute(
@@ -2259,7 +2226,6 @@ class EventDatabase(SQLiteVersionedDatabase):
             uniq_id=row['uniq_id'],
             public=cls.load_bool_from_database_field(row['public']),
             delay=row['delay'],
-            # needed to open event databases when version < 2.4.16 before checking the version
             message_default=cls.load_bool_from_database_field(
                 row.get('message_default', None)
             ),

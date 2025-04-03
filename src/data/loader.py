@@ -11,7 +11,12 @@ from pathlib import Path
 from litestar.contrib.htmx.request import HTMXRequest
 from packaging.version import Version
 
-from common import format_timestamp_date_time, unicode_normalize, EVENTS_DIR
+from common import (
+    format_timestamp_date_time,
+    unicode_normalize,
+    PAPI_WEB_VERSION,
+    EVENTS_DIR,
+)
 from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
@@ -58,7 +63,7 @@ class EventLoader:
 
     def load_stored_event(self, uniq_id: str) -> StoredEvent:
         try:
-            return self._loaded_stored_events_by_id[uniq_id] 
+            return self._loaded_stored_events_by_id[uniq_id]
         except KeyError:
             with EventDatabase(uniq_id) as event_database:
                 self._loaded_stored_events_by_id[uniq_id] = (
@@ -336,7 +341,7 @@ class EventBackupLoader:
 
         compatible_versions = [
             version for version in self.versions(event_id)
-            if version <= PapiWebConfig().version
+            if version <= PAPI_WEB_VERSION
         ]
         if not compatible_versions:
             return None

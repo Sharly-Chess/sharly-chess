@@ -74,7 +74,6 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
-            version=str(papi_web_config.version),
             log_level=log_level,
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
