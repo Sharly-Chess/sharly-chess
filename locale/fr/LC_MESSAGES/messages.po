@@ -1747,7 +1747,7 @@ msgid "Invalid board number [{fixed_board_str}]."
 msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 
 msgid "Invalid board number range."
-msgstr "Intervalle d'échiquiers invalide"
+msgstr "Intervalle d'échiquiers invalide."
 
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."

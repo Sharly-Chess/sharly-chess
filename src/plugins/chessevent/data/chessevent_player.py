@@ -1,4 +1,5 @@
 from logging import Logger
+from typing import Any
 
 from common.logger import get_logger
 from data.util import (
@@ -32,7 +33,7 @@ class ChessEventPlayer:
             
     def __init__(
         self,
-        chessevent_player_info: dict[str, bool | str | int | float | dict[int, float] | None],
+        chessevent_player_info: dict[str, Any],
     ):
         self.error = True
         reader = ChessEventFieldReader(chessevent_player_info)

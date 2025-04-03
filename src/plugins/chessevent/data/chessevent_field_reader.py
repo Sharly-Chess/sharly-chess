@@ -1,8 +1,8 @@
-from typing import Type, Optional, cast
+from typing import Any, Type, Optional, cast
 from enum import IntEnum
 
 class ChessEventFieldReader:
-    def __init__(self, data: dict[str, bool | str | int | float | dict[int, float] | None]):
+    def __init__(self, data: dict[str, Any]):
         self._data = data
         self.last_key: Optional[str] = None
 

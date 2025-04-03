@@ -101,8 +101,8 @@ class ChessEventTournament:
                 f'  - Dates: {self.start} - {self.end}',
             ]
             + [
-                f'  - Tie-break #{tie_break_index} : {self.tie_breaks[tie_break_index] if 0 <= tie_break_index < len(self.tie_breaks) else None}'
-                for tie_break_index in range(1, 4)
+                f'  - Tie-break #{index + 1} : {tie_break_.name}'
+                for index, tie_break_ in enumerate(self.tie_breaks)
             ]
             + [
                 f'  - Rating: {self.rating}',
