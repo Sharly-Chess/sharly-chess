@@ -76,9 +76,10 @@ class EventLoader:
             return self._loaded_stored_events_by_id[uniq_id]
 
     @classmethod
-    def load_event_ids(cls):
+    def load_event_ids(cls, uniq_id: str | None = None):
         known_event_ids = cls._valid_event_ids + cls._invalid_uniq_ids
-        for event_id in cls.all_event_ids():
+        event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
+        for event_id in event_ids:
             if event_id in known_event_ids:
                 continue
             try:
@@ -156,6 +157,7 @@ class EventLoader:
         try:
             return self._loaded_events_by_id[uniq_id]
         except KeyError:
+            self.load_event_ids(uniq_id)
             stored_event: StoredEvent = self.load_stored_event(uniq_id)
             self._loaded_events_by_id[uniq_id] = Event(stored_event)
             return self._loaded_events_by_id[uniq_id]
