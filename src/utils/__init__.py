@@ -78,28 +78,6 @@ class StaticUtils:
             return lowest_int + 1
         return lowest_int
 
-    @staticmethod
-    def register_class(
-        cls: type | None = None,
-        register: list[type] | None = None,
-        index: int | None = None,
-    ):
-        """Decorator registering a class into a variable.
-        Used to refer on top of a file to classes defined lower.
-        Inserts the class at position *index* of the register.
-        Appends it if *index* is None"""
-        if register is None:
-            raise ValueError('Register not initialized')
-
-        def decorator(cls_):
-            if index is not None:
-                register.insert(index, cls_)
-            else:
-                register.append(cls_)
-            return cls_
-
-        return decorator if cls is None else decorator(cls)
-
 
 class SharedUtils:
     """Class containing the shared utils functions,
