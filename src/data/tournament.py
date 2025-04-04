@@ -969,9 +969,10 @@ class Tournament:
                 )
                 weak_time = self.time_control_initial_time or 0
                 rating_diff = strong_player.rating - weak_player.rating
-                penalties = rating_diff // (
-                    self.time_control_handicap_penalty_step or 0
-                )
+                if not self.time_control_handicap_penalty_step:
+                    penalties = 0
+                else:
+                    penalties = rating_diff // (self.time_control_handicap_penalty_step)
                 strong_time = max(
                     weak_time
                     - penalties * (self.time_control_handicap_penalty_value or 0),
