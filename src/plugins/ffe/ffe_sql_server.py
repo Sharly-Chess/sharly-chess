@@ -128,7 +128,7 @@ class FFESqlServer(SqlServer):
                 },
                 fide_id=int(row['FideCode']) if row['FideCode'] else 0,
                 federation=Federation(row['Federation']),
-                club=Club(row['ClubNom']),
+                club=Club(row['ClubNom']) if row['ClubNom'] else None,
                 fixed=0,
                 check_in=False,  # not taken into account when updating/creating/deleting the player
                 pairings={},  # Pairings are read from Papi but not used
@@ -241,7 +241,7 @@ class FFESqlServer(SqlServer):
     ) -> Player | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
         )
         await self.execute(
             query,

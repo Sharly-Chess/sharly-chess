@@ -111,12 +111,10 @@ class SQLiteDatabase:
         return self.cursor.lastrowid
 
     @staticmethod
-    def load_bool_from_database_field(
-        data: int | None, if_none: bool | None = None
-    ) -> bool | None:
+    def load_bool_from_database_field(data: int | None) -> bool:
         """Returns True if `data` is 1, False if `data` is something else other
         than None, and `if_none` if `data` is None."""
-        return data == 1 if data is not None else if_none
+        return data == 1
 
     @staticmethod
     def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:
