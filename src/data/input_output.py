@@ -72,19 +72,43 @@ class TrfBxTournamentExporter(AbstractTournamentExporter):
 
 
 @dataclass
-class PlayerMatch:
+class PlayerComparator(ABC):
+    field_ids: list[str]
     player: Player
     match_player: Player | None = None
-    _field_ids: list[str] | None = None
 
     @property
-    def field_ids(self) -> list[str]:
-        return self._field_ids or []
-
-    @cached_property
+    @abstractmethod
     def diff_field_ids(self) -> list[str] | None:
         """Returns the list of fields amongst the selected fields on which
         the 2 players have a diff. If match is unset, returns None."""
+        ...
+
+    @abstractmethod
+    def update_player_from_match(self, field_ids: list[str]):
+        """Updates the selected fields of the player from the match_player."""
+        ...
+
+
+@dataclass
+class FidePlayerComparator(PlayerComparator):
+    def match_date_differs(self) -> bool:
+        src_date = self.player.date_of_birth
+        match_date = self.match_player.date_of_birth if self.match_player else None
+        if src_date is None:
+            return match_date is not None
+        if match_date is None:
+            return False
+        if src_date.year != match_date.year:
+            return True
+        if (match_date.month, match_date.day) == (1, 1):
+            return False
+        if (src_date.month, src_date.day) == (match_date.month, match_date.day):
+            return False
+        return True
+
+    @cached_property
+    def diff_field_ids(self) -> list[str] | None:
         if not self.match_player:
             return None
         diff_field_ids: list[str] = []
@@ -108,9 +132,10 @@ class PlayerMatch:
                 diff_field_ids.append(field_id)
         field_id: str = 'club'
         if field_id in self.field_ids:
-            if (
-                not self.player.club
-                or self.player.club.name != self.match_player.club.name
+            if (not self.player.club and self.match_player.club) or (
+                self.player.club
+                and self.match_player.club
+                and self.player.club.name != self.match_player.club.name
             ):
                 diff_field_ids.append(field_id)
         field_id: str = 'gender'
@@ -119,12 +144,7 @@ class PlayerMatch:
                 diff_field_ids.append(field_id)
         field_id: str = 'date_of_birth'
         if field_id in self.field_ids:
-            src_date = self.player.date_of_birth
-            match_date = self.match_player.date_of_birth
-            if (src_date.year != match_date.year) or (
-                (match_date.month, match_date.day) != (1, 1)
-                and (src_date.month, src_date.day) != (match_date.month, match_date.day)
-            ):
+            if self.match_date_differs():
                 diff_field_ids.append(field_id)
         field_id: str = 'fide_id'
         if field_id in self.field_ids:
@@ -136,7 +156,6 @@ class PlayerMatch:
         return diff_field_ids
 
     def update_player_from_match(self, field_ids: list[str]):
-        """Updates the selected fields of the player from the match_player."""
         if not self.match_player:
             return
         for rating in TournamentRating:
@@ -170,13 +189,8 @@ class PlayerMatch:
                 self.player.gender = self.match_player.gender
         field_id: str = 'date_of_birth'
         if field_id in field_ids:
-            src_date = self.player.date_of_birth
-            match_date = self.match_player.date_of_birth
-            if (src_date.year != match_date.year) or (
-                (match_date.month, match_date.day) != (1, 1)
-                and (src_date.month, src_date.day) != (match_date.month, match_date.day)
-            ):
-                self.player.date_of_birth = match_date
+            if self.match_date_differs():
+                self.player.date_of_birth = self.match_player.date_of_birth
         field_id: str = 'fide_id'
         if field_id in field_ids:
             match_fide_id = self.match_player.fide_id
@@ -243,7 +257,7 @@ class AbstractPlayerUpdater(IdentifiableEntity, ABC):
         players: list[Player],
         field_ids: list[str],
         diff_only: bool,
-    ) -> list[PlayerMatch] | None:
+    ) -> list[PlayerComparator] | None:
         """If the database access fails, returns None. Otherwise for each player,
         returns a MatchPlayer object (if a match is found, set *match_player* with
         the extracted player, else set it to None). If diff_only is True, identical
@@ -251,19 +265,18 @@ class AbstractPlayerUpdater(IdentifiableEntity, ABC):
         pass
 
     @staticmethod
-    def _create_player_matches(
+    def _create_player_comparators(
         players: list[Player],
         match_players: list[Player],
         match_condition: Callable[[Player, Player], bool],
         field_ids: list[str],
         diff_only: bool,
-        match_type: type[PlayerMatch] | None = None,
-    ) -> list[PlayerMatch]:
-        if match_type is None:
-            match_type = PlayerMatch
-        player_matches: list[match_type] = []
+        comparator: type[PlayerComparator],
+    ) -> list[PlayerComparator]:
+        player_comparators: list[PlayerComparator] = []
         for player in players:
-            player_match = match_type(
+            player_comparator = comparator(
+                field_ids,
                 player,
                 next(
                     (
@@ -273,11 +286,10 @@ class AbstractPlayerUpdater(IdentifiableEntity, ABC):
                     ),
                     None,
                 ),
-                field_ids,
             )
-            if not diff_only or player_match.diff_field_ids:
-                player_matches.append(player_match)
-        return player_matches
+            if not diff_only or player_comparator.diff_field_ids:
+                player_comparators.append(player_comparator)
+        return player_comparators
 
 
 class FidePlayerUpdater(AbstractPlayerUpdater):
@@ -301,19 +313,20 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
         players: list[Player],
         field_ids: list[str],
         diff_only: bool,
-    ) -> list[PlayerMatch] | None:
+    ) -> list[PlayerComparator] | None:
         database = FideDatabase()
         if not database.exists():
             return None
         fide_ids = [player.fide_id for player in players if player.fide_id]
         with database:
             match_players = database.get_players_by_fide_id(fide_ids)
-            return self._create_player_matches(
+            return self._create_player_comparators(
                 players,
                 match_players,
-                lambda p1, p2: p1.fide_id and p1.fide_id == p2.fide_id,
+                lambda p1, p2: p1.fide_id is not None and p1.fide_id == p2.fide_id,
                 field_ids,
                 diff_only,
+                FidePlayerComparator,
             )
 
 

@@ -306,11 +306,13 @@ class Tournament:
     @property
     def pairing(self) -> TournamentPairing:
         self.read_papi()
+        assert self._pairing is not None
         return self._pairing
 
     @property
     def rating(self) -> TournamentRating:
         self.read_papi()
+        assert self._rating is not None
         return self._rating
 
     @property
@@ -346,6 +348,7 @@ class Tournament:
     @property
     def tie_breaks(self) -> list[AbstractTieBreak]:
         self.read_papi()
+        assert self._tie_breaks is not None
         return self._tie_breaks
 
     @property
@@ -410,7 +413,8 @@ class Tournament:
         """Returns the number of players by club."""
         counter: Counter[Club] = Counter[Club]()
         for player in self.players_by_id.values():
-            counter[player.club] += 1
+            if player.club is not None:
+                counter[player.club] += 1
         return counter
 
     @property
@@ -944,6 +948,7 @@ class Tournament:
         boards = sorted(boards, reverse=True)
         for index, board in enumerate(boards, start=1):
             board.id = index
+            assert board.white_player is not None
             number: int = (
                 board.white_player.fixed
                 or (board.black_player.fixed if board.black_player else None)
@@ -962,18 +967,22 @@ class Tournament:
                     key=attrgetter('rating'),
                     reverse=True,
                 )
-                weak_time = self.time_control_initial_time
+                weak_time = self.time_control_initial_time or 0
                 rating_diff = strong_player.rating - weak_player.rating
-                penalties = rating_diff // self.time_control_handicap_penalty_step
+                if not self.time_control_handicap_penalty_step:
+                    penalties = 0
+                else:
+                    penalties = rating_diff // (self.time_control_handicap_penalty_step)
                 strong_time = max(
-                    weak_time - penalties * self.time_control_handicap_penalty_value,
-                    self.time_control_handicap_min_time,
+                    weak_time
+                    - penalties * (self.time_control_handicap_penalty_value or 0),
+                    self.time_control_handicap_min_time or 0,
                 )
                 strong_player.set_time_control(
-                    strong_time, self.time_control_increment, penalties > 0
+                    strong_time, self.time_control_increment or 0, penalties > 0
                 )
                 weak_player.set_time_control(
-                    weak_time, self.time_control_increment, False
+                    weak_time, self.time_control_increment or 0, False
                 )
         return boards, unpaired_players
 
@@ -983,6 +992,8 @@ class Tournament:
         as the black's result.
         Assumes that no asymmetric result was entered."""
         black_result = white_result.opposite_result
+        assert board.white_player is not None
+        assert board.black_player is not None
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.set_player_result(
                 board.white_player.ref_id, self._current_round, white_result
@@ -1013,6 +1024,10 @@ class Tournament:
 
     def delete_result(self, board: Board):
         """Deletes the result for the given `board` in the current round."""
+        assert self.stored_tournament.id is not None
+        assert board.white_player is not None
+        assert board.black_player is not None
+        assert board.id is not None
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.reset_player_result(
                 board.white_player.ref_id, self._current_round
@@ -1034,6 +1049,7 @@ class Tournament:
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
+        assert self.stored_tournament.id is not None
         with PapiDatabase(self.file, write=True) as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 papi_database.check_in_player(player.id, check_in)
@@ -1165,6 +1181,7 @@ class Tournament:
         assert not self.check_in_open, (
             f'Check-in already open for tournament [{self.uniq_id}].'
         )
+        assert self.stored_tournament.id is not None
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             with PapiDatabase(self.file, write=True) as papi_database:
                 event_database.set_tournament_last_check_in_update(
@@ -1182,6 +1199,7 @@ class Tournament:
             f'Check-in already closed for tournament [{self.uniq_id}].'
         )
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            assert self.stored_tournament.id is not None
             event_database.set_tournament_last_check_in_update(
                 self.stored_tournament.id
             )

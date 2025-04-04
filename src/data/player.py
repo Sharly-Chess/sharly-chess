@@ -81,7 +81,7 @@ class TournamentPlayer:
 
     def __init__(
         self,
-        id: int | None,
+        id: int,
         last_name: str,
         first_name: str | None,
         date_of_birth: date | None,
@@ -94,7 +94,7 @@ class TournamentPlayer:
         point_values: dict[Result, float] | None = None,
         tournament: 'Tournament | None' = None,
     ):
-        self.id: int | None = id
+        self.id = id
         self.last_name: str = last_name
         self.first_name: str | None = first_name
         self.date_of_birth: date | None = date_of_birth
@@ -166,7 +166,7 @@ class Player(TournamentPlayer):
 
     def __init__(
         self,
-        id: int | None,
+        id: int,
         last_name: str,
         first_name: str,
         date_of_birth: date | None,

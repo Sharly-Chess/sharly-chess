@@ -3,6 +3,7 @@ import platform
 import socket
 from logging import Logger
 from pathlib import Path
+from typing import overload
 
 import jinja2
 import litestar
@@ -221,6 +222,12 @@ class PapiWebConfig(metaclass=Singleton):
         BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'
     ).is_dir()
 
+    @overload
+    def _url(self, ip: str) -> str: ...
+
+    @overload
+    def _url(self, ip: None) -> None: ...
+
     def _url(self, ip: str | None) -> str | None:
         """Returns the URL of the application for the given IP."""
         if ip is None:
@@ -242,7 +249,7 @@ class PapiWebConfig(metaclass=Singleton):
         return None
 
     @property
-    def local_ip(self) -> str | None:
+    def local_ip(self) -> str:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
         return '127.0.0.1'
 
@@ -252,7 +259,7 @@ class PapiWebConfig(metaclass=Singleton):
         return self._url(self.lan_ip)
 
     @property
-    def local_url(self) -> str | None:
+    def local_url(self) -> str:
         """The local URL of the application (with arbiter access)."""
         return self._url(self.local_ip)
 

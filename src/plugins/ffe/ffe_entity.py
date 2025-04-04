@@ -3,7 +3,12 @@ from typing import override
 
 from common.exception import PapiWebException
 from common.i18n import _
-from data.input_output import AbstractPlayerUpdater, PlayerUpdaterField, PlayerMatch
+from data.input_output import (
+    AbstractPlayerUpdater,
+    FidePlayerComparator,
+    PlayerComparator,
+    PlayerUpdaterField,
+)
 from data.player import Player
 from data.print import AbstractPlayerSplitter
 from plugins.ffe import PLUGIN_NAME
@@ -15,7 +20,7 @@ from plugins.utils import PluginUtils
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
-class FfePlayerMatch(PlayerMatch):
+class FfePlayerComparator(FidePlayerComparator):
     @cached_property
     def diff_field_ids(self) -> list[str] | None:
         if not self.match_player:
@@ -73,7 +78,7 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
         players: list[Player],
         field_ids: list[str],
         diff_only: bool,
-    ) -> list[PlayerMatch] | None:
+    ) -> list[PlayerComparator] | None:
         ffe_licence_numbers: list[str] = []
         for player in players:
             if ffe_licence_number := self._get_ffe_licence_number(player):
@@ -102,7 +107,7 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
                     )
             else:
                 return None
-        return self._create_player_matches(
+        return self._create_player_comparators(
             players,
             match_players,
             lambda p1, p2: (
@@ -111,7 +116,7 @@ class FfePlayerUpdater(AbstractPlayerUpdater):
             ),
             field_ids,
             diff_only,
-            FfePlayerMatch,
+            FfePlayerComparator,
         )
 
 
