@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date
 from functools import cached_property
 from typing import Any, override
 
@@ -91,22 +90,23 @@ class PlayerComparator(ABC):
         ...
 
 
-def match_date_differs(src_date: date | None, match_date: date | None) -> bool:
-    return (src_date is None and match_date is not None) or (
-        src_date is not None
-        and match_date is not None
-        and (
-            (src_date.year != match_date.year)
-            or (
-                (match_date.month, match_date.day) != (1, 1)
-                and (src_date.month, src_date.day) != (match_date.month, match_date.day)
-            )
-        )
-    )
-
-
 @dataclass
 class FidePlayerComparator(PlayerComparator):
+    def match_date_differs(self) -> bool:
+        src_date = self.player.date_of_birth
+        match_date = self.match_player.date_of_birth if self.match_player else None
+        if src_date is None:
+            return match_date is not None
+        if match_date is None:
+            return False
+        if src_date.year != match_date.year:
+            return True
+        if (match_date.month, match_date.day) == (1, 1):
+            return False
+        if (src_date.month, src_date.day) == (match_date.month, match_date.day):
+            return False
+        return True
+
     @cached_property
     def diff_field_ids(self) -> list[str] | None:
         if not self.match_player:
@@ -144,9 +144,7 @@ class FidePlayerComparator(PlayerComparator):
                 diff_field_ids.append(field_id)
         field_id: str = 'date_of_birth'
         if field_id in self.field_ids:
-            src_date = self.player.date_of_birth
-            match_date = self.match_player.date_of_birth
-            if match_date_differs(src_date, match_date):
+            if self.match_date_differs():
                 diff_field_ids.append(field_id)
         field_id: str = 'fide_id'
         if field_id in self.field_ids:
@@ -191,10 +189,8 @@ class FidePlayerComparator(PlayerComparator):
                 self.player.gender = self.match_player.gender
         field_id: str = 'date_of_birth'
         if field_id in field_ids:
-            src_date = self.player.date_of_birth
-            match_date = self.match_player.date_of_birth
-            if match_date_differs(src_date, match_date):
-                self.player.date_of_birth = match_date
+            if self.match_date_differs():
+                self.player.date_of_birth = self.match_player.date_of_birth
         field_id: str = 'fide_id'
         if field_id in field_ids:
             match_fide_id = self.match_player.fide_id
