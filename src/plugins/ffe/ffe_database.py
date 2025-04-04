@@ -282,11 +282,7 @@ class FfeDatabase(LocalSourceDatabase):
             query,
             tuple(params),
         )
-        return (
-            player
-            for row in self.fetchall()
-            if (player := self.get_player_from_row(row)) is not None
-        )
+        return (self.get_player_from_row(row) for row in self.fetchall())
 
     def _get_player_by_id(
         self,
@@ -319,8 +315,4 @@ class FfeDatabase(LocalSourceDatabase):
             f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
             tuple(player_ffe_licence_numbers),
         )
-        return [
-            player
-            for row in self.fetchall()
-            if (player := self.get_player_from_row(row)) is not None
-        ]
+        return [self.get_player_from_row(row) for row in self.fetchall()]
