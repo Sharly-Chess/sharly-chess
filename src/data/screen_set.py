@@ -17,6 +17,7 @@ from database.sqlite.event.event_store import StoredScreenSet
 if TYPE_CHECKING:
     from data.event import Event
     from data.screen import Screen
+    from data.family import Family
     from data.tournament import Tournament
 
 logger: Logger = get_logger()

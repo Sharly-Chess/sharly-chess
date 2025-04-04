@@ -20,6 +20,7 @@ from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.family import Family
 
 logger: Logger = get_logger()
 

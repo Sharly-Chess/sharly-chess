@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from data.print import PlayerSplitter, PrintDocument
     from data.tie_break import TieBreak
     from data.tournament import Tournament
+    from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import StoredEvent, StoredTournament
     from database.sqlite.local_source_database import LocalSourceDatabase
@@ -161,9 +162,7 @@ class AppHookSpecs:
         """Provide extra columns for the player download datasheets"""
 
     @hookspec
-    def insert_player_updater_types(
-        self, updater_types: list[type[PlayerUpdater]]
-    ):
+    def insert_player_updater_types(self, updater_types: list[type[PlayerUpdater]]):
         """Provide extra player updaters."""
 
     @hookspec

@@ -22,7 +22,8 @@ from utils.enum import (
 )
 
 if TYPE_CHECKING:
-    pass
+    from _weakref import ReferenceType
+    from data.tournament import Tournament
 
 logger: Logger = get_logger()
 

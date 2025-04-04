@@ -18,7 +18,7 @@ from data.player import TournamentPlayer, Federation
 from plugins.ffe import ffe_tie_break
 
 if TYPE_CHECKING:
-    pass
+    from data.tournament import Tournament
 
 
 @dataclass

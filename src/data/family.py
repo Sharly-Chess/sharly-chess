@@ -15,6 +15,7 @@ from database.sqlite.event.event_store import StoredFamily
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
+    from data.timer import Timer
 
 
 class Family:
