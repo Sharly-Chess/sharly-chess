@@ -335,6 +335,7 @@ class EventDatabase(MigrationDatabase):
                                 delays=delays,
                             )
                         )
+                        assert stored_timer.id is not None
                         timer_ids_by_uniq_id[timer_uniq_id] = stored_timer.id
                         self._check_populate_dict(
                             yml_file,
@@ -437,6 +438,7 @@ class EventDatabase(MigrationDatabase):
                                 tie_breaks=None,
                             )
                         )
+                        assert stored_tournament.id is not None
                         tournament_ids_by_uniq_id[tournament_uniq_id] = (
                             stored_tournament.id
                         )
@@ -478,7 +480,7 @@ class EventDatabase(MigrationDatabase):
                         timer_uniq_id: str | None = screen_dict.get(
                             'timer_uniq_id', None
                         )
-                        timer_id: int = (
+                        timer_id: int | None = (
                             timer_ids_by_uniq_id[timer_uniq_id]
                             if timer_uniq_id
                             else None
@@ -488,7 +490,7 @@ class EventDatabase(MigrationDatabase):
                         players_show_unpaired: bool | None = None
                         results_limit: int | None = None
                         results_max_age: int | None = None
-                        results_tournament_ids: list[int] | None = None
+                        results_tournament_ids: list[int] = []
                         ranking_crosstable: bool | None = None
                         background_image: str | None = None
                         background_color: str | None = None
@@ -577,6 +579,7 @@ class EventDatabase(MigrationDatabase):
                                 background_color=background_color,
                             )
                         )
+                        assert stored_screen.id is not None
                         screen_ids_by_uniq_id[screen_uniq_id] = stored_screen.id
                         if 'sets' in screen_dict:
                             self._check_populate_list(
@@ -597,14 +600,12 @@ class EventDatabase(MigrationDatabase):
                                         'last',
                                     ],
                                 )
-                                tournament_uniq_id: str = screen_set_dict.get(
-                                    'tournament_uniq_id', None
-                                )
-                                tournament_id: int = (
-                                    tournament_ids_by_uniq_id[tournament_uniq_id]
-                                    if tournament_uniq_id
-                                    else None
-                                )
+                                tournament_uniq_id: str = screen_set_dict[
+                                    'tournament_uniq_id'
+                                ]
+                                tournament_id: int = tournament_ids_by_uniq_id[
+                                    tournament_uniq_id
+                                ]
                                 stored_screen_set: StoredScreenSet = (
                                     event_database.add_stored_screen_set(
                                         stored_screen.id, tournament_id
@@ -622,15 +623,6 @@ class EventDatabase(MigrationDatabase):
                                 )
                                 stored_screen_set.last = screen_set_dict.get(
                                     'last', None
-                                )
-                                stored_screen_set.part = screen_set_dict.get(
-                                    'part', None
-                                )
-                                stored_screen_set.parts = screen_set_dict.get(
-                                    'parts', None
-                                )
-                                stored_screen_set.number = screen_set_dict.get(
-                                    'number', None
                                 )
                                 event_database.update_stored_screen_set(
                                     stored_screen_set
@@ -676,14 +668,10 @@ class EventDatabase(MigrationDatabase):
                             else None
                         )
                         type_: str = family_dict.get('type', None)
-                        tournament_uniq_id: str = family_dict.get(
-                            'tournament_uniq_id', None
-                        )
-                        tournament_id: int = (
-                            tournament_ids_by_uniq_id[tournament_uniq_id]
-                            if tournament_uniq_id
-                            else None
-                        )
+                        tournament_uniq_id: str = family_dict.get('tournament_uniq_id')
+                        tournament_id: int = tournament_ids_by_uniq_id[
+                            tournament_uniq_id
+                        ]
                         input_exit_button: bool | None = None
                         players_show_unpaired: bool | None = None
                         ranking_crosstable: bool | None = None
@@ -721,9 +709,9 @@ class EventDatabase(MigrationDatabase):
                                 public=family_dict.get('public', True),
                                 columns=family_dict.get('columns', None),
                                 font_size=family_dict.get('font_size', None),
-                                menu_link=menu_link,
-                                menu_text=menu_text,
-                                menu=menu,
+                                menu_link=bool(menu_link),
+                                menu_text=menu_text or '',
+                                menu=menu or '',
                                 timer_id=timer_id,
                                 input_exit_button=input_exit_button,
                                 players_show_unpaired=players_show_unpaired,
@@ -737,6 +725,7 @@ class EventDatabase(MigrationDatabase):
                                 number=family_dict.get('number', None),
                             )
                         )
+                        assert stored_family.id
                         family_ids_by_uniq_id[family_uniq_id] = stored_family.id
                 if 'rotators' in event_dict and event_dict['rotators'] is not None:
                     self._check_populate_dict(
@@ -824,7 +813,7 @@ class EventDatabase(MigrationDatabase):
         # monotonic.
         self.execute('UPDATE `info` SET `last_update` = ?', (time.time(),))
 
-    def rename(self, new_uniq_id: str = None):
+    def rename(self, new_uniq_id: str):
         """Changes the event file database to the one associated to the
         provided `new_uniq_id`."""
         self.file.rename(EventDatabase(new_uniq_id).file)
@@ -1094,7 +1083,10 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `timer_hour`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_timer_hour = self.get_stored_timer_hour(self._last_inserted_id())
+            timer_hour_id: int | None = self._last_inserted_id()
+            if timer_hour_id is None:
+                raise RuntimeError('Timer hour insertion failed')
+            fetched_stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_timer_hour.id]
@@ -1102,9 +1094,11 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `timer_hour` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_timer_hour = self.get_stored_timer_hour(stored_timer_hour.id)
+            fetched_stored_timer_hour = self.get_stored_timer_hour(stored_timer_hour.id)
+        if fetched_stored_timer_hour is None:
+            raise RuntimeError('Timer hour write failed')
         self.set_last_update()
-        return stored_timer_hour
+        return fetched_stored_timer_hour
 
     def reorder_stored_timer_hours(
         self,
@@ -1147,6 +1141,8 @@ class EventDatabase(MigrationDatabase):
 
     def clone_stored_timer_hour(self, timer_hour_id: int, timer_id: int | None = None):
         stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
+        if stored_timer_hour is None:
+            raise RuntimeError('Unable to fetch timer hour to clone')
         stored_timer_hour.id = None
         if timer_id is None:
             round_: int = 0
@@ -1211,7 +1207,7 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def get_stored_timer(self, timer_id: int) -> StoredTimer | None:
+    def get_stored_timer(self, timer_id: int) -> StoredTimer:
         self.execute(
             'SELECT * FROM `timer` WHERE `id` = ?',
             (timer_id,),
@@ -1219,7 +1215,7 @@ class EventDatabase(MigrationDatabase):
         row: dict[str, Any]
         if row := self.fetchone():
             return self._row_to_stored_timer(row)
-        return None
+        raise RuntimeError('Unable to fetch timer to load')
 
     def get_stored_timer_ids(self) -> Iterator[int]:
         self.execute(
@@ -1232,6 +1228,7 @@ class EventDatabase(MigrationDatabase):
     def load_stored_timers(self) -> Iterator[StoredTimer]:
         for stored_timer_id in self.get_stored_timer_ids():
             stored_timer: StoredTimer = self.get_stored_timer(stored_timer_id)
+            assert stored_timer.id is not None
             stored_timer.stored_timer_hours = list(
                 self.load_stored_timer_hours(stored_timer.id)
             )
@@ -1257,7 +1254,10 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `timer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_timer = self.get_stored_timer(self._last_inserted_id())
+            timer_id: int | None = self._last_inserted_id()
+            if timer_id is None:
+                raise RuntimeError('Timer insertion failed')
+            fetched_stored_timer = self.get_stored_timer(timer_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_timer.id]
@@ -1265,9 +1265,11 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `timer` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_timer = self.get_stored_timer(stored_timer.id)
+            fetched_stored_timer = self.get_stored_timer(stored_timer.id)
+        if fetched_stored_timer is None:
+            raise RuntimeError('Timer write failed')
         self.set_last_update()
-        return stored_timer
+        return fetched_stored_timer
 
     def add_stored_timer(
         self,
@@ -1419,7 +1421,10 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `tournament`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_tournament = self.get_stored_tournament(self._last_inserted_id())
+            tournament_id: int | None = self._last_inserted_id()
+            if tournament_id is None:
+                raise RuntimeError('Tournament insertion failed')
+            fetched_stored_tournament = self.get_stored_tournament(tournament_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_tournament.id]
@@ -1427,9 +1432,11 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `tournament` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_tournament = self.get_stored_tournament(stored_tournament.id)
+            fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
+        if fetched_stored_tournament is None:
+            raise RuntimeError('Tournament write failed')
         self.set_last_update()
-        return stored_tournament
+        return fetched_stored_tournament
 
     def add_stored_tournament(
         self,
@@ -1553,7 +1560,13 @@ class EventDatabase(MigrationDatabase):
             f'INSERT INTO `illegal_move`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
             tuple(params),
         )
-        return self._get_stored_illegal_move(self._last_inserted_id())
+        illegal_move_id: int | None = self._last_inserted_id()
+        if illegal_move_id is None:
+            raise RuntimeError('Illegal move insertion failed')
+        fetched_stored_illegal_move = self._get_stored_illegal_move(illegal_move_id)
+        if fetched_stored_illegal_move is None:
+            raise RuntimeError('Illegal move write failed')
+        return fetched_stored_illegal_move
 
     def delete_stored_illegal_move(
         self, tournament_id: int, round_: int, player_id: int
@@ -1624,6 +1637,9 @@ class EventDatabase(MigrationDatabase):
     def add_stored_result(
         self, tournament_id: int, round_: int, board: Board, result: UtilResult
     ):
+        assert board.id is not None
+        assert board.white_player is not None
+        assert board.black_player is not None
         self.set_tournament_last_result_update(tournament_id)
         self.execute(
             'INSERT INTO `result`('
@@ -1819,7 +1835,10 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `family`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_family = self.get_stored_family(self._last_inserted_id())
+            family_id: int | None = self._last_inserted_id()
+            if family_id is None:
+                raise RuntimeError('Family insertion failed')
+            fetched_stored_family = self.get_stored_family(family_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_family.id]
@@ -1827,9 +1846,11 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `family` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_family = self.get_stored_family(stored_family.id)
+            fetched_stored_family = self.get_stored_family(stored_family.id)
+        if fetched_stored_family is None:
+            raise RuntimeError('Family write failed')
         self.set_last_update()
-        return stored_family
+        return fetched_stored_family
 
     def add_stored_family(
         self,
@@ -1915,6 +1936,7 @@ class EventDatabase(MigrationDatabase):
         )
         for row in self.fetchall():
             stored_screen: StoredScreen = self._row_to_stored_screen(row)
+            assert stored_screen.id is not None
             stored_screen.stored_screen_sets = list(
                 self.load_stored_screen_sets(stored_screen.id)
             )
@@ -2001,7 +2023,10 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `screen`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_screen = self.get_stored_screen(screen_id=self._last_inserted_id())
+            screen_id = self._last_inserted_id()
+            if screen_id is None:
+                raise RuntimeError('Screen insertion failed')
+            fetched_stored_screen = self.get_stored_screen(screen_id=screen_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_screen.id]
@@ -2009,9 +2034,11 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `screen` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_screen = self.get_stored_screen(screen_id=stored_screen.id)
+            fetched_stored_screen = self.get_stored_screen(screen_id=stored_screen.id)
+        if fetched_stored_screen is None:
+            raise RuntimeError('Screen write failed')
         self.set_last_update()
-        return stored_screen
+        return fetched_stored_screen
 
     def add_stored_screen(
         self,
@@ -2138,8 +2165,11 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `screen_set`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_screen_set = self.get_stored_screen_set(
-                screen_id=self._last_inserted_id()
+            screen_set_id: int | None = self._last_inserted_id()
+            if screen_set_id is None:
+                raise RuntimeError('Screen set insertion failed')
+            fetched_stored_screen_set = self.get_stored_screen_set(
+                screen_id=screen_set_id
             )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
@@ -2148,11 +2178,13 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `screen_set` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_screen_set = self.get_stored_screen_set(
+            fetched_stored_screen_set = self.get_stored_screen_set(
                 screen_id=stored_screen_set.id
             )
+        if fetched_stored_screen_set is None:
+            raise RuntimeError('Screen set write failed')
         self.set_last_update()
-        return stored_screen_set
+        return fetched_stored_screen_set
 
     def clone_stored_screen_set(
         self,
@@ -2276,9 +2308,10 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `rotator`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            stored_rotator = self.get_stored_rotator(
-                rotator_id=self._last_inserted_id()
-            )
+            rotator_id: int | None = self._last_inserted_id()
+            if rotator_id is None:
+                raise RuntimeError('Rotator insertion failed')
+            fetched_stored_rotator = self.get_stored_rotator(rotator_id=rotator_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_rotator.id]
@@ -2286,9 +2319,11 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `rotator` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            stored_rotator = self.get_stored_rotator(stored_rotator.id)
+            fetched_stored_rotator = self.get_stored_rotator(stored_rotator.id)
+        if fetched_stored_rotator is None:
+            raise RuntimeError('Rotator write failed')
         self.set_last_update()
-        return stored_rotator
+        return fetched_stored_rotator
 
     def add_stored_rotator(
         self,
