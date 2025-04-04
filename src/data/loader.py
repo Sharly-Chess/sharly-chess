@@ -81,7 +81,7 @@ class EventLoader:
         for event_id in cls.all_event_ids():
             if (
                 event_id in known_event_ids or
-                (uniq_id and event_id != event_id)
+                (uniq_id and uniq_id != event_id)
             ):
                 continue
             try:
