@@ -15,7 +15,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.player import Player, Federation, Club
-from data.util import (
+from utils.enum import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,

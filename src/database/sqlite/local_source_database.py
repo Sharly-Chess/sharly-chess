@@ -2,7 +2,6 @@ import atexit
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, date
-from functools import partial
 from pathlib import Path
 import threading
 from sqlite3 import OperationalError, IntegrityError
@@ -12,7 +11,7 @@ from common import TMP_DIR, get_logger
 from common.i18n import _
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
-from data.util import IdentifiableEntity, StaticUtils, AbstractEntityManager
+from utils.entity import IdentifiableEntity
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -26,10 +25,6 @@ logger = get_logger()
 # ---------------------------------------------------------------------------------
 
 
-DELAY_CLASSES: list[type['OutdateDelay']] = []
-register_delay = partial(StaticUtils.register_class, register=DELAY_CLASSES)
-
-
 class OutdateDelay(IdentifiableEntity, ABC):
     """Delay according to which a database becomes outdated."""
 
@@ -38,13 +33,6 @@ class OutdateDelay(IdentifiableEntity, ABC):
         """Determines if the delay since *start_time* is expired."""
 
 
-class OutdateDelayManager(AbstractEntityManager[OutdateDelay]):
-    @staticmethod
-    def entity_types() -> list[type[OutdateDelay]]:
-        return DELAY_CLASSES
-
-
-@register_delay
 class DisabledOutdateDelay(OutdateDelay):
     @staticmethod
     def static_id() -> str:
@@ -70,7 +58,6 @@ class DayCountOutdateDelay(OutdateDelay, ABC):
         return datetime.now() > start_time + timedelta(days=self.days_expired)
 
 
-@register_delay
 class DailyOutdateDelay(DayCountOutdateDelay):
     @staticmethod
     def static_id() -> str:
@@ -85,7 +72,6 @@ class DailyOutdateDelay(DayCountOutdateDelay):
         return 1
 
 
-@register_delay
 class Days2OutdateDelay(DayCountOutdateDelay):
     @staticmethod
     def static_id() -> str:
@@ -100,7 +86,6 @@ class Days2OutdateDelay(DayCountOutdateDelay):
         return 2
 
 
-@register_delay
 class Days3OutdateDelay(DayCountOutdateDelay):
     @staticmethod
     def static_id() -> str:
@@ -115,7 +100,6 @@ class Days3OutdateDelay(DayCountOutdateDelay):
         return 3
 
 
-@register_delay
 class WeeklyOutdateDelay(DayCountOutdateDelay):
     @staticmethod
     def static_id() -> str:
@@ -130,7 +114,6 @@ class WeeklyOutdateDelay(DayCountOutdateDelay):
         return 7
 
 
-@register_delay
 class MonthFirstDayOutdateDelay(OutdateDelay):
     @staticmethod
     def static_id() -> str:
@@ -150,24 +133,12 @@ class MonthFirstDayOutdateDelay(OutdateDelay):
 # Outdate Actions
 # ---------------------------------------------------------------------------------
 
-
-ACTION_CLASSES: list[type['OutdateAction']] = []
-register_action = partial(StaticUtils.register_class, register=ACTION_CLASSES)
-
-
 class OutdateAction(IdentifiableEntity, ABC):
     @abstractmethod
     def on_outdated(self, database: 'LocalSourceDatabase'):
         """Action to execute when a database is outdated."""
 
 
-class OutdateActionManager(AbstractEntityManager[OutdateAction]):
-    @staticmethod
-    def entity_types() -> list[type[OutdateAction]]:
-        return ACTION_CLASSES
-
-
-@register_action
 class NotifOutdateAction(OutdateAction):
     @staticmethod
     def static_id() -> str:
@@ -181,7 +152,6 @@ class NotifOutdateAction(OutdateAction):
         database.outdated_warning = True
 
 
-@register_action
 class AutoUpdateOutdateAction(OutdateAction):
     @staticmethod
     def static_id() -> str:
@@ -254,10 +224,14 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     @property
     def outdate_delay(self) -> OutdateDelay:
+        from data.entity_managers import OutdateDelayManager
+
         return OutdateDelayManager.get_object(self.stored_source_database.outdate_delay)
 
     @property
     def outdate_action(self) -> OutdateAction:
+        from data.entity_managers import OutdateActionManager
+
         return OutdateActionManager.get_object(
             self.stored_source_database.outdate_action
         )
@@ -398,16 +372,3 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             database.commit()
         logger.info(self.log_prefix + _('Database successfully updated.'))
         return self.stop_update(True)
-
-
-class LocalSourceDatabaseManager(AbstractEntityManager[LocalSourceDatabase]):
-    @staticmethod
-    def entity_types() -> list[type[LocalSourceDatabase]]:
-        from database.sqlite.fide.fide_database import FideDatabase
-        from plugins.manager import plugin_manager
-
-        database_types: list[type[LocalSourceDatabase]] = [FideDatabase]
-        plugin_manager.hook.insert_local_source_database_types(
-            database_types=database_types
-        )
-        return database_types

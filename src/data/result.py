@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from common import format_timestamp_time
 from common.logger import get_logger
-from data.util import Result as UtilResult
+from utils.enum import Result as ResultEnum
 
 logger: Logger = get_logger()
 
@@ -20,7 +20,7 @@ class Result:
     board_id: int
     white_player_id: int
     black_player_id: int
-    result: UtilResult
+    result: ResultEnum
 
     @property
     def timestamp_str(self) -> str:

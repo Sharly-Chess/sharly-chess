@@ -9,13 +9,12 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.screen import Screen
-from data.util import ScreenType
+from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
-    from data.timer import Timer
 
 
 class Family:

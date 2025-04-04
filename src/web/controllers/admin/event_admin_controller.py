@@ -17,14 +17,12 @@ from pyexcel_ods3 import save_data
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
+from data.entity_managers import PrintDocumentOptionManager, PrintDocumentManager
 from data.loader import EventLoader
 from data.player import Player
-from data.print import (
-    PrintDocumentManager,
-    AbstractPrintDocument,
-    PrintDocumentOptionManager,
-)
-from data.util import TournamentRating, OptionError
+from data.print import PrintDocument
+from utils.entity import OptionError
+from utils.enum import TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -426,7 +424,7 @@ class EventAdminController(BaseEventAdminController):
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
 
-        document_type: type[AbstractPrintDocument] | None = None
+        document_type: type[PrintDocument] | None = None
         field = 'document'
         try:
             document_type = PrintDocumentManager.get_type(

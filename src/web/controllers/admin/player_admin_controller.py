@@ -15,9 +15,11 @@ from litestar.status_codes import HTTP_200_OK
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
+from data.entity_managers import PlayerUpdaterManager
 from data.event import Event
 from data.input_output import (
     PlayerComparator,
+    PlayerUpdater,
     PlayerUpdaterManager,
     AbstractPlayerUpdater,
 )
@@ -25,7 +27,7 @@ from data.loader import EventLoader
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
 from data.tournament import Tournament
-from data.util import (
+from utils.enum import (
     PlayerCategory,
     PlayerGender,
     TournamentRating,
@@ -1618,7 +1620,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         try:
-            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.get_object(
+            player_updater: PlayerUpdater = PlayerUpdaterManager.get_object(
                 player_updater_id
             )
         except KeyError:
@@ -1697,7 +1699,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         try:
-            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.get_object(
+            player_updater: PlayerUpdater = PlayerUpdaterManager.get_object(
                 player_updater_id
             )
         except KeyError:

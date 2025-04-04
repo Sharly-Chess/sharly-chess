@@ -6,7 +6,7 @@ import unittest
 
 from data import tie_break
 from data.pairing import Pairing
-from data.util import (
+from utils.enum import (
     Result,
     BoardColor,
     PlayerGender,
@@ -18,7 +18,7 @@ from data.player import TournamentPlayer, Federation
 from plugins.ffe import ffe_tie_break
 
 if TYPE_CHECKING:
-    from data.tournament import Tournament
+    pass
 
 
 @dataclass

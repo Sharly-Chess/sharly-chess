@@ -6,12 +6,8 @@ from typing import Any, override
 
 from common.i18n import _
 from data.player import Player
-from data.util import (
-    TrfType,
-    TournamentRating,
-    IdentifiableEntity,
-    AbstractEntityManager,
-)
+from utils.entity import IdentifiableEntity
+from utils.enum import TrfType, TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
 
 
@@ -204,7 +200,7 @@ class PlayerUpdaterField:
     id: str
 
 
-class AbstractPlayerUpdater(IdentifiableEntity, ABC):
+class PlayerUpdater(IdentifiableEntity, ABC):
     """Abstract class representing a tool
     updating a player from a data source."""
 
@@ -292,7 +288,7 @@ class AbstractPlayerUpdater(IdentifiableEntity, ABC):
         return player_comparators
 
 
-class FidePlayerUpdater(AbstractPlayerUpdater):
+class FidePlayerUpdater(PlayerUpdater):
     @staticmethod
     def static_name() -> str:
         return _('FIDE database')
@@ -328,13 +324,3 @@ class FidePlayerUpdater(AbstractPlayerUpdater):
                 diff_only,
                 FidePlayerComparator,
             )
-
-
-class PlayerUpdaterManager(AbstractEntityManager[AbstractPlayerUpdater]):
-    @staticmethod
-    def entity_types() -> list[type[AbstractPlayerUpdater]]:
-        from plugins.manager import plugin_manager
-
-        player_updaters = [FidePlayerUpdater]
-        plugin_manager.hook.insert_player_updater_types(updater_types=player_updaters)
-        return player_updaters

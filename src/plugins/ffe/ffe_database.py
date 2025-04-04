@@ -13,7 +13,7 @@ from requests.exceptions import ConnectionError
 from common import TMP_DIR, get_logger
 from common.i18n import _
 from data.player import Player, Federation, Club
-from data.util import (
+from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     PlayerGender,

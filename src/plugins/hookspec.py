@@ -8,8 +8,8 @@ import pluggy  # type: ignore
 
 from common import APP_NAME
 from data.player import Player
-from data.input_output import AbstractTournamentExporter, AbstractPlayerUpdater
-from data.util import ScreenType
+from data.input_output import AbstractTournamentExporter, PlayerUpdater
+from utils.enum import ScreenType
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
@@ -17,10 +17,9 @@ from plugins.utils import (
 )
 
 if TYPE_CHECKING:
-    from data.print import AbstractPlayerSplitter, AbstractPrintDocument
-    from data.tie_break import AbstractTieBreak
+    from data.print import PlayerSplitter, PrintDocument
+    from data.tie_break import TieBreak
     from data.tournament import Tournament
-    from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import StoredEvent, StoredTournament
     from database.sqlite.local_source_database import LocalSourceDatabase
@@ -163,7 +162,7 @@ class AppHookSpecs:
 
     @hookspec
     def insert_player_updater_types(
-        self, updater_types: list[type[AbstractPlayerUpdater]]
+        self, updater_types: list[type[PlayerUpdater]]
     ):
         """Provide extra player updaters."""
 
@@ -266,18 +265,18 @@ class AppHookSpecs:
 
     @hookspec
     def insert_print_player_splitter_types(
-        self, player_splitter_types: list[type['AbstractPlayerSplitter']]
+        self, player_splitter_types: list[type['PlayerSplitter']]
     ):
         """Provide print player splitting options"""
 
     @hookspec
     def get_extra_print_view_columns(
-        self, document: 'AbstractPrintDocument'
+        self, document: 'PrintDocument'
     ) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
     @hookspec
-    def get_extra_print_view_css(self, document: 'AbstractPrintDocument') -> str:
+    def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
         """Provide extra CSS for the print view"""
 
     # ---------------------------------------------------------------------------------
@@ -293,7 +292,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_extra_tie_break_classes(self) -> list[type['AbstractTieBreak']]:
+    def get_extra_tie_break_classes(self) -> list[type['TieBreak']]:
         """Provide extra tournament tie breaks"""
 
     # ---------------------------------------------------------------------------------

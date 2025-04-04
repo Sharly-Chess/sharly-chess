@@ -20,19 +20,14 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_break import (
-    AbstractTieBreak,
-    AbstractTieBreakOption,
-    TieBreakOptionManager,
-)
-from data.tie_break_managers import TieBreakManager
-from data.util import (
+from data.tie_break import TieBreak, TieBreakOption
+from utils import SharedUtils
+from utils.enum import (
     BoardColor,
     PlayerGender,
     PointValueType,
     TournamentPairing,
     Result,
-    SharedUtils,
     TournamentRating,
     TrfType,
 )
@@ -97,7 +92,7 @@ class Tournament:
         self._boards: list[Board] | None = None
         self._unpaired_players: list[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
-        self._tie_breaks: list[AbstractTieBreak] | None = None
+        self._tie_breaks: list[TieBreak] | None = None
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
 
@@ -266,19 +261,21 @@ class Tournament:
         return self.stored_tournament.last_check_in_update
 
     @property
-    def stored_tie_breaks(self) -> list[AbstractTieBreak] | None:
+    def stored_tie_breaks(self) -> list[TieBreak] | None:
+        from data.entity_managers import TieBreakManager, TieBreakOptionManager
+
         if not self.stored_tournament.tie_breaks:
             return None
-        tie_breaks: list[AbstractTieBreak] = []
-        tie_break_type_by_id: dict[str, type[AbstractTieBreak]] = (
+        tie_breaks: list[TieBreak] = []
+        tie_break_type_by_id: dict[str, type[TieBreak]] = (
             TieBreakManager.type_by_id()
         )
-        option_type_by_id: dict[str, type[AbstractTieBreakOption]] = (
+        option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager.type_by_id()
         )
         for tie_break_dict in self.stored_tournament.tie_breaks:
             tie_break_id = tie_break_dict['type']
-            options: list[AbstractTieBreakOption] = []
+            options: list[TieBreakOption] = []
             for option_id, value in tie_break_dict['options'].items():
                 if option_type := option_type_by_id.get(option_id, None):
                     options.append(option_type(value))
@@ -346,7 +343,7 @@ class Tournament:
         return self._arbiter
 
     @property
-    def tie_breaks(self) -> list[AbstractTieBreak]:
+    def tie_breaks(self) -> list[TieBreak]:
         self.read_papi()
         assert self._tie_breaks is not None
         return self._tie_breaks
@@ -1163,7 +1160,7 @@ class Tournament:
             papi_database.update_point_values(self._point_value_type)
             papi_database.commit()
 
-    def _update_tie_breaks(self) -> list[AbstractTieBreak] | None:
+    def _update_tie_breaks(self) -> list[TieBreak] | None:
         if self.stored_tie_breaks is None:
             return None
         self._tie_breaks = [

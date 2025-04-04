@@ -3,8 +3,8 @@ from typing import Any
 
 from common.logger import get_logger
 from data import tie_break
-from data.tie_break import AbstractTieBreak
-from data.util import (
+from data.tie_break import TieBreak
+from utils.enum import (
     TournamentType,
     TournamentPairing,
     TournamentRating,
@@ -72,7 +72,7 @@ class ChessEventTournament:
         self.error = False
 
     @staticmethod
-    def _load_tie_breaks(tournament_info: dict) -> list[AbstractTieBreak]:
+    def _load_tie_breaks(tournament_info: dict) -> list[TieBreak]:
         tie_break_by_chessevent_id = {
             1: ffe_tie_break.PapiBuchholzTieBreak(),
             2: ffe_tie_break.PapiBuchholzCutBottomTieBreak(),

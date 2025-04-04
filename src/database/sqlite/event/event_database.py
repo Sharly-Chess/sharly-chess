@@ -18,7 +18,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
-from data.util import Result as UtilResult
+from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredEvent,

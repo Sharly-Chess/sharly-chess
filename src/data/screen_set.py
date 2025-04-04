@@ -11,13 +11,12 @@ from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.player import Player
-from data.util import ScreenType
+from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredScreenSet
 
 if TYPE_CHECKING:
     from data.event import Event
     from data.screen import Screen
-    from data.family import Family
     from data.tournament import Tournament
 
 logger: Logger = get_logger()

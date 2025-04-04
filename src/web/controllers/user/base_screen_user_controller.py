@@ -12,7 +12,7 @@ from common.logger import get_logger
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
-from data.util import ScreenType
+from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
 from web.controllers.user.event_user_controller import EventUserWebContext

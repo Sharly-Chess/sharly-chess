@@ -11,7 +11,7 @@ from trf import Player as TrfPlayer
 from common.i18n import _
 from common.logger import get_logger
 from data.pairing import Pairing
-from data.util import (
+from utils.enum import (
     PlayerGender,
     PlayerTitle,
     BoardColor,
@@ -22,8 +22,7 @@ from data.util import (
 )
 
 if TYPE_CHECKING:
-    from _weakref import ReferenceType
-    from data.tournament import Tournament
+    pass
 
 logger: Logger = get_logger()
 

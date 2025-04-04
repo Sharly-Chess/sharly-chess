@@ -1,6 +1,7 @@
 from logging import Logger
 from typing import Annotated, Any
 
+from data.entity_managers import OutdateActionManager, OutdateDelayManager, LocalSourceDatabaseManager
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -32,12 +33,9 @@ from database.sqlite.config.config_store import (
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from database.sqlite.local_source_database import (
-    LocalSourceDatabaseManager,
     LocalSourceDatabase,
     DisabledOutdateDelay,
     NotifOutdateAction,
-    OutdateDelayManager,
-    OutdateActionManager,
 )
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (

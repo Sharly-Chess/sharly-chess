@@ -9,7 +9,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.player import Player, Federation, Club
-from data.util import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
+from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.util import PlayerFFELicence
