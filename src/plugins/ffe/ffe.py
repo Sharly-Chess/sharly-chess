@@ -15,25 +15,22 @@ from packaging.version import Version
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.input_output import PlayerUpdater
-from data.tie_break import TieBreak
+from data.print_documents import PlayerSplitter, PrintDocument
+from data.print_documents.documents import PlayerPrintDocument
+from data.print_documents.player_splitters import ClubPlayerSplitter
+from data.tie_breaks import TieBreak
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
-from data.print import (
-    PlayerSplitter,
-    ClubPlayerSplitter,
-    PrintDocument,
-    PlayerPrintDocument,
-)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
+from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import FfePlayerUpdater, LeaguePlayerSplitter
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.ffe_tie_break import papi_performance_bonus
+from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
@@ -669,7 +666,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_player_splitter_types(
-        self, player_splitter_types: list[type['PlayerSplitter']]
+        self, player_splitter_types: list[type[PlayerSplitter]]
     ):
         PluginUtils.insert_on_equals(
             player_splitter_types, LeaguePlayerSplitter, ClubPlayerSplitter
@@ -725,12 +722,12 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_extra_tie_break_classes(self) -> list[type[TieBreak]]:
         return [
-            ffe_tie_break.PapiBuchholzTieBreak,
-            ffe_tie_break.PapiBuchholzCutBottomTieBreak,
-            ffe_tie_break.PapiMedianBuchholzTieBreak,
-            ffe_tie_break.PapiPerformanceTieBreak,
-            ffe_tie_break.PapiSumOfBuchholzTieBreak,
-            ffe_tie_break.PapiKashdanTieBreak,
+            ffe_tie_breaks.PapiBuchholzTieBreak,
+            ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
+            ffe_tie_breaks.PapiMedianBuchholzTieBreak,
+            ffe_tie_breaks.PapiPerformanceTieBreak,
+            ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
+            ffe_tie_breaks.PapiKashdanTieBreak,
         ]
 
     # ---------------------------------------------------------------------------------

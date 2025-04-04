@@ -1,194 +1,23 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
-from functools import cached_property
-from types import UnionType
-from typing import Any, Iterable, override
+from typing import Any, override
 
 from common.i18n import _
 from data.board import Board
 from data.player import Player
-from data.tournament import Tournament
-from utils.entity import (
-    EntityManager,
-    IdentifiableEntity,
-    Option,
-    OptionError,
-    OptionHandler,
+from data.print_documents.player_splitters import PlayerSplitter
+from data.print_documents.options import (
+    PlayerSplitPrintOption,
+    PrintOption,
+    RoundPrintOption,
 )
-from utils.enum import PlayerCategory
-from plugins.manager import plugin_manager
-
-# ---------------------------------------------------------------------------------
-# Player splitters
-# ---------------------------------------------------------------------------------
-
-class PlayerSplitter(IdentifiableEntity, ABC):
-    @staticmethod
-    @abstractmethod
-    def get_split_key(player: Player) -> str:
-        """Extract the split key from a player.
-        Players will be grouped by sort key."""
-        pass
-
-    @staticmethod
-    def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
-        """Returns the split keys ordered. Defaults to alphabetical sort."""
-        return sorted(split_keys)
-
-    def split_players(self, players: list[Player]) -> dict[str, list[Player]]:
-        splitted_players = defaultdict(list)
-        for player in players:
-            splitted_players[self.get_split_key(player)].append(player)
-        return {
-            key: splitted_players[key]
-            for key in self.sorted_split_keys(splitted_players.keys())
-        }
+from data.tournament import Tournament
+from utils.option import OptionHandler, OptionError
 
 
-class NoSplitPlayerSplitter(PlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'no-split'
-
-    @staticmethod
-    def static_name() -> str:
-        return '-'
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return ''
-
-
-class CategoryPlayerSplitter(PlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'category'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Category')
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.category.short_name
-
-    @staticmethod
-    def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
-        ordered_keys = [category.short_name for category in PlayerCategory]
-        return sorted(split_keys, key=lambda key: ordered_keys.index(key))
-
-
-class ClubPlayerSplitter(PlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'club'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Club')
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.club.name if player.club else ''
-
-
-class FederationPlayerSplitter(PlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'federation'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Federation')
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.federation.name
-
-
-class PrintPlayerSplitterManager(EntityManager[PlayerSplitter]):
-    @staticmethod
-    def entity_types() -> list[type[PlayerSplitter]]:
-        splitters = [
-            NoSplitPlayerSplitter,
-            CategoryPlayerSplitter,
-            ClubPlayerSplitter,
-            FederationPlayerSplitter,
-        ]
-        plugin_manager.hook.insert_print_player_splitter_types(
-            player_splitter_types=splitters
-        )
-        return splitters
-
-# ---------------------------------------------------------------------------------
-# Print Options
-# ---------------------------------------------------------------------------------
-
-class RoundPrintOption(Option):
-    @staticmethod
-    def static_id() -> str:
-        return 'round'
-
-    @property
-    def type(self) -> type | UnionType:
-        return int | None
-
-    @property
-    def default_value(self) -> Any:
-        return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/round.html'
-
-    @override
-    def validate(self):
-        super().validate()
-        if self.value is not None and self.value < 1:
-            raise OptionError(_('A positive integer is expected.'), self)
-
-
-class PlayerSplitPrintOption(Option):
-    @staticmethod
-    def static_id() -> str:
-        return 'player-split'
-
-    @property
-    def type(self) -> type | UnionType:
-        return str
-
-    @property
-    def default_value(self) -> Any:
-        return 'no-split'
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/player_split.html'
-
-    @property
-    def player_splitter_options(self) -> dict[str, str]:
-        return PrintPlayerSplitterManager.options()
-
-    @cached_property
-    def player_splitter(self) -> PlayerSplitter | None:
-        return PrintPlayerSplitterManager.get_object(self.value)
-
-    @override
-    def validate(self):
-        try:
-            _splitter = self.player_splitter
-        except KeyError:
-            # Untranslated, should not happen
-            raise OptionError(f'Unknown player splitter: {self.value}', self)
-
-# ---------------------------------------------------------------------------------
-# PrintDocuments
-# ---------------------------------------------------------------------------------
-
-class PrintDocument(OptionHandler, ABC):
+class PrintDocument(OptionHandler[PrintOption], ABC):
     def __init__(
         self,
-        options: list[Option] | None = None,
+        options: list[PrintOption] | None = None,
         tournament: Tournament | None = None,
     ):
         self.tournament = tournament
@@ -230,6 +59,8 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
     @property
     def ordered_splitted_players(self) -> dict[str, list[Player]]:
+        from data.print_documents import PrintPlayerSplitterManager
+
         split_by = self._get_option(PlayerSplitPrintOption).value
         splitter: PlayerSplitter = PrintPlayerSplitterManager.get_object(
             split_by
@@ -237,7 +68,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
         return splitter.split_players(self.ordered_players)
 
     @staticmethod
-    def available_options() -> list[type[Option]]:
+    def available_options() -> list[type[PrintOption]]:
         return [PlayerSplitPrintOption]
 
     @property
@@ -317,7 +148,7 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
         )
 
     @staticmethod
-    def available_options() -> list[type[Option]]:
+    def available_options() -> list[type[PrintOption]]:
         return [PlayerSplitPrintOption, RoundPrintOption]
 
     @override
@@ -410,7 +241,7 @@ class BoardPrintDocument(PrintDocument, ABC):
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @staticmethod
-    def available_options() -> list[type[Option]]:
+    def available_options() -> list[type[PrintOption]]:
         return [RoundPrintOption]
 
     @override

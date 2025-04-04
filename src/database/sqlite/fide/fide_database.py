@@ -15,6 +15,9 @@ from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.player import Player, Federation, Club
+from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database.actions import NotifOutdatedAction
+from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -22,11 +25,6 @@ from utils.enum import (
     PlayerRatingType,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
-from database.sqlite.local_source_database import (
-    LocalSourceDatabase,
-    NotifOutdateAction,
-    MonthFirstDayOutdateDelay,
-)
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
@@ -65,8 +63,8 @@ class FideDatabase(LocalSourceDatabase):
     def default_stored_database(self) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=self.id,
-            outdate_delay=MonthFirstDayOutdateDelay.static_id(),
-            outdate_action=NotifOutdateAction.static_id(),
+            outdate_delay=MonthFirstDayOutdatedDelay.static_id(),
+            outdate_action=NotifOutdatedAction.static_id(),
         )
 
     def _download_source_file(self) -> bool:

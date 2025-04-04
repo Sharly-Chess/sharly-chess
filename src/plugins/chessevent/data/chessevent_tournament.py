@@ -2,8 +2,7 @@ from logging import Logger
 from typing import Any
 
 from common.logger import get_logger
-from data import tie_break
-from data.tie_break import TieBreak
+from data.tie_breaks import tie_breaks, TieBreak
 from utils.enum import (
     TournamentType,
     TournamentPairing,
@@ -11,7 +10,7 @@ from utils.enum import (
 )
 from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
-from plugins.ffe import ffe_tie_break
+from plugins.ffe import ffe_tie_breaks
 
 logger: Logger = get_logger()
 
@@ -74,16 +73,16 @@ class ChessEventTournament:
     @staticmethod
     def _load_tie_breaks(tournament_info: dict) -> list[TieBreak]:
         tie_break_by_chessevent_id = {
-            1: ffe_tie_break.PapiBuchholzTieBreak(),
-            2: ffe_tie_break.PapiBuchholzCutBottomTieBreak(),
-            3: ffe_tie_break.PapiMedianBuchholzTieBreak(),
-            4: tie_break.ProgressiveScoresTieBreak(),
-            5: ffe_tie_break.PapiPerformanceTieBreak(),
-            6: ffe_tie_break.PapiSumOfBuchholzTieBreak(),
-            7: tie_break.WinsTieBreak(),
-            8: ffe_tie_break.PapiKashdanTieBreak(),
-            9: tie_break.KoyaTieBreak(),
-            10: tie_break.SonnebornBergerTieBreak(),
+            1: ffe_tie_breaks.PapiBuchholzTieBreak(),
+            2: ffe_tie_breaks.PapiBuchholzCutBottomTieBreak(),
+            3: ffe_tie_breaks.PapiMedianBuchholzTieBreak(),
+            4: tie_breaks.ProgressiveScoresTieBreak(),
+            5: ffe_tie_breaks.PapiPerformanceTieBreak(),
+            6: ffe_tie_breaks.PapiSumOfBuchholzTieBreak(),
+            7: tie_breaks.WinsTieBreak(),
+            8: ffe_tie_breaks.PapiKashdanTieBreak(),
+            9: tie_breaks.KoyaTieBreak(),
+            10: tie_breaks.SonnebornBergerTieBreak(),
         }
         return [
             tie_break_

@@ -20,7 +20,7 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_break import TieBreak, TieBreakOption
+from data.tie_breaks import TieBreak, TieBreakOption, TieBreakManager, TieBreakOptionManager
 from utils import SharedUtils
 from utils.enum import (
     BoardColor,
@@ -262,8 +262,6 @@ class Tournament:
 
     @property
     def stored_tie_breaks(self) -> list[TieBreak] | None:
-        from data.entity_managers import TieBreakManager, TieBreakOptionManager
-
         if not self.stored_tournament.tie_breaks:
             return None
         tie_breaks: list[TieBreak] = []

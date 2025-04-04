@@ -1,7 +1,7 @@
 import atexit
 import time
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, date
+from datetime import datetime
 from pathlib import Path
 import threading
 from sqlite3 import OperationalError, IntegrityError
@@ -11,6 +11,8 @@ from common import TMP_DIR, get_logger
 from common.i18n import _
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
+from database.sqlite.local_source_database.actions import OutdatedAction, NotifOutdatedAction
+from database.sqlite.local_source_database.delays import OutdatedDelay, DisabledOutdatedDelay
 from utils.entity import IdentifiableEntity
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
@@ -20,159 +22,10 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 logger = get_logger()
 
 
-# ---------------------------------------------------------------------------------
-# Outdate delay
-# ---------------------------------------------------------------------------------
-
-
-class OutdateDelay(IdentifiableEntity, ABC):
-    """Delay according to which a database becomes outdated."""
-
-    @abstractmethod
-    def is_expired(self, start_time: datetime) -> bool:
-        """Determines if the delay since *start_time* is expired."""
-
-
-class DisabledOutdateDelay(OutdateDelay):
-    @staticmethod
-    def static_id() -> str:
-        return 'disabled'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Disabled')
-
-    def is_expired(self, start_time: datetime) -> bool:
-        return False
-
-
-class DayCountOutdateDelay(OutdateDelay, ABC):
-    """Represents the delays that expire after a specific amount of days."""
-
-    @property
-    @abstractmethod
-    def days_expired(self) -> int:
-        """Number of days for the delay to expire."""
-
-    def is_expired(self, start_time: datetime) -> bool:
-        return datetime.now() > start_time + timedelta(days=self.days_expired)
-
-
-class DailyOutdateDelay(DayCountOutdateDelay):
-    @staticmethod
-    def static_id() -> str:
-        return 'daily'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Daily')
-
-    @property
-    def days_expired(self) -> int:
-        return 1
-
-
-class Days2OutdateDelay(DayCountOutdateDelay):
-    @staticmethod
-    def static_id() -> str:
-        return '2days'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('{days} days').format(days=2)
-
-    @property
-    def days_expired(self) -> int:
-        return 2
-
-
-class Days3OutdateDelay(DayCountOutdateDelay):
-    @staticmethod
-    def static_id() -> str:
-        return '3days'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('{days} days').format(days=3)
-
-    @property
-    def days_expired(self) -> int:
-        return 3
-
-
-class WeeklyOutdateDelay(DayCountOutdateDelay):
-    @staticmethod
-    def static_id() -> str:
-        return 'weekly'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Weekly')
-
-    @property
-    def days_expired(self) -> int:
-        return 7
-
-
-class MonthFirstDayOutdateDelay(OutdateDelay):
-    @staticmethod
-    def static_id() -> str:
-        return 'month_1st'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('1st day of the month')
-
-    def is_expired(self, start_time: datetime) -> bool:
-        now = datetime.now()
-        first_day = date(now.year, now.month, 1)
-        return start_time < datetime.combine(first_day, datetime.min.time())
-
-
-# ---------------------------------------------------------------------------------
-# Outdate Actions
-# ---------------------------------------------------------------------------------
-
-class OutdateAction(IdentifiableEntity, ABC):
-    @abstractmethod
-    def on_outdated(self, database: 'LocalSourceDatabase'):
-        """Action to execute when a database is outdated."""
-
-
-class NotifOutdateAction(OutdateAction):
-    @staticmethod
-    def static_id() -> str:
-        return 'notif'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Notification')
-
-    def on_outdated(self, database: 'LocalSourceDatabase'):
-        database.outdated_warning = True
-
-
-class AutoUpdateOutdateAction(OutdateAction):
-    @staticmethod
-    def static_id() -> str:
-        return 'auto_update'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Auto-update')
-
-    def on_outdated(self, database: 'LocalSourceDatabase'):
-        if not database.is_updating:
-            database.update()
-
-
-# ---------------------------------------------------------------------------------
-# Offline Source Database
-# ---------------------------------------------------------------------------------
-
-
 class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
-    """Represents the databases used as data sources for an offline usage."""
+    """Represents the local databases used as data sources.
+    These databases are downloaded and stored locally as SQLite databases.
+    They can be periodically updated, or notify the user when outdated."""
 
     is_updating: bool = False
     update_status: bool | None = None
@@ -223,16 +76,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         """Create the indexes for the databases."""
 
     @property
-    def outdate_delay(self) -> OutdateDelay:
-        from data.entity_managers import OutdateDelayManager
+    def outdate_delay(self) -> OutdatedDelay:
+        from database.sqlite.local_source_database import OutdatedDelayManager
 
-        return OutdateDelayManager.get_object(self.stored_source_database.outdate_delay)
+        return OutdatedDelayManager.get_object(self.stored_source_database.outdate_delay)
 
     @property
-    def outdate_action(self) -> OutdateAction:
-        from data.entity_managers import OutdateActionManager
+    def outdate_action(self) -> OutdatedAction:
+        from database.sqlite.local_source_database import OutdatedActionManager
 
-        return OutdateActionManager.get_object(
+        return OutdatedActionManager.get_object(
             self.stored_source_database.outdate_action
         )
 
@@ -256,8 +109,8 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def default_stored_database(self) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=self.id,
-            outdate_delay=DisabledOutdateDelay.static_id(),
-            outdate_action=NotifOutdateAction.static_id(),
+            outdate_delay=DisabledOutdatedDelay.static_id(),
+            outdate_action=NotifOutdatedAction.static_id(),
         )
 
     @property

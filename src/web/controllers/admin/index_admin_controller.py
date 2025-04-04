@@ -1,7 +1,6 @@
 from logging import Logger
 from typing import Annotated, Any
 
-from data.entity_managers import OutdateActionManager, OutdateDelayManager, LocalSourceDatabaseManager
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -34,9 +33,12 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from database.sqlite.local_source_database import (
     LocalSourceDatabase,
-    DisabledOutdateDelay,
-    NotifOutdateAction,
+    LocalSourceDatabaseManager,
+    OutdatedActionManager,
+    OutdatedDelayManager,
 )
+from database.sqlite.local_source_database.actions import NotifOutdatedAction
+from database.sqlite.local_source_database.delays import DisabledOutdatedDelay
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
@@ -344,15 +346,15 @@ class IndexAdminController(BaseAdminController):
                     data = {}
                     for database in databases:
                         data |= {
-                            f'{database.id}_outdate_delay': (database.outdate_delay.id),
+                            f'{database.id}_outdate_delay': database.outdate_delay.id,
                             f'{database.id}_outdate_action': (
                                 database.outdate_action.id
                             ),
                         }
                 context |= {
                     'databases': databases,
-                    'outdate_delay_options': OutdateDelayManager.options(),
-                    'outdate_action_options': OutdateActionManager.options(),
+                    'outdate_delay_options': OutdatedDelayManager.options(),
+                    'outdate_action_options': OutdatedActionManager.options(),
                     'modal': modal,
                     'data': data,
                     'errors': {},
@@ -615,13 +617,13 @@ class IndexAdminController(BaseAdminController):
                         data,
                         f'{source_database.id}_outdate_delay',
                     )
-                    or DisabledOutdateDelay.static_id()
+                    or DisabledOutdatedDelay.static_id()
                 )
                 outdate_action = (
                     WebContext.form_data_to_str(
                         data, f'{source_database.id}_outdate_action'
                     )
-                    or NotifOutdateAction.static_id()
+                    or NotifOutdatedAction.static_id()
                 )
                 config_database.update_stored_local_source_database(
                     StoredLocalSourceDatabase(

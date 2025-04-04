@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from data.pairing import Pairing
 from data.player import Player, TournamentPlayer
-from data.tie_break import TieBreak
+from data.tie_breaks import TieBreak
 from utils import StaticUtils
 from utils.enum import TournamentPairing, Result
 

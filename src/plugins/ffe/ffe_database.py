@@ -13,6 +13,9 @@ from requests.exceptions import ConnectionError
 from common import TMP_DIR, get_logger
 from common.i18n import _
 from data.player import Player, Federation, Club
+from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database.actions import NotifOutdatedAction
+from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from utils.enum import (
     TournamentRating,
     PlayerRatingType,
@@ -20,11 +23,6 @@ from utils.enum import (
     PlayerTitle,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
-from database.sqlite.local_source_database import (
-    LocalSourceDatabase,
-    Days2OutdateDelay,
-    NotifOutdateAction,
-)
 from plugins import PLUGINS_DIR
 
 from plugins.ffe import PLUGIN_NAME
@@ -68,8 +66,8 @@ class FfeDatabase(LocalSourceDatabase):
     def default_stored_database(self) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=self.id,
-            outdate_delay=Days2OutdateDelay.static_id(),
-            outdate_action=NotifOutdateAction.static_id(),
+            outdate_delay=Days2OutdatedDelay.static_id(),
+            outdate_action=NotifOutdatedAction.static_id(),
         )
 
     def _download_source_file(self) -> bool:

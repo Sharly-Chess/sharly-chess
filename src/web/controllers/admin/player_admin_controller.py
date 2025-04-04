@@ -3,7 +3,6 @@ from datetime import date
 from logging import Logger
 from typing import Annotated, Any, Iterable
 
-from common import unicode_normalize
 from litestar import get, patch, delete, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
@@ -12,17 +11,13 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 
+from common import unicode_normalize
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.entity_managers import PlayerUpdaterManager
 from data.event import Event
-from data.input_output import (
-    PlayerComparator,
-    PlayerUpdater,
-    PlayerUpdaterManager,
-    AbstractPlayerUpdater,
-)
+from data.input_output import PlayerUpdater, PlayerUpdaterManager
+from data.input_output.player_updaters import PlayerComparator
 from data.loader import EventLoader
 from data.pairing import Pairing
 from data.player import Player, Federation, Club

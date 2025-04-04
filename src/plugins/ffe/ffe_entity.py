@@ -3,15 +3,14 @@ from typing import override
 
 from common.exception import PapiWebException
 from common.i18n import _
-from data.input_output import (
-    AbstractPlayerUpdater,
+from data.input_output.player_updaters import (
     FidePlayerComparator,
     PlayerComparator,
     PlayerUpdater,
     PlayerUpdaterField,
 )
 from data.player import Player
-from data.print import PlayerSplitter
+from data.print_documents import PlayerSplitter
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer

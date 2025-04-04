@@ -1,15 +1,9 @@
-import itertools
 from logging import Logger
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
-from common.papi_web_config import PapiWebConfig
-from data.input_output import (
-    AbstractTournamentExporter,
-    Trf16TournamentExporter,
-    TrfBxTournamentExporter,
-)
+
 import trf
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
@@ -22,15 +16,16 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.logger import get_logger
+from common.papi_web_config import PapiWebConfig
 from data.event import Event
-from data.loader import EventLoader
-from data.tie_break import TieBreak
-from data.entity_managers import (
-    PapiTieBreakManager,
+from data.input_output import (
     PlayerUpdaterManager,
-    PrintDocumentManager,
-    TieBreakManager,
+    TournamentExporter,
+    TournamentExporterManager,
 )
+from data.loader import EventLoader
+from data.print_documents import PrintDocumentManager
+from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
 from utils.enum import TrfType
 from database.access.papi.papi_database import PapiDatabase
@@ -304,13 +299,8 @@ class TournamentAdminController(BaseEventAdminController):
             for (block_template, data) in tournament_card_blocks_and_data
             for key, value in data.items()
         }
-        tournament_exporters: list[AbstractTournamentExporter] = [
-            Trf16TournamentExporter(),
-            TrfBxTournamentExporter(),
-        ] + list(
-            itertools.chain.from_iterable(
-                plugin_manager.hook.get_extra_tournament_exporters()
-            )
+        tournament_exporters: list[TournamentExporter] = (
+            TournamentExporterManager.objects()
         )
         template_context |= {
             'admin_event_tab': 'admin-event-tournaments-tab',

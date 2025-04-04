@@ -17,17 +17,20 @@ from pyexcel_ods3 import save_data
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.entity_managers import PrintDocumentOptionManager, PrintDocumentManager
 from data.loader import EventLoader
 from data.player import Player
-from data.print import PrintDocument
-from utils.entity import OptionError
+from data.print_documents import (
+    PrintDocument,
+    PrintDocumentManager,
+    PrintDocumentOptionManager
+)
 from utils.enum import TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
+from utils.option import OptionError
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message

@@ -8,7 +8,7 @@ from typing import NamedTuple, Pattern
 from common.logger import get_logger
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-from data.tie_break import TieBreak
+from data.tie_breaks import TieBreak, PapiTieBreakManager
 from utils.enum import (
     Result,
     TournamentPairing,
@@ -69,8 +69,6 @@ class PapiDatabase(AccessDatabase):
     def read_info(self) -> TournamentInfo:
         """Reads the database and returns basic information about the
         tournament."""
-        from data.entity_managers import PapiTieBreakManager
-
         rounds: int = int(self._read_var('NbrRondes'))
         pairing: TournamentPairing = TournamentPairing.from_papi_value(
             self._read_var('Pairing')
