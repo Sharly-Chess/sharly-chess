@@ -112,8 +112,7 @@ class SQLiteDatabase:
 
     @staticmethod
     def load_bool_from_database_field(data: int | None) -> bool:
-        """Returns True if `data` is 1, False if `data` is something else other
-        than None, and `if_none` if `data` is None."""
+        """Returns True if `data` is 1, False otherwise."""
         return data == 1
 
     @staticmethod
