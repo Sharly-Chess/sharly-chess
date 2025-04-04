@@ -78,11 +78,9 @@ class EventLoader:
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None):
         known_event_ids = cls._valid_event_ids + cls._invalid_uniq_ids
-        for event_id in cls.all_event_ids():
-            if (
-                event_id in known_event_ids or
-                (uniq_id and uniq_id != event_id)
-            ):
+        event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
+        for event_id in event_ids:
+            if event_id in known_event_ids:
                 continue
             try:
                 with EventDatabase(event_id) as database:
