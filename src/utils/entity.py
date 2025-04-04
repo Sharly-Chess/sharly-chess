@@ -32,10 +32,10 @@ class IdentifiableEntity(ABC):
         return self.static_name()
 
 
-class EntityManager[IdentifiableEntity](ABC):
+class EntityManager[T: IdentifiableEntity](ABC):
     @staticmethod
     @abstractmethod
-    def entity_types() -> list[type[IdentifiableEntity]]:
+    def entity_types() -> list[type[T]]:
         """List of all the *IdentifiableEntity* classes to manage."""
 
     @classmethod
@@ -46,24 +46,24 @@ class EntityManager[IdentifiableEntity](ABC):
         }
 
     @classmethod
-    def type_by_id(cls) -> dict[str, type[IdentifiableEntity]]:
+    def type_by_id(cls) -> dict[str, type[T]]:
         return {
             entity_type.static_id(): entity_type for entity_type in cls.entity_types()
         }
 
     @classmethod
-    def get_type(cls, id_: str) -> type[IdentifiableEntity]:
+    def get_type(cls, id_: str) -> type[T]:
         """Get a type by its ID.
         Raises a KeyError if the ID is unknown."""
         return cls.type_by_id()[id_]
 
     @classmethod
-    def get_object(cls, id_: str) -> IdentifiableEntity:
+    def get_object(cls, id_: str) -> T:
         """Get an object by its ID.
         Raises a KeyError if the ID is unknown."""
         return cls.type_by_id()[id_]()
 
     @classmethod
-    def objects(cls) -> list[IdentifiableEntity]:
+    def objects(cls) -> list[T]:
         """Get one object per type initialized with the default constructor."""
         return [type_() for type_ in cls.entity_types()]

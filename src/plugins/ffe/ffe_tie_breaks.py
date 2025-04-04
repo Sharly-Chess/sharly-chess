@@ -21,7 +21,7 @@ def papi_performance_bonus(fractional_score: float) -> int | float:
     percent = 100 * fractional_score
     index = floor(abs(50 - percent))
     percent_int = floor(percent)
-    bonus = performance_table[index]
+    bonus = float(performance_table[index])
     smaller_difference = percent - percent_int
     if smaller_difference > 0:
         smaller_difference *= performance_table[index + 1] - bonus
@@ -44,23 +44,25 @@ class AbstractPapiTieBreak(TieBreak, ABC):
 class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
     @staticmethod
     def _papi_adjusted_score(
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int,
     ) -> float:
         """Legacy: Unplayed rounds are counted as draws"""
+        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
         if tournament.pairing == TournamentPairing.BERGER:
             return player.points_after(after_round)
-        score = 0
+        score = 0.0
         for round_index, pairing in player.pairings.items():
             if round_index > after_round:
                 continue
             if pairing.unplayed:
                 score += Result.DRAW.points(tournament.point_values)
                 continue
+            assert pairing.result is not None
             if pairing.requested_bye:
                 if all(
                     p.voluntary_unplayed
@@ -76,7 +78,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
 
     @staticmethod
     def _papi_dummy_score(
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -197,7 +199,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int | None,
     ) -> float:
@@ -227,7 +229,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int | None,
     ) -> float:
@@ -259,7 +261,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int | None,
     ) -> float:
@@ -294,7 +296,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int | None,
     ) -> float:
@@ -308,9 +310,10 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
             if round_index <= after_round and pairing.played
         ]
         ratings = []
-        score = 0
+        score = 0.0
         for pairing in pairings:
             assert pairing.opponent_id is not None
+            assert pairing.result is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
             with suppress(KeyError):
                 rating = min(
@@ -351,7 +354,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int | None,
     ) -> float:
@@ -395,7 +398,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int | None,
     ) -> float:
@@ -408,7 +411,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         ]
-        score_by_result: dict[Result, int] = {
+        score_by_result: dict[Result, float] = {
             Result.GAIN: 4,
             Result.UNRATED_GAIN: 4,
             Result.DRAW: 2,
@@ -416,4 +419,8 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
             Result.LOSS: 1,
             Result.UNRATED_LOSS: 1,
         }
-        return sum(pairing.result.points(score_by_result) for pairing in pairings)
+        return sum(
+            pairing.result.points(score_by_result) 
+            for pairing in pairings
+            if pairing.result is not None            
+        )

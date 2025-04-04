@@ -57,25 +57,25 @@ class Option(IdentifiableEntity, ABC):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
 
-class OptionHandler[Option](IdentifiableEntity, ABC):
+class OptionHandler[T: Option](IdentifiableEntity, ABC):
     """Abstract class handling options."""
 
-    def __init__(self, options: list[Option] | None = None):
-        self.options: list[Option] = options or self.default_options()
+    def __init__(self, options: list[T] | None = None):
+        self.options: list[T] = options or self.default_options()
 
     @staticmethod
-    def available_options() -> list[type[Option]]:
+    def available_options() -> list[type[T]]:
         """Types of options the handler can be initialized with."""
         return []
 
     @classmethod
-    def default_options(cls) -> list[Option]:
+    def default_options(cls) -> list[T]:
         """List of all available options with default values."""
         return [option_type() for option_type in cls.available_options()]
 
     def validate_options(self):
         """Checks the validity of options, Raises a ValueError if invalid."""
-        used_option_types: list[type[Option]] = []
+        used_option_types: list[type[T]] = []
         for option in self.options:
             option.validate()
             option_type = type(option)
@@ -87,9 +87,9 @@ class OptionHandler[Option](IdentifiableEntity, ABC):
                 )
             used_option_types.append(option_type)
 
-    def _get_option[Option](
-        self, option_type: type[Option]
-    ) -> Option:
+    def _get_option[V: Option](
+        self, option_type: type[V]
+    ) -> V:
         """Retrieve an option from its type. If no option with this type
         exists in the options, returns on with the default value"""
         return next(
