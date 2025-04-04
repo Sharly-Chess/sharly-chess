@@ -277,6 +277,8 @@ class Tournament:
             TieBreakOptionManager.type_by_id()
         )
         for tie_break_dict in self.stored_tournament.tie_breaks:
+            assert isinstance(tie_break_dict['type'], str)
+            assert isinstance(tie_break_dict['options'], dict)
             tie_break_id = tie_break_dict['type']
             options: list[AbstractTieBreakOption] = []
             for option_id, value in tie_break_dict['options'].items():
@@ -603,6 +605,8 @@ class Tournament:
                 player.tournament = self
         else:
             self._rounds = 0
+            self._pairing = TournamentPairing.UNKNOWN
+            self._rating = TournamentRating.STANDARD
             self._players_by_id = {}
             self._current_round = 0
             self._rating_limit1 = 0
@@ -1083,7 +1087,7 @@ class Tournament:
                 for key, value in data.items()
             }
 
-            data: dict[str, str | int | float | None] = {
+            data: dict[str, Any] = {
                 'Ref': (
                     max(p.ref_id for p in self.players_by_id.values())
                     if self.players_by_id
