@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, Any, Self, Callable, SupportsFloat
+from typing import TYPE_CHECKING, Any, Self, Callable, SupportsFloat, Optional
 from trf import Player as TrfPlayer
 
 from common.i18n import _
@@ -92,7 +92,7 @@ class TournamentPlayer:
         pairings: dict[int, Pairing],
         estimation: int | None = None,
         point_values: dict[Result, float] | None = None,
-        tournament: 'Tournament | None' = None,
+        tournament: Optional['Tournament'] = None,
     ):
         self.id = id
         self.last_name: str = last_name
@@ -105,15 +105,15 @@ class TournamentPlayer:
         self._estimation: int | None = estimation
         self.pairings: dict[int, Pairing] = pairings
         self._point_values: dict[Result, float] | None = point_values
-        self._tournament_ref: 'ReferenceType[Tournament] | None' = None
-        self.tournament: 'Tournament | None' = tournament
+        self._tournament_ref: Optional['ReferenceType[Tournament]'] = None
+        self.tournament: Optional['Tournament'] = tournament
 
     @property
-    def tournament(self) -> 'Tournament | None':  # type: ignore
+    def tournament(self) -> Optional['Tournament']:  # type: ignore
         return self._tournament_ref() if self._tournament_ref else None
 
     @tournament.setter
-    def tournament(self, tournament: 'Tournament | None'):  # type: ignore
+    def tournament(self, tournament: Optional['Tournament']):  # type: ignore
         self._tournament_ref = weakref.ref(tournament) if tournament else None
 
     @property
@@ -186,7 +186,7 @@ class Player(TournamentPlayer):
         club: Club | None,
         fixed: int | None,
         check_in: bool,
-        tournament: 'Tournament | None' = None,
+        tournament: Optional['Tournament'] = None,
         errors: dict[str, str] | None = None,
         # Plugins can add their own player data
         plugin_data: dict[str, dict[str, Any]] | None = None,

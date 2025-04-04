@@ -3,7 +3,7 @@ import weakref
 from collections.abc import Iterable
 from itertools import chain
 from logging import Logger
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
@@ -30,7 +30,7 @@ class ScreenSet:
         self,
         screen: 'Screen',
         stored_screen_set: StoredScreenSet | None = None,
-        family: 'Family | None' = None,
+        family: Optional['Family'] = None,
         family_part: int | None = None,
     ):
         if stored_screen_set is None:

@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Optional
 
 from litestar.contrib.htmx.request import HTMXRequest
 import pluggy  # type: ignore
@@ -196,14 +196,14 @@ class AppHookSpecs:
         """Returns the path of the template for additional fields of the event modal"""
 
     @hookspec
-    def get_event_form_data(self, event: 'Event | None') -> dict[str, Any]:
+    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
         """Provide form data for the additional event form fields"""
 
     @hookspec
     def get_validated_event_form_fields(
         self,
         action: str,
-        event: 'Event | None',
+        event: Optional['Event'],
         data: dict[str, str],
         errors: dict[str, str],
     ) -> dict[str, Any]:

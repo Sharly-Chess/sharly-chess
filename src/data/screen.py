@@ -3,7 +3,7 @@ import weakref
 from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
@@ -32,7 +32,7 @@ class Screen:
         self,
         event: 'Event',
         stored_screen: StoredScreen | None = None,
-        family: 'Family | None' = None,
+        family: Optional['Family'] = None,
         family_part: int | None = None,
     ):
         if stored_screen is None:
