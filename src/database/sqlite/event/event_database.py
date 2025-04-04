@@ -477,7 +477,9 @@ class EventDatabase(MigrationDatabase):
                         assert screen_dict, (
                             f'{yml_file.name}: dictionary screens.{screen_uniq_id} is empty'
                         )
-                        timer_uniq_id: str = screen_dict.get('timer_uniq_id', None)
+                        timer_uniq_id: str | None = screen_dict.get(
+                            'timer_uniq_id', None
+                        )
                         timer_id: int | None = (
                             timer_ids_by_uniq_id[timer_uniq_id]
                             if timer_uniq_id
@@ -598,9 +600,9 @@ class EventDatabase(MigrationDatabase):
                                         'last',
                                     ],
                                 )
-                                tournament_uniq_id: str = screen_set_dict.get(
+                                tournament_uniq_id: str = screen_set_dict[
                                     'tournament_uniq_id'
-                                )
+                                ]
                                 tournament_id: int = tournament_ids_by_uniq_id[
                                     tournament_uniq_id
                                 ]
@@ -1140,7 +1142,7 @@ class EventDatabase(MigrationDatabase):
     def clone_stored_timer_hour(self, timer_hour_id: int, timer_id: int | None = None):
         stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
         if stored_timer_hour is None:
-            raise RuntimeError('Unable to fetch timer hour to clone clone')
+            raise RuntimeError('Unable to fetch timer hour to clone')
         stored_timer_hour.id = None
         if timer_id is None:
             round_: int = 0
