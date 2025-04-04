@@ -896,7 +896,7 @@ class TournamentAdminController(BaseEventAdminController):
         print_document = document_type(options, admin_tournament)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
-            document=document
+            document=print_document
         )
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
