@@ -16,7 +16,11 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
-from data.input_output import PlayerMatcher, PlayerUpdaterManager, AbstractPlayerUpdater
+from data.input_output import (
+    PlayerComparator,
+    PlayerUpdaterManager,
+    AbstractPlayerUpdater,
+)
 from data.loader import EventLoader
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
@@ -536,7 +540,7 @@ class PlayerAdminController(BaseEventAdminController):
         for player in sorted(filtered_players, key=get_sort_key):
             if player.id is not None:
                 players[player.id] = player
-        print(PlayerUpdaterManager.options())
+
         template_context |= {
             'admin_event_tab': 'admin-event-players-tab',
             'admin_players': players,
@@ -1708,7 +1712,7 @@ class PlayerAdminController(BaseEventAdminController):
             else web_context.admin_event.players_sorted_by_name
         )
         player_matches: (
-            list[PlayerMatcher] | None
+            list[PlayerComparator] | None
         ) = await player_updater.get_player_matches(players, field_ids, diff_only=False)
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
