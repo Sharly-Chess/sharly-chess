@@ -10,7 +10,7 @@ from plugins.chessevent.engine.chessevent_engine import ChessEventEngine
 from plugins.chessevent.utils import ChessEventUtils
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
-from plugins.utils import PluginEngineArgument, AbstractPlugin
+from plugins.utils import PluginEngineArgument, Plugin
 
 from web.controllers.base_controller import WebContext
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
 
 
-class ChessEventPlugin(AbstractPlugin):
+class ChessEventPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME

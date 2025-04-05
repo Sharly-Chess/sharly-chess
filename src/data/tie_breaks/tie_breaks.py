@@ -4,37 +4,31 @@ from collections import namedtuple
 from collections.abc import Iterable
 from contextlib import suppress
 from decimal import Decimal
-from functools import partial
 from math import isclose
-from types import UnionType
-from typing import Any, TYPE_CHECKING, Protocol, TypeVar, override
+from typing import TYPE_CHECKING, Protocol, TypeVar
 
 
 from common.i18n import _
 from data.pairing import Pairing
 from data.player import TournamentPlayer
-from data.util import (
-    AbstractEntityManager,
-    AbstractOption,
-    AbstractOptionHandler,
-    BoardColor,
-    OptionError,
-    Result,
-    StaticUtils,
-    TournamentPairing,
+from data.tie_breaks.options import (
+    TieBreakOption,
+    CutTieBreakOption,
+    CutTopTieBreakOption,
+    CutBottomTieBreakOption,
+    PlayedModifierTieBreakOption,
+    ForeModifierTieBreakOption,
+    LimitTieBreakOption,
+    ExcludeIdsTieBreakOption,
 )
+from utils import StaticUtils
+from utils.enum import BoardColor, Result, TournamentPairing
+from utils.option import OptionHandler, OptionError
 
 if TYPE_CHECKING:
     from data.player import Player
     from data.tournament import Tournament
 
-
-TIE_BREAK_CLASSES: list[type['AbstractTieBreak']] = []
-OPTION_CLASSES: list[type['AbstractTieBreakOption']] = []
-
-
-register_tie_break = partial(StaticUtils.register_class, register=TIE_BREAK_CLASSES)
-register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
 
 T = TypeVar('T', bound='SupportsRichComparison')
 
@@ -44,69 +38,6 @@ class SupportsRichComparison(Protocol):
     def __le__(self: T, other: T) -> bool: ...
     def __gt__(self: T, other: T) -> bool: ...
     def __ge__(self: T, other: T) -> bool: ...
-
-
-class AbstractTieBreakOption(AbstractOption, ABC):
-    """Abstract class representing an option of a tie-break"""
-
-    @property
-    def template_name(self) -> str:
-        # TODO Implement templates for tie-break options
-        return ''
-
-
-class TieBreakOptionManager(AbstractEntityManager[AbstractTieBreakOption]):
-    @staticmethod
-    def entity_types() -> list[type[AbstractTieBreakOption]]:
-        return OPTION_CLASSES
-
-
-class AbstractTieBreak(AbstractOptionHandler, ABC):
-    """Abstract class representing a tie-break"""
-
-    @property
-    @abstractmethod
-    def acronym(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def short_name(self) -> str:
-        pass
-
-    @abstractmethod
-    def compute_player_value(
-        self,
-        player: 'TournamentPlayer',
-        *,
-        after_round: int | None,
-    ) -> 'SupportsRichComparison':
-        """Compute the value of the tie-break for a player.
-        As tie-breaks are intended for ranking,
-        the return type need to support rich comparison with himself"""
-        pass
-
-    @staticmethod
-    def static_papi_id() -> str | None:
-        """Represents the tie-break in a Papi database.
-        If None, the tie-break will not appear in the database"""
-        pass
-
-    @property
-    def papi_id(self) -> str | None:
-        return self.static_papi_id()
-
-    @property
-    def is_displayable(self) -> bool:
-        """Defines if the tie-break can be displayed
-        in a print view or a ranking screen"""
-        return True
-
-    def to_dict(self) -> dict:
-        return {
-            'type': self.id,
-            'options': {option.id: option.value for option in self.options},
-        }
 
 
 class TieBreakUtils:
@@ -178,105 +109,55 @@ class TieBreakUtils:
         return dummy
 
 
-class AbstractCutTieBreakOption(AbstractTieBreakOption, ABC):
-    @property
-    def type(self) -> type | UnionType:
-        return int
+class TieBreak(OptionHandler[TieBreakOption], ABC):
+    """Abstract class representing a tie-break"""
 
     @property
-    def default_value(self) -> Any:
-        return 0
+    @abstractmethod
+    def acronym(self) -> str:
+        pass
 
-    @override
-    def validate(self):
-        super().validate()
-        if self.value < 0:
-            raise OptionError(_('A positive integer is expected.'), self)
+    @property
+    @abstractmethod
+    def short_name(self) -> str:
+        pass
 
+    @abstractmethod
+    def compute_player_value(
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
+    ) -> 'SupportsRichComparison':
+        """Compute the value of the tie-break for a player.
+        As tie-breaks are intended for ranking,
+        the return type need to support rich comparison with himself"""
+        pass
 
-@register_option
-class CutTieBreakOption(AbstractCutTieBreakOption):
     @staticmethod
-    def static_id() -> str:
-        return 'CUT'
-
-
-@register_option
-class CutTopTieBreakOption(AbstractCutTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'CUT_TOP'
-
-
-@register_option
-class CutBottomTieBreakOption(AbstractCutTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'CUT_BOTTOM'
-
-
-@register_option
-class PlayedModifierTieBreakOption(AbstractTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'PLAYED_MODIFIER'
+    def static_papi_id() -> str | None:
+        """Represents the tie-break in a Papi database.
+        If None, the tie-break will not appear in the database"""
+        pass
 
     @property
-    def type(self) -> type | UnionType:
-        return bool
+    def papi_id(self) -> str | None:
+        return self.static_papi_id()
 
     @property
-    def default_value(self) -> Any:
-        return False
+    def is_displayable(self) -> bool:
+        """Defines if the tie-break can be displayed
+        in a print view or a ranking screen"""
+        return True
+
+    def to_dict(self) -> dict:
+        return {
+            'type': self.id,
+            'options': {option.id: option.value for option in self.options},
+        }
 
 
-@register_option
-class ForeModifierTieBreakOption(AbstractTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'FORE_MODIFIER'
-
-    @property
-    def type(self) -> type | UnionType:
-        return bool
-
-    @property
-    def default_value(self) -> Any:
-        return False
-
-
-@register_option
-class LimitTieBreakOption(AbstractTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'LIMIT'
-
-    @property
-    def type(self) -> type | UnionType:
-        return float | None
-
-    @property
-    def default_value(self) -> Any:
-        return None
-
-
-@register_option
-class ExcludeIdsTieBreakOption(AbstractTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'EXCLUDE_IDS'
-
-    @property
-    def type(self) -> type | UnionType:
-        return Iterable[int] | None
-
-    @property
-    def default_value(self) -> Any:
-        return None
-
-
-@register_tie_break
-class WinsTieBreak(AbstractTieBreak):
+class WinsTieBreak(TieBreak):
     """The number of rounds where a participant obtains,
     with or without playing, as many points as awarded for a win.
     See FIDE Handbook C.07.7.1"""
@@ -319,8 +200,7 @@ class WinsTieBreak(AbstractTieBreak):
         )
 
 
-@register_tie_break
-class GamesWonTieBreak(AbstractTieBreak):
+class GamesWonTieBreak(TieBreak):
     """The number of games a participant won 'over the board'.
     See FIDE Handbook C.07.7.2"""
 
@@ -355,8 +235,7 @@ class GamesWonTieBreak(AbstractTieBreak):
         )
 
 
-@register_tie_break
-class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
+class GamesPlayedWithBlackTieBreak(TieBreak):
     """The number of games played over the board with the black pieces.
     See FIDE Handbook C.07.7.3"""
 
@@ -391,8 +270,7 @@ class GamesPlayedWithBlackTieBreak(AbstractTieBreak):
         )
 
 
-@register_tie_break
-class GamesWonWithBlackTieBreak(AbstractTieBreak):
+class GamesWonWithBlackTieBreak(TieBreak):
     """The number of games won over the board with the black pieces.
     See FIDE Handbook C.07.7.4"""
 
@@ -427,8 +305,7 @@ class GamesWonWithBlackTieBreak(AbstractTieBreak):
         )
 
 
-@register_tie_break
-class ProgressiveScoresTieBreak(AbstractTieBreak):
+class ProgressiveScoresTieBreak(TieBreak):
     """The sum of progressive scores.
     After each round, a participant has a certain tournament score.
     This tie-break is calculated adding the score of the participant at the end of each round.
@@ -458,7 +335,7 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         return _('Progressive')
 
     @staticmethod
-    def available_options() -> list[type[AbstractOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [CutTieBreakOption]
 
     def compute_player_value(
@@ -473,8 +350,7 @@ class ProgressiveScoresTieBreak(AbstractTieBreak):
         return sum(player.points_after(r) for r in range(1 + cut, after_round + 1))
 
 
-@register_tie_break
-class RoundsElectedToPlayTieBreak(AbstractTieBreak):
+class RoundsElectedToPlayTieBreak(TieBreak):
     """The number of rounds one elected to play, i.e. the rounds where a player
     did not lose by forfeit, nor elected to take a bye (ZPB, HPB, or FPB)
     See FIDE Handbook C.07.7.6"""
@@ -517,8 +393,7 @@ class RoundsElectedToPlayTieBreak(AbstractTieBreak):
         )
 
 
-@register_tie_break
-class BuchholzTieBreak(AbstractTieBreak):
+class BuchholzTieBreak(TieBreak):
     """The sum of the scores of each of the opponents of a participant.
     Options:
       - CUT_TOP: removes the *cut_top* highest contributions.
@@ -548,7 +423,7 @@ class BuchholzTieBreak(AbstractTieBreak):
         return _('Buchholz')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [
             CutTopTieBreakOption,
             CutBottomTieBreakOption,
@@ -635,8 +510,7 @@ class BuchholzTieBreak(AbstractTieBreak):
         return sum(scores[cut_btm:])
 
 
-@register_tie_break
-class ForeBuchholzTieBreak(AbstractTieBreak):
+class ForeBuchholzTieBreak(TieBreak):
     """the Buchholz score as if all paired games for the final round had ended in draws.
     Options:
       - CUT_TOP: removes the *cut_top* highest contributions.
@@ -666,7 +540,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
         return _('Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [
             CutTopTieBreakOption,
             CutBottomTieBreakOption,
@@ -739,8 +613,7 @@ class ForeBuchholzTieBreak(AbstractTieBreak):
         return sum(scores[cut_btm:])
 
 
-@register_tie_break
-class SumOfBuchholzTieBreak(AbstractTieBreak):
+class SumOfBuchholzTieBreak(TieBreak):
     """The sum of Buchholz scores of the opponents.
     Options:
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
@@ -763,7 +636,7 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
         return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
     def compute_player_value(
@@ -790,8 +663,7 @@ class SumOfBuchholzTieBreak(AbstractTieBreak):
         )
 
 
-@register_tie_break
-class AverageOfBuchholzTieBreak(AbstractTieBreak):
+class AverageOfBuchholzTieBreak(TieBreak):
     """The average of opponents Buchholz scores.
     Options:
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
@@ -814,7 +686,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
         return _('Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
     def compute_player_value(
@@ -843,8 +715,7 @@ class AverageOfBuchholzTieBreak(AbstractTieBreak):
         ) / len(opponents)
 
 
-@register_tie_break
-class SonnebornBergerTieBreak(AbstractTieBreak):
+class SonnebornBergerTieBreak(TieBreak):
     """Score computed by adding, for each round,
     a value given by multiplying their score of the opponent by
     the points scored against them.
@@ -875,7 +746,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
         return _('S-Berger *** SHORT NAME FOR SONNENBORN-BERGER')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [
             CutTieBreakOption,
             PlayedModifierTieBreakOption,
@@ -986,8 +857,7 @@ class SonnebornBergerTieBreak(AbstractTieBreak):
                 return dummy, pairing.result
 
 
-@register_tie_break
-class KoyaTieBreak(AbstractTieBreak):
+class KoyaTieBreak(TieBreak):
     """The number of points achieved against all participants
     who have scored at 50% of the maximum possible score.
     This is only used in Round-Robin tournaments, but is still
@@ -1019,7 +889,7 @@ class KoyaTieBreak(AbstractTieBreak):
         return _('Koya')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [LimitTieBreakOption]
 
     def compute_player_value(
@@ -1054,8 +924,7 @@ class KoyaTieBreak(AbstractTieBreak):
         return score
 
 
-@register_tie_break
-class KashdanTieBreak(AbstractTieBreak):
+class KashdanTieBreak(TieBreak):
     """Grant 4 tiebreak points for a win, 2 for a draw, 1 for a loss,
     and 0 for an unplayed game.
     See USCF Handbook section 34E7."""
@@ -1109,8 +978,7 @@ class KashdanTieBreak(AbstractTieBreak):
         return sum(pairing.result.points(score_by_result) for pairing in pairings)
 
 
-@register_tie_break
-class AverageRatingOpponentsTieBreak(AbstractTieBreak):
+class AverageRatingOpponentsTieBreak(TieBreak):
     """The average rating of opponents.
     Only opponents met over the board will be counted.
     WARNING: This assumes everyone has a rating; if an opponent does not have
@@ -1137,7 +1005,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
         return _('Average rating')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [
             CutTopTieBreakOption,
             CutBottomTieBreakOption,
@@ -1189,8 +1057,7 @@ class AverageRatingOpponentsTieBreak(AbstractTieBreak):
         return StaticUtils.round_ranking(average)
 
 
-@register_tie_break
-class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
+class TournamentPerformanceRatingTieBreak(TieBreak):
     """The Average Rating of the Opponents, added
     to a number resulting from the conversion of the fractional score
     into RD (see FIDE Rating Regulations for the Conversion Table).
@@ -1246,8 +1113,7 @@ class TournamentPerformanceRatingTieBreak(AbstractTieBreak):
         return StaticUtils.round_ranking(average + bonus)
 
 
-@register_tie_break
-class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
+class AveragePerformanceRatingOpponentsTieBreak(TieBreak):
     """The average of the tournament performance rating of the
     opponents, only taking played games into account.
     See FIDE Handbook C.07.10.4."""
@@ -1299,8 +1165,7 @@ class AveragePerformanceRatingOpponentsTieBreak(AbstractTieBreak):
         return StaticUtils.round_ranking(average)
 
 
-@register_tie_break
-class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
+class PerfectTournamentPerformanceTieBreak(TieBreak):
     """The lowest rating that a participant should have for their
     expected score to be greater than or equal to their tournament score.
     This assumes that all players are rated, or at least have an estimation.
@@ -1483,8 +1348,7 @@ class PerfectTournamentPerformanceTieBreak(AbstractTieBreak):
             return low, high
 
 
-@register_tie_break
-class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
+class AveragePerfectPerformanceTieBreak(TieBreak):
     """The average of the Perfect Tournament Performances
     of the opponents (only those who played).
     See FIDE Hand book C.07.10.5."""
@@ -1534,8 +1398,7 @@ class AveragePerfectPerformanceTieBreak(AbstractTieBreak):
         return StaticUtils.round_ranking(sum(ptp) / len(ptp))
 
 
-@register_tie_break
-class DirectEncounterTieBreak(AbstractTieBreak):
+class DirectEncounterTieBreak(TieBreak):
     """Direct Encounter score.
     Options:
       - EXCLUDE_IDS: List of player ids to not take into account.
@@ -1560,7 +1423,7 @@ class DirectEncounterTieBreak(AbstractTieBreak):
         return _('Direct encounter')
 
     @staticmethod
-    def available_options() -> list[type[AbstractTieBreakOption]]:
+    def available_options() -> list[type[TieBreakOption]]:
         return [
             ExcludeIdsTieBreakOption,
             PlayedModifierTieBreakOption,

@@ -2,14 +2,14 @@ import functools
 import weakref
 from functools import cached_property
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from data.screen import Screen
-from data.util import ScreenType
+from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
@@ -140,7 +140,7 @@ class Family:
         return self.stored_family.timer_id
 
     @property
-    def timer(self) -> 'Timer | None':
+    def timer(self) -> Optional['Timer']:
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
     @property

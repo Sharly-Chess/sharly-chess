@@ -27,7 +27,7 @@ from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
-from data.util import (
+from utils.enum import (
     ScreenType,
     PlayerGender,
 )

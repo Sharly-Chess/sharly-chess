@@ -3,7 +3,7 @@ from logging import Logger
 from dataclasses import dataclass
 
 from common.logger import get_logger
-from data.util import Result
+from utils.enum import Result
 from data.player import Player
 
 logger: Logger = get_logger()

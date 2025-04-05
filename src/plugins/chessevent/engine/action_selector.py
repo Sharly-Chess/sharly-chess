@@ -24,7 +24,7 @@ from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import Result
+from utils.enum import Result
 from database.access.papi.papi_database import PapiDatabase
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
