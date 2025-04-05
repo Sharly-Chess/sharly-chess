@@ -16,7 +16,7 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER
+from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DEVEL_ENV
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -311,7 +311,7 @@ class Engine:
                 choice = input_interactive(
                     _(
                         'Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?'
-                    ).format(y_uc=yes_answer, n_lc=no_answer)
+                    ).format(y_uc=yes_answer, n_lc=no_answer.lower())
                 )
                 if choice in [
                     '',
@@ -357,7 +357,7 @@ class Engine:
         """Do a request on filebin.net with optional payload and attached files."""
         url: str = cls._filebin_url(path)
         handlers: dict[str, Any] = {}
-        debug: bool = False
+        debug: bool = DEVEL_ENV
         try:
             if debug:
                 logger.info('_bin_request(method=%s, url=%s)', method, url)
@@ -470,13 +470,13 @@ class Engine:
                 + _(
                     'I would like the following custom files to be added to a future version of Papi-web:'
                 )
-                + '/p>'
+                + '</p>'
             )
             body += '<ul>'
             for filename in custom_files:
                 body += f'<li>{filename}</li>'
             body += '</ul>'
-            body += '<p>' + _('Thanks :-)') + '/p>'
+            body += '<p>' + _('Thanks :-)') + '</p>'
             body += '<ul>'
             body += (
                 f'<li><a href="{bin_url}">'
@@ -496,7 +496,7 @@ class Engine:
                 )
                 + '</p>'
             )
-            body += '<p>' + _('First name LAST NAME') + '/p>'
+            body += '<p>' + _('First name LAST NAME') + '</p>'
             mail_url: str = (
                 f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
             )
