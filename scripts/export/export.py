@@ -50,9 +50,10 @@ DATA_DIR: Path = BASE_DIR / 'export-data'
 LOCALE_DIR: Path = BASE_DIR / 'locale'
 basename: str = f'papi-web-{PapiWebConfig().version}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
-PROJECT_DIR: Path = EXPORT_DIR / basename
+PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
+INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
@@ -83,7 +84,6 @@ def build_exe():
         '--clean',
         '--noconfirm',
         '--name=' + basename,
-        '--onefile',
         '--copy-metadata',
         'papi_web',
         '--hiddenimport=common',
@@ -196,13 +196,10 @@ def build_exe():
 
 def create_project():
     papi_web_config: PapiWebConfig = PapiWebConfig()
-    print_interactive_info(f'Creating folder {PROJECT_DIR} from {DATA_DIR}...')
-    shutil.copytree(DATA_DIR, PROJECT_DIR)
-    dist_exe_file: Path = DIST_DIR / EXE_FILENAME
+    print_interactive_info(f'Adding data from folder {PROJECT_DIR} from {DATA_DIR}...')
+    shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     bin_dir: Path = PROJECT_DIR / 'bin'
     bin_dir.mkdir(parents=True, exist_ok=True)
-    print_interactive_info(f'Moving {dist_exe_file} to {bin_dir}...')
-    shutil.move(dist_exe_file, PROJECT_DIR)
     bbp_pairings: BbpPairings = BbpPairings()
     bbp_pairings_dir: Path = (
         bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
