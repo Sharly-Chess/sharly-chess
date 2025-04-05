@@ -4205,6 +4205,9 @@ msgstr ""
 msgid "time control"
 msgstr ""
 
+msgid "timeout"
+msgstr ""
+
 msgid "timer"
 msgstr ""
 
