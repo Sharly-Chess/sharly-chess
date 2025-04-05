@@ -107,7 +107,7 @@ class SqlServer:
 
         try:
             await asyncio.wait_for(connect_to_server(), timeout=timeout)
-        except (TimeoutError, pyodbc.Error) as e:
+        except pyodbc.Error as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
                 error: str = _('Connection to the FFE server failed: {error}.').format(
@@ -116,9 +116,14 @@ class SqlServer:
             else:
                 error: str = _('Connection to the FFE server failed.')
             logger.error(error)
-            raise PapiWebException(
-                error or _('Connection to the FFE server failed.')
-            ) from e
+            raise PapiWebException(error) from e
+        except TimeoutError as e:
+            NetworkMonitor.set_connected(False)
+            error: str = _('Connection to the FFE server failed: {error}.').format(
+                error=_('timeout')
+            )
+            logger.error(error)
+            raise PapiWebException(error) from e
 
         assert self.database is not None
         try:
