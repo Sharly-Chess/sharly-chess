@@ -241,7 +241,7 @@ class MigrationManager[MigrationDatabase](ABC):
             if target_migration == current_migration:
                 logger.debug(self.log_prefix + 'No migration to run')
             else:
-                logger.info(
+                logger.debug(
                     self.log_prefix
                     + f'Migrating from [{current_migration}] to [{target_migration}]...'
                 )
@@ -249,7 +249,7 @@ class MigrationManager[MigrationDatabase](ABC):
                     self._rollback(target_migration)
                 else:
                     self._upgrade(target_migration)
-                logger.info(self.log_prefix + 'Migration complete.')
+                logger.debug(self.log_prefix + 'Migration complete.')
             self.database.commit()
         except OperationalError as error:
             raise PapiWebException(self.log_prefix + f'Migration failed: {error}')
