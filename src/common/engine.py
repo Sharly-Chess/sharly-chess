@@ -352,7 +352,7 @@ class Engine:
         method: str,
         path: str,
         data: dict[str, str] | None,
-        files: dict[str, Path] | None,
+        file: Path | None,
     ) -> bool:
         """Do a request on filebin.net with optional payload and attached files."""
         url: str = cls._filebin_url(path)
@@ -371,32 +371,23 @@ class Engine:
                             if field
                             else 'None',
                         )
-                if files:
-                    logger.info('- files:')
-                    for field_id, file in files.items():
-                        logger.info('  - %s: [%s]', field_id, file)
-            if not data and not files:
+            if not data and not file:
                 response: Response = request(
                     method=method, url=url, timeout=REQUEST_TIMEOUT
                 )
-            elif not files:
+            elif not file:
                 response: Response = request(
                     method=method, url=url, data=data, timeout=REQUEST_TIMEOUT
                 )
             else:
-                handlers = {
-                    file_id: open(file_name, 'rb')
-                    for file_id, file_name in files.items()
-                }
-                response: Response = request(
-                    method=method,
-                    url=url,
-                    data=data,
-                    files=handlers,
-                    timeout=REQUEST_TIMEOUT,
-                )
-                for handler in handlers.values():
-                    handler.close()
+                with open(file, 'rb') as f:
+                    response: Response = request(
+                        method=method,
+                        url=url,
+                        data=f,
+                        headers={'Content-Type': 'application/octet-stream'},
+                        timeout=REQUEST_TIMEOUT,
+                    )
             response.raise_for_status()
             content: str = response.content.decode()
             if debug:
@@ -434,7 +425,7 @@ class Engine:
                 method='POST',
                 path=f'{bin_name}/{filename}',
                 data=None,
-                files={filename: file},
+                file=file,
             ):
                 return False
         return True
@@ -492,7 +483,8 @@ class Engine:
             body += (
                 '<p>'
                 + _(
-                    'Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!'
+                    'Add here all the information you deem necessary, and if '
+                    'you are not known by the developers, introduce yourself!'
                 )
                 + '</p>'
             )
@@ -502,7 +494,9 @@ class Engine:
             )
             print_interactive_info(
                 _(
-                    'A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}.'
+                    'A window will open to send an email to the Papi-web project; '
+                    'If the window does not open, please click on the link below '
+                    'or manually send an email to {email}.'
                 ).format(email=PapiWebConfig.mail)
             )
             print_interactive_info(mail_url)
