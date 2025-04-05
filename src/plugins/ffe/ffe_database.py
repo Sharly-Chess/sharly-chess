@@ -124,7 +124,7 @@ class FfeDatabase(LocalSourceDatabase):
             'standard_rating_type': PlayerRatingType.from_papi_value,
             'rapid_rating_type': PlayerRatingType.from_papi_value,
             'blitz_rating_type': PlayerRatingType.from_papi_value,
-            'fide_id': lambda s: int(s.strip()) if s else 0,
+            'fide_id': lambda s: int(s.strip('\' ')) if s else 0,
             'fide_title': PlayerTitle.from_papi_value,
             'ffe_licence': PlayerFFELicence.from_papi_value,
             'league': None,
