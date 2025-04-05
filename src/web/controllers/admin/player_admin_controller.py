@@ -1259,7 +1259,6 @@ class PlayerAdminController(BaseEventAdminController):
         """Returns a dict containing the byes that should be saved (changes only)."""
         new_byes: dict[int, Result] = {}
         assert web_context.admin_player is not None
-        assert web_context.admin_tournament is not None
         admin_player: Player = web_context.admin_player
         assert admin_player.tournament is not None
         admin_tournament: Tournament = admin_player.tournament
