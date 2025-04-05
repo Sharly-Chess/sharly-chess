@@ -535,26 +535,27 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/tournament-trf-export/{event_uniq_id:str}/{tournament_id:int}/{usage:str}',
-        name='admin-tournament-trf-export',
+        path='/admin/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
+        name='admin-tournament-export',
     )
-    async def admin_tournament_trf_export(
+    async def admin_tournament_export(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-        usage: str,
+        exporter_id: str,
     ) -> File:
-        trf_type = TrfType(usage)
         context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
         tournament = context.admin_tournament
         if tournament is None:
             raise RuntimeError('tournament not defined')
-        temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.trf')
-        with temp_file as file:
-            trf.dump(file, tournament.to_trf(trf_type))
+        exporter = TournamentExporterManager.get_object(exporter_id)
+        temp_file = NamedTemporaryFile(delete=False, mode='w')
+        with temp_file:
+            exporter.dump_to_file(temp_file, tournament)
         return File(
-            path=temp_file.name, filename=f'{tournament.name}.{trf_type.file_extension}'
+            path=temp_file.name,
+            filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}'
         )
 
     @post(

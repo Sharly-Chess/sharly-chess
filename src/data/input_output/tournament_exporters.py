@@ -1,22 +1,35 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import IO, override
+
+import trf
 
 from common.i18n import _
+from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
 from utils.enum import TrfType
 
 
 class TournamentExporter(IdentifiableEntity, ABC):
     """Abstract class representing an export format for a tournament."""
-    @property
-    @abstractmethod
-    def download_route(self) -> str:
-        """Route downloading the export file.
-        Should take as parameters event_uniq_id: str and tournament_id: int"""
 
     @property
-    def route_parameters(self) -> dict[str, Any]:
-        return {}
+    @abstractmethod
+    def tooltip(self) -> str:
+        """Tooltip to display on the export button."""
+
+    @abstractmethod
+    def dump_to_file(self, file: IO, tournament: Tournament):
+        """Dump the content of the *tournament* to export into the *file*."""
+
+    @property
+    @abstractmethod
+    def file_extension(self) -> str:
+        """Extension of the file to download."""
+
+    @staticmethod
+    def file_name(tournament: Tournament) -> str:
+        """Name of the file to download."""
+        return tournament.name
 
 
 class Trf16TournamentExporter(TournamentExporter):
@@ -26,16 +39,18 @@ class Trf16TournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return _('Export to TRF16 (rating)')
+        return 'TRF16'
 
     @property
-    def download_route(self) -> str:
-        return 'admin-tournament-trf-export'
-
+    def tooltip(self) -> str:
+        return _('Export the tournament to the TRF16 format.')
 
     @property
-    def route_parameters(self) -> dict[str, Any]:
-        return {'usage': TrfType.RATING}
+    def file_extension(self) -> str:
+        return 'trf'
+
+    def dump_to_file(self, file: IO, tournament: Tournament):
+        trf.dump(file, tournament.to_trf(TrfType.TRF_16))
 
 
 class TrfBxTournamentExporter(TournamentExporter):
@@ -45,12 +60,56 @@ class TrfBxTournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return _('Export to TRF(bx) (pairing)')
+        return 'TRF(bx)'
 
     @property
-    def download_route(self) -> str:
-        return 'admin-tournament-trf-export'
+    def tooltip(self) -> str:
+        return _('Export the tournament to the TRF(bx) format (usage: pairing).')
 
     @property
-    def route_parameters(self) -> dict[str, Any]:
-        return {'usage': TrfType.PAIRING}
+    def file_extension(self) -> str:
+        return 'trfx'
+
+    def dump_to_file(self, file: IO, tournament: Tournament):
+        trf.dump(file, tournament.to_trf(TrfType.TRF_BX))
+
+
+class PgnTournamentExporter(TournamentExporter):
+    @staticmethod
+    def static_id() -> str:
+        return 'pgn'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'PGN'
+
+    @property
+    def tooltip(self) -> str:
+        return _(
+            'Export all the games of the last round '
+            'of the tournament to the PGN format (usage: pairing).'
+        )
+
+    @property
+    def file_extension(self) -> str:
+        return 'pgn'
+
+    @staticmethod
+    @override
+    def file_name(tournament: Tournament) -> str:
+        return f'{tournament.name} - ' + _(
+            'Round #{round}'
+        ).format(round=tournament.current_round)
+
+    def dump_to_file(self, file: IO, tournament: Tournament):
+        show_tournament_name = (
+            len(tournament.event.tournaments_by_id.values()) != 1
+        )
+        for board in tournament.boards:
+            file.write(
+                board.to_pgn(
+                    tournament,
+                    tournament.current_round,
+                    show_tournament_name,
+                )
+            )

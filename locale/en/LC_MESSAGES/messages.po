@@ -1299,10 +1299,13 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-msgid "Export to TRF(bx) (pairing)"
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairing)."
 msgstr ""
 
-msgid "Export to TRF16 (rating)"
+msgid "Export the tournament to the TRF(bx) format (usage: pairing)."
+msgstr ""
+
+msgid "Export the tournament to the TRF16 format."
 msgstr ""
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
@@ -2954,6 +2957,9 @@ msgstr ""
 
 #, python-format
 msgid "Round #%(round)d is running."
+msgstr ""
+
+msgid "Round #{round}"
 msgstr ""
 
 msgid "Round not finished (last finished: {round})."

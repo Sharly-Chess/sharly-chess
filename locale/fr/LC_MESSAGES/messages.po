@@ -1299,11 +1299,14 @@ msgstr "Licence FFE expirée"
 msgid "Export"
 msgstr "Exporter"
 
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Exporter en TRF(bx) (appariements)"
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairing)."
+msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PNG (usage: appariements)."
 
-msgid "Export to TRF16 (rating)"
-msgstr "Exporter en TRF16 (classement)"
+msgid "Export the tournament to the TRF(bx) format (usage: pairing)."
+msgstr "Exporter le tournoi au format TRF(bx) (usage: appariements)."
+
+msgid "Export the tournament to the TRF16 format."
+msgstr "Exporter le tournoi au format TRF16."
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
@@ -2956,6 +2959,9 @@ msgstr "La ronde %(round)d est terminée."
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
 
+msgid "Round #{round}"
+msgstr "Ronde n°{round}"
+
 msgid "Round not finished (last finished: {round})."
 msgstr "Ronde non terminée (dernière terminée : {round})."
 
@@ -4265,7 +4271,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "The FIDE database is not available."
-#~ msgstr "La base de données FIDE n'est pas disponible."
 

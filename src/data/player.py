@@ -339,6 +339,15 @@ class Player(TournamentPlayer):
             ],
         )
 
+    def to_pgn(self, is_white_player: bool) -> str:
+        field_prefix = 'White' if is_white_player else 'Black'
+        rating = self.rating if self.rating_type == PlayerRatingType.FIDE else '-'
+        return (
+            f'[{field_prefix} "{self.last_name}, {self.first_name or '?'}"]\n'
+            f'[{field_prefix}Title "{self.title.to_fide_value or '-'}"]\n'
+            f'[{field_prefix}Elo "{rating or '-'}"]\n'
+        )
+
     @property
     def points_str(self) -> str:
         return self._points_str(self.points)

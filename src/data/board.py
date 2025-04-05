@@ -1,8 +1,12 @@
 from functools import total_ordering
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from utils.enum import Result
 from data.player import Player
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 
 @dataclass
@@ -33,6 +37,35 @@ class Board:
     @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
+
+    def to_pgn(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        show_tournament_name: bool,
+        pairings_usage: bool = True,
+    ) -> str:
+        assert self.white_player is not None
+        assert self.black_player is not None
+        assert self.number is not None
+        result = (
+            self.result.to_pgn if self.result and not pairings_usage else '*'
+        )
+        start_date = tournament.event.formatted_start_date.replace('-', '.')
+        event_name = tournament.event.name + (
+            f' - {tournament.name}' if show_tournament_name else ''
+        )
+        return (
+            f'[Event "{event_name}"]\n'
+            f'[Site "{tournament.location or '?'}"]\n'
+            f'[Date "{start_date}"]\n'
+            f'[EventDate "{start_date}"]\n'
+            f'[Round "{round_}.{self.number}"]\n' +
+            self.white_player.to_pgn(True) +
+            self.black_player.to_pgn(False) +
+            f'[Result "{result}"]\n'
+            '\n*\n\n'
+        )
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)

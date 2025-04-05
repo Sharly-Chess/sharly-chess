@@ -22,4 +22,5 @@ class TournamentExporterManager(EntityManager[TournamentExporter]):
         return [
             tournament_exporters.Trf16TournamentExporter,
             tournament_exporters.TrfBxTournamentExporter,
+            tournament_exporters.PgnTournamentExporter,
         ]
