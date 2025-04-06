@@ -1240,8 +1240,6 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
             second_estimation, ratings, tournament.point_values
         )
 
-        low: float
-        high: float
         if first_expected_score >= second_expected_score:
             low, high = second_estimation, first_estimation
         else:
@@ -1249,7 +1247,7 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
         while not isclose(
             actual_score,
             mid_score := self._expected_score(
-                mid := (low + high) / 2,
+                (mid := StaticUtils.round_ranking((low + high) / 2)),
                 ratings,
                 tournament.point_values,
             ),
@@ -1272,8 +1270,8 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
     @classmethod
     def _expected_score(
         cls,
-        player_rating: int | float,
-        opponent_ratings: Iterable[int | float],
+        player_rating: int,
+        opponent_ratings: Iterable[int],
         point_values: dict[Result, float] | None = None,
     ) -> Decimal:
         chances = [
@@ -1290,7 +1288,7 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
 
     @staticmethod
     def win_chances(
-        player_rating: int | float, opponent_rating: int | float
+        player_rating: int, opponent_rating: int
     ) -> tuple[Decimal, Decimal]:
         difference = abs(player_rating - opponent_rating)
         lower_bounds: list[int] = [
