@@ -100,11 +100,12 @@ class Pairing:
     def color_papi_value(self) -> str:
         if self.color:
             return self.color.to_papi_value
-        return 'F' if self.result.is_bye else 'R'
+        return 'F' if self.result and self.result.is_bye else 'R'
 
     def to_trf(
         self, round_number: int, player_id_to_trf_id: Callable[[int], int]
     ) -> TrfGame:
+        assert self.result is not None
         return TrfGame(
             startrank=(
                 '0000'
@@ -121,4 +122,5 @@ class Pairing:
         )
 
     def __repr__(self):
+        assert self.result is not None
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'

@@ -17,7 +17,7 @@ from database.sqlite.config.config_store import (
 from database.sqlite.migration_database import MigrationDatabase
 
 if TYPE_CHECKING:
-    from database.sqlite.migration import MigrationManager
+    from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
 
@@ -41,7 +41,7 @@ class ConfigDatabase(MigrationDatabase):
         return cls(write)
 
     @cached_property
-    def migration_managers(self) -> list['MigrationManager']:
+    def migration_managers(self) -> list['DatabaseMigrationManager']:
         from database.sqlite.migration import DatabaseMigrationManager
 
         return [DatabaseMigrationManager(self, migrations)]

@@ -79,6 +79,7 @@ class TieBreakUtils:
                 ):
                     score += Result.DRAW.points(tournament.point_values)
                 else:
+                    assert pairing.result is not None
                     score += pairing.result.points(tournament.point_values)
             else:
                 assert pairing.result is not None
@@ -131,7 +132,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     ) -> 'SupportsRichComparison':
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking,
-        the return type need to support rich comparison with himself"""
+        the return type need to support rich comparison with itself"""
         pass
 
     @staticmethod

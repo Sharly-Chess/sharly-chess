@@ -201,69 +201,70 @@ class Timer:
             assert timer_hour.id is not None
             self.timer_hours_by_id[timer_hour.id] = timer_hour
             if not stored_timer_hour.time_str:
-                timer_hour.error = _('Time is not defined.')
-                self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
+                error = _('Time is not defined.')
+                timer_hour.error = error
+                self.event.add_warning(error, timer_hour=timer_hour)
             else:
                 matches = re.match(
                     '^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$',
                     stored_timer_hour.time_str,
                 )
                 if not matches:
-                    timer_hour.error = _('Invalid time [{time_str}].').format(
+                    error = _('Invalid time [{time_str}].').format(
                         time_str=stored_timer_hour.time_str
                     )
-                    self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
+                    timer_hour.error = error
+                    self.event.add_warning(error, timer_hour=timer_hour)
                 elif (
                     previous_valid_timer_hour is None and not stored_timer_hour.date_str
                 ):
-                    timer_hour.error = _(
-                        'The date of the first hour is not defined (mandatory).'
-                    )
-                    self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
+                    error = _('The date of the first hour is not defined (mandatory).')
+                    timer_hour.error = error
+                    self.event.add_warning(error, timer_hour=timer_hour)
                 else:
                     datetime_str: str
                     if stored_timer_hour.date_str and not re.match(
                         '^#?(?P<year>[0-9]{4})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2})$',
                         stored_timer_hour.date_str,
                     ):
-                        timer_hour.error = _('Invalid date [{date_str}].').format(
+                        error = _('Invalid date [{date_str}].').format(
                             date_str=stored_timer_hour.date_str
                         )
-                        self.event.add_warning(timer_hour.error, timer_hour=timer_hour)
+                        timer_hour.error = error
+                        self.event.add_warning(error, timer_hour=timer_hour)
                     else:
                         if stored_timer_hour.date_str:
                             datetime_str = f'{stored_timer_hour.date_str} {stored_timer_hour.time_str}'
                         else:
                             datetime_str = f'{previous_valid_timer_hour.date_str} {stored_timer_hour.time_str}'
                         try:
-                            timer_hour.timestamp = int(
+                            timestamp = int(
                                 time.mktime(
                                     datetime.strptime(
                                         datetime_str, '%Y-%m-%d %H:%M'
                                     ).timetuple()
                                 )
                             )
+                            timer_hour.timestamp = timestamp
                             if (
                                 previous_valid_timer_hour
-                                and timer_hour.timestamp
-                                <= previous_valid_timer_hour.timestamp
+                                and previous_valid_timer_hour.timestamp is not None
+                                and timestamp <= previous_valid_timer_hour.timestamp
                             ):
-                                timer_hour.error = _(
+                                error = _(
                                     'Invalid hour [{hour}] (before previous hour [{previous_hour}]).'
                                 ).format(
                                     hour=timer_hour.datetime_str,
                                     previous_hour=previous_valid_timer_hour.datetime_str,
                                 )
-                                self.event.add_warning(
-                                    timer_hour.error, timer_hour=timer_hour
-                                )
+                                timer_hour.error = error
+                                self.event.add_warning(error, timer_hour=timer_hour)
                         except ValueError:
-                            timer_hour.error = _(
-                                'Invalid date and time [{datetime_str}].'
-                            ).format(datetime_str=datetime_str)
-                            self.event.add_warning(
-                                timer_hour.error, timer_hour=timer_hour
+                            error = _('Invalid date and time [{datetime_str}].').format(
+                                datetime_str=datetime_str
                             )
+                            timer_hour.error = error
+                            self.event.add_warning(error, timer_hour=timer_hour)
             if not timer_hour.error:
                 previous_valid_timer_hour = timer_hour
         if previous_valid_timer_hour:
@@ -272,37 +273,34 @@ class Timer:
                     timer_hour.last_valid = True
                     break
         else:
-            self.error = _('No valid hour defined.')
-            self.event.add_warning(self.error, timer=self)
+            error = _('No valid hour defined.')
+            self.error = error
+            self.event.add_warning(error, timer=self)
 
     @cached_property
     def colors(self) -> dict[int, str]:
+        stored_colors = self.stored_timer.colors or {}
         return {
-            i: self.stored_timer.colors[i]
-            if self.stored_timer.colors[i]
-            else self.event.timer_colors[i]
-            for i in range(1, 4)
+            i: stored_colors.get(i) or self.event.timer_colors[i] for i in range(1, 4)
         }
 
     @property
     def color_1_rgb(self) -> RGB:
-        return hexa_to_rgb(self.colors[1])
+        return hexa_to_rgb(self.colors[1]) or RGB(0, 0, 0)
 
     @property
     def color_2_rgb(self) -> RGB:
-        return hexa_to_rgb(self.colors[2])
+        return hexa_to_rgb(self.colors[2]) or RGB(0, 0, 0)
 
     @property
     def color_3_rgb(self) -> RGB:
-        return hexa_to_rgb(self.colors[3])
+        return hexa_to_rgb(self.colors[3]) or RGB(0, 0, 0)
 
     @cached_property
     def delays(self) -> dict[int, int]:
+        stored_delays = self.stored_timer.delays or {}
         return {
-            i: self.stored_timer.delays[i]
-            if self.stored_timer.delays[i]
-            else self.event.timer_delays[i]
-            for i in range(1, 4)
+            i: stored_delays.get(i) or self.event.timer_delays[i] for i in range(1, 4)
         }
 
     def get_previous_timer_hour(self, timer_hour: TimerHour) -> TimerHour | None:

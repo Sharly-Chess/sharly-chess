@@ -1,6 +1,5 @@
 import base64
 import weakref
-from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
@@ -127,10 +126,13 @@ class TournamentPlayer:
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
+        assert self.point_values is not None
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index < before_round and (pairing.played or not only_played)
+            if round_index < before_round
+            and (pairing.played or not only_played)
+            and pairing.result is not None
         )
 
     def points_after(self, after_round: int, only_played: bool = False) -> float:
@@ -353,7 +355,7 @@ class Player(TournamentPlayer):
     def add_vpoints(self, vpoints: float):
         """If `self.vpoints` is set, add `vpoints` to it.
         Otherwise, leave `self.vpoints` as None."""
-        with suppress(TypeError):
+        if self.vpoints is not None:
             self.vpoints += vpoints
 
     @property
@@ -419,13 +421,15 @@ class Player(TournamentPlayer):
 
     @property
     def time_control_initial_time_minutes(self) -> int | None:
-        with suppress(TypeError):
+        if self.time_control_initial_time:
             return self.time_control_initial_time // 60
+        return None
 
     @property
     def time_control_initial_time_seconds(self) -> int | None:
-        with suppress(TypeError):
+        if self.time_control_initial_time:
             return self.time_control_initial_time % 60
+        return None
 
     @property
     def handicap_str(self) -> str | None:
@@ -455,6 +459,7 @@ class Player(TournamentPlayer):
         ]
 
     def compute_tie_break_values(self, *, after_round: int | None):
+        assert self.tournament is not None
         self._tie_break_values = [
             tie_break.compute_player_value(self, after_round=after_round)
             for tie_break in self.tournament.tie_breaks
