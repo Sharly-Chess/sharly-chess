@@ -126,7 +126,6 @@ class TournamentPlayer:
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        assert self.point_values is not None
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()

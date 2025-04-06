@@ -3,6 +3,9 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, cast
 import unittest
 
+# Needs to be imported first to avoid circular import
+from plugins.manager import plugin_manager  # Noqa
+
 from data.tie_breaks import tie_breaks, options
 from data.pairing import Pairing
 from utils.enum import (

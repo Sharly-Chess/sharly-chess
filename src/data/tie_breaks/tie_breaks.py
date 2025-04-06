@@ -90,7 +90,7 @@ class TieBreakUtils:
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
-    ) -> float | tuple[float, Result]:
+    ) -> float:
         """Computes the dummy score for the given pairing after *after_round*."""
         if not fore_modifier:
             return player.points_after(after_round)
@@ -492,6 +492,7 @@ class BuchholzTieBreak(TieBreak):
                 else:
                     scores.append(dummy_points)
                 continue
+            assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if tournament.pairing.swiss:
                 opponent_adjusted_score = TieBreakUtils.adjusted_score(
@@ -653,6 +654,7 @@ class SumOfBuchholzTieBreak(TieBreak):
             tournament.players_by_id.get(pairing.opponent_id)
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
+            and pairing.opponent_id is not None
         ]
         tie_break = ForeBuchholzTieBreak() if fore_modifier else BuchholzTieBreak()
         return sum(
@@ -947,7 +949,7 @@ class KashdanTieBreak(TieBreak):
         player: 'TournamentPlayer',
         *,
         after_round: int | None,
-    ) -> int:
+    ) -> float:
         if after_round is None:
             after_round = max(player.pairings)
 
@@ -1211,11 +1213,11 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
         ):
             return -800 + min(
                 tournament.players_by_id[pairing.opponent_id].estimation
-                for pairing in played_rounds
+                for pairing in played_rounds if pairing.opponent_id is not None
             )
         ratings: list[int] = [
             tournament.players_by_id[pairing.opponent_id].estimation
-            for pairing in played_rounds
+            for pairing in played_rounds if pairing.opponent_id is not None
         ]
         performance_tie_break = TournamentPerformanceRatingTieBreak()
         first_estimation = performance_tie_break.compute_player_value(
@@ -1226,8 +1228,9 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
             return StaticUtils.round_ranking(first_estimation)
-        second_estimation = first_estimation * actual_score / first_expected_score
-        second_estimation = StaticUtils.round_ranking(float(second_estimation))
+        second_estimation = StaticUtils.round_ranking(
+            first_estimation * actual_score / first_expected_score
+        )
         second_expected_score = self._expected_score(
             second_estimation, ratings, tournament.point_values
         )
@@ -1239,7 +1242,7 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
         while not isclose(
             actual_score,
             mid_score := self._expected_score(
-                (mid := (low + high) / 2), ratings, tournament.point_values
+                (mid := StaticUtils.round_ranking((low + high) / 2)), ratings, tournament.point_values
             ),
             abs_tol=0.01,
         ):
@@ -1247,7 +1250,6 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
                 high = mid
             else:
                 low = mid
-        mid = StaticUtils.round_ranking(mid)
         while (
             self._expected_score(mid, ratings, tournament.point_values) >= actual_score
         ):
@@ -1256,7 +1258,7 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
             self._expected_score(mid, ratings, tournament.point_values) < actual_score
         ):
             mid += 1
-        return StaticUtils.round_ranking(mid)
+        return mid
 
     @classmethod
     def _expected_score(
@@ -1386,7 +1388,7 @@ class AveragePerfectPerformanceTieBreak(TieBreak):
                 tournament.players_by_id[pairing.opponent_id],
                 after_round=after_round,
             )
-            for pairing in pairings
+            for pairing in pairings if pairing.opponent_id is not None
         ]
 
         if not ptp:
