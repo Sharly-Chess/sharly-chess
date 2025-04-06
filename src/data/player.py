@@ -130,9 +130,7 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index < before_round
-            and (pairing.played or not only_played)
-            and pairing.result is not None
+            if round_index < before_round and (pairing.played or not only_played)
         )
 
     def points_after(self, after_round: int, only_played: bool = False) -> float:
@@ -145,16 +143,14 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index <= after_round
-            and pairing.result is not None
-            and (pairing.played or not only_played)
+            if round_index <= after_round and (pairing.played or not only_played)
         )
 
     def total_points(self, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
-            if (pairing.played or not only_played) and pairing.result is not None
+            if pairing.played or not only_played
         )
 
     @property
@@ -303,7 +299,6 @@ class Player(TournamentPlayer):
         return sum(
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
-            if pairing.result is not None
         )
 
     @staticmethod
@@ -478,12 +473,13 @@ class Player(TournamentPlayer):
 
     @cached_property
     def crosstable_strings(self) -> list[str]:
+        assert self.tournament is not None
         return [
             pairing.result.to_crosstable
             + (
                 f'{self.tournament.players_by_id[pairing.opponent_id].rank:>3}'
                 f'{pairing.color.to_crosstable}'
-                if pairing.opponent_id
+                if pairing.opponent_id and pairing.color
                 else ''
             )
             for pairing in self.pairings.values()

@@ -16,7 +16,7 @@ class Pairing:
 
     color: BoardColor | None = None
     opponent_id: int | None = None
-    result: Result | None = None
+    result: Result = Result.NO_RESULT
 
     @property
     def forfeit(self) -> bool:

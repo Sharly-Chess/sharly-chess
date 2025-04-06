@@ -212,11 +212,7 @@ class PapiDatabase(AccessDatabase):
             if pairing.opponent_id
             else None
         )
-        result = (
-            pairing.result.to_papi_value
-            if pairing.result
-            else Result.NO_RESULT.to_papi_value
-        )
+        result = pairing.result.to_papi_value
         self._execute(
             f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
             (pairing.color_papi_value, opponent_id, result, player.ref_id),

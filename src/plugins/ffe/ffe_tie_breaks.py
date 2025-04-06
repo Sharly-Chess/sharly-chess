@@ -62,7 +62,6 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
             if pairing.unplayed:
                 score += Result.DRAW.points(tournament.point_values)
                 continue
-            assert pairing.result is not None
             if pairing.requested_bye:
                 if all(
                     p.voluntary_unplayed
@@ -313,7 +312,6 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
         score = 0.0
         for pairing in pairings:
             assert pairing.opponent_id is not None
-            assert pairing.result is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
             with suppress(KeyError):
                 rating = min(
@@ -419,8 +417,4 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
             Result.LOSS: 1,
             Result.UNRATED_LOSS: 1,
         }
-        return sum(
-            pairing.result.points(score_by_result) 
-            for pairing in pairings
-            if pairing.result is not None            
-        )
+        return sum(pairing.result.points(score_by_result) for pairing in pairings)

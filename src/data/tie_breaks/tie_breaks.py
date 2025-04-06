@@ -79,10 +79,8 @@ class TieBreakUtils:
                 ):
                     score += Result.DRAW.points(tournament.point_values)
                 else:
-                    assert pairing.result is not None
                     score += pairing.result.points(tournament.point_values)
             else:
-                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         return score
 
@@ -197,7 +195,7 @@ class WinsTieBreak(TieBreak):
         return sum(
             pairing.result.points(point_values) == Result.GAIN.points(point_values)
             for round_index, pairing in player.pairings.items()
-            if pairing.result is not None and round_index <= after_round
+            if round_index <= after_round
         )
 
 
@@ -794,7 +792,6 @@ class SonnebornBergerTieBreak(TieBreak):
                 opponent_score = TieBreakUtils.adjusted_score(
                     opponent, after_round=after_round
                 )
-                assert pairing.result is not None
                 contribution = (
                     pairing.result.points(tournament.point_values) * opponent_score
                 )
@@ -920,7 +917,6 @@ class KoyaTieBreak(TieBreak):
             opponent = tournament.players_by_id[pairing.opponent_id]
             opponent_score = opponent.points_before(after_round)
             if opponent_score >= limit:
-                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         return score
 
@@ -1103,7 +1099,6 @@ class TournamentPerformanceRatingTieBreak(TieBreak):
             with suppress(KeyError):
                 rating = opponent.estimation
                 ratings.append(rating)
-                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
