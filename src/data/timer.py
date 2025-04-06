@@ -236,7 +236,15 @@ class Timer:
                         if stored_timer_hour.date_str:
                             datetime_str = f'{stored_timer_hour.date_str} {stored_timer_hour.time_str}'
                         else:
-                            datetime_str = f'{previous_valid_timer_hour.date_str} {stored_timer_hour.time_str}'
+                            # The UI tries to ensure that the first timer has a date defined,
+                            # but this might not be the case after a timer has been deleted or re-ordered.
+                            # In that case we'll fall through to the ValueError exception below.
+                            previous_valid_timer_hour_date_str = (
+                                previous_valid_timer_hour.date_str
+                                if previous_valid_timer_hour
+                                else '-'
+                            )
+                            datetime_str = f'{previous_valid_timer_hour_date_str} {stored_timer_hour.time_str}'
                         try:
                             timestamp = int(
                                 time.mktime(

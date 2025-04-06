@@ -10,6 +10,7 @@ from trf import Player as TrfPlayer
 from common.i18n import _
 from common.logger import get_logger
 from data.pairing import Pairing
+from data.tie_breaks.tie_breaks import SupportsRichComparison
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -217,7 +218,7 @@ class Player(TournamentPlayer):
         self.board_number: int | None = None
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
-        self._tie_break_values: list[int | float] | None = None
+        self._tie_break_values: list[SupportsRichComparison] | None = None
         self._rank: int | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
@@ -486,16 +487,30 @@ class Player(TournamentPlayer):
 
     @property
     def starting_rank_sort_key(self) -> tuple[int, int, str, str]:
-        return -self.rating, -self.title, self.last_name, self.first_name
+        return -self.rating, -self.title, self.last_name, self.first_name or ''
 
     @property
     def board_number_sort_key(self) -> tuple[float, int, int, str, str]:
-        return -self.vpoints, -self.rating, -self.title, self.last_name, self.first_name
+        return (
+            -self.vpoints if self.vpoints is not None else 0.0,
+            -self.rating,
+            -self.title,
+            self.last_name,
+            self.first_name or '',
+        )
 
     @property
     def rank_sort_key(self) -> tuple:
-        tie_breaks = tuple((-tie_break for tie_break in self._tie_break_values))
-        return (-self.points,) + tie_breaks + self.starting_rank_sort_key
+        # NOTE(Tim) we need to handle the DirectEncounter TieBreak, which is a Tuple.
+        tie_breaks = tuple(
+            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
+            for tie_break in self._tie_break_values or []
+        )
+        return (
+            (-self.points if self.points is not None else 0.0,)
+            + tie_breaks
+            + self.starting_rank_sort_key
+        )
 
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
