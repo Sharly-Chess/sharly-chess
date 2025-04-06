@@ -491,7 +491,7 @@ class EventDatabase(MigrationDatabase):
                         results_limit: int | None = None
                         results_max_age: int | None = None
                         results_tournament_ids: list[int] = []
-                        ranking_crosstable: bool | None = None
+                        ranking_crosstable: bool = False
                         background_image: str | None = None
                         background_color: str | None = None
                         match type_:
@@ -528,7 +528,7 @@ class EventDatabase(MigrationDatabase):
                                     results_tournament_ids = []
                             case 'ranking':
                                 ranking_crosstable: bool = screen_dict.get(
-                                    'ranking_crosstable', None
+                                    'ranking_crosstable', False
                                 )
                             case 'image':
                                 background_image: str = screen_dict.get(
@@ -674,7 +674,7 @@ class EventDatabase(MigrationDatabase):
                         ]
                         input_exit_button: bool | None = None
                         players_show_unpaired: bool | None = None
-                        ranking_crosstable: bool | None = None
+                        ranking_crosstable: bool = False
                         match type_:
                             case 'boards':
                                 pass
@@ -1733,8 +1733,8 @@ class EventDatabase(MigrationDatabase):
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
-            ranking_crosstable=cls.load_bool_or_none_from_database_field(
-                row.get('ranking_crosstable', None)
+            ranking_crosstable=cls.load_bool_from_database_field(
+                row.get('ranking_crosstable')
             ),
             ranking_round=row.get('ranking_round', None),
             ranking_min_points=row.get('ranking_min_points', None),
@@ -1904,8 +1904,8 @@ class EventDatabase(MigrationDatabase):
             results_tournament_ids=cls.load_json_from_database_field(
                 row['results_tournament_ids']
             ),
-            ranking_crosstable=cls.load_bool_or_none_from_database_field(
-                row.get('ranking_crosstable', None)
+            ranking_crosstable=cls.load_bool_from_database_field(
+                row.get('ranking_crosstable')
             ),
             ranking_round=row.get('ranking_round', None),
             ranking_min_points=row.get('ranking_min_points', None),
@@ -2003,7 +2003,7 @@ class EventDatabase(MigrationDatabase):
             else None,
             stored_screen.ranking_crosstable
             if stored_screen.type == 'ranking'
-            else None,
+            else False,
             stored_screen.ranking_round if stored_screen.type == 'ranking' else None,
             stored_screen.ranking_min_points
             if stored_screen.type == 'ranking'
