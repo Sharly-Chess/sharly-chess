@@ -1,46 +1,23 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
-from functools import partial, cached_property
-from types import UnionType
-from typing import Any, Iterable, override
+from typing import Any, override
 
 from common.i18n import _
 from data.board import Board
 from data.player import Player
+from data.print_documents.player_splitters import PlayerSplitter
+from data.print_documents.options import (
+    PlayerSplitPrintOption,
+    PrintOption,
+    RoundPrintOption,
+)
 from data.tournament import Tournament
-from data.util import (
-    AbstractEntityManager,
-    AbstractOptionHandler,
-    AbstractOption,
-    IdentifiableEntity,
-    OptionError,
-    PlayerCategory,
-    StaticUtils,
-)
-from plugins.manager import plugin_manager
-
-DOCUMENT_CLASSES: list[type['AbstractPrintDocument']] = []
-OPTION_CLASSES: list[type['AbstractOption']] = []
-PLAYER_SPLITTER_CLASSES: list[type['AbstractPlayerSplitter']] = []
+from utils.option import OptionHandler, OptionError
 
 
-register_document = partial(StaticUtils.register_class, register=DOCUMENT_CLASSES)
-register_option = partial(StaticUtils.register_class, register=OPTION_CLASSES)
-register_player_splitter = partial(
-    StaticUtils.register_class, register=PLAYER_SPLITTER_CLASSES
-)
-
-
-class PrintDocumentOptionManager(AbstractEntityManager[AbstractOption]):
-    @staticmethod
-    def entity_types() -> list[type[AbstractOption]]:
-        return OPTION_CLASSES
-
-
-class AbstractPrintDocument(AbstractOptionHandler, ABC):
+class PrintDocument(OptionHandler[PrintOption], ABC):
     def __init__(
         self,
-        options: list[AbstractOption] | None = None,
+        options: list[PrintOption] | None = None,
         tournament: Tournament | None = None,
     ):
         self.tournament = tournament
@@ -56,7 +33,7 @@ class AbstractPrintDocument(AbstractOptionHandler, ABC):
     def template_name(self) -> str:
         """Name of the template representing the printed document.
         Template is intended to be used with a context where
-        "document" refers to the AbstractPrintDocument object
+        "document" refers to the PrintDocument object
         """
         pass
 
@@ -70,171 +47,7 @@ class AbstractPrintDocument(AbstractOptionHandler, ABC):
         pass
 
 
-class PrintDocumentManager(AbstractEntityManager[AbstractPrintDocument]):
-    @staticmethod
-    def entity_types() -> list[type[AbstractPrintDocument]]:
-        return DOCUMENT_CLASSES
-
-
-class AbstractPlayerSplitter(IdentifiableEntity, ABC):
-    @staticmethod
-    @abstractmethod
-    def get_split_key(player: Player) -> str:
-        """Extract the split key from a player.
-        Players will be grouped by sort key."""
-        pass
-
-    @staticmethod
-    def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
-        """Returns the split keys ordered. Defaults to alphabetical sort."""
-        return sorted(split_keys)
-
-    def split_players(self, players: list[Player]) -> dict[str, list[Player]]:
-        splitted_players = defaultdict(list)
-        for player in players:
-            splitted_players[self.get_split_key(player)].append(player)
-        return {
-            key: splitted_players[key]
-            for key in self.sorted_split_keys(splitted_players.keys())
-        }
-
-
-class PrintPlayerSplitterManager(AbstractEntityManager[AbstractPlayerSplitter]):
-    @staticmethod
-    def entity_types() -> list[type[AbstractPlayerSplitter]]:
-        splitters = PLAYER_SPLITTER_CLASSES
-        plugin_manager.hook.insert_print_player_splitter_types(
-            player_splitter_types=splitters
-        )
-        return splitters
-
-
-@register_option
-class RoundPrintOption(AbstractOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'round'
-
-    @property
-    def type(self) -> type | UnionType:
-        return int | None
-
-    @property
-    def default_value(self) -> Any:
-        return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/round.html'
-
-    @override
-    def validate(self):
-        super().validate()
-        if self.value is not None and self.value < 1:
-            raise OptionError(_('A positive integer is expected.'), self)
-
-
-@register_option
-class PlayerPrintSplitOption(AbstractOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'player-split'
-
-    @property
-    def type(self) -> type | UnionType:
-        return str
-
-    @property
-    def default_value(self) -> Any:
-        return 'no-split'
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/player_split.html'
-
-    @property
-    def player_splitter_options(self) -> dict[str, str]:
-        return PrintPlayerSplitterManager.options()
-
-    @cached_property
-    def player_splitter(self) -> AbstractPlayerSplitter | None:
-        return PrintPlayerSplitterManager.get_object(self.value)
-
-    @override
-    def validate(self):
-        try:
-            _splitter = self.player_splitter
-        except KeyError:
-            # Untranslated, should not happen
-            raise OptionError(f'Unknown player splitter: {self.value}', self)
-
-
-@register_player_splitter
-class NoSplitPlayerSplitter(AbstractPlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'no-split'
-
-    @staticmethod
-    def static_name() -> str:
-        return '-'
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return ''
-
-
-@register_player_splitter
-class CategoryPlayerSplitter(AbstractPlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'category'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Category')
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.category.short_name
-
-    @staticmethod
-    def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
-        ordered_keys = [category.short_name for category in PlayerCategory]
-        return sorted(split_keys, key=lambda key: ordered_keys.index(key))
-
-
-@register_player_splitter
-class ClubPlayerSplitter(AbstractPlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'club'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Club')
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.club.name if player.club else ''
-
-
-@register_player_splitter
-class FederationPlayerSplitter(AbstractPlayerSplitter):
-    @staticmethod
-    def static_id() -> str:
-        return 'federation'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Federation')
-
-    @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.federation.name
-
-
-class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
+class PlayerPrintDocument(PrintDocument, ABC):
     @property
     def template_name(self) -> str:
         return '/admin/print/players.html'
@@ -242,19 +55,21 @@ class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
     @property
     @abstractmethod
     def ordered_players(self) -> list[Player]:
-        pass
+        """List of players in the order they should appear in the document."""
 
     @property
     def ordered_splitted_players(self) -> dict[str, list[Player]]:
-        split_by = self._get_option(PlayerPrintSplitOption).value
-        splitter: AbstractPlayerSplitter = PrintPlayerSplitterManager.get_object(
+        from data.print_documents import PrintPlayerSplitterManager
+
+        split_by = self._get_option(PlayerSplitPrintOption).value
+        splitter: PlayerSplitter = PrintPlayerSplitterManager.get_object(
             split_by
         )
         return splitter.split_players(self.ordered_players)
 
     @staticmethod
-    def available_options() -> list[type[AbstractOption]]:
-        return [PlayerPrintSplitOption]
+    def available_options() -> list[type[PrintOption]]:
+        return [PlayerSplitPrintOption]
 
     @property
     def is_crosstable(self) -> bool:
@@ -289,8 +104,7 @@ class AbstractPlayerPrintDocument(AbstractPrintDocument, ABC):
         }
 
 
-@register_document
-class PlayerListPrintDocument(AbstractPlayerPrintDocument):
+class PlayerListPrintDocument(PlayerPrintDocument):
     @staticmethod
     def static_name() -> str:
         return _('List of players')
@@ -314,7 +128,7 @@ class PlayerListPrintDocument(AbstractPlayerPrintDocument):
         return True
 
 
-class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
+class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
     @override
     @property
     def ranking_round(self) -> int:
@@ -334,8 +148,8 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
         )
 
     @staticmethod
-    def available_options() -> list[type[AbstractOption]]:
-        return [PlayerPrintSplitOption, RoundPrintOption]
+    def available_options() -> list[type[PrintOption]]:
+        return [PlayerSplitPrintOption, RoundPrintOption]
 
     @override
     def validate_options(self):
@@ -360,7 +174,6 @@ class AbstractPlayerRankingPrintDocument(AbstractPlayerPrintDocument, ABC):
             )
 
 
-@register_document
 class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     @staticmethod
     def static_name() -> str:
@@ -380,7 +193,6 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument, ABC):
         return True
 
 
-@register_document
 class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     @staticmethod
     def static_name() -> str:
@@ -400,7 +212,7 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
         return True
 
 
-class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
+class BoardPrintDocument(PrintDocument, ABC):
     @property
     def template_name(self) -> str:
         return '/admin/print/boards.html'
@@ -429,7 +241,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @staticmethod
-    def available_options() -> list[type[AbstractOption]]:
+    def available_options() -> list[type[PrintOption]]:
         return [RoundPrintOption]
 
     @override
@@ -455,8 +267,7 @@ class AbstractBoardPrintDocument(AbstractPrintDocument, ABC):
             )
 
 
-@register_document(index=1)
-class PairingPrintDocument(AbstractBoardPrintDocument):
+class PairingPrintDocument(BoardPrintDocument):
     @property
     def title(self) -> str:
         return _('Pairings for round #{round}').format(round=self.at_round)
@@ -470,8 +281,7 @@ class PairingPrintDocument(AbstractBoardPrintDocument):
         return 'pairings'
 
 
-@register_document(index=2)
-class ResultPrintDocument(AbstractBoardPrintDocument):
+class ResultPrintDocument(BoardPrintDocument):
     @property
     def title(self) -> str:
         return _('Results for round #{round}').format(round=self.at_round)

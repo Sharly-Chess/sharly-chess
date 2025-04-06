@@ -9,7 +9,7 @@ from packaging.version import Version
 from common import TMP_DIR, BASE_DIR
 from data.pairing import Pairing
 from data.tournament import Tournament
-from data.util import TrfType, Result, BoardColor
+from utils.enum import TrfType, Result, BoardColor
 
 
 class BbpPairings:

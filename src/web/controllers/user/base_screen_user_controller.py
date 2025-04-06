@@ -12,7 +12,7 @@ from common.logger import get_logger
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
-from data.util import ScreenType
+from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
 from web.controllers.user.event_user_controller import EventUserWebContext
@@ -40,12 +40,12 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         super().__init__(
             request, data=data, event_uniq_id=event_uniq_id, user_event_tab=None
         )
-        assert self.user_event is not None
         self.screen: Screen | None = None
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = rotator_screen_index or 0
         if self.error:
             return
+        assert self.user_event is not None
         if screen_uniq_id:
             try:
                 self.screen = self.user_event.screens_by_uniq_id[screen_uniq_id]

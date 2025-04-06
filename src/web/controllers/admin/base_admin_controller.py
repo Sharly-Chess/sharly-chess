@@ -16,7 +16,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
-from data.util import Result
+from utils.enum import Result
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext

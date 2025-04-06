@@ -20,7 +20,7 @@ from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.util import NeedsUpload
+from utils.enum import NeedsUpload
 from plugins.ffe.engine.ffe_session import FFESession
 from plugins.utils import PluginUtils
 

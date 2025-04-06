@@ -14,7 +14,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.screen_set import ScreenSet
 from data.tournament import Tournament
-from data.util import ScreenType
+from utils.enum import ScreenType
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
