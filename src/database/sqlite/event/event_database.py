@@ -1727,13 +1727,13 @@ class EventDatabase(MigrationDatabase):
             type=row['type'],
             public=cls.load_bool_from_database_field(row['public']),
             tournament_id=row['tournament_id'],
-            input_exit_button=cls.load_bool_from_database_field(
+            input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
-            players_show_unpaired=cls.load_bool_from_database_field(
+            players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
-            ranking_crosstable=cls.load_bool_from_database_field(
+            ranking_crosstable=cls.load_bool_or_none_from_database_field(
                 row.get('ranking_crosstable', None)
             ),
             ranking_round=row.get('ranking_round', None),
@@ -1889,14 +1889,14 @@ class EventDatabase(MigrationDatabase):
             public=cls.load_bool_from_database_field(row['public']),
             columns=row['columns'],
             font_size=row['font_size'],
-            menu_link=cls.load_bool_from_database_field(row['menu_link']),
+            menu_link=cls.load_bool_or_none_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
             menu=row['menu'],
             timer_id=row['timer_id'],
-            input_exit_button=cls.load_bool_from_database_field(
+            input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
-            players_show_unpaired=cls.load_bool_from_database_field(
+            players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
             results_limit=row['results_limit'],
@@ -1904,7 +1904,7 @@ class EventDatabase(MigrationDatabase):
             results_tournament_ids=cls.load_json_from_database_field(
                 row['results_tournament_ids']
             ),
-            ranking_crosstable=cls.load_bool_from_database_field(
+            ranking_crosstable=cls.load_bool_or_none_from_database_field(
                 row.get('ranking_crosstable', None)
             ),
             ranking_round=row.get('ranking_round', None),

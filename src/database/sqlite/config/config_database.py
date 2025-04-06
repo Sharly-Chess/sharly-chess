@@ -82,7 +82,9 @@ class ConfigDatabase(MigrationDatabase):
             force_edit=self.load_bool_from_database_field(row['force_edit']),
             log_level=row['log_level'],
             federation=row['federation'],
-            launch_browser=self.load_bool_from_database_field(row['launch_browser']),
+            launch_browser=self.load_bool_or_none_from_database_field(
+                row['launch_browser']
+            ),
             locale=row['locale'],
         )
 
