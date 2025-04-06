@@ -126,6 +126,7 @@ class Plugin(IdentifiableEntity, ABC):
 
     @property
     def is_enabled(self) -> bool:
+        assert self.context.stored_plugin is not None
         return self.context.stored_plugin.is_enabled
 
     @property
