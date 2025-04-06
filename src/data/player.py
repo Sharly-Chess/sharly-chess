@@ -10,7 +10,6 @@ from trf import Player as TrfPlayer
 from common.i18n import _
 from common.logger import get_logger
 from data.pairing import Pairing
-from data.tie_breaks.tie_breaks import SupportsRichComparison
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -24,6 +23,7 @@ from utils.enum import (
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.tournament import Tournament
+    from data.tie_breaks.tie_breaks import SupportsRichComparison
 
 logger: Logger = get_logger()
 
@@ -218,7 +218,7 @@ class Player(TournamentPlayer):
         self.board_number: int | None = None
         self.color: BoardColor | None = None
         self.illegal_moves: int = 0
-        self._tie_break_values: list[SupportsRichComparison] | None = None
+        self._tie_break_values: list['SupportsRichComparison'] | None = None
         self._rank: int | None = None
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
