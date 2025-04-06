@@ -1299,10 +1299,10 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairing)."
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr ""
 
-msgid "Export the tournament to the TRF(bx) format (usage: pairing)."
+msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr ""
 
 msgid "Export the tournament to the TRF16 format."

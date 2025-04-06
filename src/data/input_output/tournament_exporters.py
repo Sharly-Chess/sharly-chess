@@ -64,7 +64,10 @@ class TrfBxTournamentExporter(TournamentExporter):
 
     @property
     def tooltip(self) -> str:
-        return _('Export the tournament to the TRF(bx) format (usage: pairing).')
+        return _(
+            'Export the tournament to the TRF(bx) '
+            'format (usage: pairings generation).'
+        )
 
     @property
     def file_extension(self) -> str:
@@ -86,8 +89,8 @@ class PgnTournamentExporter(TournamentExporter):
     @property
     def tooltip(self) -> str:
         return _(
-            'Export all the games of the last round '
-            'of the tournament to the PGN format (usage: pairing).'
+            'Export all the games of the last round of the tournament '
+            'to the PGN format (usage: pairings transfer).'
         )
 
     @property

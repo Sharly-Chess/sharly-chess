@@ -1299,11 +1299,11 @@ msgstr "Licence FFE expirée"
 msgid "Export"
 msgstr "Exporter"
 
-msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairing)."
-msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PNG (usage: appariements)."
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
 
-msgid "Export the tournament to the TRF(bx) format (usage: pairing)."
-msgstr "Exporter le tournoi au format TRF(bx) (usage: appariements)."
+msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
+msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
 
 msgid "Export the tournament to the TRF16 format."
 msgstr "Exporter le tournoi au format TRF16."
