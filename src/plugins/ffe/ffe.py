@@ -560,9 +560,7 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
-    def insert_player_updater_types(
-        self, updater_types: list[type[PlayerUpdater]]
-    ):
+    def insert_player_updater_types(self, updater_types: list[type[PlayerUpdater]]):
         updater_types.append(FfePlayerUpdater)
 
     # ---------------------------------------------------------------------------------
@@ -668,9 +666,9 @@ class FfePlugin(Plugin):
     def insert_print_player_splitter_types(
         self, player_splitter_types: list[type[PlayerSplitter]]
     ):
-        PluginUtils.insert_on_equals(
-            player_splitter_types, LeaguePlayerSplitter, ClubPlayerSplitter
-        )
+        lps: type[PlayerSplitter] = LeaguePlayerSplitter
+        cps: type[PlayerSplitter] = ClubPlayerSplitter
+        PluginUtils.insert_on_equals(player_splitter_types, lps, cps)
 
     @hookimpl
     def get_extra_print_view_columns(
