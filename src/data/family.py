@@ -159,7 +159,7 @@ class Family:
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:
-                return bool(self.stored_family.ranking_crosstable)
+                return self.stored_family.ranking_crosstable
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
