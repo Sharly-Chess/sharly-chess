@@ -51,15 +51,13 @@ Vérifiez que le fichier a bien été restauré dans le répertoire `bin`.
 
 Rappel : ne pas lancez l'exécutable restauré, vous devez utiliser les scripts situés à la racine.
 
-## Le port 80 est déjà utilisé
+## Tous les ports candidats [80, 81, 8080, 8081] sont déjà utilisés, impossible de démarrer le serveur web
 
-Le port 80 est utilisé par le serveur web de Papi-web pour répondre aux requêtes des clients (affichage des écrans, saisie des scores...).
+La serveur de Papi-web utilise plusieurs ports prédéfinis pour répondre aux requêtes des clients (affichage des écrans, saisie des scores...).
 
-Si le serveur Papi-web vous indique au démarrage que le port 80 est déjà utilisé, vous pouvez :
-- Changer le port utilisé, en éditant le fichier `papi-web.ini` et en modifiant l'option `port` ;
-- Essayer de trouver l'application qui utilise le port 80 sur votre serveur et l'arrêter avant de relancer le serveur Papi-web.
+Si le serveur Papi-web vous indique au démarrage que tous les ports sont utilisés, vous devez essayer de trouver les applications qui utilisent les ports sur votre serveur et les arrêter avant de relancer le serveur Papi-web.
 
-Pour trouver l'application qui utilise déjà le port 80 sur votre serveur, vous pouvez ouvrir un interpréteur de commande en mode administrateur et lancer la commande `netstat -ab` :
+Pour trouver l'application qui utilise déjà un port sur votre serveur, vous pouvez ouvrir un interpréteur de commande en mode administrateur et lancer la commande `netstat -ab` :
 
 ![Examen des ports utilisés sur le serveur](images/faq/faq-system-netstat.jpg)
 
