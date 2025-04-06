@@ -1,15 +1,14 @@
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Optional
 
 from litestar.contrib.htmx.request import HTMXRequest
 import pluggy  # type: ignore
 
 from common import APP_NAME
-from data.player import Player
-from data.input_output import AbstractTournamentExporter, AbstractPlayerUpdater
-from data.util import ScreenType
+
+from utils.enum import ScreenType
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
@@ -17,13 +16,15 @@ from plugins.utils import (
 )
 
 if TYPE_CHECKING:
-    from data.print import AbstractPlayerSplitter, AbstractPrintDocument
-    from data.tie_break import AbstractTieBreak
+    from data.input_output import PlayerUpdater
+    from data.player import Player
+    from data.print_documents import PrintDocument, PlayerSplitter
+    from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import StoredEvent, StoredTournament
-    from database.sqlite.local_source_database import LocalSourceDatabase
+    from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
@@ -84,12 +85,12 @@ class AppHookSpecs:
 
     @hookspec
     def augment_player_after_db_fetch(
-        self, player: Player, row: dict[str, Any]
+        self, player: 'Player', row: dict[str, Any]
     ) -> list[str]:
         """Add plugin specific data to a player after they are fetched from the database"""
 
     @hookspec
-    def player_data_for_db_write(self, player: Player) -> dict[str, Any]:
+    def player_data_for_db_write(self, player: 'Player') -> dict[str, Any]:
         """Provide addition column data for players when writing to the database"""
 
     @hookspec
@@ -123,8 +124,8 @@ class AppHookSpecs:
         """Validate the additional player form fields and returns plugin data"""
 
     @hookspec
-    def augment_player_after_search(self, player: Player):
-        """Add plugin specific data to a player after a a successful player search"""
+    def augment_player_after_search(self, player: 'Player'):
+        """Add plugin specific data to a player after a successful player search"""
 
     @hookspec
     def set_player_default_ratings(self, federation: str, player: 'Player'):
@@ -132,7 +133,7 @@ class AppHookSpecs:
 
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(
-        self, tournament: 'Tournament', player: Player
+        self, tournament: 'Tournament', player: 'Player'
     ) -> str | None:
         """Test if a player can participate in a tournament"""
 
@@ -145,7 +146,7 @@ class AppHookSpecs:
         self,
         web_context: 'PlayerAdminWebContext',
         template_context: dict[str, Any],
-        player: Player,
+        player: 'Player',
     ) -> bool:
         """Returns True if the player should be in the admin player list, False otherwise"""
 
@@ -154,7 +155,7 @@ class AppHookSpecs:
         """Clear any filters set on the admin players tab"""
 
     @hookspec(firstresult=True)
-    def player_club_sort_key(self, player: Player) -> tuple:
+    def player_club_sort_key(self, player: 'Player') -> tuple:
         """Returns a sort key for sorting the admin player list by club"""
 
     @hookspec
@@ -162,9 +163,7 @@ class AppHookSpecs:
         """Provide extra columns for the player download datasheets"""
 
     @hookspec
-    def insert_player_updater_types(
-        self, updater_types: list[type[AbstractPlayerUpdater]]
-    ):
+    def insert_player_updater_types(self, updater_types: list[type['PlayerUpdater']]):
         """Provide extra player updaters."""
 
     @hookspec
@@ -198,14 +197,14 @@ class AppHookSpecs:
         """Returns the path of the template for additional fields of the event modal"""
 
     @hookspec
-    def get_event_form_data(self, event: 'Event | None') -> dict[str, Any]:
+    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
         """Provide form data for the additional event form fields"""
 
     @hookspec
     def get_validated_event_form_fields(
         self,
         action: str,
-        event: 'Event | None',
+        event: Optional['Event'],
         data: dict[str, str],
         errors: dict[str, str],
     ) -> dict[str, Any]:
@@ -256,28 +255,24 @@ class AppHookSpecs:
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template to be added to tournament cards"""
 
-    @hookspec
-    def get_extra_tournament_exporters(self) -> list[AbstractTournamentExporter]:
-        """Provide extra exporting formats for tournaments"""
-
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
 
     @hookspec
     def insert_print_player_splitter_types(
-        self, player_splitter_types: list[type['AbstractPlayerSplitter']]
+        self, player_splitter_types: list[type['PlayerSplitter']]
     ):
         """Provide print player splitting options"""
 
     @hookspec
     def get_extra_print_view_columns(
-        self, document: 'AbstractPrintDocument'
+        self, document: 'PrintDocument'
     ) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
     @hookspec
-    def get_extra_print_view_css(self, document: 'AbstractPrintDocument') -> str:
+    def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
         """Provide extra CSS for the print view"""
 
     # ---------------------------------------------------------------------------------
@@ -293,7 +288,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_extra_tie_break_classes(self) -> list[type['AbstractTieBreak']]:
+    def get_extra_tie_break_classes(self) -> list[type['TieBreak']]:
         """Provide extra tournament tie breaks"""
 
     # ---------------------------------------------------------------------------------

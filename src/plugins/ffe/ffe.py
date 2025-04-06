@@ -14,30 +14,27 @@ from packaging.version import Version
 
 from common.i18n import _
 from common.network import NetworkMonitor
-from data.input_output import AbstractPlayerUpdater
-from data.tie_break import AbstractTieBreak
-from data.util import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
+from data.input_output import PlayerUpdater
+from data.print_documents import PlayerSplitter, PrintDocument
+from data.print_documents.documents import PlayerPrintDocument
+from data.print_documents.player_splitters import ClubPlayerSplitter
+from data.tie_breaks import TieBreak
+from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player
-from data.print import (
-    AbstractPlayerSplitter,
-    ClubPlayerSplitter,
-    AbstractPrintDocument,
-    AbstractPlayerPrintDocument,
-)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe import migrations, ffe_tie_break, PLUGIN_NAME
+from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import FfePlayerUpdater, LeaguePlayerSplitter
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.ffe_tie_break import papi_performance_bonus
+from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.util import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
-from plugins.utils import AbstractPlugin, PluginEngineArgument, PluginUtils
+from plugins.utils import Plugin, PluginEngineArgument, PluginUtils
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -49,7 +46,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
 
 
-class FfePlugin(AbstractPlugin):
+class FfePlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
@@ -564,7 +561,7 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def insert_player_updater_types(
-        self, updater_types: list[type[AbstractPlayerUpdater]]
+        self, updater_types: list[type[PlayerUpdater]]
     ):
         updater_types.append(FfePlayerUpdater)
 
@@ -669,7 +666,7 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def insert_print_player_splitter_types(
-        self, player_splitter_types: list[type['AbstractPlayerSplitter']]
+        self, player_splitter_types: list[type[PlayerSplitter]]
     ):
         PluginUtils.insert_on_equals(
             player_splitter_types, LeaguePlayerSplitter, ClubPlayerSplitter
@@ -677,9 +674,9 @@ class FfePlugin(AbstractPlugin):
 
     @hookimpl
     def get_extra_print_view_columns(
-        self, document: AbstractPrintDocument
+        self, document: PrintDocument
     ) -> Iterable[ExtraColumn]:
-        if isinstance(document, AbstractPlayerPrintDocument):
+        if isinstance(document, PlayerPrintDocument):
             return [
                 ExtraColumn(
                     at='first-round' if document.is_crosstable else 'club',
@@ -691,8 +688,8 @@ class FfePlugin(AbstractPlugin):
         return []
 
     @hookimpl
-    def get_extra_print_view_css(self, document: AbstractPrintDocument) -> str:
-        if isinstance(document, AbstractPlayerPrintDocument):
+    def get_extra_print_view_css(self, document: PrintDocument) -> str:
+        if isinstance(document, PlayerPrintDocument):
             return '.player-table .league { text-align: center; }'
         return ''
 
@@ -723,14 +720,14 @@ class FfePlugin(AbstractPlugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_extra_tie_break_classes(self) -> list[type[AbstractTieBreak]]:
+    def get_extra_tie_break_classes(self) -> list[type[TieBreak]]:
         return [
-            ffe_tie_break.PapiBuchholzTieBreak,
-            ffe_tie_break.PapiBuchholzCutBottomTieBreak,
-            ffe_tie_break.PapiMedianBuchholzTieBreak,
-            ffe_tie_break.PapiPerformanceTieBreak,
-            ffe_tie_break.PapiSumOfBuchholzTieBreak,
-            ffe_tie_break.PapiKashdanTieBreak,
+            ffe_tie_breaks.PapiBuchholzTieBreak,
+            ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
+            ffe_tie_breaks.PapiMedianBuchholzTieBreak,
+            ffe_tie_breaks.PapiPerformanceTieBreak,
+            ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
+            ffe_tie_breaks.PapiKashdanTieBreak,
         ]
 
     # ---------------------------------------------------------------------------------

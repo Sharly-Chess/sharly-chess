@@ -16,7 +16,7 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER
+from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DEVEL_ENV
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -311,7 +311,7 @@ class Engine:
                 choice = input_interactive(
                     _(
                         'Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?'
-                    ).format(y_uc=yes_answer, n_lc=no_answer)
+                    ).format(y_uc=yes_answer, n_lc=no_answer.lower())
                 )
                 if choice in [
                     '',
@@ -352,12 +352,12 @@ class Engine:
         method: str,
         path: str,
         data: dict[str, str] | None,
-        files: dict[str, Path] | None,
+        file: Path | None,
     ) -> bool:
         """Do a request on filebin.net with optional payload and attached files."""
         url: str = cls._filebin_url(path)
         handlers: dict[str, Any] = {}
-        debug: bool = False
+        debug: bool = DEVEL_ENV
         try:
             if debug:
                 logger.info('_bin_request(method=%s, url=%s)', method, url)
@@ -371,32 +371,23 @@ class Engine:
                             if field
                             else 'None',
                         )
-                if files:
-                    logger.info('- files:')
-                    for field_id, file in files.items():
-                        logger.info('  - %s: [%s]', field_id, file)
-            if not data and not files:
+            if not data and not file:
                 response: Response = request(
                     method=method, url=url, timeout=REQUEST_TIMEOUT
                 )
-            elif not files:
+            elif not file:
                 response: Response = request(
                     method=method, url=url, data=data, timeout=REQUEST_TIMEOUT
                 )
             else:
-                handlers = {
-                    file_id: open(file_name, 'rb')
-                    for file_id, file_name in files.items()
-                }
-                response: Response = request(
-                    method=method,
-                    url=url,
-                    data=data,
-                    files=handlers,
-                    timeout=REQUEST_TIMEOUT,
-                )
-                for handler in handlers.values():
-                    handler.close()
+                with open(file, 'rb') as f:
+                    response: Response = request(
+                        method=method,
+                        url=url,
+                        data=f,
+                        headers={'Content-Type': 'application/octet-stream'},
+                        timeout=REQUEST_TIMEOUT,
+                    )
             response.raise_for_status()
             content: str = response.content.decode()
             if debug:
@@ -434,7 +425,7 @@ class Engine:
                 method='POST',
                 path=f'{bin_name}/{filename}',
                 data=None,
-                files={filename: file},
+                file=file,
             ):
                 return False
         return True
@@ -470,13 +461,13 @@ class Engine:
                 + _(
                     'I would like the following custom files to be added to a future version of Papi-web:'
                 )
-                + '/p>'
+                + '</p>'
             )
             body += '<ul>'
             for filename in custom_files:
                 body += f'<li>{filename}</li>'
             body += '</ul>'
-            body += '<p>' + _('Thanks :-)') + '/p>'
+            body += '<p>' + _('Thanks :-)') + '</p>'
             body += '<ul>'
             body += (
                 f'<li><a href="{bin_url}">'
@@ -492,17 +483,20 @@ class Engine:
             body += (
                 '<p>'
                 + _(
-                    'Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!'
+                    'Add here all the information you deem necessary, and if '
+                    'you are not known by the developers, introduce yourself!'
                 )
                 + '</p>'
             )
-            body += '<p>' + _('First name LAST NAME') + '/p>'
+            body += '<p>' + _('First name LAST NAME') + '</p>'
             mail_url: str = (
                 f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
             )
             print_interactive_info(
                 _(
-                    'A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}.'
+                    'A window will open to send an email to the Papi-web project; '
+                    'If the window does not open, please click on the link below '
+                    'or manually send an email to {email}.'
                 ).format(email=PapiWebConfig.mail)
             )
             print_interactive_info(mail_url)

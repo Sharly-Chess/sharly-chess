@@ -2,7 +2,7 @@ from logging import Logger
 from typing import Any
 
 from common.logger import get_logger
-from data.util import (
+from utils.enum import (
     PlayerGender,
     PlayerCategory,
     PlayerRatingType,

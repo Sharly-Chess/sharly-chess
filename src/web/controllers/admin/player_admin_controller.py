@@ -3,7 +3,6 @@ from datetime import date
 from logging import Logger
 from typing import Annotated, Any, Iterable
 
-from common import unicode_normalize
 from litestar import get, patch, delete, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
@@ -12,20 +11,18 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 
+from common import unicode_normalize
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
-from data.input_output import (
-    PlayerComparator,
-    PlayerUpdaterManager,
-    AbstractPlayerUpdater,
-)
+from data.input_output import PlayerUpdater, PlayerUpdaterManager
+from data.input_output.player_updaters import PlayerComparator
 from data.loader import EventLoader
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
 from data.tournament import Tournament
-from data.util import (
+from utils.enum import (
     PlayerCategory,
     PlayerGender,
     TournamentRating,
@@ -1259,7 +1256,6 @@ class PlayerAdminController(BaseEventAdminController):
         """Returns a dict containing the byes that should be saved (changes only)."""
         new_byes: dict[int, Result] = {}
         assert web_context.admin_player is not None
-        assert web_context.admin_tournament is not None
         admin_player: Player = web_context.admin_player
         assert admin_player.tournament is not None
         admin_tournament: Tournament = admin_player.tournament
@@ -1618,7 +1614,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         try:
-            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.get_object(
+            player_updater: PlayerUpdater = PlayerUpdaterManager.get_object(
                 player_updater_id
             )
         except KeyError:
@@ -1697,7 +1693,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         try:
-            player_updater: AbstractPlayerUpdater = PlayerUpdaterManager.get_object(
+            player_updater: PlayerUpdater = PlayerUpdaterManager.get_object(
                 player_updater_id
             )
         except KeyError:
