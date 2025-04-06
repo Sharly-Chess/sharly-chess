@@ -11,9 +11,7 @@ from utils.entity import EntityManager
 class PlayerUpdaterManager(EntityManager[PlayerUpdater]):
     @staticmethod
     def entity_types() -> list[type[PlayerUpdater]]:
-        updaters = [
-            player_updaters.FidePlayerUpdater
-        ]
+        updaters: list[type[PlayerUpdater]] = [player_updaters.FidePlayerUpdater]
         plugin_manager.hook.insert_player_updater_types(updater_types=updaters)
         return updaters
 

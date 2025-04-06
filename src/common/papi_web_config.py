@@ -7,7 +7,7 @@ from typing import overload
 
 import jinja2
 import litestar
-import pyodbc
+import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 

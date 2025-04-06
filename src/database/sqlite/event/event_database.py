@@ -37,7 +37,7 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
-    from database.sqlite.migration import MigrationManager
+    from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
 
@@ -54,7 +54,7 @@ class EventDatabase(MigrationDatabase):
         return cls(file.stem, write)
 
     @cached_property
-    def migration_managers(self) -> list['MigrationManager']:
+    def migration_managers(self) -> list['DatabaseMigrationManager']:
         from database.sqlite.migration import DatabaseMigrationManager
 
         return [DatabaseMigrationManager(self, migrations)] + (
@@ -97,9 +97,9 @@ class EventDatabase(MigrationDatabase):
         yml_file: Path,
         dict_path: str,
         supposed_dict: dict,
-        mandatory_fields: list[str] = None,
-        optional_fields: list[str] = None,
-        field_type: type = None,
+        mandatory_fields: list[str] | None = None,
+        optional_fields: list[str] | None = None,
+        field_type: type | None = None,
         empty_allowed: bool = True,
     ):
         """Checks that the given dictionary follows assumptions.

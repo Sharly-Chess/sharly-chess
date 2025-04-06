@@ -48,6 +48,7 @@
     "elif",
     "endfor",
     "endmacro",
+    "endwith",
     "euse",
     "euses",
     "EVENTARGUMENT",
@@ -69,6 +70,7 @@
     "GUINET",
     "Guyane",
     "Hauts",
+    "heure",
     "hiddenimport",
     "Homologation",
     "hookspecs",
@@ -128,6 +130,7 @@
     "SALLETTE",
     "searchpath",
     "selectpicker",
+    "semaine",
     "Sexe",
     "Smartscreen",
     "Solkoff",
@@ -159,5 +162,7 @@
   "files.associations": {
     "*.html": "jinja"
   },
-  "python.analysis.typeCheckingMode": "off"
+  "python.analysis.typeCheckingMode": "off",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false
 }
