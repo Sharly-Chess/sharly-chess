@@ -12,8 +12,8 @@ LOGGING_CONFIG = {
     'formatters': {
         'colored': {
             '()': 'colorlog.ColoredFormatter',
-            'fmt': '%(log_color)s%(message)s%(reset)s',
-            'datefmt': None,
+            'fmt': '%(log_color)s%(asctime)s %(levelname)-10s%(message)s%(reset)s',
+            'datefmt': '%y/%m/%d %H:%M:%S',
             'reset': True,
             'log_colors': {
                 'DEBUG': 'white',
@@ -27,7 +27,7 @@ LOGGING_CONFIG = {
         },
         'standard': {
             'format': '%(asctime)s %(levelname)-10s%(message)s',
-            'datefmt': '%d/%m/%y %H:%M',
+            'datefmt': '%y/%m/%d %H:%M:%S',
             'style': '%',
         }
     },
@@ -44,7 +44,7 @@ LOGGING_CONFIG = {
             'formatter': 'standard',
             'filename': str(LOGS_DIR / f'{APP_NAME}.log'),
             'maxBytes': 500 * 1024,
-            'backupCount': 10,
+            'backupCount': 5,
         }
     },
     'loggers': {
