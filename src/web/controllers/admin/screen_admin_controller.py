@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import Annotated, Any
 
 import requests
@@ -13,7 +12,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common import REQUEST_TIMEOUT
 from common.i18n import _
-from common.logger import get_logger
 from data.loader import EventLoader
 from data.screen import Screen
 from data.screen_set import ScreenSet
@@ -27,8 +25,6 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext, BaseController
 from web.messages import Message
 from web.session import SessionHandler
-
-logger: Logger = get_logger()
 
 
 class ScreenAdminWebContext(BaseEventAdminWebContext):

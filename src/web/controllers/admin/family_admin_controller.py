@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
@@ -10,7 +9,6 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from common.logger import get_logger
 from data.family import Family
 from data.loader import EventLoader
 from utils.enum import ScreenType
@@ -23,8 +21,6 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
-
-logger: Logger = get_logger()
 
 
 class FamilyAdminWebContext(BaseEventAdminWebContext):

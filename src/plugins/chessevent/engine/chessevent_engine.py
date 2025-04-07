@@ -1,10 +1,5 @@
-from logging import Logger
-
 from plugins.chessevent.engine.event_selector import EventSelector
-from common.logger import get_logger
 from common.engine import Engine
-
-logger: Logger = get_logger()
 
 
 class ChessEventEngine(Engine):

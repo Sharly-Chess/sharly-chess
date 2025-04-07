@@ -1,13 +1,9 @@
 import re
 from datetime import datetime
-from logging import Logger
 from pathlib import Path
 from typing import Pattern, Iterator
 
-from common.logger import get_logger
 from database.access.access_database import AccessDatabase
-
-logger: Logger = get_logger()
 
 
 class FfeAccessDatabase(AccessDatabase):

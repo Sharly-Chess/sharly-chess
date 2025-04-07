@@ -1,10 +1,5 @@
-from logging import Logger
-
-from common.logger import get_logger
 from common.engine import Engine
 from plugins.ffe.engine.event_selector import EventSelector
-
-logger: Logger = get_logger()
 
 
 class FFEEngine(Engine):

@@ -1,7 +1,6 @@
 import re
 import time
 from datetime import datetime
-from logging import Logger
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
@@ -14,7 +13,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.papi_web_config import PapiWebConfig
 from common.i18n import _
-from common.logger import get_logger
 from data.loader import EventLoader
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
@@ -25,8 +23,6 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-
-logger: Logger = get_logger()
 
 
 class TimerAdminWebContext(BaseEventAdminWebContext):

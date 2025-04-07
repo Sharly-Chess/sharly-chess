@@ -1,23 +1,27 @@
+import platform
 import socket
-from logging import Logger
 from threading import Thread
 from time import sleep
 from webbrowser import open
 
+import pyodbc  # type: ignore
 import requests
 import uvicorn
 from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
+from litestar.logging import LoggingConfig
 
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from common import DEVEL_ENV, EXPERIMENTAL_FEATURES, REQUEST_TIMEOUT
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
-    get_logger,
     print_interactive_info,
     print_interactive_error,
     print_interactive_warning,
+    LOGGING_CONFIG,
+    get_logger,
+    set_console_log_level,
 )
 from common.papi_web_config import PapiWebConfig
 from common.network import NetworkMonitor
@@ -25,7 +29,7 @@ from database.sqlite.fide.fide_database import FideDatabase
 from plugins.manager import plugin_manager
 from web.settings import route_handlers, template_config, middlewares, stores
 
-logger: Logger = get_logger()
+logger = get_logger()
 
 
 def launch_browser(url: str):
@@ -54,7 +58,19 @@ class ServerEngine(Engine):
         self.debug = debug
         if self.updated:
             return
+        config = PapiWebConfig()
+        set_locale(PapiWebConfig().locale)
+        set_console_log_level(config.log_level)
 
+        logger.debug('ODBC drivers found:')
+        for driver in pyodbc.drivers():
+            logger.debug(' - %s', driver)
+        logger.debug('System information:')
+        logger.debug(
+            ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
+        )
+        logger.debug(' - Platform: %s', platform.platform())
+        logger.debug(' - Architecture: %s', ' '.join(platform.architecture()))
         print_interactive_info(_('Starting Papi-web server, please wait...'))
         papi_web_config: PapiWebConfig = PapiWebConfig()
         print_interactive_info(
@@ -111,11 +127,14 @@ class ServerEngine(Engine):
 
         NetworkMonitor.start_monitoring()
 
+        logging_config = LOGGING_CONFIG
+        logging_config['handlers']['console']['level'] = config.log_level  # type: ignore
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,
             route_handlers=route_handlers,
             template_config=template_config,
+            logging_config=LoggingConfig(**logging_config),  # type: ignore
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
@@ -124,7 +143,7 @@ class ServerEngine(Engine):
             app,
             host=papi_web_config.web_host,
             port=papi_web_config.web_port,
-            log_level='info',
+            log_config=logging_config,
         )
 
     @staticmethod

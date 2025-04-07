@@ -2,13 +2,11 @@ import math
 import weakref
 from collections.abc import Iterable
 from itertools import chain
-from logging import Logger
 from typing import Any, TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _
-from common.logger import get_logger
 from data.board import Board
 from data.player import Player
 from utils.enum import ScreenType
@@ -19,8 +17,6 @@ if TYPE_CHECKING:
     from data.screen import Screen
     from data.family import Family
     from data.tournament import Tournament
-
-logger: Logger = get_logger()
 
 
 class ScreenSet:

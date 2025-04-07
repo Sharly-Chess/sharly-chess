@@ -1,5 +1,4 @@
 from contextlib import suppress
-from logging import Logger
 from typing import Annotated
 
 from litestar import head, post, get
@@ -11,7 +10,6 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
 from common.i18n import _
-from common.logger import get_logger
 from data.screen_set import ScreenSet
 from data.tournament import Tournament
 from utils.enum import ScreenType
@@ -23,8 +21,6 @@ from web.controllers.user.base_screen_user_controller import (
 )
 from web.messages import Message
 from web.session import SessionHandler
-
-logger: Logger = get_logger()
 
 
 class LoginUserWebContext(ScreenUserWebContext):

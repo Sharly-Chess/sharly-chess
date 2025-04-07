@@ -1,7 +1,5 @@
 import logging
-import platform
 import socket
-from logging import Logger
 from pathlib import Path
 from typing import overload
 
@@ -17,19 +15,12 @@ from common.i18n import (
     _,
     trusted_locales,
     untrusted_locales,
-    set_locale,
-)
-from common.logger import (
-    get_logger,
-    configure_logger,
 )
 from common.singleton import Singleton
 from data.player import Federation
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
-
-logger: Logger = get_logger()
 
 
 class PapiWebConfig(metaclass=Singleton):
@@ -75,17 +66,6 @@ class PapiWebConfig(metaclass=Singleton):
         if EXPERIMENTAL_FEATURES:
             self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
-        set_locale(self.locale)
-        logger.debug('ODBC drivers found:')
-        for driver in pyodbc.drivers():
-            logger.debug(' - %s', driver)
-        logger.debug('System information:')
-        logger.debug(
-            ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
-        )
-        logger.debug(' - Platform: %s', platform.platform())
-        logger.debug(' - Architecture: %s', ' '.join(platform.architecture()))
-        configure_logger(self.log_level)
 
     def reload(self):
         self.stored_config = self.load()

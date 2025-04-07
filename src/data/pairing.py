@@ -1,13 +1,9 @@
 from dataclasses import dataclass
-from logging import Logger
 from typing import Callable
 
 from trf.Player import Game as TrfGame
-from common.logger import get_logger
 
 from utils.enum import Result, BoardColor
-
-logger: Logger = get_logger()
 
 
 @dataclass(frozen=True)

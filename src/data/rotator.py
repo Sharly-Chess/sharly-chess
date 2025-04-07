@@ -1,20 +1,16 @@
 from contextlib import suppress
 from functools import cached_property
-from logging import Logger
 from typing import TYPE_CHECKING
 import weakref
 from _weakref import ReferenceType
 
 from common.papi_web_config import PapiWebConfig
-from common.logger import get_logger
 from data.family import Family
 from data.screen import Screen
 from database.sqlite.event.event_store import StoredRotator
 
 if TYPE_CHECKING:
     from data.event import Event
-
-logger: Logger = get_logger()
 
 
 ROTATOR_DEFAULT_DELAY: int = 15

@@ -10,8 +10,9 @@ from typing import Iterator, Any, override
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR, get_logger
+from common import TMP_DIR
 from common.i18n import _
+from common.logger import get_logger
 from data.player import Player, Federation, Club
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction

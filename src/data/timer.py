@@ -3,7 +3,6 @@ import time
 import weakref
 from datetime import datetime
 from functools import cached_property
-from logging import Logger
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
@@ -16,14 +15,10 @@ from common import (
 )
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from common.logger import get_logger
 from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
 
 if TYPE_CHECKING:
     from data.event import Event
-
-
-logger: Logger = get_logger()
 
 
 class TimerHour:

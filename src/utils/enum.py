@@ -1,20 +1,9 @@
 """A file grouping all the "utility" classes/enum"""
 
-from abc import ABC, abstractmethod
-from collections.abc import Callable
 from datetime import datetime
-from decimal import Decimal
 from enum import Enum, StrEnum, IntEnum
-from functools import lru_cache
-from logging import Logger
-from math import floor
-from types import UnionType
-from typing import Any, override
 
 from common.i18n import _
-from common.logger import get_logger
-
-logger: Logger = get_logger()
 
 
 class PapiResult(IntEnum):

@@ -2,15 +2,11 @@ from collections import defaultdict
 import json
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
-from logging import Logger
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
 from threading import RLock
 from typing import Self, Any
 
-from common.logger import get_logger
-
-logger: Logger = get_logger()
 
 locks: defaultdict[Path, RLock] = defaultdict(RLock)
 

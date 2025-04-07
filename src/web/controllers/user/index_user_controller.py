@@ -1,5 +1,3 @@
-from logging import Logger
-
 from litestar import get
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate, Reswap, ClientRedirect
@@ -7,13 +5,10 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
 from common.i18n import _
-from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from web.controllers.user.base_user_controller import BaseUserController, UserWebContext
 from web.messages import Message
-
-logger: Logger = get_logger()
 
 
 class IndexUserController(BaseUserController):

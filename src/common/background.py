@@ -4,7 +4,7 @@ from pathlib import Path
 
 import validators
 
-from common import get_logger
+from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 
 logger: Logger = get_logger()
