@@ -618,7 +618,7 @@ class Screen:
         match self.type:
             case ScreenType.RANKING:
                 if self.stored_screen:
-                    return bool(self.stored_screen.ranking_crosstable)
+                    return self.stored_screen.ranking_crosstable
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')

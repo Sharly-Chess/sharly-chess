@@ -90,16 +90,22 @@ class ScreenSet:
         else:
             assert self.family is not None
             self.fixed_board_numbers = []
-            self.first = (
-                self.family.calculated_first
-                + (self.family_part - 1) * self.family.calculated_number
-            )
-            self.last = min(
-                self.family.calculated_last,
-                self.family.calculated_first
-                + self.family_part * self.family.calculated_number
-                - 1,
-            )
+            if (
+                self.family.calculated_first is not None
+                and self.family.calculated_last is not None
+                and self.family.calculated_number is not None
+                and self.family_part is not None
+            ):
+                self.first = (
+                    self.family.calculated_first
+                    + (self.family_part - 1) * self.family.calculated_number
+                )
+                self.last = min(
+                    self.family.calculated_last,
+                    self.family.calculated_first
+                    + self.family_part * self.family.calculated_number
+                    - 1,
+                )
         if self.first and self.last and self.first > self.last:
             self.event.add_warning(
                 _(
@@ -374,11 +380,11 @@ class ScreenSet:
                     for player in self.tournament.players_by_rank.values()
                     if (
                         self.ranking_min_points is None
-                        or player.points >= self.ranking_min_points
+                        or (player.points or 0) >= self.ranking_min_points
                     )
                     and (
                         self.ranking_max_points is None
-                        or player.points <= self.ranking_max_points
+                        or (player.points or 0) <= self.ranking_max_points
                     )
                 ]
             )

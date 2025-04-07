@@ -33,7 +33,7 @@ class BaseMigration(ABC):
         raise NotImplementedError('Rollback not implemented for this migration')
 
 
-class MigrationManager[MigrationDatabase](ABC):
+class MigrationManager[T: MigrationDatabase](ABC):
     """Class managing a timeline of migrations of a *MigrationDatabase*.
     Migration classes are stored in a similar base module.
     Each submodule of this file should implement a class named "Migration"
@@ -49,9 +49,9 @@ class MigrationManager[MigrationDatabase](ABC):
     MIGRATION_CLASS_NAME: str = 'Migration'
     MIGRATION_ZERO: str = 'm000_no_migration'
 
-    def __init__(self, database: MigrationDatabase, base_migration_module: ModuleType):
-        self.database: MigrationDatabase = database
-        self.base_migration_module: ModuleType = base_migration_module
+    def __init__(self, database: T, base_migration_module: ModuleType):
+        self.database = database
+        self.base_migration_module = base_migration_module
 
     @property
     @abstractmethod

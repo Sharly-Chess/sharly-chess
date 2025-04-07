@@ -81,7 +81,6 @@ class TieBreakUtils:
                 else:
                     score += pairing.result.points(tournament.point_values)
             else:
-                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         return score
 
@@ -91,7 +90,7 @@ class TieBreakUtils:
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
-    ) -> float | tuple[float, Result]:
+    ) -> float:
         """Computes the dummy score for the given pairing after *after_round*."""
         if not fore_modifier:
             return player.points_after(after_round)
@@ -131,7 +130,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     ) -> 'SupportsRichComparison':
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking,
-        the return type need to support rich comparison with himself"""
+        the return type need to support rich comparison with itself"""
         pass
 
     @staticmethod
@@ -196,7 +195,7 @@ class WinsTieBreak(TieBreak):
         return sum(
             pairing.result.points(point_values) == Result.GAIN.points(point_values)
             for round_index, pairing in player.pairings.items()
-            if pairing.result is not None and round_index <= after_round
+            if round_index <= after_round
         )
 
 
@@ -493,6 +492,7 @@ class BuchholzTieBreak(TieBreak):
                 else:
                     scores.append(dummy_points)
                 continue
+            assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if tournament.pairing.swiss:
                 opponent_adjusted_score = TieBreakUtils.adjusted_score(
@@ -652,8 +652,10 @@ class SumOfBuchholzTieBreak(TieBreak):
             after_round = max(player.pairings)
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
+            if pairing.opponent_id
+            else None
             for round_index, pairing in player.pairings.items()
-            if round_index <= after_round
+            if round_index <= after_round and pairing.opponent_id is not None
         ]
         tie_break = ForeBuchholzTieBreak() if fore_modifier else BuchholzTieBreak()
         return sum(
@@ -793,7 +795,6 @@ class SonnebornBergerTieBreak(TieBreak):
                 opponent_score = TieBreakUtils.adjusted_score(
                     opponent, after_round=after_round
                 )
-                assert pairing.result is not None
                 contribution = (
                     pairing.result.points(tournament.point_values) * opponent_score
                 )
@@ -919,7 +920,6 @@ class KoyaTieBreak(TieBreak):
             opponent = tournament.players_by_id[pairing.opponent_id]
             opponent_score = opponent.points_before(after_round)
             if opponent_score >= limit:
-                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         return score
 
@@ -950,7 +950,7 @@ class KashdanTieBreak(TieBreak):
         player: 'TournamentPlayer',
         *,
         after_round: int | None,
-    ) -> int:
+    ) -> float:
         if after_round is None:
             after_round = max(player.pairings)
 
@@ -975,7 +975,9 @@ class KashdanTieBreak(TieBreak):
             Result.FORFEIT_LOSS: 0,
             Result.DOUBLE_FORFEIT: 0,
         }
-        return sum(pairing.result.points(score_by_result) for pairing in pairings)
+        return float(
+            sum(pairing.result.points(score_by_result) for pairing in pairings)
+        )
 
 
 class AverageRatingOpponentsTieBreak(TieBreak):
@@ -1102,7 +1104,6 @@ class TournamentPerformanceRatingTieBreak(TieBreak):
             with suppress(KeyError):
                 rating = opponent.estimation
                 ratings.append(rating)
-                assert pairing.result is not None
                 score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
@@ -1216,10 +1217,12 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
             return -800 + min(
                 tournament.players_by_id[pairing.opponent_id].estimation
                 for pairing in played_rounds
+                if pairing.opponent_id is not None
             )
         ratings: list[int] = [
             tournament.players_by_id[pairing.opponent_id].estimation
             for pairing in played_rounds
+            if pairing.opponent_id is not None
         ]
         performance_tie_break = TournamentPerformanceRatingTieBreak()
         first_estimation = performance_tie_break.compute_player_value(
@@ -1230,8 +1233,9 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
             return StaticUtils.round_ranking(first_estimation)
-        second_estimation = first_estimation * actual_score / first_expected_score
-        second_estimation = StaticUtils.round_ranking(float(second_estimation))
+        second_estimation = StaticUtils.round_ranking(
+            first_estimation * actual_score / first_expected_score
+        )
         second_expected_score = self._expected_score(
             second_estimation, ratings, tournament.point_values
         )
@@ -1243,7 +1247,9 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
         while not isclose(
             actual_score,
             mid_score := self._expected_score(
-                (mid := (low + high) / 2), ratings, tournament.point_values
+                (mid := StaticUtils.round_ranking((low + high) / 2)),
+                ratings,
+                tournament.point_values,
             ),
             abs_tol=0.01,
         ):
@@ -1251,7 +1257,6 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
                 high = mid
             else:
                 low = mid
-        mid = StaticUtils.round_ranking(mid)
         while (
             self._expected_score(mid, ratings, tournament.point_values) >= actual_score
         ):
@@ -1260,7 +1265,7 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
             self._expected_score(mid, ratings, tournament.point_values) < actual_score
         ):
             mid += 1
-        return StaticUtils.round_ranking(mid)
+        return mid
 
     @classmethod
     def _expected_score(
@@ -1391,6 +1396,7 @@ class AveragePerfectPerformanceTieBreak(TieBreak):
                 after_round=after_round,
             )
             for pairing in pairings
+            if pairing.opponent_id is not None
         ]
 
         if not ptp:
