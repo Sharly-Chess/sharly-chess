@@ -648,16 +648,16 @@ msgstr ""
 msgid "Connection to the ChessEvent platform"
 msgstr ""
 
-msgid "Connection to the FFE database failed."
+msgid "Connection to the database failed."
 msgstr ""
 
-msgid "Connection to the FFE database failed: {error}."
+msgid "Connection to the database failed: {error}."
 msgstr ""
 
-msgid "Connection to the FFE server failed."
+msgid "Connection to the server failed."
 msgstr ""
 
-msgid "Connection to the FFE server failed: {error}."
+msgid "Connection to the server failed: {error}."
 msgstr ""
 
 msgid "Connections ChessEvent"
@@ -2867,10 +2867,10 @@ msgstr ""
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
-msgid "Request to the FFE database failed."
+msgid "Request to the database failed."
 msgstr ""
 
-msgid "Request to the FFE database failed: {error}."
+msgid "Request to the database failed: {error}."
 msgstr ""
 
 msgid "Res. ** RESULT FOR PRINT VIEW"
@@ -4205,6 +4205,9 @@ msgstr ""
 msgid "time control"
 msgstr ""
 
+msgid "timeout"
+msgstr ""
+
 msgid "timer"
 msgstr ""
 
@@ -4259,7 +4262,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Error while updating the FIDE database."
-#~ msgstr ""
 

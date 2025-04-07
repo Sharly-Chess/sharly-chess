@@ -648,17 +648,17 @@ msgstr "Connexion à la Fédération Française des Échecs"
 msgid "Connection to the ChessEvent platform"
 msgstr "Connexion à la plateforme ChessEvent"
 
-msgid "Connection to the FFE database failed."
-msgstr "La connexion à la base fédérale a échoué."
+msgid "Connection to the database failed."
+msgstr "La connexion à la base a échoué."
 
-msgid "Connection to the FFE database failed: {error}."
-msgstr "La connexion à la base fédérale a échoué : {error}."
+msgid "Connection to the database failed: {error}."
+msgstr "La connexion à la base a échoué : {error}."
 
-msgid "Connection to the FFE server failed."
-msgstr "La connexion au serveur fédéral a échoué."
+msgid "Connection to the server failed."
+msgstr "La connexion au serveur a échoué."
 
-msgid "Connection to the FFE server failed: {error}."
-msgstr "La connexion au serveur fédéral a échoué : {error}."
+msgid "Connection to the server failed: {error}."
+msgstr "La connexion au serveur a échoué : {error}."
 
 msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
@@ -2867,11 +2867,11 @@ msgstr "Le renommage de la base de données a échoué : {ex}"
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
 
-msgid "Request to the FFE database failed."
-msgstr "La requête à la base fédérale a échoué."
+msgid "Request to the database failed."
+msgstr "La requête à la base de données a échoué."
 
-msgid "Request to the FFE database failed: {error}."
-msgstr "La requête à la base fédérale a échoué : {error}."
+msgid "Request to the database failed: {error}."
+msgstr "La requête à la base de données a échoué : {error}."
 
 msgid "Res. ** RESULT FOR PRINT VIEW"
 msgstr "Res."
@@ -4204,6 +4204,9 @@ msgstr "classement complet"
 
 msgid "time control"
 msgstr "temps"
+
+msgid "timeout"
+msgstr "temps dépassé"
 
 msgid "timer"
 msgstr "chrono"
