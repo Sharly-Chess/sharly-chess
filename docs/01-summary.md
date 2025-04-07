@@ -96,5 +96,6 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | RUHLMANN Dominique  | AFE1  | BRE   | 35  | Échiquier du pays de Liffré                   |
 | SALLETTE Alain      | AFE1  | NAQ   | 33  | Bordeaux Aspom Échecs                         |
 | TRAVAILLOUX Dimitri | AFO1  | ARA   | 74  | Cercle d'échecs de l'agglomération Annécienne |
+| VIEIRA Matthieu     | AFE1  | ARA   | 69  | Centre Léo Lagrange Décines                   |
 | VIEVILLE Claude     | AFC   | HDF   | 85  | Cercle d'Échecs de Fournes en Weppes          |
 | VIOLEAU Jean-Luc    | AFE1  | PDL   | 85  | Club Échecs La Roche sur Yon                  |
