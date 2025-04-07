@@ -11,7 +11,7 @@ Simply checkout from https://github.com/papi-web-org/papi-web and play ;-)
 ### Lancement du serveur web
 
 ```
-python papi_web.py
+python src/papi_web.py
 ```
 
 Set environment variable ``PAPI_WEB_EXPERIMENTAL`` to ``1`` to enable expérimental features:
@@ -19,17 +19,27 @@ Set environment variable ``PAPI_WEB_EXPERIMENTAL`` to ``1`` to enable expérimen
 > [!WARNING]
 > USE EXPERIMENTAL FEATURES AT YOUR OWN RISKS!
 
-### Lancement de l'interface avec le serveur fédéral
+### Lancement de l'interface avec le serveur FFE
 
 ```
-python papi_web.py --server
+python src/papi_web.py --ffe
 ```
 
 ### Lancement de l'interface avec la plateforme ChessEvent
 
 ```
-python papi_web.py --chessevent
+python src/papi_web.py --chessevent
 ```
+
+## Configuration de l'authentification sur le serveur FFE
+
+```
+python scripts/ffe/generate_ffe_sql_server_credentials.py
+```
+
+Le script génère le fichier `src/plugins/ffe/.credentials` utilisé pour se connecter au site fédéral.
+
+Demander les codes de connexions aux autres développeur·euses :-)
 
 ## Création d'un exécutable Windows pour diffusion
 
@@ -44,3 +54,17 @@ python -m venv .venv-export
 ```
 
 L'archive ZIP est créée dans le répertoire `/export` et un environnement de test est créé dans `/export-test`.
+
+## Installation de bbpPairings
+
+```
+python scripts/bbp_pairings/install_bbp_pairings.py
+```
+
+Le script installe l'exécutable dans le répertoire `bin/bbpPairings/bbpPairings-vx.y.z`.
+
+## Mise à jour des drapeaux des fédérations
+
+```
+python scripts/federation_flags/download_federation_flags.py
+```

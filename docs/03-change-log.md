@@ -2,7 +2,7 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.5.0 - Mars 2025
+## Version 2.5.0 - 7 avril 2025
 - Passage en multilingue anglais et français
 - Refonte complète de l'interface web
 - Ajout/suppression/modification des joueur·euses, changements de tournoi
@@ -16,6 +16,7 @@
 - Calcul des départages et classement des joueur·euses
 - Impression et affichage du classement et de la grille américaine
 - Impression des appariements et résultats
+- Réduction du temps de démarrage de l'application
 - Correction du calcul des points virtuels en Système Accéléré Dégressif
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois

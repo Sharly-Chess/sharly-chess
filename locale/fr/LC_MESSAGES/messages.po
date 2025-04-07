@@ -237,7 +237,7 @@ msgid "Alert message:"
 msgstr "Message d'alerte :"
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
-msgstr "Tous les ports cadidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
+msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
 msgid "All the players intended to play the coming round did check-in."
 msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
@@ -247,6 +247,9 @@ msgstr "Tous les tournois"
 
 msgid "Allow"
 msgstr "Autoriser"
+
+msgid "An error occurred, press Enter to end."
+msgstr "Une erreur s'est produite, appuyez sur Entrée pour finir."
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
@@ -4262,3 +4265,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+

@@ -248,6 +248,9 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
+msgid "An error occurred, press Enter to end."
+msgstr ""
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
@@ -4263,23 +4266,3 @@ msgstr[1] ""
 msgid "{screen_type}-screen"
 msgstr ""
 
-#~ msgid "Error while updating the FIDE database."
-#~ msgstr ""
-
-#~ msgid "Connection to the FFE database failed."
-#~ msgstr ""
-
-#~ msgid "Connection to the FFE database failed: {error}."
-#~ msgstr ""
-
-#~ msgid "Connection to the FFE server failed."
-#~ msgstr ""
-
-#~ msgid "Connection to the FFE server failed: {error}."
-#~ msgstr ""
-
-#~ msgid "Request to the FFE database failed."
-#~ msgstr ""
-
-#~ msgid "Request to the FFE database failed: {error}."
-#~ msgstr ""
