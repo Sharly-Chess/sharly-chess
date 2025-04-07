@@ -313,6 +313,10 @@ msgid "Allow"
 msgstr "Toestaan"
 
 #, ai_translation
+msgid "An error occurred, press Enter to end."
+msgstr "Er is een fout opgetreden, druk op Enter om te beëindigen."
+
+#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Enig commentaar op de speler (opmerkingen zijn alleen zichtbaar door de arbiters)."
 
@@ -827,20 +831,20 @@ msgid "Connection to the ChessEvent platform"
 msgstr "Verbinding met het ChessEvent-platform"
 
 #, ai_translation
-msgid "Connection to the FFE database failed."
-msgstr "Verbinding met de FFE-database is mislukt."
+msgid "Connection to the database failed."
+msgstr "Verbinding met de database is mislukt."
 
 #, ai_translation
-msgid "Connection to the FFE database failed: {error}."
-msgstr "Verbinding met de FFE-database is mislukt: {error}."
+msgid "Connection to the database failed: {error}."
+msgstr "Verbinding met de database is mislukt: {error}."
 
 #, ai_translation
-msgid "Connection to the FFE server failed."
-msgstr "Verbinding met de FFE-server is mislukt."
+msgid "Connection to the server failed."
+msgstr "Verbinding met de server is mislukt."
 
 #, ai_translation
-msgid "Connection to the FFE server failed: {error}."
-msgstr "Verbinding met de FFE-server is mislukt: {error}."
+msgid "Connection to the server failed: {error}."
+msgstr "Verbinding met de server is mislukt: {error}."
 
 #, ai_translation
 msgid "Connections ChessEvent"
@@ -3701,12 +3705,12 @@ msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Vervangen [%(old)s] door [%(new)s]"
 
 #, ai_translation
-msgid "Request to the FFE database failed."
-msgstr "Verzoek aan de FFE-database is mislukt."
+msgid "Request to the database failed."
+msgstr "Verzoek naar de database is mislukt."
 
 #, ai_translation
-msgid "Request to the FFE database failed: {error}."
-msgstr "Verzoek aan de FFE-database mislukt: {error}."
+msgid "Request to the database failed: {error}."
+msgstr "Verzoek naar de database is mislukt: {error}."
 
 #, ai_translation
 msgid "Res. ** RESULT FOR PRINT VIEW"
@@ -5437,6 +5441,10 @@ msgid "time control"
 msgstr "tijdregeling"
 
 #, ai_translation
+msgid "timeout"
+msgstr "timeout"
+
+#, ai_translation
 msgid "timer"
 msgstr "timer"
 
@@ -5892,3 +5900,22 @@ msgstr "{screen_type}-scherm"
 
 #~ msgid "{number} players written to FIDE database."
 #~ msgstr "{number} spelers geschreven naar FIDE database."
+
+#~ msgid "Connection to the FFE database failed."
+#~ msgstr "Verbinding met de FFE-database is mislukt."
+
+#~ msgid "Connection to the FFE database failed: {error}."
+#~ msgstr "Verbinding met de FFE-database is mislukt: {error}."
+
+#~ msgid "Connection to the FFE server failed."
+#~ msgstr "Verbinding met de FFE-server is mislukt."
+
+#~ msgid "Connection to the FFE server failed: {error}."
+#~ msgstr "Verbinding met de FFE-server is mislukt: {error}."
+
+#~ msgid "Request to the FFE database failed."
+#~ msgstr "Verzoek aan de FFE-database is mislukt."
+
+#~ msgid "Request to the FFE database failed: {error}."
+#~ msgstr "Verzoek aan de FFE-database mislukt: {error}."
+

@@ -313,6 +313,10 @@ msgid "Allow"
 msgstr "Erlauben"
 
 #, ai_translation
+msgid "An error occurred, press Enter to end."
+msgstr "Ein Fehler ist aufgetreten, drücken Sie Enter, um zu beenden."
+
+#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Jeder Kommentar zum Spieler (Kommentare sind nur von den Schiedsrichtern sichtbar)."
 
@@ -827,20 +831,20 @@ msgid "Connection to the ChessEvent platform"
 msgstr "Verbindung zur ChessEvent-Plattform"
 
 #, ai_translation
-msgid "Connection to the FFE database failed."
-msgstr "Die Verbindung zur FFE-Datenbank ist fehlgeschlagen."
+msgid "Connection to the database failed."
+msgstr "Die Verbindung zur Datenbank ist fehlgeschlagen."
 
 #, ai_translation
-msgid "Connection to the FFE database failed: {error}."
-msgstr "Die Verbindung zur FFE-Datenbank ist fehlgeschlagen: {error}."
+msgid "Connection to the database failed: {error}."
+msgstr "Die Verbindung zur Datenbank ist fehlgeschlagen: {error}."
 
 #, ai_translation
-msgid "Connection to the FFE server failed."
-msgstr "Die Verbindung zum FFE-Server ist fehlgeschlagen."
+msgid "Connection to the server failed."
+msgstr "Die Verbindung zum Server ist fehlgeschlagen."
 
 #, ai_translation
-msgid "Connection to the FFE server failed: {error}."
-msgstr "Die Verbindung zum FFE-Server ist fehlgeschlagen: {error}."
+msgid "Connection to the server failed: {error}."
+msgstr "Die Verbindung zum Server ist fehlgeschlagen: {error}."
 
 #, ai_translation
 msgid "Connections ChessEvent"
@@ -3723,12 +3727,12 @@ msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "[%(old)s] durch [%(new)s] ersetzen"
 
 #, ai_translation
-msgid "Request to the FFE database failed."
-msgstr "Die Anfrage an die FFE-Datenbank ist fehlgeschlagen."
+msgid "Request to the database failed."
+msgstr "Die Anfrage an die Datenbank ist fehlgeschlagen."
 
 #, ai_translation
-msgid "Request to the FFE database failed: {error}."
-msgstr "Anfrage an die FFE-Datenbank fehlgeschlagen: {error}."
+msgid "Request to the database failed: {error}."
+msgstr "Anfrage an die Datenbank fehlgeschlagen: {error}."
 
 #, ai_translation
 msgid "Res. ** RESULT FOR PRINT VIEW"
@@ -5521,6 +5525,10 @@ msgid "time control"
 msgstr "Zeitkontrolle"
 
 #, ai_translation
+msgid "timeout"
+msgstr "Zeitabschaltung"
+
+#, ai_translation
 msgid "timer"
 msgstr "Zeitschaltuhr"
 
@@ -5943,3 +5951,22 @@ msgstr "{screen_type}-Bildschirm"
 
 #~ msgid "{number} players written to FIDE database."
 #~ msgstr "{number} Spieler geschrieben in FIDE-Datenbank."
+
+#~ msgid "Connection to the FFE database failed."
+#~ msgstr "Die Verbindung zur FFE-Datenbank ist fehlgeschlagen."
+
+#~ msgid "Connection to the FFE database failed: {error}."
+#~ msgstr "Die Verbindung zur FFE-Datenbank ist fehlgeschlagen: {error}."
+
+#~ msgid "Connection to the FFE server failed."
+#~ msgstr "Die Verbindung zum FFE-Server ist fehlgeschlagen."
+
+#~ msgid "Connection to the FFE server failed: {error}."
+#~ msgstr "Die Verbindung zum FFE-Server ist fehlgeschlagen: {error}."
+
+#~ msgid "Request to the FFE database failed."
+#~ msgstr "Die Anfrage an die FFE-Datenbank ist fehlgeschlagen."
+
+#~ msgid "Request to the FFE database failed: {error}."
+#~ msgstr "Anfrage an die FFE-Datenbank fehlgeschlagen: {error}."
+

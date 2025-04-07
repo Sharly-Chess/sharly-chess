@@ -248,6 +248,9 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
+msgid "An error occurred, press Enter to end."
+msgstr "Une erreur s'est produite, appuyez sur Entrée pour finir."
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 

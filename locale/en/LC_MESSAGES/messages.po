@@ -248,6 +248,9 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
+msgid "An error occurred, press Enter to end."
+msgstr ""
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 

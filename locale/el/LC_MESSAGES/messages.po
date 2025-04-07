@@ -313,6 +313,10 @@ msgid "Allow"
 msgstr "Επιτρέπεται"
 
 #, ai_translation
+msgid "An error occurred, press Enter to end."
+msgstr "Συνέβη ένα σφάλμα, πατήστε Enter μέχρι το τέλος."
+
+#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
 
@@ -843,20 +847,20 @@ msgid "Connection to the ChessEvent platform"
 msgstr "Σύνδεση με την πλατφόρμα ChessEvent"
 
 #, ai_translation
-msgid "Connection to the FFE database failed."
-msgstr "Η σύνδεση με τη βάση δεδομένων FFE απέτυχε."
+msgid "Connection to the database failed."
+msgstr "Η σύνδεση με τη βάση δεδομένων απέτυχε."
 
 #, ai_translation
-msgid "Connection to the FFE database failed: {error}."
-msgstr "Η σύνδεση με τη βάση δεδομένων FFE απέτυχε: {error}."
+msgid "Connection to the database failed: {error}."
+msgstr "Η σύνδεση με τη βάση δεδομένων απέτυχε: {error}."
 
 #, ai_translation
-msgid "Connection to the FFE server failed."
-msgstr "Η σύνδεση με τον εξυπηρετητή FFE απέτυχε."
+msgid "Connection to the server failed."
+msgstr "Η σύνδεση με το διακομιστή απέτυχε."
 
 #, ai_translation
-msgid "Connection to the FFE server failed: {error}."
-msgstr "Η σύνδεση με τον εξυπηρετητή FFE απέτυχε: {error}."
+msgid "Connection to the server failed: {error}."
+msgstr "Η σύνδεση με το διακομιστή απέτυχε: {error}."
 
 #, ai_translation
 msgid "Connections ChessEvent"
@@ -3739,12 +3743,12 @@ msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Αντικατάσταση [%(old)s] από [%(new)s]"
 
 #, ai_translation
-msgid "Request to the FFE database failed."
-msgstr "Το αίτημα για τη βάση δεδομένων του FFE απέτυχε."
+msgid "Request to the database failed."
+msgstr "Το αίτημα για τη βάση δεδομένων απέτυχε."
 
 #, ai_translation
-msgid "Request to the FFE database failed: {error}."
-msgstr "Η αίτηση στη βάση δεδομένων FFE απέτυχε: {error}."
+msgid "Request to the database failed: {error}."
+msgstr "Η αίτηση στη βάση δεδομένων απέτυχε: {error}."
 
 #, ai_translation
 msgid "Res. ** RESULT FOR PRINT VIEW"
@@ -5475,6 +5479,10 @@ msgid "time control"
 msgstr "Χρονοδιακόπτης"
 
 #, ai_translation
+msgid "timeout"
+msgstr "timeout"
+
+#, ai_translation
 msgid "timer"
 msgstr "Χρονοδιακόπτης"
 
@@ -5932,3 +5940,22 @@ msgstr "{screen_type}- οθόνη"
 
 #~ msgid "{number} players written to FIDE database."
 #~ msgstr "{number} Οι παίκτες που γράφτηκαν στη βάση δεδομένων της FIDE."
+
+#~ msgid "Connection to the FFE database failed."
+#~ msgstr "Η σύνδεση με τη βάση δεδομένων FFE απέτυχε."
+
+#~ msgid "Connection to the FFE database failed: {error}."
+#~ msgstr "Η σύνδεση με τη βάση δεδομένων FFE απέτυχε: {error}."
+
+#~ msgid "Connection to the FFE server failed."
+#~ msgstr "Η σύνδεση με τον εξυπηρετητή FFE απέτυχε."
+
+#~ msgid "Connection to the FFE server failed: {error}."
+#~ msgstr "Η σύνδεση με τον εξυπηρετητή FFE απέτυχε: {error}."
+
+#~ msgid "Request to the FFE database failed."
+#~ msgstr "Το αίτημα για τη βάση δεδομένων του FFE απέτυχε."
+
+#~ msgid "Request to the FFE database failed: {error}."
+#~ msgstr "Η αίτηση στη βάση δεδομένων FFE απέτυχε: {error}."
+
