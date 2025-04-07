@@ -1,0 +1,9 @@
+# NOTE: when starting a new stable branch, please remove all the owner clauses and add a global code owner
+# * @global-owner
+
+# Amaras is responsible for documentation
+/docs @Amaras
+
+# changes due to i18n scripts have no owner, might be changed later
+/docs/86-i18n
+/locale
