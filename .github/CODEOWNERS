@@ -1,0 +1,3 @@
+# Molrn is responsible for papi-web release 2.5 until its end of life (release 2.5)
+# All code changes to release 2.5 must be pushed through a PR that requires code owner approval.
+* @Molrn
