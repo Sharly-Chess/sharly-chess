@@ -47,9 +47,7 @@ Cliquez sur le menu contextuel (`···`) puis sur **Restaurer et ajouter une ex
 
 ![Confirmation de la sortie de quarantaine](images/faq/faq-system-avast-5.jpg)
 
-Vérifiez que le fichier a bien été restauré dans le répertoire `bin`.
-
-Rappel : ne pas lancez l'exécutable restauré, vous devez utiliser les scripts situés à la racine.
+Vérifiez que le fichier a bien été restauré à la racine du répertoire de Papi-web.
 
 ## Tous les ports candidats [80, 81, 8080, 8081] sont déjà utilisés, impossible de démarrer le serveur web
 
