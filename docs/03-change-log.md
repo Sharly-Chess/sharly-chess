@@ -2,7 +2,7 @@
 
 # Papi-web - ChangeLog
 
-## Version 2.5.0 - 5 avril 2025
+## Version 2.5.0 - 7 avril 2025
 - Passage en multilingue anglais et français
 - Refonte complète de l'interface web
 - Ajout/suppression/modification des joueur·euses, changements de tournoi
