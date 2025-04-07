@@ -4,15 +4,6 @@ try:
     import traceback
     from typing import TYPE_CHECKING
 
-    from common import DEVEL_ENV
-
-    if TYPE_CHECKING:
-        from plugins.utils import PluginEngineArgument
-
-    from common.i18n import _
-    from common.logger import print_interactive_warning
-
-
     # undocumented feature to start from a different folder and work with different configurations
     # Has to be executed before plugin_manager to avoid initializing from the wrong path
     path_parser = argparse.ArgumentParser(add_help=False)
@@ -20,9 +11,14 @@ try:
     args, remaining_args = path_parser.parse_known_args()
     os.chdir(args.path)
 
+    from common import DEVEL_ENV
+    from common.i18n import _
+    from common.logger import print_interactive_warning
     from plugins.manager import plugin_manager  # Noqa: E402
     from web.server_engine import ServerEngine  # Noqa: E402
 
+    if TYPE_CHECKING:
+        from plugins.utils import PluginEngineArgument
 
     parser = argparse.ArgumentParser(parents=[path_parser])
     parser.add_argument('--server', action='store_true')

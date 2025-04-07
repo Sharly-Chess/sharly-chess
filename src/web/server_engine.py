@@ -4,7 +4,7 @@ from threading import Thread
 from time import sleep
 from webbrowser import open
 
-import pyodbc
+import pyodbc  # type: ignore
 import requests
 import uvicorn
 from litestar import Litestar

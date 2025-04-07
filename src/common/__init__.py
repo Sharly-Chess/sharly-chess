@@ -15,10 +15,28 @@ from packaging.version import Version
 APP_NAME: str = 'papi-web'
 PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
-
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
+if DEVEL_ENV:
+    import tomllib
+    from contextlib import suppress
+
+    with suppress(KeyError):
+        with open('pyproject.toml', 'rb') as f:
+            version = tomllib.load(f)['project']['version']
+        if Version(version) != PAPI_WEB_VERSION:
+            from common.logger import logger
+
+            logger.critical(
+                'Installed %s version %s does not match defined '
+                'version %s. Run `pip install -e .` then run %s again.',
+                APP_NAME,
+                PAPI_WEB_VERSION,
+                version,
+                APP_NAME,
+            )
+            raise ValueError(f'{PAPI_WEB_VERSION=}, {version=}')
 
 # True when experimental features are enabled (relying on an environment variable), False otherwise.
 EXPERIMENTAL_FEATURES_ENV_VAR: str = 'PAPI_WEB_EXPERIMENTAL'
@@ -53,43 +71,21 @@ EVENTS_DIR: Path = Path(EVENTS_FOLDER)
 
 LOGS_DIR = Path('logs')
 
-def __check_values():
 
-    for directory in (EVENTS_DIR, TMP_DIR, LOGS_DIR):
-        try:
-            directory.mkdir(parents=True, exist_ok=True)
-        except PermissionError as error:
-            from common.logger import logger
+for directory in (EVENTS_DIR, TMP_DIR, LOGS_DIR):
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+    except PermissionError as error:
+        from common.logger import logger
 
-            logger.critical(
-                'Could not create directory [%s]: %s',
-                directory.absolute(),
-                error,
-            )
-            input()
-            sys.exit(1)
+        logger.critical(
+            'Could not create directory [%s]: %s',
+            directory.absolute(),
+            error,
+        )
+        input()
+        sys.exit(1)
 
-    if DEVEL_ENV:
-        import tomllib
-        from contextlib import suppress
-
-        with suppress(KeyError):
-            with open('pyproject.toml', 'rb') as f:
-                version = tomllib.load(f)['project']['version']
-            if Version(version) != PAPI_WEB_VERSION:
-                from common.logger import logger
-
-                logger.critical(
-                    'Installed %s version %s does not match defined '
-                    'version %s. Run `pip install -e .` then run %s again.',
-                    APP_NAME,
-                    PAPI_WEB_VERSION,
-                    version,
-                    APP_NAME,
-                )
-                raise ValueError(f'{PAPI_WEB_VERSION=}, {version=}')
-
-__check_values()
 
 def check_rgb_str(color: str) -> str:
     """Checks if a string is in #rrggbb format
