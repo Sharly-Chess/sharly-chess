@@ -35,7 +35,7 @@ class SqlServerCredentials:
         except FileNotFoundError as e:
             if DEVEL_ENV:
                 raise PapiWebException(
-                    f'Could not read SQL server credentials ({e}), please run generate_ffe_sql_server_credentials.py.'
+                    f'Could not read SQL server credentials ({e}), please run generate_xxx_sql_server_credentials.py.'
                 ) from e
             else:
                 raise PapiWebException(
@@ -107,18 +107,23 @@ class SqlServer:
 
         try:
             await asyncio.wait_for(connect_to_server(), timeout=timeout)
-        except (TimeoutError, pyodbc.Error) as e:
+        except pyodbc.Error as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
-                error: str = _('Connection to the FFE server failed: {error}.').format(
+                error: str = _('Connection to the server failed: {error}.').format(
                     error=e.args
                 )
             else:
-                error: str = _('Connection to the FFE server failed.')
+                error: str = _('Connection to the server failed.')
             logger.error(error)
-            raise PapiWebException(
-                error or _('Connection to the FFE server failed.')
-            ) from e
+            raise PapiWebException(error) from e
+        except TimeoutError as e:
+            NetworkMonitor.set_connected(False)
+            error: str = _('Connection to the server failed: {error}.').format(
+                error=_('timeout')
+            )
+            logger.error(error)
+            raise PapiWebException(error) from e
 
         assert self.database is not None
         try:
@@ -126,11 +131,11 @@ class SqlServer:
         except pyodbc.Error as e:
             self.database = None
             if DEVEL_ENV:
-                error: str = _(
-                    'Connection to the FFE database failed: {error}.'
-                ).format(error=e.args)
+                error: str = _('Connection to the database failed: {error}.').format(
+                    error=e.args
+                )
             else:
-                error: str = _('Connection to the FFE database failed.')
+                error: str = _('Connection to the database failed.')
             logger.error(error)
             raise PapiWebException(error) from e
         return self
@@ -159,11 +164,11 @@ class SqlServer:
             await self.cursor.execute(query, params)
         except pyodbc.Error as e:
             if DEVEL_ENV:
-                error: str = _('Request to the FFE database failed: {error}.').format(
+                error: str = _('Request to the database failed: {error}.').format(
                     error=e.args
                 )
             else:
-                error: str = _('Request to the FFE database failed.')
+                error: str = _('Request to the database failed.')
             logger.error(error)
             raise PapiWebException(error) from e
 
