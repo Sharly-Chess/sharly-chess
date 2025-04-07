@@ -7,7 +7,7 @@ from packaging.version import Version
 
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.migration import BaseMigration, MigrationManager
-from plugins.utils import AbstractPlugin
+from plugins.utils import Plugin
 
 
 class BasePluginMigration(BaseMigration, ABC):
@@ -27,7 +27,7 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
         self,
         database: EventDatabase,
         base_migration_module: ModuleType,
-        plugin: AbstractPlugin,
+        plugin: Plugin,
     ):
         super().__init__(database, base_migration_module)
         self.plugin = plugin

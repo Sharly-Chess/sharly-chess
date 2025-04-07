@@ -13,7 +13,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.family import Family
 from data.loader import EventLoader
-from data.util import ScreenType
+from utils.enum import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
 from web.controllers.admin.base_event_admin_controller import (
@@ -106,7 +106,7 @@ class FamilyAdminController(BaseEventAdminController):
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
-        ranking_crosstable: bool | None = None
+        ranking_crosstable: bool = False
         ranking_round: int | None = None
         ranking_min_points: float | None = None
         ranking_max_points: float | None = None
@@ -234,8 +234,11 @@ class FamilyAdminController(BaseEventAdminController):
                             data, 'players_show_unpaired'
                         )
                     case 'ranking':
-                        ranking_crosstable = WebContext.form_data_to_bool(
-                            data, field := 'ranking_crosstable'
+                        ranking_crosstable = (
+                            WebContext.form_data_to_bool(
+                                data, field := 'ranking_crosstable'
+                            )
+                            or False
                         )
                         try:
                             ranking_round = WebContext.form_data_to_int(
@@ -378,7 +381,7 @@ class FamilyAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
-                    ranking_crosstable: bool | None = None
+                    ranking_crosstable: bool = False
                     ranking_round: int | None = None
                     ranking_min_points: float | None = None
                     ranking_max_points: float | None = None

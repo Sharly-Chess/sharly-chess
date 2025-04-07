@@ -18,7 +18,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
-from data.util import ScreenType
+from utils.enum import ScreenType
 from web.controllers.user.base_user_controller import (
     BaseUserController,
     UserWebContext,

@@ -18,7 +18,7 @@ from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.board import Board
 from data.result import Result as DataResult
-from data.util import Result as UtilResult
+from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredEvent,
@@ -37,7 +37,7 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
-    from database.sqlite.migration import MigrationManager
+    from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
 
@@ -54,7 +54,7 @@ class EventDatabase(MigrationDatabase):
         return cls(file.stem, write)
 
     @cached_property
-    def migration_managers(self) -> list['MigrationManager']:
+    def migration_managers(self) -> list['DatabaseMigrationManager']:
         from database.sqlite.migration import DatabaseMigrationManager
 
         return [DatabaseMigrationManager(self, migrations)] + (
@@ -97,9 +97,9 @@ class EventDatabase(MigrationDatabase):
         yml_file: Path,
         dict_path: str,
         supposed_dict: dict,
-        mandatory_fields: list[str] = None,
-        optional_fields: list[str] = None,
-        field_type: type = None,
+        mandatory_fields: list[str] | None = None,
+        optional_fields: list[str] | None = None,
+        field_type: type | None = None,
         empty_allowed: bool = True,
     ):
         """Checks that the given dictionary follows assumptions.
@@ -491,7 +491,7 @@ class EventDatabase(MigrationDatabase):
                         results_limit: int | None = None
                         results_max_age: int | None = None
                         results_tournament_ids: list[int] = []
-                        ranking_crosstable: bool | None = None
+                        ranking_crosstable: bool = False
                         background_image: str | None = None
                         background_color: str | None = None
                         match type_:
@@ -528,7 +528,7 @@ class EventDatabase(MigrationDatabase):
                                     results_tournament_ids = []
                             case 'ranking':
                                 ranking_crosstable: bool = screen_dict.get(
-                                    'ranking_crosstable', None
+                                    'ranking_crosstable', False
                                 )
                             case 'image':
                                 background_image: str = screen_dict.get(
@@ -674,7 +674,7 @@ class EventDatabase(MigrationDatabase):
                         ]
                         input_exit_button: bool | None = None
                         players_show_unpaired: bool | None = None
-                        ranking_crosstable: bool | None = None
+                        ranking_crosstable: bool = False
                         match type_:
                             case 'boards':
                                 pass
@@ -1727,14 +1727,14 @@ class EventDatabase(MigrationDatabase):
             type=row['type'],
             public=cls.load_bool_from_database_field(row['public']),
             tournament_id=row['tournament_id'],
-            input_exit_button=cls.load_bool_from_database_field(
+            input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
-            players_show_unpaired=cls.load_bool_from_database_field(
+            players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
             ranking_crosstable=cls.load_bool_from_database_field(
-                row.get('ranking_crosstable', None)
+                row.get('ranking_crosstable')
             ),
             ranking_round=row.get('ranking_round', None),
             ranking_min_points=row.get('ranking_min_points', None),
@@ -1889,14 +1889,14 @@ class EventDatabase(MigrationDatabase):
             public=cls.load_bool_from_database_field(row['public']),
             columns=row['columns'],
             font_size=row['font_size'],
-            menu_link=cls.load_bool_from_database_field(row['menu_link']),
+            menu_link=cls.load_bool_or_none_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
             menu=row['menu'],
             timer_id=row['timer_id'],
-            input_exit_button=cls.load_bool_from_database_field(
+            input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
-            players_show_unpaired=cls.load_bool_from_database_field(
+            players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
             results_limit=row['results_limit'],
@@ -1905,7 +1905,7 @@ class EventDatabase(MigrationDatabase):
                 row['results_tournament_ids']
             ),
             ranking_crosstable=cls.load_bool_from_database_field(
-                row.get('ranking_crosstable', None)
+                row.get('ranking_crosstable')
             ),
             ranking_round=row.get('ranking_round', None),
             ranking_min_points=row.get('ranking_min_points', None),
@@ -2003,7 +2003,7 @@ class EventDatabase(MigrationDatabase):
             else None,
             stored_screen.ranking_crosstable
             if stored_screen.type == 'ranking'
-            else None,
+            else False,
             stored_screen.ranking_round if stored_screen.type == 'ranking' else None,
             stored_screen.ranking_min_points
             if stored_screen.type == 'ranking'

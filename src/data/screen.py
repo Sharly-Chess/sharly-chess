@@ -3,7 +3,7 @@ import weakref
 from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
@@ -14,7 +14,7 @@ from common.papi_web_config import PapiWebConfig
 from data.result import Result
 from data.screen_set import ScreenSet
 from data.timer import Timer
-from data.util import ScreenType
+from utils.enum import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 
@@ -32,7 +32,7 @@ class Screen:
         self,
         event: 'Event',
         stored_screen: StoredScreen | None = None,
-        family: 'Family | None' = None,
+        family: Optional['Family'] = None,
         family_part: int | None = None,
     ):
         if stored_screen is None:
@@ -618,7 +618,7 @@ class Screen:
         match self.type:
             case ScreenType.RANKING:
                 if self.stored_screen:
-                    return bool(self.stored_screen.ranking_crosstable)
+                    return self.stored_screen.ranking_crosstable
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')

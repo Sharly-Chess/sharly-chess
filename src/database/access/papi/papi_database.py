@@ -8,9 +8,8 @@ from typing import NamedTuple, Pattern
 from common.logger import get_logger
 from data.pairing import Pairing
 from data.player import Player, Federation, Club
-from data.tie_break import AbstractTieBreak
-from data.tie_break_managers import PapiTieBreakManager
-from data.util import (
+from data.tie_breaks import TieBreak, PapiTieBreakManager
+from utils.enum import (
     Result,
     TournamentPairing,
     PlayerGender,
@@ -35,7 +34,7 @@ class TournamentInfo(NamedTuple):
     rating: TournamentRating
     rating_limit1: int
     rating_limit2: int
-    tie_breaks: list[AbstractTieBreak]
+    tie_breaks: list[TieBreak]
     point_value_type: PointValueType
     location: str
     start_date: str
@@ -80,7 +79,7 @@ class PapiDatabase(AccessDatabase):
         rating_limit1: int = int(self._read_var('EloBase1'))
         rating_limit2: int = int(self._read_var('EloBase2'))
         tie_break_type_by_id = PapiTieBreakManager.type_by_papi_id()
-        tie_breaks: list[AbstractTieBreak] = []
+        tie_breaks: list[TieBreak] = []
         for index in range(1, 4):
             papi_id = self._read_var(f'Dep{index}')
             if tie_break_type := tie_break_type_by_id.get(papi_id, None):
@@ -213,17 +212,13 @@ class PapiDatabase(AccessDatabase):
             if pairing.opponent_id
             else None
         )
-        result = (
-            pairing.result.to_papi_value
-            if pairing.result
-            else Result.NO_RESULT.to_papi_value
-        )
+        result = pairing.result.to_papi_value
         self._execute(
             f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
             (pairing.color_papi_value, opponent_id, result, player.ref_id),
         )
 
-    def update_tie_breaks(self, tie_breaks: list[AbstractTieBreak]):
+    def update_tie_breaks(self, tie_breaks: list[TieBreak]):
         for key in ('Dep1', 'Dep2', 'Dep3'):
             while tie_breaks and tie_breaks[0].papi_id is None:
                 tie_breaks.pop(0)

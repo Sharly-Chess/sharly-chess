@@ -9,7 +9,7 @@ from common import DEVEL_ENV, unicode_normalize
 from common.exception import PapiWebException
 from common.i18n import ngettext, _
 from common.network import NetworkMonitor
-from data.util import PlayerRatingType, TournamentRating
+from utils.enum import PlayerRatingType, TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer

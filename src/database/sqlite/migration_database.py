@@ -62,7 +62,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         self.execute('SELECT `migration` FROM `metadata`')
         return self.fetchone()['migration']
 
-    def set_migration(self, migration: int):
+    def set_migration(self, migration: str):
         self.execute('UPDATE `metadata` SET `migration` = ?', (migration,))
 
     def get_version(self) -> Version:

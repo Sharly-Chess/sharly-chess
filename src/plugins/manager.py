@@ -5,7 +5,7 @@ from pluggy import PluginManager  # type: ignore
 
 from common import APP_NAME
 from plugins.hookspec import AppHookSpecs
-from plugins.utils import AbstractPlugin
+from plugins.utils import Plugin
 
 
 class AppPluginManager(PluginManager):
@@ -15,7 +15,7 @@ class AppPluginManager(PluginManager):
     """
 
     @cached_property
-    def all_plugins(self) -> list[AbstractPlugin]:
+    def all_plugins(self) -> list[Plugin]:
         from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.ffe.ffe import FfePlugin
 
@@ -25,7 +25,7 @@ class AppPluginManager(PluginManager):
         ]
 
     @property
-    def enabled_plugins(self) -> list[AbstractPlugin]:
+    def enabled_plugins(self) -> list[Plugin]:
         return [plugin for plugin in self.all_plugins if plugin.is_enabled]
 
     @property

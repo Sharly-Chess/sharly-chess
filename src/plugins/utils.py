@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 
 from packaging.version import Version
 
-from data.util import IdentifiableEntity
-
+from utils.entity import IdentifiableEntity
 from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
@@ -77,7 +76,7 @@ class PluginUtils:
 
 
 class PluginContext:
-    def __init__(self, plugin: 'AbstractPlugin'):
+    def __init__(self, plugin: 'Plugin'):
         from database.sqlite.config.config_database import ConfigDatabase
         from database.sqlite.config.config_store import StoredPlugin
 
@@ -94,7 +93,7 @@ class PluginContext:
         self.stored_plugin = stored_plugin
 
 
-class AbstractPlugin(IdentifiableEntity, ABC):
+class Plugin(IdentifiableEntity, ABC):
     def __init__(self):
         self.context: PluginContext = PluginContext(self)
 
@@ -127,6 +126,7 @@ class AbstractPlugin(IdentifiableEntity, ABC):
 
     @property
     def is_enabled(self) -> bool:
+        assert self.context.stored_plugin is not None
         return self.context.stored_plugin.is_enabled
 
     @property

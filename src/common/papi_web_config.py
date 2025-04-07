@@ -7,7 +7,7 @@ from typing import overload
 
 import jinja2
 import litestar
-import pyodbc
+import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
@@ -25,7 +25,7 @@ from common.logger import (
 )
 from common.singleton import Singleton
 from data.player import Federation
-from data.util import Result
+from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 

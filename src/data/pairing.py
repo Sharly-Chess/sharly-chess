@@ -5,7 +5,7 @@ from typing import Callable
 from trf.Player import Game as TrfGame
 from common.logger import get_logger
 
-from data.util import Result, BoardColor
+from utils.enum import Result, BoardColor
 
 logger: Logger = get_logger()
 
@@ -16,7 +16,7 @@ class Pairing:
 
     color: BoardColor | None = None
     opponent_id: int | None = None
-    result: Result | None = None
+    result: Result = Result.NO_RESULT
 
     @property
     def forfeit(self) -> bool:
