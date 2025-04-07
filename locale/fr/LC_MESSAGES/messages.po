@@ -237,7 +237,7 @@ msgid "Alert message:"
 msgstr "Message d'alerte :"
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
-msgstr "Tous les ports cadidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
+msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
 msgid "All the players intended to play the coming round did check-in."
 msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
