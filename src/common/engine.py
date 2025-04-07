@@ -1,6 +1,5 @@
 import filecmp
 import json
-import logging
 import re
 import shutil
 import time
@@ -8,7 +7,6 @@ import webbrowser
 import zipfile
 from datetime import datetime
 from json import JSONDecodeError
-from logging import Logger
 from pathlib import Path
 from typing import Any
 
@@ -20,7 +18,6 @@ from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DE
 from common.i18n import _
 from common.logger import (
     get_logger,
-    configure_logger,
     input_interactive,
     print_interactive_input,
     print_interactive_info,
@@ -34,8 +31,7 @@ from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 
-logger: Logger = get_logger()
-configure_logger(logging.INFO)
+logger = get_logger()
 
 
 class Engine:
@@ -583,10 +579,9 @@ class Engine:
                 return None
             data: str = response.content.decode()
             logger.debug(
-                'Data received (%d bytes, code %d): %s',
+                'Data received (%d bytes, code %d)',
                 len(data),
                 response.status_code,
-                data,
             )
             try:
                 entries: list[dict[str, Any]] = json.loads(data)

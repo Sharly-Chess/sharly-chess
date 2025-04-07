@@ -8,11 +8,12 @@ from string import capwords
 
 from babel import Locale
 
-from common import get_logger, BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES
 from common.logger import (
     print_interactive_error,
     print_interactive_warning,
     input_interactive,
+    get_logger,
 )
 
 logger: Logger = get_logger()

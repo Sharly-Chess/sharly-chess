@@ -1,18 +1,14 @@
-import logging
 import time
 from typing import TYPE_CHECKING
 
 from litestar.contrib.htmx.request import HTMXRequest
 
-from common import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.player import Federation, Club
 from utils.enum import PlayerGender, PlayerCategory
 
 if TYPE_CHECKING:
     from data.event import Event
-
-logger: logging.Logger = get_logger()
 
 
 class SessionHandler:

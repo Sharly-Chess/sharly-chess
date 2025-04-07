@@ -1,4 +1,3 @@
-from logging import Logger
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
@@ -15,7 +14,6 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.input_output import (
@@ -41,8 +39,6 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
-
-logger: Logger = get_logger()
 
 
 class TournamentAdminWebContext(BaseEventAdminWebContext):

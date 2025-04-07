@@ -3,12 +3,10 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from logging import Logger
 from typing import TYPE_CHECKING, Any, Self, Callable, SupportsFloat, Optional
 from trf import Player as TrfPlayer
 
 from common.i18n import _
-from common.logger import get_logger
 from data.pairing import Pairing
 from utils.enum import (
     PlayerGender,
@@ -24,8 +22,6 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.tournament import Tournament
     from data.tie_breaks.tie_breaks import SupportsRichComparison
-
-logger: Logger = get_logger()
 
 
 @dataclass(frozen=True)

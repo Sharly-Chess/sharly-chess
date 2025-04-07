@@ -7,8 +7,9 @@ import threading
 from sqlite3 import OperationalError, IntegrityError
 from typing import override
 
-from common import TMP_DIR, get_logger
+from common import TMP_DIR
 from common.i18n import _
+from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.local_source_database.actions import OutdatedAction, NotifOutdatedAction

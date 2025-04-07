@@ -2,14 +2,12 @@ import fnmatch
 import weakref
 from collections.abc import Iterator
 from functools import cached_property
-from logging import Logger
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.background import inline_image_url
 from common.i18n import _
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.result import Result
 from data.screen_set import ScreenSet
@@ -21,8 +19,6 @@ from database.sqlite.event.event_store import StoredScreen
 if TYPE_CHECKING:
     from data.event import Event
     from data.family import Family
-
-logger: Logger = get_logger()
 
 
 class Screen:

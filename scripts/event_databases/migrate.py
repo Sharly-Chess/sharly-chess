@@ -7,10 +7,10 @@ from plugins.manager import plugin_manager  # Noqa
 
 from common.exception import PapiWebException
 from common.logger import (
-    configure_logger,
     print_interactive_info,
     print_interactive_error,
     print_interactive_success,
+    set_console_log_level,
 )
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         else:
             migration = args.migration
 
-    configure_logger(logging.DEBUG)
+    set_console_log_level(logging.DEBUG)
     for database in databases:
         with database:
             try:

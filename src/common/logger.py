@@ -1,36 +1,82 @@
-import sys
-from contextlib import suppress
-from logging import Logger, getLogger, StreamHandler
-from colorlog import ColoredFormatter
+import logging
+from logging import Logger, getLogger
+from logging.config import dictConfig
+
 from colorama import Fore, Style
 
-logger: Logger = getLogger()
+from common import APP_NAME, LOGS_DIR
 
-
-# https://github.com/borntyping/python-colorlog
-def configure_logger(level: int):
-    """Initialize the logger configuration."""
-    handler: StreamHandler = StreamHandler(sys.stdout)
-    handler.setFormatter(
-        ColoredFormatter(
-            # fmt='%(log_color)s%(levelname)-8s %(message)s%(reset)s',
-            fmt='%(log_color)s%(message)s%(reset)s',
-            datefmt=None,
-            reset=True,
-            log_colors={
-                'DEBUG': 'white',  # 'cyan',
+LOGGING_CONFIG = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'colored': {
+            '()': 'colorlog.ColoredFormatter',
+            'fmt': '%(log_color)s%(message)s%(reset)s',
+            'datefmt': None,
+            'reset': True,
+            'log_colors': {
+                'DEBUG': 'white',
                 'INFO': 'light_white',
                 'WARNING': 'yellow',
                 'ERROR': 'red',
                 'CRITICAL': 'red,bg_light_white',
             },
-            secondary_log_colors={},
-            style='%',
-        )
-    )
-    logger.handlers.clear()
-    logger.addHandler(handler)
-    logger.setLevel(level)
+            'secondary_log_colors': {},
+            'style': '%',
+        },
+        'standard': {
+            'format': '%(asctime)s %(levelname)-10s%(message)s',
+            'datefmt': '%d/%m/%y %H:%M',
+            'style': '%',
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': logging.INFO,
+            'formatter': 'colored',
+            'stream': 'ext://sys.stdout',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'level': logging.DEBUG,
+            'formatter': 'standard',
+            'filename': str(LOGS_DIR / f'{APP_NAME}.log'),
+            'maxBytes': 10 * 1024 * 1024,
+            'backupCount': 5,
+        }
+    },
+    'loggers': {
+        APP_NAME: {
+            'handlers': ['console', 'file'],
+            'level': logging.DEBUG,
+            'propagate': False,
+        },
+        'litestar': {
+            'handlers': ['console', 'file'],
+            'level': logging.INFO,
+        },
+        'uvicorn': {
+            'handlers': ['console', 'file'],
+            'level': logging.INFO,
+            'propagate': False
+        },
+        'uvicorn.error': {
+            'handlers': ['console', 'file'],
+            'level': logging.INFO,
+            'propagate': False
+        },
+        'uvicorn.access': {
+            'handlers': ['console', 'file'],
+            'level': logging.INFO,
+            'propagate': False
+        }
+    },
+}
+
+logging.config.dictConfig(LOGGING_CONFIG)
+logger: Logger = getLogger(APP_NAME)
 
 
 def get_logger() -> Logger:
@@ -38,9 +84,16 @@ def get_logger() -> Logger:
     return logger
 
 
+def set_console_log_level(level: int):
+    LOGGING_CONFIG['handlers']['console']['level'] = level  # type: ignore
+    logging.config.dictConfig(LOGGING_CONFIG)
+    global logger
+    logger = getLogger(APP_NAME)
+
+
 def __flush_logger():
-    with suppress(IndexError):
-        logger.handlers[0].flush()
+    for handler in logger.handlers:
+        handler.flush()
 
 
 def print_interactive_info(string: str, end='\n'):

@@ -1,5 +1,4 @@
 from contextlib import suppress
-from logging import Logger
 from typing import Annotated, Any
 
 from litestar import get
@@ -12,7 +11,6 @@ from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
 from common.exception import PapiWebException
 from common.i18n import _
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
@@ -24,8 +22,6 @@ from web.controllers.user.base_user_controller import (
     UserWebContext,
 )
 from web.messages import Message
-
-logger: Logger = get_logger()
 
 
 class EventUserWebContext(UserWebContext):

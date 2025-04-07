@@ -1,12 +1,8 @@
 from functools import total_ordering
-from logging import Logger
 from dataclasses import dataclass
 
 from common import format_timestamp_time
-from common.logger import get_logger
 from utils.enum import Result as ResultEnum
-
-logger: Logger = get_logger()
 
 
 @dataclass

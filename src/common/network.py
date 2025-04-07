@@ -6,8 +6,8 @@ from logging import Logger
 import time
 from threading import Thread
 
-from common import get_logger
 from common.i18n import _
+from common.logger import get_logger
 
 logger: Logger = get_logger()
 

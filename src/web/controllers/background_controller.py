@@ -1,15 +1,10 @@
-from logging import Logger
-
 import validators
 from litestar import get
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.enums import MediaType
 
 from common.background import inline_image_url
-from common.logger import get_logger
 from web.controllers.base_controller import WebContext, BaseController
-
-logger: Logger = get_logger()
 
 
 class BackgroundWebContext(WebContext):

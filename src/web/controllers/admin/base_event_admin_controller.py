@@ -1,5 +1,4 @@
 import logging
-from logging import Logger
 from typing import Annotated, Any
 
 from litestar.contrib.htmx.request import HTMXRequest
@@ -10,7 +9,6 @@ from litestar.response import Template
 
 from common.exception import PapiWebException
 from common.i18n import _
-from common.logger import get_logger
 from data.event import Event
 from data.loader import EventLoader
 from web.controllers.admin.base_admin_controller import (
@@ -18,8 +16,6 @@ from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
 )
 from web.messages import Message
-
-logger: Logger = get_logger()
 
 
 class BaseEventAdminWebContext(AdminWebContext):

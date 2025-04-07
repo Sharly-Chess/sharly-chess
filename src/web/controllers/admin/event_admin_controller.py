@@ -1,5 +1,4 @@
 import csv
-from logging import Logger
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
 
@@ -15,7 +14,6 @@ from litestar_htmx import ClientRedirect
 from pyexcel_ods3 import save_data
 
 from common.i18n import _
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.loader import EventLoader
 from data.player import Player
@@ -44,8 +42,6 @@ from web.urls import (
     admin_event_config_url,
     admin_url,
 )
-
-logger: Logger = get_logger()
 
 
 class EventAdminController(BaseEventAdminController):

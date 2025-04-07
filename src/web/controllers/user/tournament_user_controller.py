@@ -1,6 +1,5 @@
 from contextlib import suppress
 from io import BytesIO
-from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
 from zipfile import ZipInfo, ZipFile
@@ -14,7 +13,6 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from common.logger import get_logger
 from data.board import Board
 from data.loader import EventLoader
 from data.player import Player
@@ -30,8 +28,6 @@ from web.controllers.user.base_screen_user_controller import (
 )
 from web.messages import Message
 from web.session import SessionHandler
-
-logger: Logger = get_logger()
 
 
 class TournamentUserWebContext(ScreenUserWebContext):

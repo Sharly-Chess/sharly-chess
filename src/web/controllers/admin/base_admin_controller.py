@@ -1,6 +1,5 @@
 import time
 from datetime import datetime
-from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -12,7 +11,6 @@ from litestar.params import Body
 
 from common import REQUEST_TIMEOUT, format_timestamp_date
 from common.i18n import _, ngettext
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
@@ -20,8 +18,6 @@ from utils.enum import Result
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
-
-logger: Logger = get_logger()
 
 
 class AdminWebContext(WebContext):

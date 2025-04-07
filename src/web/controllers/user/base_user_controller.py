@@ -1,15 +1,11 @@
-from logging import Logger
 from typing import Annotated, Any
 
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from web.controllers.base_controller import BaseController, WebContext
-
-logger: Logger = get_logger()
 
 
 class UserWebContext(WebContext):

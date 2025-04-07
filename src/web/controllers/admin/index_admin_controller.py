@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import Annotated, Any
 
 from data.loader import ArchiveLoader, EventLoader
@@ -21,7 +20,6 @@ from common.i18n import (
     trusted_locales,
     untrusted_locales,
 )
-from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
@@ -48,8 +46,6 @@ from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 from web.urls import admin_event_url
-
-logger: Logger = get_logger()
 
 
 class IndexAdminController(BaseAdminController):

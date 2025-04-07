@@ -1,6 +1,5 @@
 from functools import partial
 from time import time, sleep
-from logging import Logger
 from pathlib import Path
 
 from plugins.ffe import PLUGIN_NAME
@@ -8,7 +7,6 @@ import validators
 
 from common.i18n import _, ngettext
 from common.logger import (
-    get_logger,
     print_interactive_input,
     input_interactive,
     print_interactive_warning,
@@ -24,7 +22,6 @@ from utils.enum import NeedsUpload
 from plugins.ffe.engine.ffe_session import FFESession
 from plugins.utils import PluginUtils
 
-logger: Logger = get_logger()
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
