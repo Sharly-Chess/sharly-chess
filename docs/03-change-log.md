@@ -21,6 +21,7 @@
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois
 - Correction d'un bug empêchant l'affichage et la modification des écrans lorsque le numéro du premier échiquier est supérieur au nombre d'échiquiers
+- Amélioration des logs et archivage sur disque
 
 ## Version 2.4.18 - 23 décembre 2024
 - Ajout des écrans par défaut à la création d'un tournoi
