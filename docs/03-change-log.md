@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.1 - 8 avril 2025
+- Correction d'un bug au lancement de l'application
+
 ## Version 2.5.0 - 7 avril 2025
 - Passage en multilingue anglais et français
 - Refonte complète de l'interface web
