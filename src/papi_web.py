@@ -10,7 +10,7 @@ try:
         from plugins.utils import PluginEngineArgument
 
     from common.i18n import _
-    from common.logger import print_interactive_warning, print_interactive_error
+    from common.logger import print_interactive_warning
 
 
     # undocumented feature to start from a different folder and work with different configurations
@@ -61,6 +61,8 @@ try:
     except KeyboardInterrupt:
         pass
 except Exception:
+    from common.logger import print_interactive_error
+
     print_interactive_error(traceback.format_exc())
     print_interactive_error(_('An error occurred, press Enter to end.'))
     input()
