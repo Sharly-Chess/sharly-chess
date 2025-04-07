@@ -94,6 +94,7 @@ def build_exe():
         '--hiddenimport=web',
         '--hiddenimport=babel.numbers',
         '--hiddenimport=pyexcel_io.writers',
+        '--hiddenimport=colorlog',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
         '--optimize',
