@@ -196,7 +196,7 @@ def build_exe():
 
 def create_project():
     papi_web_config: PapiWebConfig = PapiWebConfig()
-    print_interactive_info(f'Adding data from folder {PROJECT_DIR} from {DATA_DIR}...')
+    print_interactive_info(f'Adding data from folder {PROJECT_DIR} to {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     bin_dir: Path = PROJECT_DIR / 'bin'
     bin_dir.mkdir(parents=True, exist_ok=True)
