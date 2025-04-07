@@ -119,7 +119,7 @@ class SqlServer:
             raise PapiWebException(error) from e
         except TimeoutError as e:
             NetworkMonitor.set_connected(False)
-            error: str = _('Connection to the FFE server failed: {error}.').format(
+            error: str = _('Connection to the server failed: {error}.').format(
                 error=_('timeout')
             )
             logger.error(error)
