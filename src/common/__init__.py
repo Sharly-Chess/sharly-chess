@@ -49,7 +49,7 @@ EVENTS_FOLDER: str = 'events'
 """ The event directory. """
 EVENTS_DIR: Path = Path(EVENTS_FOLDER)
 
-LOGS_DIR = Path('logs')
+LOGS_DIR: Path = Path('logs')
 
 
 for directory in (EVENTS_DIR, TMP_DIR, LOGS_DIR):
