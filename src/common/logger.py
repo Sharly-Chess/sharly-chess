@@ -43,8 +43,8 @@ LOGGING_CONFIG = {
             'level': logging.DEBUG,
             'formatter': 'standard',
             'filename': str(LOGS_DIR / f'{APP_NAME}.log'),
-            'maxBytes': 10 * 1024 * 1024,
-            'backupCount': 5,
+            'maxBytes': 500 * 1024,
+            'backupCount': 10,
         }
     },
     'loggers': {
