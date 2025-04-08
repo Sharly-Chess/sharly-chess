@@ -59,7 +59,9 @@ try:
 except OSError as error:
     input(
         f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}\n'
-        'Try creating the directory and/or file manually.'
+        f'Write permission is most likely missing from '
+        f'[{LOG_FILE.parent.parent.absolute()}].\n'
+        f'Check the permissions then try again.'
     )
     sys.exit(1)
 
