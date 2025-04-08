@@ -21,7 +21,6 @@ from common.logger import (
     print_interactive_warning,
     LOGGING_CONFIG,
     get_logger,
-    set_console_log_level,
 )
 from common.papi_web_config import PapiWebConfig
 from common.network import NetworkMonitor
@@ -58,9 +57,6 @@ class ServerEngine(Engine):
         self.debug = debug
         if self.updated:
             return
-        config = PapiWebConfig()
-        set_locale(PapiWebConfig().locale)
-        set_console_log_level(config.log_level)
 
         logger.debug('ODBC drivers found:')
         for driver in pyodbc.drivers():
@@ -128,7 +124,7 @@ class ServerEngine(Engine):
         NetworkMonitor.start_monitoring()
 
         logging_config = LOGGING_CONFIG
-        logging_config['handlers']['console']['level'] = config.log_level  # type: ignore
+        logging_config['handlers']['console']['level'] = PapiWebConfig().log_level  # type: ignore
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,

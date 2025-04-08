@@ -36,7 +36,7 @@
         <button
             class="btn btn-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="#modal-wrapper"
+            hx-target="body"
             hx-indicator="#please-wait"
             preload
             data-bs-toggle="modal"

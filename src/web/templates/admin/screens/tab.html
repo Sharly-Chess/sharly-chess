@@ -76,7 +76,7 @@
                 <li
                     class="dropdown-item text-start cursor-pointer"
                     hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
-                    hx-target="#modal-wrapper"
+                    hx-target="body"
                     hx-indicator="#please-wait"
                     preload
                     data-bs-toggle="modal"

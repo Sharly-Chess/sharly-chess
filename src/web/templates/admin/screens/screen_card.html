@@ -176,7 +176,7 @@
             <button
                 class="btn btn-sm btn-outline-primary"
                 hx-get="{{ url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="#modal-wrapper"
+                hx-target="body"
                 hx-indicator="#please-wait"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
@@ -200,7 +200,7 @@
             <button
                 class="btn btn-sm btn-outline-primary"
                 hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="#modal-wrapper"
+                hx-target="body"
                 hx-indicator="#please-wait"
                 preload
                 data-bs-toggle="modal"
@@ -235,7 +235,7 @@
             <button
                 class="btn btn-sm btn-outline-primary"
                 hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="#modal-wrapper"
+                hx-target="body"
                 hx-indicator="#please-wait"
                 preload
                 data-bs-toggle="modal"
@@ -248,7 +248,7 @@
             <button
                 class="btn btn-sm btn-outline-danger"
                 hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="#modal-wrapper"
+                hx-target="body"
                 hx-indicator="#please-wait"
                 preload
                 data-bs-toggle="modal"

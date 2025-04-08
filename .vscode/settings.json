@@ -164,5 +164,8 @@
   },
   "python.analysis.typeCheckingMode": "off",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": false
+  "editor.formatOnPaste": false,
+  "[jinja]": {
+      "editor.formatOnSave": false
+  }
 }
