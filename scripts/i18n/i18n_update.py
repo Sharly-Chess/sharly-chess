@@ -28,7 +28,6 @@ from common.i18n import (
     DEFAULT_LOCALE,
     locale_localized_name,
     locale_flag_url,
-    trusted_locales,
     translators,
 )
 from common.logger import (
@@ -521,7 +520,7 @@ class I18nUpdater:
         print_interactive_info('Checking trusted locales...')
         perfect: bool = True
         for locale, locale_info in self.locale_infos.items():
-            if locale in trusted_locales:
+            if locale in self.trusted_locales:
                 if locale_info.empty_mandatory_messages:
                     print_interactive_error(
                         'Mandatory translations are missing for trusted locales.'
@@ -529,7 +528,7 @@ class I18nUpdater:
                     perfect = False
                     break
         for locale, locale_info in self.locale_infos.items():
-            if locale in trusted_locales:
+            if locale in self.trusted_locales:
                 if not locale_info.default and locale_info.empty_optional_messages:
                     print_interactive_warning(
                         'Translations are missing for trusted locales.'
@@ -537,7 +536,7 @@ class I18nUpdater:
                     perfect = False
                     break
         for locale, locale_info in self.locale_infos.items():
-            if locale in trusted_locales:
+            if locale in self.trusted_locales:
                 if locale_info.flagged_messages:
                     print_interactive_warning(
                         'Translations are flagged for trusted locales.'
