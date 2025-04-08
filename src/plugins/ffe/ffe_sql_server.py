@@ -4,7 +4,6 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
-from common import BASE_DIR
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
@@ -12,6 +11,7 @@ from common.network import NetworkMonitor
 from data.player import Player, Federation, Club
 from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
+from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.util import PlayerFFELicence
 
@@ -19,7 +19,7 @@ logger: Logger = get_logger()
 
 
 class FFESqlServer(SqlServer):
-    CREDENTIALS_FILE: Path = BASE_DIR / 'src' / 'plugins' / 'ffe' / '.credentials'
+    CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 
     def __init__(
         self,
