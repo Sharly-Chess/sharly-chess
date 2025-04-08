@@ -2421,17 +2421,6 @@ msgstr "Bibliotheken"
 # nein, nein. nein, nein, nein. nein, nein. nein. nein, nein. nein. nein,
 # nein. nein, nein. nein, nein. nein. nein!] is much too long compared to
 # initial [Lic.]
-# Error: translation [Lic. - Nein, nein, nein, nein, nein, nein, nein, nein,
-# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
-# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
-# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
-# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
-# nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein, nein,
-# nein, nein, nein, nein, nein, nein. nein, nein, nein, nein, nein, nein.
-# nein, nein, nein. nein, nein, nein. nein, nein. nein, nein, nein. nein,
-# nein, nein. nein, nein, nein. nein, nein. nein. nein, nein. nein. nein,
-# nein. nein, nein. nein, nein. nein. nein!] is much too long compared to
-# initial [Lic.]
 #, ai_translation
 msgid "Lic."
 msgstr ""
@@ -3025,7 +3014,6 @@ msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Zahlen {first} und {last} sind nicht kompatibel ({first} > {last})."
 
 # Error: translation [In Ordnung.] is much too long compared to initial [OK]
-# Error: translation [In Ordnung.] is much too long compared to initial [OK]
 #, ai_translation
 msgid "OK"
 msgstr ""
@@ -3126,8 +3114,6 @@ msgstr "Owed"
 msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
 msgstr "Owed/paid"
 
-# Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
-# compared to initial [Owed:]
 # Error: translation [mit einem Gewicht von mehr als 1 kg] is much too long
 # compared to initial [Owed:]
 #, ai_translation
@@ -4281,6 +4267,10 @@ msgid "The first tournament of the screen, mandatory (it is possible to add othe
 msgstr "Das erste Turnier des Bildschirms, obligatorisch (es ist möglich, weitere Turniere später hinzuzufügen)."
 
 #, ai_translation
+msgid "The following languages are available:"
+msgstr "Folgende Sprachen stehen zur Verfügung:"
+
+#, ai_translation
 msgid "The following players did not check-in:"
 msgstr "Folgende Spieler haben nicht eingecheckt:"
 
@@ -4951,22 +4941,11 @@ msgstr "U"
 # Error: translation [U10
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U10]
-# Error: translation [U10
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U10]
 #, ai_translation
 msgid "U10"
 msgstr ""
 
 # Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
-# is much too long compared to initial [U12]
-# Error: translation [U12 n n s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
-# s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s
 # s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s]
 # is much too long compared to initial [U12]
@@ -4978,21 +4957,10 @@ msgstr ""
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
 # is much too long compared to initial [U14]
-# Error: translation [U14 . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .]
-# is much too long compared to initial [U14]
 #, ai_translation
 msgid "U14"
 msgstr ""
 
-# Error: translation [U16
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U16]
 # Error: translation [U16
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U16]
@@ -5003,16 +4971,10 @@ msgstr ""
 # Error: translation [U18
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U18]
-# Error: translation [U18
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U18]
 #, ai_translation
 msgid "U18"
 msgstr ""
 
-# Error: translation [U20
-# n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
-# is much too long compared to initial [U20]
 # Error: translation [U20
 # n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.n.v.m.]
 # is much too long compared to initial [U20]
@@ -5021,14 +4983,6 @@ msgid "U20"
 msgstr ""
 
 # Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
-# Error: translation [U8 ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
-# ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
-# DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG
 # DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER ENTWICKLUNG DER
 # ENTWICKLUNG DER ENTWICKLUNG] is much too long compared to initial [U8]
@@ -5593,382 +5547,4 @@ msgstr[1] "{recent_updates} Turniere wurden vor weniger als {ffe_upload_delay} S
 #, ai_translation
 msgid "{screen_type}-screen"
 msgstr "{screen_type}-Bildschirm"
-
-#~ msgid "pairings by board"
-#~ msgstr "Paarungen nach Board"
-
-#~ msgid "Zero point bye"
-#~ msgstr ""
-
-#~ msgid "The number of points by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
-#~ msgstr ""
-
-#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
-#~ msgstr ""
-
-#~ msgid "The number of points scored by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "Screen families allow to group screens together."
-#~ msgstr ""
-
-#~ msgid "%(last_name)s %(first_name)s"
-#~ msgstr "%(last_name)s %(first_name)s"
-
-#~ msgid "Skip round"
-#~ msgstr "Runde überspringen"
-
-#~ msgid "Full-point byes are deprecated."
-#~ msgstr "Vollständige Byes werden missbilligt."
-
-#~ msgid "Bye not allowed"
-#~ msgstr "Tschüss nicht erlaubt"
-
-#~ msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-#~ msgstr "Blitz"
-
-#~ msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-#~ msgstr "Fed"
-
-#~ msgid "Full-point bye"
-#~ msgstr "Vollständiges Wiedersehen"
-
-#~ msgid "Players found in the Papi_file : %(num)d"
-#~ msgstr "Spieler gefunden in der Papi_file : %(num)d"
-
-#~ msgid "Paired bye points: %(string)s"
-#~ msgstr "Gepaarte Bye-Punkte: %(string)s"
-
-#~ msgid "Paired bye points:"
-#~ msgstr "Gepaart bis zu den Punkten:"
-
-#~ msgid "The points scored by players who are paired bye."
-#~ msgstr "Die Punkte, die von Spielern, die paarweise."
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-#~ msgstr "In diesem Feld können Sie die Bildschirme angeben, deren Links im Menü der Bildschirme der Familie angezeigt werden. Bildschirmbezeichner müssen durch Kommas getrennt werden, die Schlüsselwörter @family (alle Bildschirme der Familie), @boards (alle Boards Bildschirme), @input (alle Eingabebildschirme), @players (alle Player Bildschirme) sowie die Platzhalter * können verwendet werden. Wenn dieses Feld leer bleibt, wird kein Menü auf den Bildschirmen angezeigt."
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-#~ msgstr "In diesem Feld können Sie die Bildschirme angeben, deren Links im Bildschirmmenü angezeigt werden. Bildschirmkennungen müssen durch Kommas getrennt werden, die Schlüsselwörter @boards (alle Boards Bildschirme), @input (alle Eingabebildschirme), @players (alle Player Bildschirme) sowie die Platzhalter * können verwendet werden. Wenn dieses Feld leer bleibt, wird kein Menü auf dem Bildschirm angezeigt."
-
-#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-#~ msgstr "League"
-
-#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Origin"
-
-#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "FFE"
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
-#~ msgstr "FFE-Lizenz: %(ffe_licence_number)s (abgelaufen)."
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-#~ msgstr "FFE-Lizenz: %(ffe_licence_number)s (Klicken Sie zum Kopieren in die Zwischenablage)."
-
-#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-#~ msgstr "Unbekannter FFE-Lizenztyp [%(ffe_licence)s]."
-
-#~ msgid "Sort the players by origin (federation, league, club)."
-#~ msgstr "Sortieren Sie die Spieler nach Herkunft (Federation, Liga, Verein)."
-
-#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
-#~ msgstr "Option ist veraltet, stattdessen wird die Umgebungsvariable [{var}=1] gesetzt."
-
-#~ msgid "Locale [{locale}] not found."
-#~ msgstr "Locale [{locale}] nicht gefunden."
-
-#~ msgid "Option not set."
-#~ msgstr "Option nicht gesetzt."
-
-#~ msgid "Section not found."
-#~ msgstr "Abschnitt nicht gefunden."
-
-#~ msgid "The following languages are available:"
-#~ msgstr "Folgende Sprachen stehen zur Verfügung:"
-
-#~ msgid "Invalid log level [{level}], by default [{default}]."
-#~ msgstr "Ungültige Protokollebene [{level}], standardmäßig [{default}]."
-
-#~ msgid "Option not set, by default [{default}]."
-#~ msgstr "Option nicht gesetzt, standardmäßig [{default}]."
-
-#~ msgid "Invalid host configuration [{host}], by default [{default}]."
-#~ msgstr "Ungültige Hostkonfiguration [{host}], standardmäßig [{default}]."
-
-#~ msgid "Invalid port [{port}], by default [{default}]."
-#~ msgstr "Ungültiger Port [{port}], standardmäßig [{default}]."
-
-#~ msgid "Invalid delay [{delay}], by default [{default}]"
-#~ msgstr "Ungültige Verzögerung [{delay}], standardmäßig [{default}]"
-
-#~ msgid "Section not found, default configuration set."
-#~ msgstr "Abschnitt nicht gefunden, Standardkonfiguration gesetzt."
-
-#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
-#~ msgstr "Ihre Datei {ini_file} wurde als {ini_file_org} gespeichert."
-
-#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-#~ msgstr "Es konnte nicht gespeichert werden {ini_file} zu {ini_file_org}: {ex}."
-
-#~ msgid "Adding lines to {file}..."
-#~ msgstr "Zeilen hinzufügen zu {file}..."
-
-#~ msgid "[i18n] # Added by Papi-web {version}"
-#~ msgstr "# Hinzugefügt von Papi-web {version}"
-
-#~ msgid "# The line below has been commented by Papi-web {version}"
-#~ msgstr "# Die folgende Zeile wurde von Papi-web kommentiert {version}"
-
-#~ msgid "Your file {ini_file} has been modified."
-#~ msgstr "Ihre Datei {ini_file} wurde geändert."
-
-#~ msgid "Could not write to {ini_file}: {ex}."
-#~ msgstr "Es konnte nicht an {ini_file}: {ex} geschrieben werden."
-
-#~ msgid "Port [{port}] already in use, can not start Papi-web server."
-#~ msgstr "Port [{port}] bereits in Betrieb, kann Papi-Web-Server nicht starten."
-
-#~ msgid "Default federation"
-#~ msgstr ""
-
-#~ msgid "Connections (FFE and ChessEvent)"
-#~ msgstr "Verbindungen (FFE und ChessEvent)"
-
-#~ msgid "Initial time (optional):"
-#~ msgstr "Anfangszeit (optional):"
-
-#~ msgid "Increment (optional):"
-#~ msgstr "Inkrement (fakultativ):"
-
-#~ msgid "Penalty (handicap):"
-#~ msgstr "Strafe (Handicap):"
-
-#~ msgid "Minimal time (handicap):"
-#~ msgstr "Minimale Zeit (Handicap):"
-
-#~ msgid "%t (ranking)"
-#~ msgstr ""
-
-#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-#~ msgstr "Bu."
-
-#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-#~ msgstr "Tr."
-
-#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-#~ msgstr "Me."
-
-#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-#~ msgstr "PS"
-
-#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
-#~ msgstr "Perf"
-
-#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-#~ msgstr "SBh"
-
-#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-#~ msgstr "NW"
-
-#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
-#~ msgstr "Ka."
-
-#~ msgid "Ko. *** ACRONYM FOR KOYA"
-#~ msgstr "Ko."
-
-#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-#~ msgstr "SB"
-
-#~ msgid "Cut Bottom"
-#~ msgstr "Unten schneiden"
-
-#~ msgid "Papi legacy"
-#~ msgstr "Papi-Vermächtnis"
-
-#~ msgid "Sonneborn-Berger"
-#~ msgstr "Sonneborn-Berger"
-
-#~ msgid "Create a player"
-#~ msgstr "Einen Player erstellen"
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Laden Sie die vCards der ausgewählten Spieler (VCF-Format) herunter."
-
-#~ msgid "The FFE database is not available."
-#~ msgstr "Die FFE-Datenbank ist nicht verfügbar."
-
-#~ msgid "Cat."
-#~ msgstr "Katze."
-
-#~ msgid "Cut"
-#~ msgstr "Ausschneiden"
-
-#~ msgid "Cut bottom"
-#~ msgstr "Unterteil schneiden"
-
-#~ msgid "Cut top"
-#~ msgstr "Nach oben schneiden"
-
-#~ msgid "Directory of the Papi file:"
-#~ msgstr "Verzeichnis der Papi-Datei:"
-
-#~ msgid "Do you want Papi-web to create the file?"
-#~ msgstr "Soll Papi-web die Datei erstellen?"
-
-#~ msgid "Error while updating the FFE database."
-#~ msgstr "Fehler beim Aktualisieren der FFE-Datenbank."
-
-#~ msgid "Exclude players"
-#~ msgstr "Spieler ausschließen"
-
-#~ msgid "Fore modifier"
-#~ msgstr "Vormodifikator"
-
-#~ msgid "Limit"
-#~ msgstr "Höchstmenge"
-
-#~ msgid "Missing Papi file"
-#~ msgstr "Fehlende Papi-Datei"
-
-#~ msgid "Name of the Papi file (with no extension):"
-#~ msgstr "Name der Datei Papi (ohne Erweiterung):"
-
-#~ msgid "No split"
-#~ msgstr "Keine Spaltung"
-
-#~ msgid "No, I will do it later"
-#~ msgstr "Nein, ich mache es später."
-
-#~ msgid "Options"
-#~ msgstr "Einstellungen"
-
-#~ msgid "Papi file [{file}] created."
-#~ msgstr "Papi-Datei [{file}] erstellt."
-
-#~ msgid "Papi file has not been created."
-#~ msgstr "Papi-Datei wurde nicht erstellt."
-
-#~ msgid "Papi version: {version}"
-#~ msgstr "Papi-Version: {version}"
-
-#~ msgid "Played modifier"
-#~ msgstr "Abgespielter Modifikator"
-
-#~ msgid "Player updates are possible, select the players to update:"
-#~ msgstr "Spieler-Updates sind möglich, wählen Sie die Spieler zu aktualisieren:"
-
-#~ msgid "Please choose the Papi version:"
-#~ msgstr "Bitte wählen Sie die Papi-Version:"
-
-#~ msgid "Please enter the number of the version to recover [{default}]: "
-#~ msgstr "Bitte geben Sie die Nummer der zu erholenden Version ein [{default}]:"
-
-#~ msgid "Storing data..."
-#~ msgstr "Daten speichern..."
-
-#~ msgid "The directory of the Papi file, by default %(dir)s."
-#~ msgstr "Das Verzeichnis der Papi-Datei, standardmäßig %(dir)s."
-
-#~ msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
-#~ msgstr "Der Name der Papi-Datei, ohne die Erweiterung .papi (standardmäßig die FFE-Qualifikationsnummer des Turniers, dann die eindeutige ID des Turniers)."
-
-#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-#~ msgstr "Dieses Programm sollte nicht direkt gestartet werden, verwenden Sie die Skripte server.bat, ffe.bat und chessevent.bat."
-
-#~ msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-#~ msgstr "Warnung: Papi-Datei [%(path)s] nicht gefunden, viele Funktionen sind deaktiviert."
-
-#~ msgid "YOB"
-#~ msgstr "YOB"
-
-#~ msgid "Yes, create the file"
-#~ msgstr "Ja, die Datei erstellen"
-
-#~ msgid "{number} players written."
-#~ msgstr "{number} Spieler geschrieben."
-
-#~ msgid "Could not download [{url}]: {ex}."
-#~ msgstr "Konnte nicht heruntergeladen werden [{url}]: {ex}."
-
-#~ msgid "Downloading the FFE database..."
-#~ msgstr "Download der FFE-Datenbank..."
-
-#~ msgid "Downloading the FIDE database..."
-#~ msgstr "Download der FIDE-Datenbank..."
-
-#~ msgid "Error while creating the database: {ex}."
-#~ msgstr "Fehler beim Erstellen der Datenbank: {ex}."
-
-#~ msgid "Error while updating the FIDE database."
-#~ msgstr "Fehler beim Aktualisieren der FIDE-Datenbank."
-
-#~ msgid "Not connected, can not create the FFE database."
-#~ msgstr "Nicht verbunden, kann die FFE-Datenbank nicht erstellen."
-
-#~ msgid "Not connected, can not create the FIDE database."
-#~ msgstr "Nicht verbunden, kann die FIDE-Datenbank nicht erstellen."
-
-#~ msgid "Not connected, can not update the FFE database."
-#~ msgstr "Nicht verbunden, kann die FFE-Datenbank nicht aktualisieren."
-
-#~ msgid "Not connected, can not update the FIDE database."
-#~ msgstr "Nicht verbunden, kann die FIDE-Datenbank nicht aktualisieren."
-
-#~ msgid "Storing FFE data..."
-#~ msgstr "FFE-Daten speichern..."
-
-#~ msgid "Storing FIDE data..."
-#~ msgstr "FIDE-Daten speichern..."
-
-#~ msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-#~ msgstr "Die FFE-Datenbank [{file}] ist veraltet ([{days}] Tage), möchten Sie sie aktualisieren (Y/n)?"
-
-#~ msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-#~ msgstr "Die FFE-Datenbank [{file}] wurde nicht gefunden, wollen Sie sie erstellen (Y/n)?"
-
-#~ msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-#~ msgstr "Die FIDE-Datenbank [{file}] ist veraltet ([{days}] Tage), willst du sie aktualisieren (Y/n)?"
-
-#~ msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
-#~ msgstr "Die FIDE-Datenbank [{file}] wurde nicht gefunden, wollen Sie sie erstellen (Y/n)?"
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-#~ msgstr "Turnier [{tournament_uniq_id}] hat nur [{player_count}] Spieler (< [{first}]), Familie ignoriert."
-
-#~ msgid "{family_type}-family"
-#~ msgstr "{family_type}-Familie"
-
-#~ msgid "{number} players written to FFE database."
-#~ msgstr "{number} Spieler geschrieben in FFE-Datenbank."
-
-#~ msgid "{number} players written to FIDE database."
-#~ msgstr "{number} Spieler geschrieben in FIDE-Datenbank."
-
-#~ msgid "Connection to the FFE database failed."
-#~ msgstr "Die Verbindung zur FFE-Datenbank ist fehlgeschlagen."
-
-#~ msgid "Connection to the FFE database failed: {error}."
-#~ msgstr "Die Verbindung zur FFE-Datenbank ist fehlgeschlagen: {error}."
-
-#~ msgid "Connection to the FFE server failed."
-#~ msgstr "Die Verbindung zum FFE-Server ist fehlgeschlagen."
-
-#~ msgid "Connection to the FFE server failed: {error}."
-#~ msgstr "Die Verbindung zum FFE-Server ist fehlgeschlagen: {error}."
-
-#~ msgid "Request to the FFE database failed."
-#~ msgstr "Die Anfrage an die FFE-Datenbank ist fehlgeschlagen."
-
-#~ msgid "Request to the FFE database failed: {error}."
-#~ msgstr "Anfrage an die FFE-Datenbank fehlgeschlagen: {error}."
-
-#~ msgid "An error occurred, press Enter to end."
-#~ msgstr "Ein Fehler ist aufgetreten, drücken Sie Enter, um zu beenden."
-
-#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-#~ msgstr "Möchten Sie ein Upgrade von [{old_version}] auf [{new_version}] [{y_lc}/{n_uc}}] durchführen?"
 
