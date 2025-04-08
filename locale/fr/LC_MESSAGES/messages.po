@@ -3203,8 +3203,8 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-msgid "The FIDE database is not available."
-msgstr "La base de données FIDE n'est pas disponible."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
+msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
 msgstr "L'identifiant l'évènement sur la plateforme ChessEvent (par défaut l'identifiant de l'évènement ChessEvent défini pour l'évènement Papi-web du tournoi)."
@@ -4265,4 +4265,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "The FIDE database is not available."
+#~ msgstr "La base de données FIDE n'est pas disponible."
 

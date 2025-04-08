@@ -4,6 +4,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
+from common import BASE_DIR
 from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
@@ -18,7 +19,7 @@ logger: Logger = get_logger()
 
 
 class FFESqlServer(SqlServer):
-    CREDENTIALS_FILE: Path = Path(__file__).parent / '.credentials'
+    CREDENTIALS_FILE: Path = BASE_DIR / 'src' / 'plugins' / 'ffe' / '.credentials'
 
     def __init__(
         self,
