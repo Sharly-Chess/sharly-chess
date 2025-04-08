@@ -72,6 +72,15 @@ class Club:
         return self.name
 
 
+@dataclass
+class PlayerRating:
+    value: int
+    type: PlayerRatingType
+
+    def __str__(self) -> str:
+        return f'{self.value}{self.type.short_name}'
+
+
 class TournamentPlayer:
     """A class representing a player in a tournament"""
 
@@ -175,8 +184,7 @@ class Player(TournamentPlayer):
         comment: str | None,
         owed: float | None,
         paid: float | None,
-        ratings: dict[TournamentRating, int | None],
-        rating_types: dict[TournamentRating, PlayerRatingType],
+        ratings: dict[TournamentRating, PlayerRating],
         club: Club | None,
         fixed: int | None,
         check_in: bool,
@@ -202,8 +210,7 @@ class Player(TournamentPlayer):
         self.comment: str | None = comment
         self.owed: float | None = owed
         self.paid: float | None = paid
-        self.ratings: dict[TournamentRating, int | None] = ratings
-        self.rating_types: dict[TournamentRating, PlayerRatingType] = rating_types
+        self.ratings: dict[TournamentRating, PlayerRating] = ratings
         self.federation: Federation = federation
         self.club: Club | None = club
         self.fixed: int | None = fixed
@@ -248,22 +255,19 @@ class Player(TournamentPlayer):
     @property
     def estimation(self) -> int:
         if not self.estimated:
-            assert self.tournament is not None
-            return self.ratings[self.tournament.rating] or 0
+            return self.rating
         return self._estimation or 0
 
     @estimation.setter
     def estimation(self, value: int):
         if not self.estimated:
-            assert self.tournament is not None
-            self._estimation = self.ratings[self.tournament.rating] or 0
+            self._estimation = self.rating
         else:
             self._estimation = value
 
     @property
     def estimated(self) -> bool:
-        assert self.tournament is not None
-        return self.rating_types[self.tournament.rating] == PlayerRatingType.ESTIMATED
+        return self.rating_type == PlayerRatingType.ESTIMATED
 
     @property
     def year_of_birth(self) -> int:
@@ -275,17 +279,25 @@ class Player(TournamentPlayer):
 
     @property
     def rating(self) -> int:
-        assert self.tournament is not None
-        return self.ratings[self.tournament.rating] or 0
+        return self._tournament_rating.value
 
     @property
     def rating_type(self) -> PlayerRatingType:
+        return self._tournament_rating.type
+
+    @property
+    def _tournament_rating(self) -> PlayerRating:
         assert self.tournament is not None
-        return self.rating_types[self.tournament.rating]
+        return self.get_rating(self.tournament.rating)
 
     @property
     def point_values(self) -> dict[Result, float] | None:
         return self.tournament.point_values if self.tournament else None
+
+    def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
+        return self.ratings.get(
+            tournament_rating, PlayerRating(0, PlayerRatingType.ESTIMATED)
+        )
 
     def compute_points(self, *, before_round: int):
         """Computes and stores the points scored by the player before round `before_round` (returns None)"""
@@ -525,7 +537,8 @@ class Player(TournamentPlayer):
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
-            f'{self.ratings[rt]}{self.rating_types[rt]}' for rt in TournamentRating
+            f'{self.ratings.get(tournament_rating, '  -  ')}'
+            for tournament_rating in TournamentRating
         )
         return (
             f'(#{self.id} rank={self._rank} ratings={ratings_str} title={self.title.value} gender={self.gender.value} '
