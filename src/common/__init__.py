@@ -49,10 +49,22 @@ EVENTS_FOLDER: str = 'events'
 """ The event directory. """
 EVENTS_DIR: Path = Path(EVENTS_FOLDER)
 
-LOGS_DIR: Path = Path('logs')
+LOG_FILE: Path = Path('logs') / f'{APP_NAME}.log'
 
 
-for directory in (EVENTS_DIR, TMP_DIR, LOGS_DIR):
+try:
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, 'a'):
+        pass
+except OSError as error:
+    input(
+        f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}\n'
+        'Try creating the directory and/or file manually.'
+    )
+    sys.exit(1)
+
+
+for directory in (EVENTS_DIR, TMP_DIR):
     try:
         directory.mkdir(parents=True, exist_ok=True)
     except PermissionError as error:

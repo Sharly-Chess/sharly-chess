@@ -63,6 +63,13 @@ try:
     except KeyboardInterrupt:
         pass
 except Exception:
-    print(traceback.format_exc())
+    message = traceback.format_exc()
+    try:
+        from common.logger import get_logger
+
+        logger = get_logger()
+        logger.error(message)
+    except Exception:
+        print(message)
     print('An error occurred, press Enter to end.')
     input()
