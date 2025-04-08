@@ -126,7 +126,7 @@ class FFESqlServer(SqlServer):
                         row['Fide06']
                     ),
                 },
-                fide_id=int(row['FideCode']) if row['FideCode'] else 0,
+                fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
                 federation=Federation(row['Federation']),
                 club=Club(row['ClubNom']) if row['ClubNom'] else None,
                 fixed=0,
