@@ -53,7 +53,7 @@
                                     label=_('FIDE database:'),
                                     help_text='',
                                     placeholder=_('E.g.: john doe'),
-                                    errors={} if fide_search_available else {'search_fide': _('The FIDE database is not available.'), },
+                                    errors={} if fide_search_available else {'search_fide': _('The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases.'), },
                                     disabled=not fide_search_available,
                                     hx_get=url_for('search-fide', event_uniq_id=admin_event.uniq_id) if fide_search_available else '',
                                     hx_trigger='keyup changed delay:0.2s',

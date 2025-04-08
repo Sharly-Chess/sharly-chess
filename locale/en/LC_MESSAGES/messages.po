@@ -3203,7 +3203,7 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
-msgid "The FIDE database is not available."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
