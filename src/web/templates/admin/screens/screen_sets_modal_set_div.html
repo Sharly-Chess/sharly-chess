@@ -150,7 +150,7 @@
                         <button
                             class="btn btn-sm btn-primary text-nowrap"
                             hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                            hx-target="#modal-wrapper"
+                            hx-target="body"
                             hx-indicator="#please-wait"
                             preload
                             data-bs-toggle="modal"

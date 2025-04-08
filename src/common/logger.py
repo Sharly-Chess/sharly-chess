@@ -4,7 +4,7 @@ from logging.config import dictConfig
 
 from colorama import Fore, Style
 
-from common import APP_NAME, LOGS_DIR
+from common import APP_NAME, LOG_FILE
 
 LOGGING_CONFIG = {
     'version': 1,
@@ -42,7 +42,7 @@ LOGGING_CONFIG = {
             'class': 'logging.handlers.RotatingFileHandler',
             'level': logging.DEBUG,
             'formatter': 'standard',
-            'filename': str(LOGS_DIR / f'{APP_NAME}.log'),
+            'filename': str(LOG_FILE),
             'maxBytes': 500 * 1024,
             'backupCount': 5,
         }
