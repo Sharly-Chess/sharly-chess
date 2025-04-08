@@ -4,6 +4,8 @@
 
 ## Version 2.5.2 - 8 avril 2025
 - Correction d'un bug à la récupération des versions antérieures
+- Correction d'un bug sur la connexion au Serveur SQL de la FFE
+- Correction du script de ``bin/ffe.bat``
 
 ## Version 2.5.1 - 8 avril 2025
 - Correction d'un bug au lancement de l'application
