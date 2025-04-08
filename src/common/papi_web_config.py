@@ -66,7 +66,7 @@ class PapiWebConfig(metaclass=Singleton):
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
-        self.locales: list[str] = trusted_locales
+        self.locales: list[str] = trusted_locales.copy()
         if EXPERIMENTAL_FEATURES:
             self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
