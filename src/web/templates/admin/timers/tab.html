@@ -10,7 +10,7 @@
         <button
             class="btn btn-primary text-nowrap"
             hx-get="{{ url_for('admin-timer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="#modal-wrapper"
+            hx-target="body"
             hx-indicator="#please-wait"
             preload
             data-bs-toggle="modal"
@@ -34,7 +34,7 @@
                 <button
                     class="btn btn-sm btn-outline-primary"
                     hx-get="{{ url_for('admin-default-timers-modal', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="#modal-wrapper"
+                    hx-target="body"
                     hx-indicator="#please-wait"
                     preload
                     data-bs-toggle="modal"
