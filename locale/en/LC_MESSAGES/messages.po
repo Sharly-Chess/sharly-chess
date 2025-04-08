@@ -3298,6 +3298,9 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
+msgid "The following languages are available:"
+msgstr ""
+
 msgid "The following players did not check-in:"
 msgstr ""
 
@@ -4262,10 +4265,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "An error occurred, press Enter to end."
-#~ msgstr ""
-
-#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-#~ msgstr ""
 
