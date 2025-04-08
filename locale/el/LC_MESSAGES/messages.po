@@ -313,10 +313,6 @@ msgid "Allow"
 msgstr "Επιτρέπεται"
 
 #, ai_translation
-msgid "An error occurred, press Enter to end."
-msgstr "Συνέβη ένα σφάλμα, πατήστε Enter μέχρι το τέλος."
-
-#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Κάθε σχόλιο για τον παίκτη (τα σχόλια είναι ορατά μόνο από τους arbiters)."
 
@@ -1171,8 +1167,8 @@ msgid "Do you want to send these custom files to the Papi-web developers to enha
 msgstr "Θέλετε να στείλετε αυτά τα έθιμα αρχεία στους προγραμματιστές Papi-web για να ενισχύσει τις εκδόσεις μελλοντικής εκπλήρωσης [{y_uc}/{n_lc}];"
 
 #, ai_translation
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-msgstr "Θέλετε να αναβαθμιστείτε από [{old_version}] σε [{new_version}] [{y_lc}/{n_uc}};"
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
+msgstr "Θέλετε να αναβαθμιστείτε από [{old_version}] σε [{new_version}] [{y_lc}/{n_uc}];"
 
 #, ai_translation
 msgid "Document:"
@@ -5958,4 +5954,10 @@ msgstr "{screen_type}- οθόνη"
 
 #~ msgid "Request to the FFE database failed: {error}."
 #~ msgstr "Η αίτηση στη βάση δεδομένων FFE απέτυχε: {error}."
+
+#~ msgid "An error occurred, press Enter to end."
+#~ msgstr "Συνέβη ένα σφάλμα, πατήστε Enter μέχρι το τέλος."
+
+#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+#~ msgstr "Θέλετε να αναβαθμιστείτε από [{old_version}] σε [{new_version}] [{y_lc}/{n_uc}};"
 
