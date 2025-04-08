@@ -2,6 +2,15 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.2 - 8 avril 2025
+- Correction d'un bug à la récupération des versions antérieures
+- Correction d'un bug sur la connexion au Serveur SQL de la FFE
+- Correction du script ``bin/ffe.bat``
+- Correction de l'absence de traductions dans les scripts ``bin/ffe.bat`` et ``bin/chessevent.bat``
+
+## Version 2.5.1 - 8 avril 2025
+- Correction d'un bug au lancement de l'application
+
 ## Version 2.5.0 - 7 avril 2025
 - Passage en multilingue anglais et français
 - Refonte complète de l'interface web

@@ -15,7 +15,11 @@ from common.i18n import (
     _,
     trusted_locales,
     untrusted_locales,
+    set_locale,
+    get_locale,
+    locale_localized_name,
 )
+from common.logger import print_interactive_input, input_interactive
 from common.singleton import Singleton
 from data.player import Federation
 from utils.enum import Result
@@ -62,10 +66,37 @@ class PapiWebConfig(metaclass=Singleton):
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
-        self.locales: list[str] = trusted_locales
+        self.locales: list[str] = trusted_locales.copy()
         if EXPERIMENTAL_FEATURES:
             self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
+        # TODO Remove this code when all the engine dialogs have moved to the web UI
+        # If the locale is not set ask for it before other things like version recovery,
+        # offline databases download, ...
+        if not self.stored_config.locale:
+            set_locale(get_locale())
+            print_interactive_input(_('The following languages are available:'))
+            locale_range = range(1, len(self.locales) + 1)
+            for num in locale_range:
+                locale: str = self.locales[num - 1]
+                print_interactive_input(
+                    f'  - [{num}] {locale} ({locale_localized_name(locale)})'
+                )
+            locale_num: int | None = None
+            while locale_num is None:
+                choice: str = input_interactive(_('Your choice: '))
+                try:
+                    locale_num = int(choice)
+                    if locale_num not in locale_range:
+                        locale_num = None
+                except ValueError:
+                    pass
+            with ConfigDatabase(write=True) as config_database:
+                self.stored_config.locale = self.locales[locale_num - 1]
+                config_database.update_stored_config(self.stored_config)
+                config_database.commit()
+        # TODO (up to here)
+        set_locale(self.locale)
 
     def reload(self):
         self.stored_config = self.load()

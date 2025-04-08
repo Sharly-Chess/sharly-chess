@@ -15,7 +15,7 @@ from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
 from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DEVEL_ENV
-from common.i18n import _
+from common.i18n import _, set_locale
 from common.logger import (
     get_logger,
     input_interactive,
@@ -24,6 +24,7 @@ from common.logger import (
     print_interactive_error,
     print_interactive_warning,
     print_interactive_success,
+    set_console_log_level,
 )
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
@@ -40,6 +41,8 @@ class Engine:
     def __init__(self):
         # before all the rest, initialize a PapiWebConfig instance to set the language.
         papi_web_config: PapiWebConfig = PapiWebConfig()
+        set_locale(papi_web_config.locale)
+        set_console_log_level(papi_web_config.log_level)
         print_interactive_info(
             f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
         )
@@ -59,7 +62,7 @@ class Engine:
             while True:
                 choice = input_interactive(
                     _(
-                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? '
+                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? '
                     ).format(
                         old_version=papi_web_config.version,
                         new_version=new_stable_version,

@@ -11,6 +11,7 @@ from common.network import NetworkMonitor
 from data.player import Player, Federation, Club
 from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
+from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.util import PlayerFFELicence
 
@@ -18,7 +19,7 @@ logger: Logger = get_logger()
 
 
 class FFESqlServer(SqlServer):
-    CREDENTIALS_FILE: Path = Path(__file__).parent / '.credentials'
+    CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 
     def __init__(
         self,
@@ -126,7 +127,7 @@ class FFESqlServer(SqlServer):
                         row['Fide06']
                     ),
                 },
-                fide_id=int(row['FideCode']) if row['FideCode'] else 0,
+                fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
                 federation=Federation(row['Federation']),
                 club=Club(row['ClubNom']) if row['ClubNom'] else None,
                 fixed=0,

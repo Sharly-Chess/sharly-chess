@@ -94,6 +94,7 @@ def build_exe():
         '--hiddenimport=web',
         '--hiddenimport=babel.numbers',
         '--hiddenimport=pyexcel_io.writers',
+        '--hiddenimport=colorlog',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
         '--optimize',
@@ -229,7 +230,7 @@ def create_project():
             f'echo Starting Papi-web FFE client, please wait...\n'
             f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
             f'cd ..\n'
-            f'{EXE_FILENAME} --chessevent\n'
+            f'{EXE_FILENAME} --ffe\n'
             f'pause\n'
         )
     target_file = bin_dir / 'chessevent.bat'

@@ -119,12 +119,6 @@ msgstr "Första dagen i månaden"
 # Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
 # 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
-# Error: translation [20 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +
-# 2 + 2 + 2 + 2 + 2] is much too long compared to initial [20+]
 #, ai_translation
 msgid "20+"
 msgstr ""
@@ -133,9 +127,6 @@ msgstr ""
 msgid "50+"
 msgstr "50+"
 
-# Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
-# bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
-# schablonmetoden] is much too long compared to initial [65+]
 # Error: translation [Försäkringstekniska avsättningar beräknade som helhet –
 # bruttosoliditetsgradens exponeringsvärde – exponeringar enligt
 # schablonmetoden] is much too long compared to initial [65+]
@@ -326,10 +317,6 @@ msgstr "Alla turneringar"
 #, ai_translation
 msgid "Allow"
 msgstr "Tillåt"
-
-#, ai_translation
-msgid "An error occurred, press Enter to end."
-msgstr "Ett fel uppstod, tryck på Enter för att avsluta."
 
 #, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
@@ -593,9 +580,6 @@ msgstr "Cat"
 msgid "Cat *** CATEGORY FOR PRINT VIEW"
 msgstr "Cat"
 
-# Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
-# det att den har offentliggjorts i Europeiska unionens officiella tidning.]
-# is much too long compared to initial [Category]
 # Error: translation [Denna förordning träder i kraft den tjugonde dagen efter
 # det att den har offentliggjorts i Europeiska unionens officiella tidning.]
 # is much too long compared to initial [Category]
@@ -1176,7 +1160,7 @@ msgid "Do you want to send these custom files to the Papi-web developers to enha
 msgstr "Vill du skicka dessa anpassade filer till Papi-web utvecklare för att förbättra terminsversioner [{y_uc}/{n_lc}]?"
 
 #, ai_translation
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
 msgstr "Vill du uppgradera från [{old_version}] till [{new_version}] [{y_lc}/{n_uc}]?"
 
 #, ai_translation
@@ -2715,8 +2699,6 @@ msgstr "Ny version [{version}] har installerats i [{dir}]."
 
 # Error: translation [Ej tillämpligt] is much too long compared to initial
 # [No]
-# Error: translation [Ej tillämpligt] is much too long compared to initial
-# [No]
 #, ai_translation
 msgid "No"
 msgstr ""
@@ -3775,8 +3757,6 @@ msgstr "Rk."
 
 # Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
 # much too long compared to initial [Rnd.Boa]
-# Error: translation [Styckningsdelar av höns av arten Gallus domesticus] is
-# much too long compared to initial [Rnd.Boa]
 #, ai_translation
 msgid "Rnd.Boa"
 msgstr ""
@@ -4284,6 +4264,10 @@ msgstr "Federationen som organiserar evenemanget."
 #, ai_translation
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Den första turneringen på skärmen, obligatorisk (det är möjligt att lägga till andra turneringar senare)."
+
+#, ai_translation
+msgid "The following languages are available:"
+msgstr "Följande språk finns tillgängliga:"
 
 #, ai_translation
 msgid "The following players did not check-in:"
@@ -4941,11 +4925,6 @@ msgstr "Tr. Buchholz"
 # lagstiftningen: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # . .] is much too long compared to initial [Type:]
-# Error: translation [Typ: Ursprunglig hänvisning till den nationella
-# lagstiftningen: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-# . .] is much too long compared to initial [Type:]
 #, ai_translation
 msgid "Type:"
 msgstr ""
@@ -4962,9 +4941,6 @@ msgstr "Typ: %(screen_type)s"
 msgid "U *** THE LETTER TO ANSWER UPLOAD"
 msgstr "U"
 
-# Error: translation [U10 Tillverkning vid vilken värdet av allt använt
-# material inte överstiger 50 % av produktens pris fritt fabrik] is much too
-# long compared to initial [U10]
 # Error: translation [U10 Tillverkning vid vilken värdet av allt använt
 # material inte överstiger 50 % av produktens pris fritt fabrik] is much too
 # long compared to initial [U10]
@@ -4992,7 +4968,6 @@ msgstr "U18 Ordförande"
 msgid "U20"
 msgstr "U20 Ordförande"
 
-# Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 # Error: translation [U8 Ordförande] is much too long compared to initial [U8]
 #, ai_translation
 msgid "U8"
@@ -5392,8 +5367,6 @@ msgstr "Händelse-ID matchar inte."
 
 # Error: translation [Ingen känd frekvens:] is much too long compared to
 # initial [no]
-# Error: translation [Ingen känd frekvens:] is much too long compared to
-# initial [no]
 #, ai_translation
 msgid "no"
 msgstr ""
@@ -5559,409 +5532,4 @@ msgstr[1] "{recent_updates} turneringar har uppdaterats mindre än {ffe_upload_d
 #, ai_translation
 msgid "{screen_type}-screen"
 msgstr "{screen_type}-skärm"
-
-#~ msgid "pairings by board"
-#~ msgstr "Parningar per plan"
-
-#~ msgid "Zero point bye"
-#~ msgstr ""
-
-#~ msgid "The number of points by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
-#~ msgstr ""
-
-#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
-#~ msgstr ""
-
-#~ msgid "The number of points scored by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "Screen families allow to group screens together."
-#~ msgstr ""
-
-#~ msgid "%(last_name)s %(first_name)s"
-#~ msgstr "%(last_name)s %(first_name)s"
-
-#~ msgid "Skip round"
-#~ msgstr "Hoppa över runda"
-
-#~ msgid "Full-point byes are deprecated."
-#~ msgstr "Fullpoint-byar är nedvärderade."
-
-#~ msgid "Bye not allowed"
-#~ msgstr "Hej då inte tillåtet"
-
-#~ msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-#~ msgstr "Blitz"
-
-#~ msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-#~ msgstr "Fed"
-
-#~ msgid "Full-point bye"
-#~ msgstr "Fullständigt farväl"
-
-#~ msgid "Full point bye"
-#~ msgstr "Fullständigt led-efter-datum"
-
-#~ msgid "Half point bye"
-#~ msgstr "Halva ledet efter"
-
-#~ msgid "W *** WHITE COLOR FOR RANKINGS"
-#~ msgstr "W"
-
-#~ msgid "B *** BLACK COLOR FOR RANKINGS"
-#~ msgstr "B"
-
-#~ msgid "Rankings after round #%d"
-#~ msgstr "Rankings efter omgång #% d"
-
-#~ msgid "Tournament summary after round #%d"
-#~ msgstr "Sammanfattning av turneringen efter omgång #% d"
-
-#~ msgid "Rankings"
-#~ msgstr "Placering"
-
-#~ msgid "Tournament summary"
-#~ msgstr "Sammanfattning av turneringen"
-
-#~ msgid "Not part of the selected tournament (%d rounds)."
-#~ msgstr "Inte en del av den valda turneringen (% d rundor)."
-
-#~ msgid "Round not finished (last finished: %d)."
-#~ msgstr "Rund ej färdig (senast färdig: %d)."
-
-#~ msgid "Only estimated rankings are optional."
-#~ msgstr "Endast uppskattade rankningar är valfria."
-
-#~ msgid "Players found in the Papi_file : %(num)d"
-#~ msgstr "Spelare som finns i Papi_filen : %(num)d"
-
-#~ msgid "Paired bye points: %(string)s"
-#~ msgstr "Parad bye punkter: %(string)s"
-
-#~ msgid "Paired bye points:"
-#~ msgstr "Parad bye punkter:"
-
-#~ msgid "The points scored by players who are paired bye."
-#~ msgstr "Poängen som görs av spelare som är parade bye."
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-#~ msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på menyn på skärmar i familjen. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ familj (alla skärmar i familjen), @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmarna."
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-#~ msgstr "Fältet låter dig ange skärmar vars länkar kommer att visas på skärmens meny. Skärmidentifierare måste separeras med kommatecken, nyckelorden @ tavlor (alla brädor skärmar), @ input (alla inmatningsskärmar), @ spelare (alla spelare skärmar) samt jokertecken * kan användas. Om fältet lämnas tomt, visas ingen meny på skärmen."
-
-#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-#~ msgstr "League"
-
-#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Origin"
-
-#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "FFE"
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
-#~ msgstr "FFE-licens: %(ffe_licence_number)s (utfärdad)."
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-#~ msgstr "FFE-licens: %(ffe_licence_number)s (klicka för att kopiera till klippbordet)."
-
-#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-#~ msgstr "Okänd typ av FFE-licens [%(ffe_licence)s]."
-
-#~ msgid "Sort the players by origin (federation, league, club)."
-#~ msgstr "Sortera spelarna efter ursprung (federation, liga, klubb)."
-
-#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
-#~ msgstr "Alternativet är föråldrat, ställ in miljövariabeln [{var}=1] istället."
-
-#~ msgid "Locale [{locale}] not found."
-#~ msgstr "Locale [{locale}] hittades inte."
-
-#~ msgid "Option not set."
-#~ msgstr "Alternativet är inte fastställt."
-
-#~ msgid "Section not found."
-#~ msgstr "Avsnittet hittades inte."
-
-#~ msgid "The following languages are available:"
-#~ msgstr "Följande språk finns tillgängliga:"
-
-#~ msgid "Invalid log level [{level}], by default [{default}]."
-#~ msgstr "Ogiltig loggnivå [{level}], som standard [{default}]."
-
-#~ msgid "Option not set, by default [{default}]."
-#~ msgstr "Alternativet är inte fastställt, som standard [{default}]."
-
-#~ msgid "Invalid host configuration [{host}], by default [{default}]."
-#~ msgstr "Ogiltig värdkonfiguration [{host}], som standard [{default}]."
-
-#~ msgid "Invalid port [{port}], by default [{default}]."
-#~ msgstr "Ogiltig port [{port}], som standard [{default}]."
-
-#~ msgid "Invalid delay [{delay}], by default [{default}]"
-#~ msgstr "Ogiltig försening [{delay}], som standard [{default}]"
-
-#~ msgid "Section not found, default configuration set."
-#~ msgstr "Avsnitt hittades inte, förvald inställningsuppsättning."
-
-#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
-#~ msgstr "Din fil {ini_file} har sparats som {ini_file_org}."
-
-#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-#~ msgstr "Kunde inte spara {ini_file} till {ini_file_org}: {ex}."
-
-#~ msgid "Adding lines to {file}..."
-#~ msgstr "Lägger till rader i {file}..."
-
-#~ msgid "[i18n] # Added by Papi-web {version}"
-#~ msgstr "[i18n] # Tillagd av Papi-web {version}"
-
-#~ msgid "# The line below has been commented by Papi-web {version}"
-#~ msgstr "# Linjen nedan har kommenterats av Papi-web {version}"
-
-#~ msgid "Your file {ini_file} has been modified."
-#~ msgstr "Din akt {ini_file} har ändrats."
-
-#~ msgid "Could not write to {ini_file}: {ex}."
-#~ msgstr "Kunde inte skriva till {ini_file}: {ex}."
-
-#~ msgid "Port [{port}] already in use, can not start Papi-web server."
-#~ msgstr "Port [{port}] redan i bruk, kan inte starta Papi-webbserver."
-
-#~ msgid "Default federation"
-#~ msgstr ""
-
-#~ msgid "Connections (FFE and ChessEvent)"
-#~ msgstr "Anslutningar (FFE och ChessEvent)"
-
-#~ msgid "Initial time (optional):"
-#~ msgstr "Ursprunglig tid (frivillig uppgift):"
-
-#~ msgid "Increment (optional):"
-#~ msgstr "Inkrement (frivillig uppgift):"
-
-#~ msgid "Penalty (handicap):"
-#~ msgstr "Påföljder (handikappa):"
-
-#~ msgid "Minimal time (handicap):"
-#~ msgstr "Minimal tid (handikapp):"
-
-#~ msgid "%t (ranking)"
-#~ msgstr ""
-
-#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-#~ msgstr "Bu."
-
-#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-#~ msgstr "Tr."
-
-#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-#~ msgstr "Me."
-
-#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-#~ msgstr "PS"
-
-#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
-#~ msgstr "Perf"
-
-#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-#~ msgstr "SBh"
-
-#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-#~ msgstr "NW"
-
-#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
-#~ msgstr "Ka."
-
-#~ msgid "Ko. *** ACRONYM FOR KOYA"
-#~ msgstr "Ko."
-
-#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-#~ msgstr "SB"
-
-#~ msgid "Cut Bottom"
-#~ msgstr "Klipp ner"
-
-#~ msgid "Papi legacy"
-#~ msgstr "Papi-arv"
-
-#~ msgid "Sonneborn-Berger"
-#~ msgstr "Sonneborn-Berger Ordförande"
-
-#~ msgid "Create a player"
-#~ msgstr "Skapa en spelare"
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Ladda ner vCards för de valda spelarna (VCF-format)."
-
-#~ msgid "The FFE database is not available."
-#~ msgstr "FFE-databasen är inte tillgänglig."
-
-#~ msgid "Cat."
-#~ msgstr "Katt."
-
-#~ msgid "Cut"
-#~ msgstr "Styckningsdelar"
-
-#~ msgid "Cut bottom"
-#~ msgstr "Klipp ner"
-
-#~ msgid "Cut top"
-#~ msgstr "Klipp överst"
-
-#~ msgid "Directory of the Papi file:"
-#~ msgstr "Katalog över Papi-filen:"
-
-#~ msgid "Do you want Papi-web to create the file?"
-#~ msgstr "Vill du att Papi-webben ska skapa filen?"
-
-#~ msgid "Error while updating the FFE database."
-#~ msgstr "Fel vid uppdatering av FFE- databasen."
-
-#~ msgid "Exclude players"
-#~ msgstr "Uteslut spelare"
-
-#~ msgid "Fore modifier"
-#~ msgstr "Förinställning"
-
-#~ msgid "Limit"
-#~ msgstr "Gräns"
-
-#~ msgid "Missing Papi file"
-#~ msgstr "Saknar papi- fil"
-
-#~ msgid "Name of the Papi file (with no extension):"
-#~ msgstr "Namn på Papi- filen (utan förlängning):"
-
-#~ msgid "No split"
-#~ msgstr "Ingen uppdelning"
-
-#~ msgid "No, I will do it later"
-#~ msgstr "Nej, jag gör det senare."
-
-#~ msgid "Options"
-#~ msgstr "Inställningar"
-
-#~ msgid "Papi file [{file}] created."
-#~ msgstr "Papi-fil [{file}] skapad."
-
-#~ msgid "Papi file has not been created."
-#~ msgstr "Papi- filen har inte skapats."
-
-#~ msgid "Papi version: {version}"
-#~ msgstr "Papi version: {version}"
-
-#~ msgid "Played modifier"
-#~ msgstr "Spelad modifier"
-
-#~ msgid "Player updates are possible, select the players to update:"
-#~ msgstr "Spelaruppdateringar är möjliga, välj spelarna att uppdatera:"
-
-#~ msgid "Please choose the Papi version:"
-#~ msgstr "Välj Papi-versionen:"
-
-#~ msgid "Please enter the number of the version to recover [{default}]: "
-#~ msgstr "Ange numret på den version som ska återställas [{default}]:"
-
-#~ msgid "Storing data..."
-#~ msgstr "Lagra data..."
-
-#~ msgid "The directory of the Papi file, by default %(dir)s."
-#~ msgstr "Katalogen för Papi-filen, som standard %(dir)s."
-
-#~ msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
-#~ msgstr "Namnet på Papi-filen, utan .papi förlängning (som standard FFE kvalificeringsnumret för turneringen, sedan Den unika ID för turneringen)."
-
-#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-#~ msgstr "Detta program bör inte startas direkt, använd scripts server.bat, ffe.bat och chessevent.bat."
-
-#~ msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-#~ msgstr "Varning: Papi-filen [%(path)s] hittades inte, många funktioner är inaktiverade."
-
-#~ msgid "YOB"
-#~ msgstr "HUVUDBYGGNAD"
-
-#~ msgid "Yes, create the file"
-#~ msgstr "Ja, skapa filen"
-
-#~ msgid "{number} players written."
-#~ msgstr "{number} Skrivna spelare."
-
-#~ msgid "Could not download [{url}]: {ex}."
-#~ msgstr "Kunde inte ladda ner [{url}]: {ex}."
-
-#~ msgid "Downloading the FFE database..."
-#~ msgstr "Laddar ner FFE- databasen..."
-
-#~ msgid "Downloading the FIDE database..."
-#~ msgstr "Laddar ner FIDE- databasen..."
-
-#~ msgid "Error while creating the database: {ex}."
-#~ msgstr "Fel när databasen skapades: {ex}."
-
-#~ msgid "Error while updating the FIDE database."
-#~ msgstr "Fel vid uppdatering av FIDE- databasen."
-
-#~ msgid "Not connected, can not create the FFE database."
-#~ msgstr "Kan inte anslutas, kan inte skapa FFE-databasen."
-
-#~ msgid "Not connected, can not create the FIDE database."
-#~ msgstr "Inte ansluten, kan inte skapa FIDE-databasen."
-
-#~ msgid "Not connected, can not update the FFE database."
-#~ msgstr "Inte ansluten, kan inte uppdatera FFE-databasen."
-
-#~ msgid "Not connected, can not update the FIDE database."
-#~ msgstr "Inte ansluten, kan inte uppdatera FIDE-databasen."
-
-#~ msgid "Storing FFE data..."
-#~ msgstr "Lagra FFE- data..."
-
-#~ msgid "Storing FIDE data..."
-#~ msgstr "Lagra FIDE- data..."
-
-#~ msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-#~ msgstr "FFE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
-
-#~ msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-#~ msgstr "FFE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
-
-#~ msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-#~ msgstr "FIDE-databasen [{file}] är föråldrad ([{days}] dagar], vill du uppdatera den (Y/n)?"
-
-#~ msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
-#~ msgstr "FIDE-databasen [{file}] hittades inte, vill du skapa den (Y/n)?"
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-#~ msgstr "Turneringen [{tournament_uniq_id}] har endast [{player_count}] spelare (< [{first}]), familjen ignorerade."
-
-#~ msgid "{family_type}-family"
-#~ msgstr "{family_type}-familj"
-
-#~ msgid "{number} players written to FFE database."
-#~ msgstr "{number} spelare skrivna till FFE databas."
-
-#~ msgid "{number} players written to FIDE database."
-#~ msgstr "{number} spelare skrivna till FIDE databas."
-
-#~ msgid "Connection to the FFE database failed."
-#~ msgstr "Anslutning till FFE- databasen misslyckades."
-
-#~ msgid "Connection to the FFE database failed: {error}."
-#~ msgstr "Anslutning till FFE- databasen misslyckades: {error}."
-
-#~ msgid "Connection to the FFE server failed."
-#~ msgstr "Anslutning till FFE- servern misslyckades."
-
-#~ msgid "Connection to the FFE server failed: {error}."
-#~ msgstr "Anslutning till FFE- servern misslyckades: {error}."
-
-#~ msgid "Request to the FFE database failed."
-#~ msgstr "Begäran till FFE- databasen misslyckades."
-
-#~ msgid "Request to the FFE database failed: {error}."
-#~ msgstr "Begäran till FFE-databasen misslyckades: {error}."
 

@@ -13,7 +13,7 @@
                     id="admin-config-edit-button"
                     class="btn btn-outline-primary text-nowrap ms-1"
                     hx-get="{{ url_for('admin-config-modal') }}"
-                    hx-target="#modal-wrapper"
+                    hx-target="body"
                     hx-indicator="#please-wait"
                     preload
                     data-bs-toggle="modal"
@@ -27,7 +27,7 @@
                 <button
                     class="btn btn-primary text-nowrap"
                     hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                    hx-target="#modal-wrapper"
+                    hx-target="body"
                     hx-indicator="#please-wait"
                     preload
                     data-bs-toggle="modal"

@@ -248,9 +248,6 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
-msgid "An error occurred, press Enter to end."
-msgstr "Une erreur s'est produite, appuyez sur Entrée pour finir."
-
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
@@ -904,8 +901,8 @@ msgstr "Voulez-vous récupérer la configuration de la version [{version}] [{y_u
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Papi-web pour améliorer les futures versions [{y_uc}/{n_lc}] ?"
 
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] [{y_lc}/{n_uc}}] ? "
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
+msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] [{y_lc}/{n_uc}] ? "
 
 msgid "Document:"
 msgstr "Document :"
@@ -3206,8 +3203,8 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-msgid "The FIDE database is not available."
-msgstr "La base de données FIDE n'est pas disponible."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
+msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
 msgstr "L'identifiant l'évènement sur la plateforme ChessEvent (par défaut l'identifiant de l'évènement ChessEvent défini pour l'évènement Papi-web du tournoi)."
@@ -3300,6 +3297,9 @@ msgstr "La fédération qui organise l'évènement."
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
+
+msgid "The following languages are available:"
+msgstr "Les langues suivantes sont disponibles :"
 
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
@@ -4265,4 +4265,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "The FIDE database is not available."
+#~ msgstr "La base de données FIDE n'est pas disponible."
 

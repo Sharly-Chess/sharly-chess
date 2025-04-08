@@ -34,7 +34,7 @@
                 <button
                     class="btn btn-primary text-nowrap ms-1"
                     hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="#modal-wrapper"
+                    hx-target="body"
                     hx-indicator="#please-wait"
                     preload
                     data-bs-toggle="modal"
@@ -294,7 +294,7 @@
                                         <li
                                             class="dropdown-item btn text-start"
                                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="#modal-wrapper"
+                                            hx-target="body"
                                             hx-indicator="#please-wait"
                                             preload
                                             data-bs-toggle="modal"
@@ -308,7 +308,7 @@
                                         <li
                                             class="dropdown-item btn text-start"
                                             hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                            hx-target="#modal-wrapper"
+                                            hx-target="body"
                                             hx-indicator="#please-wait"
                                             preload
                                             data-bs-toggle="modal"
@@ -325,7 +325,7 @@
                                                 class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
                                                 hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                                                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                                hx-target="#modal-wrapper"
+                                                hx-target="body"
                                                 hx-indicator="#please-wait"
                                                 preload
                                                 data-bs-toggle="modal"
