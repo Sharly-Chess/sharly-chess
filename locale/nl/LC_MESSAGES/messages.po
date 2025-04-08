@@ -313,10 +313,6 @@ msgid "Allow"
 msgstr "Toestaan"
 
 #, ai_translation
-msgid "An error occurred, press Enter to end."
-msgstr "Er is een fout opgetreden, druk op Enter om te beëindigen."
-
-#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Enig commentaar op de speler (opmerkingen zijn alleen zichtbaar door de arbiters)."
 
@@ -1155,8 +1151,8 @@ msgid "Do you want to send these custom files to the Papi-web developers to enha
 msgstr "Wilt u deze aangepaste bestanden naar de Papi-webontwikkelaars sturen om toekomstige versies te verbeteren [{y_uc}/{n_lc}]?"
 
 #, ai_translation
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-msgstr "Wilt u upgraden van [{old_version}] naar [{new_version}] [{y_lc}/{n_uc}}]?"
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
+msgstr "Wilt u upgraden van [{old_version}] naar [{new_version}] [{y_lc}/{n_uc}]?"
 
 #, ai_translation
 msgid "Document:"
@@ -5918,4 +5914,10 @@ msgstr "{screen_type}-scherm"
 
 #~ msgid "Request to the FFE database failed: {error}."
 #~ msgstr "Verzoek aan de FFE-database mislukt: {error}."
+
+#~ msgid "An error occurred, press Enter to end."
+#~ msgstr "Er is een fout opgetreden, druk op Enter om te beëindigen."
+
+#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+#~ msgstr "Wilt u upgraden van [{old_version}] naar [{new_version}] [{y_lc}/{n_uc}}]?"
 

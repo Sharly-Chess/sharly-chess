@@ -313,10 +313,6 @@ msgid "Allow"
 msgstr "Permetti"
 
 #, ai_translation
-msgid "An error occurred, press Enter to end."
-msgstr "Si è verificato un errore, premere Invio per terminare."
-
-#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Qualsiasi commento sul giocatore (i commenti sono visibili solo dagli arbitri)."
 
@@ -1167,8 +1163,8 @@ msgid "Do you want to send these custom files to the Papi-web developers to enha
 msgstr "Vuoi inviare questi file personalizzati agli sviluppatori Papi-web per migliorare le versioni future [{y_uc}/{n_lc}]?"
 
 #, ai_translation
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-msgstr "Vuoi aggiornare da [{old_version}] a [{new_version}] [{y_lc}/{n_uc}}]?"
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
+msgstr "Vuoi passare da [{old_version}] a [{new_version}] [{y_lc}/{n_uc}]?"
 
 #, ai_translation
 msgid "Document:"
@@ -5958,4 +5954,10 @@ msgstr "{screen_type}-schermo"
 
 #~ msgid "Request to the FFE database failed: {error}."
 #~ msgstr "Richiesta alla banca dati FFE non riuscita: {error}."
+
+#~ msgid "An error occurred, press Enter to end."
+#~ msgstr "Si è verificato un errore, premere Invio per terminare."
+
+#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+#~ msgstr "Vuoi aggiornare da [{old_version}] a [{new_version}] [{y_lc}/{n_uc}}]?"
 

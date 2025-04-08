@@ -59,7 +59,7 @@ class Engine:
             while True:
                 choice = input_interactive(
                     _(
-                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? '
+                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? '
                     ).format(
                         old_version=papi_web_config.version,
                         new_version=new_stable_version,
