@@ -540,15 +540,27 @@ class Engine:
             return None
         if not (
             matches := re.match(
-                r'^(?P<major>\d+)\.(?P<minor>\d+)rc(?P<rc>\d+)$',
+                r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(a|b|rc)(?P<rc>\d+)$',
                 str(PAPI_WEB_VERSION),
             )
         ):
             raise ValueError(f'Invalid Papi-web version [{str(PAPI_WEB_VERSION)}]')
-        # 'release candidates' X.YrcN
-        if last_stable_matches.group('major') > matches.group(
-            'major'
-        ) or last_stable_matches.group('minor') > matches.group('minor'):
+        # alpha versions: X.Y.ZaN
+        # beta versions: X.Y.ZbN
+        # 'release candidates' X.Y.ZrcN
+        if (
+            (stable_major := last_stable_matches.group('major'))
+            > (current_major := matches.group('major'))
+            or (
+                stable_major == current_major
+                and (stable_minor := last_stable_matches.group('minor'))
+                > (current_minor := matches.group('minor'))
+            )
+            or (
+                (stable_major, stable_minor) == (current_major, current_minor)
+                and last_stable_matches.group('patch') > matches.group('patch')
+            )
+        ):
             print_interactive_warning(
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
