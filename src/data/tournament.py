@@ -20,7 +20,12 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_breaks import TieBreak, TieBreakOption, TieBreakManager, TieBreakOptionManager
+from data.tie_breaks import (
+    TieBreak,
+    TieBreakOption,
+    TieBreakManager,
+    TieBreakOptionManager,
+)
 from utils import SharedUtils
 from utils.enum import (
     BoardColor,
@@ -119,6 +124,14 @@ class Tournament:
     def name(self) -> str:
         return (
             self.stored_tournament.name if self.stored_tournament.name else self.uniq_id
+        )
+
+    @property
+    def full_name(self) -> str:
+        return (
+            f'{self.event.name} - {self.name}'
+            if len(self.event.tournaments_by_id.values()) > 1
+            else self.name
         )
 
     @property
@@ -265,9 +278,7 @@ class Tournament:
         if not self.stored_tournament.tie_breaks:
             return None
         tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = (
-            TieBreakManager.type_by_id()
-        )
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager.type_by_id()
         )
@@ -493,7 +504,7 @@ class Tournament:
     ) -> TrfTournament:
         self.compute_player_ranks(after_round=self.max_ranking_round)
         return TrfTournament(
-            name=self.name,
+            name=self.full_name,
             city=self.location,
             startdate=self.start_date,
             enddate=self.end_date,

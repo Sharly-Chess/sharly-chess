@@ -3,6 +3,7 @@ from typing import IO, override
 
 import trf
 
+from common import unicode_normalize
 from common.i18n import _
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
@@ -32,8 +33,8 @@ class TournamentExporter(IdentifiableEntity, ABC):
         return tournament.name
 
     @property
-    def file_encoding(self) -> str:
-        return 'UTF-8'
+    def file_encoding(self) -> str | None:
+        return None
 
     @property
     def is_binary_file(self) -> bool:
@@ -57,8 +58,13 @@ class Trf16TournamentExporter(TournamentExporter):
     def file_extension(self) -> str:
         return 'trf'
 
+    @property
+    def file_encoding(self) -> str:
+        return 'ascii'
+
     def dump_to_file(self, file: IO, tournament: Tournament):
-        trf.dump(file, tournament.to_trf(TrfType.TRF_16))
+        trf_tournament = trf.dumps(tournament.to_trf(TrfType.TRF_16))
+        file.write(unicode_normalize(trf_tournament))
 
 
 class TrfBxTournamentExporter(TournamentExporter):
@@ -80,8 +86,13 @@ class TrfBxTournamentExporter(TournamentExporter):
     def file_extension(self) -> str:
         return 'trfx'
 
+    @property
+    def file_encoding(self) -> str:
+        return 'ascii'
+
     def dump_to_file(self, file: IO, tournament: Tournament):
-        trf.dump(file, tournament.to_trf(TrfType.TRF_BX))
+        trf_tournament = trf.dumps(tournament.to_trf(TrfType.TRF_BX))
+        file.write(unicode_normalize(trf_tournament))
 
 
 class PgnTournamentExporter(TournamentExporter):
@@ -104,6 +115,10 @@ class PgnTournamentExporter(TournamentExporter):
     def file_extension(self) -> str:
         return 'pgn'
 
+    @property
+    def file_encoding(self) -> str:
+        return 'UTF-8'
+
     @staticmethod
     @override
     def file_name(tournament: Tournament) -> str:
@@ -112,12 +127,5 @@ class PgnTournamentExporter(TournamentExporter):
         )
 
     def dump_to_file(self, file: IO, tournament: Tournament):
-        show_tournament_name = len(tournament.event.tournaments_by_id.values()) != 1
         for board in tournament.boards:
-            file.write(
-                board.to_pgn(
-                    tournament,
-                    tournament.current_round,
-                    show_tournament_name,
-                )
-            )
+            file.write(board.to_pgn(tournament, tournament.current_round))
