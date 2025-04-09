@@ -2,8 +2,6 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
-
-import trf
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate
@@ -25,7 +23,6 @@ from data.loader import EventLoader
 from data.print_documents import PrintDocumentManager
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
-from utils.enum import TrfType
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
@@ -550,12 +547,16 @@ class TournamentAdminController(BaseEventAdminController):
         if tournament is None:
             raise RuntimeError('tournament not defined')
         exporter = TournamentExporterManager.get_object(exporter_id)
-        temp_file = NamedTemporaryFile(delete=False, mode='w')
+        temp_file = NamedTemporaryFile(
+            delete=False,
+            mode='wb' if exporter.is_binary_file else 'w',
+            encoding=exporter.file_encoding,
+        )
         with temp_file:
             exporter.dump_to_file(temp_file, tournament)
         return File(
             path=temp_file.name,
-            filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}'
+            filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
         )
 
     @post(

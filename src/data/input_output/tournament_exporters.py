@@ -31,6 +31,14 @@ class TournamentExporter(IdentifiableEntity, ABC):
         """Name of the file to download."""
         return tournament.name
 
+    @property
+    def file_encoding(self) -> str:
+        return 'UTF-8'
+
+    @property
+    def is_binary_file(self) -> bool:
+        return False
+
 
 class Trf16TournamentExporter(TournamentExporter):
     @staticmethod
@@ -65,8 +73,7 @@ class TrfBxTournamentExporter(TournamentExporter):
     @property
     def tooltip(self) -> str:
         return _(
-            'Export the tournament to the TRF(bx) '
-            'format (usage: pairings generation).'
+            'Export the tournament to the TRF(bx) format (usage: pairings generation).'
         )
 
     @property
@@ -100,14 +107,12 @@ class PgnTournamentExporter(TournamentExporter):
     @staticmethod
     @override
     def file_name(tournament: Tournament) -> str:
-        return f'{tournament.name} - ' + _(
-            'Round #{round}'
-        ).format(round=tournament.current_round)
+        return f'{tournament.name} - ' + _('Round #{round}').format(
+            round=tournament.current_round
+        )
 
     def dump_to_file(self, file: IO, tournament: Tournament):
-        show_tournament_name = (
-            len(tournament.event.tournaments_by_id.values()) != 1
-        )
+        show_tournament_name = len(tournament.event.tournaments_by_id.values()) != 1
         for board in tournament.boards:
             file.write(
                 board.to_pgn(
