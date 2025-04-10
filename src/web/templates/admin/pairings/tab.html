@@ -1,34 +1,99 @@
-{% with url=url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) %}
-    <div
-        class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
-        style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
-    >
-        {% call() macros.section_title() %}
-            {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
-            {{ admin_event.name }} - {{ _('Pairings') }}
-        {% endcall %}
-        <div class="flex-grow-1"></div>
-        <div class="d-flex gap-2 ms-auto align-items-center">
-            <select
-                name="tournament_id"
-                class="form-select"
-                {% if tournament_options|length <= 1 %}
-                    disabled
-                {% endif %}
-                hx-trigger="change"
-                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% for value, text in tournament_options.items() %}
-                    <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
-                        {{ text }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+<div
+    class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
+    style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+>
+    {% call() macros.section_title() %}
+        {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
+        {{ admin_event.name }} - {{ _('Pairings') }}
+    {% endcall %}
+    <div class="flex-grow-1"></div>
+    <div class="d-flex gap-2 ms-auto align-items-center">
+        <select
+            name="tournament_id"
+            class="form-select"
+            {% if tournament_options|length <= 1 %}
+                disabled
+            {% endif %}
+            hx-trigger="change"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {% for value, text in tournament_options.items() %}
+                <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                    {{ text }}
+                </option>
+            {% endfor %}
+        </select>
     </div>
+</div>
 
+{% if admin_tournament %}
     <section class="pt-1 pb-1">
+        <div class="row">
+            <div class="col-12 col-md-3 mb-3">
+                <table
+                    id="players-table"
+                    class="table prominent table-striped table-sm table-hover w-100 bg-light"
+                >
+                    <thead
+                        id="players-table-header"
+                        class="position-sticky z-2"
+                        style="top: var(--header-height);"
+                    >
+                        <tr>
+                            <th>{{ _('Unpaired Player') }}</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in admin_tournament.unpaired_players %}
+                            <tr>
+                                <td>{{ player.last_name }} {{ player.first_name }}</td>
+                                <td>{{ player.get_rating(admin_tournament.rating) }}</td>
+                                <td></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-12 col-md-9 mb-3">
+                <table
+                    id="pairings-table"
+                    class="table prominent table-striped table-sm table-hover w-100 bg-light"
+                >
+                    <thead
+                        id="players-table-header"
+                        class="position-sticky z-2"
+                        style="top: var(--header-height);"
+                    >
+                        <tr>
+                            <th>{{ _('Board') }}</th>
+                            <th>{{ _('Points') }}</th>
+                            <th>{{ _('White') }}</th>
+                            <th>{{ _('Result') }}</th>
+                            <th>{{ _('Black') }}</th>
+                            <th>{{ _('Points') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for board in admin_tournament.boards %}
+                            {% with wp=board.white_player, bp=board.black_player %}
+                                <tr>
+                                    <td class="text-center">{{ board.number }}</td>
+                                    <td class="text-center">{{ wp.vpoints_str }}</td>
+                                    <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
+                                    <td class="text-center">{% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}</td>
+                                    <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>
+                                    <td class="text-center">{{ bp.vpoints_str }}</td>
+                                </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </section>
-{% endwith %}
+{% endif%}

@@ -460,7 +460,10 @@ class Tournament:
     @property
     def unpaired_players(self) -> list[Player]:
         self.read_papi()
-        return self._unpaired_players
+        return sorted(
+            list(self._unpaired_players or []),
+            key=lambda player: (player.last_name, player.first_name),
+        )
 
     @cached_property
     def dependent_families(self) -> list[Family]:
@@ -905,7 +908,7 @@ class Tournament:
         if at_round is None:
             at_round = self.current_round
         if not at_round:
-            return [], []
+            return [], list(self.players_by_id.values())
         boards: list[Board] = []
         unpaired_players: list[Player] = []
         for player in self.players_by_id.values():
