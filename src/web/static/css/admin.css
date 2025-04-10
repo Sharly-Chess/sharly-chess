@@ -57,3 +57,7 @@
     background-color: var(--bs-primary) !important;
     color: var(--pw-contrast-text) !important;
 }
+
+[data-bs-theme=dark] table.prominent td.forfeit {
+    color: var(--bs-secondary-color);
+}

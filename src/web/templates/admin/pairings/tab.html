@@ -75,11 +75,17 @@
                     </thead>
                     <tbody>
                         {% for player in admin_unpaired %}
-                            <tr class="player-row" data-player-id="{{ player.id }}">
-                                <td>{{ player.last_name }} {{ player.first_name }}</td>
-                                <td>{{ player.get_rating(admin_tournament.rating) }}</td>
-                                <td></td>
-                            </tr>
+                            {% with class="forfeit" if admin_round and (player.pairings[admin_round].forfeit or player.pairings[admin_round].half_point_bye or player.pairings[admin_round].full_point_bye) else '' %}
+                                <tr class="player-row" data-player-id="{{ player.id }}">
+                                    <td class="{{ class }}">{{ player.last_name }} {{ player.first_name }}</td>
+                                    <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
+                                    <td class="{{ class }} text-center">
+                                        {% if player.pairings[admin_round].forfeit %}{{ "f" }}{% endif %}
+                                        {% if player.pairings[admin_round].half_point_bye %}{{ "½" }}{% endif %}
+                                        {% if player.pairings[admin_round].full_point_bye %}{{ "FBP" }}{% endif %}
+                                    </td>
+                                </tr>
+                            {% endwith %}
                         {% endfor %}
                     </tbody>
                 </table>
