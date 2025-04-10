@@ -20,7 +20,12 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club, PlayerRating
 from data.screen import Screen
-from data.tie_breaks import TieBreak, TieBreakOption, TieBreakManager, TieBreakOptionManager
+from data.tie_breaks import (
+    TieBreak,
+    TieBreakOption,
+    TieBreakManager,
+    TieBreakOptionManager,
+)
 from utils import SharedUtils
 from utils.enum import (
     BoardColor,
@@ -78,8 +83,8 @@ class Tournament:
                 tournament=self,
             )
         self._rounds: int = 0
-        self._pairing: TournamentPairing | None = None
-        self._rating: TournamentRating | None = None
+        self._pairing: TournamentPairing = TournamentPairing.UNKNOWN
+        self._rating: TournamentRating = TournamentRating.STANDARD
         self._players_by_id: dict[int, Player] = {}
         self._current_round: int = 0
         self._playing: bool = False
@@ -89,10 +94,10 @@ class Tournament:
         self._start_date: str = ''
         self._end_date: str = ''
         self._arbiter: str = ''
-        self._boards: list[Board] | None = None
-        self._unpaired_players: list[Player] | None = None
-        self._players_by_rank: dict[int, Player] | None = None
-        self._tie_breaks: list[TieBreak] | None = None
+        self._boards: list[Board] = []
+        self._unpaired_players: list[Player] = []
+        self._players_by_rank: dict[int, Player] = {}
+        self._tie_breaks: list[TieBreak] = []
         self._point_value_type = PointValueType.STANDARD
         self._papi_read = False
 
@@ -119,6 +124,14 @@ class Tournament:
     def name(self) -> str:
         return (
             self.stored_tournament.name if self.stored_tournament.name else self.uniq_id
+        )
+
+    @property
+    def full_name(self) -> str:
+        return (
+            f'{self.event.name} - {self.name}'
+            if len(self.event.tournaments_by_id.values()) > 1
+            else self.name
         )
 
     @property
@@ -265,9 +278,7 @@ class Tournament:
         if not self.stored_tournament.tie_breaks:
             return None
         tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = (
-            TieBreakManager.type_by_id()
-        )
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager.type_by_id()
         )
@@ -303,13 +314,11 @@ class Tournament:
     @property
     def pairing(self) -> TournamentPairing:
         self.read_papi()
-        assert self._pairing is not None
         return self._pairing
 
     @property
     def rating(self) -> TournamentRating:
         self.read_papi()
-        assert self._rating is not None
         return self._rating
 
     @property
@@ -345,7 +354,6 @@ class Tournament:
     @property
     def tie_breaks(self) -> list[TieBreak]:
         self.read_papi()
-        assert self._tie_breaks is not None
         return self._tie_breaks
 
     @property
@@ -443,12 +451,12 @@ class Tournament:
         return self.current_round == self.rounds and not self.playing
 
     @property
-    def boards(self) -> list[Board] | None:
+    def boards(self) -> list[Board]:
         self.read_papi()
         return self._boards
 
     @property
-    def unpaired_players(self) -> list[Player] | None:
+    def unpaired_players(self) -> list[Player]:
         self.read_papi()
         return self._unpaired_players
 
@@ -496,7 +504,7 @@ class Tournament:
     ) -> TrfTournament:
         self.compute_player_ranks(after_round=self.max_ranking_round)
         return TrfTournament(
-            name=self.name,
+            name=self.full_name,
             city=self.location,
             startdate=self.start_date,
             enddate=self.end_date,
@@ -506,7 +514,7 @@ class Tournament:
                 player.to_trf(
                     self._player_id_to_trf_id,
                     after_round=self.current_round + 1
-                    if trf_type == TrfType.PAIRING
+                    if trf_type == TrfType.TRF_BX
                     else self.rounds,
                 )
                 for player in self.players_by_trf_id.values()
@@ -514,12 +522,12 @@ class Tournament:
             federation=self.event.federation,
             xx_fields=(
                 self._trf_xx_fields(first_round_pairing)
-                if trf_type == TrfType.PAIRING
+                if trf_type == TrfType.TRF_BX
                 else {}
             ),
             bb_fields=(
                 self._trf_bb_fields(point_values=self.point_values)
-                if trf_type == TrfType.PAIRING
+                if trf_type == TrfType.TRF_BX
                 else {}
             ),
         )
@@ -598,19 +606,6 @@ class Tournament:
                 self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
                 player.tournament = self
-        else:
-            self._rounds = 0
-            self._pairing = TournamentPairing.UNKNOWN
-            self._rating = TournamentRating.STANDARD
-            self._players_by_id = {}
-            self._current_round = 0
-            self._rating_limit1 = 0
-            self._rating_limit2 = 0
-            self._tie_breaks = []
-            self._location = ''
-            self._start_date = ''
-            self._end_date = ''
-            self._arbiter = ''
         self._papi_read = True
         self._calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round

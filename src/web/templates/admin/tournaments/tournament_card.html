@@ -144,7 +144,8 @@
                 {% for exporter in tournament_exporters %}
                     <li
                         class="dropdown-item text-start cursor-pointer"
-                        onclick="window.open('{{ url_for(exporter.download_route, event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, **exporter.route_parameters) }}', '_blank')"
+                        onclick="window.open('{{ url_for('admin-tournament-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, exporter_id=exporter.id) }}', '_blank')"
+                        {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
                     >
                         {{ exporter.name }}
                     </li>

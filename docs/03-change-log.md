@@ -4,6 +4,7 @@
 
 ## Version 2.6 - 2025
 - Déplacement des utilitaires de ``bin/`` vers ``tools/``
+- Ajout des exports PGN
 
 ## Version 2.5.3 - 10 avril 2025
 - Récupération de la configuration de l'application à partir d'une version antérieure

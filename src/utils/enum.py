@@ -332,6 +332,28 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @property
+    def to_pgn(self) -> str:
+        match self:
+            case Result.GAIN | Result.UNRATED_GAIN:
+                return '1-0'
+            case Result.LOSS | Result.UNRATED_LOSS:
+                return '0-1'
+            case Result.DRAW | Result.UNRATED_DRAW:
+                return '1/2-1/2'
+            case (
+            Result.NO_RESULT
+            | Result.FORFEIT_GAIN
+            | Result.FORFEIT_LOSS
+            | Result.FULL_POINT_BYE
+            | Result.HALF_POINT_BYE
+            | Result.ZERO_POINT_BYE
+            | Result.PAIRING_ALLOCATED_BYE
+            ):
+                return '*'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
     def bbp_field(self) -> str:
         match self:
             case Result.LOSS:
@@ -955,6 +977,30 @@ class PlayerTitle(IntEnum):
                 raise ValueError(f'Unknown title value: {value}')
 
     @property
+    def to_fide_value(self) -> str:
+        match self:
+            case PlayerTitle.NONE:
+                return ''
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return 'WCM'
+            case PlayerTitle.CANDIDATE_MASTER:
+                return 'CM'
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return 'WFM'
+            case PlayerTitle.FIDE_MASTER:
+                return 'FM'
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return 'WIM'
+            case PlayerTitle.INTERNATIONAL_MASTER:
+                return 'IM'
+            case PlayerTitle.WOMAN_GRANDMASTER:
+                return 'WGM'
+            case PlayerTitle.GRANDMASTER:
+                return 'GM'
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
     def to_trf(self) -> str:
         match self:
             case PlayerTitle.NONE:
@@ -1163,18 +1209,8 @@ class NeedsUpload(Enum):
 
 
 class TrfType(StrEnum):
-    PAIRING = 'pairing'
-    RATING = 'rating'
-
-    @property
-    def file_extension(self) -> str:
-        match self:
-            case TrfType.RATING:
-                return 'trf'
-            case TrfType.PAIRING:
-                return 'trfx'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
+    TRF_16 = 'trf-16'
+    TRF_BX = 'trf-bx'
 
 
 class PointValueType(Enum):

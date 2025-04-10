@@ -1,8 +1,12 @@
 from functools import total_ordering
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from utils.enum import Result
+from utils.enum import Result, PlayerRatingType
 from data.player import Player
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 
 @dataclass
@@ -33,6 +37,44 @@ class Board:
     @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
+
+    def to_pgn(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        pairings_usage: bool = True,
+    ) -> str:
+        assert self.number is not None
+        result = self.result.to_pgn if self.result and not pairings_usage else '*'
+        start_date = tournament.event.formatted_start_date.replace('-', '.')
+        return (
+            f'[Event "{self._format_pgn_string(tournament.full_name)}"]\n'
+            f'[Site "{self._format_pgn_string(tournament.location) or "?"}"]\n'
+            f'[Date "{start_date}"]\n'
+            f'[EventDate "{start_date}"]\n'
+            f'[Round "{round_}.{self.number}"]\n'
+            + self._player_to_pgn(self.white_player, True)
+            + self._player_to_pgn(self.black_player, False)
+            + f'[Result "{result}"]\n'
+            '\n*\n\n'
+        )
+
+    @classmethod
+    def _player_to_pgn(cls, player: Player | None, is_white: bool) -> str:
+        field_prefix = 'White' if is_white else 'Black'
+        if player is None:
+            return f'[{field_prefix} ""]'
+        rating = player.rating if player.rating_type == PlayerRatingType.FIDE else '-'
+        name = f'{player.last_name}, {player.first_name or "?"}'
+        return (
+            f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
+            f'[{field_prefix}Title "{player.title.to_fide_value or "-"}"]\n'
+            f'[{field_prefix}Elo "{rating or "-"}"]\n'
+        )
+
+    @staticmethod
+    def _format_pgn_string(string: str) -> str:
+        return string[:255].replace('\\', '\\\\').replace('"', '\\"')
 
     def __lt__(self, other):
         # p1 < p2 calls p1.__lt__(p2)
