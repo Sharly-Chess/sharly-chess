@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.3 - 10 avril 2025
+- Récupération de la configuration de l'application à partir d'une version antérieure
+
 ## Version 2.5.2 - 8 avril 2025
 - Correction d'un bug à la récupération des versions antérieures
 - Correction d'un bug sur la connexion au Serveur SQL de la FFE

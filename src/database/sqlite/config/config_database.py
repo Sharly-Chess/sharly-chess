@@ -1,7 +1,7 @@
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, Self, override, TYPE_CHECKING
+from typing import Any, Self, override, TYPE_CHECKING, ClassVar
 
 from packaging.version import Version
 
@@ -25,8 +25,10 @@ logger: Logger = get_logger()
 class ConfigDatabase(MigrationDatabase):
     """The SQLite database class for Papi-web config."""
 
+    # The name of the file holding the configuration of the application.
+    config_database_name: ClassVar[str] = '.scc'
     # The file holding the configuration of the application.
-    config_database_path: Path = EVENTS_DIR / '.scc'
+    config_database_path: ClassVar[Path] = EVENTS_DIR / config_database_name
     is_setup = False
 
     def __init__(self, write: bool = False):
