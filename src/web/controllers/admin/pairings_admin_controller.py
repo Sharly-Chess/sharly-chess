@@ -264,6 +264,14 @@ class PairingsAdminController(BaseEventAdminController):
         if web_context.admin_board is None:
             raise RuntimeError('admin_board not defined')
 
+        if web_context.admin_board.exempt:
+            return self._admin_event_pairings_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                tournament_id=tournament_id,
+                round_=round_,
+            )
+
         can_pair = web_context.admin_tournament.pairings_generation_allowed
         if result is None:
             if web_context.admin_round < web_context.admin_tournament.current_round:
@@ -376,7 +384,6 @@ class PairingsAdminController(BaseEventAdminController):
             case '3':
                 result = Result.DRAW
             case _:
-                print(f'Invalid key [{key}].')
                 return HTMXTemplate(
                     template_name='/common/empty.html',
                     re_swap='none',
