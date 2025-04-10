@@ -70,6 +70,7 @@ class ConfigDatabase(MigrationDatabase):
                         write_database.upgrade()
             except PapiWebException as e:
                 logger.error(e)
+                database.file.unlink(missing_ok=True)
                 database.create()
 
     # ---------------------------------------------------------------------------------
