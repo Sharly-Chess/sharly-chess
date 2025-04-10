@@ -142,8 +142,8 @@
                     id="pairings-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
                     hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="keyup[key=='1'] from:body, keyup[key=='2'] from:body, keyup[key=='3'] from:body"
-                    hx-vals="js:{key: event.key, board_id: pairing_board_id || 0}"
+                    hx-trigger="keyup[code=='Digit1'] from:body, keyup[code=='Digit2'] from:body, keyup[code=='Digit3'] from:body"
+                    hx-vals="js:{key: event.code, board_id: pairing_board_id || 0}"
                     hx-target="body"
                     hx-swap="outerHTML"
                     hx-indicator="#please-wait"
@@ -202,6 +202,11 @@
             $this.parent().addClass("highlight");
             player_id = $this.parent().data("player-id");
             pairing_board_id = null;
+        });
+
+        $(document).on("keyup", "body", function(e) {
+            console.log(e.key);
+            console.log(e.code);
         });
     </script>
 {% endif%}

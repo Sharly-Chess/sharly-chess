@@ -377,11 +377,11 @@ class PairingsAdminController(BaseEventAdminController):
 
         result: int | None = None
         match key:
-            case '1':
+            case 'Digit1':
                 result = Result.GAIN
-            case '2':
+            case 'Digit2':
                 result = Result.LOSS
-            case '3':
+            case 'Digit3':
                 result = Result.DRAW
             case _:
                 return HTMXTemplate(
