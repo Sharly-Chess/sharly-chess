@@ -14,7 +14,7 @@ from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.player import Player, Federation, Club
+from data.player import Player, Federation, Club, PlayerRating
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
@@ -212,20 +212,24 @@ class FideDatabase(LocalSourceDatabase):
             paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
-                TournamentRating.STANDARD: row['standard_rating'],
-                TournamentRating.RAPID: row['rapid_rating'],
-                TournamentRating.BLITZ: row['blitz_rating'],
-            },
-            rating_types={
-                TournamentRating.STANDARD: PlayerRatingType.FIDE
-                if row['standard_rating']
-                else PlayerRatingType.ESTIMATED,
-                TournamentRating.RAPID: PlayerRatingType.FIDE
-                if row['rapid_rating']
-                else PlayerRatingType.ESTIMATED,
-                TournamentRating.BLITZ: PlayerRatingType.FIDE
-                if row['blitz_rating']
-                else PlayerRatingType.ESTIMATED,
+                TournamentRating.STANDARD: PlayerRating(
+                    row['standard_rating'],
+                    PlayerRatingType.FIDE
+                    if row['standard_rating']
+                    else PlayerRatingType.ESTIMATED
+                ),
+                TournamentRating.RAPID: PlayerRating(
+                    row['rapid_rating'],
+                    PlayerRatingType.FIDE
+                    if row['rapid_rating']
+                    else PlayerRatingType.ESTIMATED
+                ),
+                TournamentRating.BLITZ: PlayerRating(
+                    row['blitz_rating'],
+                    PlayerRatingType.FIDE
+                    if row['blitz_rating']
+                    else PlayerRatingType.ESTIMATED
+                ),
             },
             fide_id=row['fide_id'],
             federation=Federation(row['federation']),

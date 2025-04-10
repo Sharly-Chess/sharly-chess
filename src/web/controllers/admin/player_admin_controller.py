@@ -20,7 +20,7 @@ from data.input_output import PlayerUpdater, PlayerUpdaterManager
 from data.input_output.player_updaters import PlayerComparator
 from data.loader import EventLoader
 from data.pairing import Pairing
-from data.player import Player, Federation, Club
+from data.player import Player, Federation, Club, PlayerRating
 from data.tournament import Tournament
 from utils.enum import (
     PlayerCategory,
@@ -161,22 +161,18 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
             data[field] = ''
-        field = 'rating_type'
-        rating_types: dict[TournamentRating, PlayerRatingType] = {
-            tr: PlayerRatingType(
-                WebContext.form_data_to_int(data, f'{field}_{tr.value}')
-                or PlayerRatingType.ESTIMATED.value
-            )
-            for tr in TournamentRating
+        ratings: dict[TournamentRating, PlayerRating] = {
+            tr: PlayerRating(
+                value=WebContext.form_data_to_int(data, f'rating_{tr.value}') or 0,
+                type=PlayerRatingType(
+                    WebContext.form_data_to_int(data, f'rating_type_{tr.value}')
+                    or PlayerRatingType.ESTIMATED.value
+                )
+            ) for tr in TournamentRating
         }
-        field = 'rating'
-        ratings: dict[TournamentRating, int | None] = {
-            tr: WebContext.form_data_to_int(data, f'{field}_{tr.value}')
-            for tr in TournamentRating
-        }
-        for tr in TournamentRating:
-            if rating_types[tr] != PlayerRatingType.ESTIMATED and not ratings[tr]:
-                errors[f'{field}_{tr.value}'] = _(
+        for tr, rating in ratings.items():
+            if rating.type != PlayerRatingType.ESTIMATED and not rating.value:
+                errors[f'rating_type_{tr.value}'] = _(
                     'Only estimated ratings are optional.'
                 )
         title: PlayerTitle | None = PlayerTitle.NONE
@@ -273,7 +269,6 @@ class PlayerAdminController(BaseEventAdminController):
             paid=paid,
             title=title,
             ratings=ratings,
-            rating_types=rating_types,
             fide_id=fide_id,
             federation=federation,
             club=club,
@@ -613,11 +608,9 @@ class PlayerAdminController(BaseEventAdminController):
                     last_name: str | None = None
                     date_of_birth: date | None = None
                     gender: PlayerGender = PlayerGender.NONE
-                    ratings: dict[TournamentRating, int | None] = {
-                        tr: 0 for tr in TournamentRating
-                    }
-                    rating_types: dict[TournamentRating, PlayerRatingType] = {
-                        tr: PlayerRatingType.ESTIMATED for tr in TournamentRating
+                    ratings: dict[TournamentRating, PlayerRating] = {
+                        tr: PlayerRating(0, PlayerRatingType.ESTIMATED)
+                        for tr in TournamentRating
                     }
                     title: PlayerTitle = PlayerTitle.NONE
                     federation: Federation | None = None
@@ -636,7 +629,6 @@ class PlayerAdminController(BaseEventAdminController):
                         gender = admin_player.gender
                         date_of_birth = admin_player.date_of_birth
                         ratings = admin_player.ratings
-                        rating_types = admin_player.rating_types
                         title = admin_player.title
                         federation = admin_player.federation
                         club = admin_player.club
@@ -708,13 +700,13 @@ class PlayerAdminController(BaseEventAdminController):
                         }
                         | {
                             f'rating_{tr.value}': WebContext.value_to_form_data(
-                                ratings[tr] or None
+                                ratings[tr].value or None
                             )
                             for tr in TournamentRating
                         }
                         | {
                             f'rating_type_{tr.value}': WebContext.value_to_form_data(
-                                rating_types[tr].value
+                                ratings[tr].type.value
                             )
                             for tr in TournamentRating
                         }

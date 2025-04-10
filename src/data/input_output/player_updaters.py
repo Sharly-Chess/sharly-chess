@@ -52,11 +52,11 @@ class FidePlayerComparator(PlayerComparator):
         if not self.match_player:
             return None
         diff_field_ids: list[str] = []
-        for rating in TournamentRating:
-            field_id: str = f'rating_{rating.value}'
+        for tr in TournamentRating:
+            field_id: str = f'rating_{tr.value}'
             if field_id in self.field_ids:
-                src_rating = self.player.ratings[rating]
-                match_rating = self.match_player.ratings[rating]
+                src_rating = self.player.get_rating(tr).value
+                match_rating = self.match_player.get_rating(tr).value
                 if match_rating and src_rating != match_rating:
                     diff_field_ids.append(field_id)
         field_id: str = 'name'
@@ -98,15 +98,12 @@ class FidePlayerComparator(PlayerComparator):
     def update_player_from_match(self, field_ids: list[str]):
         if not self.match_player:
             return
-        for rating in TournamentRating:
-            field_id: str = f'rating_{rating.value}'
+        for tr in TournamentRating:
+            field_id: str = f'rating_{tr.value}'
             if field_id in field_ids:
-                rating_value = self.match_player.ratings[rating]
-                if not rating_value:
-                    continue
-                self.player.ratings[rating] = rating_value
-                if rating_type := self.match_player.rating_types[rating]:
-                    self.player.rating_types[rating] = rating_type
+                match_rating = self.match_player.get_rating(tr)
+                if match_rating.value:
+                    self.player.ratings[tr] = match_rating
         field_id: str = 'name'
         if field_id in field_ids:
             if (self.player.first_name, self.player.last_name) != (

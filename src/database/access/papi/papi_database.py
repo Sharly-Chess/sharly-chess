@@ -7,7 +7,7 @@ from typing import NamedTuple, Pattern
 
 from common.logger import get_logger
 from data.pairing import Pairing
-from data.player import Player, Federation, Club
+from data.player import Player, Federation, Club, PlayerRating
 from data.tie_breaks import TieBreak, PapiTieBreakManager
 from utils.enum import (
     Result,
@@ -190,8 +190,8 @@ class PapiDatabase(AccessDatabase):
                 player.owed,
                 player.paid,
             ]
-            + [player.ratings[tr] for tr in TournamentRating]
-            + [player.rating_types[tr].to_papi_value for tr in TournamentRating]
+            + [player.get_rating(tr).value for tr in TournamentRating]
+            + [player.get_rating(tr).type.to_papi_value for tr in TournamentRating]
             + [value for value in plugin_data.values()]
             + [
                 player.ref_id,
@@ -311,10 +311,11 @@ class PapiDatabase(AccessDatabase):
                 owed=float(row['InscriptionDu']) or 0.0,
                 paid=float(row['InscriptionRegle']) or 0.0,
                 title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
-                ratings={tr: row[tr.papi_value_field] or 0 for tr in TournamentRating},
-                rating_types={
-                    tr: PlayerRatingType.from_papi_value(row[tr.papi_type_field])
-                    for tr in TournamentRating
+                ratings={
+                    tr: PlayerRating(
+                        row[tr.papi_value_field] or 0,
+                        PlayerRatingType.from_papi_value(row[tr.papi_type_field])
+                    ) for tr in TournamentRating
                 },
                 fide_id=fide_id,
                 federation=Federation(row['Federation'] or ''),

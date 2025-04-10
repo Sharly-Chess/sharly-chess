@@ -18,7 +18,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.pairing import Pairing
 from data.family import Family
-from data.player import Player, Federation, Club
+from data.player import Player, Federation, Club, PlayerRating
 from data.screen import Screen
 from data.tie_breaks import (
     TieBreak,
@@ -34,7 +34,7 @@ from utils.enum import (
     TournamentPairing,
     Result,
     TournamentRating,
-    TrfType,
+    TrfType, PlayerRatingType,
 )
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
@@ -1076,7 +1076,6 @@ class Tournament:
                 for data in per_plugin_player_data
                 for key, value in data.items()
             }
-
             data: dict[str, Any] = {
                 'Ref': (
                     max(p.ref_id for p in self.players_by_id.values())
@@ -1089,15 +1088,15 @@ class Tournament:
                 'Sexe': player.gender.to_papi_value,
                 'NeLe': PapiDatabase.date_to_papi_date(player.date_of_birth),
                 'Cat': player.category.to_papi_value,
-                'Elo': player.ratings[TournamentRating.STANDARD],
-                'Rapide': player.ratings[TournamentRating.RAPID],
-                'Blitz': player.ratings[TournamentRating.BLITZ],
+                'Elo': player.get_rating(TournamentRating.STANDARD).value,
+                'Rapide': player.get_rating(TournamentRating.RAPID).value,
+                'Blitz': player.get_rating(TournamentRating.BLITZ).value,
                 'Federation': player.federation.name,
                 'ClubRef': 0,
                 'Club': player.club.name if player.club else None,
-                'Fide': player.rating_types[TournamentRating.STANDARD].to_papi_value,
-                'RapideFide': player.rating_types[TournamentRating.RAPID].to_papi_value,
-                'BlitzFide': player.rating_types[TournamentRating.BLITZ].to_papi_value,
+                'Fide': player.get_rating(TournamentRating.STANDARD).type.to_papi_value,
+                'RapideFide': player.get_rating(TournamentRating.RAPID).type.to_papi_value,
+                'BlitzFide': player.get_rating(TournamentRating.BLITZ).type.to_papi_value,
                 'FideCode': player.fide_id if player.fide_id else None,
                 'FideTitre': player.title.to_papi_value,
                 'Pointe': player.check_in,

@@ -1152,8 +1152,8 @@ msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr "Vill du installera exempel på evenemangsdatabaser [{y_uc}/{n_lc}]?"
 
 #, ai_translation
-msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-msgstr "Vill du återställa konfigurationen av version [{version}] [{y_uc}/{n_lc}]?"
+msgid "Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?"
+msgstr "Vill du återställa uppgifterna i version [{version}] [{y_uc}/{n_lc}]?"
 
 #, ai_translation
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
@@ -3192,10 +3192,6 @@ msgid "Papi-web can automatically launch a web browser when starting the web ser
 msgstr "Papi-web kan automatiskt starta en webbläsare när du startar webbservern."
 
 #, ai_translation
-msgid "Papi-web project"
-msgstr "Projekt för papi-web"
-
-#, ai_translation
 msgid "Papi-web settings"
 msgstr "Inställning av papi-webben"
 
@@ -3676,6 +3672,10 @@ msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
 #, ai_translation
+msgid "Recovering configuration from version {version}..."
+msgstr "Återställer konfiguration från version {version}..."
+
+#, ai_translation
 msgid "Recovering custom files..."
 msgstr "Återställer anpassade filer..."
 
@@ -3998,6 +3998,10 @@ msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Skickar turnering [{ffe_id}] ({file}) till FFE:s webbplats..."
 
 #, ai_translation
+msgid "Sharly Chess project"
+msgstr "Sharly Chess-projektet"
+
+#, ai_translation
 msgid "Show all the players"
 msgstr "Visa alla spelare"
 
@@ -4146,8 +4150,8 @@ msgid "The FFE ID is a positive integer."
 msgstr "FFE ID är ett positivt heltal."
 
 #, ai_translation
-msgid "The FIDE database is not available."
-msgstr "FIDE-databasen är inte tillgänglig."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
+msgstr "FIDE- databasen är inte installerad. Använd databasknappen till höger om navigeringsfältet för att installera databaser."
 
 #, ai_translation
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
@@ -5532,4 +5536,13 @@ msgstr[1] "{recent_updates} turneringar har uppdaterats mindre än {ffe_upload_d
 #, ai_translation
 msgid "{screen_type}-screen"
 msgstr "{screen_type}-skärm"
+
+#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+#~ msgstr "Vill du återställa konfigurationen av version [{version}] [{y_uc}/{n_lc}]?"
+
+#~ msgid "The FIDE database is not available."
+#~ msgstr "FIDE-databasen är inte tillgänglig."
+
+#~ msgid "Papi-web project"
+#~ msgstr "Projekt för papi-web"
 

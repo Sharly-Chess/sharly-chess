@@ -20,7 +20,7 @@ from data.print_documents.documents import PlayerPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks import TieBreak
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
-from data.player import Player
+from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
@@ -358,14 +358,9 @@ class FfePlugin(Plugin):
                         TournamentRating.RAPID,
                         TournamentRating.BLITZ,
                     ]:
-                        if (
-                            player.rating_types[rating_type]
-                            == PlayerRatingType.ESTIMATED
-                        ):
+                        rating = player.get_rating(rating_type)
+                        if rating.type == PlayerRatingType.ESTIMATED:
                             player.ratings[rating_type] = ffe_player.ratings[
-                                rating_type
-                            ]
-                            player.rating_types[rating_type] = ffe_player.rating_types[
                                 rating_type
                             ]
                     if (
@@ -387,24 +382,27 @@ class FfePlugin(Plugin):
     def set_player_default_ratings(self, federation: str, player: 'Player'):
         if federation != 'FRA':
             return
-
-        if not player.ratings[TournamentRating.RAPID]:
+        def set_rating(tournament_rating: TournamentRating, rating_value: int):
+            player.ratings[tournament_rating] = PlayerRating(
+                rating_value, PlayerRatingType.ESTIMATED
+            )
+        if not player.get_rating(TournamentRating.RAPID).value:
             match player.category:
                 case PlayerCategory.U8 | PlayerCategory.U10:
-                    player.ratings[TournamentRating.RAPID] = 799
+                    set_rating(TournamentRating.RAPID, 799)
                 case PlayerCategory.U12 | PlayerCategory.U14:
-                    player.ratings[TournamentRating.RAPID] = 999
+                    set_rating(TournamentRating.RAPID, 999)
                 case _:
-                    player.ratings[TournamentRating.RAPID] = 1199
-        if not player.ratings[TournamentRating.BLITZ]:
+                    set_rating(TournamentRating.RAPID, 1199)
+        if not player.get_rating(TournamentRating.BLITZ).value:
             match player.category:
                 case PlayerCategory.U8 | PlayerCategory.U10:
-                    player.ratings[TournamentRating.BLITZ] = 799
+                    set_rating(TournamentRating.BLITZ, 799)
                 case PlayerCategory.U12 | PlayerCategory.U14:
-                    player.ratings[TournamentRating.BLITZ] = 999
+                    set_rating(TournamentRating.BLITZ, 999)
                 case _:
-                    player.ratings[TournamentRating.BLITZ] = 1199
-        if not player.ratings[TournamentRating.STANDARD]:
+                    set_rating(TournamentRating.BLITZ, 1199)
+        if not player.get_rating(TournamentRating.STANDARD).value:
             match player.category:
                 case (
                     PlayerCategory.U8
@@ -415,9 +413,9 @@ class FfePlugin(Plugin):
                     | PlayerCategory.U18
                     | PlayerCategory.U20
                 ):
-                    player.ratings[TournamentRating.STANDARD] = 1299
+                    set_rating(TournamentRating.STANDARD, 1299)
                 case _:
-                    player.ratings[TournamentRating.STANDARD] = 1399
+                    set_rating(TournamentRating.STANDARD, 1399)
 
     @hookimpl
     def is_tournament_participation_possible(

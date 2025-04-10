@@ -13,7 +13,7 @@ from requests.exceptions import ConnectionError
 from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
-from data.player import Player, Federation, Club
+from data.player import Player, Federation, Club, PlayerRating
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
@@ -208,16 +208,18 @@ class FfeDatabase(LocalSourceDatabase):
             paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
-                TournamentRating.STANDARD: row['standard_rating'],
-                TournamentRating.RAPID: row['rapid_rating'],
-                TournamentRating.BLITZ: row['blitz_rating'],
-            },
-            rating_types={
-                TournamentRating.STANDARD: PlayerRatingType(
-                    row['standard_rating_type']
+                TournamentRating.STANDARD: PlayerRating(
+                    row['standard_rating'],
+                    PlayerRatingType(row['standard_rating_type']),
                 ),
-                TournamentRating.RAPID: PlayerRatingType(row['rapid_rating_type']),
-                TournamentRating.BLITZ: PlayerRatingType(row['blitz_rating_type']),
+                TournamentRating.RAPID: PlayerRating(
+                    row['rapid_rating'],
+                    PlayerRatingType(row['rapid_rating_type']),
+                ),
+                TournamentRating.BLITZ: PlayerRating(
+                    row['blitz_rating'],
+                    PlayerRatingType(row['blitz_rating_type']),
+                ),
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             federation=Federation(row['federation']),
