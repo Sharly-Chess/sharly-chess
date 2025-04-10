@@ -100,6 +100,7 @@ class PapiWebConfig(metaclass=Singleton):
 
     def reload(self):
         self.stored_config = self.load()
+        set_locale(self.locale)
 
     @staticmethod
     def load() -> StoredConfig:
@@ -138,10 +139,10 @@ class PapiWebConfig(metaclass=Singleton):
     ffe_upload_delay: int = 180
 
     """ The URL of the project. """
-    url: str = 'https://github.com/papi-web-org/papi-web'
+    url: str = 'https://github.com/sharly-chess/sharly-chess'
 
     """ The contact email. """
-    mail: str = 'papi-web@echecs-bretagne.fr'
+    mail: str = 'contact@sharly-chess.com'
 
     version = PAPI_WEB_VERSION
 
@@ -153,7 +154,7 @@ class PapiWebConfig(metaclass=Singleton):
     @property
     def project(self) -> str:
         """The project of the application."""
-        return _('Papi-web project')
+        return _('Sharly Chess project')
 
     # The extension of event databases.
     event_database_ext: str = 'db'
