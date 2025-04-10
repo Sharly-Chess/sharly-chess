@@ -251,7 +251,7 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] *:focus, [data-bs-theme=light] *:focus {
     box-shadow: none;
-    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.50);
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
     outline-offset: 4px;
 }
 
