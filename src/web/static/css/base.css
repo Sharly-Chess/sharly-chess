@@ -368,6 +368,14 @@ body[data-bs-theme=light] .btn-primary {
     color: var(--pw-contrast-text);
 }
 
+[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
+    --bs-btn-color: var(--bs-body-bg);
+    --bs-btn-border-color: var(--bs-body-bg);
+    --bs-btn-hover-color: var(--bs-primary);
+    --bs-btn-hover-bg: var(--bs-body-bg);
+    --bs-btn-hover-border-color: var(--bs-body-bg);
+}
+
 table > tbody > tr.odd > * {
     --bs-table-color-type: var(--bs-table-striped-color);
     --bs-table-bg-type: var(--bs-table-striped-bg);

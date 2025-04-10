@@ -9,6 +9,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from data.loader import EventLoader
 from data.board import Board
@@ -109,6 +110,7 @@ class PairingsAdminController(BaseEventAdminController):
         round_: int | None = None,
         board_id: int | None = None,
         data: dict[str, str] | None = None,
+        trigger_event: str | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
@@ -149,9 +151,40 @@ class PairingsAdminController(BaseEventAdminController):
             'admin_round': web_context.admin_round,
             'admin_boards': web_context.admin_boards,
             'admin_unpaired': web_context.admin_unpaired,
+            'board': web_context.admin_board,
+            'wp': web_context.admin_board.white_player
+            if web_context.admin_board
+            else None,
+            'bp': web_context.admin_board.black_player
+            if web_context.admin_board
+            else None,
         }
 
-        return cls._admin_event_render(template_context)
+        if web_context.admin_board is not None and modal is None:
+            board_id = web_context.admin_board.board_id
+            assert board_id is not None
+            next_board_id = next(
+                (
+                    b.board_id
+                    for b in web_context.admin_boards
+                    if b.board_id is not None and b.board_id > board_id
+                ),
+                None,
+            )
+
+            return HTMXTemplate(
+                template_name='/admin/pairings/pairing_row.html',
+                context=template_context,
+                re_target=f'[data-board-id="{web_context.admin_board.board_id}"]',
+                re_swap='outerHTML',
+                trigger_event=trigger_event,
+                after='receive',
+                params={
+                    'board_id': next_board_id,
+                },
+            )
+        else:
+            return cls._admin_event_render(template_context)
 
     @get(
         path=[
@@ -207,6 +240,7 @@ class PairingsAdminController(BaseEventAdminController):
         round_: int,
         board_id: int,
         result: int | None,
+        trigger_event: str | None = None,
     ) -> Template | ClientRedirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
@@ -258,14 +292,16 @@ class PairingsAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             round_=round_,
+            board_id=board_id,
+            trigger_event=trigger_event,
         )
 
     @put(
-        path='/admin/pairing/add-result/'
+        path='/admin/pairing/set-result/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
-        name='admin-add-result',
+        name='admin-set-result',
     )
-    async def htmx_user_add_result(
+    async def htmx_admin_set_result(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -281,6 +317,57 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
             board_id=board_id,
             result=result,
+            trigger_event='close_modal',
+        )
+
+    @put(
+        path='/admin/pairing/set-result-hotkey/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-event-set-result-hotkey',
+        data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    async def htmx_admin_set_result_hotkey(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int | None,
+        round: int | None,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        board_id: int | None = int(data.get('board_id', 0))
+        key: str | None = data.get('key')
+
+        if tournament_id is None or not round or board_id is None:
+            return self._admin_event_pairings_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                tournament_id=tournament_id,
+                round_=round,
+                board_id=board_id,
+            )
+
+        result: int | None = None
+        match key:
+            case '1':
+                result = Result.GAIN
+            case '2':
+                result = Result.LOSS
+            case '3':
+                result = Result.DRAW
+            case _:
+                return BaseController.redirect_error(request, f'Invalid key [{key}].')
+
+        return self._admin_update_result(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+            result=result,
+            trigger_event='highlight_board',
         )
 
     @delete(

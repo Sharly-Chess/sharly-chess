@@ -85,6 +85,7 @@
     "joueur",
     "jstree",
     "Kashdan",
+    "keyup",
     "KJGYREIOBZ",
     "Koya",
     "KYNPRTZMHX",
@@ -170,6 +171,6 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": false,
   "[jinja]": {
-      "editor.formatOnSave": false
+    "editor.formatOnSave": false
   }
 }

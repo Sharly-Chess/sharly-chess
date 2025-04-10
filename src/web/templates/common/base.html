@@ -63,8 +63,7 @@
                         }
                     }
                 })
-            </script>
-            <script>
+
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
                     {#  This is necessary since dvh/dwh is broken on Chrome #}
@@ -79,12 +78,11 @@
                     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
 
-                  setSize();
+                setSize();
 
-                  window.addEventListener('resize', setSize);
-                  window.addEventListener('htmx:afterSettle', setSize);
-            </script>
-            <script>
+                window.addEventListener('resize', setSize);
+                window.addEventListener('htmx:afterSettle', setSize);
+
                 function closeTooltips () {
                     $('body .tooltip').remove();
                     $('body .tooltip-inner').remove();

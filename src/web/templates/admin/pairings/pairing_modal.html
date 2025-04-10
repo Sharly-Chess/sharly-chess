@@ -10,19 +10,19 @@
                 <div class="row d-flex align-items-center justify-content-center">
                     <button
                         class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-add-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=3) }}"
+                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=3) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     ><div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating }}{{ wp.rating_type }}</div></button>
                     <button
                         class="result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-add-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=2) }}"
+                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=2) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     ><div>{{ _('DRAW') }}<br/>½ - ½</div></button>
                     <button
                         class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-add-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=1) }}"
+                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=1) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     ><div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating }}{{ bp.rating_type }}<div></button>
@@ -30,19 +30,19 @@
                 <div class="row d-flex align-items-center justify-content-center mt-3">
                     <button
                         class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-add-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=6) }}"
+                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=6) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     ><div>{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</div></button>
                     <button
                         class="admin-result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-add-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=5) }}"
+                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=5) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     ><div>{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</div></button>
                     <button
                         class="admin-result-button black text-white bg-black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-add-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=4) }}"
+                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=4) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     ><div>{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</div></button>
@@ -62,7 +62,13 @@
             </div>
             <div class="modal-footer">
                 <button
-                    ty@
+                    type="button"
+                    class="btn btn-secondary text-nowrap"
+                    data-bs-dismiss="modal"
+                >
+                    <i class="bi-x-circle-fill"></i>
+                    {{ _('Cancel') }}
+                </button>
             </div>
         </div>
     </div>

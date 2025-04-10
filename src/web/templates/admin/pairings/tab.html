@@ -89,6 +89,13 @@
                 <table
                     id="pairings-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
+                    hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-trigger="keyup[key=='1'] from:body, keyup[key=='2'] from:body, keyup[key=='3'] from:body"
+                    hx-vals="js:{key: event.key, board_id: pairing_board_id || 0}"
+                    hx-target="body"
+                    hx-swap="outerHTML"
+                    hx-indicator="#please-wait"
+                    hx-on:highlight_board="highlight_board(event.detail.board_id)"
                 >
                     <thead
                         id="players-table-header"
@@ -107,30 +114,7 @@
                     <tbody>
                         {% for board in admin_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}
-                                <tr
-                                    class="pairing-row"
-                                    data-board-id="{{ board.number }}"
-                                    data-player-id="{{ wp.id }}"
-                                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
-                                    hx-trigger="click"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    preload
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                >
-                                    <td class="text-center">{{ board.number }}</td>
-                                    <td class="text-center">{{ wp.vpoints_str }}</td>
-                                    <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
-                                    <td class="text-center">{% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}</td>
-                                    {% if bp %}
-                                        <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>
-                                        <td class="text-center">{{ bp.vpoints_str }}</td>
-                                    {% else %}
-                                        <td>{{ _('EXEMPT') }}</td>
-                                        <td class="text-center"></td>
-                                    {% endif %}
-                                </tr>
+                                {% include '/admin/pairings/pairing_row.html' %}
                             {% endwith %}
                         {% endfor %}
                     </tbody>
@@ -141,23 +125,30 @@
 
     <script>
         var pairing_board_id = null;
-        $(document).on("click", "tr.pairing-row > td", function() {
-            var $this = $(this);
+
+        function highlight_board(board_id) {
             $("tr.highlight").removeClass("highlight");
-            $this.parent().addClass("highlight");
-            pairing_board_id = $this.parent().data("board-id");
+            if (board_id) {
+                $(`[data-board-id="${board_id}"]`).addClass("highlight");
+                pairing_board_id = board_id;
+            } else {
+                pairing_board_id = null;
+            }
             player_id = null;
-            console.log(pairing_board_id);
+        }
+
+        $(document).on("click", "tr.pairing-row > td", function(e) {
+            var $this = $(this);
+            highlight_board($this.parent().data("board-id"));
         });
 
         var player_id = null;
-        $(document).on("click", "tr.player-row > td", function() {
+        $(document).on("click", "tr.player-row > td", function(e) {
             var $this = $(this);
             $("tr.highlight").removeClass("highlight");
             $this.parent().addClass("highlight");
             player_id = $this.parent().data("player-id");
             pairing_board_id = null;
-            console.log(player_id);
         });
     </script>
 {% endif%}
