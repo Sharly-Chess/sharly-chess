@@ -120,21 +120,6 @@
         </button>
     </span>
 
-    {% if EXPERIMENTAL_FEATURES and tournament.pairings_generation_allowed %}
-        <span {{ macros.tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
-            <button
-                class="btn btn-sm btn-outline-primary text-nowrap"
-                hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <i class="bi-shuffle pe-1"></i>
-                {{ _('Pair') }}
-            </button>
-        </span>
-    {% endif %}
-
     {% if EXPERIMENTAL_FEATURES %}
         <div class="dropdown d-inline">
             <button class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">

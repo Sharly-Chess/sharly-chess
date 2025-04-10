@@ -1,5 +1,5 @@
 <div
-    class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
+    class="d-flex mb-2 align-items-center flex-wrap gap-4 z-3"
     style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
     {% call() macros.section_title() %}
@@ -7,6 +7,22 @@
         {{ admin_event.name }} - {{ _('Pairings') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
+
+    {% if EXPERIMENTAL_FEATURES and admin_tournament.pairings_generation_allowed %}
+        <div {{ macros.tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
+            <button
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-shuffle pe-1"></i>
+                {{ _('Pair') }}
+            </button>
+        </div>
+    {% endif %}
+
     <div class="d-flex gap-2 ms-auto align-items-center">
         <select
             name="tournament_id"

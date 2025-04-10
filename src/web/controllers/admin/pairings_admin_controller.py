@@ -2,7 +2,7 @@ from contextlib import suppress
 from typing import Annotated, Any
 
 
-from litestar import delete, get, put
+from litestar import delete, get, put, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -11,17 +11,20 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
+from common.i18n import _
 from data.loader import EventLoader
 from data.board import Board
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from pairing.bbp_pairings import BbpPairings
 from utils.enum import Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
 from web.controllers.base_controller import BaseController
+from web.messages import Message
 
 
 class PairingsAdminWebContext(BaseEventAdminWebContext):
@@ -86,6 +89,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     self.admin_tournament.build_boards()
                 )
 
+        self.admin_unpaired = sorted(self.admin_unpaired, key=lambda p: p.last_name)
         self.admin_board: Board | None = None
         if board_id is not None and self.admin_boards is not None:
             self.admin_board = next(
@@ -111,6 +115,7 @@ class PairingsAdminController(BaseEventAdminController):
         board_id: int | None = None,
         data: dict[str, str] | None = None,
         trigger_event: str | None = None,
+        full_refresh: bool = False,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
@@ -160,7 +165,7 @@ class PairingsAdminController(BaseEventAdminController):
             else None,
         }
 
-        if web_context.admin_board is not None and modal is None:
+        if not full_refresh and web_context.admin_board is not None and modal is None:
             board_id = web_context.admin_board.board_id
             assert board_id is not None
             next_board_id = next(
@@ -259,10 +264,20 @@ class PairingsAdminController(BaseEventAdminController):
         if web_context.admin_board is None:
             raise RuntimeError('admin_board not defined')
 
+        can_pair = web_context.admin_tournament.pairings_generation_allowed
         if result is None:
-            if web_context.admin_round == web_context.admin_tournament.current_round:
-                return BaseController.redirect_error(
-                    request, "Can't delete result from previous round"
+            if web_context.admin_round < web_context.admin_tournament.current_round:
+                Message.error(
+                    request,
+                    _("Can't delete result from previous round"),
+                )
+                return self._admin_event_pairings_render(
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    tournament_id=tournament_id,
+                    round_=round_,
+                    board_id=board_id,
+                    modal='pairing',
                 )
             with suppress(ValueError):
                 web_context.admin_tournament.delete_result(web_context.admin_board)
@@ -287,6 +302,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_tournament is not None
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -294,6 +310,8 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round_,
             board_id=board_id,
             trigger_event=trigger_event,
+            full_refresh=can_pair
+            != web_context.admin_tournament.pairings_generation_allowed,
         )
 
     @put(
@@ -391,4 +409,52 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
             board_id=board_id,
             result=None,
+        )
+
+    @post(
+        path='/admin/generate-pairings/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-generate-pairings',
+    )
+    async def admin_tournament_generate_pairings(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            data=None,
+        )
+
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        if web_context.admin_tournament is None:
+            raise RuntimeError('admin_tournament not defined')
+
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        BbpPairings().generate_pairings(tournament)
+        tournament.read_papi(True)
+
+        Message.success(
+            request,
+            _(
+                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
+            ).format(
+                round=tournament.current_round, tournament_uniq_id=tournament.uniq_id
+            ),
+        )
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            trigger_event=None,
         )
