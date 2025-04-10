@@ -48,7 +48,7 @@ BUILD_DIR: Path = BASE_DIR / 'build'
 DIST_DIR: Path = BASE_DIR / 'dist'
 DATA_DIR: Path = BASE_DIR / 'export-data'
 LOCALE_DIR: Path = BASE_DIR / 'locale'
-basename: str = f'papi-web-{PapiWebConfig().version}'
+basename: str = f'papi-web-{PAPI_WEB_VERSION}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
@@ -94,6 +94,7 @@ def build_exe():
         '--hiddenimport=web',
         '--hiddenimport=babel.numbers',
         '--hiddenimport=pyexcel_io.writers',
+        '--hiddenimport=colorlog',
         '--paths=.',
         '--icon=src/web/static/images/papi-web.ico',
         '--optimize',
@@ -201,7 +202,6 @@ def build_exe():
 
 
 def create_project():
-    papi_web_config: PapiWebConfig = PapiWebConfig()
     print_interactive_info(f'Adding data from folder {PROJECT_DIR} to {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     bin_dir: Path = PROJECT_DIR / 'bin'
@@ -227,9 +227,9 @@ def create_project():
         f.write(
             f'@echo off\n'
             f'echo Starting Papi-web FFE client, please wait...\n'
-            f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
+            f'@rem Papi-web {PAPI_WEB_VERSION} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
             f'cd ..\n'
-            f'{EXE_FILENAME} --chessevent\n'
+            f'{EXE_FILENAME} --ffe\n'
             f'pause\n'
         )
     target_file = bin_dir / 'chessevent.bat'
@@ -238,7 +238,7 @@ def create_project():
         f.write(
             f'@echo off\n'
             f'echo Starting Papi-web ChessEvent client, please wait...\n'
-            f'@rem Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}\n'
+            f'@rem Papi-web {PAPI_WEB_VERSION} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --chessevent\n'
             f'pause\n'

@@ -313,10 +313,6 @@ msgid "Allow"
 msgstr "Toestaan"
 
 #, ai_translation
-msgid "An error occurred, press Enter to end."
-msgstr "Er is een fout opgetreden, druk op Enter om te beëindigen."
-
-#, ai_translation
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "Enig commentaar op de speler (opmerkingen zijn alleen zichtbaar door de arbiters)."
 
@@ -1147,16 +1143,16 @@ msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr "Wilt u voorbeeld databases installeren [{y_uc}/{n_lc}]?"
 
 #, ai_translation
-msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-msgstr "Wilt u de configuratie van versie [{version}] [{y_uc}/{n_lc}] herstellen?"
+msgid "Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?"
+msgstr "Wilt u de gegevens van versie [{version}] [{y_uc}/{n_lc}] herstellen?"
 
 #, ai_translation
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr "Wilt u deze aangepaste bestanden naar de Papi-webontwikkelaars sturen om toekomstige versies te verbeteren [{y_uc}/{n_lc}]?"
 
 #, ai_translation
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-msgstr "Wilt u upgraden van [{old_version}] naar [{new_version}] [{y_lc}/{n_uc}}]?"
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
+msgstr "Wilt u upgraden van [{old_version}] naar [{new_version}] [{y_lc}/{n_uc}]?"
 
 #, ai_translation
 msgid "Document:"
@@ -3134,8 +3130,6 @@ msgstr "Gehele toegewezen bye"
 
 # Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
 # long compared to initial [Pairings]
-# Error: translation [met een gewicht van niet meer dan 150 g/m2] is much too
-# long compared to initial [Pairings]
 #, ai_translation
 msgid "Pairings"
 msgstr ""
@@ -3187,10 +3181,6 @@ msgstr "Papi-bestand niet gevonden [{file}] voor toernooi [{tournament_uniq_id}]
 #, ai_translation
 msgid "Papi-web can automatically launch a web browser when starting the web server."
 msgstr "Papi-web kan automatisch een webbrowser starten bij het starten van de webserver."
-
-#, ai_translation
-msgid "Papi-web project"
-msgstr "Papi-webproject"
 
 #, ai_translation
 msgid "Papi-web settings"
@@ -3673,6 +3663,10 @@ msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
 #, ai_translation
+msgid "Recovering configuration from version {version}..."
+msgstr "Configuratie herstellen van versie {version}..."
+
+#, ai_translation
 msgid "Recovering custom files..."
 msgstr "Aangepaste bestanden worden hersteld..."
 
@@ -3993,6 +3987,10 @@ msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Verzenden van toernooi [{ffe_id}] ({file}) naar de FSFE website..."
 
 #, ai_translation
+msgid "Sharly Chess project"
+msgstr "Sharly Chess-project"
+
+#, ai_translation
 msgid "Show all the players"
 msgstr "Alle spelers tonen"
 
@@ -4141,8 +4139,8 @@ msgid "The FFE ID is a positive integer."
 msgstr "De FFE ID is een positief geheel getal."
 
 #, ai_translation
-msgid "The FIDE database is not available."
-msgstr "De FIDE-database is niet beschikbaar."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
+msgstr "De FIDE-database is niet geïnstalleerd. Gebruik de databaseknop rechts van de navigatiebalk om databases te installeren."
 
 #, ai_translation
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
@@ -4259,6 +4257,10 @@ msgstr "De federatie die het evenement organiseert."
 #, ai_translation
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Het eerste toernooi van het scherm, verplicht (het is mogelijk om andere toernooien later toe te voegen)."
+
+#, ai_translation
+msgid "The following languages are available:"
+msgstr "De volgende talen zijn beschikbaar:"
 
 #, ai_translation
 msgid "The following players did not check-in:"
@@ -5514,408 +5516,12 @@ msgstr[1] "{recent_updates} toernooien zijn minder dan {ffe_upload_delay} second
 msgid "{screen_type}-screen"
 msgstr "{screen_type}-scherm"
 
-#~ msgid "pairings by board"
-#~ msgstr "paringen per bord"
+#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+#~ msgstr "Wilt u de configuratie van versie [{version}] [{y_uc}/{n_lc}] herstellen?"
 
-#~ msgid "Zero point bye"
-#~ msgstr ""
+#~ msgid "The FIDE database is not available."
+#~ msgstr "De FIDE-database is niet beschikbaar."
 
-#~ msgid "The number of points by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)s)."
-#~ msgstr ""
-
-#~ msgid "The number of last rounds for which a player can get byes (if not set, defaults to %(default)d)."
-#~ msgstr ""
-
-#~ msgid "The number of points scored by players who are paired bye."
-#~ msgstr ""
-
-#~ msgid "Screen families allow to group screens together."
-#~ msgstr ""
-
-#~ msgid "%(last_name)s %(first_name)s"
-#~ msgstr "%(last_name)s %(first_name)s"
-
-#~ msgid "Skip round"
-#~ msgstr "Rond overslaan"
-
-#~ msgid "Full-point byes are deprecated."
-#~ msgstr "Full-point byes zijn verouderd."
-
-#~ msgid "Bye not allowed"
-#~ msgstr "Dag niet toegestaan"
-
-#~ msgid "Blitz *** BLIZT ELO FOR PRINT VIEW"
-#~ msgstr "Blitz"
-
-#~ msgid "Fed *** FEDEFRATION FOR PRINT VIEW"
-#~ msgstr "Fed"
-
-#~ msgid "Full-point bye"
-#~ msgstr "Volledig punt bye"
-
-#~ msgid "Full point bye"
-#~ msgstr "Volledig punt bye"
-
-#~ msgid "Half point bye"
-#~ msgstr "Halve punt bye"
-
-#~ msgid "W *** WHITE COLOR FOR RANKINGS"
-#~ msgstr "W"
-
-#~ msgid "B *** BLACK COLOR FOR RANKINGS"
-#~ msgstr "B"
-
-#~ msgid "Rankings after round #%d"
-#~ msgstr "Ranglijsten na ronde #%d"
-
-#~ msgid "Tournament summary after round #%d"
-#~ msgstr "Overzicht van toernooien na ronde #%d"
-
-#~ msgid "Rankings"
-#~ msgstr "Ranglijsten"
-
-#~ msgid "Tournament summary"
-#~ msgstr "Overzicht van het toernooi"
-
-#~ msgid "Not part of the selected tournament (%d rounds)."
-#~ msgstr "Geen onderdeel van het geselecteerde toernooi (%d rondes)."
-
-#~ msgid "Round not finished (last finished: %d)."
-#~ msgstr "Ronde is niet voltooid (laatste voltooid: %d)."
-
-#~ msgid "Only estimated rankings are optional."
-#~ msgstr "Alleen geschatte rankings zijn optioneel."
-
-#~ msgid "Players found in the Papi_file : %(num)d"
-#~ msgstr "Spelers gevonden in het Papi_bestand : %(num)d"
-
-#~ msgid "Paired bye points: %(string)s"
-#~ msgstr "Gepaarde bye punten: %(string)s"
-
-#~ msgid "Paired bye points:"
-#~ msgstr "Gepaarde bye punten:"
-
-#~ msgid "The points scored by players who are paired bye."
-#~ msgstr "De punten gescoord door spelers die zijn gekoppeld bye."
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-#~ msgstr "Dit veld geeft u de schermen aan waarvan de links op het menu van de schermen van de familie worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @family (alle schermen van de familie), @boards (alle boards screens), @input (alle invoerschermen), @players (alle spelers screens) en de wildcard * kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op de schermen worden weergegeven."
-
-#~ msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-#~ msgstr "Dit veld geeft u de schermen aan waarvan de links op het schermmenu worden weergegeven. Screen identifiers moeten worden gescheiden door komma's, de trefwoorden @boards (alle boards), @input (alle invoerschermen), @players (alle spelersschermen) en de wildcard * kunnen worden gebruikt. Als dit veld leeg blijft, zal er geen menu op het scherm worden weergegeven."
-
-#~ msgid "League *** LEAGUE FOR PLAYERS COLUMNS"
-#~ msgstr "League"
-
-#~ msgid "Origin *** ORIGIN COLUMN HEADER FOR PLAYERS"
-#~ msgstr "Origin"
-
-#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-#~ msgstr "FFE"
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
-#~ msgstr "FFE-licentie: %(ffe_licence_number)s (verlopen)."
-
-#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-#~ msgstr "FFE licentie: %(ffe_licence_number)s (klik om te kopiëren naar het klembord)."
-
-#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-#~ msgstr "Onbekend FFE-licentietype [%(ffe_licence)s]."
-
-#~ msgid "Sort the players by origin (federation, league, club)."
-#~ msgstr "Sorteer de spelers op herkomst (federation, league, club)."
-
-#~ msgid "Option is obsolete, set environment variable [{var}=1] instead."
-#~ msgstr "De optie is verouderd, zet omgevingsvariabele [{var}=1] in plaats daarvan."
-
-#~ msgid "Locale [{locale}] not found."
-#~ msgstr "Lokaal [{locale}] niet gevonden."
-
-#~ msgid "Option not set."
-#~ msgstr "Optie niet ingesteld."
-
-#~ msgid "Section not found."
-#~ msgstr "Sectie niet gevonden."
-
-#~ msgid "The following languages are available:"
-#~ msgstr "De volgende talen zijn beschikbaar:"
-
-#~ msgid "Invalid log level [{level}], by default [{default}]."
-#~ msgstr "Ongeldig logniveau [{level}], standaard [{default}]."
-
-#~ msgid "Option not set, by default [{default}]."
-#~ msgstr "Standaard is de optie niet ingesteld [{default}]."
-
-#~ msgid "Invalid host configuration [{host}], by default [{default}]."
-#~ msgstr "Ongeldige hostconfiguratie [{host}], standaard [{default}]."
-
-#~ msgid "Invalid port [{port}], by default [{default}]."
-#~ msgstr "Ongeldige poort [{port}], standaard [{default}]."
-
-#~ msgid "Invalid delay [{delay}], by default [{default}]"
-#~ msgstr "Ongeldige vertraging [{delay}], standaard [{default}]"
-
-#~ msgid "Section not found, default configuration set."
-#~ msgstr "Sectie niet gevonden, standaard configuratie ingesteld."
-
-#~ msgid "Your file {ini_file} has been saved as {ini_file_org}."
-#~ msgstr "Uw bestand {ini_file} is opgeslagen als {ini_file_org}."
-
-#~ msgid "Could not save {ini_file} to {ini_file_org}: {ex}."
-#~ msgstr "Kon {ini_file} niet opslaan in {ini_file_org}: {ex}."
-
-#~ msgid "Adding lines to {file}..."
-#~ msgstr "Regels toevoegen aan {file}..."
-
-#~ msgid "[i18n] # Added by Papi-web {version}"
-#~ msgstr "[i18n] # Toegevoegd door Papi-web {version}"
-
-#~ msgid "# The line below has been commented by Papi-web {version}"
-#~ msgstr "# De lijn hieronder is becommentarieerd door Papi-web {version}"
-
-#~ msgid "Your file {ini_file} has been modified."
-#~ msgstr "Uw bestand {ini_file} is gewijzigd."
-
-#~ msgid "Could not write to {ini_file}: {ex}."
-#~ msgstr "Kon niet schrijven naar {ini_file}: {ex}."
-
-#~ msgid "Port [{port}] already in use, can not start Papi-web server."
-#~ msgstr "Poort [{port}] al in gebruik, kan Papi-webserver niet starten."
-
-#~ msgid "Default federation"
-#~ msgstr ""
-
-#~ msgid "Connections (FFE and ChessEvent)"
-#~ msgstr "Verbindingen (FFE en ChessEvent)"
-
-#~ msgid "Initial time (optional):"
-#~ msgstr "Begintijd (facultatief):"
-
-#~ msgid "Increment (optional):"
-#~ msgstr "Increment (facultatief):"
-
-#~ msgid "Penalty (handicap):"
-#~ msgstr "Straf (handicap):"
-
-#~ msgid "Minimal time (handicap):"
-#~ msgstr "Minimale tijd (handicap):"
-
-#~ msgid "%t (ranking)"
-#~ msgstr ""
-
-#~ msgid "Bu. *** ACRONYM FOR BUCHHOLZ"
-#~ msgstr "Bu."
-
-#~ msgid "Tr. *** ACRONYM FOR BUCHHOLZ CUT BOTTOM"
-#~ msgstr "Tr."
-
-#~ msgid "Me. *** ACRONYM FOR MEDIAN BUCHHOLZ"
-#~ msgstr "Me."
-
-#~ msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-#~ msgstr "PS"
-
-#~ msgid "Perf *** ACRONYM FOR PERFORMANCE"
-#~ msgstr "Perf"
-
-#~ msgid "SBh *** ACRONYM FOR SUM OF BUCHHOLZ"
-#~ msgstr "SBh"
-
-#~ msgid "NW *** ACRONYM FOR NUMBER OF WINS"
-#~ msgstr "NW"
-
-#~ msgid "Ka. *** ACRONYM FOR KASHDAN"
-#~ msgstr "Ka."
-
-#~ msgid "Ko. *** ACRONYM FOR KOYA"
-#~ msgstr "Ko."
-
-#~ msgid "SB *** ACRONYM FOR SONNENBORN BERGER"
-#~ msgstr "SB"
-
-#~ msgid "Cut Bottom"
-#~ msgstr "Onderkant knippen"
-
-#~ msgid "Papi legacy"
-#~ msgstr "Papi-erfgoed"
-
-#~ msgid "Sonneborn-Berger"
-#~ msgstr "Sonneborn-Berger"
-
-#~ msgid "Create a player"
-#~ msgstr "Een speler aanmaken"
-
-#~ msgid "Download the vCards of the selected players (VCF format)."
-#~ msgstr "Download de vCards van de geselecteerde spelers (VCF-formaat)."
-
-#~ msgid "The FFE database is not available."
-#~ msgstr "De FFE-database is niet beschikbaar."
-
-#~ msgid "Cat."
-#~ msgstr "Cat."
-
-#~ msgid "Cut"
-#~ msgstr "Knippen"
-
-#~ msgid "Cut bottom"
-#~ msgstr "Onderkant knippen"
-
-#~ msgid "Cut top"
-#~ msgstr "Knippen boven"
-
-#~ msgid "Directory of the Papi file:"
-#~ msgstr "Map van het Papi-bestand:"
-
-#~ msgid "Do you want Papi-web to create the file?"
-#~ msgstr "Wilt u dat Papi-web het bestand aanmaakt?"
-
-#~ msgid "Error while updating the FFE database."
-#~ msgstr "Fout bij het bijwerken van de FFE-database."
-
-#~ msgid "Exclude players"
-#~ msgstr "Spelers uitsluiten"
-
-#~ msgid "Fore modifier"
-#~ msgstr "Fore modifier"
-
-#~ msgid "Limit"
-#~ msgstr "Maximumhoeveelheid"
-
-#~ msgid "Missing Papi file"
-#~ msgstr "Ontbrekend Papi-bestand"
-
-#~ msgid "Name of the Papi file (with no extension):"
-#~ msgstr "Naam van het Papi-bestand (zonder extensie):"
-
-#~ msgid "No split"
-#~ msgstr "Geen splitsing"
-
-#~ msgid "No, I will do it later"
-#~ msgstr "Nee, ik doe het later wel."
-
-#~ msgid "Options"
-#~ msgstr "Opties"
-
-#~ msgid "Papi file [{file}] created."
-#~ msgstr "Papi-bestand [{file}] aangemaakt."
-
-#~ msgid "Papi file has not been created."
-#~ msgstr "Papi-bestand is niet aangemaakt."
-
-#~ msgid "Papi version: {version}"
-#~ msgstr "Papi-versie: {version}"
-
-#~ msgid "Played modifier"
-#~ msgstr "Bespeelde modifier"
-
-#~ msgid "Player updates are possible, select the players to update:"
-#~ msgstr "Speler updates zijn mogelijk, selecteer de spelers om te updaten:"
-
-#~ msgid "Please choose the Papi version:"
-#~ msgstr "Kies de Papi-versie:"
-
-#~ msgid "Please enter the number of the version to recover [{default}]: "
-#~ msgstr "Voer het nummer in van de te herstellen versie [{default}]:"
-
-#~ msgid "Storing data..."
-#~ msgstr "Gegevens worden opgeslagen..."
-
-#~ msgid "The directory of the Papi file, by default %(dir)s."
-#~ msgstr "De map van het Papi-bestand, standaard %(dir)s."
-
-#~ msgid "The name of the Papi file, without the .papi extension (by default the FFE certification number of the tournament, then The Unique ID of the tournament)."
-#~ msgstr "De naam van het Papi bestand, zonder de .papi extensie (standaard het FFE kwalificatienummer van het toernooi, dan De Unieke ID van het toernooi)."
-
-#~ msgid "This program should not be launched directly, use the scripts server.bat, ffe.bat and chessevent.bat."
-#~ msgstr "Dit programma moet niet direct worden gestart, gebruik maken van de scripts server.bat, ffe.bat en chessevent.bat."
-
-#~ msgid "Warning: Papi file [%(path)s] not found, many features are disabled."
-#~ msgstr "Waarschuwing: Papi-bestand [%(path)s] niet gevonden, veel functies zijn uitgeschakeld."
-
-#~ msgid "YOB"
-#~ msgstr "YOB"
-
-#~ msgid "Yes, create the file"
-#~ msgstr "Ja, maak het bestand aan"
-
-#~ msgid "{number} players written."
-#~ msgstr "{number} spelers geschreven."
-
-#~ msgid "Could not download [{url}]: {ex}."
-#~ msgstr "Kon niet downloaden [{url}]: {ex}."
-
-#~ msgid "Downloading the FFE database..."
-#~ msgstr "Downloaden van de FFE-database..."
-
-#~ msgid "Downloading the FIDE database..."
-#~ msgstr "De FIDE-database downloaden..."
-
-#~ msgid "Error while creating the database: {ex}."
-#~ msgstr "Fout bij het aanmaken van de database: {ex}."
-
-#~ msgid "Error while updating the FIDE database."
-#~ msgstr "Fout bij het bijwerken van de FIDE-database."
-
-#~ msgid "Not connected, can not create the FFE database."
-#~ msgstr "Niet verbonden, kan de FFE-database niet aanmaken."
-
-#~ msgid "Not connected, can not create the FIDE database."
-#~ msgstr "Niet verbonden, kan de FIDE-database niet aanmaken."
-
-#~ msgid "Not connected, can not update the FFE database."
-#~ msgstr "Niet verbonden, kan de FFE-database niet bijwerken."
-
-#~ msgid "Not connected, can not update the FIDE database."
-#~ msgstr "Niet verbonden, kan de FIDE-database niet bijwerken."
-
-#~ msgid "Storing FFE data..."
-#~ msgstr "Opslaan van FFE-gegevens..."
-
-#~ msgid "Storing FIDE data..."
-#~ msgstr "Opslaan van FIDE-gegevens..."
-
-#~ msgid "The FFE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-#~ msgstr "De FFE-database [{file}] is verouderd ([{days}] dagen], wilt u het bijwerken (Y/n)?"
-
-#~ msgid "The FFE database [{file}] was not found, do you want to create it (Y/n)? "
-#~ msgstr "De FFE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
-
-#~ msgid "The FIDE database [{file}] is obsolete ([{days}] days], do you want to update it (Y/n)? "
-#~ msgstr "De FIDE-database [{file}] is verouderd ([{days}] dagen], wilt u deze updaten (Y/n)?"
-
-#~ msgid "The FIDE database [{file}] was not found, do you want to create it (Y/n)? "
-#~ msgstr "De FIDE-database [{file}] is niet gevonden, wilt u deze aanmaken (Y/n)?"
-
-#~ msgid "Tournament [{tournament_uniq_id}] has only [{player_count}] players (< [{first}]), family ignored."
-#~ msgstr "Toernooi [{tournament_uniq_id}] heeft alleen [{player_count}] spelers (< [{first}]), familie genegeerd."
-
-#~ msgid "{family_type}-family"
-#~ msgstr "{family_type}-familie"
-
-#~ msgid "{number} players written to FFE database."
-#~ msgstr "{number} spelers geschreven naar FFE-database."
-
-#~ msgid "{number} players written to FIDE database."
-#~ msgstr "{number} spelers geschreven naar FIDE database."
-
-#~ msgid "Connection to the FFE database failed."
-#~ msgstr "Verbinding met de FFE-database is mislukt."
-
-#~ msgid "Connection to the FFE database failed: {error}."
-#~ msgstr "Verbinding met de FFE-database is mislukt: {error}."
-
-#~ msgid "Connection to the FFE server failed."
-#~ msgstr "Verbinding met de FFE-server is mislukt."
-
-#~ msgid "Connection to the FFE server failed: {error}."
-#~ msgstr "Verbinding met de FFE-server is mislukt: {error}."
-
-#~ msgid "Request to the FFE database failed."
-#~ msgstr "Verzoek aan de FFE-database is mislukt."
-
-#~ msgid "Request to the FFE database failed: {error}."
-#~ msgstr "Verzoek aan de FFE-database mislukt: {error}."
+#~ msgid "Papi-web project"
+#~ msgstr "Papi-webproject"
 

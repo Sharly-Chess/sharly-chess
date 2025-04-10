@@ -306,13 +306,13 @@
                                     {% set field_updated=player_updated and field_id in diff_field_ids %}
                                     {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                     <td
-                                            scope="col" colspan="2" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
-                                            {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt] ~ ' ' ~ player.rating_types[rt], new=match_player.ratings[rt] ~ ' ' ~ match_player.rating_types[rt]), 'top') }}{% endif %}
+                                        scope="col" colspan="2" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt], new=match_player.ratings[rt]), 'top') }}{% endif %}
                                     >
                                         {% if field_updated %}
-                                            {{ match_player.ratings[rt] }} {{ match_player.rating_types[rt] }}
+                                            {{ match_player.ratings[rt] }}
                                         {% else %}
-                                            {{ player.ratings[rt] }} {{ player.rating_types[rt] }}
+                                            {{ player.ratings[rt] }}
                                         {% endif %}
                                     </td>
                                 {% endfor %}

@@ -8,9 +8,10 @@ from common.exception import PapiWebException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import Player, Federation, Club
+from data.player import Player, Federation, Club, PlayerRating
 from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
+from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.util import PlayerFFELicence
 
@@ -18,7 +19,7 @@ logger: Logger = get_logger()
 
 
 class FFESqlServer(SqlServer):
-    CREDENTIALS_FILE: Path = Path(__file__).parent / '.credentials'
+    CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 
     def __init__(
         self,
@@ -96,54 +97,48 @@ class FFESqlServer(SqlServer):
     )
 
     @staticmethod
-    def _get_player_from_row(row: dict[str, Any]) -> Player | None:
-        return (
-            Player(
-                id=0,
-                first_name=row['Prenom'].title() if row['Prenom'] else '',
-                last_name=row['Nom'].upper(),
-                date_of_birth=row['NeLe'],
-                gender=PlayerGender.from_papi_value(row['Sexe']),
-                mail='',
-                phone='',
-                comment='',
-                owed=0.0,
-                paid=0.0,
-                title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
-                ratings={
-                    TournamentRating.STANDARD: row['Elo'],
-                    TournamentRating.RAPID: row['Rapide'],
-                    TournamentRating.BLITZ: row['Elo06'],
-                },
-                rating_types={
-                    TournamentRating.STANDARD: PlayerRatingType.from_papi_value(
-                        row['Fide']
-                    ),
-                    TournamentRating.RAPID: PlayerRatingType.from_papi_value(
-                        row['Fide03']
-                    ),
-                    TournamentRating.BLITZ: PlayerRatingType.from_papi_value(
-                        row['Fide06']
-                    ),
-                },
-                fide_id=int(row['FideCode']) if row['FideCode'] else 0,
-                federation=Federation(row['Federation']),
-                club=Club(row['ClubNom']) if row['ClubNom'] else None,
-                fixed=0,
-                check_in=False,  # not taken into account when updating/creating/deleting the player
-                pairings={},  # Pairings are read from Papi but not used
-                tournament=None,
-                plugin_data={
-                    PLUGIN_NAME: {
-                        'ffe_id': row['Ref'],
-                        'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType']),
-                        'ffe_licence_number': row['NrFFE'],
-                        'league': row['ClubLigue'],
-                    }
-                },
-            )
-            if row
-            else None
+    def _get_player_from_row(row: dict[str, Any]) -> Player:
+        return Player(
+            id=0,
+            first_name=row['Prenom'].title() if row['Prenom'] else '',
+            last_name=row['Nom'].upper(),
+            date_of_birth=row['NeLe'],
+            gender=PlayerGender.from_papi_value(row['Sexe']),
+            mail='',
+            phone='',
+            comment='',
+            owed=0.0,
+            paid=0.0,
+            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+            ratings={
+                TournamentRating.STANDARD: PlayerRating(
+                    row['Elo'],
+                    PlayerRatingType.from_papi_value(row['Fide'])
+                ),
+                TournamentRating.RAPID: PlayerRating(
+                    row['Rapide'],
+                    PlayerRatingType.from_papi_value(row['Fide03'])
+                ),
+                TournamentRating.BLITZ: PlayerRating(
+                    row['Elo06'],
+                    PlayerRatingType.from_papi_value(row['Fide06'])
+                ),
+            },
+            fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
+            federation=Federation(row['Federation']),
+            club=Club(row['ClubNom']) if row['ClubNom'] else None,
+            fixed=0,
+            check_in=False,  # not taken into account when updating/creating/deleting the player
+            pairings={},  # Pairings are read from Papi but not used
+            tournament=None,
+            plugin_data={
+                PLUGIN_NAME: {
+                    'ffe_id': row['Ref'],
+                    'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType']),
+                    'ffe_licence_number': row['NrFFE'],
+                    'league': row['ClubLigue'],
+                }
+            },
         )
 
     def get_player_fields(self) -> list[str]:
@@ -174,9 +169,8 @@ class FFESqlServer(SqlServer):
                 )
                 await self.execute(query, (string,))
                 return (
-                    player
+                    self._get_player_from_row(row)
                     async for row in self.fetchall()
-                    if (player := self._get_player_from_row(row)) is not None
                 )
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
@@ -229,9 +223,8 @@ class FFESqlServer(SqlServer):
             tuple(params),
         )
         return (
-            player
+            self._get_player_from_row(row)
             async for row in self.fetchall()
-            if (player := self._get_player_from_row(row)) is not None
         )
 
     async def _get_player_by_id(
@@ -276,7 +269,6 @@ class FFESqlServer(SqlServer):
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
         return (
-            player
+            self._get_player_from_row(row)
             async for row in self.fetchall()
-            if (player := self._get_player_from_row(row)) is not None
         )

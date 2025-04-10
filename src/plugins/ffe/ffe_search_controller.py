@@ -183,18 +183,13 @@ class FfeSearchController(BaseEventAdminController):
                             TournamentRating.RAPID,
                             TournamentRating.BLITZ,
                         ]:
+                            fide_rating = fide_player.get_rating(rating_type)
+                            ffe_rating = ffe_player.get_rating(rating_type)
                             if (
-                                ffe_player.rating_types[rating_type]
-                                == PlayerRatingType.ESTIMATED
-                                and fide_player.rating_types[rating_type]
-                                != PlayerRatingType.ESTIMATED
+                                ffe_rating.type == PlayerRatingType.ESTIMATED
+                                and fide_rating.type != PlayerRatingType.ESTIMATED
                             ):
-                                ffe_player.ratings[rating_type] = fide_player.ratings[
-                                    rating_type
-                                ]
-                                ffe_player.rating_types[rating_type] = (
-                                    fide_player.rating_types[rating_type]
-                                )
+                                ffe_player.ratings[rating_type] = fide_rating
 
         return PlayerAdminController._admin_event_players_render(
             request,

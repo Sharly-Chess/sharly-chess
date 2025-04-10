@@ -15,7 +15,7 @@ from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
 from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DEVEL_ENV
-from common.i18n import _
+from common.i18n import _, set_locale
 from common.logger import (
     get_logger,
     input_interactive,
@@ -24,11 +24,13 @@ from common.logger import (
     print_interactive_error,
     print_interactive_warning,
     print_interactive_success,
+    set_console_log_level,
 )
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
+from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 
 logger = get_logger()
@@ -40,6 +42,8 @@ class Engine:
     def __init__(self):
         # before all the rest, initialize a PapiWebConfig instance to set the language.
         papi_web_config: PapiWebConfig = PapiWebConfig()
+        set_locale(papi_web_config.locale)
+        set_console_log_level(papi_web_config.log_level)
         print_interactive_info(
             f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
         )
@@ -59,7 +63,7 @@ class Engine:
             while True:
                 choice = input_interactive(
                     _(
-                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? '
+                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? '
                     ).format(
                         old_version=papi_web_config.version,
                         new_version=new_stable_version,
@@ -140,7 +144,7 @@ class Engine:
                     while True:
                         choice = input_interactive(
                             _(
-                                'Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?'
+                                'Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?'
                             ).format(
                                 version=previous_versions[0],
                                 y_uc=yes_answer.upper(),
@@ -221,7 +225,26 @@ class Engine:
 
     @classmethod
     def _recover_previous_version(cls, version: Version, files: list[Path]):
-        """Recover all the configuration of a previous version (events, Papi files and customization files)."""
+        """Recover all the data of a previous version (configuration, events, Papi files and customization files)."""
+        version_dir = Path('..') / f'papi-web-{version}'
+        config_database_file = (
+            version_dir / EVENTS_FOLDER / ConfigDatabase.config_database_name
+        )
+        if config_database_file.is_file():
+            print_interactive_info(
+                _('Recovering configuration from version {version}...').format(
+                    version=version
+                )
+            )
+            # copy the configuration database to its new destination
+            shutil.copy(config_database_file, ConfigDatabase().file)
+            PapiWebConfig().reload()
+        else:
+            logger.debug(
+                'Can not recover configuration from version {%s} (file[%s] not found).',
+                version,
+                config_database_file,
+            )
         print_interactive_info(
             _('Recovering events from version {version}...').format(version=version)
         )
@@ -537,15 +560,27 @@ class Engine:
             return None
         if not (
             matches := re.match(
-                r'^(?P<major>\d+)\.(?P<minor>\d+)rc(?P<rc>\d+)$',
+                r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(a|b|rc)(?P<rc>\d+)$',
                 str(PAPI_WEB_VERSION),
             )
         ):
             raise ValueError(f'Invalid Papi-web version [{str(PAPI_WEB_VERSION)}]')
-        # 'release candidates' X.YrcN
-        if last_stable_matches.group('major') > matches.group(
-            'major'
-        ) or last_stable_matches.group('minor') > matches.group('minor'):
+        # alpha versions: X.Y.ZaN
+        # beta versions: X.Y.ZbN
+        # 'release candidates' X.Y.ZrcN
+        if (
+            (stable_major := last_stable_matches.group('major'))
+            > (current_major := matches.group('major'))
+            or (
+                stable_major == current_major
+                and (stable_minor := last_stable_matches.group('minor'))
+                > (current_minor := matches.group('minor'))
+            )
+            or (
+                (stable_major, stable_minor) == (current_major, current_minor)
+                and last_stable_matches.group('patch') > matches.group('patch')
+            )
+        ):
             print_interactive_warning(
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
@@ -561,11 +596,11 @@ class Engine:
 
     @staticmethod
     def _get_last_stable_version() -> Version | None:
-        """Retrieves the available versions from the Papi-web GitHub
+        """Retrieves the available versions from the Sharly Chess GitHub
         repository.
         If an error occurred, returns None.
         Otherwise, the last stable version is returned."""
-        url: str = 'https://api.github.com/repos/papi-web-org/papi-web/releases'
+        url: str = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
         try:
             print_interactive_info(
                 _('Looking for a more recent version on GitHub ([{url}])...').format(

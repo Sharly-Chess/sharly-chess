@@ -248,9 +248,6 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
-msgid "An error occurred, press Enter to end."
-msgstr "Une erreur s'est produite, appuyez sur Entrée pour finir."
-
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
@@ -898,14 +895,14 @@ msgstr "Ne rien faire"
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ?"
 
-msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-msgstr "Voulez-vous récupérer la configuration de la version [{version}] [{y_uc}/{n_lc}] ?"
+msgid "Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?"
+msgstr "Voulez-vous récupérer les données de la version [{version}] [{y_uc}/{n_lc}] ?"
 
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Papi-web pour améliorer les futures versions [{y_uc}/{n_lc}] ?"
 
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
-msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] [{y_lc}/{n_uc}}] ? "
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
+msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] [{y_lc}/{n_uc}] ? "
 
 msgid "Document:"
 msgstr "Document :"
@@ -1302,11 +1299,14 @@ msgstr "Licence FFE expirée"
 msgid "Export"
 msgstr "Exporter"
 
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Exporter en TRF(bx) (appariements)"
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
 
-msgid "Export to TRF16 (rating)"
-msgstr "Exporter en TRF16 (classement)"
+msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
+msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
+
+msgid "Export the tournament to the TRF16 format."
+msgstr "Exporter le tournoi au format TRF16."
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
@@ -2471,9 +2471,6 @@ msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]
 msgid "Papi-web can automatically launch a web browser when starting the web server."
 msgstr "Papi-web peut automatiquement lancer la navigateur au démarrage du serveur web."
 
-msgid "Papi-web project"
-msgstr "Projet Papi-web"
-
 msgid "Papi-web settings"
 msgstr "Configuration de Papi-web"
 
@@ -2845,6 +2842,9 @@ msgstr "Historique"
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
 
+msgid "Recovering configuration from version {version}..."
+msgstr "Récupération de la configuration de la version {version}..."
+
 msgid "Recovering custom files..."
 msgstr "Récupération des fichiers de personnalisation..."
 
@@ -2958,6 +2958,9 @@ msgstr "La ronde %(round)d est terminée."
 #, python-format
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
+
+msgid "Round #{round}"
+msgstr "Ronde n°{round}"
 
 msgid "Round not finished (last finished: {round})."
 msgstr "Ronde non terminée (dernière terminée : {round})."
@@ -3095,6 +3098,9 @@ msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
+msgid "Sharly Chess project"
+msgstr "Projet Sharly Chess"
+
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
@@ -3206,8 +3212,8 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-msgid "The FIDE database is not available."
-msgstr "La base de données FIDE n'est pas disponible."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
+msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
 msgstr "L'identifiant l'évènement sur la plateforme ChessEvent (par défaut l'identifiant de l'évènement ChessEvent défini pour l'évènement Papi-web du tournoi)."
@@ -3300,6 +3306,9 @@ msgstr "La fédération qui organise l'évènement."
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
+
+msgid "The following languages are available:"
+msgstr "Les langues suivantes sont disponibles :"
 
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"

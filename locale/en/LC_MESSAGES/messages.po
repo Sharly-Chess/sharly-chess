@@ -248,9 +248,6 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
-msgid "An error occurred, press Enter to end."
-msgstr ""
-
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
@@ -898,13 +895,13 @@ msgstr ""
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr ""
 
-msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+msgid "Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?"
 msgstr ""
 
 msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr ""
 
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}}]? "
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
 msgstr ""
 
 msgid "Document:"
@@ -1302,10 +1299,13 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-msgid "Export to TRF(bx) (pairing)"
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr ""
 
-msgid "Export to TRF16 (rating)"
+msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
+msgstr ""
+
+msgid "Export the tournament to the TRF16 format."
 msgstr ""
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
@@ -2471,9 +2471,6 @@ msgstr ""
 msgid "Papi-web can automatically launch a web browser when starting the web server."
 msgstr ""
 
-msgid "Papi-web project"
-msgstr ""
-
 msgid "Papi-web settings"
 msgstr ""
 
@@ -2845,6 +2842,9 @@ msgstr ""
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
+msgid "Recovering configuration from version {version}..."
+msgstr ""
+
 msgid "Recovering custom files..."
 msgstr ""
 
@@ -2957,6 +2957,9 @@ msgstr ""
 
 #, python-format
 msgid "Round #%(round)d is running."
+msgstr ""
+
+msgid "Round #{round}"
 msgstr ""
 
 msgid "Round not finished (last finished: {round})."
@@ -3095,6 +3098,9 @@ msgstr ""
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
+msgid "Sharly Chess project"
+msgstr ""
+
 msgid "Show all the players"
 msgstr ""
 
@@ -3206,7 +3212,7 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
-msgid "The FIDE database is not available."
+msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
@@ -3299,6 +3305,9 @@ msgid "The federation that organizes the event."
 msgstr ""
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgstr ""
+
+msgid "The following languages are available:"
 msgstr ""
 
 msgid "The following players did not check-in:"
@@ -4265,4 +4274,10 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
+#~ msgstr ""
+
+#~ msgid "Papi-web project"
+#~ msgstr ""
 

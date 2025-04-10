@@ -4,7 +4,8 @@ from logging.config import dictConfig
 
 from colorama import Fore, Style
 
-from common import APP_NAME, LOGS_DIR
+from common import APP_NAME, LOG_FILE
+
 
 LOGGING_CONFIG = {
     'version': 1,
@@ -29,7 +30,7 @@ LOGGING_CONFIG = {
             'format': '%(asctime)s %(levelname)-10s%(message)s',
             'datefmt': '%y/%m/%d %H:%M:%S',
             'style': '%',
-        }
+        },
     },
     'handlers': {
         'console': {
@@ -42,10 +43,11 @@ LOGGING_CONFIG = {
             'class': 'logging.handlers.RotatingFileHandler',
             'level': logging.DEBUG,
             'formatter': 'standard',
-            'filename': str(LOGS_DIR / f'{APP_NAME}.log'),
+            'filename': str(LOG_FILE),
             'maxBytes': 500 * 1024,
             'backupCount': 5,
-        }
+            'encoding': 'UTF-8',
+        },
     },
     'loggers': {
         APP_NAME: {
@@ -60,22 +62,22 @@ LOGGING_CONFIG = {
         'uvicorn': {
             'handlers': ['console', 'file'],
             'level': logging.INFO,
-            'propagate': False
+            'propagate': False,
         },
         'uvicorn.error': {
             'handlers': ['console', 'file'],
             'level': logging.INFO,
-            'propagate': False
+            'propagate': False,
         },
         'uvicorn.access': {
             'handlers': ['console', 'file'],
             'level': logging.INFO,
-            'propagate': False
-        }
+            'propagate': False,
+        },
     },
 }
 
-logging.config.dictConfig(LOGGING_CONFIG)
+dictConfig(LOGGING_CONFIG)
 logger: Logger = getLogger(APP_NAME)
 
 
@@ -86,7 +88,7 @@ def get_logger() -> Logger:
 
 def set_console_log_level(level: int):
     LOGGING_CONFIG['handlers']['console']['level'] = level  # type: ignore
-    logging.config.dictConfig(LOGGING_CONFIG)
+    dictConfig(LOGGING_CONFIG)
     global logger
     logger = getLogger(APP_NAME)
 
