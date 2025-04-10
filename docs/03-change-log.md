@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.6 - 2025
+- Déplacement des utilitaires de ``bin/`` vers ``tools/``
+
 ## Version 2.5.3 - 10 avril 2025
 - Récupération de la configuration de l'application à partir d'une version antérieure
 - Modification de l'encodage des fichiers de log

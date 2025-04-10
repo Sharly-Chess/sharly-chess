@@ -204,11 +204,11 @@ def build_exe():
 def create_project():
     print_interactive_info(f'Adding data from folder {PROJECT_DIR} to {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
-    bin_dir: Path = PROJECT_DIR / 'bin'
-    bin_dir.mkdir(parents=True, exist_ok=True)
+    tools_dir: Path = PROJECT_DIR / 'tools'
+    tools_dir.mkdir(parents=True, exist_ok=True)
     bbp_pairings: BbpPairings = BbpPairings()
     bbp_pairings_dir: Path = (
-        bin_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
+        tools_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
     )
     bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
     print_interactive_info(
@@ -221,7 +221,7 @@ def create_project():
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
-    target_file = bin_dir / 'ffe.bat'
+    target_file = tools_dir / 'ffe.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
@@ -232,7 +232,7 @@ def create_project():
             f'{EXE_FILENAME} --ffe\n'
             f'pause\n'
         )
-    target_file = bin_dir / 'chessevent.bat'
+    target_file = tools_dir / 'chessevent.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
