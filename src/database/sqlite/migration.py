@@ -126,8 +126,11 @@ class MigrationManager[T: MigrationDatabase](ABC):
         version = self.get_version()
         if version > self.latest_version:
             raise PapiWebException(
-                f'Database version [{version}] is after '
-                f'current app version {self.latest_version}.'
+                self.log_prefix
+                + (
+                    f'Database version [{version}] is after '
+                    f'current app version {self.latest_version}.'
+                )
             )
         status = True
         if version < self.latest_version:
