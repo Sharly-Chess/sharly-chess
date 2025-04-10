@@ -68,14 +68,14 @@
                         style="top: var(--header-height);"
                     >
                         <tr>
-                            <th>{{ _('Unpaired Player') }}</th>
+                            <th>{{ _('Unpaired Players') }}</th>
                             <th></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for player in admin_unpaired %}
-                            <tr>
+                            <tr class="player-row" data-player-id="{{ player.id }}">
                                 <td>{{ player.last_name }} {{ player.first_name }}</td>
                                 <td>{{ player.get_rating(admin_tournament.rating) }}</td>
                                 <td></td>
@@ -107,7 +107,7 @@
                     <tbody>
                         {% for board in admin_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}
-                                <tr>
+                                <tr class="pairing-row" data-board-id="{{ board.number }}">
                                     <td class="text-center">{{ board.number }}</td>
                                     <td class="text-center">{{ wp.vpoints_str }}</td>
                                     <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
@@ -127,4 +127,26 @@
             </div>
         </div>
     </section>
+
+    <script>
+        var pairing_board_id = null;
+        $(document).on("click", "tr.pairing-row > td", function() {
+            var $this = $(this);
+            $("tr.highlight").removeClass("highlight");
+            $this.parent().addClass("highlight");
+            pairing_board_id = $this.parent().data("board-id");
+            player_id = null;
+            console.log(pairing_board_id);
+        });
+
+        var player_id = null;
+        $(document).on("click", "tr.player-row > td", function() {
+            var $this = $(this);
+            $("tr.highlight").removeClass("highlight");
+            $this.parent().addClass("highlight");
+            player_id = $this.parent().data("player-id");
+            pairing_board_id = null;
+            console.log(player_id);
+        });
+    </script>
 {% endif%}

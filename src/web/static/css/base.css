@@ -251,7 +251,7 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] *:focus, [data-bs-theme=light] *:focus {
     box-shadow: none;
-    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.50);
     outline-offset: 4px;
 }
 
@@ -361,6 +361,11 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent td {
     vertical-align: middle;
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight td {
+    background-color: rgba(var(--bs-primary-rgb), 0.70);
+    color: var(--pw-contrast-text);
 }
 
 table > tbody > tr.odd > * {
