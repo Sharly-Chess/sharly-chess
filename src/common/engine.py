@@ -379,7 +379,7 @@ class Engine:
         debug: bool = DEVEL_ENV
         try:
             if debug:
-                logger.info('_bin_request(method=%s, url=%s)', method, url)
+                logger.debug('_bin_request(method=%s, url=%s)', method, url)
                 if data:
                     logger.info('- data:')
                     for field_id, field in data.items():
@@ -410,7 +410,7 @@ class Engine:
             response.raise_for_status()
             content: str = response.content.decode()
             if debug:
-                logger.info('content=%s', content)
+                logger.debug('content=%s', content)
             return True
         except ConnectionError as ex:
             print_interactive_error(
