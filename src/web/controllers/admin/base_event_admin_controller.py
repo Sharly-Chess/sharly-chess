@@ -115,6 +115,10 @@ class BaseEventAdminController(BaseAdminController):
                 ),
                 'template': 'players/tab.html',
             },
+            'admin-event-pairings-tab': {
+                'title': _('Pairings'),
+                'template': 'pairings/tab.html',
+            },
             'admin-event-screens-tab': {
                 'title': _('Screens ({num})').format(
                     num=len(admin_event.basic_screens_by_id) or '-'

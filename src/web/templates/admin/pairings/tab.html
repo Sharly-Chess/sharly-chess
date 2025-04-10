@@ -1,0 +1,34 @@
+{% with url=url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) %}
+    <div
+        class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
+        style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+    >
+        {% call() macros.section_title() %}
+            {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
+            {{ admin_event.name }} - {{ _('Pairings') }}
+        {% endcall %}
+        <div class="flex-grow-1"></div>
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            <select
+                name="tournament_id"
+                class="form-select"
+                {% if tournament_options|length <= 1 %}
+                    disabled
+                {% endif %}
+                hx-trigger="change"
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% for value, text in tournament_options.items() %}
+                    <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                        {{ text }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <section class="pt-1 pb-1">
+    </section>
+{% endwith %}
