@@ -376,7 +376,16 @@ class PairingsAdminController(BaseEventAdminController):
             case '3':
                 result = Result.DRAW
             case _:
-                return BaseController.redirect_error(request, f'Invalid key [{key}].')
+                print(f'Invalid key [{key}].')
+                return HTMXTemplate(
+                    template_name='/common/empty.html',
+                    re_swap='none',
+                    trigger_event='highlight_board',
+                    after='receive',
+                    params={
+                        'board_id': board_id,
+                    },
+                )
 
         return self._admin_update_result(
             request,
