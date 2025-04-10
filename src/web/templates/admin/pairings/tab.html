@@ -11,6 +11,7 @@
         <select
             name="tournament_id"
             class="form-select"
+            style="width: fit-content;"
             {% if tournament_options|length <= 1 %}
                 disabled
             {% endif %}
@@ -24,6 +25,31 @@
                     {{ text }}
                 </option>
             {% endfor %}
+        </select>
+
+        <select
+            name="round"
+            class="form-select"
+            style="width: fit-content;"
+            {% if not admin_tournament or admin_tournament.current_round == 0 %}
+                disabled
+            {% endif %}
+            hx-trigger="change"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+            hx-include="[name='tournament_id']"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {% with rounds=admin_tournament.rounds if admin_tournament else 0 %}
+                {% for round in range(1, rounds + 1) %}
+                    <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
+                        {{ _('Round #%(round)d', round=round) }}
+                    </option>
+                {% endfor %}
+                {% if rounds == 0 %}
+                    <option value="0">-</option>
+                {% endif %}
+            {% endwith %}
         </select>
     </div>
 </div>
@@ -48,7 +74,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for player in admin_tournament.unpaired_players %}
+                        {% for player in admin_unpaired %}
                             <tr>
                                 <td>{{ player.last_name }} {{ player.first_name }}</td>
                                 <td>{{ player.get_rating(admin_tournament.rating) }}</td>
@@ -79,15 +105,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for board in admin_tournament.boards %}
+                        {% for board in admin_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}
                                 <tr>
                                     <td class="text-center">{{ board.number }}</td>
                                     <td class="text-center">{{ wp.vpoints_str }}</td>
                                     <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
                                     <td class="text-center">{% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}</td>
-                                    <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>
-                                    <td class="text-center">{{ bp.vpoints_str }}</td>
+                                    {% if bp %}
+                                        <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>
+                                        <td class="text-center">{{ bp.vpoints_str }}</td>
+                                    {% else %}
+                                        <td>{{ _('EXEMPT') }}</td>
+                                        <td class="text-center"></td>
+                                    {% endif %}
                                 </tr>
                             {% endwith %}
                         {% endfor %}

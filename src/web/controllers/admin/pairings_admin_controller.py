@@ -8,7 +8,9 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 
+from data.board import Board
 from data.event import Event
+from data.player import Player
 from data.tournament import Tournament
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -69,6 +71,7 @@ class PairingsAdminController(BaseEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         tournament_id: int | None = None,
+        round: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
@@ -88,6 +91,25 @@ class PairingsAdminController(BaseEventAdminController):
             web_context
         )
 
+        admin_round = (
+            round
+            if round is not None
+            else admin_tournament.current_round
+            if admin_tournament is not None
+            else 0
+        )
+
+        admin_boards: list[Board] = []
+        admin_unpaired: list[Player] = []
+        if admin_tournament is not None:
+            if admin_round < admin_tournament.current_round:
+                admin_tournament.calculate_points_before_round(before_round=admin_round)
+                admin_boards, admin_unpaired = admin_tournament.build_boards(
+                    admin_round
+                )
+            else:
+                admin_boards, admin_unpaired = admin_tournament.build_boards()
+
         template_context |= {
             'admin_event_tab': 'admin-event-pairings-tab',
             'admin_event': admin_event,
@@ -96,6 +118,9 @@ class PairingsAdminController(BaseEventAdminController):
             if admin_tournament
             else None,
             'tournament_options': web_context.get_tournament_options(),
+            'admin_round': admin_round,
+            'admin_boards': admin_boards,
+            'admin_unpaired': admin_unpaired,
         }
 
         return cls._admin_event_render(template_context)
@@ -104,6 +129,7 @@ class PairingsAdminController(BaseEventAdminController):
         path=[
             '/admin/event/{event_uniq_id:str}/pairings',
             '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}',
+            '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
         cache=1,
@@ -113,9 +139,11 @@ class PairingsAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int | None,
+        round: int | None,
     ) -> Template | ClientRedirect:
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
+            round=round,
         )
