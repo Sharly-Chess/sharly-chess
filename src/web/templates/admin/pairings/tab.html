@@ -80,9 +80,39 @@
                                     <td class="{{ class }}">{{ player.last_name }} {{ player.first_name }}</td>
                                     <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
                                     <td class="{{ class }} text-center">
-                                        {% if player.pairings[admin_round].forfeit %}{{ "f" }}{% endif %}
-                                        {% if player.pairings[admin_round].half_point_bye %}{{ "½" }}{% endif %}
-                                        {% if player.pairings[admin_round].full_point_bye %}{{ "FBP" }}{% endif %}
+                                        {% if admin_round %}
+                                            {% if player.pairings[admin_round].forfeit %}
+                                                <span
+                                                    {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
+                                                >
+                                                    {{ "f" }}
+                                                </span>
+                                            {% endif %}
+                                            {% if player.pairings[admin_round].half_point_bye %}
+                                                <span
+                                                    {{ macros.tooltip_attributes('info', _('Half point bye'), 'right') }}
+                                                >
+                                                    {{ "½" }}
+                                                </span>
+                                            {% endif %}
+                                            {% if player.pairings[admin_round].full_point_bye %}
+                                                <span
+                                                    {{ macros.tooltip_attributes('info', _('Full point bye'), 'right') }}
+                                                >
+                                                    {{ "FBP" }}
+                                                </span>
+                                            {% endif %}
+                                        {% else %}
+                                            <i
+                                                {% if player.check_in %}
+                                                    class="bi-check-circle-fill text-success"
+                                                    {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
+                                                {% else %}
+                                                    class="bi-circle-fill text-warning"
+                                                    {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
+                                                {% endif %}
+                                            ></i>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endwith %}
