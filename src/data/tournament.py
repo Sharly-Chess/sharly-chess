@@ -982,7 +982,7 @@ class Tournament:
                 )
         return boards, unpaired_players
 
-    def add_result(self, board: Board, white_result: Result):
+    def add_result(self, board: Board, white_result: Result, round_: int | None = None):
         """Stores the given result for the given `board` in the current round.
         Stores the `white_result` directly, and uses the opposite result
         as the black's result.
@@ -990,24 +990,26 @@ class Tournament:
         black_result = white_result.opposite_result
         assert board.white_player is not None
         assert board.black_player is not None
+
+        if round_ is None:
+            round_ = self.current_round
+
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.set_player_result(
-                board.white_player.ref_id, self._current_round, white_result
+                board.white_player.ref_id, round_, white_result
             )
             papi_database.set_player_result(
-                board.black_player.ref_id, self._current_round, black_result
+                board.black_player.ref_id, round_, black_result
             )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.add_stored_result(
-                self.id, self.current_round, board, white_result
-            )
+            event_database.add_stored_result(self.id, round_, board, white_result)
             event_database.commit()
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
             self.uniq_id,
-            self._current_round,
+            round_,
             board.id,
             board.white_player.last_name,
             board.white_player.first_name,

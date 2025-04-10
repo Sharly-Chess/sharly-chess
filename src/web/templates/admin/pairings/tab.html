@@ -40,7 +40,7 @@
             hx-target="body"
             hx-indicator="#please-wait"
         >
-            {% with rounds=admin_tournament.rounds if admin_tournament else 0 %}
+            {% with rounds=admin_tournament.current_round if admin_tournament else 0 %}
                 {% for round in range(1, rounds + 1) %}
                     <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
                         {{ _('Round #%(round)d', round=round) }}
@@ -107,7 +107,18 @@
                     <tbody>
                         {% for board in admin_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}
-                                <tr class="pairing-row" data-board-id="{{ board.number }}">
+                                <tr
+                                    class="pairing-row"
+                                    data-board-id="{{ board.number }}"
+                                    data-player-id="{{ wp.id }}"
+                                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                                    hx-trigger="click"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    preload
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                >
                                     <td class="text-center">{{ board.number }}</td>
                                     <td class="text-center">{{ wp.vpoints_str }}</td>
                                     <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>

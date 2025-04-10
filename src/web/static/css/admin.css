@@ -35,3 +35,25 @@
     justify-content: center;
     line-height: 0;
 }
+
+.pairing-modal .result-button {
+    border: 3px white solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+}
+
+.pairing-modal .admin-result-button {
+    border: 3px #800000 solid;
+}
+
+.pairing-modal .result-button.draw {
+    background-color: gray;
+}
+
+.pairing-modal .result-button:hover,
+.pairing-modal .admin-result-button:hover {
+    background-color: var(--bs-primary) !important;
+    color: var(--pw-contrast-text) !important;
+}

@@ -12,7 +12,13 @@
 {% elif modal == 'player' %}
     {% include 'players/player_modal.html' %}
 {% elif modal == 'record' %}
-    {% include 'players/record_modal.html' %}
+    {% include 'players/record_modal.html' %}``
+{% elif modal == 'close_check_in' %}
+    {% include 'players/close_check_in_modal.html' %}
+{% elif modal == 'players_diff' %}
+    {% include 'players/players_diff_modal.html' %}
+{% elif modal == 'pairing' %}
+    {% include 'pairings/pairing_modal.html' %}
 {% elif modal == 'screen' %}
     {% include 'screens/screen_modal.html' %}
 {% elif modal == 'screen_sets' %}
@@ -27,10 +33,6 @@
     {% include 'timers/timer_modal.html' %}
 {% elif modal == 'timer_hours' %}
     {% include 'timers/timer_hours_modal.html' %}
-{% elif modal == 'close_check_in' %}
-    {% include 'players/close_check_in_modal.html' %}
-{% elif modal == 'players_diff' %}
-    {% include 'players/players_diff_modal.html' %}
 {% elif modal == 'database' %}
     {% include 'common/database/database_modal.html' %}
 {% elif modal %}
