@@ -30,6 +30,7 @@ from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
+from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 
 logger = get_logger()
@@ -143,7 +144,7 @@ class Engine:
                     while True:
                         choice = input_interactive(
                             _(
-                                'Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?'
+                                'Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?'
                             ).format(
                                 version=previous_versions[0],
                                 y_uc=yes_answer.upper(),
@@ -224,7 +225,26 @@ class Engine:
 
     @classmethod
     def _recover_previous_version(cls, version: Version, files: list[Path]):
-        """Recover all the configuration of a previous version (events, Papi files and customization files)."""
+        """Recover all the data of a previous version (configuration, events, Papi files and customization files)."""
+        version_dir = Path('..') / f'papi-web-{version}'
+        config_database_file = (
+            version_dir / EVENTS_FOLDER / ConfigDatabase.config_database_name
+        )
+        if config_database_file.is_file():
+            print_interactive_info(
+                _('Recovering configuration from version {version}...').format(
+                    version=version
+                )
+            )
+            # copy the configuration database to its new destination
+            shutil.copy(config_database_file, ConfigDatabase().file)
+            PapiWebConfig().reload()
+        else:
+            logger.debug(
+                'Can not recover configuration from version {%s} (file[%s] not found).',
+                version,
+                config_database_file,
+            )
         print_interactive_info(
             _('Recovering events from version {version}...').format(version=version)
         )
@@ -564,11 +584,11 @@ class Engine:
 
     @staticmethod
     def _get_last_stable_version() -> Version | None:
-        """Retrieves the available versions from the Papi-web GitHub
+        """Retrieves the available versions from the Sharly Chess GitHub
         repository.
         If an error occurred, returns None.
         Otherwise, the last stable version is returned."""
-        url: str = 'https://api.github.com/repos/papi-web-org/papi-web/releases'
+        url: str = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
         try:
             print_interactive_info(
                 _('Looking for a more recent version on GitHub ([{url}])...').format(
