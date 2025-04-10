@@ -53,6 +53,8 @@ class StoredTournament:
     last_rounds_no_byes: int | None
     tie_breaks: list[dict[str, str | dict[str, Any]]] | None
     check_in_open: bool = field(default=False)
+    rounds: int = field(default=1)
+    rating: int = field(default=1)
     last_update: float = field(default=0.0)
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
@@ -163,6 +165,8 @@ class StoredEvent:
     stop: float
     public: bool = False
     path: str | None = None
+    location: str | None = None
+    arbiter: str | None = None
     hide_background_image: bool = PapiWebConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None

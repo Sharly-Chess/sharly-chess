@@ -38,6 +38,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
 #, python-format
+msgid "%(title)s:"
+msgstr ""
+
+#, python-format
 msgid "%f to %l"
 msgstr ""
 
@@ -533,6 +537,9 @@ msgstr ""
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
+msgid "Chief arbiter"
+msgstr ""
+
 msgid "Choose a custom image:"
 msgstr ""
 
@@ -1012,6 +1019,9 @@ msgid "E.g.: Check-in started for %%s"
 msgstr ""
 
 msgid "E.g.: DOE"
+msgstr ""
+
+msgid "E.g.: DOE John"
 msgstr ""
 
 msgid "E.g.: John"
@@ -1700,6 +1710,9 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+msgid "Impossible to set a round number lower than current round #{round}."
+msgstr ""
+
 msgid "Incorrect password."
 msgstr ""
 
@@ -1909,6 +1922,9 @@ msgid "Local URL: {local_url}"
 msgstr ""
 
 msgid "Local source databases settings have been updated."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid "Log level"
@@ -2330,6 +2346,9 @@ msgstr ""
 
 #, python-format
 msgid "Number of players : %(num)d"
+msgstr ""
+
+msgid "Number of rounds in the tournament."
 msgstr ""
 
 msgid "Number of wins"
@@ -2833,6 +2852,9 @@ msgstr ""
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
+msgid "Rating:"
+msgstr ""
+
 msgid "Ratings"
 msgstr ""
 
@@ -2985,6 +3007,9 @@ msgid "Round: %(round)d"
 msgstr ""
 
 msgid "Round: the last finished round"
+msgstr ""
+
+msgid "Rounds"
 msgstr ""
 
 msgid "Rounds one Elected to Play"
@@ -3328,6 +3353,9 @@ msgstr ""
 msgid "The last set of a screen can not be deleted."
 msgstr ""
 
+msgid "The location of the event."
+msgstr ""
+
 msgid "The log level allows you to trace the behaviour of the application."
 msgstr ""
 
@@ -3366,6 +3394,9 @@ msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
+msgstr ""
+
+msgid "The name of the chief arbiter of the event."
 msgstr ""
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3577,6 +3608,9 @@ msgid "The tournament to print."
 msgstr ""
 
 msgid "The type of document to print."
+msgstr ""
+
+msgid "The type of rating to use for the tournament."
 msgstr ""
 
 msgid "This action can not be applied to the tournaments of this event."
@@ -3859,6 +3893,9 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
 msgid "Unable to create Papi files."
+msgstr ""
+
+msgid "Undefined"
 msgstr ""
 
 msgid "Under 10"

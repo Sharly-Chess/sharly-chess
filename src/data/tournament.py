@@ -36,7 +36,7 @@ from utils.enum import (
     TournamentRating,
     TrfType, PlayerRatingType,
 )
-from database.access.papi.papi_database import PapiDatabase
+from database.access.papi.papi_database import PapiDatabase, PapiVariable
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins.manager import plugin_manager
@@ -90,10 +90,6 @@ class Tournament:
         self._playing: bool = False
         self._rating_limit1: int = 0
         self._rating_limit2: int = 0
-        self._location: str = ''
-        self._start_date: str = ''
-        self._end_date: str = ''
-        self._arbiter: str = ''
         self._boards: list[Board] = []
         self._unpaired_players: list[Player] = []
         self._players_by_rank: dict[int, Player] = {}
@@ -295,6 +291,14 @@ class Tournament:
         return tie_breaks
 
     @property
+    def stored_rounds(self) -> int:
+        return self.stored_tournament.rounds
+
+    @property
+    def stored_rating(self) -> TournamentRating:
+        return TournamentRating(self.stored_tournament.rating)
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -330,26 +334,6 @@ class Tournament:
     def rating_limit2(self) -> int:
         self.read_papi()
         return self._rating_limit2
-
-    @property
-    def location(self) -> str:
-        self.read_papi()
-        return self._location
-
-    @property
-    def start_date(self) -> str:
-        self.read_papi()
-        return self._start_date
-
-    @property
-    def end_date(self) -> str:
-        self.read_papi()
-        return self._end_date
-
-    @property
-    def arbiter(self) -> str:
-        self.read_papi()
-        return self._arbiter
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
@@ -505,11 +489,11 @@ class Tournament:
         self.compute_player_ranks(after_round=self.max_ranking_round)
         return TrfTournament(
             name=self.full_name,
-            city=self.location,
-            startdate=self.start_date,
-            enddate=self.end_date,
+            city=self.event.location,
+            startdate=self.event.formatted_start_date.replace('-', '/'),
+            enddate=self.event.formatted_stop_date.replace('-', '/'),
             numplayers=len(self.players_by_id),
-            chiefarbiter=self.arbiter,
+            chiefarbiter=self.event.arbiter,
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
@@ -598,10 +582,6 @@ class Tournament:
                     self._rating_limit2,
                     self._tie_breaks,
                     self._point_value_type,
-                    self._location,
-                    self._start_date,
-                    self._end_date,
-                    self._arbiter,
                 ) = papi_database.read_info()
                 self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
@@ -1153,7 +1133,19 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             if (tie_breaks := self._update_tie_breaks()) is not None:
                 papi_database.update_tie_breaks(tie_breaks)
-            papi_database.update_point_values(self._point_value_type)
+            if self.rounds > self.stored_rounds:
+                for round_ in range(self.stored_rounds + 1, self.rounds + 1):
+                    papi_database.set_round_unused(round_)
+            elif self.rounds < self.stored_rounds:
+                for round_ in range(self.rounds + 1, self.stored_rounds + 1):
+                    papi_database.set_round_used(round_)
+            papi_database.write_info(
+                {
+                    PapiVariable.ROUNDS: self.stored_rounds,
+                    PapiVariable.RATING: self.stored_rating.to_papi_value,
+                    PapiVariable.POINT_VALUE_TYPE: self._point_value_type.to_papi_value,
+                }
+            )
             papi_database.commit()
 
     def _update_tie_breaks(self) -> list[TieBreak] | None:

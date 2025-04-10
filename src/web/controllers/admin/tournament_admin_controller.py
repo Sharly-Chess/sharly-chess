@@ -23,6 +23,7 @@ from data.loader import EventLoader
 from data.print_documents import PrintDocumentManager
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
+from utils.enum import TournamentRating
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
@@ -91,6 +92,8 @@ class TournamentAdminController(BaseEventAdminController):
         uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
+        rounds: int | None = None
+        rating: int | None = None
         if action == 'delete':
             if web_context.admin_tournament is None:
                 raise RuntimeError('admin_tournament not defined')
@@ -106,6 +109,10 @@ class TournamentAdminController(BaseEventAdminController):
                     char='/'
                 )
             else:
+                field = 'rounds'
+                rounds = WebContext.form_data_to_int(data, field) or 1
+                if rounds < 1:
+                    errors[field] = _('A positive integer is expected.')
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
@@ -114,18 +121,33 @@ class TournamentAdminController(BaseEventAdminController):
                             ).format(uniq_id=uniq_id)
                     case 'update':
                         assert web_context.admin_tournament is not None
+                        tournament = web_context.admin_tournament
                         if (
-                            uniq_id != web_context.admin_tournament.uniq_id
+                            uniq_id != tournament.uniq_id
                             and uniq_id
                             in web_context.admin_event.tournaments_by_uniq_id
                         ):
                             errors['uniq_id'] = _(
                                 'Tournament [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
-                        check_in_open = web_context.admin_tournament.check_in_open
+                        check_in_open = tournament.check_in_open
+                        if rounds and rounds < tournament.current_round:
+                            errors['rounds'] = _(
+                                'Impossible to set a round number '
+                                'lower than current round #{round}.'
+                            ).format(round=tournament.current_round)
                     case _:
                         raise ValueError(f'action=[{action}]')
 
+                field = 'rating'
+                rating = (
+                    WebContext.form_data_to_int(data, field)
+                    or TournamentRating.STANDARD.value
+                )
+                try:
+                    TournamentRating(rating)
+                except ValueError:
+                    errors[field] = f'Unknown rating [{rating}]'
                 tie_breaks = []
                 tie_break_type_by_id: dict[str, type[TieBreak]] = (
                     TieBreakManager.type_by_id()
@@ -250,6 +272,8 @@ class TournamentAdminController(BaseEventAdminController):
             last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
+            rounds=rounds or 1,
+            rating=rating or TournamentRating.STANDARD.value,
             errors=errors,
             plugin_data=plugin_data,
         )
@@ -351,31 +375,43 @@ class TournamentAdminController(BaseEventAdminController):
                     tie_break_1: str | None = None
                     tie_break_2: str | None = None
                     tie_break_3: str | None = None
+                    rounds: int | None = None
+                    rating: TournamentRating | None = None
                     match action:
                         case 'update' | 'clone':
                             assert admin_tournament is not None
                             assert admin_tournament.stored_tournament is not None
-                            path = admin_tournament.stored_tournament.path
-                            time_control_initial_time = admin_tournament.stored_tournament.time_control_initial_time
-                            time_control_increment = admin_tournament.stored_tournament.time_control_increment
-                            time_control_handicap_penalty_value = admin_tournament.stored_tournament.time_control_handicap_penalty_value
-                            time_control_handicap_penalty_step = admin_tournament.stored_tournament.time_control_handicap_penalty_step
-                            time_control_handicap_min_time = admin_tournament.stored_tournament.time_control_handicap_min_time
+                            stored_tournament = admin_tournament.stored_tournament
+                            path = stored_tournament.path
+                            time_control_initial_time = (
+                                stored_tournament.time_control_initial_time
+                            )
+                            time_control_increment = (
+                                stored_tournament.time_control_increment
+                            )
+                            time_control_handicap_penalty_value = (
+                                stored_tournament.time_control_handicap_penalty_value
+                            )
+                            time_control_handicap_penalty_step = (
+                                stored_tournament.time_control_handicap_penalty_step
+                            )
+                            time_control_handicap_min_time = (
+                                stored_tournament.time_control_handicap_min_time
+                            )
                             record_illegal_moves = (
-                                admin_tournament.stored_tournament.record_illegal_moves
+                                stored_tournament.record_illegal_moves
                             )
-                            rules = admin_tournament.stored_tournament.rules
-                            first_board_number = (
-                                admin_tournament.stored_tournament.first_board_number
-                            )
-                            paired_bye_result = (
-                                admin_tournament.stored_tournament.paired_bye_result
-                            )
-                            max_byes = admin_tournament.stored_tournament.max_byes
-                            last_rounds_no_byes = (
-                                admin_tournament.stored_tournament.last_rounds_no_byes
-                            )
-                        case 'create' | 'delete':
+                            rules = stored_tournament.rules
+                            first_board_number = stored_tournament.first_board_number
+                            paired_bye_result = stored_tournament.paired_bye_result
+                            max_byes = stored_tournament.max_byes
+                            last_rounds_no_byes = stored_tournament.last_rounds_no_byes
+                            rating = admin_tournament.rating
+                            rounds = admin_tournament.rounds or 1
+                        case 'create':
+                            rounds = 1
+                            rating = TournamentRating.STANDARD
+                        case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
@@ -440,6 +476,10 @@ class TournamentAdminController(BaseEventAdminController):
                         'tie_break_1': WebContext.value_to_form_data(tie_break_1),
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
+                        'rounds': WebContext.value_to_form_data(rounds),
+                        'rating': WebContext.value_to_form_data(
+                            rating.value if rating else None
+                        ),
                     } | plugin_form_data
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
@@ -460,6 +500,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tie_break_options': {'': _('None')}
                     | PapiTieBreakManager.options(),
+                    'rating_options': cls._get_rating_options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'file_exists': cls._extract_papi_file_path(
                         data, admin_event

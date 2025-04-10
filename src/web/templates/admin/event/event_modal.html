@@ -82,6 +82,26 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.text_input(
+                                name='location',
+                                label=_('%(title)s:', title=_('Location')),
+                                placeholder=_('E.g.: %(string)s', string='Paris'),
+                                help_text=_('The location of the event.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.text_input(
+                                name='arbiter',
+                                label=_('%(title)s:', title=_('Chief arbiter')),
+                                placeholder=_('E.g.: DOE John'),
+                                help_text=_('The name of the chief arbiter of the event.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-12 col-md-6 col-lg-3 mb-3">
                             {{ admin_macros.datetime_input(
                                 name='start',

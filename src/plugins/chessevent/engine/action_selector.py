@@ -25,7 +25,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from utils.enum import Result
-from database.access.papi.papi_database import PapiDatabase
+from database.access.papi.papi_database import PapiDatabase, PapiVariable
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import PLUGIN_NAME
@@ -117,20 +117,25 @@ class ActionSelector(metaclass=Singleton):
                 default_rounds,
             )
             chessevent_tournament.rounds = default_rounds
-        data: dict[str, str | int] = {
-            'Nom': chessevent_tournament.name,
-            'Genre': chessevent_tournament.type.to_papi_value,
-            'NbrRondes': chessevent_tournament.rounds,
-            'Pairing': chessevent_tournament.pairing.to_papi_value,
-            'Cadence': chessevent_tournament.time_control,
-            'Lieu': chessevent_tournament.location,
-            'Arbitre': chessevent_tournament.arbiter,
-            'DateDebut': database.timestamp_to_papi_date(chessevent_tournament.start),
-            'DateFin': database.timestamp_to_papi_date(chessevent_tournament.end),
-            'ClassElo': chessevent_tournament.rating.to_papi_value,
-            'Homologation': str(chessevent_tournament.ffe_id),
-        }
-        database.write_info(data)
+        database.write_info(
+            {
+                PapiVariable.NAME: chessevent_tournament.name,
+                PapiVariable.TYPE: chessevent_tournament.type.to_papi_value,
+                PapiVariable.ROUNDS: chessevent_tournament.rounds,
+                PapiVariable.PAIRING: chessevent_tournament.pairing.to_papi_value,
+                PapiVariable.TIME_CONTROL: chessevent_tournament.time_control,
+                PapiVariable.LOCATION: chessevent_tournament.location,
+                PapiVariable.ARBITER: chessevent_tournament.arbiter,
+                PapiVariable.START_DATE: database.timestamp_to_papi_date(
+                    chessevent_tournament.start
+                ),
+                PapiVariable.END_DATE: database.timestamp_to_papi_date(
+                    chessevent_tournament.end
+                ),
+                PapiVariable.RATING: chessevent_tournament.rating.to_papi_value,
+                PapiVariable.FFE_ID: str(chessevent_tournament.ffe_id),
+            }
+        )
         database.update_tie_breaks(chessevent_tournament.tie_breaks)
 
     @classmethod

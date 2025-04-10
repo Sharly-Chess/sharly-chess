@@ -38,6 +38,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
+msgid "%(title)s:"
+msgstr "%(title)s :"
+
+#, python-format
 msgid "%f to %l"
 msgstr "%f to %l"
 
@@ -533,6 +537,9 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s"
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 
+msgid "Chief arbiter"
+msgstr "Arbitre en chef"
+
 msgid "Choose a custom image:"
 msgstr "Choisissez une image personnalisée :"
 
@@ -1013,6 +1020,9 @@ msgstr "Exemple : Pointage commencé depuis %%s"
 
 msgid "E.g.: DOE"
 msgstr "Exemple : DUPONT"
+
+msgid "E.g.: DOE John"
+msgstr "Exemple: DUPONT Pierre"
 
 msgid "E.g.: John"
 msgstr "Exemple : Pierre"
@@ -1700,6 +1710,9 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+msgid "Impossible to set a round number lower than current round #{round}."
+msgstr "Impossible d'attribuer un nombre de rondes inférieur à la ronde actuelle (ronde n°{round})."
+
 msgid "Incorrect password."
 msgstr "Mot de passe incorrect."
 
@@ -1910,6 +1923,9 @@ msgstr "URL locale : {local_url}"
 
 msgid "Local source databases settings have been updated."
 msgstr "les paramètres des bases de données locales ont été mis à jour."
+
+msgid "Location"
+msgstr "Lieu"
 
 msgid "Log level"
 msgstr "Niveau de log"
@@ -2331,6 +2347,9 @@ msgstr "Nombre de parties gagnées"
 #, python-format
 msgid "Number of players : %(num)d"
 msgstr "Nombre de joueur·euses : %(num)d"
+
+msgid "Number of rounds in the tournament."
+msgstr "Nombre de rondes dans le tournoi."
 
 msgid "Number of wins"
 msgstr "Nombre de victoires"
@@ -2833,6 +2852,9 @@ msgstr "Elo"
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
+msgid "Rating:"
+msgstr "Classement :"
+
 msgid "Ratings"
 msgstr "Classements"
 
@@ -2986,6 +3008,9 @@ msgstr "Ronde : %(round)d"
 
 msgid "Round: the last finished round"
 msgstr "Ronde : la dernière ronde terminée"
+
+msgid "Rounds"
+msgstr "Rondes"
 
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
@@ -3328,6 +3353,9 @@ msgstr "L'installation de la version [{version}] a échoué."
 msgid "The last set of a screen can not be deleted."
 msgstr "Le dernier écran ne peut être supprimé."
 
+msgid "The location of the event."
+msgstr "Le lieu de l'évènement."
+
 msgid "The log level allows you to trace the behaviour of the application."
 msgstr "Le niveau de log permet de trancer le comportement de l'application."
 
@@ -3367,6 +3395,9 @@ msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
+
+msgid "The name of the chief arbiter of the event."
+msgstr "Le nom de l'arbitre en chef de l'évènement."
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le nom de l'évènement sur la plateforme ChessEvent (par défaut, peut être modifié pour chaque tournoi)."
@@ -3578,6 +3609,9 @@ msgstr "Le tournoi à imprimer."
 
 msgid "The type of document to print."
 msgstr "Le type de document à imprimer."
+
+msgid "The type of rating to use for the tournament."
+msgstr "Le type de classement utilsé."
 
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
@@ -3860,6 +3894,9 @@ msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
+
+msgid "Undefined"
+msgstr "Non défini"
 
 msgid "Under 10"
 msgstr "Moins de 10"

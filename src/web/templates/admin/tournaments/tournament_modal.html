@@ -79,6 +79,45 @@
                             ) }}
                         </div>
                     </div>
+                    <div class="row">
+                        <div
+                            class="file-exists col-12 col-md-6 mb-3"
+                            data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
+                            {{
+                                macros.tooltip_attributes(
+                                    'info',
+                                    _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
+                                    'bottom'
+                                )
+                            }}
+                        >
+                            {{ admin_macros.number_input(
+                                name='rounds',
+                                label=_('%(title)s:', title=_('Rounds')),
+                                help_text=_('Number of rounds in the tournament.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div
+                            class="file-exists col-12 col-md-6 mb-3"
+                            data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
+                            {{
+                                macros.tooltip_attributes(
+                                    'info',
+                                    _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
+                                    'bottom'
+                                )
+                            }}
+                        >
+                            {{ admin_macros.select_input(
+                                name='rating',
+                                label=_('Rating:'),
+                                help_text=_('The type of rating to use for the tournament.'),
+                                select_options=rating_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
                     <h4>
                         {{ _('Papi file') }}
                     </h4>

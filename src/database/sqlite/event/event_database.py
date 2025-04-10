@@ -901,6 +901,8 @@ class EventDatabase(MigrationDatabase):
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
             path=row['path'],
+            location=row['location'],
+            arbiter=row['arbiter'],
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
                     'hide_background_image', PapiWebConfig.default_hide_background_image
@@ -963,6 +965,8 @@ class EventDatabase(MigrationDatabase):
             'public',
             'federation',
             'path',
+            'location',
+            'arbiter',
             'hide_background_image',
             'background_image',
             'background_color',
@@ -984,6 +988,8 @@ class EventDatabase(MigrationDatabase):
             stored_event.public,
             stored_event.federation,
             stored_event.path,
+            stored_event.location,
+            stored_event.arbiter,
             stored_event.hide_background_image,
             stored_event.background_image,
             stored_event.background_color,
@@ -1327,6 +1333,8 @@ class EventDatabase(MigrationDatabase):
             check_in_open=cls.load_bool_from_database_field(
                 row.get('check_in_open', None)
             ),
+            rounds=row['rounds'],
+            rating=row['rating'],
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
@@ -1385,6 +1393,8 @@ class EventDatabase(MigrationDatabase):
             'paired_bye_result',
             'max_byes',
             'tie_breaks',
+            'rounds',
+            'rating',
             'last_rounds_no_byes',
             'last_update',
             'last_result_update',
@@ -1408,6 +1418,8 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.paired_bye_result,
             stored_tournament.max_byes,
             self.dump_to_json_database_field(stored_tournament.tie_breaks),
+            stored_tournament.rounds,
+            stored_tournament.rating,
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
