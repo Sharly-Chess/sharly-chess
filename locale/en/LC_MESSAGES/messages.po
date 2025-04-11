@@ -38,6 +38,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
 #, python-format
+msgid "%(string)s:"
+msgstr ""
+
+#, python-format
 msgid "%f to %l"
 msgstr ""
 
@@ -1032,6 +1036,9 @@ msgstr ""
 msgid "E.g.: My screen family"
 msgstr ""
 
+msgid "E.g.: Paris"
+msgstr ""
+
 #, python-format
 msgid "E.g.: Players %%f to %%l"
 msgstr ""
@@ -1194,6 +1201,9 @@ msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
 msgid "End of upload (Ctrl-C)"
+msgstr ""
+
+msgid "End time needs to be after start time."
 msgstr ""
 
 msgid "End:"
@@ -1700,6 +1710,9 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+msgid "Impossible to set a round number lower than current round #{round}."
+msgstr ""
+
 msgid "Incorrect password."
 msgstr ""
 
@@ -1909,6 +1922,9 @@ msgid "Local URL: {local_url}"
 msgstr ""
 
 msgid "Local source databases settings have been updated."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid "Log level"
@@ -2833,6 +2849,9 @@ msgstr ""
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
+msgid "Rating:"
+msgstr ""
+
 msgid "Ratings"
 msgstr ""
 
@@ -2985,6 +3004,9 @@ msgid "Round: %(round)d"
 msgstr ""
 
 msgid "Round: the last finished round"
+msgstr ""
+
+msgid "Rounds"
 msgstr ""
 
 msgid "Rounds one Elected to Play"
@@ -3301,6 +3323,10 @@ msgstr ""
 msgid "The end date and time of the event."
 msgstr ""
 
+#, python-format
+msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
 msgid "The federation that organizes the event."
 msgstr ""
 
@@ -3326,6 +3352,16 @@ msgid "The installation of version [{version}] failed."
 msgstr ""
 
 msgid "The last set of a screen can not be deleted."
+msgstr ""
+
+msgid "The location of the event."
+msgstr ""
+
+#, python-format
+msgid "The location of the tournament (defaults to [%(location)s])."
+msgstr ""
+
+msgid "The location of the tournament."
 msgstr ""
 
 msgid "The log level allows you to trace the behaviour of the application."
@@ -3404,6 +3440,9 @@ msgid "The number of players per screen, optional (the number of screens adapts 
 msgstr ""
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr ""
+
+msgid "The number of rounds of the tournament."
 msgstr ""
 
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
@@ -3549,6 +3588,10 @@ msgstr ""
 msgid "The start date and time of the event."
 msgstr ""
 
+#, python-format
+msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
 msgid "The text colour of the alert messages."
 msgstr ""
 
@@ -3577,6 +3620,9 @@ msgid "The tournament to print."
 msgstr ""
 
 msgid "The type of document to print."
+msgstr ""
+
+msgid "The type of rating to use for the tournament."
 msgstr ""
 
 msgid "This action can not be applied to the tournaments of this event."
@@ -3635,6 +3681,9 @@ msgid "Time control"
 msgstr ""
 
 msgid "Time is not defined."
+msgstr ""
+
+msgid "Time outside of event time range ({start} - {stop})."
 msgstr ""
 
 msgid "Timer [{timer_id}] not found."
@@ -3859,6 +3908,9 @@ msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
 msgid "Unable to create Papi files."
+msgstr ""
+
+msgid "Undefined"
 msgstr ""
 
 msgid "Under 10"
@@ -4274,10 +4326,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-#~ msgstr ""
-
-#~ msgid "Papi-web project"
-#~ msgstr ""
 
