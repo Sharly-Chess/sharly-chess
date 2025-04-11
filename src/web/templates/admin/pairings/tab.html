@@ -1,5 +1,5 @@
 <div
-    class="d-flex mb-2 align-items-center flex-wrap gap-4 z-3"
+    class="d-flex mb-2 align-items-center flex-wrap gap-3 z-3"
     style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
 >
     {% call() macros.section_title() %}
@@ -11,7 +11,7 @@
     {% if EXPERIMENTAL_FEATURES and admin_tournament.pairings_generation_allowed %}
         <div {{ macros.tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
             <button
-                class="btn btn-sm btn-outline-primary text-nowrap"
+                class="btn btn-outline-primary text-nowrap"
                 hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 preload
                 hx-target="body"
@@ -22,6 +22,20 @@
             </button>
         </div>
     {% endif %}
+     <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
+        <button
+            class="btn btn-outline-primary text-nowrap"
+            hx-get="{{ url_for('admin-pairings-unpair-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+            hx-trigger="click"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {{ _('Unpair') }}
+        </button>
+    </div>
 
     <div class="d-flex gap-2 ms-auto align-items-center">
         <select

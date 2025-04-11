@@ -179,6 +179,11 @@ class PairingsAdminController(BaseEventAdminController):
                     'modal': modal,
                     'board': web_context.admin_board,
                 }
+            case 'confirm-unpair-all':
+                template_context |= {
+                    'modal': modal,
+                    'admin_round': web_context.admin_round,
+                }
 
         template_context |= {
             'admin_event_tab': 'admin-event-pairings-tab',
@@ -682,4 +687,78 @@ class PairingsAdminController(BaseEventAdminController):
             round_=None,
             board_id=None,
             trigger_event=None,
+        )
+
+    @post(
+        path='/admin/pairings/unpair/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-unpair',
+    )
+    async def admin_pairings_unpair(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            player_id=None,
+            data=None,
+        )
+
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        if web_context.admin_tournament is None:
+            raise RuntimeError('admin_tournament not defined')
+
+        # TODO: Implement unpairing
+        print(f'unpairing round {round}')
+
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+
+    @get(
+        path='/admin/pairings/unpair-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-unpair-modal',
+    )
+    async def admin_pairings_unpair_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            player_id=None,
+            data=None,
+        )
+
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        if web_context.admin_tournament is None:
+            raise RuntimeError('admin_tournament not defined')
+
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            modal='confirm-unpair-all',
         )
