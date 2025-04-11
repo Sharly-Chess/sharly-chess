@@ -1,0 +1,89 @@
+{% import '/common/macros.j2' as macros %}
+
+{% with
+    no_bye_possible = admin_round >= player.tournament.rounds - player.tournament.last_rounds_no_byes,
+    pairing = player.pairings[admin_round]
+%}
+    <div style="--bs-modal-width: min(90vw, 400px);">
+        <div class="modal-dialog modal-dialog-centered pairing-modal">
+            <div class="modal-content bg-secondary-subtle">
+                <div class="modal-header">
+                    <div class="modal-title fs-4 fw-bold">{{ _('%(first_name)s %(last_name)s - Round %(num)s', first_name=player.first_name, last_name=player.last_name, num=admin_round) }}</div>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column align-items-center justify-content-center gap-4">
+                        {% if not pairing.forfeit %}
+                            <button
+                                class="btn btn-outline-primary w-100"
+                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="ZPB") }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                {{ _('Absent for this round') }}
+                            </button>
+                            <button
+                                class="btn btn-outline-primary w-100"
+                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="LEAVE") }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                {{ _('Absent for rest of the tournament') }}
+                            </button>
+                        {% else %}
+                            <button
+                                class="btn btn-outline-primary w-100"
+                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="RETURN") }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                {% if admin_round < admin_tournament.current_round %}
+                                    {{ _('Cancel absence for this round') }}
+                                {% else %}
+                                    {{ _('Return to tournament') }}
+                                {% endif %}
+                            </button>
+                        {% endif %}
+                        <button
+                            class="btn btn-outline-primary w-100"
+                            {% if no_bye_possible or not hpb_possible %}disabled{% endif %}
+                            hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="HPB") }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            {{ _('Half-point bye (HPB)') }}
+                        </button>
+                        {% if exempt_player %}
+                            <button
+                                class="btn btn-outline-primary w-100"
+                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="PAIR") }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                {{ _('Pair as BLACK vs %(player)s', player=exempt_player.first_name ~ ' ' ~ exempt_player.last_name) }}
+                            </button>
+                        {% else %}
+                            <button
+                                class="btn btn-outline-primary w-100"
+                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="PAIR") }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                {{ _('Pair as WHITE or pairing allocated bye (PAB)') }}
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary text-nowrap"
+                        data-bs-dismiss="modal"
+                    >
+                        <i class="bi-x-circle-fill"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endwith %}

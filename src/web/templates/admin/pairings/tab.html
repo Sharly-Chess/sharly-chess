@@ -76,7 +76,7 @@
             <div class="col-12 col-md-3 mb-3">
                 <table
                     id="players-table"
-                    class="table prominent table-striped table-sm table-hover w-100 bg-light"
+                    class="table prominent table-striped table-sm w-100 bg-light"
                 >
                     <thead
                         id="players-table-header"
@@ -93,42 +93,55 @@
                         {% for player in admin_unpaired %}
                             {% with class="forfeit" if admin_round and (player.pairings[admin_round].forfeit or player.pairings[admin_round].half_point_bye or player.pairings[admin_round].full_point_bye) else '' %}
                                 <tr class="player-row" data-player-id="{{ player.id }}">
-                                    <td class="{{ class }}">{{ player.last_name }} {{ player.first_name }}</td>
+                                    <td class="{{ class }}">
+                                        <div class="d-flex align-items-center gap-2">
+                                        <i
+                                            {% if player.check_in %}
+                                                class="bi-check-circle-fill text-success"
+                                                {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
+                                            {% else %}
+                                                class="bi-circle-fill text-warning"
+                                                {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
+                                            {% endif %}
+                                        ></i>
+                                            <span>{{ player.last_name }} {{ player.first_name }}</span>
+                                        </div>
+                                    </td>
                                     <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
                                     <td class="{{ class }} text-center">
-                                        {% if admin_round %}
+                                        <div
                                             {% if player.pairings[admin_round].forfeit %}
-                                                <span
-                                                    {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
-                                                >
+                                               {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
+                                            {% elif player.pairings[admin_round].half_point_bye %}
+                                               {{ macros.tooltip_attributes('info', _('Half point bye'), 'right') }}
+                                            {% elif player.pairings[admin_round].full_point_bye %}
+                                               {{ macros.tooltip_attributes('info', _('Full point bye'), 'right') }}
+                                            {% else %}
+                                                {{ macros.tooltip_attributes('info', _('Click to pair'), 'right') }}
+                                            {% endif %}
+                                        >
+                                            <button
+                                                class="btn btn-sm btn-outline-primary"
+                                                style="width: 2rem;"
+                                                hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                                                hx-trigger="click"
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                                preload
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
+                                            >
+                                                {% if player.pairings[admin_round].forfeit %}
                                                     {{ "f" }}
-                                                </span>
-                                            {% endif %}
-                                            {% if player.pairings[admin_round].half_point_bye %}
-                                                <span
-                                                    {{ macros.tooltip_attributes('info', _('Half point bye'), 'right') }}
-                                                >
-                                                    {{ "½" }}
-                                                </span>
-                                            {% endif %}
-                                            {% if player.pairings[admin_round].full_point_bye %}
-                                                <span
-                                                    {{ macros.tooltip_attributes('info', _('Full point bye'), 'right') }}
-                                                >
-                                                    {{ "FBP" }}
-                                                </span>
-                                            {% endif %}
-                                        {% else %}
-                                            <i
-                                                {% if player.check_in %}
-                                                    class="bi-check-circle-fill text-success"
-                                                    {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
+                                                {% elif player.pairings[admin_round].half_point_bye %}
+                                                    <i class="bi bi-circle-half"></i>
+                                                {% elif player.pairings[admin_round].full_point_bye %}
+                                                    <i class="bi bi-1-circle-fill"></i>
                                                 {% else %}
-                                                    class="bi-circle-fill text-warning"
-                                                    {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
+                                                    <i class="bi-shuffle pe-1"></i>
                                                 {% endif %}
-                                            ></i>
-                                        {% endif %}
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             {% endwith %}
@@ -187,7 +200,6 @@
             } else {
                 pairing_board_id = null;
             }
-            player_id = null;
         }
 
         $(document).on("click", "tr.pairing-row > td", function(e) {
@@ -195,18 +207,5 @@
             highlight_board($this.parent().data("board-id"));
         });
 
-        var player_id = null;
-        $(document).on("click", "tr.player-row > td", function(e) {
-            var $this = $(this);
-            $("tr.highlight").removeClass("highlight");
-            $this.parent().addClass("highlight");
-            player_id = $this.parent().data("player-id");
-            pairing_board_id = null;
-        });
-
-        $(document).on("keyup", "body", function(e) {
-            console.log(e.key);
-            console.log(e.code);
-        });
     </script>
 {% endif%}
