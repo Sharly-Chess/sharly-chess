@@ -1,3 +1,5 @@
+# Need to import this first to avoid circular imports
+import plugins.manager  # noqa
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 
 

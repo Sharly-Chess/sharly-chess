@@ -2,6 +2,8 @@ from pathlib import Path
 
 from requests import get, Response, HTTPError
 
+# Import this to avoid circular imports
+import plugins.manager  # noqa
 from common.i18n import _
 from common.logger import print_interactive_error
 from common.papi_web_config import PapiWebConfig

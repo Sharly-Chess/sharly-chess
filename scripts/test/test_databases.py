@@ -2,6 +2,8 @@ import random
 import string
 import time
 
+# Import this first to avoid circular imports
+import plugins.manager  # noqa
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 
