@@ -6,6 +6,7 @@
 - Récupération de la configuration de l'application à partir d'une version antérieure
 - Modification de l'encodage des fichiers de log
 - Correction d'un bug d'affichage des rondes sur les écrans d'appariements
+- Correction d'un bug d'initialisation des joueur·euses depuis ChessEvent
 
 ## Version 2.5.2 - 8 avril 2025
 - Correction d'un bug à la récupération des versions antérieures
