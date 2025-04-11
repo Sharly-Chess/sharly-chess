@@ -10,9 +10,6 @@
         <button
             class="btn btn-sm btn-outline-primary"
             style="width: 3rem;"
-            {% if board.exempt %}
-                disabled
-            {% endif %}
             hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
             hx-trigger="click"
             hx-target="body"

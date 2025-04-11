@@ -9,55 +9,122 @@
             <div class="modal-body">
                 <div class="row d-flex align-items-center justify-content-center">
                     <button
-                        class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        class="result-button white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
                         hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=3) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    ><div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating }}{{ wp.rating_type }}</div></button>
+                    >
+                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating }}{{ wp.rating_type }}</div>
+                    </button>
                     <button
                         class="result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
                         hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=2) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    ><div>{{ _('DRAW') }}<br/>½ - ½</div></button>
+                    >
+                        <div>{{ _('DRAW') }}<br/>½ - ½</div>
+                    </button>
                     <button
-                        class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        class="result-button black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
                         hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=1) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    ><div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating }}{{ bp.rating_type }}<div></button>
+                    >
+                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating }}{{ bp.rating_type }}<div>
+                    </button>
                 </div>
                 <div class="row d-flex align-items-center justify-content-center mt-3">
                     <button
-                        class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        class="admin-result-button white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
                         hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=6) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    ><div>{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</div></button>
+                    >
+                        <div>{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</div>
+                    </button>
                     <button
                         class="admin-result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
                         hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=5) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    ><div>{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</div></button>
+                    >
+                        <div>{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</div>
+                    </button>
                     <button
-                        class="admin-result-button black text-white bg-black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=4) }}"
+                        class="admin-result-button black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
+                         hx-put="{{ url_for('admin-set-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id, result=4) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    ><div>{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</div></button>
+                    >
+                        <div>{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</div>
+                    </button>
                 </div>
 
+                <hr class="my-3" />
+
                 <div class="row d-flex align-items-center justify-content-center mt-3">
-                    {% if board.result_str and admin_round == admin_tournament.current_round %}
-                        <button
-                            hx-trigger="click"
-                            class="admin-result-button col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                            hx-delete="{{ url_for('admin-delete-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        ><div>{{ _('CLEAR THE RESULT') }}</div></button>
-                    {% endif %}
+                    <button
+                        hx-trigger="click"
+                        class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        hx-delete="{{ url_for('admin-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {% if not board.result_str or admin_round != admin_tournament.current_round %}
+                            disabled
+                        {% endif %}
+                    >
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            {{ _('UNPAIR') }}
+                        </div>
+                    </button>
+                    <button
+                        hx-trigger="click"
+                        class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        hx-delete="{{ url_for('admin-delete-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {% if not board.result_str or board.exempt or admin_round != admin_tournament.current_round %}
+                            disabled
+                        {% endif %}
+                    >
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-trash"></i>
+                            {{ _('CLEAR THE RESULT') }}
+                        </div>
+                    </button>
+                    <button
+                        hx-trigger="click"
+                        class="admin-result-button col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                        {% if board.exempt %}
+                            disabled
+                        {% endif %}
+                        hx-patch="{{ url_for('admin-permute', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            {{ _('PERMUTE THE RESULT') }}
+                        </div>
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">

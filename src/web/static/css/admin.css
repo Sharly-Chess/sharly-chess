@@ -45,17 +45,45 @@
 }
 
 .pairing-modal .admin-result-button {
-    border: 3px #800000 solid;
+    border: 3px var(--bs-danger-border-subtle) solid;
 }
 
-.pairing-modal .result-button.draw {
+.pairing-modal .admin-result-button:hover {
+    border-color: var(--bs-danger);
+}
+
+.pairing-modal .result-button.white,
+.pairing-modal .admin-result-button.white {
+    background-color: white;
+    color: black;
+}
+
+.pairing-modal .result-button.black,
+.pairing-modal .admin-result-button.black {
+    background-color: black;
+    color: white;
+}
+
+.pairing-modal .result-button.draw,
+.pairing-modal .admin-result-button.draw {
     background-color: gray;
 }
 
 .pairing-modal .result-button:hover,
 .pairing-modal .admin-result-button:hover {
-    background-color: var(--bs-primary) !important;
-    color: var(--pw-contrast-text) !important;
+    background-color: var(--bs-primary);
+    color: var(--pw-contrast-text);
+}
+
+.pairing-modal .admin-result-button.danger {
+    border: 3px var(--bs-danger-border-subtle) solid;
+    background-color: var(--bs-danger-border-subtle);
+}
+
+.pairing-modal .admin-result-button.danger:hover {
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    color: white;
 }
 
 [data-bs-theme=dark] table.prominent td.forfeit {

@@ -2,7 +2,7 @@ from contextlib import suppress
 from typing import Annotated, Any
 
 
-from litestar import delete, get, put, post
+from litestar import delete, get, patch, put, post
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -344,6 +344,49 @@ class PairingsAdminController(BaseEventAdminController):
             board_id=board_id,
             result=result,
             trigger_event='close_modal',
+        )
+
+    @delete(
+        path='/admin/pairing/unpair/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
+        name='admin-unpair',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_unpair(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+    ) -> Template | ClientRedirect:
+        # TODO: Implement unpairing
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+
+    @patch(
+        path='/admin/pairing/permute/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
+        name='admin-permute',
+    )
+    async def htmx_admin_permute(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+    ) -> Template | ClientRedirect:
+        # TODO: Implement permute
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
         )
 
     @put(
