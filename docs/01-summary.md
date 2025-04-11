@@ -69,11 +69,11 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | BELEY Huong         | AFO1  | IDF   | 77  | Tours et Detours Club d'Échecs Centre Brie    |
 | BENETEAU Hubert     | AFE1  | NOR   | 50  | Agneaux Saint-Lô                              |
 | BENADDOU Khaled     | AFE2  | IDF   | 94  | Club d'Échecs de Saint-Maur                   |
+| BERNARD Denis       | AFO1  | CVL   | 45  | Echiquiers Berry-Sologne                      |
 | BLEUZEN Christian   | AFE1  | BRE   | 35  | Rennes Paul Bert                              |
 | BLOT Philippe       | AFE1  | NOR   | 59  | Le Coin de L'echiquier Grande Synthe          |
 | CHANTIER Pierre     | AFO1  | EST   | 10  | Verrières Animation Loisirs                   |
 | CLEMENCEAU Cyril    | AFC   | BRE   | 29  | Échiquier du Léon                             |
-| DENIS Bernard       | AFO1  | CVL   | 45  | Echiquiers Berry-Sologne                      |
 | DELMOTTE Eric       | AFE1  | BFC   | 71  | L'Échiquier Châlonnais                        |
 | FRAYSSE Sébastien   | AFO2  | BRE   | 29  | Échiquier Quimpérois                          |
 | GRANCHER Étienne    | AFO1  | NOR   | 76  | Le Fou du Roi Montivilliers                   |
