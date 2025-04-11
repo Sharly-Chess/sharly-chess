@@ -4,9 +4,9 @@
     >
         <h2 class="set-title text-center">
             {% if tournament.current_round %}
-                {{ screen_set.name_for_players }}
-            {% else %}
                 {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_players, round=tournament.current_round) }}
+            {% else %}
+                {{ screen_set.name_for_players }}
             {% endif %}
         </h2>
         <div class="row screen-set-row mx-0 w-100">
