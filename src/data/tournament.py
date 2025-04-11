@@ -1143,6 +1143,47 @@ class Tournament:
             papi_database.update_player(player)
             papi_database.commit()
 
+    def create_round_pairing(
+        self, round_nb: int, white_player_id: int, black_player_id: int | None
+    ):
+        """Creates a pairing for a round."""
+        white_player = self.players_by_id[white_player_id]
+        black_player = (
+            self.players_by_id[black_player_id] if black_player_id is not None else None
+        )
+        white_pairing = white_player.pairings.get(round_nb, None)
+        black_pairing = (
+            black_player.pairings.get(round_nb, None) if black_player else None
+        )
+
+        if white_pairing and white_pairing.opponent_id:
+            raise ValueError(
+                f'White player {white_player.last_name} {white_player.first_name} already has an opponent for round {round_nb}.'
+            )
+        if black_player is not None and black_pairing and black_pairing.opponent_id:
+            raise ValueError(
+                f'Black player {black_player.last_name} {black_player.first_name} already has an opponent for round {round_nb}.'
+            )
+
+        with PapiDatabase(self.file, write=True) as papi_database:
+            white_player.pairings[round_nb] = Pairing(
+                BoardColor.WHITE,
+                black_player.id if black_player else 1,
+                Result.NO_RESULT if black_player else Result.PAIRING_ALLOCATED_BYE,
+            )
+            papi_database.update_player_pairing(
+                white_player, round_nb, white_player.pairings[round_nb]
+            )
+            if black_player:
+                papi_database.remove_exempt_pairing(round_nb)
+                black_player.pairings[round_nb] = Pairing(
+                    BoardColor.BLACK, white_player.id, Result.NO_RESULT
+                )
+                papi_database.update_player_pairing(
+                    black_player, round_nb, black_player.pairings[round_nb]
+                )
+            papi_database.commit()
+
     def update_round_pairings(self, round_nb: int):
         """Updates the pairings of all players for a round."""
         with PapiDatabase(self.file, write=True) as papi_database:

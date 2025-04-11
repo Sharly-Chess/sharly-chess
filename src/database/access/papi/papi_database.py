@@ -220,6 +220,16 @@ class PapiDatabase(AccessDatabase):
             tuple(params),
         )
 
+    def remove_exempt_pairing(self, round_nb: int):
+        field_sets = [
+            f'`Rd{round_nb:0>2}{field}` = ?' for field in ('Cl', 'Adv', 'Res')
+        ]
+        result = Result.NO_RESULT.to_papi_value
+        self._execute(
+            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = 1',
+            ('R', None, result),
+        )
+
     def update_player_pairing(self, player: Player, round_nb: int, pairing: Pairing):
         field_sets = [
             f'`Rd{round_nb:0>2}{field}` = ?' for field in ('Cl', 'Adv', 'Res')
@@ -227,13 +237,19 @@ class PapiDatabase(AccessDatabase):
         opponent_id = (
             Player.player_papi_id_from_papi_web_id(pairing.opponent_id)
             if pairing.opponent_id
-            else None
+            else 1
         )
         result = pairing.result.to_papi_value
         self._execute(
             f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
             (pairing.color_papi_value, opponent_id, result, player.ref_id),
         )
+        # If the player is exempt, we need to update the pairing of the virtual exempt player
+        if opponent_id == 1:
+            self._execute(
+                f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = 1',
+                (BoardColor.BLACK.to_papi_value, player.ref_id, result),
+            )
 
     def update_tie_breaks(self, tie_breaks: list[TieBreak]):
         for variable in (

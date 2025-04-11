@@ -80,5 +80,5 @@ class BbpPairings:
                 )
             else:
                 white_player.pairings[next_round] = Pairing(
-                    BoardColor.WHITE, 1, Result.PAIRING_ALLOCATED_BYE
+                    BoardColor.WHITE, None, Result.PAIRING_ALLOCATED_BYE
                 )

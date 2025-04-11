@@ -149,11 +149,6 @@ class PairingsAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'unpaired-player':
-                print(
-                    web_context.admin_round,
-                    web_context.admin_tournament.rounds,
-                    web_context.admin_tournament.last_rounds_no_byes,
-                )
                 if (
                     web_context.admin_player is not None
                     and web_context.admin_tournament is not None
@@ -592,9 +587,39 @@ class PairingsAdminController(BaseEventAdminController):
                         )
                     }
             case 'HPB':
-                new_byes[round_for_participation] = Result.HALF_POINT_BYE
+                byes: int = 0
+                for pairing in web_context.admin_player.pairings.values():
+                    match pairing.result:
+                        case Result.HALF_POINT_BYE:
+                            byes += 1
+                        case Result.FULL_POINT_BYE:
+                            byes += 2
+                if byes >= web_context.admin_tournament.max_byes:
+                    Message.error(
+                        request,
+                        _('Too many byes for player [{player_name}].').format(
+                            player_name=web_context.admin_player.last_name
+                        ),
+                    )
+                else:
+                    new_byes[round_for_participation] = Result.HALF_POINT_BYE
             case 'PAIR':
-                pass
+                exempt_player = next(
+                    (b.white_player for b in web_context.admin_boards if b.exempt),
+                    None,
+                )
+                if exempt_player is not None:
+                    web_context.admin_tournament.create_round_pairing(
+                        round_for_participation,
+                        exempt_player.id,
+                        web_context.admin_player.id,
+                    )
+                else:
+                    web_context.admin_tournament.create_round_pairing(
+                        round_for_participation,
+                        web_context.admin_player.id,
+                        None,
+                    )
 
         if len(new_byes) > 0:
             web_context.admin_tournament.set_player_byes(
