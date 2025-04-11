@@ -10,7 +10,7 @@ from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
 
-from common import format_timestamp_date_time
+from common import format_timestamp_date_time, format_timestamp
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
@@ -18,7 +18,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.pairing import Pairing
 from data.family import Family
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import Player, Federation, Club
 from data.screen import Screen
 from data.tie_breaks import (
     TieBreak,
@@ -34,7 +34,7 @@ from utils.enum import (
     TournamentPairing,
     Result,
     TournamentRating,
-    TrfType, PlayerRatingType,
+    TrfType,
 )
 from database.access.papi.papi_database import PapiDatabase, PapiVariable
 from database.sqlite.event.event_database import EventDatabase
@@ -90,6 +90,7 @@ class Tournament:
         self._playing: bool = False
         self._rating_limit1: int = 0
         self._rating_limit2: int = 0
+        self._arbiter: str = ''
         self._boards: list[Board] = []
         self._unpaired_players: list[Player] = []
         self._players_by_rank: dict[int, Player] = {}
@@ -151,6 +152,18 @@ class Tournament:
     @property
     def file_exists(self) -> bool:
         return self.file.exists()
+
+    @property
+    def start_timestamp(self) -> float:
+        return self.stored_tournament.start or self.event.start
+
+    @property
+    def stop_timestamp(self) -> float:
+        return self.stored_tournament.stop or self.event.stop
+
+    @property
+    def location(self) -> str | None:
+        return self.stored_tournament.location or self.event.location
 
     @property
     def time_control_initial_time(self) -> int | None:
@@ -336,6 +349,11 @@ class Tournament:
         return self._rating_limit2
 
     @property
+    def arbiter(self) -> str:
+        self.read_papi()
+        return self._arbiter
+
+    @property
     def tie_breaks(self) -> list[TieBreak]:
         self.read_papi()
         return self._tie_breaks
@@ -489,11 +507,11 @@ class Tournament:
         self.compute_player_ranks(after_round=self.max_ranking_round)
         return TrfTournament(
             name=self.full_name,
-            city=self.event.location,
-            startdate=self.event.formatted_start_date.replace('-', '/'),
-            enddate=self.event.formatted_stop_date.replace('-', '/'),
+            city=self.location,
+            startdate=format_timestamp(self.start_timestamp, '%Y/%m/%d'),
+            enddate=format_timestamp(self.stop_timestamp, '%Y/%m/%d'),
             numplayers=len(self.players_by_id),
-            chiefarbiter=self.event.arbiter,
+            chiefarbiter=self.arbiter,
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
@@ -582,6 +600,7 @@ class Tournament:
                     self._rating_limit2,
                     self._tie_breaks,
                     self._point_value_type,
+                    self._arbiter,
                 ) = papi_database.read_info()
                 self._players_by_id = papi_database.read_players(self.id, self._rounds)
             for player in self._players_by_id.values():
@@ -1075,8 +1094,12 @@ class Tournament:
                 'ClubRef': 0,
                 'Club': player.club.name if player.club else None,
                 'Fide': player.get_rating(TournamentRating.STANDARD).type.to_papi_value,
-                'RapideFide': player.get_rating(TournamentRating.RAPID).type.to_papi_value,
-                'BlitzFide': player.get_rating(TournamentRating.BLITZ).type.to_papi_value,
+                'RapideFide': player.get_rating(
+                    TournamentRating.RAPID
+                ).type.to_papi_value,
+                'BlitzFide': player.get_rating(
+                    TournamentRating.BLITZ
+                ).type.to_papi_value,
                 'FideCode': player.fide_id if player.fide_id else None,
                 'FideTitre': player.title.to_papi_value,
                 'Pointe': player.check_in,
@@ -1133,12 +1156,6 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             if (tie_breaks := self._update_tie_breaks()) is not None:
                 papi_database.update_tie_breaks(tie_breaks)
-            if self.rounds > self.stored_rounds:
-                for round_ in range(self.stored_rounds + 1, self.rounds + 1):
-                    papi_database.set_round_unused(round_)
-            elif self.rounds < self.stored_rounds:
-                for round_ in range(self.rounds + 1, self.stored_rounds + 1):
-                    papi_database.set_round_used(round_)
             papi_database.write_info(
                 {
                     PapiVariable.ROUNDS: self.stored_rounds,

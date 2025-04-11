@@ -19,6 +19,7 @@ from utils.enum import (
     PlayerRatingType,
     BoardColor,
     PointValueType,
+    PapiResult,
 )
 from database.access.access_database import AccessDatabase
 from database.access.papi.papi_template import create_empty_papi_database
@@ -37,6 +38,7 @@ class TournamentInfo(NamedTuple):
     rating_limit2: int
     tie_breaks: list[TieBreak]
     point_value_type: PointValueType
+    arbiter: str
 
 
 class PapiVariable(StrEnum):
@@ -108,6 +110,7 @@ class PapiDatabase(AccessDatabase):
         point_value_type: PointValueType = PointValueType.from_papi_value(
             self.read_variable(PapiVariable.POINT_VALUE_TYPE)
         )
+        arbiter: str = self.read_variable(PapiVariable.ARBITER)
         return TournamentInfo(
             rounds,
             pairing,
@@ -116,6 +119,7 @@ class PapiDatabase(AccessDatabase):
             rating_limit2,
             tie_breaks,
             point_value_type,
+            arbiter,
         )
 
     def write_info(self, info: dict[PapiVariable, str | int]):
@@ -301,7 +305,7 @@ class PapiDatabase(AccessDatabase):
                     if opponent_papi_id and opponent_papi_id != 1
                     else None,
                     Result.from_papi_value(
-                        row[f'{round_str}Res'],
+                        row[f'{round_str}Res'] or PapiResult.NOT_PAIRED.value,
                         opponent_papi_id is None,
                         opponent_papi_id == 1,
                         color_str == 'F',
@@ -328,8 +332,9 @@ class PapiDatabase(AccessDatabase):
                 ratings={
                     tr: PlayerRating(
                         row[tr.papi_value_field] or 0,
-                        PlayerRatingType.from_papi_value(row[tr.papi_type_field])
-                    ) for tr in TournamentRating
+                        PlayerRatingType.from_papi_value(row[tr.papi_type_field]),
+                    )
+                    for tr in TournamentRating
                 },
                 fide_id=fide_id,
                 federation=Federation(row['Federation'] or ''),
@@ -366,26 +371,6 @@ class PapiDatabase(AccessDatabase):
     def reset_player_result(self, player_papi_id: int, round_: int):
         """Writes the empty result for the given player in the database."""
         self.set_player_result(player_papi_id, round_, Result.NO_RESULT)
-
-    def set_round_used(self, round_: int):
-        prefix = f'Rd{round_:0>2}'
-        self._execute(
-            f'UPDATE `joueur` SET `{prefix}Res` = ?, `{prefix}Cl` = ? WHERE `Ref` > 1',
-            (
-                Result.NO_RESULT.to_papi_value,
-                'R',
-            ),
-        )
-
-    def set_round_unused(self, round_: int):
-        prefix = f'Rd{round_:0>2}'
-        self._execute(
-            f'UPDATE `joueur` SET `{prefix}Res` = ?, `{prefix}Cl` = ? WHERE `Ref` > 1',
-            (
-                None,
-                None,
-            ),
-        )
 
     @staticmethod
     def timestamp_to_papi_date(ts: float) -> str:

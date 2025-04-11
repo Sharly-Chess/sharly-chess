@@ -106,18 +106,6 @@
             </td>
         </tr>
         <tr>
-            <th scope="row" class="text-nowrap">{{ _('Chief arbiter') }}</th>
-            <td>
-                {% if admin_event.arbiter %}
-                    {{ admin_event.arbiter }}
-                {% else %}
-                    <span class="fst-italic">
-                        {{ _('Undefined') }}
-                    </span>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
             <th scope="row" class="text-nowrap">{{ _('Background image and colour') }}</th>
             <td class="text-nowrap">
                 <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">

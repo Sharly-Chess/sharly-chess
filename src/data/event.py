@@ -289,10 +289,6 @@ class Event:
     def location(self) -> str | None:
         return self.stored_event.location
 
-    @property
-    def arbiter(self) -> str | None:
-        return self.stored_event.arbiter
-
     @cached_property
     def background_image(self) -> str:
         if self.stored_event.hide_background_image:

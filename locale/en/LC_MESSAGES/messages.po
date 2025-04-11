@@ -38,7 +38,7 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
 #, python-format
-msgid "%(title)s:"
+msgid "%(string)s:"
 msgstr ""
 
 #, python-format
@@ -537,9 +537,6 @@ msgstr ""
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
-msgid "Chief arbiter"
-msgstr ""
-
 msgid "Choose a custom image:"
 msgstr ""
 
@@ -1021,9 +1018,6 @@ msgstr ""
 msgid "E.g.: DOE"
 msgstr ""
 
-msgid "E.g.: DOE John"
-msgstr ""
-
 msgid "E.g.: John"
 msgstr ""
 
@@ -1040,6 +1034,9 @@ msgid "E.g.: My screen"
 msgstr ""
 
 msgid "E.g.: My screen family"
+msgstr ""
+
+msgid "E.g.: Paris"
 msgstr ""
 
 #, python-format
@@ -1204,6 +1201,9 @@ msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
 msgid "End of upload (Ctrl-C)"
+msgstr ""
+
+msgid "End time needs to be after start time."
 msgstr ""
 
 msgid "End:"
@@ -2348,9 +2348,6 @@ msgstr ""
 msgid "Number of players : %(num)d"
 msgstr ""
 
-msgid "Number of rounds in the tournament."
-msgstr ""
-
 msgid "Number of wins"
 msgstr ""
 
@@ -3326,6 +3323,10 @@ msgstr ""
 msgid "The end date and time of the event."
 msgstr ""
 
+#, python-format
+msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
 msgid "The federation that organizes the event."
 msgstr ""
 
@@ -3354,6 +3355,13 @@ msgid "The last set of a screen can not be deleted."
 msgstr ""
 
 msgid "The location of the event."
+msgstr ""
+
+#, python-format
+msgid "The location of the tournament (defaults to [%(location)s])."
+msgstr ""
+
+msgid "The location of the tournament."
 msgstr ""
 
 msgid "The log level allows you to trace the behaviour of the application."
@@ -3396,9 +3404,6 @@ msgstr ""
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr ""
 
-msgid "The name of the chief arbiter of the event."
-msgstr ""
-
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
@@ -3435,6 +3440,9 @@ msgid "The number of players per screen, optional (the number of screens adapts 
 msgstr ""
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr ""
+
+msgid "The number of rounds of the tournament."
 msgstr ""
 
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
@@ -3580,6 +3588,10 @@ msgstr ""
 msgid "The start date and time of the event."
 msgstr ""
 
+#, python-format
+msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
 msgid "The text colour of the alert messages."
 msgstr ""
 
@@ -3669,6 +3681,9 @@ msgid "Time control"
 msgstr ""
 
 msgid "Time is not defined."
+msgstr ""
+
+msgid "Time outside of event time range ({start} - {stop})."
 msgstr ""
 
 msgid "Timer [{timer_id}] not found."
@@ -4311,10 +4326,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-#~ msgstr ""
-
-#~ msgid "Papi-web project"
-#~ msgstr ""
 

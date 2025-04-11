@@ -40,18 +40,21 @@ class StoredTournament:
     name: str
     path: str | None
     filename: str | None
-    time_control_initial_time: int | None
-    time_control_increment: int | None
-    time_control_handicap_penalty_step: int | None
-    time_control_handicap_penalty_value: int | None
-    time_control_handicap_min_time: int | None
-    record_illegal_moves: int | None
-    rules: str | None
-    first_board_number: int | None
-    paired_bye_result: int | None
-    max_byes: int | None
-    last_rounds_no_byes: int | None
-    tie_breaks: list[dict[str, str | dict[str, Any]]] | None
+    time_control_initial_time: int | None = None
+    time_control_increment: int | None = None
+    time_control_handicap_penalty_step: int | None = None
+    time_control_handicap_penalty_value: int | None = None
+    time_control_handicap_min_time: int | None = None
+    record_illegal_moves: int | None = None
+    rules: str | None = None
+    first_board_number: int | None = None
+    paired_bye_result: int | None = None
+    max_byes: int | None = None
+    last_rounds_no_byes: int | None = None
+    tie_breaks: list[dict[str, str | dict[str, Any]]] | None = None
+    location: str | None = None
+    start: float | None = None
+    stop: float | None = None
     check_in_open: bool = field(default=False)
     rounds: int = field(default=1)
     rating: int = field(default=1)
@@ -166,7 +169,6 @@ class StoredEvent:
     public: bool = False
     path: str | None = None
     location: str | None = None
-    arbiter: str | None = None
     hide_background_image: bool = PapiWebConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None

@@ -38,8 +38,8 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
-msgid "%(title)s:"
-msgstr "%(title)s :"
+msgid "%(string)s:"
+msgstr "%(string)s :"
 
 #, python-format
 msgid "%f to %l"
@@ -537,9 +537,6 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s"
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 
-msgid "Chief arbiter"
-msgstr "Arbitre en chef"
-
 msgid "Choose a custom image:"
 msgstr "Choisissez une image personnalisée :"
 
@@ -1021,9 +1018,6 @@ msgstr "Exemple : Pointage commencé depuis %%s"
 msgid "E.g.: DOE"
 msgstr "Exemple : DUPONT"
 
-msgid "E.g.: DOE John"
-msgstr "Exemple: DUPONT Pierre"
-
 msgid "E.g.: John"
 msgstr "Exemple : Pierre"
 
@@ -1041,6 +1035,9 @@ msgstr "Exemple : Mon écran"
 
 msgid "E.g.: My screen family"
 msgstr "Exemple : Ma famille d'écrans"
+
+msgid "E.g.: Paris"
+msgstr "Exemple : Paris"
 
 #, python-format
 msgid "E.g.: Players %%f to %%l"
@@ -1205,6 +1202,9 @@ msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes
 
 msgid "End of upload (Ctrl-C)"
 msgstr "Fin de mise en ligne (Ctrl-C)"
+
+msgid "End time needs to be after start time."
+msgstr "L'horaire de fin doit être après l'horaire de début."
 
 msgid "End:"
 msgstr "Fin :"
@@ -2348,9 +2348,6 @@ msgstr "Nombre de parties gagnées"
 msgid "Number of players : %(num)d"
 msgstr "Nombre de joueur·euses : %(num)d"
 
-msgid "Number of rounds in the tournament."
-msgstr "Nombre de rondes dans le tournoi."
-
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
@@ -3326,6 +3323,10 @@ msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
 msgid "The end date and time of the event."
 msgstr "La date et l'heure de fin de l'évènement."
 
+#, python-format
+msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
+
 msgid "The federation that organizes the event."
 msgstr "La fédération qui organise l'évènement."
 
@@ -3355,6 +3356,13 @@ msgstr "Le dernier écran ne peut être supprimé."
 
 msgid "The location of the event."
 msgstr "Le lieu de l'évènement."
+
+#, python-format
+msgid "The location of the tournament (defaults to [%(location)s])."
+msgstr "Le lieu du tournoi (par défaut [%(location)s])."
+
+msgid "The location of the tournament."
+msgstr "Le lieu du tournoi."
 
 msgid "The log level allows you to trace the behaviour of the application."
 msgstr "Le niveau de log permet de trancer le comportement de l'application."
@@ -3396,9 +3404,6 @@ msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
 
-msgid "The name of the chief arbiter of the event."
-msgstr "Le nom de l'arbitre en chef de l'évènement."
-
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le nom de l'évènement sur la plateforme ChessEvent (par défaut, peut être modifié pour chaque tournoi)."
 
@@ -3436,6 +3441,9 @@ msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
+
+msgid "The number of rounds of the tournament."
+msgstr "Le nombre de rondes du tournoi."
 
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
 msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facultatif (le nombre d'écrans reste toujours le même et le nombre d'échiquiers par écran s'adapte)."
@@ -3580,6 +3588,10 @@ msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent 
 msgid "The start date and time of the event."
 msgstr "La date et l'heure de début de l'évènement."
 
+#, python-format
+msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr "L'horaire de début du tournoi (par défaut %(datetime)s)."
+
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
 
@@ -3670,6 +3682,9 @@ msgstr "Cadence"
 
 msgid "Time is not defined."
 msgstr "L'heure n'est pas définie"
+
+msgid "Time outside of event time range ({start} - {stop})."
+msgstr "Horaire en dehors des horaires de l'évènement ({start} - {stop})."
 
 msgid "Timer [{timer_id}] not found."
 msgstr "Le chronomètre [{timer_id}] n'existe pas."

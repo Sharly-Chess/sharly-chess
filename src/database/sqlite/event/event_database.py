@@ -429,13 +429,6 @@ class EventDatabase(MigrationDatabase):
                                 time_control_handicap_min_time=tournament_dict.get(
                                     'time_control_handicap_min_time', None
                                 ),
-                                record_illegal_moves=None,
-                                rules=None,
-                                first_board_number=None,
-                                paired_bye_result=None,
-                                max_byes=None,
-                                last_rounds_no_byes=None,
-                                tie_breaks=None,
                             )
                         )
                         assert stored_tournament.id is not None
@@ -902,7 +895,6 @@ class EventDatabase(MigrationDatabase):
             public=self.load_bool_from_database_field(row['public']),
             path=row['path'],
             location=row['location'],
-            arbiter=row['arbiter'],
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
                     'hide_background_image', PapiWebConfig.default_hide_background_image
@@ -966,7 +958,6 @@ class EventDatabase(MigrationDatabase):
             'federation',
             'path',
             'location',
-            'arbiter',
             'hide_background_image',
             'background_image',
             'background_color',
@@ -989,7 +980,6 @@ class EventDatabase(MigrationDatabase):
             stored_event.federation,
             stored_event.path,
             stored_event.location,
-            stored_event.arbiter,
             stored_event.hide_background_image,
             stored_event.background_image,
             stored_event.background_color,
@@ -1340,6 +1330,9 @@ class EventDatabase(MigrationDatabase):
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
             tie_breaks=cls.load_json_from_database_field(row.get('tie_breaks', None)),
+            start=row['start'],
+            stop=row['stop'],
+            location=row['location'],
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(
             stored_tournament=stored_tournament, row=row
@@ -1395,6 +1388,9 @@ class EventDatabase(MigrationDatabase):
             'tie_breaks',
             'rounds',
             'rating',
+            'location',
+            'start',
+            'stop',
             'last_rounds_no_byes',
             'last_update',
             'last_result_update',
@@ -1420,6 +1416,9 @@ class EventDatabase(MigrationDatabase):
             self.dump_to_json_database_field(stored_tournament.tie_breaks),
             stored_tournament.rounds,
             stored_tournament.rating,
+            stored_tournament.location,
+            stored_tournament.start,
+            stored_tournament.stop,
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,

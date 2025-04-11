@@ -93,8 +93,8 @@
                         >
                             {{ admin_macros.number_input(
                                 name='rounds',
-                                label=_('%(title)s:', title=_('Rounds')),
-                                help_text=_('Number of rounds in the tournament.'),
+                                label=_('%(string)s:', string=_('Rounds')),
+                                help_text=_('The number of rounds of the tournament.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -114,6 +114,38 @@
                                 label=_('Rating:'),
                                 help_text=_('The type of rating to use for the tournament.'),
                                 select_options=rating_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6 col-lg-3 mb-3">
+                            {{ admin_macros.datetime_input(
+                                name='start',
+                                label=_('Start:'),
+                                help_text=_('The start time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_start_date_time),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3 mb-3">
+                            {{ admin_macros.datetime_input(
+                                name='stop',
+                                label=_('End:'),
+                                help_text=_('The end time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_stop_date_time),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.text_input(
+                                name='location',
+                                label=_('%(string)s:', string=_('Location')),
+                                placeholder=_('E.g.: Paris'),
+                                help_text=(
+                                    _(
+                                        'The location of the tournament (defaults to [%(location)s]).',
+                                        location=admin_event.location
+                                    ) if admin_event.location else _('The location of the tournament.')
+                                ),
                                 data=data, errors=errors
                             ) }}
                         </div>

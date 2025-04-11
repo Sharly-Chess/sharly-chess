@@ -1,3 +1,5 @@
+import time
+from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
@@ -94,6 +96,8 @@ class TournamentAdminController(BaseEventAdminController):
         tie_breaks: list[dict] | None = None
         rounds: int | None = None
         rating: int | None = None
+        start: float | None = None
+        stop: float | None = None
         if action == 'delete':
             if web_context.admin_tournament is None:
                 raise RuntimeError('admin_tournament not defined')
@@ -109,10 +113,6 @@ class TournamentAdminController(BaseEventAdminController):
                     char='/'
                 )
             else:
-                field = 'rounds'
-                rounds = WebContext.form_data_to_int(data, field) or 1
-                if rounds < 1:
-                    errors[field] = _('A positive integer is expected.')
                 match action:
                     case 'create' | 'clone':
                         if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
@@ -120,8 +120,8 @@ class TournamentAdminController(BaseEventAdminController):
                                 'Tournament [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
-                        assert web_context.admin_tournament is not None
                         tournament = web_context.admin_tournament
+                        assert tournament is not None
                         if (
                             uniq_id != tournament.uniq_id
                             and uniq_id
@@ -131,23 +131,56 @@ class TournamentAdminController(BaseEventAdminController):
                                 'Tournament [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                         check_in_open = tournament.check_in_open
-                        if rounds and rounds < tournament.current_round:
-                            errors['rounds'] = _(
-                                'Impossible to set a round number '
-                                'lower than current round #{round}.'
-                            ).format(round=tournament.current_round)
+
                     case _:
                         raise ValueError(f'action=[{action}]')
-
-                field = 'rating'
+                rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+                if rounds < 1:
+                    errors[field] = _('A positive integer is expected.')
+                elif action == 'update':
+                    tournament = web_context.admin_tournament
+                    assert tournament is not None
+                    if rounds and rounds < tournament.current_round:
+                        errors['rounds'] = _(
+                            'Impossible to set a round number '
+                            'lower than current round #{round}.'
+                        ).format(round=tournament.current_round)
                 rating = (
-                    WebContext.form_data_to_int(data, field)
+                    WebContext.form_data_to_int(data, field := 'rating')
                     or TournamentRating.STANDARD.value
                 )
                 try:
                     TournamentRating(rating)
                 except ValueError:
                     errors[field] = f'Unknown rating [{rating}]'
+                event = web_context.admin_event
+                start_str = WebContext.form_data_to_str(data, field := 'start')
+                if start_str:
+                    start = time.mktime(
+                        datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
+                    )
+                    if not event.start <= start <= event.stop:
+                        errors[field] = _(
+                            'Time outside of event time range ({start} - {stop}).'
+                        ).format(
+                            start=event.formatted_start_date_time,
+                            stop=event.formatted_stop_date_time,
+                        )
+                stop_str = WebContext.form_data_to_str(data, field := 'stop')
+                if stop_str:
+                    stop = time.mktime(
+                        datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
+                    )
+                    if not event.start <= stop <= event.stop:
+                        errors[field] = _(
+                            'Time outside of event time range ({start} - {stop}).'
+                        ).format(
+                            start=event.formatted_start_date_time,
+                            stop=event.formatted_stop_date_time,
+                        )
+                    elif start and stop < start:
+                        errors[field] = _('End time needs to be after start time.')
+
                 tie_breaks = []
                 tie_break_type_by_id: dict[str, type[TieBreak]] = (
                     TieBreakManager.type_by_id()
@@ -183,6 +216,7 @@ class TournamentAdminController(BaseEventAdminController):
         paired_bye_result: int | None = None
         max_byes: int | None = None
         last_rounds_no_byes: int | None = None
+        location: str | None = None
         match action:
             case 'create' | 'update' | 'clone':
                 name = WebContext.form_data_to_str(data, 'name') or ''
@@ -219,6 +253,7 @@ class TournamentAdminController(BaseEventAdminController):
                 last_rounds_no_byes = WebContext.form_data_to_int(
                     data, 'last_rounds_no_byes'
                 )
+                location = WebContext.form_data_to_str(data, 'location')
             case 'delete':
                 if web_context.admin_tournament is None:
                     raise RuntimeError(
@@ -272,6 +307,9 @@ class TournamentAdminController(BaseEventAdminController):
             last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
+            location=location,
+            start=start,
+            stop=stop,
             rounds=rounds or 1,
             rating=rating or TournamentRating.STANDARD.value,
             errors=errors,
@@ -375,6 +413,9 @@ class TournamentAdminController(BaseEventAdminController):
                     tie_break_1: str | None = None
                     tie_break_2: str | None = None
                     tie_break_3: str | None = None
+                    location: str | None = None
+                    start: float | None = None
+                    stop: float | None = None
                     rounds: int | None = None
                     rating: TournamentRating | None = None
                     match action:
@@ -406,6 +447,9 @@ class TournamentAdminController(BaseEventAdminController):
                             paired_bye_result = stored_tournament.paired_bye_result
                             max_byes = stored_tournament.max_byes
                             last_rounds_no_byes = stored_tournament.last_rounds_no_byes
+                            location = stored_tournament.location
+                            start = stored_tournament.start
+                            stop = stored_tournament.stop
                             rating = admin_tournament.rating
                             rounds = admin_tournament.rounds or 1
                         case 'create':
@@ -476,6 +520,9 @@ class TournamentAdminController(BaseEventAdminController):
                         'tie_break_1': WebContext.value_to_form_data(tie_break_1),
                         'tie_break_2': WebContext.value_to_form_data(tie_break_2),
                         'tie_break_3': WebContext.value_to_form_data(tie_break_3),
+                        'location': WebContext.value_to_form_data(location),
+                        'start': WebContext.value_to_datetime_form_data(start),
+                        'stop': WebContext.value_to_datetime_form_data(stop),
                         'rounds': WebContext.value_to_form_data(rounds),
                         'rating': WebContext.value_to_form_data(
                             rating.value if rating else None

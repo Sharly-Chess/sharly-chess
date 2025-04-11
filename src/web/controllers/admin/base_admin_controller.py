@@ -340,7 +340,6 @@ class BaseAdminController(BaseController):
         public: bool | None = None
         path: str | None = None
         location: str | None = None
-        arbiter: str | None = None
         hide_background_image: bool | None = None
         background_image: str | None = None
         background_color: str | None = None
@@ -391,7 +390,6 @@ class BaseAdminController(BaseController):
                 public = WebContext.form_data_to_bool(data, 'public')
                 path = WebContext.form_data_to_str(data, 'path')
                 location = WebContext.form_data_to_str(data, 'location')
-                arbiter = WebContext.form_data_to_str(data, 'arbiter')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
                 field = 'background_image'
                 hide_background_image = WebContext.form_data_to_bool(
@@ -504,7 +502,6 @@ class BaseAdminController(BaseController):
             public=bool(public),
             path=path,
             location=location,
-            arbiter=arbiter,
             hide_background_image=bool(hide_background_image),
             background_image=background_image,
             background_color=background_color,
@@ -654,7 +651,6 @@ class BaseAdminController(BaseController):
         background_color: str | None = None
         path: str | None = None
         location: str | None = None
-        arbiter: str | None = None
         update_password: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
@@ -673,7 +669,6 @@ class BaseAdminController(BaseController):
                 background_color = stored_event.background_color
                 path = stored_event.path
                 location = stored_event.location
-                arbiter = stored_event.arbiter
                 update_password = stored_event.update_password
                 record_illegal_moves = stored_event.record_illegal_moves
                 rules = stored_event.rules
@@ -713,7 +708,6 @@ class BaseAdminController(BaseController):
             ),
             'path': WebContext.value_to_form_data(path),
             'location': WebContext.value_to_form_data(location),
-            'arbiter': WebContext.value_to_form_data(arbiter),
             'update_password': WebContext.value_to_form_data(update_password),
             'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
             'rules': WebContext.value_to_form_data(rules),
