@@ -67,6 +67,7 @@ Pour être prévenu·e des nouvelles versions de Papi-web, il suffit de s'abonne
 | AUBRY Pascal        | AFO2  | BRE   | 35  | Échiquier Domloupéen                          |
 | AVENIA Adrien       |       | BFC   | 25  | Tour Prends Garde! Besançon                   |
 | BELEY Huong         | AFO1  | IDF   | 77  | Tours et Detours Club d'Échecs Centre Brie    |
+| BELLILI Bachir      | AFO1  | HDF   | 60  | Echiquier Beauvaisien                         |
 | BENETEAU Hubert     | AFE1  | NOR   | 50  | Agneaux Saint-Lô                              |
 | BENADDOU Khaled     | AFE2  | IDF   | 94  | Club d'Échecs de Saint-Maur                   |
 | BLEUZEN Christian   | AFE1  | BRE   | 35  | Rennes Paul Bert                              |
