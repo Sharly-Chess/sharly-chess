@@ -12,7 +12,7 @@ from common.logger import get_logger
 logger: Logger = get_logger()
 
 pyodbc.pooling = False
-logger.info('Pooling ODBC : %s', 'enabled' if pyodbc.pooling else 'disabled')
+logger.debug('Pooling ODBC : %s', 'enabled' if pyodbc.pooling else 'disabled')
 
 
 @dataclass
