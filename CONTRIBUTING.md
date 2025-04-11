@@ -34,6 +34,9 @@ Whenever possible, please add tests to ensure your changes do not cause regressi
 
 Make sure to run `pytest` and solve problems before sending your code to review.
 
+If you're changing translation files, make sure you have the `translate` dependency group installed, run `python scripts/i18n/i18n_update.py`, and update all locales.
+A PR with a partial `docs/86-i18n.md` will get changes requested immediately.
+
 Once all the changes are made, create a Pull Request with a descriptive name, and why you made the changes.
 If you're solving an issue, link to it in when opening your PR.
 
