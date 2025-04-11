@@ -22,6 +22,7 @@
             </button>
         </div>
     {% endif %}
+    {% if admin_tournament.current_round > 0 %}
      <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
@@ -33,9 +34,10 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            {{ _('Unpair') }}
-        </button>
-    </div>
+                {{ _('Unpair') }}
+            </button>
+        </div>
+    {% endif %}
 
     <div class="d-flex gap-2 ms-auto align-items-center">
         <select
@@ -105,7 +107,7 @@
                     </thead>
                     <tbody>
                         {% for player in admin_unpaired %}
-                            {% with class="forfeit" if admin_round and (player.pairings[admin_round].forfeit or player.pairings[admin_round].half_point_bye or player.pairings[admin_round].full_point_bye) else '' %}
+                            {% with class="forfeit" if admin_round and player.pairings[admin_round] and (player.pairings[admin_round].forfeit or player.pairings[admin_round].half_point_bye or player.pairings[admin_round].full_point_bye) else '' %}
                                 <tr class="player-row" data-player-id="{{ player.id }}">
                                     <td class="{{ class }}">
                                         <div class="d-flex align-items-center gap-2">
@@ -124,11 +126,11 @@
                                     <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
                                     <td class="{{ class }} text-center">
                                         <div
-                                            {% if player.pairings[admin_round].forfeit %}
+                                            {% if player.pairings[admin_round] and player.pairings[admin_round].forfeit %}
                                                {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
-                                            {% elif player.pairings[admin_round].half_point_bye %}
+                                            {% elif player.pairings[admin_round] and player.pairings[admin_round].half_point_bye %}
                                                {{ macros.tooltip_attributes('info', _('Half point bye'), 'right') }}
-                                            {% elif player.pairings[admin_round].full_point_bye %}
+                                            {% elif player.pairings[admin_round] and player.pairings[admin_round].full_point_bye %}
                                                {{ macros.tooltip_attributes('info', _('Full point bye'), 'right') }}
                                             {% else %}
                                                 {{ macros.tooltip_attributes('info', _('Click to pair'), 'right') }}
@@ -145,11 +147,11 @@
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modal-wrapper"
                                             >
-                                                {% if player.pairings[admin_round].forfeit %}
+                                                {% if player.pairings[admin_round] and player.pairings[admin_round].forfeit %}
                                                     {{ "f" }}
-                                                {% elif player.pairings[admin_round].half_point_bye %}
+                                                {% elif player.pairings[admin_round] and player.pairings[admin_round].half_point_bye %}
                                                     <i class="bi bi-circle-half"></i>
-                                                {% elif player.pairings[admin_round].full_point_bye %}
+                                                {% elif player.pairings[admin_round] and player.pairings[admin_round].full_point_bye %}
                                                     <i class="bi bi-1-circle-fill"></i>
                                                 {% else %}
                                                     <i class="bi-shuffle pe-1"></i>
