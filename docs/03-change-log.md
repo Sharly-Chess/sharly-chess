@@ -35,6 +35,7 @@
 - Impression et affichage du classement et de la grille américaine
 - Impression des appariements et résultats
 - Réduction du temps de démarrage de l'application
+- Ajout de la possibilité de modifier la taille des polices sur les écrans d'affichage
 - Correction du calcul des points virtuels en Système Accéléré Dégressif
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois
