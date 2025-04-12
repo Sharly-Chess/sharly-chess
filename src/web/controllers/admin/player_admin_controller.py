@@ -855,7 +855,7 @@ class PlayerAdminController(BaseEventAdminController):
                 [
                     Federation.from_query_param(query_param)
                     for query_param in admin_players_filter_federations
-                    if query_param  # '' must be ignored
+                    if query_param != '*'
                 ],
             )
         elif admin_players_filter_clubs is not None:
@@ -864,7 +864,7 @@ class PlayerAdminController(BaseEventAdminController):
                 [
                     Club.from_query_param(query_param)
                     for query_param in admin_players_filter_clubs
-                    if query_param  # '' must be ignored
+                    if query_param != '*'
                 ],
             )
         elif admin_players_filter_genders is not None:
