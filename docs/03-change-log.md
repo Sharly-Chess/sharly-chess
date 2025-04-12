@@ -6,9 +6,11 @@
 - Déplacement des utilitaires de ``bin/`` vers ``tools/``
 - Ajout des exports PGN
 
-## Version 2.5.3 - 10 avril 2025
+## Version 2.5.3 - 11 avril 2025
 - Récupération de la configuration de l'application à partir d'une version antérieure
 - Modification de l'encodage des fichiers de log
+- Correction d'un bug d'affichage des rondes sur les écrans d'appariements
+- Correction d'un bug d'initialisation des joueur·euses depuis ChessEvent
 
 ## Version 2.5.2 - 8 avril 2025
 - Correction d'un bug à la récupération des versions antérieures
@@ -34,6 +36,7 @@
 - Impression et affichage du classement et de la grille américaine
 - Impression des appariements et résultats
 - Réduction du temps de démarrage de l'application
+- Ajout de la possibilité de modifier la taille des polices sur les écrans d'affichage
 - Correction du calcul des points virtuels en Système Accéléré Dégressif
 - Correction d'un bug de mise en ligne des tournois sur le site FFE
 - Correction d'un bug sur la duplication des écrans, familles et tournois

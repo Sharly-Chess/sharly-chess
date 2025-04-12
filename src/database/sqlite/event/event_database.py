@@ -429,13 +429,6 @@ class EventDatabase(MigrationDatabase):
                                 time_control_handicap_min_time=tournament_dict.get(
                                     'time_control_handicap_min_time', None
                                 ),
-                                record_illegal_moves=None,
-                                rules=None,
-                                first_board_number=None,
-                                paired_bye_result=None,
-                                max_byes=None,
-                                last_rounds_no_byes=None,
-                                tie_breaks=None,
                             )
                         )
                         assert stored_tournament.id is not None
@@ -901,6 +894,7 @@ class EventDatabase(MigrationDatabase):
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
             path=row['path'],
+            location=row['location'],
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
                     'hide_background_image', PapiWebConfig.default_hide_background_image
@@ -910,16 +904,16 @@ class EventDatabase(MigrationDatabase):
             background_color=row['background_color'],
             update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
-            rules=row.get('rules', None),
+            rules=row['rules'],
             timer_colors=self.set_dict_int_keys(
                 self.load_json_from_database_field(row['timer_colors'])
             ),
             timer_delays=self.set_dict_int_keys(
                 self.load_json_from_database_field(row['timer_delays'])
             ),
-            message_text=row.get('message_text', None),
-            message_color=row.get('message_color', None),
-            message_background_color=row.get('message_background_color', None),
+            message_text=row['message_text'],
+            message_color=row['message_color'],
+            message_background_color=row['message_background_color'],
             last_update=row['last_update'],
         )
         plugin_manager.hook.augment_event_after_db_fetch(
@@ -963,6 +957,7 @@ class EventDatabase(MigrationDatabase):
             'public',
             'federation',
             'path',
+            'location',
             'hide_background_image',
             'background_image',
             'background_color',
@@ -984,6 +979,7 @@ class EventDatabase(MigrationDatabase):
             stored_event.public,
             stored_event.federation,
             stored_event.path,
+            stored_event.location,
             stored_event.hide_background_image,
             stored_event.background_image,
             stored_event.background_color,
@@ -1319,19 +1315,22 @@ class EventDatabase(MigrationDatabase):
             ],
             time_control_handicap_min_time=row['time_control_handicap_min_time'],
             record_illegal_moves=row['record_illegal_moves'],
-            rules=row.get('rules', None),
-            first_board_number=row.get('first_board_number', None),
-            paired_bye_result=row.get('paired_bye_result', None),
-            max_byes=row.get('max_byes', None),
-            last_rounds_no_byes=row.get('last_rounds_no_byes', None),
-            check_in_open=cls.load_bool_from_database_field(
-                row.get('check_in_open', None)
-            ),
+            rules=row['rules'],
+            first_board_number=row['first_board_number'],
+            paired_bye_result=row['paired_bye_result'],
+            max_byes=row['max_byes'],
+            last_rounds_no_byes=row['last_rounds_no_byes'],
+            check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
+            rounds=row['rounds'],
+            rating=row['rating'],
             last_update=row['last_update'],
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
-            tie_breaks=cls.load_json_from_database_field(row.get('tie_breaks', None)),
+            tie_breaks=cls.load_json_from_database_field(row['tie_breaks']),
+            start=row['start'],
+            stop=row['stop'],
+            location=row['location'],
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(
             stored_tournament=stored_tournament, row=row
@@ -1385,6 +1384,11 @@ class EventDatabase(MigrationDatabase):
             'paired_bye_result',
             'max_byes',
             'tie_breaks',
+            'rounds',
+            'rating',
+            'location',
+            'start',
+            'stop',
             'last_rounds_no_byes',
             'last_update',
             'last_result_update',
@@ -1408,6 +1412,11 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.paired_bye_result,
             stored_tournament.max_byes,
             self.dump_to_json_database_field(stored_tournament.tie_breaks),
+            stored_tournament.rounds,
+            stored_tournament.rating,
+            stored_tournament.location,
+            stored_tournament.start,
+            stored_tournament.stop,
             stored_tournament.last_rounds_no_byes,
             time.time(),
             stored_tournament.last_result_update,
@@ -1734,11 +1743,11 @@ class EventDatabase(MigrationDatabase):
                 row['players_show_unpaired']
             ),
             ranking_crosstable=cls.load_bool_from_database_field(
-                row.get('ranking_crosstable')
+                row['ranking_crosstable']
             ),
-            ranking_round=row.get('ranking_round', None),
-            ranking_min_points=row.get('ranking_min_points', None),
-            ranking_max_points=row.get('ranking_max_points', None),
+            ranking_round=row['ranking_round'],
+            ranking_min_points=row['ranking_min_points'],
+            ranking_max_points=row['ranking_max_points'],
             columns=row['columns'],
             font_size=row['font_size'],
             menu_link=cls.load_bool_from_database_field(row['menu_link']),
@@ -1749,10 +1758,8 @@ class EventDatabase(MigrationDatabase):
             last=row['last'],
             parts=row['parts'],
             number=row['number'],
-            message_default=cls.load_bool_from_database_field(
-                row.get('message_default', None)
-            ),
-            message_text=row.get('message_text', None),
+            message_default=cls.load_bool_from_database_field(row['message_default']),
+            message_text=row['message_text'],
             last_update=row['last_update'],
         )
 
@@ -1905,17 +1912,15 @@ class EventDatabase(MigrationDatabase):
                 row['results_tournament_ids']
             ),
             ranking_crosstable=cls.load_bool_from_database_field(
-                row.get('ranking_crosstable')
+                row['ranking_crosstable']
             ),
-            ranking_round=row.get('ranking_round', None),
-            ranking_min_points=row.get('ranking_min_points', None),
-            ranking_max_points=row.get('ranking_max_points', None),
+            ranking_round=row['ranking_round'],
+            ranking_min_points=row['ranking_min_points'],
+            ranking_max_points=row['ranking_max_points'],
             background_image=row['background_image'],
             background_color=row['background_color'],
-            message_default=cls.load_bool_from_database_field(
-                row.get('message_default', None)
-            ),
-            message_text=row.get('message_text', None),
+            message_default=cls.load_bool_from_database_field(row['message_default']),
+            message_text=row['message_text'],
             last_update=row['last_update'],
         )
 
@@ -2255,10 +2260,8 @@ class EventDatabase(MigrationDatabase):
             uniq_id=row['uniq_id'],
             public=cls.load_bool_from_database_field(row['public']),
             delay=row['delay'],
-            message_default=cls.load_bool_from_database_field(
-                row.get('message_default', None)
-            ),
-            message_text=row.get('message_text', None),
+            message_default=cls.load_bool_from_database_field(row['message_default']),
+            message_text=row['message_text'],
             screen_ids=cls.load_json_from_database_field(row['screen_ids']),
             family_ids=cls.load_json_from_database_field(row['family_ids']),
         )

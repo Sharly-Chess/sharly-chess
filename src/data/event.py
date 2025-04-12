@@ -285,6 +285,10 @@ class Event:
             self.add_error(_('[{path}] is not a directory.').format(path=path))
         return path
 
+    @property
+    def location(self) -> str | None:
+        return self.stored_event.location
+
     @cached_property
     def background_image(self) -> str:
         if self.stored_event.hide_background_image:

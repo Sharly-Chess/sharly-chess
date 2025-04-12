@@ -14,7 +14,7 @@ from common.i18n import _, ngettext
 from common.papi_web_config import PapiWebConfig
 from data.event import Event
 from data.loader import EventLoader
-from utils.enum import Result
+from utils.enum import Result, TournamentRating
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
@@ -141,6 +141,13 @@ class BaseAdminController(BaseController):
         )
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
+
+    @staticmethod
+    def _get_rating_options() -> dict[str, str]:
+        return {
+            WebContext.value_to_form_data(rating.value): rating.short_name
+            for rating in TournamentRating
+        }
 
     @staticmethod
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
@@ -332,6 +339,7 @@ class BaseAdminController(BaseController):
         stop: float | None = None
         public: bool | None = None
         path: str | None = None
+        location: str | None = None
         hide_background_image: bool | None = None
         background_image: str | None = None
         background_color: str | None = None
@@ -381,6 +389,7 @@ class BaseAdminController(BaseController):
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
                 path = WebContext.form_data_to_str(data, 'path')
+                location = WebContext.form_data_to_str(data, 'location')
                 update_password = WebContext.form_data_to_str(data, 'update_password')
                 field = 'background_image'
                 hide_background_image = WebContext.form_data_to_bool(
@@ -492,6 +501,7 @@ class BaseAdminController(BaseController):
             stop=stop,
             public=bool(public),
             path=path,
+            location=location,
             hide_background_image=bool(hide_background_image),
             background_image=background_image,
             background_color=background_color,
@@ -640,6 +650,7 @@ class BaseAdminController(BaseController):
         background_image: str | None = None
         background_color: str | None = None
         path: str | None = None
+        location: str | None = None
         update_password: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
@@ -650,16 +661,18 @@ class BaseAdminController(BaseController):
             case 'update' | 'clone':
                 if admin_event is None:
                     raise RuntimeError(f'{admin_event=} for [{action=}]')
-                public = admin_event.stored_event.public
-                federation = admin_event.stored_event.federation
-                hide_background_image = admin_event.stored_event.hide_background_image
-                background_image = admin_event.stored_event.background_image
-                background_color = admin_event.stored_event.background_color
-                path = admin_event.stored_event.path
-                update_password = admin_event.stored_event.update_password
-                record_illegal_moves = admin_event.stored_event.record_illegal_moves
-                rules = admin_event.stored_event.rules
-                message_text = admin_event.stored_event.message_text
+                stored_event = admin_event.stored_event
+                public = stored_event.public
+                federation = stored_event.federation
+                hide_background_image = stored_event.hide_background_image
+                background_image = stored_event.background_image
+                background_color = stored_event.background_color
+                path = stored_event.path
+                location = stored_event.location
+                update_password = stored_event.update_password
+                record_illegal_moves = stored_event.record_illegal_moves
+                rules = stored_event.rules
+                message_text = stored_event.message_text
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
             case 'create':
@@ -694,6 +707,7 @@ class BaseAdminController(BaseController):
                 background_color is None
             ),
             'path': WebContext.value_to_form_data(path),
+            'location': WebContext.value_to_form_data(location),
             'update_password': WebContext.value_to_form_data(update_password),
             'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
             'rules': WebContext.value_to_form_data(rules),

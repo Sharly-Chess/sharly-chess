@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timedelta, date
+from enum import StrEnum
 from itertools import product
 from logging import Logger
 from pathlib import Path
@@ -18,6 +19,7 @@ from utils.enum import (
     PlayerRatingType,
     BoardColor,
     PointValueType,
+    PapiResult,
 )
 from database.access.access_database import AccessDatabase
 from database.access.papi.papi_template import create_empty_papi_database
@@ -36,10 +38,27 @@ class TournamentInfo(NamedTuple):
     rating_limit2: int
     tie_breaks: list[TieBreak]
     point_value_type: PointValueType
-    location: str
-    start_date: str
-    end_date: str
     arbiter: str
+
+
+class PapiVariable(StrEnum):
+    NAME = 'Nom'
+    TYPE = 'Genre'
+    ROUNDS = 'NbrRondes'
+    PAIRING = 'Pairing'
+    TIME_CONTROL = 'Cadence'
+    RATING = 'ClassElo'
+    RATING_LIMIT1 = 'EloBase1'
+    RATING_LIMIT2 = 'EloBase2'
+    TIE_BREAK1 = 'Dep1'
+    TIE_BREAK2 = 'Dep2'
+    TIE_BREAK3 = 'Dep3'
+    POINT_VALUE_TYPE = 'DecomptePoints'
+    LOCATION = 'Lieu'
+    START_DATE = 'DateDebut'
+    END_DATE = 'DateFin'
+    ARBITER = 'Arbitre'
+    FFE_ID = 'Homologation'
 
 
 class PapiDatabase(AccessDatabase):
@@ -57,40 +76,41 @@ class PapiDatabase(AccessDatabase):
     def commit(self):
         self._commit()
 
-    def _read_var(self, name: str) -> str:
+    def read_variable(self, variable: PapiVariable) -> str:
         query: str = 'SELECT `Value` FROM `info` WHERE `Variable` = ?'
-        self._execute(query, (name,))
+        self._execute(query, (variable.value,))
         return self._fetchval()
 
-    def _update_var(self, name: str, value: str | int):
+    def update_variable(self, variable: PapiVariable, value: str | int):
         query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
-        self._execute(query, (value, name))
+        self._execute(query, (value, variable.value))
 
     def read_info(self) -> TournamentInfo:
         """Reads the database and returns basic information about the
         tournament."""
-        rounds: int = int(self._read_var('NbrRondes'))
+        rounds: int = int(self.read_variable(PapiVariable.ROUNDS))
         pairing: TournamentPairing = TournamentPairing.from_papi_value(
-            self._read_var('Pairing')
+            self.read_variable(PapiVariable.PAIRING)
         )
         rating: TournamentRating = TournamentRating.from_papi_value(
-            self._read_var('ClassElo')
+            self.read_variable(PapiVariable.RATING)
         )
-        rating_limit1: int = int(self._read_var('EloBase1'))
-        rating_limit2: int = int(self._read_var('EloBase2'))
+        rating_limit1: int = int(self.read_variable(PapiVariable.RATING_LIMIT1))
+        rating_limit2: int = int(self.read_variable(PapiVariable.RATING_LIMIT2))
         tie_break_type_by_id = PapiTieBreakManager.type_by_papi_id()
         tie_breaks: list[TieBreak] = []
-        for index in range(1, 4):
-            papi_id = self._read_var(f'Dep{index}')
+        for variable in (
+            PapiVariable.TIE_BREAK1,
+            PapiVariable.TIE_BREAK2,
+            PapiVariable.TIE_BREAK3,
+        ):
+            papi_id = self.read_variable(variable)
             if tie_break_type := tie_break_type_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break_type())
         point_value_type: PointValueType = PointValueType.from_papi_value(
-            self._read_var('DecomptePoints')
+            self.read_variable(PapiVariable.POINT_VALUE_TYPE)
         )
-        location: str = self._read_var('Lieu')
-        start_date: str = self._read_var('DateDebut')
-        end_date: str = self._read_var('DateFin')
-        arbiter: str = self._read_var('Arbitre')
+        arbiter: str = self.read_variable(PapiVariable.ARBITER)
         return TournamentInfo(
             rounds,
             pairing,
@@ -99,15 +119,12 @@ class PapiDatabase(AccessDatabase):
             rating_limit2,
             tie_breaks,
             point_value_type,
-            location,
-            start_date,
-            end_date,
             arbiter,
         )
 
-    def write_info(self, info: dict[str, str | int]):
+    def write_info(self, info: dict[PapiVariable, str | int]):
         for name, value in info.items():
-            self._update_var(name, value)
+            self.update_variable(name, value)
 
     def read_player_dict(
         self, player_papi_id: int
@@ -219,15 +236,16 @@ class PapiDatabase(AccessDatabase):
         )
 
     def update_tie_breaks(self, tie_breaks: list[TieBreak]):
-        for key in ('Dep1', 'Dep2', 'Dep3'):
+        for variable in (
+            PapiVariable.TIE_BREAK1,
+            PapiVariable.TIE_BREAK2,
+            PapiVariable.TIE_BREAK3,
+        ):
             while tie_breaks and tie_breaks[0].papi_id is None:
                 tie_breaks.pop(0)
-            self._update_var(
-                key, (tie_breaks.pop(0).papi_id or '') if tie_breaks else ''
+            self.update_variable(
+                variable, (tie_breaks.pop(0).papi_id or '') if tie_breaks else ''
             )
-
-    def update_point_values(self, point_value_type: PointValueType):
-        self._update_var('DecomptePoints', point_value_type.to_papi_value)
 
     def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
         """Reads the database and fetches the Player identification, pairings and results.
@@ -287,7 +305,7 @@ class PapiDatabase(AccessDatabase):
                     if opponent_papi_id and opponent_papi_id != 1
                     else None,
                     Result.from_papi_value(
-                        row[f'{round_str}Res'],
+                        row[f'{round_str}Res'] or PapiResult.NOT_PAIRED.value,
                         opponent_papi_id is None,
                         opponent_papi_id == 1,
                         color_str == 'F',
@@ -314,8 +332,9 @@ class PapiDatabase(AccessDatabase):
                 ratings={
                     tr: PlayerRating(
                         row[tr.papi_value_field] or 0,
-                        PlayerRatingType.from_papi_value(row[tr.papi_type_field])
-                    ) for tr in TournamentRating
+                        PlayerRatingType.from_papi_value(row[tr.papi_type_field]),
+                    )
+                    for tr in TournamentRating
                 },
                 fide_id=fide_id,
                 federation=Federation(row['Federation'] or ''),

@@ -38,6 +38,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
+#, python-format
 msgid "%f to %l"
 msgstr "%f to %l"
 
@@ -1032,6 +1036,9 @@ msgstr "Exemple : Mon écran"
 msgid "E.g.: My screen family"
 msgstr "Exemple : Ma famille d'écrans"
 
+msgid "E.g.: Paris"
+msgstr "Exemple : Paris"
+
 #, python-format
 msgid "E.g.: Players %%f to %%l"
 msgstr "Exemple : Joueur·euses %%f à %%l"
@@ -1195,6 +1202,9 @@ msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes
 
 msgid "End of upload (Ctrl-C)"
 msgstr "Fin de mise en ligne (Ctrl-C)"
+
+msgid "End time needs to be after start time."
+msgstr "L'horaire de fin doit être après l'horaire de début."
 
 msgid "End:"
 msgstr "Fin :"
@@ -1700,6 +1710,9 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+msgid "Impossible to set a round number lower than current round #{round}."
+msgstr "Impossible d'attribuer un nombre de rondes inférieur à la ronde actuelle (ronde n°{round})."
+
 msgid "Incorrect password."
 msgstr "Mot de passe incorrect."
 
@@ -1910,6 +1923,9 @@ msgstr "URL locale : {local_url}"
 
 msgid "Local source databases settings have been updated."
 msgstr "les paramètres des bases de données locales ont été mis à jour."
+
+msgid "Location"
+msgstr "Lieu"
 
 msgid "Log level"
 msgstr "Niveau de log"
@@ -2833,6 +2849,9 @@ msgstr "Elo"
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
+msgid "Rating:"
+msgstr "Classement :"
+
 msgid "Ratings"
 msgstr "Classements"
 
@@ -2986,6 +3005,9 @@ msgstr "Ronde : %(round)d"
 
 msgid "Round: the last finished round"
 msgstr "Ronde : la dernière ronde terminée"
+
+msgid "Rounds"
+msgstr "Rondes"
 
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
@@ -3301,6 +3323,10 @@ msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
 msgid "The end date and time of the event."
 msgstr "La date et l'heure de fin de l'évènement."
 
+#, python-format
+msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
+
 msgid "The federation that organizes the event."
 msgstr "La fédération qui organise l'évènement."
 
@@ -3327,6 +3353,16 @@ msgstr "L'installation de la version [{version}] a échoué."
 
 msgid "The last set of a screen can not be deleted."
 msgstr "Le dernier écran ne peut être supprimé."
+
+msgid "The location of the event."
+msgstr "Le lieu de l'évènement."
+
+#, python-format
+msgid "The location of the tournament (defaults to [%(location)s])."
+msgstr "Le lieu du tournoi (par défaut [%(location)s])."
+
+msgid "The location of the tournament."
+msgstr "Le lieu du tournoi."
 
 msgid "The log level allows you to trace the behaviour of the application."
 msgstr "Le niveau de log permet de trancer le comportement de l'application."
@@ -3405,6 +3441,9 @@ msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
+
+msgid "The number of rounds of the tournament."
+msgstr "Le nombre de rondes du tournoi."
 
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
 msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facultatif (le nombre d'écrans reste toujours le même et le nombre d'échiquiers par écran s'adapte)."
@@ -3549,6 +3588,10 @@ msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent 
 msgid "The start date and time of the event."
 msgstr "La date et l'heure de début de l'évènement."
 
+#, python-format
+msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr "L'horaire de début du tournoi (par défaut %(datetime)s)."
+
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
 
@@ -3578,6 +3621,9 @@ msgstr "Le tournoi à imprimer."
 
 msgid "The type of document to print."
 msgstr "Le type de document à imprimer."
+
+msgid "The type of rating to use for the tournament."
+msgstr "Le type de classement utilsé."
 
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
@@ -3636,6 +3682,9 @@ msgstr "Cadence"
 
 msgid "Time is not defined."
 msgstr "L'heure n'est pas définie"
+
+msgid "Time outside of event time range ({start} - {stop})."
+msgstr "Horaire en dehors des horaires de l'évènement ({start} - {stop})."
 
 msgid "Timer [{timer_id}] not found."
 msgstr "Le chronomètre [{timer_id}] n'existe pas."
@@ -3860,6 +3909,9 @@ msgstr "UTILISEZ À VOS PROPRES RISQUES"
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
+
+msgid "Undefined"
+msgstr "Non défini"
 
 msgid "Under 10"
 msgstr "Moins de 10"

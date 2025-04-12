@@ -130,25 +130,26 @@ def rgb_to_hexa(rgb: RGB) -> str:
     return '#' + ''.join(f'{max(0, min(255, i)):02X}' for i in rgb)
 
 
+def format_timestamp(ts: float | None = None, format_: str = '%Y-%m-%d %H:%M') -> str:
+    """Formats a timestamp (now if None) to the given format."""
+    return datetime.strftime(
+        datetime.fromtimestamp(ts if ts is not None else time.time()), format_
+    )
+
+
 def format_timestamp_date_time(ts: float | None = None) -> str:
     """Formats the given timestamp (now if None) to YYYY-mm-dd HH:MM format."""
-    return datetime.strftime(
-        datetime.fromtimestamp(ts if ts is not None else time.time()), '%Y-%m-%d %H:%M'
-    )
+    return format_timestamp(ts)
 
 
 def format_timestamp_date(ts: float | None = None) -> str:
     """Formats the given timestamp (now if None) to YYYY-mm-dd format."""
-    return datetime.strftime(
-        datetime.fromtimestamp(ts if ts is not None else time.time()), '%Y-%m-%d'
-    )
+    return format_timestamp(ts, '%Y-%m-%d')
 
 
 def format_timestamp_time(ts: float | None = None) -> str:
     """Formats the given timestamp (now if None) to HH:MM format."""
-    return datetime.strftime(
-        datetime.fromtimestamp(ts if ts is not None else time.time()), '%H:%M'
-    )
+    return format_timestamp(ts, '%H:%M')
 
 
 def show_duration(func):
