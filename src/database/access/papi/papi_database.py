@@ -328,7 +328,13 @@ class PapiDatabase(AccessDatabase):
             players[player_papi_web_id] = player
         return players
 
-    def set_player_result(self, player_papi_id: int, round_: int, result: Result):
+    def set_player_result(
+        self,
+        player_papi_id: int,
+        round_: int,
+        result: Result,
+        was_paired: bool | None = None,
+    ):
         """Writes the given result to the database."""
         rd = f'Rd{round_:0>2}'
         data: dict[str, str | int | None] = {
@@ -340,6 +346,8 @@ class PapiDatabase(AccessDatabase):
         elif result.is_bye:
             data[f'{rd}Cl'] = 'F'
             data[f'{rd}Adv'] = None
+        elif was_paired is False and result == Result.NO_RESULT:
+            data[f'{rd}Cl'] = 'R'
         actions: str = ', '.join([f'`{key}` = ?' for key in data])
         query: str = f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?'
         params: tuple = tuple(

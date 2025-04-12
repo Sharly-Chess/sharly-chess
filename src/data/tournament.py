@@ -20,7 +20,12 @@ from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.screen import Screen
-from data.tie_breaks import TieBreak, TieBreakOption, TieBreakManager, TieBreakOptionManager
+from data.tie_breaks import (
+    TieBreak,
+    TieBreakOption,
+    TieBreakManager,
+    TieBreakOptionManager,
+)
 from utils import SharedUtils
 from utils.enum import (
     BoardColor,
@@ -265,9 +270,7 @@ class Tournament:
         if not self.stored_tournament.tie_breaks:
             return None
         tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = (
-            TieBreakManager.type_by_id()
-        )
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager.type_by_id()
         )
@@ -1219,6 +1222,9 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             for round_, result in byes.items():
                 papi_database.set_player_result(
-                    player_papi_id=player.ref_id, round_=round_, result=result
+                    player.ref_id,
+                    round_,
+                    result,
+                    player.pairings[round_].opponent_id is not None,
                 )
             papi_database.commit()
