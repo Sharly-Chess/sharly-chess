@@ -92,14 +92,6 @@ class Pairing:
     def requested_bye(self) -> bool:
         return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
 
-    @property
-    def unpairable_bye(self) -> bool:
-        return self.result in (
-            Result.FULL_POINT_BYE,
-            Result.HALF_POINT_BYE,
-            Result.ZERO_POINT_BYE,
-        )
-
     def to_trf(
         self, round_number: int, player_id_to_trf_id: Callable[[int], int]
     ) -> TrfGame:
