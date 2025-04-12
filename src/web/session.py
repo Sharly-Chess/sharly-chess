@@ -237,7 +237,7 @@ class SessionHandler:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, Federation) else Federation(d)
+            d if isinstance(d, Federation) else Federation(d['name'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, [])
         ]
 
@@ -254,7 +254,7 @@ class SessionHandler:
         # type-casting is needed because the value returned by Session.get is serialized
         # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, Club) else Club(d)
+            d if isinstance(d, Club) else Club(d['name'])
             for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 

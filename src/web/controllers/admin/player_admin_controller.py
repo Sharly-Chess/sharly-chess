@@ -167,8 +167,9 @@ class PlayerAdminController(BaseEventAdminController):
                 type=PlayerRatingType(
                     WebContext.form_data_to_int(data, f'rating_type_{tr.value}')
                     or PlayerRatingType.ESTIMATED.value
-                )
-            ) for tr in TournamentRating
+                ),
+            )
+            for tr in TournamentRating
         }
         for tr, rating in ratings.items():
             if rating.type != PlayerRatingType.ESTIMATED and not rating.value:
@@ -847,7 +848,7 @@ class PlayerAdminController(BaseEventAdminController):
                 [
                     Federation.from_query_param(query_param)
                     for query_param in admin_players_filter_federations
-                    if query_param  # '' must be ignored
+                    if query_param != '*'
                 ],
             )
         elif admin_players_filter_clubs is not None:
@@ -856,7 +857,7 @@ class PlayerAdminController(BaseEventAdminController):
                 [
                     Club.from_query_param(query_param)
                     for query_param in admin_players_filter_clubs
-                    if query_param  # '' must be ignored
+                    if query_param != '*'
                 ],
             )
         elif admin_players_filter_genders is not None:

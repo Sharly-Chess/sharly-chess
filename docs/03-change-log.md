@@ -5,6 +5,9 @@
 ## Version 2.6 - 2025
 - Ajout des exports PGN
 
+## Version 2.5.4 - 12 avril 2025
+- Correction d'un bug de filtrage des clubs et fédérations sur l'onglet Joueur·euses
+
 ## Version 2.5.3 - 11 avril 2025
 - Récupération de la configuration de l'application à partir d'une version antérieure
 - Modification de l'encodage des fichiers de log
