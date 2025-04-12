@@ -8,8 +8,8 @@
         ></i></button>
         <ul class="dropdown-menu players-filter-club p-0">
             {% with name='admin_players_filter_clubs' %}
-                {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
-                <input type="hidden" name="{{ name }}" value="" />
+                {# this input is always checked with a special value (ignored) to be sure to get a list parameter. #}
+                <input type="hidden" name="{{ name }}" value="*" />
                 <li class="dropdown-item title text-nowrap">
                     <input
                         type="checkbox"
