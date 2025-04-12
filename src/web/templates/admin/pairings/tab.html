@@ -52,24 +52,6 @@
         {% endif %}
 
         <div class="d-flex gap-2 ms-auto align-items-center">
-            <select
-                name="tournament_id"
-                class="form-select"
-                style="width: fit-content;"
-                {% if tournament_options|length <= 1 %}
-                    disabled
-                {% endif %}
-                hx-trigger="change"
-                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% for value, text in tournament_options.items() %}
-                    <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
-                        {{ text }}
-                    </option>
-                {% endfor %}
-            </select>
             <span {{ macros.tooltip_attributes('info', _('Previous round'), 'bottom') }}>
                 <button
                     class="btn btn-outline-primary text-nowrap"
@@ -126,7 +108,26 @@
                     <i class="bi-caret-right"></i>
                 </button>
             </span>
-
+            {% if tournament_options|length > 1 %}
+                <select
+                    name="tournament_id"
+                    class="form-select"
+                style="width: fit-content;"
+                {% if tournament_options|length <= 1 %}
+                    disabled
+                {% endif %}
+                hx-trigger="change"
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% for value, text in tournament_options.items() %}
+                    <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                        {{ text }}
+                    </option>
+                    {% endfor %}
+                </select>
+            {% endif %}
         </div>
     {% endif %}
 </div>
