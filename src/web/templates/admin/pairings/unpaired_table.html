@@ -1,0 +1,74 @@
+<table
+    id="players-table"
+    class="table prominent table-striped table-sm w-100 bg-light"
+>
+    <thead
+        id="players-table-header"
+        class="position-sticky z-2"
+        style="top: var(--header-height);"
+    >
+        <tr>
+            <th>{{ title }}</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in unpaired %}
+            {% with class="forfeit" if admin_round and player.pairings[admin_round] and (player.pairings[admin_round].forfeit or player.pairings[admin_round].half_point_bye or player.pairings[admin_round].full_point_bye) else '' %}
+                <tr class="player-row" data-player-id="{{ player.id }}">
+                    <td class="{{ class }}">
+                        <div class="d-flex align-items-center gap-2">
+                        <i
+                            {% if player.check_in %}
+                                class="bi-check-circle-fill text-success"
+                                {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
+                            {% else %}
+                                class="bi-circle-fill text-warning"
+                                {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
+                            {% endif %}
+                        ></i>
+                            <span>{{ player.last_name }} {{ player.first_name }}</span>
+                        </div>
+                    </td>
+                    <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
+                    {% with pairing=player.pairings[admin_round] %}
+                        <td class="{{ class }} text-center">
+                            <div
+                                {% if pairing.forfeit %}
+                                    {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
+                                {% elif pairing and (pairing.half_point_bye or pairing.full_point_bye) %}
+                                    {{ macros.tooltip_attributes('info', pairing.result.name, 'right') }}
+                                {% else %}
+                                    {{ macros.tooltip_attributes('info', _('Click to pair'), 'right') }}
+                                {% endif %}
+                            >
+                                <button
+                                    class="btn btn-sm btn-outline-primary"
+                                    style="width: 2rem;"
+                                    hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                                    hx-trigger="click"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    preload
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    {% if pairing and pairing.forfeit %}
+                                        {{ "f" }}
+                                    {% elif pairing and pairing.half_point_bye %}
+                                        <i class="bi bi-circle-half"></i>
+                                    {% elif pairing and pairing.full_point_bye %}
+                                        <i class="bi bi-1-circle-fill"></i>
+                                    {% else %}
+                                        <i class="bi-shuffle pe-1"></i>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
+                {% endwith %}
+                </tr>
+            {% endwith %}
+        {% endfor %}
+    </tbody>
+</table>

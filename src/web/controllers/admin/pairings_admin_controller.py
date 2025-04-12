@@ -76,23 +76,34 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         )
 
         self.admin_boards: list[Board] = []
-        self.admin_unpaired: list[Player] = []
+        unpaired: list[Player] = []
         if self.admin_tournament is not None:
             if self.admin_round <= self.admin_tournament.pairing_round:
                 self.admin_tournament.calculate_points_before_round(
                     before_round=self.admin_round
                 )
-                self.admin_boards, self.admin_unpaired = (
-                    self.admin_tournament.build_boards(self.admin_round)
+                self.admin_boards, unpaired = self.admin_tournament.build_boards(
+                    self.admin_round
                 )
             else:
-                self.admin_boards, self.admin_unpaired = (
-                    self.admin_tournament.build_boards(
-                        self.admin_tournament.pairing_round
-                    )
+                self.admin_boards, unpaired = self.admin_tournament.build_boards(
+                    self.admin_tournament.pairing_round
                 )
 
-        self.admin_unpaired = sorted(self.admin_unpaired, key=lambda p: p.last_name)
+        self.admin_unpaired = []
+        self.admin_forfeit_players = []
+        for player in sorted(unpaired, key=lambda p: p.last_name):
+            if player.pairings[self.admin_round] and player.pairings[
+                self.admin_round
+            ].result in (
+                Result.ZERO_POINT_BYE,
+                Result.HALF_POINT_BYE,
+                Result.FULL_POINT_BYE,
+            ):
+                self.admin_forfeit_players.append(player)
+            else:
+                self.admin_unpaired.append(player)
+
         self.admin_board: Board | None = None
         if board_id is not None and self.admin_boards is not None:
             self.admin_board = next(
@@ -100,10 +111,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             )
 
         self.admin_player: Player | None = None
-        if player_id is not None and self.admin_unpaired is not None:
-            self.admin_player = next(
-                (p for p in self.admin_unpaired if p.id == player_id), None
-            )
+        if player_id is not None:
+            self.admin_player = next((p for p in unpaired if p.id == player_id), None)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -198,6 +207,7 @@ class PairingsAdminController(BaseEventAdminController):
             'admin_round': web_context.admin_round,
             'admin_boards': web_context.admin_boards,
             'admin_unpaired': web_context.admin_unpaired,
+            'admin_forfeit_players': web_context.admin_forfeit_players,
             'board': web_context.admin_board,
             'wp': web_context.admin_board.white_player
             if web_context.admin_board
