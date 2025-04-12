@@ -2,14 +2,18 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.5 - 13 avril 2025
+- Correction d'un bug d'affichage des écrans d'appariements (#401)
+- Correction d'un bug à la suppression d'un résultat
+
 ## Version 2.5.4 - 12 avril 2025
-- Correction d'un bug de filtrage des clubs et fédérations sur l'onglet Joueur·euses
+- Correction d'un bug de filtrage des clubs et fédérations sur l'onglet Joueur·euses (#378)
 
 ## Version 2.5.3 - 11 avril 2025
 - Récupération de la configuration de l'application à partir d'une version antérieure
 - Modification de l'encodage des fichiers de log
-- Correction d'un bug d'affichage des rondes sur les écrans d'appariements
-- Correction d'un bug d'initialisation des joueur·euses depuis ChessEvent
+- Correction d'un bug d'affichage des rondes sur les écrans d'appariements (#389)
+- Correction d'un bug d'initialisation des joueur·euses depuis ChessEvent (#388)
 
 ## Version 2.5.2 - 8 avril 2025
 - Correction d'un bug à la récupération des versions antérieures
