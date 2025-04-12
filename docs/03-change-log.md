@@ -4,7 +4,7 @@
 
 ## Version 2.5.5 - 13 avril 2025
 - Correction d'un bug d'affichage des écrans d'appariements (#401)
-- Correction d'un bug de à la suppression d'un résultat
+- Correction d'un bug à la suppression d'un résultat
 
 ## Version 2.5.4 - 12 avril 2025
 - Correction d'un bug de filtrage des clubs et fédérations sur l'onglet Joueur·euses (#378)
