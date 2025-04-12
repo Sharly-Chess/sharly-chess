@@ -8,13 +8,14 @@
     {% endcall %}
     <div class="flex-grow-1"></div>
     {% if admin_tournament %}
-        {% if EXPERIMENTAL_FEATURES and admin_tournament.pairings_generation_allowed and admin_round == admin_tournament.pairing_round %}
+        {% if EXPERIMENTAL_FEATURES %}
             <div
                 {{ macros.tooltip_attributes(
                     'info',
                     _('Pairings disabled while check-in is open.')
-                    if admin_tournament.check_in_open else
-                    _('Generate pairings for this round.'),
+                    if admin_tournament.check_in_open else _('Generate pairings for this round.')
+                    if admin_tournament.pairings_generation_allowed and admin_round == admin_tournament.pairing_round
+                    else _('Pairings generation unavailable for this round.'),
                     'top'
                 ) }}
             >
@@ -24,7 +25,9 @@
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    {% if admin_tournament.check_in_open %}disabled{% endif %}
+                    {% if not admin_tournament.pairings_generation_allowed or admin_round != admin_tournament.pairing_round %}
+                        disabled
+                    {% endif %}
                 >
                     <i class="bi-shuffle pe-1"></i>
                     {{ _('Pair') }}
@@ -67,7 +70,20 @@
                     </option>
                 {% endfor %}
             </select>
-
+            <span {{ macros.tooltip_attributes('info', _('Previous round'), 'bottom') }}>
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round - 1 }}"
+                    hx-include="[name='tournament_id']"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if admin_round == 1 %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-caret-left"></i>
+                </button>
+            </span>
             <select
                 name="round"
                 class="form-select"
@@ -89,6 +105,28 @@
                     {% endif %}
                 {% endwith %}
             </select>
+            <span
+                {{ macros.tooltip_attributes(
+                    'info',
+                    _('Current round is not finished, pairings for the next round unavailable.')
+                    if admin_round == admin_tournament.pairing_round else _('Next round'),
+                    'bottom',
+                ) }}
+            >
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round + 1 }}"
+                    hx-include="[name='tournament_id']"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if admin_round == admin_tournament.pairing_round %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-caret-right"></i>
+                </button>
+            </span>
+
         </div>
     {% endif %}
 </div>

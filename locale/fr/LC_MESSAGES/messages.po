@@ -768,6 +768,9 @@ msgstr "Grille américaine après la ronde {round}"
 msgid "Current events ({num})"
 msgstr "Évènements en cours ({num})"
 
+msgid "Current round is not finished, pairings for the next round unavailable."
+msgstr "La ronde actuelle n'est pas terminée, les appariements de la prochaine ronde ne sont pas disponibles."
+
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
 
@@ -2147,6 +2150,9 @@ msgstr "Nouveau tournoi"
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
 
+msgid "Next round"
+msgstr "Ronde suivante"
+
 msgid "No"
 msgstr "Non"
 
@@ -2518,6 +2524,9 @@ msgstr "Appariements désactivés lorsque le pointage est ouvert."
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
 
+msgid "Pairings generation unavailable for this round."
+msgstr "Génération d'appariements non disponible pour cette ronde."
+
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
@@ -2792,6 +2801,9 @@ msgstr "Port : {port}"
 
 msgid "Present"
 msgstr "Présent·e"
+
+msgid "Previous round"
+msgstr "Ronde précédente"
 
 msgid "Print"
 msgstr "Imprimer"

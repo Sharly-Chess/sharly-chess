@@ -768,6 +768,9 @@ msgstr ""
 msgid "Current events ({num})"
 msgstr ""
 
+msgid "Current round is not finished, pairings for the next round unavailable."
+msgstr ""
+
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr ""
 
@@ -2147,6 +2150,9 @@ msgstr ""
 msgid "New version [{version}] has been installed in [{dir}]."
 msgstr ""
 
+msgid "Next round"
+msgstr ""
+
 msgid "No"
 msgstr ""
 
@@ -2518,6 +2524,9 @@ msgstr ""
 msgid "Pairings for round #{round}"
 msgstr ""
 
+msgid "Pairings generation unavailable for this round."
+msgstr ""
+
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2791,6 +2800,9 @@ msgid "Port: {port}"
 msgstr ""
 
 msgid "Present"
+msgstr ""
+
+msgid "Previous round"
 msgstr ""
 
 msgid "Print"

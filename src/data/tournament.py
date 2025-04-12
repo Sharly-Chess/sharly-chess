@@ -317,7 +317,7 @@ class Tournament:
 
     @property
     def pairings_generation_allowed(self) -> bool:
-        return not self.finished and not self.playing
+        return not self.check_in_open and not self.finished and not self.playing
 
     @property
     def handicap(self) -> bool:

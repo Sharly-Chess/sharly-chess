@@ -87,7 +87,7 @@
                         hx-delete="{{ url_for('admin-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        {% if board.result_str or admin_round != admin_tournament.current_round %}
+                        {% if (board.result_str and not board.exempt) or admin_round != admin_tournament.current_round %}
                             disabled
                         {% endif %}
                     >
