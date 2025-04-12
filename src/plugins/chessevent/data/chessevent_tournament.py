@@ -51,7 +51,8 @@ class ChessEventTournament:
                 chessevent_player: ChessEventPlayer = ChessEventPlayer(
                     chessevent_player_info
                 )
-                self.check_in_started = True
+                if chessevent_player.check_in:
+                    self.check_in_started = True
                 if chessevent_player.error:
                     return
                 self.players.append(chessevent_player)
