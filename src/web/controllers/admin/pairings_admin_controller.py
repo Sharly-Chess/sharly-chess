@@ -572,6 +572,7 @@ class PairingsAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             round_=round,
             board_id=board_id,
+            trigger_event='close_modal',
             result=None,
         )
 
