@@ -18,6 +18,10 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr ""
 
 #, python-format
+msgid "%(first_name)s %(last_name)s - Round %(num)s"
+msgstr ""
+
+#, python-format
 msgid "%(lib)s version"
 msgstr ""
 
@@ -136,6 +140,12 @@ msgid "A window will open to send an email to the Papi-web project; If the windo
 msgstr ""
 
 msgid "Absent"
+msgstr ""
+
+msgid "Absent for rest of the tournament"
+msgstr ""
+
+msgid "Absent for this round"
 msgstr ""
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
@@ -267,6 +277,10 @@ msgstr ""
 msgid "Archived events ({num})"
 msgstr ""
 
+#, python-format
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
+msgstr ""
+
 msgid "Argument --server is deprecated, ignored."
 msgstr ""
 
@@ -367,8 +381,15 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
+msgid "Board"
+msgstr ""
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
+msgstr ""
+
+#, python-format
+msgid "Board %(board_number)s"
 msgstr ""
 
 msgid "Board & color"
@@ -444,7 +465,13 @@ msgstr ""
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Can't delete result from previous round"
+msgstr ""
+
 msgid "Cancel"
+msgstr ""
+
+msgid "Cancel absence for this round"
 msgstr ""
 
 msgid "Candidate Master"
@@ -559,6 +586,9 @@ msgid "Click to check-in the player."
 msgstr ""
 
 msgid "Click to check-out the player."
+msgstr ""
+
+msgid "Click to pair"
 msgstr ""
 
 msgid "Clone"
@@ -1574,6 +1604,9 @@ msgstr "Fore Bu."
 msgid "Fore Buchholz"
 msgstr ""
 
+msgid "Forfeit"
+msgstr ""
+
 msgid "Forfeit gain"
 msgstr ""
 
@@ -1625,7 +1658,7 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
-msgid "Generate pairings for the next round."
+msgid "Generate pairings for this round."
 msgstr ""
 
 msgid "Getting fees for tournament [{ffe_id}]..."
@@ -2208,6 +2241,9 @@ msgstr ""
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr ""
 
+msgid "No pairings."
+msgstr ""
+
 msgid "No passed events."
 msgstr ""
 
@@ -2314,6 +2350,9 @@ msgid "No warnings"
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "Not checked-in"
 msgstr ""
 
 msgid "Not checked-in yet"
@@ -2433,6 +2472,9 @@ msgstr "Owed/paid"
 msgid "Owed:"
 msgstr ""
 
+msgid "PERMUTE WHITE/BLACK"
+msgstr ""
+
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
 msgstr "PS"
 
@@ -2443,6 +2485,13 @@ msgid "Paid:"
 msgstr ""
 
 msgid "Pair"
+msgstr ""
+
+#, python-format
+msgid "Pair as BLACK vs %(player)s"
+msgstr ""
+
+msgid "Pair as WHITE"
 msgstr ""
 
 msgid "Pairing allocated bye"
@@ -2461,6 +2510,9 @@ msgid "Pairings by player"
 msgstr ""
 
 msgid "Pairings by player ({num})"
+msgstr ""
+
+msgid "Pairings disabled while check-in is open."
 msgstr ""
 
 msgid "Pairings for round #{round}"
@@ -2705,6 +2757,9 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
+msgid "Points"
+msgstr ""
+
 msgid "Points for draw (half-point bye)"
 msgstr ""
 
@@ -2920,6 +2975,9 @@ msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
 msgid "Results upload OK"
+msgstr ""
+
+msgid "Return to tournament"
 msgstr ""
 
 msgid "Rk. *** RANK FOR PRINT VIEW"
@@ -3664,6 +3722,9 @@ msgstr ""
 msgid "This screen is public (visible by the users)."
 msgstr ""
 
+msgid "This will cause the table numbers to be reordered."
+msgstr ""
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr ""
@@ -3737,6 +3798,9 @@ msgid "Timers: %(num)d"
 msgstr ""
 
 msgid "Today"
+msgstr ""
+
+msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
 msgid "Top cut must be at most equal to bottom cut."
@@ -3898,6 +3962,9 @@ msgstr ""
 msgid "U8"
 msgstr ""
 
+msgid "UNPAIR"
+msgstr ""
+
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
@@ -3945,11 +4012,27 @@ msgstr ""
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
+msgid "Unpair"
+msgstr ""
+
+msgid "Unpair all boards"
+msgstr ""
+
+#, python-format
+msgid "Unpair round %(round_number)s"
+msgstr ""
+
+msgid "Unpair this round."
+msgstr ""
+
 msgid "Unpaired *** FEMALE"
 msgstr "Unpaired"
 
 msgid "Unpaired *** MALE"
 msgstr "Unpaired"
+
+msgid "Unpaired Players"
+msgstr ""
 
 msgid "Unpaired players: displayed"
 msgstr ""

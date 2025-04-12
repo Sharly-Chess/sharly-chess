@@ -70,7 +70,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_round = (
             round_
             if round_ is not None
-            else self.admin_tournament.current_round
+            else self.admin_tournament.pairing_round
             if self.admin_tournament is not None
             else 0
         )
@@ -78,7 +78,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         self.admin_unpaired: list[Player] = []
         if self.admin_tournament is not None:
-            if self.admin_round < self.admin_tournament.current_round:
+            if self.admin_round <= self.admin_tournament.pairing_round:
                 self.admin_tournament.calculate_points_before_round(
                     before_round=self.admin_round
                 )
@@ -87,7 +87,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 )
             else:
                 self.admin_boards, self.admin_unpaired = (
-                    self.admin_tournament.build_boards()
+                    self.admin_tournament.build_boards(
+                        self.admin_tournament.pairing_round
+                    )
                 )
 
         self.admin_unpaired = sorted(self.admin_unpaired, key=lambda p: p.last_name)
@@ -376,6 +378,7 @@ class PairingsAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         assert web_context.admin_tournament is not None
+        web_context.admin_tournament.calculate_current_round()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -425,7 +428,21 @@ class PairingsAdminController(BaseEventAdminController):
         round: int,
         board_id: int,
     ) -> Template | ClientRedirect:
-        # TODO: Implement unpairing
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+            player_id=None,
+            data=None,
+        )
+        board = web_context.admin_board
+        tournament = web_context.admin_tournament
+        assert board is not None
+        assert tournament is not None
+        tournament.unpair_boards([board], round)
+        tournament.calculate_current_round()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -446,7 +463,20 @@ class PairingsAdminController(BaseEventAdminController):
         round: int,
         board_id: int,
     ) -> Template | ClientRedirect:
-        # TODO: Implement permute
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+            player_id=None,
+            data=None,
+        )
+        board = web_context.admin_board
+        tournament = web_context.admin_tournament
+        assert board is not None
+        assert tournament is not None
+        tournament.permute_board_colors(board, round)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -625,6 +655,7 @@ class PairingsAdminController(BaseEventAdminController):
                         web_context.admin_player.id,
                         None,
                     )
+                web_context.admin_tournament.calculate_current_round()
 
         if len(new_byes) > 0:
             web_context.admin_tournament.set_player_byes(
@@ -704,7 +735,7 @@ class PairingsAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            round_=None,
+            round_=round,
             board_id=None,
             player_id=None,
             data=None,
@@ -714,12 +745,13 @@ class PairingsAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        if web_context.admin_tournament is None:
+        tournament = web_context.admin_tournament
+        if tournament is None:
             raise RuntimeError('admin_tournament not defined')
-
-        # TODO: Implement unpairing
-        print(f'unpairing round {round}')
-
+        boards = web_context.admin_boards
+        assert boards is not None
+        tournament.unpair_boards(boards, round)
+        tournament.calculate_current_round()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

@@ -7,83 +7,90 @@
         {{ admin_event.name }} - {{ _('Pairings') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
-
-    {% if EXPERIMENTAL_FEATURES and admin_tournament.pairings_generation_allowed %}
-        <div {{ macros.tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
+    {% if admin_tournament %}
+        {% if EXPERIMENTAL_FEATURES and admin_tournament.pairings_generation_allowed and admin_round == admin_tournament.pairing_round %}
+            <div
+                {{ macros.tooltip_attributes(
+                    'info',
+                    _('Pairings disabled while check-in is open.')
+                    if admin_tournament.check_in_open else
+                    _('Generate pairings for this round.'),
+                    'top'
+                ) }}
+            >
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    preload
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if admin_tournament.check_in_open %}disabled{% endif %}
+                >
+                    <i class="bi-shuffle pe-1"></i>
+                    {{ _('Pair') }}
+                </button>
+            </div>
+        {% endif %}
+        {% if admin_round and admin_tournament.current_round == admin_round %}
+         <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
-                hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-get="{{ url_for('admin-pairings-unpair-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                hx-trigger="click"
+                hx-target="body"
+                hx-indicator="#please-wait"
                 preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                    {{ _('Unpair') }}
+                </button>
+            </div>
+        {% endif %}
+
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            <select
+                name="tournament_id"
+                class="form-select"
+                style="width: fit-content;"
+                {% if tournament_options|length <= 1 %}
+                    disabled
+                {% endif %}
+                hx-trigger="change"
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <i class="bi-shuffle pe-1"></i>
-                {{ _('Pair') }}
-            </button>
-        </div>
-    {% endif %}
-    {% if admin_tournament.current_round > 0 %}
-     <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
-        <button
-            class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-pairings-unpair-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-            hx-trigger="click"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-                {{ _('Unpair') }}
-            </button>
-        </div>
-    {% endif %}
-
-    <div class="d-flex gap-2 ms-auto align-items-center">
-        <select
-            name="tournament_id"
-            class="form-select"
-            style="width: fit-content;"
-            {% if tournament_options|length <= 1 %}
-                disabled
-            {% endif %}
-            hx-trigger="change"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-        >
-            {% for value, text in tournament_options.items() %}
-                <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
-                    {{ text }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <select
-            name="round"
-            class="form-select"
-            style="width: fit-content;"
-            {% if not admin_tournament or admin_tournament.current_round == 0 %}
-                disabled
-            {% endif %}
-            hx-trigger="change"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-            hx-include="[name='tournament_id']"
-            hx-target="body"
-            hx-indicator="#please-wait"
-        >
-            {% with rounds=admin_tournament.current_round if admin_tournament else 0 %}
-                {% for round in range(1, rounds + 1) %}
-                    <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
-                        {{ _('Round #%(round)d', round=round) }}
+                {% for value, text in tournament_options.items() %}
+                    <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                        {{ text }}
                     </option>
                 {% endfor %}
-                {% if rounds == 0 %}
-                    <option value="0">-</option>
-                {% endif %}
-            {% endwith %}
-        </select>
-    </div>
+            </select>
+
+            <select
+                name="round"
+                class="form-select"
+                style="width: fit-content;"
+                hx-trigger="change"
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                hx-include="[name='tournament_id']"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% with rounds=admin_tournament.pairing_round %}
+                    {% for round in range(1, rounds + 1) %}
+                        <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
+                            {{ _('Round #%(round)d', round=round) }}
+                        </option>
+                    {% endfor %}
+                    {% if rounds == 0 %}
+                        <option value="0">-</option>
+                    {% endif %}
+                {% endwith %}
+            </select>
+        </div>
+    {% endif %}
 </div>
 
 {% if admin_tournament %}
@@ -124,41 +131,41 @@
                                         </div>
                                     </td>
                                     <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
-                                    <td class="{{ class }} text-center">
-                                        <div
-                                            {% if player.pairings[admin_round] and player.pairings[admin_round].forfeit %}
-                                               {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
-                                            {% elif player.pairings[admin_round] and player.pairings[admin_round].half_point_bye %}
-                                               {{ macros.tooltip_attributes('info', _('Half point bye'), 'right') }}
-                                            {% elif player.pairings[admin_round] and player.pairings[admin_round].full_point_bye %}
-                                               {{ macros.tooltip_attributes('info', _('Full point bye'), 'right') }}
-                                            {% else %}
-                                                {{ macros.tooltip_attributes('info', _('Click to pair'), 'right') }}
-                                            {% endif %}
-                                        >
-                                            <button
-                                                class="btn btn-sm btn-outline-primary"
-                                                style="width: 2rem;"
-                                                hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
-                                                hx-trigger="click"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                preload
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                            >
-                                                {% if player.pairings[admin_round] and player.pairings[admin_round].forfeit %}
-                                                    {{ "f" }}
-                                                {% elif player.pairings[admin_round] and player.pairings[admin_round].half_point_bye %}
-                                                    <i class="bi bi-circle-half"></i>
-                                                {% elif player.pairings[admin_round] and player.pairings[admin_round].full_point_bye %}
-                                                    <i class="bi bi-1-circle-fill"></i>
+                                    {% with pairing=player.pairings[admin_round] %}
+                                        <td class="{{ class }} text-center">
+                                            <div
+                                                {% if pairing.forfeit %}
+                                                    {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
+                                                {% elif pairing and (pairing.half_point_bye or pairing.full_point_bye) %}
+                                                    {{ macros.tooltip_attributes('info', pairing.result.name, 'right') }}
                                                 {% else %}
-                                                    <i class="bi-shuffle pe-1"></i>
+                                                    {{ macros.tooltip_attributes('info', _('Click to pair'), 'right') }}
                                                 {% endif %}
-                                            </button>
-                                        </div>
-                                    </td>
+                                            >
+                                                <button
+                                                    class="btn btn-sm btn-outline-primary"
+                                                    style="width: 2rem;"
+                                                    hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                                                    hx-trigger="click"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    preload
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modal-wrapper"
+                                                >
+                                                    {% if pairing and pairing.forfeit %}
+                                                        {{ "f" }}
+                                                    {% elif pairing and pairing.half_point_bye %}
+                                                        <i class="bi bi-circle-half"></i>
+                                                    {% elif pairing and pairing.full_point_bye %}
+                                                        <i class="bi bi-1-circle-fill"></i>
+                                                    {% else %}
+                                                        <i class="bi-shuffle pe-1"></i>
+                                                    {% endif %}
+                                                </button>
+                                            </div>
+                                        </td>
+                                {% endwith %}
                                 </tr>
                             {% endwith %}
                         {% endfor %}
@@ -188,7 +195,7 @@
                             <th>{{ _('Board') }}</th>
                             <th>{{ _('Points') }}</th>
                             <th>{{ _('White') }}</th>
-                            <th>{{ _('Result') }}</th>
+                            <th class="text-center">{{ _('Result') }}</th>
                             <th>{{ _('Black') }}</th>
                             <th>{{ _('Points') }}</th>
                         </tr>
@@ -224,4 +231,6 @@
         });
 
     </script>
+{% else %}
+    {{ _('No pairings.') }}
 {% endif%}

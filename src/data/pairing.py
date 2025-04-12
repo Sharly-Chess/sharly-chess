@@ -93,10 +93,12 @@ class Pairing:
         return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
 
     @property
-    def color_papi_value(self) -> str:
-        if self.color:
-            return self.color.to_papi_value
-        return 'F' if self.result.is_bye else 'R'
+    def unpairable_bye(self) -> bool:
+        return self.result in (
+            Result.FULL_POINT_BYE,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE,
+        )
 
     def to_trf(
         self, round_number: int, player_id_to_trf_id: Callable[[int], int]

@@ -28,6 +28,11 @@ from plugins.manager import plugin_manager
 logger: Logger = get_logger()
 
 
+EXEMPT_PLAYER_ID = 1
+BYE_COLOR = 'F'
+UNPLAYED_COLOR = 'R'
+
+
 class TournamentInfo(NamedTuple):
     """Basic tournament information tuple."""
 
@@ -226,8 +231,8 @@ class PapiDatabase(AccessDatabase):
         ]
         result = Result.NO_RESULT.to_papi_value
         self._execute(
-            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = 1',
-            ('R', None, result),
+            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
+            (UNPLAYED_COLOR, None, result, EXEMPT_PLAYER_ID),
         )
 
     def update_player_pairing(self, player: Player, round_nb: int, pairing: Pairing):
@@ -237,19 +242,34 @@ class PapiDatabase(AccessDatabase):
         opponent_id = (
             Player.player_papi_id_from_papi_web_id(pairing.opponent_id)
             if pairing.opponent_id
-            else 1
+            else EXEMPT_PLAYER_ID
         )
+        if pairing.color:
+            color = pairing.color.to_papi_value
+        elif pairing.result.is_bye:
+            color = BYE_COLOR
+        else:
+            color = UNPLAYED_COLOR
         result = pairing.result.to_papi_value
         self._execute(
             f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
-            (pairing.color_papi_value, opponent_id, result, player.ref_id),
+            (color, opponent_id, result, player.ref_id),
         )
         # If the player is exempt, we need to update the pairing of the virtual exempt player
-        if opponent_id == 1:
+        if opponent_id == EXEMPT_PLAYER_ID and False:
             self._execute(
-                f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = 1',
-                (BoardColor.BLACK.to_papi_value, player.ref_id, result),
+                f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
+                (UNPLAYED_COLOR, player.ref_id, result, EXEMPT_PLAYER_ID),
             )
+
+    def remove_player_pairing(self, player: Player, round_nb: int):
+        field_sets = [
+            f'`Rd{round_nb:0>2}{field}` = ?' for field in ('Cl', 'Adv', 'Res')
+        ]
+        self._execute(
+            f'UPDATE `joueur` SET {", ".join(field_sets)} WHERE `Ref` = ?',
+            (UNPLAYED_COLOR, None, Result.NO_RESULT.to_papi_value, player.ref_id),
+        )
 
     def update_tie_breaks(self, tie_breaks: list[TieBreak]):
         for variable in (
@@ -299,9 +319,9 @@ class PapiDatabase(AccessDatabase):
             player_fields.append(f'Rd{rd:0>2}{suffix}')
 
         query: str = (
-            f'SELECT {", ".join(player_fields)} FROM joueur WHERE Ref <> 1 ORDER BY Ref'
+            f'SELECT {", ".join(player_fields)} FROM joueur WHERE Ref <> ? ORDER BY Ref'
         )
-        self._execute(query)
+        self._execute(query, (EXEMPT_PLAYER_ID,))
         for row in self._fetchall():
             pairings: dict[int, Pairing] = {}
             for round_ in range(1, rounds + 1):
@@ -318,13 +338,13 @@ class PapiDatabase(AccessDatabase):
                     Player.player_papi_web_id_from_papi_id(
                         tournament_id, opponent_papi_id
                     )
-                    if opponent_papi_id and opponent_papi_id != 1
+                    if opponent_papi_id and opponent_papi_id != EXEMPT_PLAYER_ID
                     else None,
                     Result.from_papi_value(
                         row[f'{round_str}Res'] or PapiResult.NOT_PAIRED.value,
                         opponent_papi_id is None,
-                        opponent_papi_id == 1,
-                        color_str == 'F',
+                        opponent_papi_id == EXEMPT_PLAYER_ID,
+                        color_str == BYE_COLOR,
                     ),
                 )
             player_papi_web_id: int = Player.player_papi_web_id_from_papi_id(
@@ -371,17 +391,13 @@ class PapiDatabase(AccessDatabase):
         }
         match result:
             case Result.NO_RESULT:
-                data[f'Rd{round_:0>2}Cl'] = 'R'
+                data[f'Rd{round_:0>2}Cl'] = UNPLAYED_COLOR
             case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
-                data[f'Rd{round_:0>2}Cl'] = 'F'
+                data[f'Rd{round_:0>2}Cl'] = BYE_COLOR
         actions: str = ', '.join([f'`{key}` = ?' for key in data])
         query: str = f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?'
-        params: tuple = tuple(
-            list(data.values())
-            + [
-                player_papi_id,
-            ]
-        )
+        params: tuple = tuple(list(data.values())) + (player_papi_id,)
+
         self._execute(query, params)
 
     def reset_player_result(self, player_papi_id: int, round_: int):
@@ -426,10 +442,10 @@ class PapiDatabase(AccessDatabase):
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                data[f'Rd{round_:0>2}Cl'] = 'R'
+                data[f'Rd{round_:0>2}Cl'] = UNPLAYED_COLOR
             actions: str = ', '.join([f'`{key}` = ?' for key in data])
-            query: str = f'UPDATE `joueur` SET {actions} WHERE Ref > 1'
-            params = tuple(data.values())
+            query: str = f'UPDATE `joueur` SET {actions} WHERE Ref <> ?'
+            params = tuple(data.values()) + (EXEMPT_PLAYER_ID,)
             self._execute(query, params)
             logger.info('Done.')
         else:
@@ -437,52 +453,35 @@ class PapiDatabase(AccessDatabase):
 
     def get_checked_in_player_count(self) -> int:
         """Return the number players already checked in."""
-        query: str = 'SELECT COUNT(`Ref`) FROM `joueur` WHERE `Pointe` AND `Ref` > 1'
-        self._execute(query)
+        query: str = 'SELECT COUNT(`Ref`) FROM `joueur` WHERE `Pointe` AND `Ref` > ?'
+        self._execute(query, (EXEMPT_PLAYER_ID,))
         return self._fetchval()
 
     def check_in_player(self, player_id: int, check_in: bool):
         """Toggles the check in status of the player, depending on `check_in`."""
-        player_papi_id: int = Player.player_papi_id_from_papi_web_id(player_id)
-        data: dict[str, str | int | float | None] = {
-            'Pointe': check_in,
-        }
-        actions: str = ', '.join([f'`{key}` = ?' for key in data])
-        query: str = f'UPDATE `joueur` SET {actions} WHERE Ref = ?'
-        params = tuple(data.values()) + (player_papi_id,)
-        self._execute(query, params)
+        self._execute(
+            'UPDATE `joueur` SET Pointe = ? WHERE Ref = ?',
+            (check_in, Player.player_papi_id_from_papi_web_id(player_id)),
+        )
 
     def open_check_in(self, round_: int):
         """Sets all the present players (at the given round) as not checked-in."""
-        data: dict[str, str | int | float | None] = {
-            'Pointe': False,
-        }
-        actions: str = ', '.join([f'`{key}` = ?' for key in data])
-        query: str = (
-            f'UPDATE `joueur` SET {actions} WHERE Ref > 1 AND Rd{round_:0>2}Cl <> ?'
+        self._execute(
+            f'UPDATE `joueur` SET Pointe = ? WHERE Ref <> ? AND Rd{round_:0>2}Cl <> ?',
+            (False, EXEMPT_PLAYER_ID, BYE_COLOR),
         )
-        params = tuple(
-            list(data.values())
-            + [
-                'F',
-            ]
-        )
-        self._execute(query, params)
 
     def close_check_in(self, round_: int, last_round: int | None):
         """Sets all the players present at the given round as not checked-in for the given round
         (and for the rest of the rounds if last_round is set)."""
         data: dict[str, str | int | float | None] = {
-            f'Rd{round_:0>2}Cl': 'F',
+            f'Rd{round_:0>2}Cl': BYE_COLOR,
         }
         if last_round:
-            data |= {f'Rd{r:0>2}Cl': 'F' for r in range(round_, last_round + 1)}
+            data |= {f'Rd{r:0>2}Cl': BYE_COLOR for r in range(round_, last_round + 1)}
         actions: str = ', '.join([f'`{key}` = ?' for key in data.keys()])
-        query: str = f'UPDATE `joueur` SET {actions} WHERE (Ref > 1) AND NOT (`Pointe`) AND (`Rd{round_:0>2}Cl` = ?)'
-        params = tuple(
-            list(data.values())
-            + [
-                'R',
-            ]
+        self._execute(
+            f'UPDATE `joueur` SET {actions} WHERE (Ref <> ?) '
+            f'AND NOT (`Pointe`) AND (`Rd{round_:0>2}Cl` = ?)',
+            tuple(list(data.values())) + (EXEMPT_PLAYER_ID, UNPLAYED_COLOR),
         )
-        self._execute(query, params)

@@ -20,7 +20,7 @@ class Board:
     number: int | None = None
     white_player: Player | None = None
     black_player: Player | None = None
-    result: Result | None = None
+    result: Result = Result.NO_RESULT
 
     @property
     def id(self) -> int | None:

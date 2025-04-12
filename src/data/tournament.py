@@ -36,7 +36,7 @@ from utils.enum import (
     TournamentRating,
     TrfType,
 )
-from database.access.papi.papi_database import PapiDatabase, PapiVariable
+from database.access.papi.papi_database import PapiDatabase, PapiVariable, BYE_COLOR, UNPLAYED_COLOR
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins.manager import plugin_manager
@@ -430,6 +430,12 @@ class Tournament:
         return self._current_round
 
     @property
+    def pairing_round(self) -> int:
+        if self.playing or self.finished:
+            return self.current_round
+        return self.current_round + 1
+
+    @property
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0
@@ -439,7 +445,6 @@ class Tournament:
 
     @property
     def started(self) -> bool:
-        self.read_papi()
         return self.current_round != 0
 
     @property
@@ -461,7 +466,7 @@ class Tournament:
     def unpaired_players(self) -> list[Player]:
         self.read_papi()
         return sorted(
-            list(self._unpaired_players or []),
+            list(self._unpaired_players),
             key=lambda player: (player.last_name, player.first_name),
         )
 
@@ -609,13 +614,13 @@ class Tournament:
             for player in self._players_by_id.values():
                 player.tournament = self
         self._papi_read = True
-        self._calculate_current_round()
+        self.calculate_current_round()
         self._set_players_illegal_moves()  # load illegal moves for the current round
         self.calculate_points_before_round()
         self._boards, self._unpaired_players = self.build_boards()
         self.estimate_players(after_round=None)
 
-    def _calculate_current_round(self):
+    def calculate_current_round(self):
         """Computes which round is the current round.
         Currently, the current round is the first paired round with missing
         results."""
@@ -654,6 +659,9 @@ class Tournament:
                     break
             if self._current_round == 0:
                 self._current_round = paired_rounds[-1]
+        else:
+            self._current_round = 0
+            self._playing = False
 
     def calculate_points_before_round(self, before_round: int | None = None):
         """Calculate the points of all player before *before_round*.
@@ -1120,7 +1128,9 @@ class Tournament:
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                data[f'Rd{round_:0>2}Cl'] = 'F' if round_ < self.current_round else 'R'
+                data[f'Rd{round_:0>2}Cl'] = (
+                    BYE_COLOR if round_ < self.current_round else UNPLAYED_COLOR
+                )
             papi_database.write_player_dict(data)
             papi_database.commit()
 
@@ -1183,6 +1193,31 @@ class Tournament:
                     black_player, round_nb, black_player.pairings[round_nb]
                 )
             papi_database.commit()
+
+    def unpair_boards(self, boards: list[Board], round_: int):
+        with PapiDatabase(self.file, True) as database:
+            for board in boards:
+                for player in (board.white_player, board.black_player):
+                    if not player:
+                        continue
+                    database.remove_player_pairing(player, round_)
+                    self._players_by_id[player.id].pairings[round_] = Pairing()
+
+                if board.result == Result.PAIRING_ALLOCATED_BYE:
+                    database.remove_exempt_pairing(round_)
+            database.commit()
+
+    def permute_board_colors(self, board: Board, round_: int):
+        assert board.white_player is not None
+        assert board.black_player is not None
+        with PapiDatabase(self.file, True) as database:
+            pairing = Pairing(BoardColor.BLACK, board.black_player.id, board.result)
+            database.update_player_pairing(board.white_player, round_, pairing)
+            self._players_by_id[board.white_player.id].pairings[round_] = pairing
+            pairing = Pairing(BoardColor.WHITE, board.white_player.id, board.result)
+            database.update_player_pairing(board.black_player, round_, pairing)
+            self._players_by_id[board.black_player.id].pairings[round_] = pairing
+            database.commit()
 
     def update_round_pairings(self, round_nb: int):
         """Updates the pairings of all players for a round."""

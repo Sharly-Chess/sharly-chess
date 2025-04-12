@@ -18,6 +18,10 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
 #, python-format
+msgid "%(first_name)s %(last_name)s - Round %(num)s"
+msgstr "%(first_name)s %(last_name)s - Ronde %(num)s"
+
+#, python-format
 msgid "%(lib)s version"
 msgstr "Version de %(lib)s"
 
@@ -137,6 +141,12 @@ msgstr "Une fenêtre va s'ouvrir pour envoyer un mél au projet Papi-web ; si la
 
 msgid "Absent"
 msgstr "Absent·e"
+
+msgid "Absent for rest of the tournament"
+msgstr "Absent pour le reste du tournoi"
+
+msgid "Absent for this round"
+msgstr "Absent pour cette ronde"
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
@@ -267,6 +277,10 @@ msgstr "Évènement archivé"
 msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
+#, python-format
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
+msgstr "Êtes vous sûr de vouloir désapparier tous les échiquier de la ronde %(round_number)s?"
+
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
 
@@ -367,9 +381,16 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
+msgid "Board"
+msgstr "Échiquier"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
+
+#, python-format
+msgid "Board %(board_number)s"
+msgstr "Échiquier %(board_number)s"
 
 msgid "Board & color"
 msgstr "Échiquier & couleur"
@@ -444,8 +465,14 @@ msgstr "EFFACER LE RÉSULTAT"
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Can't delete result from previous round"
+msgstr "Impossible de supprimer les résultats des rondes passées."
+
 msgid "Cancel"
 msgstr "Annuler"
+
+msgid "Cancel absence for this round"
+msgstr "Annuler l'absence pour cette ronde"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -560,6 +587,9 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
+
+msgid "Click to pair"
+msgstr "Cliquer pour apparier"
 
 msgid "Clone"
 msgstr "Dupliquer"
@@ -1574,6 +1604,9 @@ msgstr "Fore Bu."
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
+msgid "Forfeit"
+msgstr "Forfait"
+
 msgid "Forfeit gain"
 msgstr "Gain par forfait"
 
@@ -1625,8 +1658,8 @@ msgstr "Genre"
 msgid "Gender:"
 msgstr "Genre :"
 
-msgid "Generate pairings for the next round."
-msgstr "Générer les appariements de la prochaine ronde."
+msgid "Generate pairings for this round."
+msgstr "Générer les appariements pour cette ronde."
 
 msgid "Getting fees for tournament [{ffe_id}]..."
 msgstr "Récupération des droits d'homologation pour le tournoi [{ffe_id}]..."
@@ -2208,6 +2241,9 @@ msgstr "Aucun résultat à mettre à jour sur le site web FFE (à jour)."
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr "Aucun règlement à mettre à jour sur le site web FFE (à jour)."
 
+msgid "No pairings."
+msgstr "Aucun appariement."
+
 msgid "No passed events."
 msgstr "Aucun évènement passé."
 
@@ -2315,6 +2351,9 @@ msgstr "Aucun avertissement"
 
 msgid "None"
 msgstr "Aucun"
+
+msgid "Not checked-in"
+msgstr "Non point·ée"
 
 msgid "Not checked-in yet"
 msgstr "Non point·ée"
@@ -2433,6 +2472,9 @@ msgstr "Du/payé"
 msgid "Owed:"
 msgstr "Dû :"
 
+msgid "PERMUTE WHITE/BLACK"
+msgstr "PERMUTER BLANCS/NOIRS"
+
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
 msgstr "Cu."
 
@@ -2444,6 +2486,13 @@ msgstr "Payé :"
 
 msgid "Pair"
 msgstr "Apparier"
+
+#, python-format
+msgid "Pair as BLACK vs %(player)s"
+msgstr "Apparier avec les NOIRS contre %(player)s"
+
+msgid "Pair as WHITE"
+msgstr "Apparier avec les BLANCS"
 
 msgid "Pairing allocated bye"
 msgstr "Exempt·e"
@@ -2462,6 +2511,9 @@ msgstr "Appariements par ordre alphabétique"
 
 msgid "Pairings by player ({num})"
 msgstr "Appariements par ordre alphabétique ({num})"
+
+msgid "Pairings disabled while check-in is open."
+msgstr "Appariements désactivés lorsque le pointage est ouvert."
 
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
@@ -2705,6 +2757,9 @@ msgstr "Veuillez valider la configuration globale de l'application."
 msgid "Plugins"
 msgstr "Plug-ins"
 
+msgid "Points"
+msgstr "Points"
+
 msgid "Points for draw (half-point bye)"
 msgstr "Points de match nul (demi-point joker)"
 
@@ -2921,6 +2976,9 @@ msgstr "Les écrans de résultats affichent les derniers résultats saisis par o
 
 msgid "Results upload OK"
 msgstr "Mise en ligne des résultats OK"
+
+msgid "Return to tournament"
+msgstr "Retour au tournoi"
 
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Pl."
@@ -3664,6 +3722,9 @@ msgstr "Cet écran est privé (non visible des utilisateur·ices)."
 msgid "This screen is public (visible by the users)."
 msgstr "Cet écran est public (visible des utilisateur·ices)."
 
+msgid "This will cause the table numbers to be reordered."
+msgstr "Cela peut modifier l'ordre des tables."
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
@@ -3738,6 +3799,9 @@ msgstr "Chronomètres : %(num)d"
 
 msgid "Today"
 msgstr "Aujourd'hui"
+
+msgid "Too many byes for player [{player_name}]."
+msgstr "Trop de points joker pour le joueur [{player_name}]."
 
 msgid "Top cut must be at most equal to bottom cut."
 msgstr "La troncature haute doit au moins être égale à la troncature basse."
@@ -3898,6 +3962,9 @@ msgstr "U20"
 msgid "U8"
 msgstr "U8"
 
+msgid "UNPAIR"
+msgstr "DÉSAPPARIER"
+
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 
@@ -3945,11 +4012,27 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 
+msgid "Unpair"
+msgstr "Désapparier"
+
+msgid "Unpair all boards"
+msgstr "Désapparier tous les échiquiers"
+
+#, python-format
+msgid "Unpair round %(round_number)s"
+msgstr "Désapparier la ronde %(round_number)s"
+
+msgid "Unpair this round."
+msgstr "Désapparier cette ronde."
+
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"
 
 msgid "Unpaired *** MALE"
 msgstr "Non apparié"
+
+msgid "Unpaired Players"
+msgstr "Joueur·euses non-apparié·es"
 
 msgid "Unpaired players: displayed"
 msgstr "Joueur·euses non apparié·es : affiché·es"

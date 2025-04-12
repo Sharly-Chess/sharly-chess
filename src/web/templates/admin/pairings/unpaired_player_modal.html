@@ -50,7 +50,7 @@
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >
-                            {{ _('Half-point bye (HPB)') }}
+                            {{ _('Half-point bye') }}
                         </button>
                         {% if exempt_player %}
                             <button
@@ -58,6 +58,10 @@
                                 hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="PAIR") }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
+                                {% if admin_tournament.check_in_open %}
+                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+                                    disabled
+                                {% endif %}
                             >
                                 {{ _('Pair as BLACK vs %(player)s', player=exempt_player.first_name ~ ' ' ~ exempt_player.last_name) }}
                                 <div class="text-danger italic" style="font-size: 0.9rem;">
@@ -71,6 +75,10 @@
                                 hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="PAIR") }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
+                                {% if admin_tournament.check_in_open %}
+                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+                                    disabled
+                                {% endif %}
                             >
                                 {{ _('Pair as WHITE') }}
                             </button>

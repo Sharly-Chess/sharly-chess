@@ -25,7 +25,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from utils.enum import Result
-from database.access.papi.papi_database import PapiDatabase, PapiVariable
+from database.access.papi.papi_database import PapiDatabase, PapiVariable, UNPLAYED_COLOR, BYE_COLOR
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import PLUGIN_NAME
@@ -91,11 +91,11 @@ class ActionSelector(metaclass=Singleton):
             if round_ not in player.skipped_rounds:
                 data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
                 if player.check_in or not check_in_started:
-                    data[f'Rd{round_:0>2}Cl'] = 'R'
+                    data[f'Rd{round_:0>2}Cl'] = UNPLAYED_COLOR
                 else:
-                    data[f'Rd{round_:0>2}Cl'] = 'F'
+                    data[f'Rd{round_:0>2}Cl'] = BYE_COLOR
             else:
-                data[f'Rd{round_:0>2}Cl'] = 'F'
+                data[f'Rd{round_:0>2}Cl'] = BYE_COLOR
                 match player.skipped_rounds[round_]:
                     case 0.0:
                         data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
