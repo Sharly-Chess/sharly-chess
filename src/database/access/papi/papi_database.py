@@ -330,14 +330,16 @@ class PapiDatabase(AccessDatabase):
 
     def set_player_result(self, player_papi_id: int, round_: int, result: Result):
         """Writes the given result to the database."""
-        data: dict[str, str | int] = {
-            f'Rd{round_:0>2}Res': result.to_papi_value,
+        rd = f'Rd{round_:0>2}'
+        data: dict[str, str | int | None] = {
+            f'{rd}Res': result.to_papi_value,
         }
-        match result:
-            case Result.NO_RESULT:
-                data[f'Rd{round_:0>2}Cl'] = 'R'
-            case Result.ZERO_POINT_BYE | Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
-                data[f'Rd{round_:0>2}Cl'] = 'F'
+        if result == Result.PAIRING_ALLOCATED_BYE:
+            data[f'{rd}Cl'] = BoardColor.WHITE.to_papi_value
+            data[f'{rd}Adv'] = 1
+        elif result.is_bye:
+            data[f'{rd}Cl'] = 'F'
+            data[f'{rd}Adv'] = None
         actions: str = ', '.join([f'`{key}` = ?' for key in data])
         query: str = f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?'
         params: tuple = tuple(
