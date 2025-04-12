@@ -39,6 +39,10 @@ msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (round %(round)d)"
 
 #, ai_translation, python-format
+msgid "%(string)s:"
+msgstr "%(string)s:"
+
+#, ai_translation, python-format
 msgid "%f to %l"
 msgstr "da %f a %l"
 
@@ -1316,6 +1320,10 @@ msgstr "Es.: Il mio schermo"
 msgid "E.g.: My screen family"
 msgstr "Ad es.: La mia famiglia di schermi"
 
+#, ai_translation
+msgid "E.g.: Paris"
+msgstr "E.g.: Parigi"
+
 #, ai_translation, python-format
 msgid "E.g.: Players %%f to %%l"
 msgstr "Ad esempio: Giocatori %%f a %%l"
@@ -1521,6 +1529,10 @@ msgid "End of upload (Ctrl-C)"
 msgstr "Fine del caricamento (Ctrl-C)"
 
 #, ai_translation
+msgid "End time needs to be after start time."
+msgstr "L'ora di fine deve essere dopo l'ora di inizio."
+
+#, ai_translation
 msgid "End:"
 msgstr "Fine:"
 
@@ -1657,12 +1669,16 @@ msgid "Export"
 msgstr "Esporta"
 
 #, ai_translation
-msgid "Export to TRF(bx) (pairing)"
-msgstr "Esporta in TRF(bx) (pailing)"
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgstr "Esporta tutti i giochi dell'ultimo round del torneo nel formato PGN (uso: trasferimento di accoppiamenti)."
 
 #, ai_translation
-msgid "Export to TRF16 (rating)"
-msgstr "Esportazione in TRF16 (rating)"
+msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
+msgstr "Esporta il torneo nel formato TRF(bx) (uso: generazione di accoppiamenti)."
+
+#, ai_translation
+msgid "Export the tournament to the TRF16 format."
+msgstr "Esporta il torneo nel formato TRF16."
 
 #, fuzzy
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
@@ -2179,6 +2195,10 @@ msgid "Image: %(image)s"
 msgstr "Immagine: %(image)s"
 
 #, ai_translation
+msgid "Impossible to set a round number lower than current round #{round}."
+msgstr "Impossibile impostare un numero rotondo inferiore a quello attuale #{round}."
+
+#, ai_translation
 msgid "Incorrect password."
 msgstr "Password errata."
 
@@ -2463,6 +2483,10 @@ msgstr "URL locale: {local_url}"
 #, ai_translation
 msgid "Local source databases settings have been updated."
 msgstr "Le impostazioni dei database locali sono state aggiornate."
+
+#, ai_translation
+msgid "Location"
+msgstr "Ubicazione"
 
 #, ai_translation
 msgid "Log level"
@@ -3663,6 +3687,10 @@ msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
 #, ai_translation
+msgid "Rating:"
+msgstr "Valutazione:"
+
+#, ai_translation
 msgid "Ratings"
 msgstr "Valutazioni"
 
@@ -3825,6 +3853,10 @@ msgid "Round #%(round)d is running."
 msgstr "Il round #%(round)d è in esecuzione."
 
 #, ai_translation
+msgid "Round #{round}"
+msgstr "Round #{round}"
+
+#, ai_translation
 msgid "Round not finished (last finished: {round})."
 msgstr "Round non finito (ultimo finito: {round})."
 
@@ -3855,6 +3887,10 @@ msgstr "Round: %(round)d"
 #, ai_translation
 msgid "Round: the last finished round"
 msgstr "Round: l'ultimo round finito"
+
+#, ai_translation
+msgid "Rounds"
+msgstr "Rotonde"
 
 #, ai_translation
 msgid "Rounds one Elected to Play"
@@ -4264,6 +4300,10 @@ msgstr "La directory del file Papi (defaults to [%(dir)s])."
 msgid "The end date and time of the event."
 msgstr "La data e l'ora di fine dell'evento."
 
+#, ai_translation, python-format
+msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr "La fine del torneo (defaults to %(datetime)s)."
+
 #, ai_translation
 msgid "The federation that organizes the event."
 msgstr "La federazione che organizza l'evento."
@@ -4299,6 +4339,18 @@ msgstr "L'installazione della versione [{version}] non è riuscita."
 #, ai_translation
 msgid "The last set of a screen can not be deleted."
 msgstr "L'ultimo set di una schermata non può essere eliminato."
+
+#, ai_translation
+msgid "The location of the event."
+msgstr "La location dell'evento."
+
+#, ai_translation, python-format
+msgid "The location of the tournament (defaults to [%(location)s])."
+msgstr "La posizione del torneo (default a [%(location)s])."
+
+#, ai_translation
+msgid "The location of the tournament."
+msgstr "La posizione del torneo."
 
 #, ai_translation
 msgid "The log level allows you to trace the behaviour of the application."
@@ -4395,6 +4447,10 @@ msgstr "Il numero di giocatori per schermo, opzionale (il numero di schermi si a
 #, ai_translation
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr "Il numero di punti differenza tra la classifica dei giocatori utilizzati per calcolare il numero di penalità applicate al giocatore più alto classificato."
+
+#, ai_translation
+msgid "The number of rounds of the tournament."
+msgstr "Il numero di round del torneo."
 
 #, ai_translation
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
@@ -4584,6 +4640,10 @@ msgstr "Gli schermi da ruotare (gli schermi di ingresso sono enfatizzati perché
 msgid "The start date and time of the event."
 msgstr "La data di inizio e l'ora dell'evento."
 
+#, ai_translation, python-format
+msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr "L'ora di inizio del torneo (defaults to %(datetime)s)."
+
 #, ai_translation
 msgid "The text colour of the alert messages."
 msgstr "Il colore del testo dei messaggi di avviso."
@@ -4623,6 +4683,10 @@ msgstr "Il torneo da stampare."
 #, ai_translation
 msgid "The type of document to print."
 msgstr "Il tipo di documento da stampare."
+
+#, ai_translation
+msgid "The type of rating to use for the tournament."
+msgstr "Il tipo di valutazione da utilizzare per il torneo."
 
 #, ai_translation
 msgid "This action can not be applied to the tournaments of this event."
@@ -4699,6 +4763,10 @@ msgstr "Controllo del tempo"
 #, ai_translation
 msgid "Time is not defined."
 msgstr "Il tempo non è definito."
+
+#, ai_translation
+msgid "Time outside of event time range ({start} - {stop})."
+msgstr "Tempo al di fuori dell'intervallo temporale dell'evento ({start} - {stop})."
 
 #, ai_translation
 msgid "Timer [{timer_id}] not found."
@@ -4993,6 +5061,10 @@ msgstr "UTILIZZO AI TUOI PERICOLOSI"
 #, ai_translation
 msgid "Unable to create Papi files."
 msgstr "Impossibile creare file Papi poiché non sono definiti tornei."
+
+#, ai_translation
+msgid "Undefined"
+msgstr "Indefinito"
 
 #, ai_translation
 msgid "Under 10"
@@ -5535,13 +5607,4 @@ msgstr[1] "{recent_updates} tornei sono stati aggiornati meno di {ffe_upload_del
 #, ai_translation
 msgid "{screen_type}-screen"
 msgstr "{screen_type}-schermo"
-
-#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-#~ msgstr "Vuoi recuperare la configurazione della versione [{version}] [{y_uc}/{n_lc}]?"
-
-#~ msgid "The FIDE database is not available."
-#~ msgstr "Il database FIDE non è disponibile."
-
-#~ msgid "Papi-web project"
-#~ msgstr "Progetto Papi-web"
 

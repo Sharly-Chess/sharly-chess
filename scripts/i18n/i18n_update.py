@@ -144,8 +144,10 @@ class LocaleInfo:
     @staticmethod
     def message_is_empty(msg: Message):
         if isinstance(msg.id, str):
+            assert isinstance(msg.string, str)
             return not msg.string
         else:
+            assert isinstance(msg.string, tuple)
             return not msg.string[0] or not msg.string[1]
 
     @staticmethod
@@ -182,19 +184,22 @@ class LocaleInfo:
 
     def compare_message_tokens(self, msg: Message) -> bool:
         error: bool = False
-        if isinstance(msg.id, str):
+        if isinstance(msg.string, str):
+            assert isinstance(msg.id, str)
             if self.sorted_tokens(msg.id) != self.sorted_tokens(msg.string):
-                msg.user_comments.append(
-                    f'Error: tokens differ between [{msg.id}] and [{msg.string}]'
-                )
+                msg.user_comments = [
+                    f'Error: tokens differ between [{msg.id}] and [{msg.string}]',
+                ]
                 msg.string = ''
                 error = True
         else:
+            assert isinstance(msg.id, tuple)
+            assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
                 if self.sorted_tokens(msg.id[i]) != self.sorted_tokens(msg.string[i]):
-                    msg.user_comments.append(
-                        f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]'
-                    )
+                    msg.user_comments = [
+                        f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]',
+                    ]
                     msg.string = tuple(
                         [
                             '',
@@ -209,18 +214,21 @@ class LocaleInfo:
     def check_message_length(msg: Message) -> bool:
         error: bool = False
         if isinstance(msg.id, str):
+            assert isinstance(msg.string, str)
             if len(msg.string) > 5 * len(msg.id):
-                msg.user_comments.append(
-                    f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]'
-                )
+                msg.user_comments = [
+                    f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
+                ]
                 msg.string = ''
                 error = True
         else:
+            assert isinstance(msg.id, tuple)
+            assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
                 if len(msg.string[i]) > 5 * len(msg.id[i]):
-                    msg.user_comments.append(
-                        f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]'
-                    )
+                    msg.user_comments = [
+                        f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
+                    ]
                     msg.string = tuple(
                         [
                             '',
@@ -243,7 +251,7 @@ class LocaleInfo:
         self.flagged_messages = {}
         # Control all the messages.
         for msg in catalog:
-            if msg.id:
+            if isinstance(msg.id, str) and msg.id:
                 self.messages[msg.id] = msg
                 if msg.id.__contains__('***'):
                     self.mandatory_messages[msg.id] = msg
@@ -549,26 +557,19 @@ class I18nUpdater:
 
 
 if __name__ == '__main__':
-    untrusted_locales: list[str] = []
-    if (
-        input_interactive('Do you want to update the untrusted locales (y/N)? ').upper()
-        or 'N'
-    ) == 'Y':
-        untrusted_locales = [
+    updater = I18nUpdater(
+        trusted_locales=[
+            'en',
+            'fr',
+        ],
+        untrusted_locales=[
             'de',
             'el',
             'es',
             'it',
             'nl',
             'sv',
-        ]
-    # PO and MO files are automatically created from this list; to add a new locale, add it to the list.
-    updater = I18nUpdater(
-        trusted_locales=[
-            'en',
-            'fr',
         ],
-        untrusted_locales=untrusted_locales,
     )
     if not updater.new_locales:
         updater.check_trusted_locales()
