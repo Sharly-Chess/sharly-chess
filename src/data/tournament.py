@@ -1004,10 +1004,10 @@ class Tournament:
 
         with PapiDatabase(self.file, write=True) as papi_database:
             papi_database.set_player_result(
-                board.white_player.ref_id, round_, white_result
+                board.white_player.ref_id, round_, white_result, True
             )
             papi_database.set_player_result(
-                board.black_player.ref_id, round_, black_result
+                board.black_player.ref_id, round_, black_result, True
             )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
@@ -1035,12 +1035,10 @@ class Tournament:
         assert board.black_player is not None
         assert board.id is not None
         with PapiDatabase(self.file, write=True) as papi_database:
-            papi_database.reset_player_result(
-                board.white_player.ref_id, self._current_round
-            )
-            papi_database.reset_player_result(
-                board.black_player.ref_id, self._current_round
-            )
+            for player in (board.white_player, board.black_player):
+                papi_database.set_player_result(
+                    player.ref_id, self._current_round, Result.NO_RESULT, True
+                )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.delete_stored_result(self.id, self.current_round, board.id)
@@ -1303,6 +1301,9 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             for round_, result in byes.items():
                 papi_database.set_player_result(
-                    player_papi_id=player.ref_id, round_=round_, result=result
+                    player.ref_id,
+                    round_,
+                    result,
+                    player.pairings[round_].opponent_id is not None,
                 )
             papi_database.commit()

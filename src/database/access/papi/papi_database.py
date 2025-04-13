@@ -401,7 +401,13 @@ class PapiDatabase(AccessDatabase):
             players[player_papi_web_id] = player
         return players
 
-    def set_player_result(self, player_papi_id: int, round_: int, result: Result):
+    def set_player_result(
+        self,
+        player_papi_id: int,
+        round_: int,
+        result: Result,
+        was_paired: bool,
+    ):
         """Writes the given result to the database."""
         rf = RoundFields(round_)
         data: dict[str, Any] = {
@@ -413,16 +419,13 @@ class PapiDatabase(AccessDatabase):
         elif result.is_bye:
             data[rf.color] = BYE_COLOR
             data[rf.opponent] = None
-
+        elif not was_paired and result == Result.NO_RESULT:
+            data[rf.color] = UNPLAYED_COLOR
         actions: str = ', '.join([f'`{key}` = ?' for key in data])
         self._execute(
             f'UPDATE `joueur` SET {actions} WHERE `Ref` = ?',
             tuple(list(data.values())) + (player_papi_id,),
         )
-
-    def reset_player_result(self, player_papi_id: int, round_: int):
-        """Writes the empty result for the given player in the database."""
-        self.set_player_result(player_papi_id, round_, Result.NO_RESULT)
 
     @staticmethod
     def timestamp_to_papi_date(ts: float) -> str:
