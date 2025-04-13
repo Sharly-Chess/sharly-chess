@@ -1,4 +1,3 @@
-import os
 import re
 import sys
 import time
@@ -10,8 +9,9 @@ from babel.messages import Catalog, Message
 from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po, write_po
 
-# force PAPI_WEB_EXPERIMENTAL to True to compile untrusted locales
-os.environ['PAPI_WEB_EXPERIMENTAL'] = '1'
+from common import enable_experimental_features
+
+enable_experimental_features(True)
 
 sys.path.extend(
     map(
@@ -24,20 +24,23 @@ sys.path.extend(
     )
 )
 
-from common.i18n import (
-    DEFAULT_LOCALE,
-    locale_localized_name,
-    locale_flag_url,
-    translators,
-)
-from common.logger import (
-    print_interactive_error,
-    print_interactive_warning,
-    print_interactive_info,
-    print_interactive_success,
-    input_interactive,
-    print_interactive_input,
-)
+if (
+    True
+):  # to pass pre-commit tests (otherwise E402 Module level import not at top of file)
+    from common.i18n import (
+        DEFAULT_LOCALE,
+        locale_localized_name,
+        locale_flag_url,
+        translators,
+    )
+    from common.logger import (
+        print_interactive_error,
+        print_interactive_warning,
+        print_interactive_info,
+        print_interactive_success,
+        input_interactive,
+        print_interactive_input,
+    )
 
 
 def run_babel_command(

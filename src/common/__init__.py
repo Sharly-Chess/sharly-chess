@@ -18,17 +18,17 @@ PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
 # True when experimental features are enabled (relying on an engine option), False otherwise.
-EXPERIMENTAL_FEATURES: bool = False
+_EXPERIMENTAL_FEATURES: bool = False
 
 
 def enable_experimental_features(enabled: bool):
-    global EXPERIMENTAL_FEATURES
-    EXPERIMENTAL_FEATURES = enabled
+    global _EXPERIMENTAL_FEATURES
+    _EXPERIMENTAL_FEATURES = enabled
 
 
 def experimental_features_enabled() -> bool:
-    global EXPERIMENTAL_FEATURES
-    return EXPERIMENTAL_FEATURES
+    global _EXPERIMENTAL_FEATURES
+    return _EXPERIMENTAL_FEATURES
 
 
 REQUEST_TIMEOUT: int = 10

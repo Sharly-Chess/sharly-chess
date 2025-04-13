@@ -9,7 +9,7 @@ import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
-from common import BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR, PAPI_WEB_VERSION
+from common import BASE_DIR, experimental_features_enabled, EVENTS_DIR, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
     _,
@@ -67,7 +67,7 @@ class PapiWebConfig(metaclass=Singleton):
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
         self.locales: list[str] = trusted_locales.copy()
-        if EXPERIMENTAL_FEATURES:
+        if experimental_features_enabled():
             self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
         # TODO Remove this code when all the engine dialogs have moved to the web UI

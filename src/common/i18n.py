@@ -8,7 +8,7 @@ from string import capwords
 
 from babel import Locale
 
-from common import BASE_DIR, DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import BASE_DIR, DEVEL_ENV, experimental_features_enabled
 from common.logger import (
     print_interactive_error,
     print_interactive_warning,
@@ -117,7 +117,7 @@ translators['fr'] = [
 """ Locales with translators assigned are considered trusted. """
 trusted_locales = [locale for locale in translators if locale in locales]
 
-if EXPERIMENTAL_FEATURES:
+if experimental_features_enabled():
     # Mark the untrusted locales as translated by an IA.
     translators |= {
         locale: [
