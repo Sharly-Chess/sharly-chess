@@ -14,6 +14,14 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
+msgid "%(count)d boards without result"
+msgstr "%(count)d échiquiers sans résultat"
+
+#, python-format
+msgid "%(count)d players unpaired"
+msgstr "%(count)d joueur·euses non-apparié·es"
+
+#, python-format
 msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
@@ -465,9 +473,6 @@ msgstr "EFFACER LE RÉSULTAT"
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
-msgid "Can't delete result from previous round"
-msgstr "Impossible de supprimer les résultats des rondes passées."
-
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -613,6 +618,9 @@ msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
 msgid "Close"
 msgstr "Fermer"
 
+msgid "Close check in"
+msgstr "Fermer le pointage"
+
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
 msgstr "Fermer le pointage pour le tournoi [%(tournament_uniq_id)s]"
@@ -703,6 +711,9 @@ msgstr "Contact et inscription"
 msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
 msgstr "Le contenu de l'URL [{url}] n'est pa valide (input[id=[{id]] introuvable)."
 
+msgid "Continue"
+msgstr "Continuer"
+
 msgid "Continuously"
 msgstr "En continu"
 
@@ -767,9 +778,6 @@ msgstr "Grille américaine après la ronde {round}"
 
 msgid "Current events ({num})"
 msgstr "Évènements en cours ({num})"
-
-msgid "Current round is not finished, pairings for the next round unavailable."
-msgstr "La ronde actuelle n'est pas terminée, les appariements de la prochaine ronde ne sont pas disponibles."
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
@@ -1616,6 +1624,9 @@ msgstr "Gain par forfait"
 msgid "Forfeit loss"
 msgstr "Perte par forfait"
 
+msgid "Forfeits and byes"
+msgstr "Forfaits et points jokers"
+
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
 
@@ -2104,6 +2115,10 @@ msgstr "Nombre minimum de points (inclus) :"
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr "Paramètre manquant (code : [{code}]) : [{error}]."
 
+#, python-format
+msgid "Moving on to round #%(round)d"
+msgstr "Passage à la ronde n°%(round)d"
+
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
@@ -2506,6 +2521,9 @@ msgstr "Exempt·e"
 msgid "Pairings"
 msgstr "Appariements"
 
+msgid "Pairings already generated."
+msgstr "Les appariements ont déjà été générés."
+
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
@@ -2524,8 +2542,8 @@ msgstr "Appariements désactivés lorsque le pointage est ouvert."
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
 
-msgid "Pairings generation unavailable for this round."
-msgstr "Génération d'appariements non disponible pour cette ronde."
+msgid "Pairings generation unavailable if previous rounds contains boards without results or unpaired players."
+msgstr "La génération d'appariements n'est pas disponible si les rondes précédentes contiennent des échiquiers sans résultat ou des joueur·euses non apparié·es."
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
@@ -4037,14 +4055,14 @@ msgstr "Désapparier la ronde %(round_number)s"
 msgid "Unpair this round."
 msgstr "Désapparier cette ronde."
 
+msgid "Unpaired"
+msgstr "Non-apparié·es"
+
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"
 
 msgid "Unpaired *** MALE"
 msgstr "Non apparié"
-
-msgid "Unpaired Players"
-msgstr "Joueur·euses non-apparié·es"
 
 msgid "Unpaired players: displayed"
 msgstr "Joueur·euses non apparié·es : affiché·es"
@@ -4131,6 +4149,10 @@ msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de l
 
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
+
+#, python-format
+msgid "Warning: round #%(round)d is not finished."
+msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"

@@ -316,10 +316,6 @@ class Tournament:
         return self.file_exists
 
     @property
-    def pairings_generation_allowed(self) -> bool:
-        return not self.check_in_open and not self.finished and not self.playing
-
-    @property
     def handicap(self) -> bool:
         return bool(self.time_control_handicap_penalty_value)
 
@@ -430,12 +426,6 @@ class Tournament:
         return self._current_round
 
     @property
-    def pairing_round(self) -> int:
-        if self.playing or self.finished:
-            return self.current_round
-        return self.current_round + 1
-
-    @property
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0
@@ -507,12 +497,27 @@ class Tournament:
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_tournament.plugin_data or {}
 
+    def pairings_generation_allowed(self, at_round: int) -> bool:
+        """Check if pairing generation is allowed for round *at_round*."""
+        return not self.check_in_open and all(
+            self.is_round_finished(round_) for round_ in range(1, at_round)
+        )
+
+    def is_round_finished(self, round_: int):
+        for player in self.players_by_id.values():
+            if player.pairings[round_].result == Result.NO_RESULT:
+                return False
+        return True
+
     def to_trf(
         self,
         trf_type: TrfType,
         first_round_pairing: BoardColor = BoardColor.WHITE,
+        after_round: int | None = None,
     ) -> TrfTournament:
-        self.compute_player_ranks(after_round=self.max_ranking_round)
+        if after_round is None:
+            after_round = self.rounds
+        self.compute_player_ranks(after_round=after_round)
         return TrfTournament(
             name=self.full_name,
             city=self.location,
@@ -523,9 +528,7 @@ class Tournament:
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
-                    after_round=self.current_round + 1
-                    if trf_type == TrfType.TRF_BX
-                    else self.rounds,
+                    after_round=after_round,
                 )
                 for player in self.players_by_trf_id.values()
             ],

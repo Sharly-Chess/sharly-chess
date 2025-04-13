@@ -1,4 +1,3 @@
-from contextlib import suppress
 from typing import Annotated, Any
 
 
@@ -70,7 +69,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_round = (
             round_
             if round_ is not None
-            else self.admin_tournament.pairing_round
+            else self.admin_tournament.current_round or 1
             if self.admin_tournament is not None
             else 0
         )
@@ -78,17 +77,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         unpaired: list[Player] = []
         if self.admin_tournament is not None:
-            if self.admin_round <= self.admin_tournament.pairing_round:
-                self.admin_tournament.calculate_points_before_round(
-                    before_round=self.admin_round
-                )
-                self.admin_boards, unpaired = self.admin_tournament.build_boards(
-                    self.admin_round
-                )
-            else:
-                self.admin_boards, unpaired = self.admin_tournament.build_boards(
-                    self.admin_tournament.pairing_round
-                )
+            self.admin_tournament.calculate_points_before_round(
+                before_round=self.admin_round
+            )
+            self.admin_boards, unpaired = self.admin_tournament.build_boards(
+                self.admin_round
+            )
 
         self.admin_unpaired = []
         self.admin_forfeit_players = []
@@ -193,7 +187,18 @@ class PairingsAdminController(BaseEventAdminController):
             case 'confirm-unpair-all':
                 template_context |= {
                     'modal': modal,
-                    'admin_round': web_context.admin_round,
+                }
+            case 'unfinished-round':
+                template_context |= {
+                    'modal': modal,
+                    'admin_unpaired_player_count': len(web_context.admin_unpaired),
+                    'admin_no_result_board_count': len(
+                        [
+                            board
+                            for board in web_context.admin_boards
+                            if board.result == Result.NO_RESULT
+                        ]
+                    ),
                 }
 
         template_context |= {
@@ -333,14 +338,17 @@ class PairingsAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if web_context.admin_event is None:
+        event = web_context.admin_event
+        tournament = web_context.admin_tournament
+        board = web_context.admin_board
+        if event is None:
             raise RuntimeError('admin_event not defined')
-        if web_context.admin_tournament is None:
+        if tournament is None:
             raise RuntimeError('admin_tournament not defined')
-        if web_context.admin_board is None:
+        if board is None:
             raise RuntimeError('admin_board not defined')
 
-        if web_context.admin_board.exempt:
+        if board.exempt:
             return self._admin_event_pairings_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -348,34 +356,15 @@ class PairingsAdminController(BaseEventAdminController):
                 round_=round_,
             )
 
-        can_pair = web_context.admin_tournament.pairings_generation_allowed
-        if result is None:
-            if web_context.admin_round < web_context.admin_tournament.current_round:
-                Message.error(
-                    request,
-                    _("Can't delete result from previous round"),
-                )
-                return self._admin_event_pairings_render(
-                    request,
-                    event_uniq_id=event_uniq_id,
-                    tournament_id=tournament_id,
-                    round_=round_,
-                    board_id=board_id,
-                    modal='pairing',
-                )
-            with suppress(ValueError):
-                web_context.admin_tournament.delete_result(web_context.admin_board)
-        else:
-            if result not in (Result.admin_imputable_results()):
-                return BaseController.redirect_error(
-                    request, f'Invalid result [{result}].'
-                )
-            web_context.admin_tournament.add_result(
-                web_context.admin_board,
-                Result.from_papi_value(result),
-                web_context.admin_round,
-            )
-        EventLoader.get(request=request).clear_cache(web_context.admin_event.uniq_id)
+        was_round_finished = tournament.is_round_finished(round_)
+        if result not in (Result.admin_imputable_results()):
+            return BaseController.redirect_error(request, f'Invalid result [{result}].')
+        tournament.add_result(
+            board,
+            Result.from_papi_value(result),
+            web_context.admin_round,
+        )
+        EventLoader.get(request=request).clear_cache(event.uniq_id)
         web_context = PairingsAdminWebContext(
             request,
             data=None,
@@ -387,8 +376,9 @@ class PairingsAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        assert web_context.admin_tournament is not None
-        web_context.admin_tournament.calculate_current_round()
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        tournament.calculate_current_round()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -396,8 +386,7 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round_,
             board_id=board_id,
             trigger_event=trigger_event,
-            full_refresh=can_pair
-            != web_context.admin_tournament.pairings_generation_allowed,
+            full_refresh=tournament.is_round_finished(round_) != was_round_finished,
         )
 
     @put(
@@ -525,11 +514,13 @@ class PairingsAdminController(BaseEventAdminController):
 
         result: int | None = None
         match key:
-            case 'Digit1':
+            case 'Digit0' | 'Numpad0':
+                result = Result.NO_RESULT
+            case 'Digit1' | 'Numpad1':
                 result = Result.GAIN
-            case 'Digit2':
+            case 'Digit2' | 'Numpad2':
                 result = Result.LOSS
-            case 'Digit3':
+            case 'Digit3' | 'Numpad3':
                 result = Result.DRAW
             case _:
                 return HTMXTemplate(
@@ -573,7 +564,7 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
             board_id=board_id,
             trigger_event='close_modal',
-            result=None,
+            result=Result.NO_RESULT.value,
         )
 
     @patch(
@@ -683,7 +674,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/generate-pairings/{event_uniq_id:str}/{tournament_id:int}',
+        path='/admin/generate-pairings/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-tournament-generate-pairings',
     )
     async def admin_tournament_generate_pairings(
@@ -691,12 +682,13 @@ class PairingsAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
+        round: int,
     ) -> Template | ClientRedirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            round_=None,
+            round_=round,
             board_id=None,
             player_id=None,
             data=None,
@@ -711,7 +703,7 @@ class PairingsAdminController(BaseEventAdminController):
 
         tournament = web_context.admin_tournament
         assert tournament is not None
-        BbpPairings().generate_pairings(tournament)
+        BbpPairings().generate_pairings(tournament, web_context.admin_round)
         tournament.read_papi(True)
 
         Message.success(
@@ -804,4 +796,41 @@ class PairingsAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             round_=round,
             modal='confirm-unpair-all',
+        )
+
+    @get(
+        path='/admin/pairings/unfinished-round-modal/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-unfinished-round-modal',
+    )
+    async def admin_pairings_unfinished_round_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=None,
+            player_id=None,
+            data=None,
+        )
+
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        if web_context.admin_tournament is None:
+            raise RuntimeError('admin_tournament not defined')
+
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            modal='unfinished-round',
         )

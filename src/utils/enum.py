@@ -341,13 +341,13 @@ class Result(IntEnum):
             case Result.DRAW | Result.UNRATED_DRAW:
                 return '1/2-1/2'
             case (
-            Result.NO_RESULT
-            | Result.FORFEIT_GAIN
-            | Result.FORFEIT_LOSS
-            | Result.FULL_POINT_BYE
-            | Result.HALF_POINT_BYE
-            | Result.ZERO_POINT_BYE
-            | Result.PAIRING_ALLOCATED_BYE
+                Result.NO_RESULT
+                | Result.FORFEIT_GAIN
+                | Result.FORFEIT_LOSS
+                | Result.FULL_POINT_BYE
+                | Result.HALF_POINT_BYE
+                | Result.ZERO_POINT_BYE
+                | Result.PAIRING_ALLOCATED_BYE
             ):
                 return '*'
             case _:
@@ -390,6 +390,7 @@ class Result(IntEnum):
     def admin_imputable_results(cls) -> tuple['Result', ...]:
         """Admin imputable results are the ones that only arbiters can input."""
         return cls.user_imputable_results() + (
+            cls.NO_RESULT,
             cls.FORFEIT_GAIN,
             cls.FORFEIT_LOSS,
             cls.DOUBLE_FORFEIT,

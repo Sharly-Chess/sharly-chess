@@ -29,19 +29,15 @@ class BbpPairings:
     def executable_path(self) -> Path:
         return self.executable_dir / 'bbpPairings.exe'
 
-    def generate_pairings(self, tournament: Tournament):
-        """Generate the pairings of a tournament's next round"""
-        if tournament.finished or tournament.playing:
-            raise ValueError(
-                'Impossible to generate pairings '
-                'if tournament is finished '
-                'or if a round is ongoing.'
-            )
+    def generate_pairings(self, tournament: Tournament, round_: int):
+        """Generate the pairings of a tournament's round"""
 
         trf_file_path = TMP_DIR / 'tournament.trfx'
         pairings_file_path = TMP_DIR / 'pairings.txt'
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
-            trf.dump(trf_file, tournament.to_trf(TrfType.TRF_BX))
+            trf.dump(
+                trf_file, tournament.to_trf(TrfType.TRF_BX, after_round=round_ - 1)
+            )
         try:
             subprocess.run(
                 [
@@ -57,28 +53,27 @@ class BbpPairings:
             os.remove(trf_file_path)
         try:
             with open(pairings_file_path, encoding='utf-8') as pairing_file:
-                self._pairings_from_file(pairing_file, tournament)
+                self._pairings_from_file(pairing_file, tournament, round_)
         finally:
             os.remove(pairings_file_path)
-        tournament.update_round_pairings(tournament.current_round + 1)
+        tournament.update_round_pairings(round_)
 
     @staticmethod
-    def _pairings_from_file(file: TextIO, tournament: Tournament):
+    def _pairings_from_file(file: TextIO, tournament: Tournament, round_: int):
         exempt_id: int = 0
         file.readline()  # table_count
-        next_round = tournament.current_round + 1
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_trf_id[white_trf_id]
             if black_trf_id != exempt_id:
                 black_player = tournament.players_by_trf_id[black_trf_id]
-                white_player.pairings[next_round] = Pairing(
+                white_player.pairings[round_] = Pairing(
                     BoardColor.WHITE, black_player.id, Result.NO_RESULT
                 )
-                black_player.pairings[next_round] = Pairing(
+                black_player.pairings[round_] = Pairing(
                     BoardColor.BLACK, white_player.id, Result.NO_RESULT
                 )
             else:
-                white_player.pairings[next_round] = Pairing(
+                white_player.pairings[round_] = Pairing(
                     BoardColor.WHITE, None, Result.PAIRING_ALLOCATED_BYE
                 )

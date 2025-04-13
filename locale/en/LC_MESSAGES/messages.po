@@ -14,6 +14,14 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(count)d boards without result"
+msgstr ""
+
+#, python-format
+msgid "%(count)d players unpaired"
+msgstr ""
+
+#, python-format
 msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr ""
 
@@ -465,9 +473,6 @@ msgstr ""
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
-msgid "Can't delete result from previous round"
-msgstr ""
-
 msgid "Cancel"
 msgstr ""
 
@@ -613,6 +618,9 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Close check in"
+msgstr ""
+
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
 msgstr ""
@@ -703,6 +711,9 @@ msgstr ""
 msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
 msgstr ""
 
+msgid "Continue"
+msgstr ""
+
 msgid "Continuously"
 msgstr ""
 
@@ -766,9 +777,6 @@ msgid "Crosstable after round #{round}"
 msgstr ""
 
 msgid "Current events ({num})"
-msgstr ""
-
-msgid "Current round is not finished, pairings for the next round unavailable."
 msgstr ""
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
@@ -1616,6 +1624,9 @@ msgstr ""
 msgid "Forfeit loss"
 msgstr ""
 
+msgid "Forfeits and byes"
+msgstr ""
+
 msgid "French Chess Federation"
 msgstr ""
 
@@ -2104,6 +2115,10 @@ msgstr ""
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
+#, python-format
+msgid "Moving on to round #%(round)d"
+msgstr ""
+
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
@@ -2506,6 +2521,9 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
+msgid "Pairings already generated."
+msgstr ""
+
 msgid "Pairings by board"
 msgstr ""
 
@@ -2524,7 +2542,7 @@ msgstr ""
 msgid "Pairings for round #{round}"
 msgstr ""
 
-msgid "Pairings generation unavailable for this round."
+msgid "Pairings generation unavailable if previous rounds contains boards without results or unpaired players."
 msgstr ""
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
@@ -4037,14 +4055,14 @@ msgstr ""
 msgid "Unpair this round."
 msgstr ""
 
+msgid "Unpaired"
+msgstr ""
+
 msgid "Unpaired *** FEMALE"
 msgstr "Unpaired"
 
 msgid "Unpaired *** MALE"
 msgstr "Unpaired"
-
-msgid "Unpaired Players"
-msgstr ""
 
 msgid "Unpaired players: displayed"
 msgstr ""
@@ -4130,6 +4148,10 @@ msgid "Warning: connection to the online FFE database failed, local database was
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
+msgstr ""
+
+#, python-format
+msgid "Warning: round #%(round)d is not finished."
 msgstr ""
 
 msgid "Warning: the deletion of a player is permanent!"

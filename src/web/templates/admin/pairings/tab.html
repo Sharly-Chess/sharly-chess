@@ -8,24 +8,43 @@
     {% endcall %}
     <div class="flex-grow-1"></div>
     {% if admin_tournament %}
+        {% if admin_tournament.check_in_open %}
+            <button
+                class="btn btn-outline-primary text-nowrap"
+                hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-trigger="click"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+            >
+                {{ _('Close check in') }}
+            </button>
+        {% endif %}
+
         {% if EXPERIMENTAL_FEATURES %}
+            {% with pairings_allowed=admin_tournament.pairings_generation_allowed(admin_round) %}
             <div
                 {{ macros.tooltip_attributes(
                     'info',
                     _('Pairings disabled while check-in is open.')
-                    if admin_tournament.check_in_open else _('Generate pairings for this round.')
-                    if admin_tournament.pairings_generation_allowed and admin_round == admin_tournament.pairing_round
-                    else _('Pairings generation unavailable for this round.'),
-                    'top'
+                    if admin_tournament.check_in_open
+                    else _('Pairings generation unavailable if previous rounds contains boards without results or unpaired players.')
+                    if not pairings_allowed
+                    else _('Pairings already generated.') if admin_board
+                    else _('Generate pairings for this round.'),
+                    'top',
                 ) }}
             >
                 <button
                     class="btn btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    {% if not admin_tournament.pairings_generation_allowed or admin_round != admin_tournament.pairing_round %}
+                    {% if not pairings_allowed or admin_boards %}
                         disabled
                     {% endif %}
                 >
@@ -33,33 +52,34 @@
                     {{ _('Pair') }}
                 </button>
             </div>
+            {% endwith %}
         {% endif %}
-        {% if admin_round and admin_tournament.current_round == admin_round %}
-         <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                hx-get="{{ url_for('admin-pairings-unpair-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                hx-trigger="click"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
+        {% if admin_boards %}
+             <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-pairings-unpair-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-trigger="click"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
                     {{ _('Unpair') }}
                 </button>
             </div>
         {% endif %}
 
         <div class="d-flex gap-2 ms-auto align-items-center">
-            <span {{ macros.tooltip_attributes('info', _('Previous round'), 'bottom') }}>
+            <span {{ macros.tooltip_attributes('info', _('Previous round'), 'top') }}>
                 <button
                     class="btn btn-outline-primary text-nowrap"
                     hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round - 1 }}"
                     hx-include="[name='tournament_id']"
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    {% if admin_round == 1 %}
+                    {% if admin_round <= 1 %}
                         disabled
                     {% endif %}
                 >
@@ -76,32 +96,28 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% with rounds=admin_tournament.pairing_round %}
+                {% with rounds=admin_tournament.current_round if admin_tournament.current_round > admin_round else admin_round %}
                     {% for round in range(1, rounds + 1) %}
                         <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
                             {{ _('Round #%(round)d', round=round) }}
                         </option>
                     {% endfor %}
-                    {% if rounds == 0 %}
-                        <option value="0">-</option>
-                    {% endif %}
                 {% endwith %}
             </select>
-            <span
-                {{ macros.tooltip_attributes(
-                    'info',
-                    _('Current round is not finished, pairings for the next round unavailable.')
-                    if admin_round == admin_tournament.pairing_round else _('Next round'),
-                    'bottom',
-                ) }}
-            >
+            <span {{ macros.tooltip_attributes('info', _('Next round'), 'top') }}>
                 <button
                     class="btn btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round + 1 }}"
-                    hx-include="[name='tournament_id']"
+                    {% if admin_tournament.is_round_finished(admin_round) %}
+                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
+                    {% else %}
+                        hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        preload
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    {% endif %}
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    {% if admin_round == admin_tournament.pairing_round %}
+                    {% if admin_round >= admin_tournament.rounds %}
                         disabled
                     {% endif %}
                 >
@@ -157,7 +173,10 @@
                     id="pairings-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
                     hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="keyup[code=='Digit1'] from:body, keyup[code=='Digit2'] from:body, keyup[code=='Digit3'] from:body"
+                    hx-trigger="
+                        {% for digit in range(0, 4) %}
+                            keydown[code=='Digit{{ digit }}'] from:body, keydown[code=='Numpad{{ digit }}'] from:body,
+                        {% endfor %}"
                     hx-vals="js:{key: event.code, board_id: pairing_board_id || 0}"
                     hx-target="body"
                     hx-swap="outerHTML"

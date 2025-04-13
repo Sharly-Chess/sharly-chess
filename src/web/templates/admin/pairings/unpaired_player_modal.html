@@ -53,6 +53,7 @@
                             {{ _('Half-point bye') }}
                         </button>
                         <span
+                            class="w-100"
                             {% if admin_tournament.check_in_open %}
                                 {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
                             {% endif %}
