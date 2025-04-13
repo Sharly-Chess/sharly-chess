@@ -1,0 +1,41 @@
+name: Sharly-Chess export
+
+on:
+  push:
+    tags: "*"
+
+jobs:
+  export-sharly-chess:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@4.2.2
+      - name: Setup Python
+        uses: actions/setup-python@v5.5.0
+        with:
+          # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
+          python-version: 3.12
+      - name: Setup virtual environment and export
+        shell: pwsh
+        env:
+          FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
+          FFE_USER: ${{ secrets.FFE_USER }}
+          FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
+          FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
+        run: |
+          pip install venv
+          venv .venv
+          .venv/Scripts/Activate.ps1
+          pip install -e .[export]
+          python scripts/ffe/generate_ffe_sql_server_credentials.py \
+            --host="$env:FFE_HOST" --user="$env:FFE_USER" \
+            --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
+          python scripts/export/export.py
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: contains("a", ${{ github.tag_name }}) || contains("b", ${{ github.tag_name }}) || contains("rc", ${{ github.tag_name }})
+          files: |
+            export/papi-web-${{ github.tag_name }}.zip
+          
