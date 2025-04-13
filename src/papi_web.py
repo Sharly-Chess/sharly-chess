@@ -11,7 +11,7 @@ try:
     args, remaining_args = path_parser.parse_known_args()
     os.chdir(args.path)
 
-    from common import DEVEL_ENV
+    from common import DEVEL_ENV, enable_experimental_features
     from common.i18n import _
     from common.logger import (
         get_logger,
@@ -27,6 +27,7 @@ try:
         from plugins.utils import PluginEngineArgument
 
     parser = argparse.ArgumentParser(parents=[path_parser])
+    parser.add_argument('--experimental', action='store_true')
     parser.add_argument('--server', action='store_true')
     engine_argument_names: list[str] = []
     plugin_engine_arguments: list['PluginEngineArgument'] = (
@@ -49,6 +50,7 @@ try:
         )
     args = parser.parse_args(remaining_args)
 
+    enable_experimental_features(bool(args.experimental))
     if args.server:
         print_interactive_warning(_('Argument --server is deprecated, ignored.'))
     try:
