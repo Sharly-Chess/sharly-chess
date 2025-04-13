@@ -128,6 +128,7 @@ class PairingsAdminController(BaseEventAdminController):
         player_id: int | None = None,
         data: dict[str, str] | None = None,
         trigger_event: str | None = None,
+        params: dict[str, Any] | None = None,
         full_refresh: bool = False,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
@@ -214,6 +215,9 @@ class PairingsAdminController(BaseEventAdminController):
             'admin_unpaired': web_context.admin_unpaired,
             'admin_forfeit_players': web_context.admin_forfeit_players,
             'board': web_context.admin_board,
+            'extra_row_class': 'highlight highlight-warning'
+            if trigger_event == 'highlight_board_with_warning'
+            else '',
             'wp': web_context.admin_board.white_player
             if web_context.admin_board
             else None,
@@ -223,17 +227,6 @@ class PairingsAdminController(BaseEventAdminController):
         }
 
         if not full_refresh and web_context.admin_board is not None and modal is None:
-            board_id = web_context.admin_board.board_id
-            assert board_id is not None
-            next_board_id = next(
-                (
-                    b.board_id
-                    for b in web_context.admin_boards
-                    if b.board_id is not None and b.board_id > board_id
-                ),
-                None,
-            )
-
             return HTMXTemplate(
                 template_name='/admin/pairings/pairing_row.html',
                 context=template_context,
@@ -241,9 +234,7 @@ class PairingsAdminController(BaseEventAdminController):
                 re_swap='outerHTML',
                 trigger_event=trigger_event,
                 after='receive',
-                params={
-                    'board_id': next_board_id,
-                },
+                params=params,
             )
         else:
             return cls._admin_event_render(template_context)
@@ -326,6 +317,7 @@ class PairingsAdminController(BaseEventAdminController):
         board_id: int,
         result: int | None,
         trigger_event: str | None = None,
+        on_change_trigger_event: str | None = None,
     ) -> Template | ClientRedirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
@@ -359,26 +351,52 @@ class PairingsAdminController(BaseEventAdminController):
         was_round_finished = tournament.is_round_finished(round_)
         if result not in (Result.admin_imputable_results()):
             return BaseController.redirect_error(request, f'Invalid result [{result}].')
-        tournament.add_result(
-            board,
-            Result.from_papi_value(result),
-            web_context.admin_round,
-        )
-        EventLoader.get(request=request).clear_cache(event.uniq_id)
-        web_context = PairingsAdminWebContext(
-            request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            round_=round_,
-            board_id=board_id,
-            player_id=None,
-        )
-        if web_context.error:
-            return web_context.error
-        tournament = web_context.admin_tournament
-        assert tournament is not None
-        tournament.calculate_current_round()
+
+        params: dict[str, Any] | None = None
+        if (
+            on_change_trigger_event
+            and board.result != Result.NO_RESULT
+            and result != board.result
+        ):
+            # If the result is changed, trigger the on_change_trigger_event and don't modify the board
+            # This is used to highlight the board with a warning when using hotkeys
+            trigger_event = on_change_trigger_event
+            params = {
+                'board_id': board_id,
+            }
+        else:
+            tournament.add_result(
+                board,
+                Result.from_papi_value(result),
+                web_context.admin_round,
+            )
+            EventLoader.get(request=request).clear_cache(event.uniq_id)
+            web_context = PairingsAdminWebContext(
+                request,
+                data=None,
+                event_uniq_id=event_uniq_id,
+                tournament_id=tournament_id,
+                round_=round_,
+                board_id=board_id,
+                player_id=None,
+            )
+            if web_context.error:
+                return web_context.error
+            tournament = web_context.admin_tournament
+            assert tournament is not None
+            tournament.calculate_current_round()
+            next_board_id = next(
+                (
+                    b.board_id
+                    for b in web_context.admin_boards
+                    if b.board_id is not None and b.board_id > board_id
+                ),
+                None,
+            )
+            params = {
+                'board_id': next_board_id,
+            }
+
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -386,6 +404,7 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round_,
             board_id=board_id,
             trigger_event=trigger_event,
+            params=params,
             full_refresh=tournament.is_round_finished(round_) != was_round_finished,
         )
 
@@ -541,6 +560,7 @@ class PairingsAdminController(BaseEventAdminController):
             board_id=board_id,
             result=result,
             trigger_event='highlight_board',
+            on_change_trigger_event='highlight_board_with_warning',
         )
 
     @delete(

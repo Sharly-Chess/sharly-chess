@@ -368,6 +368,11 @@ body[data-bs-theme=light] .btn-primary {
     color: var(--pw-contrast-text);
 }
 
+[data-bs-theme=dark] table.prominent tr.highlight-warning td {
+    background-color: var(--bs-form-invalid-color);
+    color: var(--pw-contrast-text);
+}
+
 [data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
     --bs-btn-color: var(--bs-body-bg);
     --bs-btn-border-color: var(--bs-body-bg);

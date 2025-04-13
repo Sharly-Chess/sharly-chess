@@ -173,16 +173,14 @@
                     id="pairings-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
                     hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="
-                        {% for digit in range(0, 4) %}
-                            keydown[code=='Digit{{ digit }}'] from:body, keydown[code=='Numpad{{ digit }}'] from:body,
-                        {% endfor %}"
+                    hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}'] from:body, keydown[code=='Numpad{{ digit }}'] from:body{%if not loop.last %},{% endif %}{% endfor %}"
                     hx-vals="js:{key: event.code, board_id: pairing_board_id || 0}"
                     hx-target="body"
                     hx-swap="outerHTML"
                     hx-indicator="#please-wait"
                     hx-sync="body:queue all"
-                    hx-on:highlight_board="highlight_board(event.detail.board_id)"
+                    hx-on:highlight_board="highlight_board(event.detail.board_id, false)"
+                    hx-on:highlight_board_with_warning="highlight_board(event.detail.board_id, true)"
                 >
                     <thead
                         id="players-table-header"
@@ -213,10 +211,11 @@
     <script>
         var pairing_board_id = null;
 
-        function highlight_board(board_id) {
+        function highlight_board(board_id, with_warning) {
             $("tr.highlight").removeClass("highlight");
+            $("tr.highlight-warning").removeClass("highlight-warning");
             if (board_id) {
-                $(`[data-board-id="${board_id}"]`).addClass("highlight");
+                $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
                 pairing_board_id = board_id;
             } else {
                 pairing_board_id = null;
@@ -225,7 +224,7 @@
 
         $(document).on("click", "tr.pairing-row > td", function(e) {
             var $this = $(this);
-            highlight_board($this.parent().data("board-id"));
+            highlight_board($this.parent().data("board-id"), false);
         });
 
     </script>
