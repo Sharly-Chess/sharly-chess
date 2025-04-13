@@ -3,7 +3,11 @@
 # Papi-web - ChangeLog
 
 ## Version 2.6 - 2025
+- Déplacement des utilitaires de ``bin/`` vers ``tools/``
 - Ajout des exports PGN
+
+## Version 2.5.4 - 12 avril 2025
+- Correction d'un bug de filtrage des clubs et fédérations sur l'onglet Joueur·euses
 
 ## Version 2.5.3 - 11 avril 2025
 - Récupération de la configuration de l'application à partir d'une version antérieure
