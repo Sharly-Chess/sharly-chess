@@ -3,6 +3,7 @@
 # Papi-web - ChangeLog
 
 ## Version 2.6 - 2025
+- Déplacement des utilitaires de ``bin/`` vers ``tools/``
 - Ajout des exports PGN
 
 ## Version 2.5.4 - 12 avril 2025

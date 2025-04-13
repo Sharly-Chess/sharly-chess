@@ -19,7 +19,7 @@ class BbpPairings:
     def is_installed(self) -> bool:
         return self.executable_path.exists()
 
-    bbp_pairings_dir: Path = BASE_DIR / 'bin' / 'bbpPairings'
+    bbp_pairings_dir: Path = BASE_DIR / 'tools' / 'bbpPairings'
 
     @property
     def executable_dir(self) -> Path:

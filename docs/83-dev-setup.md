@@ -61,7 +61,7 @@ L'archive ZIP est créée dans le répertoire `/export` et un environnement de t
 python scripts/bbp_pairings/install_bbp_pairings.py
 ```
 
-Le script installe l'exécutable dans le répertoire `bin/bbpPairings/bbpPairings-vx.y.z`.
+Le script installe l'exécutable dans le répertoire `tools/bbpPairings/bbpPairings-vx.y.z`.
 
 ## Mise à jour des drapeaux des fédérations
 
