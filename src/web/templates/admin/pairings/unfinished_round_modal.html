@@ -22,6 +22,9 @@
                     <li>{{ _('%(count)d boards without result', count=admin_no_result_board_count) }}</li>
                 {% endif %}
             </ul>
+            {% if admin_tournament.is_safe_mode_enabled %}
+                <p>{{ _('With safe-mode On, only forfeits and byes definition will be available.') }}</p>
+            {% endif %}
         </div>
         <div class="modal-footer">
             <button
@@ -32,18 +35,18 @@
                 <i class="bi-x-circle-fill"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                {% if admin_round >= admin_tournament.rounds %}
-                    disabled
-                {% endif %}
-            >
-                <i class="bi-caret-right"></i>
-                {{ _('Continue') }}
-            </button>
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if admin_round >= admin_tournament.rounds %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-caret-right"></i>
+                    {{ _('Continue') }}
+                </button>
         </div>
     </div>
 </div>

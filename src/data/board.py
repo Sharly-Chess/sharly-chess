@@ -2,6 +2,7 @@ from functools import total_ordering
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from common import format_timestamp
 from utils.enum import Result, PlayerRatingType
 from data.player import Player
 
@@ -35,6 +36,10 @@ class Board:
         return self.result == Result.PAIRING_ALLOCATED_BYE
 
     @property
+    def no_result(self) -> bool:
+        return self.result == Result.NO_RESULT
+
+    @property
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
 
@@ -46,12 +51,11 @@ class Board:
     ) -> str:
         assert self.number is not None
         result = self.result.to_pgn if self.result and not pairings_usage else '*'
-        start_date = tournament.event.formatted_start_date.replace('-', '.')
         return (
             f'[Event "{self._format_pgn_string(tournament.full_name)}"]\n'
-            f'[Site "{self._format_pgn_string(tournament.location) or "?"}"]\n'
-            f'[Date "{start_date}"]\n'
-            f'[EventDate "{start_date}"]\n'
+            f'[Site "{self._format_pgn_string(tournament.location or "?")}"]\n'
+            f'[Date "{format_timestamp(tournament.start_timestamp, "%Y.%m.%d")}"]\n'
+            f'[EventDate "{format_timestamp(tournament.event.start, "%Y.%m.%d")}"]\n'
             f'[Round "{round_}.{self.number}"]\n'
             + self._player_to_pgn(self.white_player, True)
             + self._player_to_pgn(self.black_player, False)

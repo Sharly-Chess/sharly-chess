@@ -32,6 +32,12 @@ class BbpPairings:
     def generate_pairings(self, tournament: Tournament, round_: int):
         """Generate the pairings of a tournament's round"""
 
+        if not tournament.pairings_generation_allowed(round_):
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.uniq_id}].'
+            )
+
         trf_file_path = TMP_DIR / 'tournament.trfx'
         pairings_file_path = TMP_DIR / 'pairings.txt'
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:

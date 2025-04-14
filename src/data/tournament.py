@@ -36,7 +36,12 @@ from utils.enum import (
     TournamentRating,
     TrfType,
 )
-from database.access.papi.papi_database import PapiDatabase, PapiVariable, BYE_COLOR, UNPLAYED_COLOR
+from database.access.papi.papi_database import (
+    PapiDatabase,
+    PapiVariable,
+    BYE_COLOR,
+    UNPLAYED_COLOR,
+)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins.manager import plugin_manager
@@ -320,6 +325,11 @@ class Tournament:
         return bool(self.time_control_handicap_penalty_value)
 
     @property
+    def is_safe_mode_enabled(self) -> bool:
+        # TODO implement safe mode enabling / disabling
+        return True
+
+    @property
     def rounds(self) -> int:
         self.read_papi()
         return self._rounds
@@ -509,6 +519,33 @@ class Tournament:
                 return False
         return True
 
+    def pairings_level_1_operations_allowed(self, round_: int):
+        """Level 1 pairings operations can be executed:
+            - on the current round and rounds to come
+            - on the previous round while the current round is still playing
+            - on every round once the tournament is finished
+        Operations that should be included:
+            - changing board result
+            - changing bye player's byes
+            - permuting board color
+        """
+        return (
+            not self.is_safe_mode_enabled
+            or self.finished
+            or round_ == self.current_round
+            or (round_ >= self.current_round - 1 and self.playing)
+        )
+
+    def pairings_level_2_operations_allowed(self, round_: int):
+        """Level 2 pairings operations can only be executed on the current round.
+        Operations that should be included:
+            - Unpairing boards
+            - delete board result
+            - cancel a player's bye
+            - manual / automatic pairing
+        """
+        return not self.is_safe_mode_enabled or round_ == self.current_round
+
     def to_trf(
         self,
         trf_type: TrfType,
@@ -643,10 +680,7 @@ class Tournament:
                     ):
                         round_infos[round_]['pairings_found'] = True
                         paired_rounds.append(round_)
-                    if (
-                        pairing.result == Result.NO_RESULT
-                        and pairing.opponent_id is not None
-                    ):
+                    if pairing.result == Result.NO_RESULT:
                         round_infos[round_]['results_missing'] = True
                     if (
                         round_infos[round_]['pairings_found']

@@ -220,7 +220,7 @@ class PairingsAdminController(BaseEventAdminController):
                         ]
                     ),
                 }
-
+        round_ = web_context.admin_round
         template_context |= {
             'admin_event_tab': 'admin-event-pairings-tab',
             'admin_event': admin_event,
@@ -229,11 +229,26 @@ class PairingsAdminController(BaseEventAdminController):
             if admin_tournament
             else None,
             'tournament_options': web_context.get_tournament_options(),
-            'admin_round': web_context.admin_round,
+            'admin_round': round_,
             'admin_boards': web_context.admin_boards,
             'admin_filtered_boards': web_context.admin_filtered_boards,
             'admin_unpaired': web_context.admin_unpaired,
             'admin_forfeit_players': web_context.admin_forfeit_players,
+            'level_1_operations_allowed': admin_tournament
+            and (admin_tournament.pairings_level_1_operations_allowed(round_)),
+            'level_2_operations_allowed': admin_tournament
+            and (admin_tournament.pairings_level_2_operations_allowed(round_)),
+            'level_1_disabled_message': _(
+                'With safe-mode On, this operation is only available '
+                'on the current round, on the previous round '
+                'or at the end of the tournament.'
+            ),
+            'level_2_disabled_message': _(
+                'With safe-mode On, this operation is only '
+                'available on the current round.'
+            ),
+            'pairings_generation_allowed': admin_tournament
+            and (admin_tournament.pairings_generation_allowed(round_)),
             'board': web_context.admin_board,
             'extra_row_class': 'highlight highlight-warning'
             if trigger_event == 'highlight_board_with_warning'
@@ -337,7 +352,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round_: int,
         board_id: int,
-        result: int | None,
+        result: int,
         trigger_event: str | None = None,
         on_change_trigger_event: str | None = None,
     ) -> Template | ClientRedirect:
@@ -377,10 +392,18 @@ class PairingsAdminController(BaseEventAdminController):
         params: dict[str, Any] | None = None
         if (
             on_change_trigger_event
-            and board.result != Result.NO_RESULT
             and result != board.result
+            and (
+                (
+                    result != Result.NO_RESULT
+                    and not tournament.pairings_level_1_operations_allowed(round_)
+                )
+                or (
+                    result == Result.NO_RESULT
+                    and not tournament.pairings_level_2_operations_allowed(round_)
+                )
+            )
         ):
-            # If the result is changed, trigger the on_change_trigger_event and don't modify the board
             # This is used to highlight the board with a warning when using hotkeys
             trigger_event = on_change_trigger_event
             params = {
