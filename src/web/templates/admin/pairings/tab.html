@@ -155,6 +155,27 @@
 
 {% if admin_tournament %}
     <section class="pt-1 pb-1">
+        <div class="d-flex gap-2 justify-content-end mb-2">
+            {% with id='admin-events-show-details', name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
+                <div
+                    class="form-check form-switch d-inline-block align-items-center"
+                >
+                    <input
+                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-vals='{"{{ name }}": "{% if wo_results %}false{% else %}true{% endif %}"}'
+                        hx-include="[name='tournament_id'], [name='round']"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        class="form-check-input"
+                        type="checkbox"
+                        id="{{ id }}"
+                        {% if wo_results %}checked{% endif %}
+                    />
+                    <label for="{{ id }}" class="form-check-label">{{ _('Only show pairings with no results') }}</label>
+                </div>
+            {% endwith %}
+        </div>
+
         <div class="row">
             {% set has_unpaired = admin_unpaired|length > 0 or admin_forfeit_players|length > 0 %}
             {% if has_unpaired %}
@@ -202,7 +223,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for board in admin_boards %}
+                        {% for board in admin_filtered_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}
                                 {% include '/admin/pairings/pairing_row.html' %}
                             {% endwith %}

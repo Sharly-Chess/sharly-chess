@@ -24,6 +24,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import BaseController
 from web.messages import Message
+from web.session import SessionHandler
 
 
 class PairingsAdminWebContext(BaseEventAdminWebContext):
@@ -84,6 +85,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 self.admin_round
             )
 
+        if SessionHandler.get_session_admin_pairings_show_without_results(request):
+            self.admin_filtered_boards = [
+                b for b in self.admin_boards if b.result == Result.NO_RESULT
+            ]
+        else:
+            self.admin_filtered_boards = self.admin_boards
+
         self.admin_unpaired = []
         self.admin_forfeit_players = []
         for player in sorted(unpaired, key=lambda p: p.last_name):
@@ -130,8 +138,13 @@ class PairingsAdminController(BaseEventAdminController):
         trigger_event: str | None = None,
         params: dict[str, Any] | None = None,
         full_refresh: bool = False,
-        errors: dict[str, str] | None = None,
+        admin_pairings_show_without_results: bool | None = None,
     ) -> Template | ClientRedirect:
+        if admin_pairings_show_without_results is not None:
+            SessionHandler.set_session_admin_pairings_show_without_results(
+                request, admin_pairings_show_without_results
+            )
+
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -150,6 +163,12 @@ class PairingsAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
+
+        template_context |= {
+            'admin_pairings_show_without_results': SessionHandler.get_session_admin_pairings_show_without_results(
+                request
+            ),
+        }
 
         match modal:
             case None:
@@ -212,6 +231,7 @@ class PairingsAdminController(BaseEventAdminController):
             'tournament_options': web_context.get_tournament_options(),
             'admin_round': web_context.admin_round,
             'admin_boards': web_context.admin_boards,
+            'admin_filtered_boards': web_context.admin_filtered_boards,
             'admin_unpaired': web_context.admin_unpaired,
             'admin_forfeit_players': web_context.admin_forfeit_players,
             'board': web_context.admin_board,
@@ -254,12 +274,14 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         round: int | None,
+        admin_pairings_show_without_results: bool | None,
     ) -> Template | ClientRedirect:
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             round_=round,
+            admin_pairings_show_without_results=admin_pairings_show_without_results,
         )
 
     @get(
@@ -388,7 +410,7 @@ class PairingsAdminController(BaseEventAdminController):
             next_board_id = next(
                 (
                     b.board_id
-                    for b in web_context.admin_boards
+                    for b in web_context.admin_filtered_boards
                     if b.board_id is not None and b.board_id > board_id
                 ),
                 None,
