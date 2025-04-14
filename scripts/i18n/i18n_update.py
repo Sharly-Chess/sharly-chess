@@ -24,23 +24,20 @@ sys.path.extend(
     )
 )
 
-if (
-    True
-):  # to pass pre-commit tests (otherwise E402 Module level import not at top of file)
-    from common.i18n import (
-        DEFAULT_LOCALE,
-        locale_localized_name,
-        locale_flag_url,
-        translators,
-    )
-    from common.logger import (
-        print_interactive_error,
-        print_interactive_warning,
-        print_interactive_info,
-        print_interactive_success,
-        input_interactive,
-        print_interactive_input,
-    )
+from common.i18n import (  # Noqa: E402
+    DEFAULT_LOCALE,
+    locale_localized_name,
+    locale_flag_url,
+    translators,
+)
+from common.logger import (  # Noqa: E402
+    print_interactive_error,
+    print_interactive_warning,
+    print_interactive_info,
+    print_interactive_success,
+    input_interactive,
+    print_interactive_input,
+)
 
 
 def run_babel_command(
