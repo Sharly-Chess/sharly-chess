@@ -24,36 +24,41 @@
             </button>
         {% endif %}
 
-        {% if EXPERIMENTAL_FEATURES %}
-            {% with pairings_allowed=admin_tournament.pairings_generation_allowed(admin_round) %}
-            <div
-                {{ macros.tooltip_attributes(
-                    'info',
-                    _('Pairings disabled while check-in is open.')
-                    if admin_tournament.check_in_open
-                    else _('Pairings generation unavailable if previous rounds contains boards without results or unpaired players.')
-                    if not pairings_allowed
-                    else _('Pairings already generated.') if admin_board
-                    else _('Generate pairings for this round.'),
-                    'top',
-                ) }}
-            >
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {% if not pairings_allowed or admin_boards %}
-                        disabled
-                    {% endif %}
+        {% with pairings_allowed=admin_tournament.pairings_generation_allowed(admin_round) %}
+            {% if EXPERIMENTAL_FEATURES %}
+                <div
+                    {{ macros.tooltip_attributes(
+                        'info',
+                        _('Pairings disabled while check-in is open.')
+                        if admin_tournament.check_in_open
+                        else _('Pairings generation unavailable if previous rounds contains boards without results or unpaired players.')
+                        if not pairings_allowed
+                        else _('Pairings already generated.') if admin_board
+                        else _('Generate pairings for this round.'),
+                        'top',
+                    ) }}
                 >
-                    <i class="bi-shuffle pe-1"></i>
-                    {{ _('Pair') }}
-                </button>
-            </div>
-            {% endwith %}
-        {% endif %}
+                    <button
+                        class="btn btn-outline-primary text-nowrap"
+                        hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        preload
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {% if not pairings_allowed or admin_boards %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-shuffle pe-1"></i>
+                        {{ _('Pair') }}
+                    </button>
+                </div>
+            {% elif not admin_boards and pairings_allowed %}
+                <div class="text-warning text-center fst-italic lh-sm" style="width: 140px; font-size: 0.9rem;">
+                    {{ _('Please use Papi to generate pairings.') }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% if admin_boards %}
              <div {{ macros.tooltip_attributes('info', _('Unpair this round.'), 'top') }}>
                 <button
