@@ -390,3 +390,41 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
         transform: rotate(360deg);
     }
 }
+
+.message-debug {
+    border: 1px solid rgb(var(--bs-secondary-rgb));
+    background-color: rgb(var(--bs-secondary-rgb));
+    color: rgb(var(--bs-light-rgb));
+}
+
+.message-info {
+    border: 1px solid rgb(var(--bs-info-rgb));
+    background-color: rgb(var(--bs-info-rgb));
+    color: rgb(var(--bs-dark-rgb));
+}
+
+.message-success {
+    border: 1px solid rgb(var(--bs-success-rgb));
+    background-color: rgb(var(--bs-success-rgb));
+    color: rgb(var(--bs-light-rgb));
+}
+
+.message-warning {
+    border: 1px solid rgb(var(--bs-warning-rgb));
+    background-color: rgb(var(--bs-warning-rgb));
+    color: rgb(var(--bs-dark-rgb));
+}
+
+.message-error {
+    border: 1px solid rgb(var(--bs-danger-rgb));
+    background-color: rgb(var(--bs-danger-rgb));
+    color: rgb(var(--bs-light-rgb));
+}
+
+.message-info .btn-close, .message-warning .btn-close {
+    --bs-btn-close-white-filter: unset;
+}
+
+.alert .btn-close {
+    filter: var(--bs-btn-close-white-filter);
+}
