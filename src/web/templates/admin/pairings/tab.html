@@ -198,17 +198,15 @@
                 <table
                     id="pairings-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
-                    {% if level_1_operations_allowed %}
-                        hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}'] from:body, keydown[code=='Numpad{{ digit }}'] from:body{%if not loop.last %},{% endif %}{% endfor %}"
-                        hx-vals="js:{key: event.code, board_id: pairing_board_id || 0}"
-                        hx-target="body"
-                        hx-swap="outerHTML"
-                        hx-indicator="#please-wait"
-                        hx-sync="body:queue all"
-                        hx-on:highlight_board="highlight_board(event.detail.board_id, false)"
-                        hx-on:highlight_board_with_warning="highlight_board(event.detail.board_id, true)"
-                    {% endif %}
+                    hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}'] from:body, keydown[code=='Numpad{{ digit }}'] from:body{%if not loop.last %},{% endif %}{% endfor %}"
+                    hx-vals="js:{key: event.code, board_id: pairing_board_id || 0}"
+                    hx-target="body"
+                    hx-swap="outerHTML"
+                    hx-indicator="#please-wait"
+                    hx-sync="body:queue all"
+                    hx-on:highlight_board="highlight_board(event.detail.board_id, false)"
+                    hx-on:highlight_board_with_warning="highlight_board(event.detail.board_id, true)"
                 >
                     <thead
                         id="players-table-header"

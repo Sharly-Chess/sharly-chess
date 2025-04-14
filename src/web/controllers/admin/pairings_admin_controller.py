@@ -390,18 +390,14 @@ class PairingsAdminController(BaseEventAdminController):
             return BaseController.redirect_error(request, f'Invalid result [{result}].')
 
         params: dict[str, Any] | None = None
-        if (
-            on_change_trigger_event
-            and result != board.result
-            and (
-                (
-                    result != Result.NO_RESULT
-                    and not tournament.pairings_level_1_operations_allowed(round_)
-                )
-                or (
-                    result == Result.NO_RESULT
-                    and not tournament.pairings_level_2_operations_allowed(round_)
-                )
+        if on_change_trigger_event and (
+            (
+                result != Result.NO_RESULT
+                and not tournament.pairings_level_1_operations_allowed(round_)
+            )
+            or (
+                result == Result.NO_RESULT
+                and not tournament.pairings_level_2_operations_allowed(round_)
             )
         ):
             # This is used to highlight the board with a warning when using hotkeys
