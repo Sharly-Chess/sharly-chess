@@ -6,39 +6,49 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 
 ## Définition du statut des rondes
 
-| Ronde                                | Définition                                                                                                                                                                                                    |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Ronde en cours                       | La première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat (en général la dernière ronde appariée sauf dans le cas où des appariements sont défaits surt une ronde précédente). |
-| Dernière ronde publiée               | Notion inexistante aujourd'hui car nous n'avons pas encore la notion de brouillon.                                                                                                                            |
-| Ronde courante/affichée/sélectionnée | La ronde active sur l'interface web de l'onglet Appariements.                                                                                                                                                 |
+| Ronde                                | Définition                                                                                                                            |
+|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| Ronde en cours                       | La dernière ronde avec des appariements.                                                                                              |
+| Ronde précédente                     | La ronde qui précéde immédiatement la ronde en cours (N-1).                                                                           |
+| Rondes passées                       | Les rondes qui précédent la ronde précédente (N-2, N-3, ...).                                                                         |
+| Ronde suivante                       | La ronde qui suit immédiatement la ronde en cours (N+1).                                                                              |
+| Rondes futures                       | Les rondes qui suivent la ronde suivante (N+2, N+3, ...).                                                                             |
+| Dernière ronde publiée               | La dernière ronde publiée est la dernière ronde pour laquelle l'arbitre principal·e a passé le statut de « brouillon » à « publiée ». |
+
+> [!NOTE]
+>
+> > **Ronde en cours** : la définition jusque-là de la ronde en cours était : la première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat.
+> C'est exactement ce qui est implémenté par ``Tournament.current_round()``.
+> Avec cette définition, la ronde en cours changeait lors des appariements sont défaits sur une ronde précédente, ce qui était complètement contre-intuitif.
+>
+> **Dernière ronde publiée** : Cette notion n'existe pas encore et sera implémentée lorsque le stockage Access sera abandonné.
+> Dans la version actuelle, toutes les rondes avec appariements sont considérées comme publiées (le statut de brouillon n'existe pas).
+>
+> Les notions du tableau ci-dessous sont relatives au tournoi. la notion de ronde affichée (ou sélectionnée, ou courante) est relative à l'interface web, c'est la ronde active l'onglet Appariements.
 
 ## Légende
 
-### Respect des règlements de la FIDE
+|       Icône        | Respect des règlements de la FIDE |
+|:------------------:|-----------------------------------|
+|   :white_circle:   | _Action non pertinente_           |
+|  :no_entry_sign:   | Action non autorisée par la FIDE  |
+| :white_check_mark: | Action autorisée par la FIDE      |
 
-| Action autorisée FIDE | Explication                      |
-|:---------------------:|----------------------------------|
-|    :no_entry_sign:    | Action non autorisée par la FIDE |
-|         :ok:          | Action autorisée par la FIDE     |
+### Messages d'alerte aux arbitres
 
-### Statut des rondes
+|      Icône      | Messages d'alerte aux arbitres                                                                      |
+|:---------------:|-----------------------------------------------------------------------------------------------------|
+| :white_circle:  | _Action non proposée_                                                                               |
+|      :ok:       | Action sans message d'alerte                                                                        |
+| :grey_question: | Modal : L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
+|  :exclamation:  | Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
 
-| Ronde                 | Explication                                                                                                                                                                                                  |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Passée                | En cours – 2, en cours - 3, ...                                                                                                                                                                              |
-| Précédente            | En cours - 1                                                                                                                                                                                                 |
-| En cours              | La première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat (en général la dernière ronde appariée sauf dans le cas où des appariements sont défaits surt uen ronde précédente) |
-| Première non appariée | En cours + 1                                                                                                                                                                                                 |
-| Future                | En cours + 2, en cours + 3, ...                                                                                                                                                                              |
+### Enregistrement des actions non standard
 
-### Messages d'alerte aux arbitres et enregistrement des actions non standard
-
-|      Modal      | Explication                                                                                 | Enregistrement<br/>(si confirmation) |
-|:---------------:|---------------------------------------------------------------------------------------------|:------------------------------------:|
-|        -        | Aucun modal                                                                                 |            :white_circle:            |
-| :grey_question: | L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |            :orange_book:             |
-|   :question:    | L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |            :closed_book:             |
-|       :x:       | L'action que vous souhaitez réaliser n’est pas est impossible                               |            :white_circle:            |
+|           Icône            | Enregistrement<br/>(si confirmation du modal par l'utilisateur)                             |
+|:--------------------------:|---------------------------------------------------------------------------------------------|
+|       :white_circle:       | Aucun modal                                                                                 |
+| :one:, :two:, :three:, ... | Enregistrement dans la base de données                                                      |
 
 ## Modification des Tournois
 
@@ -54,16 +64,16 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 >
 > Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2
 
-| Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Recalcul<br/>>numéros<br/>appariement |      Modification<br/>classement      |
-|-------------------------------------------------|------------------------|:--------------:|:--------------:|:-------------------------------------:|:-------------------------------------:|
-| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :ok:      | :white_circle: |                ronde 1                |                                       |
-| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 2                |                ronde 1                |
-| Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 3                |                ronde 3                |
-| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 3                |                ronde 2                |
-| Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 4                |                ronde 4                |
-| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 4                |                                       |
-| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                  non                  |  ronde N+1 ou N+2<br/>>selon les cas  |
-| N'importe quand                                 | Autres                 |      :ok:      | :white_circle: |                                       |            Sans influence             |
+| Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Recalcul<br/>>numéros<br/>appariement |    Modification<br/>classement     |
+|-------------------------------------------------|------------------------|:--------------:|:--------------:|:-------------------------------------:|:----------------------------------:|
+| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :white_check_mark:      | :white_circle: |                ronde 1                |                                    |
+| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 2                |              ronde 1               |
+| Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 3                |              ronde 3               |
+| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 3                |              ronde 2               |
+| Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 4                |              ronde 4               |
+| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 4                |                                    |
+| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                  non                  | ronde N+1 ou N+2<br/>selon les cas |
+| N'importe quand                                 | Autres                 |      :white_check_mark:      | :white_circle: |                                       |           Sans influence           |
 
 > [!NOTE]
 >
@@ -126,13 +136,13 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 | ~~Future~~                | ~~Modification d’un résultat~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
 | Future                    | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
 
-| Action / Ronde                 |                    Passée                     |                  Précédente                   |                   En cours                   |        Première<br/>non<br/>appariée         |                    Future                     |
-|--------------------------------|:---------------------------------------------:|:---------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
-| Appariement total              | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle: |      :ok: :white_circle: :white_circle:      | :no_entry_sign: :white_circle: :white_circle: |
-| Appariement complémentaire     | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle:  |      :ok: :white_circle: :white_circle:      | :white_circle: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |
-| Appariement manuel             | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle:  |      :ok: :grey_question: :orange_book:      |       :ok: :warning: :closed_book:       | :no_entry_sign: :white_circle: :white_circle: |
-| Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |
-| Désappariement manuel          |    :no_entry_sign: :warning: :closed_book:    |       :ok: :warning: :closed_book:        |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Permutation                    |  :no_entry_sign: :warning: :closed_book:  |       :ok: :warning: :closed_book:        |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Modification d’un résultat     |  :no_entry_sign: :warning: :closed_book:  |      :ok: :grey_question: :orange_book:       |      :ok: :white_circle: :white_circle:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Modification des byes/forfaits |  :no_entry_sign: :warning: :closed_book:  |      :ok: :grey_question: :orange_book:       |      :ok: :white_circle: :white_circle:      |      :ok: :white_circle: :white_circle:      |      :ok: :white_circle: :white_circle:       |
+| Action / Ronde                 |                    Passée                     |                    Précédente                    |                     En cours                     |        Première<br/>non<br/>appariée         |                    Future                     |
+|--------------------------------|:---------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
+| Appariement total              | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:   |    :white_check_mark: :ok: :white_circle:    | :no_entry_sign: :white_circle: :white_circle: |
+| Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :orange_book: |   :no_entry_sign: :warning: :closed_book:    | :no_entry_sign: :white_circle: :white_circle: |
+| Appariement manuel             |    :no_entry_sign: :warning: :closed_book:    | :white_check_mark: :white_circle: :white_circle: | :white_check_mark: :grey_question: :orange_book: |   :no_entry_sign: :warning: :closed_book:    | :no_entry_sign: :white_circle: :white_circle: |
+| Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :orange_book: | :white_circle: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |
+| Désappariement manuel          |    :no_entry_sign: :warning: :closed_book:    |    :white_check_mark: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
+| Permutation                    |    :no_entry_sign: :warning: :closed_book:    |    :white_check_mark: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
+| Modification d’un résultat     |    :no_entry_sign: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: |      :white_check_mark: :ok: :white_circle:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
+| Modification des byes/forfaits |    :no_entry_sign: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: |      :white_check_mark: :ok: :white_circle:      |    :white_check_mark: :ok: :white_circle:    |    :white_check_mark: :ok: :white_circle:     |
