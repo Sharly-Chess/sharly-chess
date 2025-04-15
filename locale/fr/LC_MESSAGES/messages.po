@@ -110,14 +110,26 @@ msgstr "- Voir les fichiers sur filebin.net : {bin_url}"
 msgid "/move"
 msgstr "/cp"
 
+msgid "0: No result"
+msgstr "0 : Pas de résultat"
+
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
+
+msgid "1: White wins"
+msgstr "1 : Victoire des Blancs"
 
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
 msgid "20+"
 msgstr "20+"
+
+msgid "2: Black wins"
+msgstr "2 : Victoire des Noirs"
+
+msgid "3: Draw"
+msgstr "3 : Partie nulle"
 
 msgid "50+"
 msgstr "50+"
@@ -149,12 +161,6 @@ msgstr "Une fenêtre va s'ouvrir pour envoyer un mél au projet Papi-web ; si la
 
 msgid "Absent"
 msgstr "Absent·e"
-
-msgid "Absent for rest of the tournament"
-msgstr "Absent pour le reste du tournoi"
-
-msgid "Absent for this round"
-msgstr "Absent pour cette ronde"
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
@@ -455,6 +461,13 @@ msgstr "Par défaut : %(minutes)d (minutes)"
 msgid "By player"
 msgstr "Par ordre alpha."
 
+#, python-format
+msgid "Bye limit (%(limit)d) is already reached for this tournament."
+msgstr "La limite de points jokers (%(limit)d) est déjà atteinte pour ce tournoi."
+
+msgid "Bye-players"
+msgstr "Forfaits et points jokers"
+
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
@@ -476,8 +489,11 @@ msgstr "CM"
 msgid "Cancel"
 msgstr "Annuler"
 
-msgid "Cancel absence for this round"
-msgstr "Annuler l'absence pour cette ronde"
+msgid "Cancel half-point bye"
+msgstr "Annuler le demi-point joker"
+
+msgid "Cancel zero-point bye"
+msgstr "Annuler l'absence"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -592,9 +608,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
-
-msgid "Click to pair"
-msgstr "Cliquer pour apparier"
 
 msgid "Clone"
 msgstr "Dupliquer"
@@ -1615,17 +1628,11 @@ msgstr "Fore Bu."
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
-msgid "Forfeit"
-msgstr "Forfait"
-
 msgid "Forfeit gain"
 msgstr "Gain par forfait"
 
 msgid "Forfeit loss"
 msgstr "Perte par forfait"
-
-msgid "Forfeits and byes"
-msgstr "Forfaits et points jokers"
 
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
@@ -1702,6 +1709,9 @@ msgstr "Demi-point joker (bye)"
 msgid "Hello,"
 msgstr "Bonjour,"
 
+msgid "Hide pairings with results"
+msgstr "Masquer les échiquiers avec résultats"
+
 msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
 
@@ -1757,6 +1767,10 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+#, python-format
+msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
+msgstr "Impossible de définir un point joker dans les %(rounds)d dernières rondes du tournoi"
+
 msgid "Impossible to set a round number lower than current round #{round}."
 msgstr "Impossible d'attribuer un nombre de rondes inférieur à la ronde actuelle (ronde n°{round})."
 
@@ -1778,6 +1792,12 @@ msgstr "Temps initial (optionel, en secondes) :"
 
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisation d'une session vers [{url}]..."
+
+msgid "Input"
+msgstr "Saisie"
+
+msgid "Input mode is only available for the current round."
+msgstr "Le mode Saisie n'est disponible que pour la ronde en cours."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
@@ -1883,6 +1903,9 @@ msgstr "Ka."
 
 msgid "Kashdan"
 msgstr "Kashdan"
+
+msgid "Keyboard shortcuts"
+msgstr "Raccourcis clavier"
 
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
@@ -2472,6 +2495,9 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
+msgid "Options"
+msgstr "Options"
+
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
 
@@ -2542,8 +2568,8 @@ msgstr "Appariements désactivés lorsque le pointage est ouvert."
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
 
-msgid "Pairings generation unavailable if previous rounds contains boards without results or unpaired players."
-msgstr "La génération d'appariements n'est pas disponible si les rondes précédentes contiennent des échiquiers sans résultat ou des joueur·euses non apparié·es."
+msgid "Pairings generation unavailable for this round."
+msgstr "La génération d'appariements n'est pas disponible pour cette ronde."
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
@@ -2777,6 +2803,9 @@ msgstr "Veuillez entrer le nom du tournoi."
 
 msgid "Please enter valid date and time."
 msgstr "Veuillez entrer une date et une heure valides."
+
+msgid "Please use Papi to generate pairings."
+msgstr "Utiliser Papi pour générer les appariements."
 
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
@@ -3210,6 +3239,12 @@ msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
+
+msgid "Shortcuts check if the inputted result and the result of the selected row are a match."
+msgstr "Les raccourcis vérifient si le résultat saisi et le résultat du rang séléctionné sont identiques."
+
+msgid "Shortcuts set the result of the selected row to the inputted result."
+msgstr "Les raccourcis mettent à jour le résultat du rang séléctionné."
 
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
@@ -4048,12 +4083,12 @@ msgstr "Désapparier"
 msgid "Unpair all boards"
 msgstr "Désapparier tous les échiquiers"
 
+msgid "Unpair all the boards of this round."
+msgstr "Désapparier tous les échiquiers de cette ronde."
+
 #, python-format
 msgid "Unpair round %(round_number)s"
 msgstr "Désapparier la ronde %(round_number)s"
-
-msgid "Unpair this round."
-msgstr "Désapparier cette ronde."
 
 msgid "Unpaired"
 msgstr "Non-apparié·es"
@@ -4075,6 +4110,9 @@ msgstr "Non apparié·es : affiché·es"
 
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
+
+msgid "Up/Down: Navigation"
+msgstr "Haut/Bas : Navigation"
 
 msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
@@ -4113,6 +4151,9 @@ msgstr "Ne pas utiliser de chronomètre"
 
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
+
+msgid "Validation"
+msgstr "Validation"
 
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr "La version [{version}] est déjà installée dans le répertoire [{dir}], veuillez supprimer ce répertoire avant d'installer."
@@ -4218,6 +4259,9 @@ msgstr "Blancs"
 msgid "Wins"
 msgstr "Victoires"
 
+msgid "Withdraw from tournament"
+msgstr "Retirer du tournoi"
+
 msgid "Woman Candidate Master"
 msgstr "Candidat Maître Femme"
 
@@ -4271,6 +4315,9 @@ msgstr "Votre choix, par défaut [{default}] :"
 
 msgid "Your choice: "
 msgstr "Votre choix : "
+
+msgid "Zero-point bye"
+msgstr "Absent"
 
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr "[Papi-web {version}] Demande d'intégration de fichiers de personnalisation"

@@ -71,7 +71,7 @@
                             {% set zero_point_bye = false %}
                             {% set half_point_bye = false %}
                             {% set full_point_bye = false %}
-                            {% if pairing.forfeit %}
+                            {% if pairing.zero_point_bye %}
                                 {% set text=_('Round skipped') %}
                                 {% set zero_point_bye = true %}
                             {% elif pairing.not_paired %}

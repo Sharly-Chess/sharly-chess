@@ -15,7 +15,7 @@
     </thead>
     <tbody>
         {% for player in unpaired %}
-            {% with pairing=player.pairings[admin_round], class="forfeit" if admin_round and pairing and (pairing.forfeit or pairing.half_point_bye or pairing.full_point_bye) else '' %}
+            {% with pairing=player.pairings[admin_round], class="forfeit" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
                 <tr class="player-row" data-player-id="{{ player.id }}">
                     <td class="{{ class }}">
                         <div class="d-flex align-items-center gap-2">
@@ -34,14 +34,14 @@
                     <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
                     <td class="{{ class }} text-center">
                         <div
-                            {% if pairing and pairing.forfeit %}
-                               {{ macros.tooltip_attributes('info', _('Forfeit'), 'right') }}
+                            {% if pairing and pairing.zero_point_bye %}
+                               {{ macros.tooltip_attributes('info', _('Zero-point bye'), 'right') }}
                             {% elif pairing and pairing.half_point_bye %}
                                {{ macros.tooltip_attributes('info', _('Half-point bye'), 'right') }}
                             {% elif pairing and pairing.full_point_bye %}
                                {{ macros.tooltip_attributes('info', _('Full-point bye (deprecated)'), 'right') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('info', _('Click to pair'), 'right') }}
+                                {{ macros.tooltip_attributes('info', _('Pair'), 'right') }}
                             {% endif %}
                         >
                             <button
@@ -55,8 +55,8 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-wrapper"
                             >
-                                {% if pairing and pairing.forfeit %}
-                                    {{ "f" }}
+                                {% if pairing and pairing.zero_point_bye %}
+                                    <i class="bi bi-0-circle-fill"></i>
                                 {% elif pairing and pairing.half_point_bye %}
                                     <i class="bi bi-circle-half"></i>
                                 {% elif pairing and pairing.full_point_bye %}

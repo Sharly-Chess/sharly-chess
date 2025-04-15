@@ -15,7 +15,7 @@ class Pairing:
     result: Result = Result.NO_RESULT
 
     @property
-    def forfeit(self) -> bool:
+    def zero_point_bye(self) -> bool:
         return self.result == Result.ZERO_POINT_BYE
 
     @property

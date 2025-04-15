@@ -410,7 +410,7 @@ class Player(TournamentPlayer):
             return False
         pairing: Pairing = self.pairings[self.tournament.current_round + 1]
         return (
-            not pairing.forfeit
+            not pairing.zero_point_bye
             and not pairing.half_point_bye
             and not pairing.full_point_bye
         )
@@ -537,7 +537,7 @@ class Player(TournamentPlayer):
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
-            f'{self.ratings.get(tournament_rating, '  -  ')}'
+            f'{self.ratings.get(tournament_rating, "  -  ")}'
             for tournament_rating in TournamentRating
         )
         return (

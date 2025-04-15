@@ -40,7 +40,7 @@
 {% macro player_record(player) %}
     <!-- player_record() -->
     {% for pairing in player.pairings.values() %}
-        {% if pairing.forfeit %}
+        {% if pairing.zero_point_bye %}
             {% set _text='f' %}
             {% set _class='text-secondary' %}
         {% elif pairing.not_paired %}
