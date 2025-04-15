@@ -1,5 +1,6 @@
 from typing import Annotated, Any
 
+from common import experimental_features_enabled
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -15,7 +16,6 @@ from litestar.status_codes import HTTP_200_OK
 from common.i18n import (
     _,
     DEFAULT_LOCALE,
-    EXPERIMENTAL_FEATURES,
     locale_localized_name,
     trusted_locales,
     untrusted_locales,
@@ -275,7 +275,7 @@ class IndexAdminController(BaseAdminController):
                 } | {
                     locale: locale_localized_name(locale) for locale in trusted_locales
                 }
-                if EXPERIMENTAL_FEATURES:
+                if experimental_features_enabled():
                     locale_options |= {
                         locale: locale_localized_name(locale)
                         for locale in untrusted_locales

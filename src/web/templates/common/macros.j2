@@ -189,3 +189,15 @@
         <td class="{{ column.classes }}">{{ column.value(value) }}</td>
     {% endfor %}
 {% endmacro %}
+
+{% macro experimental_warning(
+    show
+) %}
+    {% if show %}
+        <i
+                class="fixed-bottom text-danger bi bi-exclamation-triangle-fill"
+                style="font-size: 60px; left: 20px; right: auto;"
+                {{ tooltip_attributes('warning', _('Warning: experimental features are enabled!'), 'right') }}
+        ></i>
+    {% endif %}
+{% endmacro %}

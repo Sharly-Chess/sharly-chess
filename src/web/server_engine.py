@@ -12,7 +12,7 @@ from litestar.contrib.htmx.request import HTMXRequest
 from litestar.logging import LoggingConfig
 
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
-from common import DEVEL_ENV, EXPERIMENTAL_FEATURES, REQUEST_TIMEOUT
+from common import DEVEL_ENV, experimental_features_enabled, REQUEST_TIMEOUT
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
@@ -80,7 +80,7 @@ class ServerEngine(Engine):
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
         bbp_pairings = BbpPairingsInstaller()
-        if EXPERIMENTAL_FEATURES and not bbp_pairings.is_installed:
+        if experimental_features_enabled() and not bbp_pairings.is_installed:
             if DEVEL_ENV:
                 print_interactive_info(
                     _(

@@ -4037,6 +4037,9 @@ msgstr "WIM"
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""
 
+msgid "Warning: experimental features are enabled!"
+msgstr ""
+
 msgid "Warning: the deletion of a player is permanent!"
 msgstr ""
 

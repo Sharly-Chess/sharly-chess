@@ -17,7 +17,7 @@ from litestar.params import Body
 from litestar.response import Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.i18n import (
     set_locale,
     locale_localized_name,
@@ -359,7 +359,7 @@ class WebContext:
             locale_options[locale] = name
         return {
             'DEVEL_ENV': DEVEL_ENV,
-            'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
+            'EXPERIMENTAL_FEATURES': experimental_features_enabled(),
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,
