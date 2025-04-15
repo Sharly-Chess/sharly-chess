@@ -61,26 +61,24 @@
                     <i class="bi-caret-right"></i>
                 </button>
             </span>
-            {% if tournament_options|length > 1 %}
-                <select
-                    name="tournament_id"
-                    class="form-select"
-                    style="width: fit-content;"
-                    {% if tournament_options|length <= 1 %}
-                        disabled
-                    {% endif %}
-                    hx-trigger="change"
-                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    {% for value, text in tournament_options.items() %}
-                        <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
-                            {{ text }}
-                        </option>
-                    {% endfor %}
-                </select>
-            {% endif %}
+            <select
+                name="tournament_id"
+                class="form-select {{ 'd-none' if tournament_options|length <= 1 else '' }}"
+                style="width: fit-content;"
+                {% if tournament_options|length <= 1 %}
+                    disabled
+                {% endif %}
+                hx-trigger="change"
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% for value, text in tournament_options.items() %}
+                    <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                        {{ text }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
     {% endif %}
 </div>
@@ -301,69 +299,81 @@
             </div>
         </div>
     </section>
-
-    <script>
-        var pairing_board_id = null;
-
-        function scrollToTargetAdjusted(element) {
-            var headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
-            var tableHeaderHeight = $('#players-table-header').height();
-            var scrollTop = $(window).scrollTop();
-            var rect = element.getBoundingClientRect();
-            const elementTop = rect.top + scrollTop;
-            const elementBottom = rect.bottom + scrollTop;
-            var viewportTop = scrollTop + headerHeight + tableHeaderHeight;
-            var viewportBottom = scrollTop + $(window).height();
-
-            // Test if the element is fully visible on the screen
-            if (elementTop < viewportTop) {
-                window.scrollTo({
-                    top: elementTop - headerHeight - tableHeaderHeight,
-                    behavior: "smooth"
-                });
-            } else if (elementBottom > (viewportBottom)) {
-               element.scrollIntoView({ behavior: "smooth", block: "end" });
-            }
-        }
-
-        function highlight_board(board_id, with_warning) {
-            $("tr.highlight").removeClass("highlight");
-            $("tr.highlight-warning").removeClass("highlight-warning");
-            if (board_id) {
-                $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
-                pairing_board_id = board_id;
-                scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
-            } else {
-                pairing_board_id = null;
-            }
-        }
-
-        $(document).on("click", "tr.pairing-row > td", function(e) {
-            var $this = $(this);
-            highlight_board($this.parent().data("board-id"), false);
-        });
-
-        // Handle up/down arrow keys
-        $(document).on("keydown", function(e) {
-            if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
-                e.preventDefault();
-
-                var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
-                if (!$row.length) {
-                    return;
-                }
-                var $next_row = $row.next();
-                var $prev_row = $row.prev();
-
-                // Highlight the next/previous row
-                if (e.key === "ArrowUp" && $prev_row.length) {
-                    highlight_board($prev_row.data("board-id"), false);
-                } else if (e.key === "ArrowDown" && $next_row.length) {
-                    highlight_board($next_row.data("board-id"), false);
-                }
-            }
-        });
-    </script>
 {% else %}
     {{ _('No pairings.') }}
 {% endif%}
+
+<script>
+    var pairing_board_id = null;
+
+    function scrollToTargetAdjusted(element) {
+        var headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
+        var tableHeaderHeight = $('#players-table-header').height();
+        var scrollTop = $(window).scrollTop();
+        var rect = element.getBoundingClientRect();
+        const elementTop = rect.top + scrollTop;
+        const elementBottom = rect.bottom + scrollTop;
+        var viewportTop = scrollTop + headerHeight + tableHeaderHeight;
+        var viewportBottom = scrollTop + $(window).height();
+
+        // Test if the element is fully visible on the screen
+        if (elementTop < viewportTop) {
+            window.scrollTo({
+                top: elementTop - headerHeight - tableHeaderHeight,
+                behavior: "smooth"
+            });
+        } else if (elementBottom > (viewportBottom)) {
+            element.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+    }
+
+    function highlight_board(board_id, with_warning) {
+        $("tr.highlight").removeClass("highlight");
+        $("tr.highlight-warning").removeClass("highlight-warning");
+        if (board_id) {
+            $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
+            pairing_board_id = board_id;
+            scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
+        } else {
+            pairing_board_id = null;
+        }
+    }
+
+    function rowClickHandler(e) {
+        var $this = $(this);
+        highlight_board($this.parent().data("board-id"), false);
+    };
+
+   function keydownHandler(e) {
+        if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
+            e.preventDefault();
+
+            var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
+            if (!$row.length) {
+                return;
+            }
+            var $next_row = $row.next();
+            var $prev_row = $row.prev();
+
+            // Highlight the next/previous row
+            if (e.key === "ArrowUp" && $prev_row.length) {
+                highlight_board($prev_row.data("board-id"), false);
+            } else if (e.key === "ArrowDown" && $next_row.length) {
+                highlight_board($next_row.data("board-id"), false);
+            }
+        }
+    };
+
+    function swapHandler(e) {
+        if (e.detail.elt.tagName === "BODY") {
+            $("tr.pairing-row > td").off("click", rowClickHandler);
+            $(document).off("keydown", keydownHandler);
+            $(document).off("htmx:afterSwap", swapHandler);
+        }
+    }
+
+    $("tr.pairing-row > td").on("click", rowClickHandler);
+    $(document).on("keydown", keydownHandler);
+    $(document).on('htmx:afterSwap', swapHandler);
+
+</script>
