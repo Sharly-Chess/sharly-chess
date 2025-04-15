@@ -95,28 +95,6 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 ### Description des actions
 
-| En cours                  | Désappariement complet         |      :ok:       | :grey_question: | :orange_book:  | Action dangereuse qui peut faire perdre des données => super warning |
-| En cours                  | Désappariement manuel          |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
-| En cours                  | Permutation                    |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
-| En cours                  | Modification d’un résultat     |      :ok:       | :white_circle:  | :white_circle: |                                                                      |
-| En cours                  | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
-| Première non appariée     | Appariement total              |      :ok:       | :white_circle:  | :white_circle: |                                                                      |
-| ~~Première non appariée~~ | ~~Appariement complémentaire~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| Première non appariée     | Appariement manuel             |      :ok:       |   :question:    | :closed_book:  |                                                                      |
-| ~~Première non appariée~~ | ~~Désappariement complet~~     | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| ~~Première non appariée~~ | ~~Désappariement manuel~~      | :white_circle:  |                 | :white_circle: | Aucun appariement.                                                   |
-| ~~Première non appariée~~ | ~~Permutation~~                | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| ~~Première non appariée~~ | ~~Modification d’un résultat~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| Première non appariée     | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
-| Future                    | Appariement total              | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| Future                    | Appariement complémentaire     | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| Future                    | Appariement manuel             | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| ~~Future~~                | ~~Désappariement complet~~     | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| ~~Future~~                | ~~Désappariement manuel~~      | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| ~~Future~~                | ~~Permutation~~                | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| ~~Future~~                | ~~Modification d’un résultat~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
-| Future                    | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
-
 | Action / Ronde                 |                    Passée                     |                    Précédente                    |                     En cours                     |        Première<br/>non<br/>appariée         |                    Future                     |
 |--------------------------------|:---------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
 | Appariement total              | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:   |    :white_check_mark: :ok: :white_circle:    | :no_entry_sign: :white_circle: :white_circle: |
