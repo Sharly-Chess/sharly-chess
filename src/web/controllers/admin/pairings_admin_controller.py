@@ -92,7 +92,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_filtered_boards = self.admin_boards
 
         self.admin_unpaired = []
-        self.admin_forfeit_players = []
+        self.admin_bye_players = []
         for player in sorted(unpaired, key=lambda p: p.last_name):
             if player.pairings[self.admin_round] and player.pairings[
                 self.admin_round
@@ -101,7 +101,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 Result.HALF_POINT_BYE,
                 Result.FULL_POINT_BYE,
             ):
-                self.admin_forfeit_players.append(player)
+                self.admin_bye_players.append(player)
             else:
                 self.admin_unpaired.append(player)
 
@@ -232,7 +232,7 @@ class PairingsAdminController(BaseEventAdminController):
             'admin_boards': web_context.admin_boards,
             'admin_filtered_boards': web_context.admin_filtered_boards,
             'admin_unpaired': web_context.admin_unpaired,
-            'admin_forfeit_players': web_context.admin_forfeit_players,
+            'admin_bye_players': web_context.admin_bye_players,
             'pairings_generation_allowed': admin_tournament
             and (admin_tournament.pairings_generation_allowed(round_)),
             'board': web_context.admin_board,

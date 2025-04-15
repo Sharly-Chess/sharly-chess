@@ -19,15 +19,17 @@
                 <tr class="player-row" data-player-id="{{ player.id }}">
                     <td class="{{ class }}">
                         <div class="d-flex align-items-center gap-2">
-                        <i
-                            {% if player.check_in %}
-                                class="bi-check-circle-fill text-success"
-                                {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
-                            {% else %}
-                                class="bi-circle-fill text-warning"
-                                {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
-                            {% endif %}
-                        ></i>
+                        {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open %}
+                            <i
+                                {% if player.check_in %}
+                                    class="bi-check-circle-fill text-success"
+                                    {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
+                                {% else %}
+                                    class="bi-circle-fill text-warning"
+                                    {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
+                                {% endif %}
+                            ></i>
+                        {% endif %}
                             <span>{{ player.last_name }} {{ player.first_name }}</span>
                         </div>
                     </td>

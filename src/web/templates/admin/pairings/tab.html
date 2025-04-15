@@ -172,7 +172,7 @@
         </div>
 
         <div class="row">
-            {% set has_unpaired = admin_unpaired|length > 0 or admin_forfeit_players|length > 0 %}
+            {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
             {% if has_unpaired %}
                 <div class="col-12 col-md-3 mb-3">
                     {% if admin_unpaired|length > 0 %}
@@ -181,8 +181,8 @@
                         {% endwith %}
                     {% endif %}
 
-                    {% if admin_forfeit_players|length > 0 %}
-                    {% with title=_('bye-players'), unpaired=admin_forfeit_players %}
+                    {% if admin_bye_players|length > 0 %}
+                    {% with title=_('bye-players'), unpaired=admin_bye_players %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}
