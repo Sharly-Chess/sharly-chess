@@ -2,9 +2,13 @@
 
 # Papi-web - Actions
 
-Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'onglets Joueur·euses et Appariements.
+Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'onglets Tournois, Joueur·euses et Appariements.
 
-## Onglet Joueur·euses
+## Modification des Tournois
+
+A compléter (certaines modifications des tournois ne devraient pas être autorisées après le démarrage d'un tournoi).
+
+## Modification des Joueur·euses
 
 > [!NOTE]
 >
@@ -14,23 +18,23 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 >
 > Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2
 
-| Moment                                          | Action                                  | Enregistrement | Remarque                                                                                      |
-|-------------------------------------------------|-----------------------------------------|:--------------:|-----------------------------------------------------------------------------------------------|
-| Avant publication appariements ronde 1          | Modification du Elo, titre FIDE ou nom  |                |                                                                                               |
-| Avant fin délai publication résultats ronde 1   | Modification du Elo, titre FIDE ou nom  | :orange_book:  | Numéro d’appariement recalculé ronde 2, classement ronde 1 modifié                            |
-| Après publication appariements ronde 2          | Modification du Elo, titre FIDE ou nom  | :orange_book:  | Numéro d’appariement recalculé ronde 3, classement ronde 3 modifié                            |
-| Avant fin délai publication résultats ronde 2   | Modification du Elo, titre FIDE ou nom  | :orange_book:  | Numéro d’appariement recalculé ronde 3, classement ronde 2 modifié                            |
-| Après publication appariements ronde 3          | Modification du Elo, titre FIDE ou nom  | :orange_book:  | Numéro d’appariement recalculé ronde 4, classement ronde 4 modifié                            |
-| Avant fin délai publication résultats ronde 3   | Modification du Elo, titre FIDE ou nom  | :orange_book:  | Numéro d’appariement recalculé ronde 4                                                        |
-| À partir de la publication appariements ronde 4 | Modification du Elo, titre FIDE ou nom  | :orange_book:  | Pas de changement du numéro d’appariement, classement ronde N+1 ou N+2 modifiés selon les cas |
-| N'importe quand                                 | Autres modifications                    | :orange_book:  |                                                                                               |
+| Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Remarque                                                                                      |
+|-------------------------------------------------|------------------------|:--------------:|:--------------:|-----------------------------------------------------------------------------------------------|
+| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :ok:      |                |                                                                                               |
+| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 2 , classement ronde 1 modifié                           |
+| Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 3, classement ronde 3 modifié                            |
+| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 3, classement ronde 2 modifié                            |
+| Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 4, classement ronde 4 modifié                            |
+| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 4                                                        |
+| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Pas de changement du numéro d’appariement, classement ronde N+1 ou N+2 modifiés selon les cas |
+| N'importe quand                                 | Autres                 |      :ok:      | :orange_book:  | Sans influence sur le classement                                                              |
 
 > [!NOTE]
 >
 > Sammy doit confirmer auprès de la DNA que le classement peut être modifié à n'importe quel moment car cela peut influer sur les départages.
 
 
-## Onglet Appariements
+## Modification des appariements et résultats
 
 > [!NOTE] (règlement FIDE)
 >
@@ -63,63 +67,63 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 
 |      Modal      | Enregistrement | Explication                                                                                 |
 |:---------------:|:--------------:|---------------------------------------------------------------------------------------------|
-|        -        |                | Aucun modal                                                                                 |
+|        -        | :white_circle: | Aucun modal                                                                                 |
 | :grey_question: | :orange_book:  | L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
 |   :question:    | :closed_book:  | L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
-|       :x:       |                | L'action que vous souhaitez réaliser n’est pas est impossible                               |
+|       :x:       | :white_circle: | L'action que vous souhaitez réaliser n’est pas est impossible                               |
 
 ### Description des actions
 
-| Ronde sélectionnée        | Action                         | Autorisée FIDE  |      Modal      | Enregistrement | Remarque                                                             |
+| Ronde                     | Action                         | Autorisée FIDE  |      Modal      | Enregistrement | Remarque                                                             |
 |---------------------------|--------------------------------|:---------------:|:---------------:|:--------------:|----------------------------------------------------------------------|
-| ~~Passée~~                | ~~Appariement total~~          |                 |                 |                | Aucun·e joueur·euse non apparié·e                                    |
-| ~~Passée~~                | ~~Appariement complémentaire~~ |                 |                 |                | Aucun·e joueur·euse non apparié·e                                    |
-| ~~Passée~~                | ~~Appariement manuel~~         |                 |                 |                | Aucun·e joueur·euse non apparié·e                                    |
-| Passée                    | Désappariement complet         | :no_entry_sign: |       :x:       |                |                                                                      |
-| Passée                    | Désappariement manuel          | :no_entry_sign: |       :x:       |                |                                                                      |
-| Passée                    | Permutation                    | :no_entry_sign: |       :x:       |                |                                                                      |
-| Passée                    | Modification d’un résultat     | :no_entry_sign: |       :x:       |                |                                                                      |
-| Passée                    | Modification des byes/forfaits | :no_entry_sign: |       :x:       |                |                                                                      |
-| Précédente                | Appariement total              | :no_entry_sign: |       :x:       |                |                                                                      |
-| Précédente                | Appariement complémentaire     | :no_entry_sign: |       :x:       |                |                                                                      |
+| ~~Passée~~                | ~~Appariement total~~          | :white_circle:  | :white_circle:  | :white_circle: | Aucun·e joueur·euse non apparié·e                                    |
+| ~~Passée~~                | ~~Appariement complémentaire~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun·e joueur·euse non apparié·e                                    |
+| ~~Passée~~                | ~~Appariement manuel~~         | :white_circle:  | :white_circle:  | :white_circle: | Aucun·e joueur·euse non apparié·e                                    |
+| Passée                    | Désappariement complet         | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Passée                    | Désappariement manuel          | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Passée                    | Permutation                    | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Passée                    | Modification d’un résultat     | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Passée                    | Modification des byes/forfaits | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Précédente                | Appariement total              | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Précédente                | Appariement complémentaire     | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
 | Précédente                | Appariement manuel             | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Précédente                | Désappariement complet         | :no_entry_sign: |       :x:       |                |                                                                      |
+| Précédente                | Désappariement complet         | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
 | Précédente                | Désappariement manuel          | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
 | Précédente                | Permutation                    | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
 | Précédente                | Modification d’un résultat     | :no_entry_sign: | :grey_question: | :orange_book:  |                                                                      |
 | Précédente                | Modification des byes/forfaits | :no_entry_sign: |   :question:    | :closed_book:  | Si autorisé par le règlement., vraiment un warning ?                 |
-| ~~En cours~~              | ~~Appariement total~~          |                 |                 |                |                                                                      |
-| En cours                  | Appariement complémentaire     |      :ok:       |        -        |                |                                                                      |
+| ~~En cours~~              | ~~Appariement total~~          | :white_circle:  | :white_circle:  | :white_circle: |                                                                      |
+| En cours                  | Appariement complémentaire     |      :ok:       | :white_circle:  | :white_circle: |                                                                      |
 | En cours                  | Appariement manuel             |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
 | En cours                  | Désappariement complet         |      :ok:       | :grey_question: | :orange_book:  | Action dangereuse qui peut faire perdre des données => super warning |
 | En cours                  | Désappariement manuel          |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
 | En cours                  | Permutation                    |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
-| En cours                  | Modification d’un résultat     |      :ok:       |        -        |                |                                                                      |
-| En cours                  | Modification des byes/forfaits |      :ok:       |        -        |                | Si autorisé par le règlement.                                        |
-| Première non appariée     | Appariement total              |      :ok:       |        -        |                |                                                                      |
-| ~~Première non appariée~~ | ~~Appariement complémentaire~~ |                 |                 |                | Aucun appariement.                                                   |
+| En cours                  | Modification d’un résultat     |      :ok:       | :white_circle:  | :white_circle: |                                                                      |
+| En cours                  | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
+| Première non appariée     | Appariement total              |      :ok:       | :white_circle:  | :white_circle: |                                                                      |
+| ~~Première non appariée~~ | ~~Appariement complémentaire~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
 | Première non appariée     | Appariement manuel             |      :ok:       |   :question:    | :closed_book:  |                                                                      |
-| ~~Première non appariée~~ | ~~Désappariement complet~~     |                 |                 |                | Aucun appariement.                                                   |
-| ~~Première non appariée~~ | ~~Désappariement manuel~~      |                 |                 |                | Aucun appariement.                                                   |
-| ~~Première non appariée~~ | ~~Permutation~~                |                 |                 |                | Aucun appariement.                                                   |
-| ~~Première non appariée~~ | ~~Modification d’un résultat~~ |                 |                 |                | Aucun appariement.                                                   |
-| Première non appariée     | Modification des byes/forfaits |      :ok:       |        -        |                | Si autorisé par le règlement.                                        |
-| Future                    | Appariement total              | :no_entry_sign: |       :x:       |                |                                                                      |
-| Future                    | Appariement complémentaire     | :no_entry_sign: |       :x:       |                |                                                                      |
-| Future                    | Appariement manuel             | :no_entry_sign: |       :x:       |                |                                                                      |
-| ~~Future~~                | ~~Désappariement complet~~     |                 |                 |                | Aucun appariement.                                                   |
-| ~~Future~~                | ~~Désappariement manuel~~      |                 |                 |                | Aucun appariement.                                                   |
-| ~~Future~~                | ~~Permutation~~                |                 |                 |                | Aucun appariement.                                                   |
-| ~~Future~~                | ~~Modification d’un résultat~~ |                 |                 |                | Aucun appariement.                                                   |
-| Future                    | Modification des byes/forfaits |      :ok:       |        -        |                | Si autorisé par le règlement.                                        |
+| ~~Première non appariée~~ | ~~Désappariement complet~~     | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| ~~Première non appariée~~ | ~~Désappariement manuel~~      | :white_circle:  |                 | :white_circle: | Aucun appariement.                                                   |
+| ~~Première non appariée~~ | ~~Permutation~~                | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| ~~Première non appariée~~ | ~~Modification d’un résultat~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| Première non appariée     | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
+| Future                    | Appariement total              | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Future                    | Appariement complémentaire     | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| Future                    | Appariement manuel             | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
+| ~~Future~~                | ~~Désappariement complet~~     | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| ~~Future~~                | ~~Désappariement manuel~~      | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| ~~Future~~                | ~~Permutation~~                | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| ~~Future~~                | ~~Modification d’un résultat~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun appariement.                                                   |
+| Future                    | Modification des byes/forfaits |      :ok:       | :white_circle:  | :white_circle: | Si autorisé par le règlement.                                        |
 
-| Ronde sélectionnée        | Action                         |        Passée         |                  Précédente                   |              En cours              | Première<br/>non<br/>appariée |       Future        |
-|---------------------------|--------------------------------|:---------------------:|:---------------------------------------------:|:----------------------------------:|:-----------------------------:|:-------------------:|
-| ~~Passée~~                | ~~Appariement total~~          | :white_circle:        |                :white_circle:                 |           :white_circle:           |            :ok: -             | :no_entry_sign: :x: |
-| ~~Passée~~                | ~~Appariement complémentaire~~ |    :white_circle:     |                :white_circle:                 |               :ok: -               |        :white_circle:         | :no_entry_sign: :x: |
-| ~~Passée~~                | ~~Appariement manuel~~         |    :white_circle:     |                :white_circle:                 | :ok: :grey_question: :orange_book: | :ok: :question: :closed_book: | :no_entry_sign: :x: |
-| Passée                    | Désappariement complet         |  :no_entry_sign: :x:  |              :no_entry_sign: :x:              | :ok: :grey_question: :orange_book: |        :white_circle:         | :no_entry_sign: :x: |
-| Passée                    | Désappariement manuel          |  :no_entry_sign: :x:  |   :no_entry_sign: :question: :closed_book:    | :ok: :grey_question: :orange_book: |        :white_circle:         |   :white_circle:    |
-| Passée                    | Permutation                    |  :no_entry_sign: :x:  |   :no_entry_sign: :question: :closed_book:    | :ok: :grey_question: :orange_book: |        :white_circle:         |   :white_circle:    |
-| Passée                    | Modification d’un résultat     |  :no_entry_sign: :x:  | :no_entry_sign: :grey_question: :orange_book: |               :ok: -               |        :white_circle:         |   :white_circle:    |
-| Passée                    | Modification des byes/forfaits |  :no_entry_sign: :x:  |   :no_entry_sign: :question: :closed_book:    |               :ok: -               |            :ok: -             |       :ok: -        |
+| Action / Ronde                 |                    Passée                    |                  Précédente                   |                   En cours                   |        Première<br/>non<br/>appariée         |                    Future                    |
+|--------------------------------|:--------------------------------------------:|:---------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|
+| ~~Appariement total~~          | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle: |      :ok: :white_circle: :white_circle:      |      :no_entry_sign: :x: :white_circle:      |
+| ~~Appariement complémentaire~~ | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |      :ok: :white_circle: :white_circle:      | :white_circle: :white_circle: :white_circle: |      :no_entry_sign: :x: :white_circle:      |
+| ~~Appariement manuel~~         | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |      :ok: :grey_question: :orange_book:      |        :ok: :question: :closed_book:         |      :no_entry_sign: :x: :white_circle:      |
+| Désappariement complet         |      :no_entry_sign: :x: :white_circle:      |      :no_entry_sign: :x: :white_circle:       |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: |      :no_entry_sign: :x: :white_circle:      |
+| Désappariement manuel          |      :no_entry_sign: :x: :white_circle:      |   :no_entry_sign: :question: :closed_book:    |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle: |
+| Permutation                    |      :no_entry_sign: :x: :white_circle:      |   :no_entry_sign: :question: :closed_book:    |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle: |
+| Modification d’un résultat     |      :no_entry_sign: :x: :white_circle:      | :no_entry_sign: :grey_question: :orange_book: |      :ok: :white_circle: :white_circle:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle: |
+| Modification des byes/forfaits |      :no_entry_sign: :x: :white_circle:      |   :no_entry_sign: :question: :closed_book:    |      :ok: :white_circle: :white_circle:      |      :ok: :white_circle: :white_circle:      |      :ok: :white_circle: :white_circle:      |
