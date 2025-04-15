@@ -1,0 +1,72 @@
+<div id="round-controls" class="d-flex gap-2 ms-auto align-items-center">
+    <span {{ macros.tooltip_attributes('info', _('Previous round'), 'top') }}>
+        <button
+            class="btn btn-outline-primary text-nowrap"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round - 1 }}"
+            hx-include="[name='tournament_id']"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            {% if admin_round <= 1 %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-caret-left"></i>
+        </button>
+    </span>
+    <select
+        name="round"
+        class="form-select"
+        style="width: fit-content;"
+        hx-trigger="change"
+        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+        hx-include="[name='tournament_id']"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {% with rounds=admin_tournament.current_round if admin_tournament.current_round > admin_round else admin_round %}
+            {% for round in range(1, rounds + 1) %}
+                <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
+                    {{ _('Round #%(round)d', round=round) }}
+                </option>
+            {% endfor %}
+        {% endwith %}
+    </select>
+    <span {{ macros.tooltip_attributes('info', _('Next round'), 'top') }}>
+        <button
+            class="btn btn-outline-primary text-nowrap"
+            {% if admin_tournament.is_round_finished(admin_round) %}
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
+            {% else %}
+                hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% endif %}
+            hx-target="body"
+            hx-indicator="#please-wait"
+            {% if admin_round >= admin_tournament.rounds %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-caret-right"></i>
+        </button>
+    </span>
+    <select
+        name="tournament_id"
+        class="form-select {{ 'd-none' if tournament_options|length <= 1 else '' }}"
+        style="width: fit-content;"
+        {% if tournament_options|length <= 1 %}
+            disabled
+        {% endif %}
+        hx-trigger="change"
+        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {% for value, text in tournament_options.items() %}
+            <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                {{ text }}
+            </option>
+        {% endfor %}
+    </select>
+</div>

@@ -516,7 +516,7 @@ class Tournament:
 
     def is_round_finished(self, round_: int):
         return all(
-            player.pairings[round_].result == Result.NO_RESULT
+            player.pairings[round_].result != Result.NO_RESULT
             for player in self.players_by_id.values()
         )
 

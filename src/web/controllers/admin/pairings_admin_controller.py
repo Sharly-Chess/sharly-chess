@@ -249,9 +249,9 @@ class PairingsAdminController(BaseEventAdminController):
 
         if not full_refresh and web_context.admin_board is not None and modal is None:
             return HTMXTemplate(
-                template_name='/admin/pairings/pairing_row.html',
+                template_name='/admin/pairings/pairing_row_and_controls.html',
                 context=template_context,
-                re_target=f'[data-board-id="{web_context.admin_board.board_id}"]',
+                re_target='#round-controls',
                 re_swap='outerHTML',
                 trigger_event=trigger_event,
                 after='receive',

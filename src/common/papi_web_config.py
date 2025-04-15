@@ -215,7 +215,7 @@ class PapiWebConfig(metaclass=Singleton):
         BASE_DIR
         / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}'
     ).is_dir()
-    htmx_version: Version = Version('1.9.12')
+    htmx_version: Version = Version('2.0.4')
     assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
     jquery_version: Version = Version('3.7.1')
     assert (

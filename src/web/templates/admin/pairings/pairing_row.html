@@ -1,7 +1,11 @@
 <tr
+    id="pairing-row-{{ board.number }}"
     class="pairing-row {{ row_class }} {{ extra_row_class }}"
     data-board-id="{{ board.number }}"
     data-player-id="{{ wp.id }}"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
 >
     <td class="text-center">{{ board.number }}</td>
     <td class="text-center">{{ wp.vpoints_str }}</td>
