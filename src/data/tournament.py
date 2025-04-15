@@ -439,12 +439,12 @@ class Tournament:
     def finished(self) -> bool:
         return self.current_round == self.rounds and not self.playing
 
-    @property
+    @cached_property
     def boards(self) -> list[Board]:
         self.read_papi()
         return self._boards
 
-    @property
+    @cached_property
     def unpaired_players(self) -> list[Player]:
         self.read_papi()
         return sorted(
@@ -503,7 +503,12 @@ class Tournament:
         return self.is_round_finished(self.current_round)
 
     def clear_cache(self):
-        cached_property_names = ['current_round', 'playing']
+        cached_property_names = [
+            'boards',
+            'unpaired_players',
+            'current_round',
+            'playing',
+        ]
         for property_name in cached_property_names:
             if property in self.__dict__:
                 del self.__dict__[property_name]
