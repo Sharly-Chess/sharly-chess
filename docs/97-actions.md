@@ -63,18 +63,18 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 >
 > Dans un certain délai après la publication des résultats de la ronde N (ou avant publication des résultats), le changement prend effet pour le classement de la ronde N, et les appariements de la ronde N+1.
 >
-> Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2
+> Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2.
 
-| Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Recalcul<br/>>numéros<br/>appariement |    Modification<br/>classement     |
-|-------------------------------------------------|------------------------|:--------------:|:--------------:|:-------------------------------------:|:----------------------------------:|
-| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :white_check_mark:      | :white_circle: |                ronde 1                |                                    |
-| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 2                |              ronde 1               |
-| Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 3                |              ronde 3               |
-| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 3                |              ronde 2               |
-| Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 4                |              ronde 4               |
-| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                ronde 4                |                                    |
-| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :white_check_mark:      | :orange_book:  |                  non                  | ronde N+1 ou N+2<br/>selon les cas |
-| N'importe quand                                 | Autres                 |      :white_check_mark:      | :white_circle: |                                       |           Sans influence           |
+| Moment                                          | Modification           |   Autorisée FIDE   | Enregistrement | Recalcul<br/>>numéros<br/>appariement |    Modification<br/>classement     |
+|-------------------------------------------------|------------------------|:------------------:|:--------------:|:-------------------------------------:|:----------------------------------:|
+| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom | :white_check_mark: | :white_circle: |                ronde 1                |                                    |
+| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 2                |              ronde 1               |
+| Après publication appariements ronde 2          | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 3                |              ronde 3               |
+| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 3                |              ronde 2               |
+| Après publication appariements ronde 3          | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 4                |              ronde 4               |
+| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 4                |                                    |
+| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                  non                  | ronde N+1 ou N+2<br/>selon les cas |
+| N'importe quand                                 | Autres                 | :white_check_mark: | :white_circle: |                                       |           Sans influence           |
 
 > [!NOTE]
 >
@@ -99,9 +99,9 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 |--------------------------------|:---------------------------------------------:|:-------------------------------------------------:|:----------------------------------------------------:|:------------------------------------------------:|:-------------------------------------------------:|
 | Appariement total              | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   |     :white_circle: :white_circle: :white_circle:     |      :white_check_mark: :ok: :white_circle:      |   :no_entry_sign: :white_circle: :white_circle:   |
 | Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   |     :white_check_mark: :grey_question: :pushpin:     |       :no_entry_sign: :warning: :pushpin:        |   :no_entry_sign: :white_circle: :white_circle:   |
-| Appariement manuel             |      :no_entry_sign: :warning: :pushpin:      | :white_check_mark: :white_circle: :white_circle:  |     :white_check_mark: :grey_question: :pushpin:     |       :no_entry_sign: :warning: :pushpin:        |   :no_entry_sign: :white_circle: :white_circle:   |
+| Appariement manuel             |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |     :white_check_mark: :grey_question: :pushpin:     |       :no_entry_sign: :warning: :pushpin:        |   :no_entry_sign: :white_circle: :white_circle:   |
 | Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :no_entry_sign: :white_circle: :white_circle:   |
-| Désappariement manuel          |      :no_entry_sign: :warning: :pushpin:      |      :white_check_mark: :warning: :pushpin:       |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
-| Permutation                    |      :no_entry_sign: :warning: :pushpin:      |      :white_check_mark: :warning: :pushpin:       |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
+| Désappariement manuel          |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
+| Permutation                    |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
 | Modification d’un résultat     |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |        :white_check_mark: :ok: :white_circle:        |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
 | Modification des byes/forfaits |      :no_entry_sign: :warning: :pushpin:      | :ballot_box_with_check: :grey_question: :pushpin: |     :ballot_box_with_check: :ok: :white_circle:      |   :ballot_box_with_check: :ok: :white_circle:    |    :ballot_box_with_check: :ok: :white_circle:    |
