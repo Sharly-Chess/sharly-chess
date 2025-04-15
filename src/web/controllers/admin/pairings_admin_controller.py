@@ -480,7 +480,7 @@ class PairingsAdminController(BaseEventAdminController):
         assert board is not None
         assert tournament is not None
         tournament.unpair_boards([board], round)
-        tournament.calculate_current_round()
+        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -688,7 +688,7 @@ class PairingsAdminController(BaseEventAdminController):
                         web_context.admin_player.id,
                         None,
                     )
-                web_context.admin_tournament.calculate_current_round()
+                web_context.admin_tournament.clear_cache()
 
         if len(new_byes) > 0:
             web_context.admin_tournament.set_player_byes(
@@ -785,7 +785,7 @@ class PairingsAdminController(BaseEventAdminController):
         boards = web_context.admin_boards
         assert boards is not None
         tournament.unpair_boards(boards, round)
-        tournament.calculate_current_round()
+        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

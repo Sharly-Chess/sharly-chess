@@ -91,8 +91,6 @@ class Tournament:
         self._pairing: TournamentPairing = TournamentPairing.UNKNOWN
         self._rating: TournamentRating = TournamentRating.STANDARD
         self._players_by_id: dict[int, Player] = {}
-        self._current_round: int = 0
-        self._playing: bool = False
         self._rating_limit1: int = 0
         self._rating_limit2: int = 0
         self._arbiter: str = ''
@@ -325,11 +323,6 @@ class Tournament:
         return bool(self.time_control_handicap_penalty_value)
 
     @property
-    def is_safe_mode_enabled(self) -> bool:
-        # TODO implement safe mode enabling / disabling
-        return True
-
-    @property
     def rounds(self) -> int:
         self.read_papi()
         return self._rounds
@@ -431,11 +424,6 @@ class Tournament:
         return counter
 
     @property
-    def current_round(self) -> int:
-        self.read_papi()
-        return self._current_round
-
-    @property
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0
@@ -448,13 +436,7 @@ class Tournament:
         return self.current_round != 0
 
     @property
-    def playing(self) -> bool:
-        self.read_papi()
-        return self._playing
-
-    @property
     def finished(self) -> bool:
-        self.read_papi()
         return self.current_round == self.rounds and not self.playing
 
     @property
@@ -490,12 +472,10 @@ class Tournament:
     @property
     def print_real_points(self) -> bool:
         match self._pairing:
-            case _ if self._current_round is None:
-                return False
             case TournamentPairing.HALEY | TournamentPairing.HALEY_SOFT:
-                return self._current_round <= 2
+                return self.current_round <= 2
             case TournamentPairing.SAD if self._rounds is not None:
-                return self._current_round <= self._rounds - 2
+                return self.current_round <= self._rounds - 2
             case _:
                 return False
 
@@ -507,6 +487,27 @@ class Tournament:
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_tournament.plugin_data or {}
 
+    @cached_property
+    def current_round(self) -> int:
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, self.rounds))
+                if self.round_has_pairings(round_)
+            ),
+            0,
+        )
+
+    @cached_property
+    def playing(self) -> bool:
+        return self.is_round_finished(self.current_round)
+
+    def clear_cache(self):
+        cached_property_names = ['current_round', 'playing']
+        for property_name in cached_property_names:
+            if property in self.__dict__:
+                del self.__dict__[property_name]
+
     def pairings_generation_allowed(self, at_round: int) -> bool:
         """Check if pairing generation is allowed for round *at_round*."""
         return not self.check_in_open and all(
@@ -514,10 +515,16 @@ class Tournament:
         )
 
     def is_round_finished(self, round_: int):
-        for player in self.players_by_id.values():
-            if player.pairings[round_].result == Result.NO_RESULT:
-                return False
-        return True
+        return all(
+            player.pairings[round_].result == Result.NO_RESULT
+            for player in self.players_by_id.values()
+        )
+
+    def round_has_pairings(self, round_: int):
+        return any(
+            player.pairings[round_].opponent_id is not None
+            for player in self.players_by_id.values()
+        )
 
     def to_trf(
         self,
@@ -627,51 +634,11 @@ class Tournament:
             for player in self._players_by_id.values():
                 player.tournament = self
         self._papi_read = True
-        self.calculate_current_round()
+        self.clear_cache()
         self._set_players_illegal_moves()  # load illegal moves for the current round
         self.calculate_points_before_round()
         self._boards, self._unpaired_players = self.build_boards()
         self.estimate_players(after_round=None)
-
-    def calculate_current_round(self):
-        """Computes which round is the current round.
-        Currently, the current round is the first paired round with missing
-        results."""
-        round_infos: dict[int, dict[str, bool]] = {}
-        paired_rounds: list[int] = []
-        for round_ in range(1, self._rounds + 1):
-            round_infos[round_] = {
-                'pairings_found': False,
-                'results_missing': False,
-            }
-            for player in self._players_by_id.values():
-                if player.ref_id != 1:
-                    pairing: Pairing = player.pairings[round_]
-                    if pairing.color in (
-                        BoardColor.WHITE,
-                        BoardColor.BLACK,
-                    ):
-                        round_infos[round_]['pairings_found'] = True
-                        paired_rounds.append(round_)
-                    if pairing.result == Result.NO_RESULT:
-                        round_infos[round_]['results_missing'] = True
-                    if (
-                        round_infos[round_]['pairings_found']
-                        and round_infos[round_]['results_missing']
-                    ):
-                        break
-        # the current round is the first one with pairings and no missing result
-        if paired_rounds:
-            for round_ in paired_rounds:
-                if round_infos[round_]['results_missing']:
-                    self._current_round = round_
-                    self._playing = True
-                    break
-            if self._current_round == 0:
-                self._current_round = paired_rounds[-1]
-        else:
-            self._current_round = 0
-            self._playing = False
 
     def calculate_points_before_round(self, before_round: int | None = None):
         """Calculate the points of all player before *before_round*.
@@ -753,8 +720,8 @@ class Tournament:
         """Estimate the players after round *after_round*.
         If *after_round* is None, use the current round if possible."""
         if after_round is None:
-            after_round = self._current_round
-        if self._current_round <= 1:
+            after_round = self.current_round
+        if self.current_round <= 1:
             return
         if not any(player.estimated for player in self.players_by_id.values()):
             return
@@ -1047,7 +1014,7 @@ class Tournament:
         with PapiDatabase(self.file, write=True) as papi_database:
             for player in (board.white_player, board.black_player):
                 papi_database.set_player_result(
-                    player.ref_id, self._current_round, Result.NO_RESULT, True
+                    player.ref_id, self.current_round, Result.NO_RESULT, True
                 )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
@@ -1057,7 +1024,7 @@ class Tournament:
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
             self.uniq_id,
-            self._current_round,
+            self.current_round,
             board.id,
         )
 

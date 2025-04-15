@@ -22,9 +22,6 @@
                     <li>{{ _('%(count)d boards without result', count=admin_no_result_board_count) }}</li>
                 {% endif %}
             </ul>
-            {% if admin_tournament.is_safe_mode_enabled %}
-                <p>{{ _('With safe-mode On, only forfeits and byes definition will be available.') }}</p>
-            {% endif %}
         </div>
         <div class="modal-footer">
             <button
