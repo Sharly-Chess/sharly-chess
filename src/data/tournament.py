@@ -492,7 +492,7 @@ class Tournament:
         return next(
             (
                 round_
-                for round_ in reversed(range(1, self.rounds))
+                for round_ in reversed(range(1, self.rounds + 1))
                 if self.round_has_pairings(round_)
             ),
             0,
