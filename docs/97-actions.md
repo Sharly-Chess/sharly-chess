@@ -17,7 +17,7 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 
 > [!NOTE]
 >
-> > **Ronde en cours** : la définition jusque-là de la ronde en cours était : la première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat.
+> **Ronde en cours** : la définition jusque-là de la ronde en cours était : la première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat.
 > C'est exactement ce qui est implémenté par ``Tournament.current_round()``.
 > Avec cette définition, la ronde en cours changeait lors des appariements sont défaits sur une ronde précédente, ce qui était complètement contre-intuitif.
 >
@@ -49,7 +49,7 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 |     Icône      | Enregistrement<br/>(si confirmation du modal par l'utilisateur) |
 |:--------------:|-----------------------------------------------------------------|
 | :white_circle: | Aucun enregistrement                                            |
-|   :push_pin:   | Enregistrement dans la base de données                          |
+|   :pushpin:    | Enregistrement dans la base de données                          |
 
 ## Modification des Tournois
 
@@ -95,13 +95,13 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 ### Description des actions
 
-| Action / Ronde                 |                    Passée                     |                    Précédente                    |                     En cours                     |        Première<br/>non<br/>appariée         |                    Future                     |
-|--------------------------------|:---------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
-| Appariement total              | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:   |    :white_check_mark: :ok: :white_circle:    | :no_entry_sign: :white_circle: :white_circle: |
-| Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :push_pin: |   :no_entry_sign: :warning: :push_pin:    | :no_entry_sign: :white_circle: :white_circle: |
-| Appariement manuel             |    :no_entry_sign: :warning: :push_pin:    | :white_check_mark: :white_circle: :white_circle: | :white_check_mark: :grey_question: :push_pin: |   :no_entry_sign: :warning: :push_pin:    | :no_entry_sign: :white_circle: :white_circle: |
-| Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :push_pin: | :white_circle: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |
-| Désappariement manuel          |    :no_entry_sign: :warning: :push_pin:    |     :white_check_mark: :warning: :push_pin:      | :white_check_mark: :grey_question: :push_pin: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Permutation                    |    :no_entry_sign: :warning: :push_pin:    |    :white_check_mark: :warning: :push_pin:    | :white_check_mark: :grey_question: :push_pin: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Modification d’un résultat     |    :no_entry_sign: :warning: :push_pin:    | :white_check_mark: :grey_question: :push_pin: |      :white_check_mark: :ok: :white_circle:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Modification des byes/forfaits |    :no_entry_sign: :warning: :push_pin:    | :ballot_box_with_check: :grey_question: :push_pin: |      :ballot_box_with_check: :ok: :white_circle:      |    :ballot_box_with_check: :ok: :white_circle:    |    :ballot_box_with_check: :ok: :white_circle:     |
+| Action / Ronde                 |                    Passée                     |                    Précédente                     |                       En cours                       |          Première<br/>non<br/>appariée           |                      Future                       |
+|--------------------------------|:---------------------------------------------:|:-------------------------------------------------:|:----------------------------------------------------:|:------------------------------------------------:|:-------------------------------------------------:|
+| Appariement total              | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   |     :white_circle: :white_circle: :white_circle:     |      :white_check_mark: :ok: :white_circle:      |   :no_entry_sign: :white_circle: :white_circle:   |
+| Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   |     :white_check_mark: :grey_question: :pushpin:     |       :no_entry_sign: :warning: :pushpin:        |   :no_entry_sign: :white_circle: :white_circle:   |
+| Appariement manuel             |      :no_entry_sign: :warning: :pushpin:      | :white_check_mark: :white_circle: :white_circle:  |     :white_check_mark: :grey_question: :pushpin:     |       :no_entry_sign: :warning: :pushpin:        |   :no_entry_sign: :white_circle: :white_circle:   |
+| Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :no_entry_sign: :white_circle: :white_circle:   |
+| Désappariement manuel          |      :no_entry_sign: :warning: :pushpin:      |      :white_check_mark: :warning: :pushpin:       |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
+| Permutation                    |      :no_entry_sign: :warning: :pushpin:      |      :white_check_mark: :warning: :pushpin:       |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
+| Modification d’un résultat     |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |        :white_check_mark: :ok: :white_circle:        |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
+| Modification des byes/forfaits |      :no_entry_sign: :warning: :pushpin:      | :ballot_box_with_check: :grey_question: :pushpin: |     :ballot_box_with_check: :ok: :white_circle:      |   :ballot_box_with_check: :ok: :white_circle:    |    :ballot_box_with_check: :ok: :white_circle:    |
