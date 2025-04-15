@@ -28,11 +28,12 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 
 ## Légende
 
-|       Icône        | Respect des règlements de la FIDE |
-|:------------------:|-----------------------------------|
-|   :white_circle:   | _Action non pertinente_           |
-|  :no_entry_sign:   | Action non autorisée par la FIDE  |
-| :white_check_mark: | Action autorisée par la FIDE      |
+|          Icône          | Respect des règlements de la FIDE                                  |
+|:-----------------------:|--------------------------------------------------------------------|
+|     :white_circle:      | _Action non pertinente_                                            |
+|     :no_entry_sign:     | Action non autorisée par la FIDE                                   |
+|   :white_check_mark:    | Action autorisée par la FIDE                                       |
+| :ballot_box_with_check: | Action autorisée par la FIDE, doit être autorisée par le règlement |
 
 ### Messages d'alerte aux arbitres
 
@@ -41,14 +42,14 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 | :white_circle:  | _Action non proposée_                                                                               |
 |      :ok:       | Action sans message d'alerte                                                                        |
 | :grey_question: | Modal : L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
-|  :exclamation:  | Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
+|    :warning:    | Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
 
 ### Enregistrement des actions non standard
 
-|           Icône            | Enregistrement<br/>(si confirmation du modal par l'utilisateur)                             |
-|:--------------------------:|---------------------------------------------------------------------------------------------|
-|       :white_circle:       | Aucun modal                                                                                 |
-| :one:, :two:, :three:, ... | Enregistrement dans la base de données                                                      |
+|     Icône      | Enregistrement<br/>(si confirmation du modal par l'utilisateur) |
+|:--------------:|-----------------------------------------------------------------|
+| :white_circle: | Aucun enregistrement                                            |
+|   :push_pin:   | Enregistrement dans la base de données                          |
 
 ## Modification des Tournois
 
@@ -81,7 +82,8 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 ## Modification des appariements et résultats
 
-> [!NOTE] (règlement FIDE)
+> [!NOTE]
+> (règlement FIDE)
 >
 > Un résultat ou une couleur erronée à la ronde N peut être signalée :
 > - Dans un certain délai après la publication des résultats de la ronde N
@@ -93,27 +95,6 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 ### Description des actions
 
-| Ronde                     | Action                         | Autorisée FIDE  |      Modal      | Enregistrement | Remarque                                                             |
-|---------------------------|--------------------------------|:---------------:|:---------------:|:--------------:|----------------------------------------------------------------------|
-| ~~Passée~~                | ~~Appariement total~~          | :white_circle:  | :white_circle:  | :white_circle: | Aucun·e joueur·euse non apparié·e                                    |
-| ~~Passée~~                | ~~Appariement complémentaire~~ | :white_circle:  | :white_circle:  | :white_circle: | Aucun·e joueur·euse non apparié·e                                    |
-| ~~Passée~~                | ~~Appariement manuel~~         | :white_circle:  | :white_circle:  | :white_circle: | Aucun·e joueur·euse non apparié·e                                    |
-| Passée                    | Désappariement complet         | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| Passée                    | Désappariement manuel          | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Passée                    | Permutation                    | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Passée                    | Modification d’un résultat     | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Passée                    | Modification des byes/forfaits | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Précédente                | Appariement total              | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| Précédente                | Appariement complémentaire     | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| Précédente                | Appariement manuel             | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Précédente                | Désappariement complet         | :no_entry_sign: |       :x:       | :white_circle: |                                                                      |
-| Précédente                | Désappariement manuel          | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Précédente                | Permutation                    | :no_entry_sign: |   :question:    | :closed_book:  |                                                                      |
-| Précédente                | Modification d’un résultat     | :no_entry_sign: | :grey_question: | :orange_book:  |                                                                      |
-| Précédente                | Modification des byes/forfaits | :no_entry_sign: |   :question:    | :orange_book:  |                                                                      |
-| ~~En cours~~              | ~~Appariement total~~          | :white_circle:  | :white_circle:  | :white_circle: |                                                                      |
-| En cours                  | Appariement complémentaire     |      :ok:       | :white_circle:  | :white_circle: |                                                                      |
-| En cours                  | Appariement manuel             |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
 | En cours                  | Désappariement complet         |      :ok:       | :grey_question: | :orange_book:  | Action dangereuse qui peut faire perdre des données => super warning |
 | En cours                  | Désappariement manuel          |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
 | En cours                  | Permutation                    |      :ok:       | :grey_question: | :orange_book:  |                                                                      |
@@ -139,10 +120,10 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 | Action / Ronde                 |                    Passée                     |                    Précédente                    |                     En cours                     |        Première<br/>non<br/>appariée         |                    Future                     |
 |--------------------------------|:---------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
 | Appariement total              | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:   |    :white_check_mark: :ok: :white_circle:    | :no_entry_sign: :white_circle: :white_circle: |
-| Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :orange_book: |   :no_entry_sign: :warning: :closed_book:    | :no_entry_sign: :white_circle: :white_circle: |
-| Appariement manuel             |    :no_entry_sign: :warning: :closed_book:    | :white_check_mark: :white_circle: :white_circle: | :white_check_mark: :grey_question: :orange_book: |   :no_entry_sign: :warning: :closed_book:    | :no_entry_sign: :white_circle: :white_circle: |
-| Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :orange_book: | :white_circle: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |
-| Désappariement manuel          |    :no_entry_sign: :warning: :closed_book:    |    :white_check_mark: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Permutation                    |    :no_entry_sign: :warning: :closed_book:    |    :white_check_mark: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Modification d’un résultat     |    :no_entry_sign: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: |      :white_check_mark: :ok: :white_circle:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
-| Modification des byes/forfaits |    :no_entry_sign: :warning: :closed_book:    | :white_check_mark: :grey_question: :orange_book: |      :white_check_mark: :ok: :white_circle:      |    :white_check_mark: :ok: :white_circle:    |    :white_check_mark: :ok: :white_circle:     |
+| Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :push_pin: |   :no_entry_sign: :warning: :push_pin:    | :no_entry_sign: :white_circle: :white_circle: |
+| Appariement manuel             |    :no_entry_sign: :warning: :push_pin:    | :white_check_mark: :white_circle: :white_circle: | :white_check_mark: :grey_question: :push_pin: |   :no_entry_sign: :warning: :push_pin:    | :no_entry_sign: :white_circle: :white_circle: |
+| Désappariement complet         | :no_entry_sign: :white_circle: :white_circle: |  :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :push_pin: | :white_circle: :white_circle: :white_circle: | :no_entry_sign: :white_circle: :white_circle: |
+| Désappariement manuel          |    :no_entry_sign: :warning: :push_pin:    |     :white_check_mark: :warning: :push_pin:      | :white_check_mark: :grey_question: :push_pin: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
+| Permutation                    |    :no_entry_sign: :warning: :push_pin:    |    :white_check_mark: :warning: :push_pin:    | :white_check_mark: :grey_question: :push_pin: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
+| Modification d’un résultat     |    :no_entry_sign: :warning: :push_pin:    | :white_check_mark: :grey_question: :push_pin: |      :white_check_mark: :ok: :white_circle:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
+| Modification des byes/forfaits |    :no_entry_sign: :warning: :push_pin:    | :ballot_box_with_check: :grey_question: :push_pin: |      :ballot_box_with_check: :ok: :white_circle:      |    :ballot_box_with_check: :ok: :white_circle:    |    :ballot_box_with_check: :ok: :white_circle:     |
