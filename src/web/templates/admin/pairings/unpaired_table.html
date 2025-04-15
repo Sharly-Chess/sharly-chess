@@ -19,7 +19,7 @@
                 <tr class="player-row" data-player-id="{{ player.id }}">
                     <td class="{{ class }}">
                         <div class="d-flex align-items-center gap-2">
-                        {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open %}
+                        {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round == admin_tournament.current_round or admin_tournament.current_round == 0) %}
                             <i
                                 {% if player.check_in %}
                                     class="bi-check-circle-fill text-success"
@@ -33,8 +33,8 @@
                             <span>{{ player.last_name }} {{ player.first_name }}</span>
                         </div>
                     </td>
-                    <td class="{{ class }}">{{ player.get_rating(admin_tournament.rating) }}</td>
-                    <td class="{{ class }} text-center">
+                    <td class="{{ class }} text-end">{{ player.get_rating(admin_tournament.rating) }}</td>
+                    <td class="{{ class }} text-center" width="1">
                         <div
                             {% if pairing and pairing.zero_point_bye %}
                                {{ macros.tooltip_attributes('info', _('Zero-point bye'), 'right') }}
