@@ -4,6 +4,34 @@
 
 Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'onglets Tournois, Joueur·euses et Appariements.
 
+## Définitions
+
+### Respect des règlements de la FIDE
+
+| Action autorisée FIDE | Explication                      |
+|:---------------------:|----------------------------------|
+|    :no_entry_sign:    | Action non autorisée par la FIDE |
+|         :ok:          | Action autorisée par la FIDE     |
+
+### Statut des rondes
+
+| Ronde                 | Explication                                                                                                                                                                                                  |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Passée                | En cours – 2, en cours - 3, ...                                                                                                                                                                              |
+| Précédente            | En cours - 1                                                                                                                                                                                                 |
+| En cours              | La première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat (en général la dernière ronde appariée sauf dans le cas où des appariements sont défaits surt uen ronde précédente) |
+| Première non appariée | En cours + 1                                                                                                                                                                                                 |
+| Future                | En cours + 2, en cours + 3, ...                                                                                                                                                                              |
+
+### Messages d'alerte aux arbitres et enregistrement des actions non standard
+
+|      Modal      | Enregistrement | Explication                                                                                 |
+|:---------------:|:--------------:|---------------------------------------------------------------------------------------------|
+|        -        | :white_circle: | Aucun modal                                                                                 |
+| :grey_question: | :orange_book:  | L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
+|   :question:    | :closed_book:  | L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
+|       :x:       | :white_circle: | L'action que vous souhaitez réaliser n’est pas est impossible                               |
+
 ## Modification des Tournois
 
 A compléter (certaines modifications des tournois ne devraient pas être autorisées après le démarrage d'un tournoi).
@@ -18,21 +46,20 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 >
 > Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2
 
-| Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Remarque                                                                                      |
-|-------------------------------------------------|------------------------|:--------------:|:--------------:|-----------------------------------------------------------------------------------------------|
-| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :ok:      |                |                                                                                               |
-| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 2 , classement ronde 1 modifié                           |
-| Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 3, classement ronde 3 modifié                            |
-| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 3, classement ronde 2 modifié                            |
-| Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 4, classement ronde 4 modifié                            |
-| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Numéro d’appariement recalculé ronde 4                                                        |
-| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  | Pas de changement du numéro d’appariement, classement ronde N+1 ou N+2 modifiés selon les cas |
-| N'importe quand                                 | Autres                 |      :ok:      | :orange_book:  | Sans influence sur le classement                                                              |
+| Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Recalcul<br/>>numéros<br/>appariement |      Modification<br/>classement      |
+|-------------------------------------------------|------------------------|:--------------:|:--------------:|:-------------------------------------:|:-------------------------------------:|
+| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :ok:      |                |                ronde 1                |                                       |
+| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 2                |                ronde 1                |
+| Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 3                |                ronde 3                |
+| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 3                |                ronde 2                |
+| Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 4                |                ronde 4                |
+| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 4                |                                       |
+| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                  non                  |  ronde N+1 ou N+2<br/>>selon les cas  |
+| N'importe quand                                 | Autres                 |      :ok:      | :orange_book:  |                                       |            Sans influence             |
 
 > [!NOTE]
 >
 > Sammy doit confirmer auprès de la DNA que le classement peut être modifié à n'importe quel moment car cela peut influer sur les départages.
-
 
 ## Modification des appariements et résultats
 
@@ -45,32 +72,6 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 >   - Les appariements de la ronde N+2 utilisent cette correction (probablement aussi le classement de la ronde N+1)
 > - Après la fin de la ronde N+1
 >   - Le résultat n’est utilisé que pour l’export FIDE, ni pour le classement final ni pour les appariements suivants.
-
-### Définition du statut des rondes
-
-| Ronde                 | Explication                                                                                                                                                                                                  |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Passée                | En cours – 2, en cours - 3, ...                                                                                                                                                                              |
-| Précédente            | En cours - 1                                                                                                                                                                                                 |
-| En cours              | La première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat (en général la dernière ronde appariée sauf dans le cas où des appariements sont défaits surt uen ronde précédente) |
-| Première non appariée | En cours + 1                                                                                                                                                                                                 |
-| Future                | En cours + 2, en cours + 3, ...                                                                                                                                                                              |
-
-### Respect des règlements de la FIDE
-
-|  Autorisée FIDE   | Explication                      |
-|:-----------------:|----------------------------------|
-|  :no_entry_sign:  | Action non autorisée par la FIDE |
-|       :ok:        | Action autorisée par la FIDE     |
-
-### Avertissements aux arbitres et enregistrement des opérations non standard
-
-|      Modal      | Enregistrement | Explication                                                                                 |
-|:---------------:|:--------------:|---------------------------------------------------------------------------------------------|
-|        -        | :white_circle: | Aucun modal                                                                                 |
-| :grey_question: | :orange_book:  | L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
-|   :question:    | :closed_book:  | L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
-|       :x:       | :white_circle: | L'action que vous souhaitez réaliser n’est pas est impossible                               |
 
 ### Description des actions
 
