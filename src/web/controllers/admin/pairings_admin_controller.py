@@ -353,7 +353,7 @@ class PairingsAdminController(BaseEventAdminController):
         board_id: int,
         result: int,
         trigger_event: str | None = None,
-        on_change_trigger_event: str | None = None,
+        validate_result: bool = False,
     ) -> Template | ClientRedirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
@@ -384,21 +384,19 @@ class PairingsAdminController(BaseEventAdminController):
                 round_=round_,
             )
 
+        target_board_id: int | None
         was_round_finished = tournament.is_round_finished(round_)
         if result not in (Result.admin_imputable_results()):
             return BaseController.redirect_error(request, f'Invalid result [{result}].')
 
-        params: dict[str, Any] | None = None
-        if (
-            on_change_trigger_event
-            and Result.NO_RESULT not in (result, board.result)
-            and result != board.result
-        ):
-            # This is used to highlight the board with a warning when using hotkeys
-            trigger_event = on_change_trigger_event
-            params = {
-                'board_id': board_id,
-            }
+        if validate_result:
+            if board.result != result:
+                trigger_event = 'highlight_board_with_warning'
+                target_board_id = board_id
+            else:
+                target_board_id = self._next_board_id(
+                    board_id, web_context.admin_filtered_boards
+                )
         else:
             tournament.add_result(
                 board,
@@ -417,20 +415,9 @@ class PairingsAdminController(BaseEventAdminController):
             )
             if web_context.error:
                 return web_context.error
-            tournament = web_context.admin_tournament
-            assert tournament is not None
-            tournament.calculate_current_round()
-            next_board_id = next(
-                (
-                    b.board_id
-                    for b in web_context.admin_filtered_boards
-                    if b.board_id is not None and b.board_id > board_id
-                ),
-                None,
+            target_board_id = self._next_board_id(
+                board_id, web_context.admin_filtered_boards
             )
-            params = {
-                'board_id': next_board_id,
-            }
 
         return self._admin_event_pairings_render(
             request,
@@ -439,8 +426,19 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round_,
             board_id=board_id,
             trigger_event=trigger_event,
-            params=params,
+            params={'board_id': target_board_id},
             full_refresh=tournament.is_round_finished(round_) != was_round_finished,
+        )
+
+    @staticmethod
+    def _next_board_id(board_id: int, boards: list[Board]) -> int | None:
+        return next(
+            (
+                b.board_id
+                for b in boards
+                if b.board_id is not None and b.board_id > board_id
+            ),
+            None,
         )
 
     @put(
@@ -547,24 +545,15 @@ class PairingsAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        tournament_id: int | None,
-        round: int | None,
+        tournament_id: int,
+        round: int,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        board_id: int = int(data.get('board_id', 0))
-        key: str | None = data.get('key')
-
-        if tournament_id is None or not round:
-            return self._admin_event_pairings_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                tournament_id=tournament_id,
-                round_=round,
-                board_id=board_id,
-            )
+        board_id: int = int(data['board_id'])
+        key: str = data['key']
 
         result: int | None = None
         match key:
@@ -595,7 +584,7 @@ class PairingsAdminController(BaseEventAdminController):
             board_id=board_id,
             result=result,
             trigger_event='highlight_board',
-            on_change_trigger_event='highlight_board_with_warning',
+            validate_result=data['validate_result'] == 'true',
         )
 
     @delete(
