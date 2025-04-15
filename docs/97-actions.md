@@ -105,3 +105,20 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 | Permutation                    |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |     :white_check_mark: :grey_question: :pushpin:     |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
 | Modification d’un résultat     |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |        :white_check_mark: :ok: :white_circle:        |   :white_circle: :white_circle: :white_circle:   |   :white_circle: :white_circle: :white_circle:    |
 | Modification des byes/forfaits |      :no_entry_sign: :warning: :pushpin:      | :ballot_box_with_check: :grey_question: :pushpin: |     :ballot_box_with_check: :ok: :white_circle:      |   :ballot_box_with_check: :ok: :white_circle:    |    :ballot_box_with_check: :ok: :white_circle:    |
+
+> [!NOTE]
+> Respect des règlements de la FIDE :
+> - :white_circle: _Action non pertinente_
+> - :no_entry_sign: Action non autorisée par la FIDE
+> - :white_check_mark: Action autorisée par la FIDE
+> - :ballot_box_with_check: Action autorisée par la FIDE, doit être autorisée par le règlement
+>
+> Messages d'alerte aux arbitres :
+> - :white_circle: _Action non proposée_
+> - :ok: Action sans message d'alerte
+> - :grey_question: Modal : L'action que vous souhaitez réaliser n’est pas « standard », continuer ?
+> - :warning: Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ?
+>
+> Enregistrement des actions non standard :
+> - :white_circle: Aucun enregistrement
+> - :pushpin: Enregistrement dans la base de données
