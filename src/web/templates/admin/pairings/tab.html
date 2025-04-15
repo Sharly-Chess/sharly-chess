@@ -110,8 +110,6 @@
                         'info',
                         _('Pairings disabled while check-in is open.')
                         if admin_tournament.check_in_open
-                        else level_2_disabled_message
-                        if not level_2_operations_allowed
                         else _('Pairings generation unavailable for this round.')
                         if not pairings_generation_allowed
                         else _('Pairings already generated.')
@@ -126,7 +124,7 @@
                         preload
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        {% if not level_2_operations_allowed or not pairings_generation_allowed or admin_boards %}
+                        {% if not pairings_generation_allowed or admin_boards %}
                             disabled
                         {% endif %}
                     >
@@ -134,7 +132,7 @@
                         {{ _('Pair') }}
                     </button>
                 </div>
-            {% elif not admin_boards and pairings_generation_allowed and level_2_operations_allowed %}
+            {% elif not admin_boards and pairings_generation_allowed %}
                 <div class="text-warning text-center fst-italic lh-sm" style="width: 140px; font-size: 0.9rem;">
                     {{ _('Please use Papi to generate pairings.') }}
                 </div>

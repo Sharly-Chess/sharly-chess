@@ -30,26 +30,18 @@
                                 {{ _('Absent for rest of the tournament') }}
                             </button>
                         {% else %}
-                            <span
-                                class="w-100"
-                                {% if not level_2_operations_allowed %}
-                                    {{ macros.tooltip_attributes('info', level_2_disabled_message, 'top') }}
-                                {% endif %}
+                            <button
+                                class="btn btn-outline-primary w-100"
+                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="RETURN") }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
                             >
-                                <button
-                                    class="btn btn-outline-primary w-100"
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="RETURN") }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    {% if not level_2_operations_allowed %}disabled{% endif %}
-                                >
-                                    {% if admin_round < admin_tournament.current_round %}
-                                        {{ _('Cancel absence for this round') }}
-                                    {% else %}
-                                        {{ _('Return to tournament') }}
-                                    {% endif %}
-                                </button>
-                            </span>
+                                {% if admin_round < admin_tournament.current_round %}
+                                    {{ _('Cancel absence for this round') }}
+                                {% else %}
+                                    {{ _('Return to tournament') }}
+                                {% endif %}
+                            </button>
                         {% endif %}
                         <span
                             class="w-100"
@@ -57,13 +49,11 @@
                                 {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=player.tournament.last_rounds_no_byes), 'top') }}
                             {% elif not hpb_possible %}
                                 {{ macros.tooltip_attributes('info', _('Bye limit (%(limit)d) is already reached for this tournament.', limit=player.tournament.max_byes), 'top') }}
-                            {% elif not level_1_operations_allowed %}
-                                {{ macros.tooltip_attributes('info', level_1_disabled_message, 'top') }}
                             {% endif %}
                         >
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if no_bye_possible or not hpb_possible or not level_1_operations_allowed %}
+                                {% if no_bye_possible or not hpb_possible %}
                                     disabled
                                 {% endif %}
                                 hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="HPB") }}"
@@ -77,8 +67,6 @@
                             class="w-100"
                             {% if admin_tournament.check_in_open %}
                                 {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
-                            {% elif not level_2_operations_allowed %}
-                                {{ macros.tooltip_attributes('info', level_2_disabled_message, 'top') }}
                             {% endif %}
                         >
                             {% if exempt_player %}
@@ -87,7 +75,7 @@
                                     hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="PAIR") }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
-                                    {% if admin_tournament.check_in_open or not level_2_operations_allowed %}
+                                    {% if admin_tournament.check_in_open %}
                                         disabled
                                     {% endif %}
                                 >
@@ -102,7 +90,7 @@
                                     hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action="PAIR") }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
-                                    {% if admin_tournament.check_in_open or not level_2_operations_allowed %}
+                                    {% if admin_tournament.check_in_open %}
                                         disabled
                                     {% endif %}
                                 >

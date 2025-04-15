@@ -7,23 +7,19 @@
     <td class="text-center">{{ wp.vpoints_str }}</td>
     <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
     <td class="text-center" style="width: 3rem;">
-        {% if level_1_operations_allowed %}
-            <button
-                class="btn btn-sm btn-outline-primary"
-                style="width: 3rem;"
-                hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
-                hx-trigger="click"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
-            </button>
-        {% else %}
+        <button
+            class="btn btn-sm btn-outline-primary"
+            style="width: 3rem;"
+            hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+            hx-trigger="click"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
             {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
-        {% endif %}
+        </button>
     </td>
     {% if bp %}
         <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>

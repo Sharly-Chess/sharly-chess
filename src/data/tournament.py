@@ -519,33 +519,6 @@ class Tournament:
                 return False
         return True
 
-    def pairings_level_1_operations_allowed(self, round_: int):
-        """Level 1 pairings operations can be executed:
-            - on the current round and rounds to come
-            - on the previous round while the current round is still playing
-            - on every round once the tournament is finished
-        Operations that should be included:
-            - changing board result
-            - changing bye player's byes
-            - permuting board color
-        """
-        return (
-            not self.is_safe_mode_enabled
-            or self.finished
-            or round_ == self.current_round
-            or (round_ >= self.current_round - 1 and self.playing)
-        )
-
-    def pairings_level_2_operations_allowed(self, round_: int):
-        """Level 2 pairings operations can only be executed on the current round.
-        Operations that should be included:
-            - Unpairing boards
-            - delete board result
-            - cancel a player's bye
-            - manual / automatic pairing
-        """
-        return not self.is_safe_mode_enabled or round_ == self.current_round
-
     def to_trf(
         self,
         trf_type: TrfType,

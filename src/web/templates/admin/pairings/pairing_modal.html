@@ -87,7 +87,7 @@
                         hx-delete="{{ url_for('admin-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        {% if (not board.no_result and not board.exempt) or not level_2_operations_allowed %}
+                        {% if (not board.no_result and not board.exempt) %}
                             disabled
                         {% endif %}
                     >
@@ -101,7 +101,7 @@
                         hx-delete="{{ url_for('admin-delete-result', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        {% if board.no_result or board.exempt or not level_2_operations_allowed %}
+                        {% if board.no_result or board.exempt %}
                             disabled
                         {% endif %}
                     >

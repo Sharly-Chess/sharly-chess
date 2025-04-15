@@ -233,19 +233,6 @@ class PairingsAdminController(BaseEventAdminController):
             'admin_filtered_boards': web_context.admin_filtered_boards,
             'admin_unpaired': web_context.admin_unpaired,
             'admin_forfeit_players': web_context.admin_forfeit_players,
-            'level_1_operations_allowed': admin_tournament
-            and (admin_tournament.pairings_level_1_operations_allowed(round_)),
-            'level_2_operations_allowed': admin_tournament
-            and (admin_tournament.pairings_level_2_operations_allowed(round_)),
-            'level_1_disabled_message': _(
-                'With safe-mode On, this operation is only available '
-                'on the current round, on the previous round '
-                'or at the end of the tournament.'
-            ),
-            'level_2_disabled_message': _(
-                'With safe-mode On, this operation is only '
-                'available on the current round.'
-            ),
             'pairings_generation_allowed': admin_tournament
             and (admin_tournament.pairings_generation_allowed(round_)),
             'board': web_context.admin_board,
