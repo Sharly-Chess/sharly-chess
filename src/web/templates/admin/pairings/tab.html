@@ -194,7 +194,7 @@
                     id="pairings-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
                     hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}'] from:body, keydown[code=='Numpad{{ digit }}'] from:body{%if not loop.last %},{% endif %}{% endfor %}"
+                    hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}' && no_error_rows()] from:body, keydown[code=='Numpad{{ digit }}' && no_error_rows()] from:body{%if not loop.last %},{% endif %}{% endfor %}"
                     hx-vals="js:{key: event.code, board_id: pairing_board_id || 0, validate_result: document.querySelector('input[name=\'hotkey-mode\']:checked').id == 'hotkey-validate'}"
                     hx-target="body"
                     hx-swap="outerHTML"
@@ -274,6 +274,7 @@
     };
 
    function keydownHandler(e) {
+        var has_error_row = $("tr.highlight-warning").length > 0;
         if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
             e.preventDefault();
 
@@ -292,6 +293,10 @@
             }
         }
     };
+
+    function no_error_rows() {
+        return $("tr.highlight-warning").length === 0;
+    }
 
     function swapHandler(e) {
         if (e.detail.elt.tagName === "BODY") {
