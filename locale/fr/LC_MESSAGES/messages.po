@@ -4037,6 +4037,9 @@ msgstr "MIF"
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
 
+msgid "Warning: experimental features are enabled!"
+msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
+
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
 
