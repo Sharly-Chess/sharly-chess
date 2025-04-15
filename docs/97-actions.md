@@ -25,12 +25,12 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 
 ### Messages d'alerte aux arbitres et enregistrement des actions non standard
 
-|      Modal      | Enregistrement | Explication                                                                                 |
-|:---------------:|:--------------:|---------------------------------------------------------------------------------------------|
-|        -        | :white_circle: | Aucun modal                                                                                 |
-| :grey_question: | :orange_book:  | L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
-|   :question:    | :closed_book:  | L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
-|       :x:       | :white_circle: | L'action que vous souhaitez réaliser n’est pas est impossible                               |
+|      Modal      | Explication                                                                                 | Enregistrement<br/>(si confirmation) |
+|:---------------:|---------------------------------------------------------------------------------------------|:------------------------------------:|
+|        -        | Aucun modal                                                                                 |            :white_circle:            |
+| :grey_question: | L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |            :orange_book:             |
+|   :question:    | L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |            :closed_book:             |
+|       :x:       | L'action que vous souhaitez réaliser n’est pas est impossible                               |            :white_circle:            |
 
 ## Modification des Tournois
 
@@ -48,14 +48,14 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 | Moment                                          | Modification           | Autorisée FIDE | Enregistrement | Recalcul<br/>>numéros<br/>appariement |      Modification<br/>classement      |
 |-------------------------------------------------|------------------------|:--------------:|:--------------:|:-------------------------------------:|:-------------------------------------:|
-| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :ok:      |                |                ronde 1                |                                       |
+| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom |      :ok:      | :white_circle: |                ronde 1                |                                       |
 | Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 2                |                ronde 1                |
 | Après publication appariements ronde 2          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 3                |                ronde 3                |
 | Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 3                |                ronde 2                |
 | Après publication appariements ronde 3          | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 4                |                ronde 4                |
 | Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                ronde 4                |                                       |
 | À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom |      :ok:      | :orange_book:  |                  non                  |  ronde N+1 ou N+2<br/>>selon les cas  |
-| N'importe quand                                 | Autres                 |      :ok:      | :orange_book:  |                                       |            Sans influence             |
+| N'importe quand                                 | Autres                 |      :ok:      | :white_circle: |                                       |            Sans influence             |
 
 > [!NOTE]
 >
@@ -120,9 +120,9 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 | Action / Ronde                 |                    Passée                    |                  Précédente                   |                   En cours                   |        Première<br/>non<br/>appariée         |                    Future                    |
 |--------------------------------|:--------------------------------------------:|:---------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|
-| ~~Appariement total~~          | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle: |      :ok: :white_circle: :white_circle:      |      :no_entry_sign: :x: :white_circle:      |
-| ~~Appariement complémentaire~~ | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |      :ok: :white_circle: :white_circle:      | :white_circle: :white_circle: :white_circle: |      :no_entry_sign: :x: :white_circle:      |
-| ~~Appariement manuel~~         | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |      :ok: :grey_question: :orange_book:      |        :ok: :question: :closed_book:         |      :no_entry_sign: :x: :white_circle:      |
+| Appariement total              | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  | :white_circle: :white_circle: :white_circle: |      :ok: :white_circle: :white_circle:      |      :no_entry_sign: :x: :white_circle:      |
+| Appariement complémentaire     | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |      :ok: :white_circle: :white_circle:      | :white_circle: :white_circle: :white_circle: |      :no_entry_sign: :x: :white_circle:      |
+| Appariement manuel             | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |      :ok: :grey_question: :orange_book:      |        :ok: :question: :closed_book:         |      :no_entry_sign: :x: :white_circle:      |
 | Désappariement complet         |      :no_entry_sign: :x: :white_circle:      |      :no_entry_sign: :x: :white_circle:       |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: |      :no_entry_sign: :x: :white_circle:      |
 | Désappariement manuel          |      :no_entry_sign: :x: :white_circle:      |   :no_entry_sign: :question: :closed_book:    |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle: |
 | Permutation                    |      :no_entry_sign: :x: :white_circle:      |   :no_entry_sign: :question: :closed_book:    |      :ok: :grey_question: :orange_book:      | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle: |
