@@ -182,7 +182,7 @@
                     {% endif %}
 
                     {% if admin_forfeit_players|length > 0 %}
-                    {% with title=_('Bye-players'), unpaired=admin_forfeit_players %}
+                    {% with title=_('bye-players'), unpaired=admin_forfeit_players %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}

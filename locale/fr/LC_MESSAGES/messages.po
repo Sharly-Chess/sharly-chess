@@ -465,9 +465,6 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points jokers (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Bye-players"
-msgstr "Forfaits et points jokers"
-
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
@@ -4357,6 +4354,9 @@ msgstr "échiquiers {board_numbers}"
 
 msgid "by default"
 msgstr "par défaut"
+
+msgid "bye-players"
+msgstr "Forfaits et points jokers"
 
 msgid "event"
 msgstr "évènement"
