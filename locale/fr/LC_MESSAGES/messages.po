@@ -293,7 +293,7 @@ msgstr "Évènements archivés ({num})"
 
 #, python-format
 msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
-msgstr "Êtes vous sûr de vouloir désapparier tous les échiquier de la ronde %(round_number)s?"
+msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -463,7 +463,7 @@ msgstr "Par ordre alpha."
 
 #, python-format
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
-msgstr "La limite de points jokers (%(limit)d) est déjà atteinte pour ce tournoi."
+msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -2560,7 +2560,7 @@ msgid "Pairings by player ({num})"
 msgstr "Appariements par ordre alphabétique ({num})"
 
 msgid "Pairings disabled while check-in is open."
-msgstr "Appariements désactivés lorsque le pointage est ouvert."
+msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
 
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
@@ -2802,7 +2802,7 @@ msgid "Please enter valid date and time."
 msgstr "Veuillez entrer une date et une heure valides."
 
 msgid "Please use Papi to generate pairings."
-msgstr "Utiliser Papi pour générer les appariements."
+msgstr "Veuillez utiliser Papi pour générer les appariements."
 
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
@@ -3238,10 +3238,10 @@ msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
 
 msgid "Shortcuts check if the inputted result and the result of the selected row are a match."
-msgstr "Les raccourcis vérifient si le résultat saisi et le résultat du rang séléctionné sont identiques."
+msgstr "Les raccourcis vérifient si le résultat saisi et le résultat de l'échiquier sélectionné sont identiques."
 
 msgid "Shortcuts set the result of the selected row to the inputted result."
-msgstr "Les raccourcis mettent à jour le résultat du rang séléctionné."
+msgstr "Les raccourcis mettent à jour le résultat de l'échiquier sélectionné."
 
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
@@ -4356,7 +4356,7 @@ msgid "by default"
 msgstr "par défaut"
 
 msgid "bye-players"
-msgstr "Forfaits et points jokers"
+msgstr "Forfaits et points joker"
 
 msgid "event"
 msgstr "évènement"
