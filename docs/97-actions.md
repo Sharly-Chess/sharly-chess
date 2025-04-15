@@ -24,7 +24,7 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 > **Dernière ronde publiée** : Cette notion n'existe pas encore et sera implémentée lorsque le stockage Access sera abandonné.
 > Dans la version actuelle, toutes les rondes avec appariements sont considérées comme publiées (le statut de brouillon n'existe pas).
 >
-> Les notions du tableau ci-dessous sont relatives au tournoi. la notion de ronde affichée (ou sélectionnée, ou courante) est relative à l'interface web, c'est la ronde active l'onglet Appariements.
+> Les notions du tableau ci-dessous sont relatives au tournoi. la notion de ronde affichée (ou sélectionnée, ou courante) est relative à l'interface web, c'est la ronde active sur l'onglet Appariements.
 
 ## Modification des Tournois
 
@@ -40,7 +40,7 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 > Dans un certain délai après la publication des résultats de la ronde N (ou avant publication des résultats), le changement prend effet pour le classement de la ronde N, et les appariements de la ronde N+1.
 > Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2.
 
-| Moment                                          |   Autorisée FIDE   | Enregistrement | Recalcul<br/>>numéros<br/>appariement |    Modification<br/>classement     |
+| Moment                                          |   Autorisée FIDE   | Enregistrement | Recalcul<br/>numéros<br/>appariement |    Modification<br/>classement     |
 |-------------------------------------------------|:------------------:|:--------------:|:-------------------------------------:|:----------------------------------:|
 | Avant publication appariements ronde 1          | :white_check_mark: | :white_circle: |                ronde 1                |                                    |
 | Avant fin délai publication résultats ronde 1   | :white_check_mark: |   :pushpin:    |                ronde 2                |              ronde 1               |
@@ -54,16 +54,7 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 > Les modifications des informations des joueur·euses ne portant pas sur le Elo, le titre FIDE ou le nom n'ont pas d'impact sur les appariements et les classements.
 >
 > Respect des règlements de la FIDE :
-> - :white_circle: _Action non pertinente_
-> - :no_entry_sign: Action non autorisée par la FIDE
 > - :white_check_mark: Action autorisée par la FIDE
-> - :ballot_box_with_check: Action autorisée par la FIDE, doit être autorisée par le règlement
->
-> Messages d'alerte aux arbitres :
-> - :white_circle: _Action non proposée_
-> - :ok: Action sans message d'alerte
-> - :grey_question: Modal : L'action que vous souhaitez réaliser n’est pas « standard », continuer ?
-> - :warning: Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ?
 >
 > Enregistrement des actions non standard :
 > - :white_circle: Aucun enregistrement
@@ -76,9 +67,7 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 ## Modification des appariements et résultats
 
 > [!NOTE]
-> (règlement FIDE)
->
-> Un résultat ou une couleur erronée à la ronde N peut être signalée :
+> Un résultat ou une couleur erronée à la ronde N peut être signalée (règlement FIDE) :
 > - Dans un certain délai après la publication des résultats de la ronde N
 >   - Le classement de la ronde N et l’appariement de la ronde N+1 utilisent cette correction
 > - Après la publication des appariements de la ronde N+1, mais avant la fin de la ronde N+1
