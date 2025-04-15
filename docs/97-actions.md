@@ -26,55 +26,48 @@ Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'o
 >
 > Les notions du tableau ci-dessous sont relatives au tournoi. la notion de ronde affichée (ou sélectionnée, ou courante) est relative à l'interface web, c'est la ronde active l'onglet Appariements.
 
-## Légende
-
-|          Icône          | Respect des règlements de la FIDE                                  |
-|:-----------------------:|--------------------------------------------------------------------|
-|     :white_circle:      | _Action non pertinente_                                            |
-|     :no_entry_sign:     | Action non autorisée par la FIDE                                   |
-|   :white_check_mark:    | Action autorisée par la FIDE                                       |
-| :ballot_box_with_check: | Action autorisée par la FIDE, doit être autorisée par le règlement |
-
-### Messages d'alerte aux arbitres
-
-|      Icône      | Messages d'alerte aux arbitres                                                                      |
-|:---------------:|-----------------------------------------------------------------------------------------------------|
-| :white_circle:  | _Action non proposée_                                                                               |
-|      :ok:       | Action sans message d'alerte                                                                        |
-| :grey_question: | Modal : L'action que vous souhaitez réaliser n’est pas « standard », continuer ?                    |
-|    :warning:    | Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ? |
-
-### Enregistrement des actions non standard
-
-|     Icône      | Enregistrement<br/>(si confirmation du modal par l'utilisateur) |
-|:--------------:|-----------------------------------------------------------------|
-| :white_circle: | Aucun enregistrement                                            |
-|   :pushpin:    | Enregistrement dans la base de données                          |
-
 ## Modification des Tournois
 
 A compléter (certaines modifications des tournois ne devraient pas être autorisées après le démarrage d'un tournoi).
 
-## Modification des Joueur·euses
+## Modification des Joueur·euses (Elo, tiitre FIDE ou nom)
 
 > [!NOTE]
->
+> Les modifications des informations des joueur·euses ne portant pas sur le Elo, le titre FIDE ou le nom n'ont pas d'impact sur les appariements et les classements.
+
+> [!NOTE]
 > Papi recalcule les numéros d’appariement à chaque ronde (contrairement aux règlements FIDE).
->
 > Dans un certain délai après la publication des résultats de la ronde N (ou avant publication des résultats), le changement prend effet pour le classement de la ronde N, et les appariements de la ronde N+1.
->
 > Après la publication de la ronde N+1, les classements sont changés à partir de la ronde N+2.
 
-| Moment                                          | Modification           |   Autorisée FIDE   | Enregistrement | Recalcul<br/>>numéros<br/>appariement |    Modification<br/>classement     |
-|-------------------------------------------------|------------------------|:------------------:|:--------------:|:-------------------------------------:|:----------------------------------:|
-| Avant publication appariements ronde 1          | Elo, titre FIDE ou nom | :white_check_mark: | :white_circle: |                ronde 1                |                                    |
-| Avant fin délai publication résultats ronde 1   | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 2                |              ronde 1               |
-| Après publication appariements ronde 2          | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 3                |              ronde 3               |
-| Avant fin délai publication résultats ronde 2   | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 3                |              ronde 2               |
-| Après publication appariements ronde 3          | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 4                |              ronde 4               |
-| Avant fin délai publication résultats ronde 3   | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                ronde 4                |                                    |
-| À partir de la publication appariements ronde 4 | Elo, titre FIDE ou nom | :white_check_mark: |   :pushpin:    |                  non                  | ronde N+1 ou N+2<br/>selon les cas |
-| N'importe quand                                 | Autres                 | :white_check_mark: | :white_circle: |                                       |           Sans influence           |
+| Moment                                          |   Autorisée FIDE   | Enregistrement | Recalcul<br/>>numéros<br/>appariement |    Modification<br/>classement     |
+|-------------------------------------------------|:------------------:|:--------------:|:-------------------------------------:|:----------------------------------:|
+| Avant publication appariements ronde 1          | :white_check_mark: | :white_circle: |                ronde 1                |                                    |
+| Avant fin délai publication résultats ronde 1   | :white_check_mark: |   :pushpin:    |                ronde 2                |              ronde 1               |
+| Après publication appariements ronde 2          | :white_check_mark: |   :pushpin:    |                ronde 3                |              ronde 3               |
+| Avant fin délai publication résultats ronde 2   | :white_check_mark: |   :pushpin:    |                ronde 3                |              ronde 2               |
+| Après publication appariements ronde 3          | :white_check_mark: |   :pushpin:    |                ronde 4                |              ronde 4               |
+| Avant fin délai publication résultats ronde 3   | :white_check_mark: |   :pushpin:    |                ronde 4                |                                    |
+| À partir de la publication appariements ronde 4 | :white_check_mark: |   :pushpin:    |                  non                  | ronde N+1 ou N+2<br/>selon les cas |
+
+> [!NOTE]
+> Les modifications des informations des joueur·euses ne portant pas sur le Elo, le titre FIDE ou le nom n'ont pas d'impact sur les appariements et les classements.
+>
+> Respect des règlements de la FIDE :
+> - :white_circle: _Action non pertinente_
+> - :no_entry_sign: Action non autorisée par la FIDE
+> - :white_check_mark: Action autorisée par la FIDE
+> - :ballot_box_with_check: Action autorisée par la FIDE, doit être autorisée par le règlement
+>
+> Messages d'alerte aux arbitres :
+> - :white_circle: _Action non proposée_
+> - :ok: Action sans message d'alerte
+> - :grey_question: Modal : L'action que vous souhaitez réaliser n’est pas « standard », continuer ?
+> - :warning: Modal : L'action que vous souhaitez réaliser n’est pas n’est pas autorisée par la FIDE, continuer ?
+>
+> Enregistrement des actions non standard :
+> - :white_circle: Aucun enregistrement
+> - :pushpin: Enregistrement dans la base de données
 
 > [!NOTE]
 >
