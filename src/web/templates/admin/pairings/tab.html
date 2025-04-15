@@ -295,8 +295,13 @@
 
     function swapHandler(e) {
         if (e.detail.elt.tagName === "BODY") {
+            $("tr.pairing-row > td").off("click", rowClickHandler);
             $(document).off("keydown", keydownHandler);
             $(document).off("htmx:afterSwap", swapHandler);
+            $("tr.pairing-row > td").on("click", rowClickHandler);
+        } else if (e.detail.elt.tagName === "TR") {
+            $("tr.pairing-row > td").off("click", rowClickHandler);
+            $("tr.pairing-row > td").on("click", rowClickHandler);
         }
     }
 
