@@ -35,12 +35,24 @@ class Pairing:
         return self.result in (Result.LOSS, Result.UNRATED_LOSS)
 
     @property
+    def unrated_loss(self) -> bool:
+        return self.result == Result.UNRATED_LOSS
+
+    @property
     def draw(self) -> bool:
         return self.result in (Result.DRAW, Result.UNRATED_DRAW)
 
     @property
+    def unrated_draw(self) -> bool:
+        return self.result == Result.UNRATED_DRAW
+
+    @property
     def gain(self) -> bool:
         return self.result in (Result.GAIN, Result.UNRATED_GAIN)
+
+    @property
+    def unrated_gain(self) -> bool:
+        return self.result == Result.UNRATED_GAIN
 
     @property
     def half_point_bye(self) -> bool:

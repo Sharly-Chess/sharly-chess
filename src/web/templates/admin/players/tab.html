@@ -539,7 +539,7 @@
                             {% endif %}
                             {{ admin_macros.extra_admin_column_cell("record", player, admin_players_extra_columns)}}
                             {% if 'record' in admin_players_filter_columns %}
-                                <td class="text-nowrap">
+                                <td>
                                     {{ admin_macros.player_record(player) }}
                                 </td>
                             {% endif %}
