@@ -484,7 +484,7 @@ msgid "Cancel Half-Point Bye"
 msgstr "Annuler le demi-point joker"
 
 msgid "Cancel Zero-Point Bye"
-msgstr "Annuler l'absence"
+msgstr "Supprimer l'absence"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -2822,11 +2822,11 @@ msgstr "Points"
 msgid "Points for draw (Half-Point Bye)"
 msgstr "Points de match nul (demi-point joker)"
 
-msgid "Points for loss (zero-point bye)"
-msgstr ""
+msgid "Points for loss (Zero-Point Bye)"
+msgstr "Points de défaite (absence)"
 
-msgid "Points for win (full-point bye)"
-msgstr ""
+msgid "Points for win (Full-Point Bye)"
+msgstr "Points de victoire (point joker entier)"
 
 #, python-format
 msgid "Points: %(min)s or more"
@@ -4324,9 +4324,6 @@ msgstr "Votre choix : "
 
 msgid "Zero-Point Bye"
 msgstr "Absent·e"
-
-msgid "Zero-point bye"
-msgstr ""
 
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr "[Papi-web {version}] Demande d'intégration de fichiers de personnalisation"

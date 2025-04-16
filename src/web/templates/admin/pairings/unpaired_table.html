@@ -42,7 +42,7 @@
                     <td class="{{ class }} text-center" width="1">
                         <div
                             {% if pairing and pairing.zero_point_bye %}
-                               {{ macros.tooltip_attributes('info', _('Zero-point bye'), 'right') }}
+                               {{ macros.tooltip_attributes('info', _('Zero-Point Bye'), 'right') }}
                             {% elif pairing and pairing.half_point_bye %}
                                {{ macros.tooltip_attributes('info', _('Half-Point Bye'), 'right') }}
                             {% elif pairing and pairing.full_point_bye %}

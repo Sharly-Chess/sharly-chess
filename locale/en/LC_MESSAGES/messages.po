@@ -2822,10 +2822,10 @@ msgstr ""
 msgid "Points for draw (Half-Point Bye)"
 msgstr ""
 
-msgid "Points for loss (zero-point bye)"
+msgid "Points for loss (Zero-Point Bye)"
 msgstr ""
 
-msgid "Points for win (full-point bye)"
+msgid "Points for win (Full-Point Bye)"
 msgstr ""
 
 #, python-format
@@ -4325,9 +4325,6 @@ msgstr ""
 msgid "Zero-Point Bye"
 msgstr ""
 
-msgid "Zero-point bye"
-msgstr ""
-
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr ""
 
@@ -4499,4 +4496,13 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Points for loss (zero-point bye)"
+#~ msgstr ""
+
+#~ msgid "Points for win (full-point bye)"
+#~ msgstr ""
+
+#~ msgid "Zero-point bye"
+#~ msgstr ""
 
