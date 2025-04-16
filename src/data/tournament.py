@@ -500,7 +500,9 @@ class Tournament:
 
     @cached_property
     def playing(self) -> bool:
-        return self.is_round_finished(self.current_round)
+        return self.is_round_in_tournament(
+            self.current_round
+        ) and self.is_round_finished(self.current_round)
 
     def clear_cache(self):
         cached_property_names = [
@@ -535,6 +537,9 @@ class Tournament:
         return any(
             player.pairings[round_].exempt for player in self.players_by_id.values()
         )
+
+    def is_round_in_tournament(self, round_: int) -> bool:
+        return 1 <= round_ <= self.rounds
 
     def to_trf(
         self,
