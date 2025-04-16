@@ -502,7 +502,7 @@ class Tournament:
     def playing(self) -> bool:
         return self.is_round_in_tournament(
             self.current_round
-        ) and self.is_round_finished(self.current_round)
+        ) and not self.is_round_finished(self.current_round)
 
     def clear_cache(self):
         cached_property_names = [
