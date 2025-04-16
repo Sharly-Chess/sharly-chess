@@ -65,7 +65,7 @@
             {% elif pairing.draw %}
                 {% set _text='D' if pairing.unrated_draw else '=' %}
                 {% set _class=_box_class %}
-                {% set _tooltip_text=_('Unrated draw') if pairing.unrated_draw else _('Draw') %}
+                {% set _tooltip_text=_('Unrated Draw') if pairing.unrated_draw else _('Draw') %}
             {% elif pairing.gain %}
                 {% set _text='W' if pairing.unrated_gain else '1' %}
                 {% set _class=_box_class %}
@@ -74,11 +74,11 @@
             {% elif pairing.half_point_bye %}
                 {% set _text='<i class="bi bi-circle-half"></i>' %}
                 {% set _class='text-secondary' %}
-                {% set _tooltip_text=_('Half Point Bye') %}
+                {% set _tooltip_text=_('Half-Point Bye') %}
             {% elif pairing.full_point_bye %}
                 {% set _text='<i class="bi bi-1-circle-fill"></i>' %}
                 {% set _class='text-secondary' %}
-                {% set _tooltip_text=_('Full Point Bye') %}
+                {% set _tooltip_text=_('Full-Point Bye') %}
             {% elif pairing.forfeit_loss or pairing.double_forfeit %}
                 {% set _text='-' %}
                 {% set _class=_box_class %}
