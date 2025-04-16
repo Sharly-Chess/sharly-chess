@@ -459,6 +459,9 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
+msgid "Byes *** Players with byes"
+msgstr "Forfaits et points joker"
+
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
@@ -1624,9 +1627,6 @@ msgstr "Défaite par forfait"
 
 msgid "Forfeit Win"
 msgstr "Victoire par forfait"
-
-msgid "Forfeits and byes"
-msgstr "Forfaits et points joker"
 
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
@@ -4266,7 +4266,7 @@ msgid "Wins"
 msgstr "Victoires"
 
 msgid "Withdraw from tournament"
-msgstr "Retirer du tournoi"
+msgstr "Forfait définitif"
 
 msgid "Woman Candidate Master"
 msgstr "Candidat Maître Femme"

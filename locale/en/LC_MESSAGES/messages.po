@@ -459,6 +459,9 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
+msgid "Byes *** Players with byes"
+msgstr "Byes"
+
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
@@ -1624,9 +1627,6 @@ msgstr ""
 
 msgid "Forfeit Win"
 msgstr ""
-
-msgid "Forfeits and byes"
-msgstr "Byes"
 
 msgid "French Chess Federation"
 msgstr ""
@@ -4504,5 +4504,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Zero-point bye"
+#~ msgstr ""
+
+#~ msgid "Byes"
+#~ msgstr "Byes"
+
+#~ msgid "player-byes"
 #~ msgstr ""
 
