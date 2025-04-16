@@ -209,6 +209,7 @@
                     hx-swap="outerHTML"
                     hx-indicator="#please-wait"
                     hx-sync="body:queue all"
+                    hx-on::before-request="$('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary');"
                     hx-on:highlight_board="highlight_board(event.detail.board_id, false)"
                     hx-on:highlight_board_with_warning="highlight_board(event.detail.board_id, true)"
                 >

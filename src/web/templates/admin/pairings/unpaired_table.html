@@ -30,7 +30,7 @@
                                     {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
                                     hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
                                 {% endif %}
-                                # hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             ></i>
