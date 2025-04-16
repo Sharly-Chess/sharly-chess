@@ -46,6 +46,11 @@ nav .btn-link:hover {
     color: var(--bs-nav-hover-color);
 }
 
+.btn-group>span:not(:last-child)>.btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 .please-wait {
     pointer-events: none;
     height: 80px;

@@ -86,70 +86,79 @@
                 </div>
             {% endif %}
 
-            {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
-                <div class="btn-group">
-                    <button
-                        class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
-                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-vals='{"{{ name }}": false }'
-                        hx-include="[name='tournament_id'], [name='round']"
-                        hx-target="body"
-                        hx-indicator="#please-wait"image.png
-                    >
-                        {{ _('All') }}
-                    </button>
-                    <button
-                        class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
-                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-vals='{"{{ name }}": true }'
-                        hx-include="[name='tournament_id'], [name='round']"
-                        hx-target="body"
-                        hx-indicator="#please-wait"image.png
-                    >
-                        {{ _('In play') }}
-                    </button>
-                </div>
-            {% endwith %}
+            {% if admin_round <= admin_tournament.current_round %}
+                {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
+                    <div class="btn-group">
+                        <button
+                            class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
+                            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-vals='{"{{ name }}": false }'
+                            hx-include="[name='tournament_id'], [name='round']"
+                            hx-target="body"
+                            hx-indicator="#please-wait"image.png
+                        >
+                            {{ _('All') }}
+                        </button>
+                        <button
+                            class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
+                            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-vals='{"{{ name }}": true }'
+                            hx-include="[name='tournament_id'], [name='round']"
+                            hx-target="body"
+                            hx-indicator="#please-wait"image.png
+                        >
+                            {{ _('In play') }}
+                        </button>
+                    </div>
+                {% endwith %}
 
-            <div class="d-flex flex-column">
-                <div style="font-size: 0.8rem;">
-                    {{ _('Keyboard shortcuts:') }}
-                    <i
-                        class="bi-info-circle-fill ps-1"
-                        {{ macros.tooltip_attributes(
-                            '',
-                            '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
-                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
-                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
-                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
-                                    '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
-                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
-                            '</div>',
-                            'top',
-                        ) }}
-                    ></i>
-                </div>
+                <div class="d-flex flex-column">
+                    <div style="font-size: 0.8rem;">
+                        {{ _('Keyboard shortcuts:') }}
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            {{ macros.tooltip_attributes(
+                                '',
+                                '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
+                                    '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
+                                    '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
+                                    '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
+                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
+                                    '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
+                                '</div>',
+                                'top',
+                            ) }}
+                        ></i>
+                    </div>
 
-                <div class="btn-group">
-                    <button
-                        id="overwrite-mode"
-                        class="btn btn-outline-primary {% if admin_round == admin_tournament.current_round %}active{% endif %}"
-                        hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                        {% if admin_round != admin_tournament.current_round %}
-                            disabled
-                        {% endif %}
-                    >
-                        {{ _('Overwrite') }}
-                    </button>
-                    <button
-                        id="highlight-mode"
-                        class="btn btn-outline-primary {% if admin_round != admin_tournament.current_round %}active{% endif %}"
-                        hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                    >
-                        {{ _('Highlight') }}
-                    </button>
+                    <div class="btn-group">
+                        <span
+                            {% set _tooltip_text=_('Overwrite the result of the pairing when using the keyboard shortcuts.') if admin_round == admin_tournament.current_round else _("Overwrite mode is not available for previous rounds.") %}
+                            {{ macros.tooltip_attributes('info', _tooltip_text, 'top') }}
+                        >
+                            <button
+                                id="overwrite-mode"
+                                class="btn btn-outline-primary {% if admin_round == admin_tournament.current_round %}active{% endif %}"
+                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
+                                {% if admin_round != admin_tournament.current_round %}
+                                    disabled
+                                {% endif %}
+
+                            >
+                                {{ _('Overwrite') }}
+                            </button>
+                        </span>
+                        <button
+                            id="highlight-mode"
+                            class="btn btn-outline-primary {% if admin_round != admin_tournament.current_round %}active{% endif %}"
+                            hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
+                            {{ macros.tooltip_attributes('info', _('Highlights the row if the new result is different when using the keyboard shortcuts.  Useful when re-entering all the results for verification.'), 'top') }}
+                        >
+                            {{ _('Highlight') }}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
 
         <div class="row">
