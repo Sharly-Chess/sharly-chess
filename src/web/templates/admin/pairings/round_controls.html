@@ -5,6 +5,7 @@
             hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round - 1 }}"
             hx-include="[name='tournament_id']"
             hx-target="body"
+            hx-replace-url="true"
             hx-indicator="#please-wait"
             {% if admin_round <= 1 %}
                 disabled
@@ -21,6 +22,7 @@
         hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
         hx-include="[name='tournament_id']"
         hx-target="body"
+        hx-replace-url="true"
         hx-indicator="#please-wait"
     >
         {% with rounds=admin_tournament.current_round if admin_tournament.current_round > admin_round else admin_round %}
@@ -43,6 +45,7 @@
                 data-bs-target="#modal-wrapper"
             {% endif %}
             hx-target="body"
+            hx-replace-url="true"
             hx-indicator="#please-wait"
             {% if admin_round >= admin_tournament.rounds %}
                 disabled
@@ -61,6 +64,7 @@
         hx-trigger="change"
         hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
         hx-target="body"
+        hx-replace-url="true"
         hx-indicator="#please-wait"
     >
         {% for value, text in tournament_options.items() %}
