@@ -6,12 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from babel.messages import Catalog, Message
-from babel.messages.frontend import CommandLineInterface
 from babel.messages.pofile import read_po, write_po
-
-from common import enable_experimental_features
-
-enable_experimental_features(True)
 
 sys.path.extend(
     map(
@@ -20,43 +15,27 @@ sys.path.extend(
             Path(__file__).parents[2],  # The root path
             Path(__file__).parents[2]
             / 'src',  # The path to the sources of the application
+            Path(__file__).parents[2]
+            / 'scripts',  # The path to the scripts of the application
         ],
     )
 )
+
+from scripts.i18n.i18n_babel import run_babel_command
 
 from common.i18n import (  # Noqa: E402
     DEFAULT_LOCALE,
     locale_localized_name,
     locale_flag_url,
     translators,
+    locales,
 )
 from common.logger import (  # Noqa: E402
     print_interactive_error,
     print_interactive_warning,
     print_interactive_info,
     print_interactive_success,
-    input_interactive,
-    print_interactive_input,
 )
-
-
-def run_babel_command(
-    babel_command: str,
-    babel_args: list,
-    quiet: bool = False,
-):
-    """Run a Babel command using the command-line interface."""
-    argv: list[str] = [
-        sys.argv[0],
-    ]
-    if quiet:
-        argv += [
-            '-q',
-        ]
-    argv += [
-        babel_command,
-    ] + list(map(str, babel_args))  # map to ensure all args are passed as strings
-    CommandLineInterface().run(argv)
 
 
 class LocaleInfo:
@@ -64,14 +43,12 @@ class LocaleInfo:
         self,
         id_: str,
         locale_dir: Path,
-        trusted: bool,
     ):
         self.id: str = id_
         self.default: bool = id_ == DEFAULT_LOCALE
         self.locale_dir: Path = locale_dir
         self.po_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.po'
         self.mo_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.mo'
-        self.trusted: bool = trusted
         self.messages: dict[str, Message] = {}
         self.error_messages: dict[str, Message] = {}
         self.empty_optional_messages: dict[str, Message] = {}
@@ -82,11 +59,9 @@ class LocaleInfo:
     def update_and_compile(
         self,
         pot_file: Path,
-    ) -> bool:
+    ):
         """Updates the PO file from the POT file,
-        compiles the PO file to the MO file,
-        returns True if the locale is new."""
-        new_locale: bool = False
+        compiles the PO file to the MO file."""
         if not self.po_file.is_file():
             print_interactive_info(f'- {self.po_file.parent}...')
             self.po_file.parent.mkdir(parents=True, exist_ok=True)
@@ -99,7 +74,6 @@ class LocaleInfo:
                 ],
                 quiet=True,
             )
-            new_locale = True
         print_interactive_info(f'- {self.po_file}...')
         run_babel_command(
             'update',
@@ -114,10 +88,7 @@ class LocaleInfo:
             ],
             quiet=True,
         )
-        if not self.mo_file.is_file():
-            new_locale = True
         self.compile()
-        return new_locale
 
     def compile(
         self,
@@ -144,8 +115,10 @@ class LocaleInfo:
     @staticmethod
     def message_is_empty(msg: Message):
         if isinstance(msg.id, str):
+            assert isinstance(msg.string, str)
             return not msg.string
         else:
+            assert isinstance(msg.string, tuple)
             return not msg.string[0] or not msg.string[1]
 
     @staticmethod
@@ -182,19 +155,22 @@ class LocaleInfo:
 
     def compare_message_tokens(self, msg: Message) -> bool:
         error: bool = False
-        if isinstance(msg.id, str):
+        if isinstance(msg.string, str):
+            assert isinstance(msg.id, str)
             if self.sorted_tokens(msg.id) != self.sorted_tokens(msg.string):
-                msg.user_comments.append(
-                    f'Error: tokens differ between [{msg.id}] and [{msg.string}]'
-                )
+                msg.user_comments = [
+                    f'Error: tokens differ between [{msg.id}] and [{msg.string}]',
+                ]
                 msg.string = ''
                 error = True
         else:
+            assert isinstance(msg.id, tuple)
+            assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
                 if self.sorted_tokens(msg.id[i]) != self.sorted_tokens(msg.string[i]):
-                    msg.user_comments.append(
-                        f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]'
-                    )
+                    msg.user_comments = [
+                        f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]',
+                    ]
                     msg.string = tuple(
                         [
                             '',
@@ -209,18 +185,21 @@ class LocaleInfo:
     def check_message_length(msg: Message) -> bool:
         error: bool = False
         if isinstance(msg.id, str):
+            assert isinstance(msg.string, str)
             if len(msg.string) > 5 * len(msg.id):
-                msg.user_comments.append(
-                    f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]'
-                )
+                msg.user_comments = [
+                    f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
+                ]
                 msg.string = ''
                 error = True
         else:
+            assert isinstance(msg.id, tuple)
+            assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
                 if len(msg.string[i]) > 5 * len(msg.id[i]):
-                    msg.user_comments.append(
-                        f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]'
-                    )
+                    msg.user_comments = [
+                        f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
+                    ]
                     msg.string = tuple(
                         [
                             '',
@@ -243,7 +222,7 @@ class LocaleInfo:
         self.flagged_messages = {}
         # Control all the messages.
         for msg in catalog:
-            if msg.id:
+            if isinstance(msg.id, str) and msg.id:
                 self.messages[msg.id] = msg
                 if msg.id.__contains__('***'):
                     self.mandatory_messages[msg.id] = msg
@@ -322,46 +301,20 @@ class LocaleInfo:
 
 
 class I18nUpdater:
-    def __init__(
-        self,
-        trusted_locales: list[str],
-        untrusted_locales: list[str],
-    ):
-        """The path of the i18n files (this script should be run from the dev root)."""
-        self.trusted_locales: list[str] = trusted_locales
-        self.untrusted_locales: list[str] = untrusted_locales
+    def __init__(self):
+        # The path of the i18n files (this script should be run from the dev root).
         self.locale_dir: Path = Path('locale')
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.doc_dir: Path = Path('docs')
         self.doc_file: Path = self.doc_dir / '86-i18n.md'
-        self.new_locales: list[str] = []
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
         self.extract()
         self.locale_infos: dict[str, LocaleInfo] = OrderedDict()
-        for locale in self.trusted_locales:
-            self.locale_infos[locale] = LocaleInfo(
-                locale, self.locale_dir, trusted=True
-            )
-        for locale in self.untrusted_locales:
-            self.locale_infos[locale] = LocaleInfo(
-                locale, self.locale_dir, trusted=False
-            )
+        for locale in locales:
+            self.locale_infos[locale] = LocaleInfo(locale, self.locale_dir)
         print_interactive_info('Updating PO files...')
         for locale_info in self.locale_infos.values():
-            if locale_info.update_and_compile(self.pot_file):
-                self.new_locales.append(locale_info.id)
-        if self.new_locales:
-            print_interactive_success('New locales created, please re-run.')
-            return
-        print_interactive_info('Inspecting PO files...')
-        untrusted_locales_with_missing_translations: list[str] = []
-        for locale_info in self.locale_infos.values():
-            locale_info.control()
-            if (
-                locale_info.id not in self.trusted_locales
-                and locale_info.empty_optional_messages
-            ):
-                untrusted_locales_with_missing_translations.append(locale_info.id)
+            locale_info.update_and_compile(self.pot_file)
         print_interactive_info('Compiling PO files...')
         for locale_info in self.locale_infos.values():
             if not locale_info.error_messages:
@@ -369,39 +322,6 @@ class I18nUpdater:
         self.print_summary()
         print_interactive_info('Writing MD files...')
         self.write_markdown()
-        if untrusted_locales_with_missing_translations:
-            print_interactive_input(
-                f'Some translations are missing for the following untrusted locales: {", ".join(untrusted_locales_with_missing_translations)}'
-            )
-            if (
-                input_interactive(
-                    'Do you want to add the missing translations (y/N)? '
-                ).upper()
-                or 'N'
-            ) == 'Y':
-                # import here not to create a dependency from export.py to translate stuff
-                try:
-                    from scripts.i18n.i18n_translate import I18nTranslator
-                except ModuleNotFoundError as error:
-                    print_interactive_error(
-                        f'Could not import I18nTranslator: {error}.'
-                    )
-                    print_interactive_error(
-                        "Make sure all the needed modules for translation are installed by running 'pip install -e .[translate]'."
-                    )
-                    sys.exit(1)
-                for locale in untrusted_locales_with_missing_translations:
-                    I18nTranslator(locale).add_missing_translations()
-                print_interactive_info('Inspecting PO files...')
-                for locale in untrusted_locales_with_missing_translations:
-                    self.locale_infos[locale].control()
-                print_interactive_info('Compiling PO files...')
-                for locale in untrusted_locales_with_missing_translations:
-                    if not self.locale_infos[locale].error_messages:
-                        self.locale_infos[locale].compile()
-                self.print_summary()
-                print_interactive_info('Writing MD files...')
-                self.write_markdown()
 
     def extract(
         self,
@@ -515,60 +435,37 @@ class I18nUpdater:
         for locale_info in self.locale_infos.values():
             locale_info.print_summary()
 
-    def check_trusted_locales(self) -> bool:
-        assert not self.new_locales
-        print_interactive_info('Checking trusted locales...')
+    def check(self) -> bool:
+        print_interactive_info('Checking locales...')
         perfect: bool = True
         for locale, locale_info in self.locale_infos.items():
-            if locale in self.trusted_locales:
+            if locale in locales:
                 if locale_info.empty_mandatory_messages:
                     print_interactive_error(
-                        'Mandatory translations are missing for trusted locales.'
+                        'Mandatory translations are missing for some locales.'
                     )
                     perfect = False
                     break
         for locale, locale_info in self.locale_infos.items():
-            if locale in self.trusted_locales:
+            if locale in locales:
                 if not locale_info.default and locale_info.empty_optional_messages:
                     print_interactive_warning(
-                        'Translations are missing for trusted locales.'
+                        'Translations are missing for some locales.'
                     )
                     perfect = False
                     break
         for locale, locale_info in self.locale_infos.items():
-            if locale in self.trusted_locales:
+            if locale in locales:
                 if locale_info.flagged_messages:
                     print_interactive_warning(
-                        'Translations are flagged for trusted locales.'
+                        'Translations are flagged for some locales.'
                     )
                     perfect = False
                     break
         if perfect:
-            print_interactive_success('Translations seem perfect for trusted locales.')
+            print_interactive_success('Translations seem perfect.')
         return perfect
 
 
 if __name__ == '__main__':
-    untrusted_locales: list[str] = []
-    if (
-        input_interactive('Do you want to update the untrusted locales (y/N)? ').upper()
-        or 'N'
-    ) == 'Y':
-        untrusted_locales = [
-            'de',
-            'el',
-            'es',
-            'it',
-            'nl',
-            'sv',
-        ]
-    # PO and MO files are automatically created from this list; to add a new locale, add it to the list.
-    updater = I18nUpdater(
-        trusted_locales=[
-            'en',
-            'fr',
-        ],
-        untrusted_locales=untrusted_locales,
-    )
-    if not updater.new_locales:
-        updater.check_trusted_locales()
+    I18nUpdater().check()
