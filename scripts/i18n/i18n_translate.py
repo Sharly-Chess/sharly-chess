@@ -8,8 +8,6 @@ from babel.messages.pofile import read_po, write_po
 from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
-from scripts.i18n.i18n_babel import run_babel_command
-
 sys.path.extend(
     map(
         str,
@@ -17,9 +15,13 @@ sys.path.extend(
             Path(__file__).parents[2],  # The root path
             Path(__file__).parents[2]
             / 'src',  # The path to the sources of the application
+            Path(__file__).parents[2]
+            / 'scripts',  # The path to the scripts of the application
         ],
     )
 )
+
+from scripts.i18n.i18n_babel import run_babel_command
 
 from common.i18n import DEFAULT_LOCALE
 from common.logger import (
