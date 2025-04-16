@@ -19,7 +19,7 @@
                 <tr id="player-{{ player.id }}" class="player-row" data-player-id="{{ player.id }}">
                     <td class="{{ class }}">
                         <div class="d-flex align-items-center gap-2">
-                        {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round == admin_tournament.current_round or admin_tournament.current_round == 0) %}
+                        {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round >= admin_tournament.current_round) %}
                             <i
                                 {% if player.check_in %}
                                     class="bi-check-circle-fill text-success cursor-pointer"
