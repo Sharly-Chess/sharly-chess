@@ -127,10 +127,10 @@ class BaseAdminController(BaseController):
         options: dict[str, str] = {
             '': '',
             WebContext.value_to_form_data(Result.GAIN.value): _(
-                'Points for gain (full-point bye)'
+                'Points for win (full-point bye)'
             ),
             WebContext.value_to_form_data(Result.DRAW.value): _(
-                'Points for draw (half-point bye)'
+                'Points for draw (Half-Point Bye)'
             ),
             WebContext.value_to_form_data(Result.LOSS.value): _(
                 'Points for loss (zero-point bye)'

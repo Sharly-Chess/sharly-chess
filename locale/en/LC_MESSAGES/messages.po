@@ -110,25 +110,13 @@ msgstr ""
 msgid "/move"
 msgstr ""
 
-msgid "0: No result"
-msgstr ""
-
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
-
-msgid "1: White wins"
-msgstr ""
 
 msgid "1st day of the month"
 msgstr ""
 
 msgid "20+"
-msgstr ""
-
-msgid "2: Black wins"
-msgstr ""
-
-msgid "3: Draw"
 msgstr ""
 
 msgid "50+"
@@ -264,6 +252,9 @@ msgstr ""
 msgid "Alert message:"
 msgstr ""
 
+msgid "All"
+msgstr ""
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
 msgstr ""
 
@@ -377,6 +368,9 @@ msgstr "Bd."
 msgid "Black"
 msgstr ""
 
+msgid "Black Wins"
+msgstr ""
+
 msgid "Black games"
 msgstr ""
 
@@ -486,10 +480,10 @@ msgstr "CM"
 msgid "Cancel"
 msgstr ""
 
-msgid "Cancel half-point bye"
+msgid "Cancel Half-Point Bye"
 msgstr ""
 
-msgid "Cancel zero-point bye"
+msgid "Cancel Zero-Point Bye"
 msgstr ""
 
 msgid "Candidate Master"
@@ -1625,11 +1619,14 @@ msgstr "Fore Bu."
 msgid "Fore Buchholz"
 msgstr ""
 
-msgid "Forfeit gain"
+msgid "Forfeit Loss"
 msgstr ""
 
-msgid "Forfeit loss"
+msgid "Forfeit Win"
 msgstr ""
+
+msgid "Forfeits and byes"
+msgstr "Byes"
 
 msgid "French Chess Federation"
 msgstr ""
@@ -1646,14 +1643,14 @@ msgstr ""
 msgid "From the local network (LAN/WAN)"
 msgstr ""
 
-msgid "Full-point bye (deprecated)"
+msgid "Full-Point Bye"
+msgstr ""
+
+msgid "Full-Point Bye (deprecated)"
 msgstr ""
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
-
-msgid "Gain"
-msgstr ""
 
 msgid "Games played"
 msgstr ""
@@ -1664,7 +1661,7 @@ msgstr ""
 msgid "Games won"
 msgstr ""
 
-msgid "Games won with black"
+msgid "Games won with Black"
 msgstr ""
 
 msgid "Gender"
@@ -1700,16 +1697,19 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
-msgid "Half-point bye"
+msgid "Half-Point Bye"
 msgstr ""
 
 msgid "Hello,"
 msgstr ""
 
-msgid "Hide pairings with results"
+msgid "Hide the exit button"
 msgstr ""
 
-msgid "Hide the exit button"
+msgid "Highlight"
+msgstr ""
+
+msgid "Highlights the row if the new result is different when using the keyboard shortcuts. Useful when re-entering all the results for verification."
 msgstr ""
 
 msgid "Hour [{uniq_id}] already exists."
@@ -1771,6 +1771,9 @@ msgstr ""
 msgid "Impossible to set a round number lower than current round #{round}."
 msgstr ""
 
+msgid "In play"
+msgstr ""
+
 msgid "Incorrect password."
 msgstr ""
 
@@ -1788,12 +1791,6 @@ msgid "Initial time (optional, seconds):"
 msgstr ""
 
 msgid "Initializing a session to [{url}]..."
-msgstr ""
-
-msgid "Input"
-msgstr ""
-
-msgid "Input mode is only available for the current round."
 msgstr ""
 
 msgid "Input screen creation"
@@ -1901,7 +1898,7 @@ msgstr "Ka."
 msgid "Kashdan"
 msgstr ""
 
-msgid "Keyboard shortcuts"
+msgid "Keyboard shortcuts:"
 msgstr ""
 
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
@@ -2173,6 +2170,9 @@ msgstr ""
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
+msgid "Navigation"
+msgstr ""
+
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nb."
 
@@ -2318,6 +2318,9 @@ msgstr ""
 msgid "No response from GitHub."
 msgstr ""
 
+msgid "No result"
+msgstr ""
+
 msgid "No results."
 msgstr ""
 
@@ -2391,9 +2394,6 @@ msgid "No warnings"
 msgstr ""
 
 msgid "None"
-msgstr ""
-
-msgid "Not checked-in"
 msgstr ""
 
 msgid "Not checked-in yet"
@@ -2492,9 +2492,6 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
-msgid "Options"
-msgstr ""
-
 msgid "Other ODBC drivers found on the server"
 msgstr ""
 
@@ -2505,6 +2502,15 @@ msgid "Over 50"
 msgstr ""
 
 msgid "Over 65"
+msgstr ""
+
+msgid "Overwrite"
+msgstr ""
+
+msgid "Overwrite mode is not available for previous rounds."
+msgstr ""
+
+msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr ""
 
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
@@ -2538,7 +2544,7 @@ msgstr ""
 msgid "Pair as WHITE"
 msgstr ""
 
-msgid "Pairing allocated bye"
+msgid "Pairing Allocated Bye"
 msgstr ""
 
 msgid "Pairings"
@@ -2813,13 +2819,13 @@ msgstr ""
 msgid "Points"
 msgstr ""
 
-msgid "Points for draw (half-point bye)"
-msgstr ""
-
-msgid "Points for gain (full-point bye)"
+msgid "Points for draw (Half-Point Bye)"
 msgstr ""
 
 msgid "Points for loss (zero-point bye)"
+msgstr ""
+
+msgid "Points for win (full-point bye)"
 msgstr ""
 
 #, python-format
@@ -3235,12 +3241,6 @@ msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
 msgid "Sharly Chess project"
-msgstr ""
-
-msgid "Shortcuts check if the inputted result and the result of the selected row are a match."
-msgstr ""
-
-msgid "Shortcuts set the result of the selected row to the inputted result."
 msgstr ""
 
 msgid "Show all the players"
@@ -4108,7 +4108,13 @@ msgstr ""
 msgid "Unpaired: hidden"
 msgstr ""
 
-msgid "Up/Down: Navigation"
+msgid "Unrated Draw"
+msgstr ""
+
+msgid "Unrated Loss"
+msgstr ""
+
+msgid "Unrated Win"
 msgstr ""
 
 msgid "Upcoming events ({num})"
@@ -4148,9 +4154,6 @@ msgstr ""
 
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
-
-msgid "Validation"
-msgstr ""
 
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr ""
@@ -4247,10 +4250,16 @@ msgstr ""
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr ""
 
 msgid "White"
+msgstr ""
+
+msgid "White wins"
+msgstr ""
+
+msgid "Win"
 msgstr ""
 
 msgid "Wins"
@@ -4313,6 +4322,9 @@ msgstr ""
 msgid "Your choice: "
 msgstr ""
 
+msgid "Zero-Point Bye"
+msgstr ""
+
 msgid "Zero-point bye"
 msgstr ""
 
@@ -4354,9 +4366,6 @@ msgstr ""
 
 msgid "by default"
 msgstr ""
-
-msgid "bye-players"
-msgstr "Byes"
 
 msgid "event"
 msgstr ""
@@ -4490,13 +4499,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Cancel zero-point bye for this round"
-#~ msgstr ""
-
-#~ msgid "Zero-point bye for this round"
-#~ msgstr ""
-
-#~ msgid "Byes"
-#~ msgstr ""
 

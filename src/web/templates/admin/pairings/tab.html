@@ -152,7 +152,7 @@
                             id="highlight-mode"
                             class="btn btn-outline-primary {% if admin_round != admin_tournament.current_round %}active{% endif %}"
                             hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                            {{ macros.tooltip_attributes('info', _('Highlights the row if the new result is different when using the keyboard shortcuts.  Useful when re-entering all the results for verification.'), 'top') }}
+                            {{ macros.tooltip_attributes('info', _('Highlights the row if the new result is different when using the keyboard shortcuts. Useful when re-entering all the results for verification.'), 'top') }}
                         >
                             {{ _('Highlight') }}
                         </button>
@@ -172,7 +172,7 @@
                     {% endif %}
 
                     {% if admin_bye_players|length > 0 %}
-                    {% with title=_('bye-players'), unpaired=admin_bye_players %}
+                    {% with title=_('Forfeits and byes'), unpaired=admin_bye_players %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}

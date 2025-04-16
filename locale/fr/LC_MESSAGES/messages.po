@@ -110,26 +110,14 @@ msgstr "- Voir les fichiers sur filebin.net : {bin_url}"
 msgid "/move"
 msgstr "/cp"
 
-msgid "0: No result"
-msgstr "0 : Pas de résultat"
-
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
-
-msgid "1: White wins"
-msgstr "1 : Victoire des Blancs"
 
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
 msgid "20+"
 msgstr "20+"
-
-msgid "2: Black wins"
-msgstr "2 : Victoire des Noirs"
-
-msgid "3: Draw"
-msgstr "3 : Partie nulle"
 
 msgid "50+"
 msgstr "50+"
@@ -264,6 +252,9 @@ msgstr "Message d'alerte"
 msgid "Alert message:"
 msgstr "Message d'alerte :"
 
+msgid "All"
+msgstr "Tous"
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
@@ -353,7 +344,7 @@ msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
 
 msgid "BLACK WINS"
-msgstr "GAIN NOIRS"
+msgstr "VICTOIRE NOIRS"
 
 msgid "BY FORFEIT"
 msgstr "PAR FORFAIT"
@@ -376,6 +367,9 @@ msgstr "Ech."
 
 msgid "Black"
 msgstr "Noirs"
+
+msgid "Black Wins"
+msgstr "Victoires avec les Noirs"
 
 msgid "Black games"
 msgstr "Parties Noirs"
@@ -486,10 +480,10 @@ msgstr "CM"
 msgid "Cancel"
 msgstr "Annuler"
 
-msgid "Cancel half-point bye"
+msgid "Cancel Half-Point Bye"
 msgstr "Annuler le demi-point joker"
 
-msgid "Cancel zero-point bye"
+msgid "Cancel Zero-Point Bye"
 msgstr "Annuler l'absence"
 
 msgid "Candidate Master"
@@ -1625,11 +1619,14 @@ msgstr "Fore Bu."
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
-msgid "Forfeit gain"
-msgstr "Gain par forfait"
+msgid "Forfeit Loss"
+msgstr "Défaite par forfait"
 
-msgid "Forfeit loss"
-msgstr "Perte par forfait"
+msgid "Forfeit Win"
+msgstr "Victoire par forfait"
+
+msgid "Forfeits and byes"
+msgstr "Forfaits et points joker"
 
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
@@ -1646,26 +1643,26 @@ msgstr "Depuis le serveur Papi-web"
 msgid "From the local network (LAN/WAN)"
 msgstr "Depuis le réseau local (LAN/WAN)"
 
-msgid "Full-point bye (deprecated)"
+msgid "Full-Point Bye"
+msgstr "Point joker entier"
+
+msgid "Full-Point Bye (deprecated)"
 msgstr "Point joker entier (obsolète)"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
 
-msgid "Gain"
-msgstr "Gain"
-
 msgid "Games played"
 msgstr "Parties jouées"
 
 msgid "Games played with black"
-msgstr "Nombre de parties jouées avec les noirs"
+msgstr "Nombre de parties jouées avec les Noirs"
 
 msgid "Games won"
 msgstr "Parties gagnées"
 
-msgid "Games won with black"
-msgstr "Nombre de parties gagnées avec les noirs"
+msgid "Games won with Black"
+msgstr "Nombre de parties gagnées avec les Noirs"
 
 msgid "Gender"
 msgstr "Genre"
@@ -1700,17 +1697,20 @@ msgstr "Aller à l'écran."
 msgid "Grand Master"
 msgstr "Grand Maître International"
 
-msgid "Half-point bye"
+msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
 msgid "Hello,"
 msgstr "Bonjour,"
 
-msgid "Hide pairings with results"
-msgstr "Masquer les échiquiers avec résultats"
-
 msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
+
+msgid "Highlight"
+msgstr "Surbrillance"
+
+msgid "Highlights the row if the new result is different when using the keyboard shortcuts. Useful when re-entering all the results for verification."
+msgstr ""
 
 msgid "Hour [{uniq_id}] already exists."
 msgstr "L'horaire [{uniq_id}] existe déjà."
@@ -1771,6 +1771,9 @@ msgstr "Impossible de définir un point joker dans les %(rounds)d dernières ron
 msgid "Impossible to set a round number lower than current round #{round}."
 msgstr "Impossible d'attribuer un nombre de rondes inférieur à la ronde actuelle (ronde n°{round})."
 
+msgid "In play"
+msgstr "En jeu"
+
 msgid "Incorrect password."
 msgstr "Mot de passe incorrect."
 
@@ -1789,12 +1792,6 @@ msgstr "Temps initial (optionel, en secondes) :"
 
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisation d'une session vers [{url}]..."
-
-msgid "Input"
-msgstr "Saisie"
-
-msgid "Input mode is only available for the current round."
-msgstr "Le mode Saisie n'est disponible que pour la ronde en cours."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
@@ -1901,8 +1898,8 @@ msgstr "Ka."
 msgid "Kashdan"
 msgstr "Kashdan"
 
-msgid "Keyboard shortcuts"
-msgstr "Raccourcis clavier"
+msgid "Keyboard shortcuts:"
+msgstr "Raccourcis clavier :"
 
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
@@ -2007,7 +2004,7 @@ msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr "Recherche d'une version plus récente sur GitHub ([{url}])..."
 
 msgid "Loss"
-msgstr "Perte"
+msgstr "Défaite"
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -2173,6 +2170,9 @@ msgstr "Nom : par défaut"
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
+msgid "Navigation"
+msgstr "Navigation"
+
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nr"
 
@@ -2318,6 +2318,9 @@ msgstr "Pas d'enregistrement"
 msgid "No response from GitHub."
 msgstr "Pas de réponse de GitHub."
 
+msgid "No result"
+msgstr "Pas de résultat"
+
 msgid "No results."
 msgstr "Aucun résultat."
 
@@ -2393,11 +2396,8 @@ msgstr "Aucun avertissement"
 msgid "None"
 msgstr "Aucun"
 
-msgid "Not checked-in"
-msgstr "Non point·ée"
-
 msgid "Not checked-in yet"
-msgstr "Non point·ée"
+msgstr "Pas encore point·ée"
 
 msgid "Not connected to internet."
 msgstr "Aucune connection à internet."
@@ -2492,9 +2492,6 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
-msgid "Options"
-msgstr "Options"
-
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
 
@@ -2506,6 +2503,15 @@ msgstr "Plus de 50"
 
 msgid "Over 65"
 msgstr "Plus de 65"
+
+msgid "Overwrite"
+msgstr "Remplacement"
+
+msgid "Overwrite mode is not available for previous rounds."
+msgstr "Le mode remplacement n'est pas disponible pour les rondes qui précèdent la ronde courante."
+
+msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
+msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Du"
@@ -2538,7 +2544,7 @@ msgstr "Apparier avec les NOIRS contre %(player)s"
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
 
-msgid "Pairing allocated bye"
+msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
 msgid "Pairings"
@@ -2813,14 +2819,14 @@ msgstr "Plug-ins"
 msgid "Points"
 msgstr "Points"
 
-msgid "Points for draw (half-point bye)"
+msgid "Points for draw (Half-Point Bye)"
 msgstr "Points de match nul (demi-point joker)"
 
-msgid "Points for gain (full-point bye)"
-msgstr "Points de victoire (point joker)"
-
 msgid "Points for loss (zero-point bye)"
-msgstr "Points de défaite (zéro point joker)"
+msgstr ""
+
+msgid "Points for win (full-point bye)"
+msgstr ""
 
 #, python-format
 msgid "Points: %(min)s or more"
@@ -3236,12 +3242,6 @@ msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
-
-msgid "Shortcuts check if the inputted result and the result of the selected row are a match."
-msgstr "Les raccourcis vérifient si le résultat saisi et le résultat de l'échiquier sélectionné sont identiques."
-
-msgid "Shortcuts set the result of the selected row to the inputted result."
-msgstr "Les raccourcis mettent à jour le résultat de l'échiquier sélectionné."
 
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
@@ -4108,8 +4108,14 @@ msgstr "Non apparié·es : affiché·es"
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
 
-msgid "Up/Down: Navigation"
-msgstr "Haut/Bas : Navigation"
+msgid "Unrated Draw"
+msgstr "Nulle non comptabilisé pour le classement Elo"
+
+msgid "Unrated Loss"
+msgstr "Défaite non comptabilisé pour le classement Elo"
+
+msgid "Unrated Win"
+msgstr "Victoire non comptabilisé pour le classement Elo"
 
 msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
@@ -4149,9 +4155,6 @@ msgstr "Ne pas utiliser de chronomètre"
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
 
-msgid "Validation"
-msgstr "Validation"
-
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr "La version [{version}] est déjà installée dans le répertoire [{dir}], veuillez supprimer ce répertoire avant d'installer."
 
@@ -4177,7 +4180,7 @@ msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "GMF"
 
 msgid "WHITE WINS"
-msgstr "GAIN BLANCS"
+msgstr "VICTOIRE BLANCS"
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
@@ -4247,11 +4250,17 @@ msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."
 
 msgid "White"
 msgstr "Blancs"
+
+msgid "White wins"
+msgstr "Victoire Blancs"
+
+msgid "Win"
+msgstr "Victoire"
 
 msgid "Wins"
 msgstr "Victoires"
@@ -4313,8 +4322,11 @@ msgstr "Votre choix, par défaut [{default}] :"
 msgid "Your choice: "
 msgstr "Votre choix : "
 
+msgid "Zero-Point Bye"
+msgstr "Absent·e"
+
 msgid "Zero-point bye"
-msgstr "Absent"
+msgstr ""
 
 msgid "[Papi-web {version}] Request for the integration of custom files"
 msgstr "[Papi-web {version}] Demande d'intégration de fichiers de personnalisation"
@@ -4354,9 +4366,6 @@ msgstr "échiquiers {board_numbers}"
 
 msgid "by default"
 msgstr "par défaut"
-
-msgid "bye-players"
-msgstr "Forfaits et points joker"
 
 msgid "event"
 msgstr "évènement"

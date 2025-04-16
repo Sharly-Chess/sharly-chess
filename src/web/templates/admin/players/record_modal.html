@@ -79,25 +79,25 @@
                             {% elif pairing.playing %}
                                 {% set text=_('Playing') %}
                             {% elif pairing.exempt %}
-                                {% set text=_('Pairing allocated bye') %}
+                                {% set text=_('Pairing Allocated Bye') %}
                             {% elif pairing.loss %}
                                 {% set text=_('Loss') %}
                             {% elif pairing.draw %}
                                 {% set text=_('Draw') %}
                             {% elif pairing.gain %}
-                                {% set text=_('Gain') %}
+                                {% set text=_('Win') %}
                             {% elif pairing.half_point_bye %}
-                                {% set text=_('Half-point bye') %}
+                                {% set text=_('Half-Point Bye') %}
                                 {% set half_point_bye = true %}
                             {% elif pairing.full_point_bye %}
-                                {% set text=_('Full-point bye (deprecated)') %}
+                                {% set text=_('Full-Point Bye (deprecated)') %}
                                 {% set full_point_bye = true %}
                             {% elif pairing.forfeit_loss %}
-                                {% set text=_('Forfeit loss') %}
+                                {% set text=_('Forfeit Loss') %}
                             {% elif pairing.double_forfeit %}
-                                {% set text=_('Forfeit loss') %}
+                                {% set text=_('Forfeit Loss') %}
                             {% elif pairing.forfeit_gain %}
-                                {% set text=_('Forfeit gain') %}
+                                {% set text=_('Forfeit Win') %}
                             {% else %}
                                 {% set text='???' %}
                             {% endif %}
@@ -138,7 +138,7 @@
                                                             selected
                                                         {% endif %}
                                                 >
-                                                    {{ _('Half-point bye') }}
+                                                    {{ _('Half-Point Bye') }}
                                                 </option>
                                                 <option
                                                         value="10"
@@ -147,7 +147,7 @@
                                                             selected
                                                         {% endif %}
                                                 >
-                                                    {{ _('Full-point bye (deprecated)') }}
+                                                    {{ _('Full-Point Bye (deprecated)') }}
                                                 </option>
                                             {% endif %}
                                         </select>

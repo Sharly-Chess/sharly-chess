@@ -11,11 +11,11 @@ class PapiResult(IntEnum):
 
     NOT_PAIRED = 0
     LOSS = 1
-    DRAW_OR_HPB = 2  # HPB = Half Point Bye
+    DRAW_OR_HPB = 2  # HPB = Half-Point Bye
     GAIN = 3
     FORFEIT_LOSS = 4
     DOUBLE_FORFEIT = 5
-    PAB_OR_FORFEIT_GAIN_OR_FPB = 6  # PAB = Pairing-Allocated-Bye, FPB = Full Point Bye
+    PAB_OR_FORFEIT_GAIN_OR_FPB = 6  # PAB = Pairing-Allocated-Bye, FPB = Full-Point Bye
 
 
 class Result(IntEnum):
