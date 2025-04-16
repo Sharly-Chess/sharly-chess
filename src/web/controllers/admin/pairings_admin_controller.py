@@ -736,6 +736,7 @@ class PairingsAdminController(BaseEventAdminController):
         assert tournament is not None
         BbpPairings().generate_pairings(tournament, web_context.admin_round)
         tournament.read_papi(True)
+        EventLoader.get(request=request).clear_cache(web_context.admin_event.uniq_id)
         Message.success(
             request,
             _(
