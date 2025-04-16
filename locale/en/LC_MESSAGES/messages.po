@@ -1709,7 +1709,7 @@ msgstr ""
 msgid "Highlight"
 msgstr ""
 
-msgid "Highlights the row if the new result is different when using the keyboard shortcuts. Useful when re-entering all the results for verification."
+msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
 msgid "Hour [{uniq_id}] already exists."

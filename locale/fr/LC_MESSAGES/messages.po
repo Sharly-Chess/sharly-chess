@@ -284,7 +284,7 @@ msgstr "Évènements archivés ({num})"
 
 #, python-format
 msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
-msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s?"
+msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s ?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -1709,8 +1709,8 @@ msgstr "Ne pas afficher de bouton de sortie d'écran"
 msgid "Highlight"
 msgstr "Surbrillance"
 
-msgid "Highlights the row if the new result is different when using the keyboard shortcuts. Useful when re-entering all the results for verification."
-msgstr ""
+msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
+msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
 
 msgid "Hour [{uniq_id}] already exists."
 msgstr "L'horaire [{uniq_id}] existe déjà."
