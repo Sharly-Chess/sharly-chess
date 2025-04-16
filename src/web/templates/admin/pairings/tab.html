@@ -290,28 +290,24 @@
         return $("tr.highlight-warning").length === 0;
     }
 
-    function swapHandler(e) {
-        if (e.detail.elt.tagName === "BODY") {
-            $("tr.pairing-row > td").off("click", rowClickHandler);
-            $(document).off("keydown", keydownHandler);
-            $(document).off("htmx:afterSwap", swapHandler);
-            $(document).off("htmx:afterSettle", settleHandler);
-        } else if (e.detail.elt.tagName === "TR") {
-            $("tr.pairing-row > td").off("click", rowClickHandler);
-        }
+    function afterSwapHandler(e) {
+        $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
     }
 
-    function settleHandler(e) {
-        if (e.detail.elt.tagName === "BODY") {
-            $("tr.pairing-row > td").on("click", rowClickHandler);
-        } else if (e.detail.elt.tagName === "TR") {
-            $("tr.pairing-row > td").on("click", rowClickHandler);
-        }
+    function beforeSwapHandler(e) {
+        $("tr.pairing-row > td").off("click.pairings");
     }
 
-    $("tr.pairing-row > td").on("click", rowClickHandler);
-    $(document).on("keydown", keydownHandler);
-    $(document).on('htmx:afterSwap', swapHandler);
-    $(document).on('htmx:afterSettle', settleHandler);
+    $(document).ready(function() {
+        $(document).off("keydown.pairings");
+        $(document).off("click.pairings");
+        $(document).off("htmx:beforeSwap.pairings");
+        $(document).off("htmx:afterSwap.pairings");
+
+        $(document).on("keydown.pairings", keydownHandler);
+        $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
+        $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
+        $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
+    });
 
 </script>
