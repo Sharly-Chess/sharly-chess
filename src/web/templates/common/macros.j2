@@ -201,3 +201,19 @@
         ></i>
     {% endif %}
 {% endmacro %}
+
+{% macro refresh_listener(
+    hx_get,
+    hx_include
+)%}
+    <div
+        class="d-none"
+        hx-get={{ hx_get }}
+        {% if hx_include %}
+            hx-include={{ hx_include }}
+        {% endif %}
+        hx-trigger="request_refresh from:body"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    ></div>
+{% endmacro %}

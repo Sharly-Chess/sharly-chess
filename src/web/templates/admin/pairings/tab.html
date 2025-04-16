@@ -13,6 +13,11 @@
 </div>
 
 {% if admin_tournament %}
+    {{ macros.refresh_listener(
+        hx_get=url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
+        hx_include="[name='round']"
+    ) }}
+
     <section class="pt-1 pb-1">
         <div class="d-flex gap-2 justify-content-end mb-2">
             {% if admin_tournament.check_in_open %}
