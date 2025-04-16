@@ -283,8 +283,8 @@ msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
 #, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
-msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s ?"
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
+msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s ? Cela supprimera tous les résultats de cette ronde."
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -785,6 +785,9 @@ msgstr "Grille américaine après la ronde {round}"
 
 msgid "Current events ({num})"
 msgstr "Évènements en cours ({num})"
+
+msgid "Current round"
+msgstr "Ronde en cours"
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
@@ -1598,6 +1601,9 @@ msgstr "Prénom :"
 
 msgid "First player:"
 msgstr "Premier·e joueur·euse :"
+
+msgid "First round"
+msgstr "Première ronde"
 
 msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
 msgstr "Échiquier fixe"

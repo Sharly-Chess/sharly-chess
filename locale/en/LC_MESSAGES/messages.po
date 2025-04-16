@@ -283,7 +283,7 @@ msgid "Archived events ({num})"
 msgstr ""
 
 #, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -784,6 +784,9 @@ msgid "Crosstable after round #{round}"
 msgstr ""
 
 msgid "Current events ({num})"
+msgstr ""
+
+msgid "Current round"
 msgstr ""
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
@@ -1597,6 +1600,9 @@ msgid "First name:"
 msgstr ""
 
 msgid "First player:"
+msgstr ""
+
+msgid "First round"
 msgstr ""
 
 msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
@@ -4510,5 +4516,11 @@ msgstr ""
 #~ msgstr "Byes"
 
 #~ msgid "player-byes"
+#~ msgstr ""
+
+#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
+#~ msgstr ""
+
+#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?  This will delete any results for this round."
 #~ msgstr ""
 
