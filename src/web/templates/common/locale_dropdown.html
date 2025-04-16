@@ -9,7 +9,6 @@
                     dropdown-item
                     text-center
                     {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
-                    {% if l_info.experimental %}bg-dark-subtle{% endif %}"
                 "
                 {% if l != locale %}
                     hx-get="{{ url }}"
@@ -20,14 +19,13 @@
                     hx-trigger="click, keyup[key=='Enter']"
                     tabindex="0"
                 {% endif %}
-                {{ macros.tooltip_attributes('warning' if l_info.experimental else 'info', l_info.name_and_warning, 'left') }}
+                {{ macros.tooltip_attributes('info', l_info.name, 'left') }}
             >
                 <img
                     src="{{l_info.flag_url}}"
                     alt="{{l_info.name}}"
                     class="locale-flag"
                 />
-                {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
             </li>
         {% endfor %}
     </ul>

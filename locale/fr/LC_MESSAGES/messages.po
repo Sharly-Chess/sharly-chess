@@ -3904,9 +3904,6 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
-msgid "USE AT YOUR OWN RISKS"
-msgstr "UTILISEZ À VOS PROPRES RISQUES"
-
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
 

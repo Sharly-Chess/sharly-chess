@@ -9,12 +9,11 @@ import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
-from common import BASE_DIR, experimental_features_enabled, EVENTS_DIR, PAPI_WEB_VERSION
+from common import BASE_DIR, EVENTS_DIR, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
     _,
-    trusted_locales,
-    untrusted_locales,
+    locales,
     set_locale,
     get_locale,
     locale_localized_name,
@@ -66,9 +65,6 @@ class PapiWebConfig(metaclass=Singleton):
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
-        self.locales: list[str] = trusted_locales.copy()
-        if experimental_features_enabled():
-            self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
@@ -76,9 +72,9 @@ class PapiWebConfig(metaclass=Singleton):
         if not self.stored_config.locale:
             set_locale(get_locale())
             print_interactive_input(_('The following languages are available:'))
-            locale_range = range(1, len(self.locales) + 1)
+            locale_range = range(1, len(locales) + 1)
             for num in locale_range:
-                locale: str = self.locales[num - 1]
+                locale: str = locales[num - 1]
                 print_interactive_input(
                     f'  - [{num}] {locale} ({locale_localized_name(locale)})'
                 )
@@ -92,7 +88,7 @@ class PapiWebConfig(metaclass=Singleton):
                 except ValueError:
                     pass
             with ConfigDatabase(write=True) as config_database:
-                self.stored_config.locale = self.locales[locale_num - 1]
+                self.stored_config.locale = locales[locale_num - 1]
                 config_database.update_stored_config(self.stored_config)
                 config_database.commit()
         # TODO (up to here)
