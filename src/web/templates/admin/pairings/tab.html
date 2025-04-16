@@ -109,67 +109,71 @@
                         </div>
                     {% endwith %}
                     <div class="dropdown-divider"></div>
-                    <h6 class="mx-2">
-                        {{ _('Keyboard shortcuts') }}
-                        <i
-                            class="bi-info-circle-fill ps-1"
-                            {{ macros.tooltip_attributes(
-                                '',
-                                '<div class="text-start">' ~ _('0: No result') ~ '</div>' ~
-                                '<div class="text-start">' ~ _('1: White wins') ~ '</div>' ~
-                                '<div class="text-start">' ~ _('2: Black wins') ~ '</div>' ~
-                                '<div class="text-start">' ~ _('3: Draw') ~ '</div>' ~
-                                '<div class="text-start">' ~ _('Up/Down: Navigation') ~ '</div>',
-                                'bottom',
-                            ) }}
-                        ></i>
-                    </h6>
-                    <div class="mx-3">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input"
-                                type="radio"
-                                name="hotkey-mode"
-                                id="hotkey-input"
-                                {% if admin_round == admin_tournament.current_round %}
-                                    checked
-                                {% else %}
-                                    disabled
-                                {% endif %}
-                            >
-                            <label
-                                class="form-check-label"
-                                for="hotkey-input"
+                    <div class="ms-2 me-4 d-flex flex-column gap-2">
+                        <div>
+                            {{ _('When changing a result using the keyboard:') }}
+                            <i
+                                class="bi-info-circle-fill ps-1"
                                 {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('Shortcuts set the result of the selected row to the inputted result.')
-                                    if admin_round == admin_tournament.current_round else
-                                    _('Input mode is only available for the current round.'),
-                                    'top',
+                                    '',
+                                    '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
+                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
+                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
+                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
+                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
+                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
+                                    '</div>',
+                                    'left',
                                 ) }}
-                            >
-                                {{ _('Input') }}
-                            </label>
+                            ></i>
                         </div>
-                        <div class="form-check">
-                            <input
-                                class="form-check-input"
-                                type="radio"
-                                name="hotkey-mode"
-                                id="hotkey-validate"
-                                {% if admin_round != admin_tournament.current_round %}
-                                    checked
-                                {% endif %}
-                            >
-                            <label
-                                class="form-check-label"
-                                for="hotkey-validate"
-                                {{ macros.tooltip_attributes(
-                                    'info', _('Shortcuts check if the inputted result and the result of the selected row are a match.'), 'top',
-                                ) }}
-                            >
-                                {{ _('Validation') }}
-                            </label>
+                        <div class="ms-4">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="hotkey-mode"
+                                    id="hotkey-input"
+                                    {% if admin_round == admin_tournament.current_round %}
+                                        checked
+                                    {% else %}
+                                        disabled
+                                    {% endif %}
+                                >
+                                <label
+                                    class="form-check-label"
+                                    for="hotkey-input"
+                                    {{ macros.tooltip_attributes(
+                                        'info',
+                                        _('Shortcuts set the result of the selected row to the inputted result.')
+                                        if admin_round == admin_tournament.current_round else
+                                        _('Input mode is only available for the current round.'),
+                                        'top',
+                                    ) }}
+                                >
+                                    {{ _('Overwrite') }}
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="hotkey-mode"
+                                    id="hotkey-validate"
+                                    {% if admin_round != admin_tournament.current_round %}
+                                        checked
+                                    {% endif %}
+                                >
+                                <label
+                                    class="form-check-label"
+                                    for="hotkey-validate"
+                                    {{ macros.tooltip_attributes(
+                                        'info', _('Shortcuts check if the inputted result and the result of the selected row are a match.'), 'top',
+                                    ) }}
+                                >
+                                    {{ _('Highlight the row') }}
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>

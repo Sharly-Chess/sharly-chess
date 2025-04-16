@@ -293,6 +293,12 @@
         <script>
             closeTooltips();
             activateTooltips();
+
+            if (typeof bootstrap !== 'undefined') {
+                // Allow the tooltip content to have a style attribute
+                bootstrap.Tooltip.Default.allowList['*'].push('style')
+            }
+
             var confirm_when_leaving = true;
             document.addEventListener('htmx:beforeOnLoad', function(evt) {
                 if (evt.detail.xhr.getResponseHeader('hx-redirect')) {
