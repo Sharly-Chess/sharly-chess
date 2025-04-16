@@ -47,8 +47,8 @@
                             {% endif %}
                         >
                             <button
-                                class="btn btn-sm btn-outline-primary"
-                                style="width: 2rem;"
+                                class="btn btn-sm btn-outline-primary py-2"
+                                style="width: 2rem; line-height: 0;"
                                 hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
                                 hx-trigger="click"
                                 hx-target="body"
