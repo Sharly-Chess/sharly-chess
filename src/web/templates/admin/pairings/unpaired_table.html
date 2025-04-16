@@ -15,19 +15,24 @@
     </thead>
     <tbody>
         {% for player in unpaired %}
-            {% with pairing=player.pairings[admin_round], class="forfeit" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
-                <tr class="player-row" data-player-id="{{ player.id }}">
+            {% with pairing=player.pairings[admin_round], class="bye" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
+                <tr id="player-{{ player.id }}" class="player-row" data-player-id="{{ player.id }}">
                     <td class="{{ class }}">
                         <div class="d-flex align-items-center gap-2">
                         {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round == admin_tournament.current_round or admin_tournament.current_round == 0) %}
                             <i
                                 {% if player.check_in %}
-                                    class="bi-check-circle-fill text-success"
-                                    {{ macros.tooltip_attributes('info', _('Checked-in'), 'right') }}
+                                    class="bi-check-circle-fill text-success cursor-pointer"
+                                    {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                                    hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=0) }}"
                                 {% else %}
-                                    class="bi-circle-fill text-warning"
-                                    {{ macros.tooltip_attributes('info', _('Not checked-in'), 'right') }}
+                                    class="bi-circle-fill text-warning cursor-pointer"
+                                    {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                                    hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
                                 {% endif %}
+                                # hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
                             ></i>
                         {% endif %}
                             <span>{{ player.last_name }} {{ player.first_name }}</span>

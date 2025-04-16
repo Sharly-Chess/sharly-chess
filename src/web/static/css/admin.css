@@ -86,6 +86,6 @@
     color: white;
 }
 
-[data-bs-theme=dark] table.prominent td.forfeit {
+[data-bs-theme=dark] table.prominent td.bye {
     color: var(--bs-secondary-color);
 }

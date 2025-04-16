@@ -864,3 +864,42 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
             modal='unfinished-round',
         )
+
+    @post(
+        path='/admin/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}/{check_in:int}',
+        name='admin-pairings-check-in-out',
+    )
+    async def htmx_admin_pairings_check_in_out(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        player_id: int,
+        check_in: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            round_=round,
+            board_id=None,
+            data=None,
+        )
+
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_player is None:
+            raise RuntimeError('admin_player not defined')
+        admin_player: Player = web_context.admin_player
+        assert admin_player.tournament is not None
+        admin_player.tournament.check_in_player(admin_player, bool(check_in))
+        event_loader: EventLoader = EventLoader.get(request=request)
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
