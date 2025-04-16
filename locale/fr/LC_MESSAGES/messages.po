@@ -390,7 +390,7 @@ msgid "Blitz:"
 msgstr "Blitz :"
 
 msgid "Board"
-msgstr "Échiquier"
+msgstr "Éch."
 
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
