@@ -27,7 +27,6 @@ from plugins.manager import plugin_manager  # Noqa
 from common import BASE_DIR
 from pairing.bbp_pairings import BbpPairings
 from common import PAPI_WEB_VERSION
-from common.i18n import trusted_locales, untrusted_locales
 from common.papi_web_config import PapiWebConfig
 from common.logger import (
     get_logger,
@@ -324,10 +323,10 @@ def main():
     if not bbp_pairings.is_installed:
         print_interactive_info('Installing BBP Pairings....')
         bbp_pairings.install()
-    if not I18nUpdater(trusted_locales, untrusted_locales).check_trusted_locales():
+    if not I18nUpdater().check():
         if (
             input_interactive(
-                'Translations are not perfect for trusted locales, do you want to continue (y/N):'
+                'Translations are not perfect, do you want to continue (y/N):'
             ).upper()
             or 'N'
         ) != 'Y':

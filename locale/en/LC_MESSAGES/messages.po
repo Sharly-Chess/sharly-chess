@@ -3916,9 +3916,6 @@ msgstr ""
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-msgid "USE AT YOUR OWN RISKS"
-msgstr ""
-
 msgid "Unable to create Papi files."
 msgstr ""
 
