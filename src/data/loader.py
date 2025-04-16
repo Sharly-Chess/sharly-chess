@@ -21,6 +21,7 @@ from common.exception import PapiWebException
 from common.papi_web_config import PapiWebConfig
 from common.logger import get_logger
 from data.event import Event
+from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 
@@ -54,16 +55,29 @@ class EventLoader:
                 del self._loaded_events_by_id[event_uniq_id]
             with suppress(ValueError):
                 self.__class__._valid_event_ids.remove(event_uniq_id)
-        with suppress(AttributeError):
-            del self.event_uniq_ids
-        with suppress(AttributeError):
-            del self.stored_events_by_id
-        with suppress(AttributeError):
-            del self.stored_events_sorted_by_name
-        with suppress(AttributeError):
-            del self.events_by_id
-        with suppress(AttributeError):
-            del self.events_sorted_by_name
+        cached_property_names = [
+            'event_uniq_ids',
+            'stored_events_by_id',
+            'stored_events_sorted_by_name',
+            'events_by_id',
+            'events_sorted_by_name',
+        ]
+        for property_name in cached_property_names:
+            if property in self.__dict__:
+                del self.__dict__[property_name]
+
+    def reload_tournament(self, event_uniq_id: str, tournament_id: int):
+        event = self._loaded_events_by_id[event_uniq_id]
+        with EventDatabase(event_uniq_id) as database:
+            stored_tournament = database.get_stored_tournament(tournament_id)
+        if not stored_tournament:
+            if tournament_id in event.tournaments_by_id:
+                del event.tournaments_by_id[tournament_id]
+        else:
+            event.tournaments_by_id[tournament_id] = Tournament(
+                event, stored_tournament
+            )
+        self.clear_cache()
 
     def load_stored_event(self, uniq_id: str) -> StoredEvent:
         try:

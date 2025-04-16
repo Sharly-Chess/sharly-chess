@@ -390,7 +390,9 @@ class PairingsAdminController(BaseEventAdminController):
                 Result.from_papi_value(result),
                 web_context.admin_round,
             )
-            EventLoader.get(request=request).clear_cache(event.uniq_id)
+            EventLoader.get(request=request).reload_tournament(
+                event.uniq_id, tournament.id
+            )
             web_context = PairingsAdminWebContext(
                 request,
                 data=None,
@@ -480,7 +482,7 @@ class PairingsAdminController(BaseEventAdminController):
         assert board is not None
         assert tournament is not None
         tournament.unpair_boards([board], round)
-        tournament.clear_cache()
+        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament.id)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -688,14 +690,9 @@ class PairingsAdminController(BaseEventAdminController):
                         web_context.admin_player.id,
                         None,
                     )
-                web_context.admin_tournament.clear_cache()
 
-        if len(new_byes) > 0:
-            web_context.admin_tournament.set_player_byes(
-                web_context.admin_player, new_byes
-            )
-            event_loader: EventLoader = EventLoader.get(request=request)
-            event_loader.clear_cache(event_uniq_id)
+        web_context.admin_tournament.set_player_byes(web_context.admin_player, new_byes)
+        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
 
         return self._admin_event_pairings_render(
             request,
@@ -735,8 +732,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.admin_tournament
         assert tournament is not None
         BbpPairings().generate_pairings(tournament, web_context.admin_round)
-        tournament.read_papi(True)
-        EventLoader.get(request=request).clear_cache(web_context.admin_event.uniq_id)
+        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
         Message.success(
             request,
             _(
@@ -785,7 +781,7 @@ class PairingsAdminController(BaseEventAdminController):
         boards = web_context.admin_boards
         assert boards is not None
         tournament.unpair_boards(boards, round)
-        tournament.clear_cache()
+        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -896,8 +892,7 @@ class PairingsAdminController(BaseEventAdminController):
         admin_player: Player = web_context.admin_player
         assert admin_player.tournament is not None
         admin_player.tournament.check_in_player(admin_player, bool(check_in))
-        event_loader: EventLoader = EventLoader.get(request=request)
-        event_loader.clear_cache(event_uniq_id)
+        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

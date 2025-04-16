@@ -514,6 +514,7 @@ class Tournament:
         for property_name in cached_property_names:
             if property in self.__dict__:
                 del self.__dict__[property_name]
+        self._papi_read = False
 
     def pairings_generation_allowed(self, at_round: int) -> bool:
         """Check if pairing generation is allowed for round *at_round*."""
@@ -629,10 +630,10 @@ class Tournament:
             fields[result.bbp_field] = f'{result.points(point_values):>4}'
         return fields
 
-    def read_papi(self, update: bool = False):
+    def read_papi(self):
         """Fetch tournament information from the Papi database, as well
         as the player information."""
-        if self._papi_read and not update:
+        if self._papi_read:
             return
         if self.file_exists:
             with PapiDatabase(self.file) as papi_database:
@@ -650,7 +651,6 @@ class Tournament:
             for player in self._players_by_id.values():
                 player.tournament = self
         self._papi_read = True
-        self.clear_cache()
         self._set_players_illegal_moves()  # load illegal moves for the current round
         self.calculate_points_before_round()
         self._boards, self._unpaired_players = self.build_boards()
