@@ -44,16 +44,13 @@ for l_entry in _locale_dir.iterdir():
                     ],
                 )
                 locales.append(locale_name)
-                if not _i18n_script:
+                if DEVEL_ENV and not _i18n_script:
                     # Check that the MO files are up-to-date.
                     po_file: Path = mo_file.with_suffix('.po')
                     if not po_file.is_file():
                         logger.critical('PO file [%s] not found, exiting.', po_file)
                         sys.exit(1)
-                    if (
-                        DEVEL_ENV
-                        and mo_file.lstat().st_mtime < po_file.lstat().st_mtime
-                    ):
+                    if mo_file.lstat().st_mtime < po_file.lstat().st_mtime:
                         logger.warning('MO file [%s] is out of date.', mo_file)
             except Exception as ex:
                 logger.critical('Could not load locale [%s]: %s.', locale_name, ex)
