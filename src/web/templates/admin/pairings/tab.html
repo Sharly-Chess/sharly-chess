@@ -19,7 +19,7 @@
     ) }}
 
     <section class="pt-1 pb-1">
-        <div class="d-flex gap-2 justify-content-end mb-2">
+        <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
             {% if admin_tournament.check_in_open %}
                 <button
                     class="btn btn-outline-primary text-nowrap"
@@ -85,97 +85,69 @@
                     </button>
                 </div>
             {% endif %}
-            <div class="dropdown d-inline">
-                <button class="btn btn-outline-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi-gear pe-1"></i>{{ _('Options') }}
-                </button>
-                <div class="dropdown-menu dropdown-menu-right text-nowrap">
-                    {% with id='admin-events-show-details', name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
-                        <div
-                            class="form-check form-switch d-inline-block align-items-center mx-2"
-                        >
-                            <input
-                                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                                hx-vals='{"{{ name }}": "{% if wo_results %}false{% else %}true{% endif %}"}'
-                                hx-include="[name='tournament_id'], [name='round']"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                class="form-check-input"
-                                type="checkbox"
-                                id="{{ id }}"
-                                {% if wo_results %}checked{% endif %}
-                            />
-                            <label for="{{ id }}" class="form-check-label">{{ _('Hide pairings with results') }}</label>
-                        </div>
-                    {% endwith %}
-                    <div class="dropdown-divider"></div>
-                    <div class="ms-2 me-4 d-flex flex-column gap-2">
-                        <div>
-                            {{ _('When changing a result using the keyboard:') }}
-                            <i
-                                class="bi-info-circle-fill ps-1"
-                                {{ macros.tooltip_attributes(
-                                    '',
-                                    '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
-                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
-                                    '</div>',
-                                    'left',
-                                ) }}
-                            ></i>
-                        </div>
-                        <div class="ms-4">
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
-                                    type="radio"
-                                    name="hotkey-mode"
-                                    id="hotkey-input"
-                                    {% if admin_round == admin_tournament.current_round %}
-                                        checked
-                                    {% else %}
-                                        disabled
-                                    {% endif %}
-                                >
-                                <label
-                                    class="form-check-label"
-                                    for="hotkey-input"
-                                    {{ macros.tooltip_attributes(
-                                        'info',
-                                        _('Shortcuts set the result of the selected row to the inputted result.')
-                                        if admin_round == admin_tournament.current_round else
-                                        _('Input mode is only available for the current round.'),
-                                        'top',
-                                    ) }}
-                                >
-                                    {{ _('Overwrite') }}
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
-                                    type="radio"
-                                    name="hotkey-mode"
-                                    id="hotkey-validate"
-                                    {% if admin_round != admin_tournament.current_round %}
-                                        checked
-                                    {% endif %}
-                                >
-                                <label
-                                    class="form-check-label"
-                                    for="hotkey-validate"
-                                    {{ macros.tooltip_attributes(
-                                        'info', _('Shortcuts check if the inputted result and the result of the selected row are a match.'), 'top',
-                                    ) }}
-                                >
-                                    {{ _('Highlight the row') }}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+
+            {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
+                <div class="btn-group">
+                    <button
+                        class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
+                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-vals='{"{{ name }}": false }'
+                        hx-include="[name='tournament_id'], [name='round']"
+                        hx-target="body"
+                        hx-indicator="#please-wait"image.png
+                    >
+                        {{ _('All') }}
+                    </button>
+                    <button
+                        class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
+                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-vals='{"{{ name }}": true }'
+                        hx-include="[name='tournament_id'], [name='round']"
+                        hx-target="body"
+                        hx-indicator="#please-wait"image.png
+                    >
+                        {{ _('In play') }}
+                    </button>
+                </div>
+            {% endwith %}
+
+            <div class="d-flex flex-column">
+                <div style="font-size: 0.8rem;">
+                    {{ _('Keyboard shortcuts:') }}
+                    <i
+                        class="bi-info-circle-fill ps-1"
+                        {{ macros.tooltip_attributes(
+                            '',
+                            '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
+                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
+                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
+                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
+                                    '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
+                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
+                            '</div>',
+                            'top',
+                        ) }}
+                    ></i>
+                </div>
+
+                <div class="btn-group">
+                    <button
+                        id="overwrite-mode"
+                        class="btn btn-outline-primary {% if admin_round == admin_tournament.current_round %}active{% endif %}"
+                        hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
+                        {% if admin_round != admin_tournament.current_round %}
+                            disabled
+                        {% endif %}
+                    >
+                        {{ _('Overwrite') }}
+                    </button>
+                    <button
+                        id="highlight-mode"
+                        class="btn btn-outline-primary {% if admin_round != admin_tournament.current_round %}active{% endif %}"
+                        hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
+                    >
+                        {{ _('Highlight') }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -204,7 +176,7 @@
                     class="table prominent table-striped table-sm table-hover w-100 bg-light"
                     hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}' && no_error_rows()] from:body, keydown[code=='Numpad{{ digit }}' && no_error_rows()] from:body{%if not loop.last %},{% endif %}{% endfor %}"
-                    hx-vals="js:{key: event.code, board_id: pairing_board_id || 0, validate_result: document.querySelector('input[name=\'hotkey-mode\']:checked').id == 'hotkey-validate'}"
+                    hx-vals="js:{key: event.code, board_id: pairing_board_id || 0, validate_result: $('button[id=\'highlight-mode\']').hasClass('active')}"
                     hx-target="body"
                     hx-swap="outerHTML"
                     hx-indicator="#please-wait"
