@@ -271,6 +271,7 @@
         $("tr.highlight-warning").removeClass("highlight-warning");
         if (board_id) {
             $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
+            $(`[data-board-id="${board_id}"]`).removeClass("text-secondary");
             pairing_board_id = board_id;
             scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
         } else {
@@ -313,9 +314,16 @@
             $("tr.pairing-row > td").off("click", rowClickHandler);
             $(document).off("keydown", keydownHandler);
             $(document).off("htmx:afterSwap", swapHandler);
-            $("tr.pairing-row > td").on("click", rowClickHandler);
+            $(document).off("htmx:afterSettle", settleHandler);
         } else if (e.detail.elt.tagName === "TR") {
             $("tr.pairing-row > td").off("click", rowClickHandler);
+        }
+    }
+
+    function settleHandler(e) {
+        if (e.detail.elt.tagName === "BODY") {
+            $("tr.pairing-row > td").on("click", rowClickHandler);
+        } else if (e.detail.elt.tagName === "TR") {
             $("tr.pairing-row > td").on("click", rowClickHandler);
         }
     }
@@ -323,5 +331,6 @@
     $("tr.pairing-row > td").on("click", rowClickHandler);
     $(document).on("keydown", keydownHandler);
     $(document).on('htmx:afterSwap', swapHandler);
+    $(document).on('htmx:afterSettle', settleHandler);
 
 </script>
