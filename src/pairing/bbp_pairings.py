@@ -15,6 +15,8 @@ from utils.enum import TrfType, Result, BoardColor
 class BbpPairings:
     version: Version = Version('5.0.1')
 
+    BYE_ID = 0
+
     @property
     def is_installed(self) -> bool:
         return self.executable_path.exists()
@@ -64,14 +66,13 @@ class BbpPairings:
             os.remove(pairings_file_path)
         tournament.update_round_pairings(round_)
 
-    @staticmethod
-    def _pairings_from_file(file: TextIO, tournament: Tournament, round_: int):
-        exempt_id: int = 0
+    @classmethod
+    def _pairings_from_file(cls, file: TextIO, tournament: Tournament, round_: int):
         file.readline()  # table_count
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_trf_id[white_trf_id]
-            if black_trf_id != exempt_id:
+            if black_trf_id != cls.BYE_ID:
                 black_player = tournament.players_by_trf_id[black_trf_id]
                 white_player.pairings[round_] = Pairing(
                     BoardColor.WHITE, black_player.id, Result.NO_RESULT
@@ -79,7 +80,9 @@ class BbpPairings:
                 black_player.pairings[round_] = Pairing(
                     BoardColor.BLACK, white_player.id, Result.NO_RESULT
                 )
-            else:
+            elif not white_player.pairings[
+                round_
+            ].next_round_bye and not tournament.round_has_pab(round_):
                 white_player.pairings[round_] = Pairing(
                     BoardColor.WHITE, None, Result.PAIRING_ALLOCATED_BYE
                 )

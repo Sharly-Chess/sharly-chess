@@ -519,16 +519,21 @@ class Tournament:
             self.is_round_finished(round_) for round_ in range(1, at_round)
         )
 
-    def is_round_finished(self, round_: int):
+    def is_round_finished(self, round_: int) -> bool:
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.players_by_id.values()
         )
 
-    def round_has_pairings(self, round_: int):
+    def round_has_pairings(self, round_: int) -> bool:
         return any(
             player.pairings[round_].opponent_id is not None
             for player in self.players_by_id.values()
+        )
+
+    def round_has_pab(self, round_: int) -> bool:
+        return any(
+            player.pairings[round_].exempt for player in self.players_by_id.values()
         )
 
     def to_trf(
@@ -551,6 +556,7 @@ class Tournament:
                 player.to_trf(
                     self._player_id_to_trf_id,
                     after_round=after_round,
+                    include_next_round_bye=trf_type == TrfType.TRF_BX,
                 )
                 for player in self.players_by_trf_id.values()
             ],

@@ -736,20 +736,19 @@ class PairingsAdminController(BaseEventAdminController):
         assert tournament is not None
         BbpPairings().generate_pairings(tournament, web_context.admin_round)
         tournament.read_papi(True)
-
         Message.success(
             request,
             _(
                 'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
             ).format(
-                round=tournament.current_round, tournament_uniq_id=tournament.uniq_id
+                round=web_context.admin_round, tournament_uniq_id=tournament.uniq_id
             ),
         )
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            round_=None,
+            round_=web_context.admin_round,
             board_id=None,
             trigger_event=None,
         )

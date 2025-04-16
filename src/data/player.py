@@ -329,6 +329,7 @@ class Player(TournamentPlayer):
         /,
         *,
         after_round: int,
+        include_next_round_bye: bool,
     ) -> TrfPlayer:
         assert self.id is not None
         return TrfPlayer(
@@ -348,6 +349,11 @@ class Player(TournamentPlayer):
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
                 if round_nb <= after_round
+                or (
+                    include_next_round_bye
+                    and round_nb == after_round + 1
+                    and result.next_round_bye
+                )
             ],
         )
 

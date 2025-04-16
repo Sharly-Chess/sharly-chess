@@ -263,6 +263,8 @@ class PapiDatabase(AccessDatabase):
             Player.player_papi_id_from_papi_web_id(pairing.opponent_id)
             if pairing.opponent_id
             else EXEMPT_PLAYER_ID
+            if pairing.exempt
+            else None
         )
         if pairing.color:
             color = pairing.color.to_papi_value
