@@ -969,7 +969,6 @@ class TournamentAdminController(BaseEventAdminController):
                 option_data[key] = value
         print_options: list[PrintOption] = []
         for print_option in document_type.default_options():
-            print(print_option)
             value = (
                 WebContext.form_data_to_value(
                     option_data,
