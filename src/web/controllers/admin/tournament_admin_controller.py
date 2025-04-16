@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
+import urllib.parse
 
 from litestar import post, get, delete, patch
 from litestar.contrib.htmx.request import HTMXRequest
@@ -23,6 +24,7 @@ from data.input_output import (
 )
 from data.loader import EventLoader
 from data.print_documents import PrintDocumentManager
+from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
 from utils.enum import TournamentRating
@@ -933,26 +935,23 @@ class TournamentAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @post(
+    @get(
         path='/admin/tournament-print-view/{event_uniq_id:str}/{tournament_id:int}/{document: str}',
         name='admin-tournament-print-view',
     )
     async def htmx_tournament_print_view(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         event_uniq_id: str,
         tournament_id: int,
         document: str,
+        options: str | None = None,
     ) -> Template | ClientRedirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            data=data,
+            data=None,
         )
         if web_context.error:
             return web_context.error
@@ -963,16 +962,25 @@ class TournamentAdminController(BaseEventAdminController):
             web_context
         )
         document_type = PrintDocumentManager.get_type(document)
-        options = []
-        for option in document_type.default_options():
-            value = WebContext.form_data_to_value(
-                data,
-                option.id,
-                option.type,
-                option.default_value,
+        option_data: dict[str, str] = {}
+        if options:
+            for option in urllib.parse.unquote(options).split('|'):
+                key, value = option.split('=')
+                option_data[key] = value
+        print_options: list[PrintOption] = []
+        for print_option in document_type.default_options():
+            print(print_option)
+            value = (
+                WebContext.form_data_to_value(
+                    option_data,
+                    print_option.id,
+                    print_option.type,  # type: ignore
+                    print_option.default_value,
+                )
+                or ''
             )
-            options.append(type(option)(value))
-        print_document = document_type(options, admin_tournament)
+            print_options.append(type(print_option)(value))
+        print_document = document_type(print_options, admin_tournament)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=print_document
