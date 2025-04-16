@@ -58,3 +58,4 @@ __pycache__/
 
 # PyInstaller spec files
 /*.spec
+/src/web/static/lib/bootstrap

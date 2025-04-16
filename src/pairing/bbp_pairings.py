@@ -15,10 +15,6 @@ from utils.enum import TrfType, Result, BoardColor
 class BbpPairings:
     version: Version = Version('5.0.1')
 
-    @property
-    def is_installed(self) -> bool:
-        return self.executable_path.exists()
-
     bbp_pairings_dir: Path = BASE_DIR / 'tools' / 'bbpPairings'
 
     @property

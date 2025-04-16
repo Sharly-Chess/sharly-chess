@@ -291,8 +291,8 @@ msgstr ""
 msgid "Auto-update"
 msgstr ""
 
-msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
+msgid "Automatically installing BBP Pairings for developers in experimental mode."
+msgstr ""
 
 msgid "Automatically launch a browser when starting the server"
 msgstr ""
@@ -1713,6 +1713,9 @@ msgstr ""
 msgid "Impossible to set a round number lower than current round #{round}."
 msgstr ""
 
+msgid "Incorrect installation, exiting."
+msgstr ""
+
 msgid "Incorrect password."
 msgstr ""
 
@@ -1739,6 +1742,12 @@ msgid "Input screen family creation"
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr ""
+
+msgid "Installation of [{lib}] failed."
+msgstr ""
+
+msgid "Installed [{lib}]."
 msgstr ""
 
 msgid "International Master"
@@ -1892,6 +1901,9 @@ msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
 msgstr "League"
 
 msgid "League:"
+msgstr ""
+
+msgid "Lib [{lib}] is missing."
 msgstr ""
 
 msgid "Libraries"
@@ -4329,4 +4341,22 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
+#~ msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
+
+#~ msgid "Installation is correct."
+#~ msgstr ""
+
+#~ msgid "Installation of [{lib}]."
+#~ msgstr ""
+
+#~ msgid "Installation of [{self.name}] failed."
+#~ msgstr ""
+
+#~ msgid "Needed lib [{lib}] is missing."
+#~ msgstr ""
+
+#~ msgid "Needed lib [{self.name}] is missing."
+#~ msgstr ""
 

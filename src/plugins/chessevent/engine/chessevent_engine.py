@@ -8,7 +8,7 @@ class ChessEventEngine(Engine):
     def __init__(self):
         try:
             super().__init__()
-            if self.updated:
+            if self.error:
                 return
             while EventSelector().run():
                 pass

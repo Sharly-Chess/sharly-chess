@@ -211,9 +211,6 @@ class PapiWebConfig(metaclass=Singleton):
 
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')
-    assert (
-        BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist'
-    ).is_dir()
     bootstrap_icons_version: Version = Version('1.11.3')
     assert (
         BASE_DIR

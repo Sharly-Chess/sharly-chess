@@ -6,7 +6,7 @@
             <title>{% block title %}Papi-web{% endblock %}</title>
             <link rel="shortcut icon" type="image/png" href="{{ url_for('static', file_path='/images/papi-web.ico') }}"/>
             {# https://github.com/twbs/bootstrap/releases #}
-            <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-5.3.3-dist/css/bootstrap.min.css') }}" rel="stylesheet">
+            <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ papi_web_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
             {# https://github.com/twbs/icons/releases #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}" type="text/css" />
@@ -294,7 +294,7 @@
         </script>
     </body>
     {% if not request.htmx %}
-        <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ papi_web_config.bootstrap_version ~ '-dist/js/bootstrap.bundle.min.js') }}"></script>
         <script>
             closeTooltips();
             activateTooltips();

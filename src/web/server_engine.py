@@ -11,8 +11,7 @@ from litestar import Litestar
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.logging import LoggingConfig
 
-from pairing.bbp_pairings_installer import BbpPairingsInstaller
-from common import DEVEL_ENV, experimental_features_enabled, REQUEST_TIMEOUT
+from common import REQUEST_TIMEOUT
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
@@ -55,7 +54,7 @@ class ServerEngine(Engine):
     def __init__(self, debug: bool = False):
         super().__init__()
         self.debug = debug
-        if self.updated:
+        if self.error:
             return
 
         logger.debug('ODBC drivers found:')
@@ -79,17 +78,6 @@ class ServerEngine(Engine):
 
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
-        bbp_pairings = BbpPairingsInstaller()
-        if experimental_features_enabled() and not bbp_pairings.is_installed:
-            if DEVEL_ENV:
-                print_interactive_info(
-                    _(
-                        'Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1.'
-                    )
-                )
-                bbp_pairings.install()
-            else:
-                raise FileNotFoundError('BBP Pairings not installed.')
 
         for port in papi_web_config.web_ports:
             if self.__port_in_use(port):

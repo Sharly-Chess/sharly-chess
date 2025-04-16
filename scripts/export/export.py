@@ -38,6 +38,7 @@ from common.logger import (
 )
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
+from common.installation_checker import BootstrapInstaller, InstallationChecker
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
 from scripts.i18n.i18n_update import I18nUpdater
@@ -124,16 +125,12 @@ def build_exe():
     ]
     files += [file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()]
     files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
-    lib_dir = static_dir / 'lib'
-    bootstrap_dir = (
-        lib_dir / 'bootstrap' / f'bootstrap-{PapiWebConfig.bootstrap_version}-dist'
-    )
+    bootstrap_installer: BootstrapInstaller = BootstrapInstaller()
     files += [
-        bootstrap_dir / 'css' / 'bootstrap.min.css',
-        bootstrap_dir / 'css' / 'bootstrap.min.css.map',
-        bootstrap_dir / 'js' / 'bootstrap.bundle.min.js',
-        bootstrap_dir / 'js' / 'bootstrap.bundle.min.js.map',
+        bootstrap_installer.version_install_dir / lib_file
+        for lib_file in BootstrapInstaller.lib_files
     ]
+    lib_dir = static_dir / 'lib'
     bootstrap_icons_dir = (
         lib_dir
         / 'bootstrap-icons'
@@ -320,6 +317,8 @@ def update_readme():
 
 
 def main():
+    if not InstallationChecker.check():
+        return
     clean(clean_zip=True)
     bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
     if not bbp_pairings.is_installed:
