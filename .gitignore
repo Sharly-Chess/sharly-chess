@@ -60,3 +60,4 @@ __pycache__/
 /*.spec
 /src/web/static/lib/bootstrap
 /src/web/static/lib/bootstrap-icons
+/src/web/static/lib/jquery

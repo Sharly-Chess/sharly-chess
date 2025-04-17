@@ -22,7 +22,7 @@ class WebLibInstaller(ToolInstaller, ABC):
     lib_dir: Path = BASE_DIR / 'src' / 'web' / 'static' / 'lib'
 
 
-class BootstrapInstaller(WebLibInstaller, ABC):
+class BootstrapInstaller(WebLibInstaller):
     lib_files: list[Path] = [
         Path() / 'js' / 'bootstrap.bundle.min.js',
         Path() / 'js' / 'bootstrap.bundle.min.js.map',
@@ -67,7 +67,7 @@ class BootstrapInstaller(WebLibInstaller, ABC):
         return self.is_installed
 
 
-class BootstrapIconsInstaller(WebLibInstaller, ABC):
+class BootstrapIconsInstaller(WebLibInstaller):
     lib_files: list[Path] = [
         Path() / 'font' / 'bootstrap-icons.min.css',
         Path() / 'font' / 'fonts' / 'bootstrap-icons.woff',
@@ -111,6 +111,67 @@ class BootstrapIconsInstaller(WebLibInstaller, ABC):
         return self.is_installed
 
 
+class JQueryInstaller(WebLibInstaller):
+    def __init__(self):
+        super().__init__('jQuery', PapiWebConfig.jquery_version)
+        self.lib_install_dir: Path = self.lib_dir / 'jquery'
+
+    @property
+    def check_file(self) -> Path:
+        return self.lib_install_dir / f'jquery-{self.version}.min.js'
+
+    def install(self) -> bool:
+        dist_filename: str = f'jquery-{self.version}.min.js'
+        dist_url: str = f'https://code.jquery.com/{dist_filename}'
+        self.lib_install_dir.mkdir(parents=True, exist_ok=True)
+        dist_file: Path = TMP_DIR / dist_filename
+        print_interactive_info(f'Downloading {dist_url}...')
+        response = requests.get(dist_url, stream=True, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        with open(dist_file, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print_interactive_success('Done.')
+        print_interactive_info(f'Installing to {self.lib_install_dir}...')
+        shutil.copy(dist_file, self.check_file)
+        dist_file.unlink(missing_ok=True)
+        print_interactive_success('Done.')
+        return self.is_installed
+
+
+class OtherInstaller(WebLibInstaller):
+    def __init__(self):
+        super().__init__('Bootstrap icons', PapiWebConfig.bootstrap_icons_version)
+        self.lib_install_dir: Path = self.lib_dir / 'bootstrap-icons'
+        self.version_folder_name: str = f'bootstrap-icons-{self.version}'
+        self.version_install_dir: Path = self.lib_install_dir / self.version_folder_name
+
+    @property
+    def check_file(self) -> Path:
+        return self.version_install_dir / 'font' / 'bootstrap-icons.min.css'
+
+    def install(self) -> bool:
+        build_filename: str = f'bootstrap-icons-{self.version}.zip'
+        build_url: str = f'https://github.com/twbs/icons/releases/download/v{self.version}/{build_filename}'
+        self.version_install_dir.mkdir(parents=True, exist_ok=True)
+        archive_file: Path = TMP_DIR / build_filename
+        print_interactive_info(f'Downloading {build_url}...')
+        response = requests.get(build_url, stream=True, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        with open(archive_file, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print_interactive_success('Done.')
+        print_interactive_info(f'Installing to {self.version_install_dir}...')
+        shutil.unpack_archive(archive_file, TMP_DIR)
+        archive_dir: Path = TMP_DIR / self.version_folder_name
+        shutil.copytree(archive_dir, self.version_install_dir, dirs_exist_ok=True)
+        archive_file.unlink(missing_ok=True)
+        shutil.rmtree(archive_dir)
+        print_interactive_success('Done.')
+        return self.is_installed
+
+
 class InstallationChecker:
     """A class to check the installation of all the needed tools and libs."""
 
@@ -126,6 +187,7 @@ class InstallationChecker:
         ) + [
             BootstrapInstaller(),
             BootstrapIconsInstaller(),
+            JQueryInstaller(),
         ]
         for installer in installers:
             if not installer.check_installation():

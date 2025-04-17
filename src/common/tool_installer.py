@@ -6,10 +6,13 @@ from packaging.version import Version
 from common import DEVEL_ENV
 from common.i18n import _
 from common.logger import (
+    get_logger,
     print_interactive_warning,
     print_interactive_success,
     print_interactive_error,
 )
+
+logger = get_logger()
 
 
 class ToolInstaller(ABC):
@@ -35,6 +38,7 @@ class ToolInstaller(ABC):
         If not installed and DEVEL_ENV then install.
         After this, returns True if correctly installed, False otherwise."""
         if self.is_installed:
+            logger.debug('Library [%s] is installed.', self.name)
             return True
         else:
             if not DEVEL_ENV:

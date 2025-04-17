@@ -211,9 +211,6 @@ class PapiWebConfig(metaclass=Singleton):
     htmx_version: Version = Version('1.9.12')
     assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
     jquery_version: Version = Version('3.7.1')
-    assert (
-        BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js'
-    ).is_file()
     sortable_version: Version = Version('1.15.2')
     assert (
         BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}'
