@@ -121,6 +121,17 @@
     <!-- end rotator_visibility_icon() -->
 {% endmacro %}
 
+{% macro client_controller_icon() %}
+    <!-- client_controller_icon() -->
+    <span
+        class="fw-bold"
+        {{ tooltip_attributes('info', _('The screens displayed by the client controller are controlled by the administrator.'), 'top') }}
+    >
+        <i class="bi bi-display"></i>
+    </span>
+    <!-- end client_controller_icon() -->
+{% endmacro %}
+
 {% macro client_controller_visibility_icon(client_controller, class) %}
     <!-- client_controller_visibility_icon() -->
     {{ visibility_icon('client_controller', client_controller.public, '', '', class) }}

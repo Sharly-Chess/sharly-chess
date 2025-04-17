@@ -769,6 +769,13 @@ class Event:
         return client_controllers_by_id
 
     @cached_property
+    def client_controllers_by_uniq_id(self) -> dict[str, ClientController]:
+        return {
+            client_controller.uniq_id: client_controller
+            for client_controller in self.client_controllers_by_id.values()
+        }
+
+    @cached_property
     def client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
         return sorted(
             self.client_controllers_by_id.values(),

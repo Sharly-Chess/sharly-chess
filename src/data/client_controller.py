@@ -3,6 +3,7 @@ import weakref
 from _weakref import ReferenceType
 
 from common.i18n import _
+from common.papi_web_config import PapiWebConfig
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
@@ -104,3 +105,34 @@ class ClientController:
         if isinstance(object, Rotator):
             return 'rotator'
         raise ValueError(f'type=[{type(object)}]')
+
+    @property
+    def screen(self) -> Screen | None:
+        if self.screen_id:
+            return self.event.screens_by_id[self.screen_id]
+        if self.family_id:
+            family: Family = self.event.families_by_id[self.family_id]
+            return (
+                family.screens_by_uniq_id[family.calculated_first_screen_id]
+                if family.calculated_first_screen_id
+                else None
+            )
+        if self.rotator_id:
+            rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
+            if rotator and rotator.rotating_screens:
+                return self.event.rotators_by_id[self.rotator_id].rotating_screens[0]
+        return None
+
+    @property
+    def rotator(self) -> Rotator | None:
+        if self.rotator_id:
+            return self.event.rotators_by_id[self.rotator_id]
+        return None
+
+    @property
+    def delay(self) -> int:
+        if self.rotator_id:
+            rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
+            if rotator:
+                return rotator.delay
+        return PapiWebConfig.user_screen_update_delay

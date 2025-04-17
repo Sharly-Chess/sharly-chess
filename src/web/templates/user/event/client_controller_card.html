@@ -1,0 +1,14 @@
+{% extends '../common/card.html' %}
+
+{% block card_header %}
+    {% if admin_auth %}
+        {{ macros.client_controller_visibility_icon(client_controller, 'pe-1') }}
+    {% endif %}
+    {{ client_controller.uniq_id }}
+{% endblock %}
+
+{% block card_title %}
+{% endblock %}
+
+{% block card_text %}
+{% endblock %}

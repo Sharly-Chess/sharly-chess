@@ -16,6 +16,7 @@ from utils.enum import ScreenType
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
+    ClientControllerUserWebContext,
     RotatorUserWebContext,
     ScreenUserWebContext,
 )
@@ -249,6 +250,49 @@ class ScreenUserController(BaseScreenUserController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
+        rotator_screen_index: int = 0,
+    ) -> None:
+        pass
+
+    @get(
+        path=[
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}/{rotator_screen_index:int}',
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}',
+        ],
+        name='user-client-controller',
+    )
+    async def htmx_user_client_controller(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        client_controller_id: int,
+        rotator_screen_index: int = 0,
+    ) -> Template | ClientRedirect:
+        web_context: ClientControllerUserWebContext = ClientControllerUserWebContext(
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            client_controller_id=client_controller_id,
+            rotator_screen_index=rotator_screen_index,
+        )
+        if web_context.error:
+            return web_context.error
+
+        return self._user_screen_render(web_context)
+
+    @head(
+        path=[
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}/{rotator_screen_index:int}',
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}',
+        ],
+        name='user-client-controller-head',
+        status_code=HTTP_304_NOT_MODIFIED,
+    )
+    async def htmx_user_client_controller_head(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        client_controller_id: int,
         rotator_screen_index: int = 0,
     ) -> None:
         pass

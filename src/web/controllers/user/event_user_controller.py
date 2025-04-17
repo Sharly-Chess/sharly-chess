@@ -12,6 +12,7 @@ from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from common.exception import PapiWebException
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
+from data.client_controller import ClientController
 from data.event import Event
 from data.loader import EventLoader
 from data.rotator import Rotator
@@ -86,6 +87,7 @@ class EventUserController(BaseUserController):
         ranking_screens: list[Screen]
         image_screens: list[Screen]
         rotators: list[Rotator]
+        client_controllers: list[ClientController]
         if web_context.admin_auth:
             input_screens = web_context.user_event.input_screens_sorted_by_uniq_id
             boards_screens = web_context.user_event.boards_screens_sorted_by_uniq_id
@@ -94,6 +96,9 @@ class EventUserController(BaseUserController):
             ranking_screens = web_context.user_event.ranking_screens_sorted_by_uniq_id
             image_screens = web_context.user_event.image_screens_sorted_by_uniq_id
             rotators = web_context.user_event.rotators_sorted_by_uniq_id
+            client_controllers = (
+                web_context.user_event.client_controllers_sorted_by_uniq_id
+            )
         else:
             input_screens = (
                 web_context.user_event.public_input_screens_sorted_by_uniq_id
@@ -114,6 +119,9 @@ class EventUserController(BaseUserController):
                 web_context.user_event.public_image_screens_sorted_by_uniq_id
             )
             rotators = web_context.user_event.public_rotators_sorted_by_uniq_id
+            client_controllers = (
+                web_context.user_event.public_client_controllers_sorted_by_uniq_id
+            )
         nav_tabs: dict[str, dict] = {
             'input': {
                 'title': _('Results entry ({num})').format(
@@ -157,6 +165,13 @@ class EventUserController(BaseUserController):
                 'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
                 'rotators': rotators,
                 'disabled': not rotators,
+            },
+            'client_controllers': {
+                'title': _('Client controllers ({num})').format(
+                    num=len(client_controllers) or '-'
+                ),
+                'client_controllers': client_controllers,
+                'disabled': not client_controllers,
             },
         }
         if (
