@@ -20,6 +20,10 @@
 
     <section class="pt-1 pb-1">
         <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
+            <span>
+                {# TODO add a clear indicator for the current mode #}
+                {{ safety_mode.name }}
+            </span>
             {% if admin_tournament.check_in_open %}
                 <button
                     class="btn btn-outline-primary text-nowrap"
@@ -36,57 +40,74 @@
                 </button>
             {% endif %}
 
-            {% if EXPERIMENTAL_FEATURES %}
-                <div
-                    {{ macros.tooltip_attributes(
-                        'info',
-                        _('Pairings disabled while check-in is open.')
-                        if admin_tournament.check_in_open
-                        else _('Pairings generation unavailable for this round.')
-                        if not pairings_generation_allowed
-                        else _('Pairings already generated.')
-                        if admin_boards
-                        else _('Generate pairings for this round.'),
-                        'top',
-                    ) }}
-                >
-                    <button
-                        class="btn btn-outline-primary text-nowrap"
-                        hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        preload
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {% if not pairings_generation_allowed or admin_boards %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-shuffle pe-1"></i>
-                        {{ _('Pair') }}
-                    </button>
-                </div>
-            {% elif not admin_boards and pairings_generation_allowed %}
-                <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
-                    {{ _('Please use Papi to generate pairings.') }}
-                </div>
-            {% endif %}
-            {% if admin_boards and admin_round == admin_tournament.current_round %}
-                <div {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}>
-                    <button
-                        class="btn btn-outline-primary text-nowrap"
-                        hx-get="{{ url_for('admin-pairings-unpair-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        hx-trigger="click"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        {{ _('Unpair') }}
-                    </button>
-                </div>
-            {% endif %}
+            {% with action='FULL_PAIRING' %}
+                {% if action in existing_actions %}
+                    {% if EXPERIMENTAL_FEATURES %}
+                        <div
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('Pairings disabled while check-in is open.')
+                                if admin_tournament.check_in_open
+                                else _(
+                                    'Pairings generation not allowed if previous '
+                                    'rounds have missing results or unpaired players.'
+                                ) if not pairings_generation_allowed
+                                else _('Generate pairings for this round.'),
+                                'top',
+                            ) }}
+                        >
+                            <button
+                                class="btn btn-outline-primary text-nowrap"
+                                {% if action in allowed_actions %}
+                                    hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                                {% else %}
+                                    hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                                    hx-trigger="click"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                {% endif %}
+                                preload
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                {% if not pairings_generation_allowed %}
+                                    disabled
+                                {% endif %}
+                            >
+                                <i class="bi-shuffle pe-1"></i>
+                                {{ _('Pair') }}
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
+                            {{ _('Please use Papi to generate pairings.') }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+            {% with action='FULL_UNPAIRING' %}
+                {% if action in existing_actions %}
+                    <div {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}>
+                        <button
+                            class="btn btn-outline-primary text-nowrap"
+                            {% if action in allowed_actions %}
+                                hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                            {% else %}
+                                hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                                hx-trigger="click"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                        >
+                            {{ _('Unpair') }}
+                        </button>
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-            {% if admin_round <= admin_tournament.current_round %}
+            {% if admin_boards %}
                 {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
                     <div class="btn-group">
                         <button
@@ -95,7 +116,7 @@
                             hx-vals='{"{{ name }}": false }'
                             hx-include="[name='tournament_id'], [name='round']"
                             hx-target="body"
-                            hx-indicator="#please-wait"image.png
+                            hx-indicator="#please-wait"
                         >
                             {{ _('All') }}
                         </button>
@@ -105,7 +126,7 @@
                             hx-vals='{"{{ name }}": true }'
                             hx-include="[name='tournament_id'], [name='round']"
                             hx-target="body"
-                            hx-indicator="#please-wait"image.png
+                            hx-indicator="#please-wait"
                         >
                             {{ _('In play') }}
                         </button>
@@ -130,33 +151,50 @@
                             ) }}
                         ></i>
                     </div>
-
-                    <div class="btn-group">
-                        <span
-                            {% set _tooltip_text=_('Overwrite the result of the pairing when using the keyboard shortcuts.') if admin_round == admin_tournament.current_round else _("Overwrite mode is not available for previous rounds.") %}
-                            {{ macros.tooltip_attributes('info', _tooltip_text, 'top') }}
-                        >
-                            <button
-                                id="overwrite-mode"
-                                class="btn btn-outline-primary {% if admin_round == admin_tournament.current_round %}active{% endif %}"
-                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                                {% if admin_round != admin_tournament.current_round %}
-                                    disabled
-                                {% endif %}
-
+                    {% with action='RESULT_UPDATE' %}
+                        <div class="btn-group">
+                            <span
+                                {{ macros.tooltip_attributes(
+                                    'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
+                                ) }}
                             >
-                                {{ _('Overwrite') }}
+                                <button
+                                    id="overwrite-mode"
+                                    {% if action in allowed_actions %}
+                                        class="btn btn-outline-primary active"
+                                        hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
+                                    {% else %}
+                                        class="btn btn-outline-primary"
+                                        hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                                        hx-trigger="click"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-wrapper"
+                                        hx-indicator="#please-wait"
+                                        hx-target="body"
+                                        preload
+                                    {% endif %}
+                                >
+                                    {{ _('Overwrite') }}
+                                </button>
+                            </span>
+                            <button
+                                id="highlight-mode"
+                                class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
+                                hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _(
+                                        'Highlights the row if the new result is different
+                                        when using the keyboard shortcuts
+                                        (useful when re-entering all the results for verification).'
+                                    ),
+                                    'top'
+                                ) }}
+                            >
+                                {{ _('Highlight') }}
                             </button>
-                        </span>
-                        <button
-                            id="highlight-mode"
-                            class="btn btn-outline-primary {% if admin_round != admin_tournament.current_round %}active{% endif %}"
-                            hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                            {{ macros.tooltip_attributes('info', _('Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification).'), 'top') }}
-                        >
-                            {{ _('Highlight') }}
-                        </button>
-                    </div>
+                        </div>
+                    {% endwith %}
                 </div>
             {% endif %}
         </div>
@@ -172,7 +210,7 @@
                     {% endif %}
 
                     {% if admin_bye_players|length > 0 %}
-                    {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
+                        {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}

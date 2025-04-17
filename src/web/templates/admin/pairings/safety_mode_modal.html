@@ -1,0 +1,47 @@
+{% import '/common/macros.j2' as macros %}
+
+<div style="--bs-modal-width: min(90vw, 600px);">
+    <div class="modal-dialog modal-dialog-centered pairing-modal">
+        <div class="modal-content bg-secondary-subtle">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold">{{ _('Warning: Protected action') }}</div>
+            </div>
+            <div class="modal-body">
+                {{
+                    _('Consulted round: %(round)d', round=admin_round) ~ ' - ' ~
+                    _('Current round: %(round)d', round=admin_tournament.current_round)
+                }}
+                <br/>
+                {{ _('For the consulted round, the action "%(action)s" is protected.', action=action.name) }}
+                <br/>
+                {{ _(
+                    'You are currently in mode "%(current_mode)s", this action requires mode "%(required_mode)s".',
+                    current_mode=safety_mode.name,
+                    required_mode=required_mode.name,
+                ) }}
+                <br/>
+                {{ _('Do you want to switch to the required mode?') }}
+                <br/>
+                {{ _('This will enable the following actions:') }}
+                <ul>
+                    {% for enabled_action in enabled_actions %}
+                        <li>{{ enabled_action.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                    {{ _('Cancel') }}
+                </button>
+                <button
+                    class="btn btn-danger text-nowrap"
+                    hx-post="{{ url_for('admin-pairings-update-safety-mode', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, mode=required_mode) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {{ _('Switch to mode "%(mode)s"', mode=required_mode.name) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
