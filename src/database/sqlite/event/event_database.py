@@ -2362,6 +2362,9 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             uniq_id=row['uniq_id'],
             name=row['name'],
+            screen_id=row['screen_id'],
+            family_id=row['family_id'],
+            rotator_id=row['rotator_id'],
             public=cls.load_bool_from_database_field(row['public']),
         )
 
@@ -2394,12 +2397,18 @@ class EventDatabase(MigrationDatabase):
             'uniq_id',
             'name',
             'public',
+            'screen_id',
+            'family_id',
+            'rotator_id',
             'last_update',
         ]
         params: list = [
             stored_client_controller.uniq_id,
             stored_client_controller.name,
             stored_client_controller.public,
+            stored_client_controller.screen_id,
+            stored_client_controller.family_id,
+            stored_client_controller.rotator_id,
             time.time(),
         ]
         if stored_client_controller.id is None:

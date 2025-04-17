@@ -732,3 +732,26 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         {% endfor %}
     {% endwith %}
 {% endmacro %}
+
+{% macro client_controller_assign_dropdown(
+    client_controllers,
+    object_type,
+    object_uniq_id
+) %}
+    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a client controller.', 'top') }}>
+        <button class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-display pe-1"></i>
+        </button>
+        <ul class="dropdown-menu">
+            {% for client_controller in client_controllers %}
+                <button
+                    class="dropdown-item text-start cursor-pointer"
+                    hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
+                    hx-indicator="#please-wait"
+                >
+                    {{ client_controller.name }}
+                </button>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}

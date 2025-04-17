@@ -10,7 +10,10 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from data.client_controller import ClientController
+from data.family import Family
 from data.loader import EventLoader
+from data.rotator import Rotator
+from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredClientController
 from web.controllers.admin.base_event_admin_controller import (
@@ -489,3 +492,88 @@ class ClientControllerAdminController(BaseEventAdminController):
             client_controller_id=client_controller_id,
             data=data,
         )
+
+    @patch(
+        path='/admin/client-controller-assign/{event_uniq_id:str}/{client_controller_id:int}/{type:str}/{object_uniq_id:str}',
+        name='admin-client-controller-assign',
+    )
+    async def htmx_admin_client_controller_assign(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        client_controller_id: int | None,
+        type: str,
+        object_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: ClientControllerAdminWebContext = ClientControllerAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            client_controller_id=client_controller_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        if web_context.admin_client_controller is None:
+            raise RuntimeError('admin_client_controller not defined')
+        message: str | None = None
+        match type:
+            case 'screen':
+                screen: Screen = web_context.admin_event.screens_by_uniq_id[
+                    object_uniq_id
+                ]
+                web_context.admin_client_controller.screen_id = screen.id
+                message = _(
+                    'Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
+                ).format(
+                    client_controller_uniq_id=web_context.admin_client_controller.uniq_id,
+                    screen_uniq_id=screen.uniq_id,
+                )
+            case 'family':
+                family: Family = web_context.admin_event.families_by_uniq_id[
+                    object_uniq_id
+                ]
+                web_context.admin_client_controller.family_id = family.id
+                message = _(
+                    'Family [{family_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
+                ).format(
+                    client_controller_uniq_id=web_context.admin_client_controller.uniq_id,
+                    family_uniq_id=family.uniq_id,
+                )
+            case 'rotator':
+                rotator: Rotator = web_context.admin_event.rotators_by_uniq_id[
+                    object_uniq_id
+                ]
+                web_context.admin_client_controller.rotator_id = rotator.id
+                message = _(
+                    'Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
+                ).format(
+                    client_controller_uniq_id=web_context.admin_client_controller.uniq_id,
+                    rotator_uniq_id=rotator.uniq_id,
+                )
+            case _:
+                raise ValueError(f'type=[{type}]')
+
+        if message:
+            event_loader: EventLoader = EventLoader.get(request=request)
+            with EventDatabase(
+                web_context.admin_event.uniq_id, write=True
+            ) as event_database:
+                event_database.update_stored_client_controller(
+                    web_context.admin_client_controller.stored_client_controller
+                )
+                event_database.commit()
+            event_loader.clear_cache(event_uniq_id)
+
+            Message.success(
+                request,
+                message,
+            )
+        else:
+            Message.error(
+                request,
+                _('Failed to assign the object to the controller.'),
+            )
+
+        return self.render_messages(request)

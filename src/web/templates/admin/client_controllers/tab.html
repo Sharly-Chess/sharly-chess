@@ -21,9 +21,6 @@
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
-            {% if not admin_event.screens_by_uniq_id %}
-                disabled
-            {% endif %}
         >
             <i class="bi-plus-square-fill pe-1"></i>
             {{ _('Create a client controller') }}
@@ -33,8 +30,8 @@
 
 {% block cards_container_cards %}
     <div class="row">
-        {% if admin_event.client_controllers_by_uniq_id %}
-            {% for client_controller in admin_event.client_controllers_by_uniq_id.values() %}
+        {% if admin_event.client_controllers_sorted_by_uniq_id %}
+            {% for client_controller in admin_event.client_controllers_sorted_by_uniq_id %}
                 {% include 'client_controller_card.html' %}
             {% endfor %}
         {% else %}

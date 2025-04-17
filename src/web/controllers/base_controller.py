@@ -377,7 +377,7 @@ class BaseController(Controller):
         return ClientRedirect(redirect_to=index_url(request))
 
     @staticmethod
-    def _render_messages(request: HTMXRequest) -> Template:
+    def render_messages(request: HTMXRequest) -> Template:
         return HTMXTemplate(
             template_name='common/messages.html',
             re_swap='afterbegin',

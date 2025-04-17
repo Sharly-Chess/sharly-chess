@@ -709,6 +709,16 @@ class Event:
         return screens_by_uniq_id
 
     @cached_property
+    def screens_by_id(self) -> dict[int, Screen]:
+        if self.errors:
+            return {}
+        screens_by_id: dict[int, Screen] = {
+            screen.id: screen for screen in self.screens_by_uniq_id.values()
+        }
+
+        return screens_by_id
+
+    @cached_property
     def family_screens_by_uniq_id(self) -> dict[str, Screen]:
         family_screens_by_uniq_id: dict[str, Screen] = {}
         for family in self.families_by_id.values():
@@ -759,12 +769,18 @@ class Event:
         return client_controllers_by_id
 
     @cached_property
-    def client_controllers_by_uniq_id(self) -> dict[str, ClientController]:
-        return {
-            client_controller.uniq_id: client_controller
-            for client_controller in self.client_controllers_by_id.values()
-            if client_controller.uniq_id is not None
-        }
+    def client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
+        return sorted(
+            self.client_controllers_by_id.values(),
+            key=attrgetter('uniq_id'),
+        )
+
+    @cached_property
+    def public_client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
+        return sorted(
+            filter(attrgetter('public'), self.client_controllers_by_id.values()),
+            key=attrgetter('uniq_id'),
+        )
 
     def get_unused_client_controller_uniq_id(
         self,
@@ -773,7 +789,11 @@ class Event:
         """Returns the first unused client controller uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         return self._get_unused_item_uniq_id(
-            base_uniq_id or _('client-controller'), self.client_controllers_by_uniq_id
+            base_uniq_id or _('client-controller'),
+            [
+                client_controller.uniq_id
+                for client_controller in self.client_controllers_by_id.values()
+            ],
         )
 
     def get_unused_client_controller_name(

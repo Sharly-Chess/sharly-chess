@@ -83,7 +83,7 @@ class ScreenUserController(BaseScreenUserController):
         else:
             Message.error(request, _('Incorrect password.'))
             SessionHandler.store_password(request, web_context.user_event, None)
-        return self._render_messages(request)
+        return self.render_messages(request)
 
     @staticmethod
     def _user_screen_set_refresh_needed(

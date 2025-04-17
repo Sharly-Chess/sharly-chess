@@ -8,6 +8,17 @@
     {{ client_controller.uniq_id }}
 {% endblock %}
 {% block card_text %}
+    {% with object_type=client_controller.assigned_type, uniq_id=client_controller.assigned_object.uniq_id %}
+        {% if object_type == "screen" %}
+            {{ _('Screen:') }} {{ uniq_id }}
+        {% elif object_type == "family" %}
+            {{ _('Family:') }} {{ uniq_id }}
+        {% elif object_type == "rotator" %}
+            {{ _('Rotator:') }} {{ uniq_id }}
+        {% else %}
+            {{ _('No screens are currently assigned to this client controller.') }}
+        {% endif %}
+    {% endwith %}
 {% endblock %}
 
 {% block card_buttons_left %}

@@ -3,6 +3,9 @@ import weakref
 from _weakref import ReferenceType
 
 from common.i18n import _
+from data.family import Family
+from data.rotator import Rotator
+from data.screen import Screen
 from database.sqlite.event.event_store import StoredClientController
 
 if TYPE_CHECKING:
@@ -19,9 +22,6 @@ class ClientController:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_client_controller: StoredClientController = stored_client_controller
-        self._screen_id: int | None = None
-        self._family_id: int | None = None
-        self._rotator_id: int | None = None
 
     @property
     def event(self) -> 'Event':
@@ -54,30 +54,53 @@ class ClientController:
 
     @property
     def screen_id(self) -> int | None:
-        return self._screen_id
+        return self.stored_client_controller.screen_id
 
     @screen_id.setter
     def screen_id(self, new_id):
-        self._screen_id = new_id
-        self._family_id = None
-        self._rotator_id = None
+        self.stored_client_controller.screen_id = new_id
+        self.stored_client_controller.family_id = None
+        self.stored_client_controller.rotator_id = None
 
     @property
     def family_id(self) -> int | None:
-        return self._family_id
+        return self.stored_client_controller.family_id
 
     @family_id.setter
     def family_id(self, new_id):
-        self._family_id = new_id
-        self._screen_id = None
-        self._rotator_id = None
+        self.stored_client_controller.family_id = new_id
+        self.stored_client_controller.screen_id = None
+        self.stored_client_controller.rotator_id = None
 
     @property
     def rotator_id(self) -> int | None:
-        return self._rotator_id
+        return self.stored_client_controller.rotator_id
 
     @rotator_id.setter
     def rotator_id(self, new_id):
-        self._rotator_id = new_id
-        self._screen_id = None
-        self._family_id = None
+        self.stored_client_controller.rotator_id = new_id
+        self.stored_client_controller.screen_id = None
+        self.stored_client_controller.family_id = None
+
+    @property
+    def assigned_object(self) -> Screen | Family | Rotator | None:
+        if self.screen_id:
+            return self.event.screens_by_id[self.screen_id]
+        if self.family_id:
+            return self.event.families_by_id[self.family_id]
+        if self.rotator_id:
+            return self.event.rotators_by_id[self.rotator_id]
+        return None
+
+    @property
+    def assigned_type(self) -> str | None:
+        object = self.assigned_object
+        if object is None:
+            return None
+        if isinstance(object, Screen):
+            return 'screen'
+        if isinstance(object, Family):
+            return 'family'
+        if isinstance(object, Rotator):
+            return 'rotator'
+        raise ValueError(f'type=[{type(object)}]')
