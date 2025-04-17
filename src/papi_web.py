@@ -73,5 +73,5 @@ except Exception:
         logger.error(message)
     except Exception:
         print(message)
-    print('An error occurred, press Enter to end.')
-    input()
+    print('An error occurred.')
+input('Press Enter to end.')
