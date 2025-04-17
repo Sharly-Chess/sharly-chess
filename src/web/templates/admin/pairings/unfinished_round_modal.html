@@ -1,0 +1,49 @@
+<div
+    class="modal-dialog modal-dialog-centered pairing-modal"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fw-bold">
+                <h3>
+                    {{ _('Moving on to round #%(round)d', round=admin_round+1) }}
+                </h3>
+            </div>
+        </div>
+        <div class="modal-body">
+            <h4 class="text-danger">
+                {{ _('Warning: round #%(round)d is not finished.', round=admin_round) }}
+            </h4>
+            <ul>
+                {% if admin_unpaired_player_count %}
+                    <li>{{ _('%(count)d players unpaired', count=admin_unpaired_player_count) }}</li>
+                {% endif %}
+                {% if admin_no_result_board_count %}
+                    <li>{{ _('%(count)d boards without result', count=admin_no_result_board_count) }}</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if admin_round >= admin_tournament.rounds %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-caret-right"></i>
+                    {{ _('Continue') }}
+                </button>
+        </div>
+    </div>
+</div>

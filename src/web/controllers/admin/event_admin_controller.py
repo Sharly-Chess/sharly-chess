@@ -20,7 +20,7 @@ from data.player import Player
 from data.print_documents import (
     PrintDocument,
     PrintDocumentManager,
-    PrintDocumentOptionManager
+    PrintDocumentOptionManager,
 )
 from utils.enum import TournamentRating
 from data.tournament import Tournament
@@ -37,6 +37,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.urls import (
+    admin_event_pairings_url,
     admin_event_players_url,
     admin_event_tournaments_url,
     admin_event_config_url,
@@ -168,6 +169,17 @@ class EventAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        started_tournaments: list[Tournament] = [
+            tournament
+            for tournament in web_context.admin_event.tournaments_by_uniq_id.values()
+            if tournament.started
+        ]
+        if len(started_tournaments) > 0:
+            return Redirect(
+                admin_event_pairings_url(
+                    request, web_context.admin_event.uniq_id, started_tournaments[0].id
+                )
+            )
         if web_context.admin_event.player_count:
             return Redirect(
                 admin_event_players_url(request, web_context.admin_event.uniq_id)

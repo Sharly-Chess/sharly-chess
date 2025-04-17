@@ -15,7 +15,7 @@ class Pairing:
     result: Result = Result.NO_RESULT
 
     @property
-    def forfeit(self) -> bool:
+    def zero_point_bye(self) -> bool:
         return self.result == Result.ZERO_POINT_BYE
 
     @property
@@ -35,12 +35,24 @@ class Pairing:
         return self.result in (Result.LOSS, Result.UNRATED_LOSS)
 
     @property
+    def unrated_loss(self) -> bool:
+        return self.result == Result.UNRATED_LOSS
+
+    @property
     def draw(self) -> bool:
         return self.result in (Result.DRAW, Result.UNRATED_DRAW)
 
     @property
+    def unrated_draw(self) -> bool:
+        return self.result == Result.UNRATED_DRAW
+
+    @property
     def gain(self) -> bool:
         return self.result in (Result.GAIN, Result.UNRATED_GAIN)
+
+    @property
+    def unrated_gain(self) -> bool:
+        return self.result == Result.UNRATED_GAIN
 
     @property
     def half_point_bye(self) -> bool:
@@ -93,10 +105,12 @@ class Pairing:
         return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
 
     @property
-    def color_papi_value(self) -> str:
-        if self.color:
-            return self.color.to_papi_value
-        return 'F' if self.result.is_bye else 'R'
+    def next_round_bye(self) -> bool:
+        return self.result in (
+            Result.ZERO_POINT_BYE,
+            Result.HALF_POINT_BYE,
+            Result.FULL_POINT_BYE,
+        )
 
     def to_trf(
         self, round_number: int, player_id_to_trf_id: Callable[[int], int]

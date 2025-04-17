@@ -40,12 +40,14 @@
     "datasheet",
     "datasheets",
     "datetime",
+    "dblclick",
     "DELMOTTE",
     "DEVEL",
     "domloup",
     "Domloupéen",
     "Echiquier",
     "elif",
+    "endcall",
     "endfor",
     "endmacro",
     "endwith",
@@ -83,6 +85,7 @@
     "joueur",
     "jstree",
     "Kashdan",
+    "keyup",
     "KJGYREIOBZ",
     "Koya",
     "KYNPRTZMHX",
@@ -105,9 +108,11 @@
     "noconfirm",
     "Normandie",
     "nowrap",
+    "Numpad",
     "Occitanie",
     "odbc",
     "ODBC",
+    "onclick",
     "onefile",
     "papi",
     "Papi",
@@ -168,6 +173,6 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": false,
   "[jinja]": {
-      "editor.formatOnSave": false
+    "editor.formatOnSave": false
   }
 }

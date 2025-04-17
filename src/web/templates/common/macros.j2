@@ -13,7 +13,7 @@
     data-bs-placement="{{ tooltip_placement or 'top' }}"
     data-bs-html="true"
     data-bs-custom-class="{% if tooltip_type == 'error' %}papi-web-tooltip-error{% elif tooltip_type == 'warning' %}papi-web-tooltip-warning{% else %}papi-web-tooltip-info{% endif %}"
-    data-bs-title="<i class='{% if tooltip_type == 'error' %}bi-exclamation-triangle-fill{% elif tooltip_type == 'warning' %}bi-exclamation-triangle{% else %}bi-info-circle-fill{% endif %}'></i> {{ tooltip_text }}"
+    data-bs-title="<i class='{% if tooltip_type == 'error' %}bi-exclamation-triangle-fill{% elif tooltip_type == 'warning' %}bi-exclamation-triangle{% elif tooltip_type == 'info' %}bi-info-circle-fill{% endif %}'></i> {{ tooltip_text }}"
     hx-on::before-send="$('body .tooltip').remove(); $('body .tooltip-inner').remove(); $('body .tooltip-arrow').remove();"
 {% endmacro %}
 
@@ -200,4 +200,20 @@
                 {{ tooltip_attributes('warning', _('Warning: experimental features are enabled!'), 'right') }}
         ></i>
     {% endif %}
+{% endmacro %}
+
+{% macro refresh_listener(
+    hx_get,
+    hx_include
+)%}
+    <div
+        class="d-none"
+        hx-get={{ hx_get }}
+        {% if hx_include %}
+            hx-include={{ hx_include }}
+        {% endif %}
+        hx-trigger="request_refresh from:body"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    ></div>
 {% endmacro %}

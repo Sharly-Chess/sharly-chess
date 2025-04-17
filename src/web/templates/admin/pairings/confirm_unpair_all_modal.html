@@ -1,0 +1,25 @@
+{% import '/common/macros.j2' as macros %}
+
+<div style="--bs-modal-width: min(90vw, 600px);">
+    <div class="modal-dialog modal-dialog-centered pairing-modal">
+        <div class="modal-content bg-secondary-subtle">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold">{{ _('Unpair round %(round_number)s', round_number=admin_round) }}</div>
+            </div>
+            <div class="modal-body">
+                {{ _('Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round.', round_number=admin_round) }}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                <button
+                    class="btn btn-danger text-nowrap"
+                    hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {{ _('Unpair all boards') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

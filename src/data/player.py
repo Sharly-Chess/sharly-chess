@@ -329,6 +329,7 @@ class Player(TournamentPlayer):
         /,
         *,
         after_round: int,
+        include_next_round_bye: bool,
     ) -> TrfPlayer:
         assert self.id is not None
         return TrfPlayer(
@@ -348,6 +349,11 @@ class Player(TournamentPlayer):
                 result.to_trf(round_nb, player_id_to_trf_id)
                 for round_nb, result in self.pairings.items()
                 if round_nb <= after_round
+                or (
+                    include_next_round_bye
+                    and round_nb == after_round + 1
+                    and result.next_round_bye
+                )
             ],
         )
 
@@ -410,7 +416,7 @@ class Player(TournamentPlayer):
             return False
         pairing: Pairing = self.pairings[self.tournament.current_round + 1]
         return (
-            not pairing.forfeit
+            not pairing.zero_point_bye
             and not pairing.half_point_bye
             and not pairing.full_point_bye
         )
@@ -537,7 +543,7 @@ class Player(TournamentPlayer):
         if self.ref_id == 1:
             return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
-            f'{self.ratings.get(tournament_rating, '  -  ')}'
+            f'{self.ratings.get(tournament_rating, "  -  ")}'
             for tournament_rating in TournamentRating
         )
         return (

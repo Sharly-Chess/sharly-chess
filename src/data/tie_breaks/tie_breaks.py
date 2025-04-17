@@ -275,7 +275,7 @@ class GamesWonWithBlackTieBreak(TieBreak):
 
     @staticmethod
     def static_name() -> str:
-        return _('Games won with black')
+        return _('Games won with Black')
 
     @staticmethod
     def static_id() -> str:
@@ -287,7 +287,7 @@ class GamesWonWithBlackTieBreak(TieBreak):
 
     @property
     def short_name(self) -> str:
-        return _('Black wins')
+        return _('Black Wins')
 
     def compute_player_value(
         self,
