@@ -4,7 +4,6 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from common.papi_web_config import PapiWebConfig
-from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
 from database.sqlite.event.event_store import StoredClientController
@@ -72,7 +71,7 @@ class ClientController:
         self.stored_client_controller.screen_id = None
 
     @property
-    def assigned_object(self) -> Screen | Family | Rotator | None:
+    def assigned_object(self) -> Screen | Rotator | None:
         if self.screen_id:
             return self.event.non_family_screens_by_id[self.screen_id]
         if self.rotator_id:
@@ -89,6 +88,24 @@ class ClientController:
         if isinstance(object, Rotator):
             return 'rotator'
         raise ValueError(f'type=[{type(object)}]')
+
+    def assigned_description(
+        self,
+        default: str = _(
+            'No screens are currently assigned to this client controller.'
+        ),
+    ) -> str:
+        assigned_object = self.assigned_object
+        if assigned_object is None:
+            return default
+
+        assert assigned_object.uniq_id is not None
+        if self.assigned_type == 'screen':
+            return _('Currently displaying screen:') + '  ' + assigned_object.uniq_id
+        elif self.assigned_type == 'rotator':
+            return _('Currently displaying rotator:') + ' ' + assigned_object.uniq_id
+        else:
+            return default
 
     @property
     def screen(self) -> Screen | None:

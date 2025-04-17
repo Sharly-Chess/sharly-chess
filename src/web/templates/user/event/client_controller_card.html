@@ -12,14 +12,5 @@
 {% endblock %}
 
 {% block card_text %}
-    {{ _('Currently displaying:') }}
-    {% if client_controller.screen_uniq_id %}
-        {{ _('Screen:') }} {{ client_controller.screen_uniq_id }}
-    {% elif client_controller.family_uniq_id %}
-        {{ _('Family:') }} {{ client_controller.family_uniq_id }}
-    {% elif client_controller.rotator_uniq_id %}
-        {{ _('Rotator:') }} {{ client_controller.rotator_uniq_id }}
-    {% else %}
-        {{ _('No screens are currently assigned to this client controller.') }}
-    {% endif %}
+    {{ client_controller.assigned_description() }}
 {% endblock %}
