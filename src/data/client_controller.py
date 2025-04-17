@@ -72,10 +72,13 @@ class ClientController:
 
     @property
     def assigned_object(self) -> Screen | Rotator | None:
-        if self.screen_id:
-            return self.event.non_family_screens_by_id[self.screen_id]
-        if self.rotator_id:
-            return self.event.rotators_by_id[self.rotator_id]
+        try:
+            if self.screen_id:
+                return self.event.non_family_screens_by_id[self.screen_id]
+            if self.rotator_id:
+                return self.event.rotators_by_id[self.rotator_id]
+        except KeyError:
+            return None
         return None
 
     @property
@@ -109,12 +112,17 @@ class ClientController:
 
     @property
     def screen(self) -> Screen | None:
-        if self.screen_id:
-            return self.event.non_family_screens_by_id[self.screen_id]
-        if self.rotator_id:
-            rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
-            if rotator and rotator.rotating_screens:
-                return self.event.rotators_by_id[self.rotator_id].rotating_screens[0]
+        try:
+            if self.screen_id:
+                return self.event.non_family_screens_by_id[self.screen_id]
+            if self.rotator_id:
+                rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
+                if rotator and rotator.rotating_screens:
+                    return self.event.rotators_by_id[self.rotator_id].rotating_screens[
+                        0
+                    ]
+        except KeyError:
+            return None
         return None
 
     @property
