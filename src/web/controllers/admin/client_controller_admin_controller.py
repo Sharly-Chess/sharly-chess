@@ -523,7 +523,7 @@ class ClientControllerAdminController(BaseEventAdminController):
                 screen: Screen = web_context.admin_event.screens_by_uniq_id[
                     object_uniq_id
                 ]
-                web_context.admin_client_controller.screen_id = screen.id
+                web_context.admin_client_controller.screen_uniq_id = screen.uniq_id
                 message = _(
                     'Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
                 ).format(
@@ -534,7 +534,7 @@ class ClientControllerAdminController(BaseEventAdminController):
                 family: Family = web_context.admin_event.families_by_uniq_id[
                     object_uniq_id
                 ]
-                web_context.admin_client_controller.family_id = family.id
+                web_context.admin_client_controller.family_uniq_id = family.uniq_id
                 message = _(
                     'Family [{family_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
                 ).format(
@@ -545,7 +545,7 @@ class ClientControllerAdminController(BaseEventAdminController):
                 rotator: Rotator = web_context.admin_event.rotators_by_uniq_id[
                     object_uniq_id
                 ]
-                web_context.admin_client_controller.rotator_id = rotator.id
+                web_context.admin_client_controller.rotator_uniq_id = rotator.uniq_id
                 message = _(
                     'Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
                 ).format(
