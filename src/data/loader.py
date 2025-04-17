@@ -63,7 +63,7 @@ class EventLoader:
             'events_sorted_by_name',
         ]
         for property_name in cached_property_names:
-            if property in self.__dict__:
+            if property_name in self.__dict__:
                 del self.__dict__[property_name]
 
     def reload_tournament(self, event_uniq_id: str, tournament_id: int):
