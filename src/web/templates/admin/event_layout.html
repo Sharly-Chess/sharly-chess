@@ -63,6 +63,7 @@
         <i class="bi bi-printer-fill"></i>
     </button>
     {% include '/admin/common/database/database_button.html' %}
+    {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
 {% endblock admin_header_action_buttons %}
 
 {% block admin_content %}
