@@ -49,6 +49,7 @@
             {% if client_controller %}
                 <div
                     class="refresher client-controller-refresher"
+                    hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
                     hx-get="{{ url_for('user-client-controller', event_uniq_id=user_event.uniq_id, client_controller_id=client_controller.id, rotator_screen_index=rotator_screen_index + 1) }}"
                     hx-trigger="every {{ client_controller.delay }}s"
                     hx-target="body"

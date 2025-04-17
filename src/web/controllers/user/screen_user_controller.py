@@ -115,7 +115,7 @@ class ScreenUserController(BaseScreenUserController):
     @classmethod
     def _user_screen_refresh_needed(
         cls,
-        web_context: BasicScreenOrFamilyUserWebContext,
+        web_context: BasicScreenOrFamilyUserWebContext | ClientControllerUserWebContext,
         date: float,
     ) -> bool:
         if web_context.screen:
@@ -159,7 +159,7 @@ class ScreenUserController(BaseScreenUserController):
                                 return True
                 case _:
                     raise ValueError(f'type={web_context.screen.type}')
-        else:
+        elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
             assert web_context.family is not None
             assert web_context.family.event is not None
             if (
@@ -267,7 +267,7 @@ class ScreenUserController(BaseScreenUserController):
         event_uniq_id: str,
         client_controller_id: int,
         rotator_screen_index: int = 0,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Reswap:
         web_context: ClientControllerUserWebContext = ClientControllerUserWebContext(
             request,
             data=None,
@@ -278,7 +278,13 @@ class ScreenUserController(BaseScreenUserController):
         if web_context.error:
             return web_context.error
 
-        return self._user_screen_render(web_context)
+        date: float | None = self.get_if_modified_since(request)
+        if date is None or self._user_screen_refresh_needed(web_context, date):
+            return self._user_screen_render(web_context)
+        else:
+            return Reswap(
+                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
+            )
 
     @head(
         path=[
