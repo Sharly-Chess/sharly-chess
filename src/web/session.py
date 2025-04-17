@@ -150,6 +150,20 @@ class SessionHandler:
     def get_session_admin_events_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_EVENTS_SHOW_DETAILS_KEY, False)
 
+    ADMIN_PAIRINGS_SHOW_WITHOUT_RESULTS_KEY: str = 'admin_pairings_show_without_results'
+
+    @classmethod
+    def set_session_admin_pairings_show_without_results(
+        cls, request: HTMXRequest, b: bool
+    ):
+        request.session[cls.ADMIN_PAIRINGS_SHOW_WITHOUT_RESULTS_KEY] = b
+
+    @classmethod
+    def get_session_admin_pairings_show_without_results(
+        cls, request: HTMXRequest
+    ) -> bool:
+        return request.session.get(cls.ADMIN_PAIRINGS_SHOW_WITHOUT_RESULTS_KEY, False)
+
     ADMIN_SCREENS_SCREEN_TYPES_KEY: str = 'admin_screens_screen_types'
 
     @classmethod

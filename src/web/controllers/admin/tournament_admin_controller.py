@@ -31,7 +31,6 @@ from utils.enum import TournamentRating
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
-from pairing.bbp_pairings import BbpPairings
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
@@ -648,28 +647,6 @@ class TournamentAdminController(BaseEventAdminController):
             path=temp_file.name,
             filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
         )
-
-    @post(
-        path='/admin/tournament-generate-pairings/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-generate-pairings',
-    )
-    async def admin_tournament_generate_pairings(
-        self, request: HTMXRequest, event_uniq_id: str, tournament_id: int
-    ) -> Template | ClientRedirect:
-        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
-        tournament = context.admin_tournament
-        assert tournament is not None
-        BbpPairings().generate_pairings(tournament)
-        tournament.read_papi(True)
-        Message.success(
-            request,
-            _(
-                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
-            ).format(
-                round=tournament.current_round, tournament_uniq_id=tournament.uniq_id
-            ),
-        )
-        return self._admin_event_tournaments_render(request, event_uniq_id)
 
     @post(
         path='/admin/tournament-file-status/{event_uniq_id:str}',

@@ -46,6 +46,11 @@ nav .btn-link:hover {
     color: var(--bs-nav-hover-color);
 }
 
+.btn-group>span:not(:last-child)>.btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 .please-wait {
     pointer-events: none;
     height: 80px;
@@ -361,6 +366,24 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent td {
     vertical-align: middle;
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight td {
+    background-color: rgba(var(--bs-primary-rgb), 0.70);
+    color: var(--pw-contrast-text);
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight-warning td {
+    background-color: var(--bs-form-invalid-color);
+    color: var(--pw-contrast-text);
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
+    --bs-btn-color: var(--bs-body-bg);
+    --bs-btn-border-color: var(--bs-body-bg);
+    --bs-btn-hover-color: var(--bs-primary);
+    --bs-btn-hover-bg: var(--bs-body-bg);
+    --bs-btn-hover-border-color: var(--bs-body-bg);
 }
 
 table > tbody > tr.odd > * {

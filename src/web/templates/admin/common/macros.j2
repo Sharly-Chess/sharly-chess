@@ -39,54 +39,71 @@
 
 {% macro player_record(player) %}
     <!-- player_record() -->
-    {% for pairing in player.pairings.values() %}
-        {% if pairing.forfeit %}
-            {% set _text='f' %}
-            {% set _class='text-secondary' %}
-        {% elif pairing.not_paired %}
-            {% set _text='' %}
-            {% set _class='text-secondary' %}
-        {% elif pairing.playing %}
-            {% set _text='&nbsp;' %}
-            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
-        {% elif pairing.exempt %}
-            {% set _text='x' %}
-            {% set _class='text-secondary' %}
-        {% elif pairing.loss %}
-            {% set _text='-' %}
-            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
-        {% elif pairing.draw %}
-            {% set _text='=' %}
-            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
-        {% elif pairing.gain %}
-            {% set _text='+' %}
-            {% set _class='bg-white border border-dark text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
-        {% elif pairing.half_point_bye %}
-            {% set _text='=' %}
-            {% set _class='text-secondary' %}
-        {% elif pairing.full_point_bye %}
-            {% set _text='+' %}
-            {% set _class='text-secondary' %}
-        {% elif pairing.forfeit_loss or pairing.double_forfeit %}
-            {% set _text='<' %}
-            {% set _class='text-secondary' %}
-        {% elif pairing.forfeit_gain %}
-            {% set _text='>' %}
-            {% set _class='text-secondary' %}
-        {% else %}
-            {% set _text='?' %}
-            {% set _class='bg-danger text-white' %}
-        {% endif %}
-        <span
-                class="player-record text-center p-0 m-0  {{ _class }}"
-                {% if tooltip_placement %}
-                    {{ tooltip_attributes(_tooltip_level, _tooltip_text, tooltip_placement) }}
+    <div class="d-flex gap-1 h-100 align-items-center">
+        {% for pairing in player.pairings.values() %}
+            {% set _box_class='bg-white border border-white text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
+            {% set _text_style='line-height: 0;' %}
+            {% if pairing.zero_point_bye %}
+                {% set _text='<i class="bi bi-0-circle-fill"></i>' %}
+                {% set _class='text-secondary' %}
+                {% set _tooltip_text=_('Zero-Point Bye') %}
+            {% elif pairing.not_paired %}
+                {% set _text='' %}
+                {% set _class='text-secondary' %}
+            {% elif pairing.playing %}
+                {% set _text='&nbsp;' %}
+                {% set _class=_box_class %}
+            {% elif pairing.exempt %}
+                {% set _text='+' %}
+                {% set _text_style='position: relative; top: 0.1em;' %}
+                {% set _tooltip_text=_('Pairing Allocated Bye') %}
+            {% elif pairing.loss %}
+                {% set _text='L' if pairing.unrated_loss else '0' %}
+                {% set _class=_box_class  %}
+                {% set _text_style='position: relative; top: 0.1em;' %}
+                {% set _tooltip_text=_('Unrated Loss') if pairing.unrated_loss else _('Loss') %}
+            {% elif pairing.draw %}
+                {% set _text='D' if pairing.unrated_draw else '=' %}
+                {% set _class=_box_class %}
+                {% set _tooltip_text=_('Unrated Draw') if pairing.unrated_draw else _('Draw') %}
+            {% elif pairing.gain %}
+                {% set _text='W' if pairing.unrated_gain else '1' %}
+                {% set _class=_box_class %}
+                {% set _text_style='position: relative; top: 0.1em;' %}
+                {% set _tooltip_text=_('Unrated Win') if pairing.unrated_gain else _('Win') %}
+            {% elif pairing.half_point_bye %}
+                {% set _text='<i class="bi bi-circle-half"></i>' %}
+                {% set _class='text-secondary' %}
+                {% set _tooltip_text=_('Half-Point Bye') %}
+            {% elif pairing.full_point_bye %}
+                {% set _text='<i class="bi bi-1-circle-fill"></i>' %}
+                {% set _class='text-secondary' %}
+                {% set _tooltip_text=_('Full-Point Bye') %}
+            {% elif pairing.forfeit_loss or pairing.double_forfeit %}
+                {% set _text='-' %}
+                {% set _class=_box_class %}
+                {% set _tooltip_text=_('Forfeit Loss') %}
+            {% elif pairing.forfeit_gain %}
+                {% set _text='+' %}
+                {% set _class=_box_class %}
+                {% set _tooltip_text=_('Forfeit Win') %}
+            {% else %}
+                {% set _text='?' %}
+                {% set _class='bg-danger text-white' %}
+            {% endif %}
+            <span
+                class="player-record text-center p-0 m-0 {{ _class }}"
+                {% if _tooltip_text %}
+                    {{ tooltip_attributes('info', _tooltip_text) }}
                 {% endif %}
-                style="display: inline-block; width: 1em"
-        >
-            {{ _text|safe }}
-        </span>
-    {% endfor %}
+                style="display: inline-flex; width: 1.5em; height: 1.5em; align-items: center; justify-content: center;"
+            >
+                <span style="{{ _text_style }}">
+                    {{ _text|safe }}
+                </span>
+            </span>
+        {% endfor %}
+    </div>
     <!-- end player_record() -->
 {% endmacro %}
 

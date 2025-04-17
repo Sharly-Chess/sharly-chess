@@ -1,0 +1,81 @@
+<table
+    id="players-table"
+    class="table prominent table-striped table-sm w-100 bg-light"
+>
+    <thead
+        id="players-table-header"
+        class="position-sticky z-2"
+        style="top: var(--header-height);"
+    >
+        <tr>
+            <th>{{ title }}</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in unpaired %}
+            {% with pairing=player.pairings[admin_round], class="bye" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
+                <tr id="player-{{ player.id }}" class="player-row" data-player-id="{{ player.id }}">
+                    <td class="{{ class }}">
+                        <div class="d-flex align-items-center gap-2">
+                        {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round >= admin_tournament.current_round) %}
+                            <i
+                                {% if player.check_in %}
+                                    class="bi-check-circle-fill text-success cursor-pointer"
+                                    {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                                    hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=0) }}"
+                                {% else %}
+                                    class="bi-circle-fill text-warning cursor-pointer"
+                                    {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                                    hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
+                                {% endif %}
+                                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            ></i>
+                        {% endif %}
+                            <span>{{ player.last_name }} {{ player.first_name }}</span>
+                        </div>
+                    </td>
+                    <td class="{{ class }} text-end">{{ player.get_rating(admin_tournament.rating) }}</td>
+                    <td class="{{ class }} text-center" width="1">
+                        <div
+                            {% if pairing and pairing.zero_point_bye %}
+                               {{ macros.tooltip_attributes('info', _('Zero-Point Bye'), 'right') }}
+                            {% elif pairing and pairing.half_point_bye %}
+                               {{ macros.tooltip_attributes('info', _('Half-Point Bye'), 'right') }}
+                            {% elif pairing and pairing.full_point_bye %}
+                               {{ macros.tooltip_attributes('info', _('Full-Point Bye (deprecated)'), 'right') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Pair'), 'right') }}
+                            {% endif %}
+                        >
+                            <button
+                                class="btn btn-sm btn-outline-primary py-2"
+                                style="width: 2rem; line-height: 0;"
+                                hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                                hx-trigger="click"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                preload
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            >
+                                {% if pairing and pairing.zero_point_bye %}
+                                    <i class="bi bi-0-circle-fill"></i>
+                                {% elif pairing and pairing.half_point_bye %}
+                                    <i class="bi bi-circle-half"></i>
+                                {% elif pairing and pairing.full_point_bye %}
+                                    <i class="bi bi-1-circle-fill"></i>
+                                {% else %}
+                                    <i class="bi-shuffle pe-1"></i>
+                                {% endif %}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {% endwith %}
+        {% endfor %}
+    </tbody>
+</table>

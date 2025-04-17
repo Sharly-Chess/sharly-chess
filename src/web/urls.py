@@ -43,3 +43,15 @@ def admin_event_tournaments_url(
     return request.app.route_reverse(
         'admin-event-tournaments-tab', event_uniq_id=event_uniq_id
     )
+
+
+def admin_event_pairings_url(
+    request: HTMXRequest,
+    event_uniq_id: str,
+    tournament_id: int,
+) -> str:
+    return request.app.route_reverse(
+        'admin-event-pairings-tab',
+        event_uniq_id=event_uniq_id,
+        tournament_id=tournament_id,
+    )

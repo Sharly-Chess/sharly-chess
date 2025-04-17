@@ -10,6 +10,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from common import unicode_normalize
 from common.i18n import _, ngettext
@@ -1462,7 +1463,12 @@ class PlayerAdminController(BaseEventAdminController):
         )
         event_loader: EventLoader = EventLoader.get(request=request)
         event_loader.clear_cache(event_uniq_id)
-        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+        return HTMXTemplate(
+            template_name='common/empty.html',
+            re_swap='none',
+            trigger_event='request_refresh',
+            after='receive',
+        )
 
     @patch(
         path='/admin/tournament-close-check-in-forfeit-next-round/{event_uniq_id:str}/{tournament_id:int}',

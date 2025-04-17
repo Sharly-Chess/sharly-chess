@@ -208,7 +208,7 @@ class PapiWebConfig(metaclass=Singleton):
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')
     bootstrap_icons_version: Version = Version('1.11.3')
-    htmx_version: Version = Version('1.9.12')
+    htmx_version: Version = Version('2.0.4')
     htmx_preload_version: Version = Version('2.1.0')
     htmx_remove_me_version: Version = Version('2.0.0')
     htmx_multi_swap_version: Version = Version('2.0.0')

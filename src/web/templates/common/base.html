@@ -42,12 +42,11 @@
                     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
 
-                  setSize();
+                setSize();
 
-                  window.addEventListener('resize', setSize);
-                  window.addEventListener('htmx:afterSettle', setSize);
-            </script>
-            <script>
+                window.addEventListener('resize', setSize);
+                window.addEventListener('htmx:afterSettle', setSize);
+
                 function closeTooltips () {
                     $('body .tooltip').remove();
                     $('body .tooltip-inner').remove();
@@ -258,6 +257,12 @@
         <script>
             closeTooltips();
             activateTooltips();
+
+            if (typeof bootstrap !== 'undefined') {
+                // Allow the tooltip content to have a style attribute
+                bootstrap.Tooltip.Default.allowList['*'].push('style')
+            }
+
             var confirm_when_leaving = true;
             document.addEventListener('htmx:beforeOnLoad', function(evt) {
                 if (evt.detail.xhr.getResponseHeader('hx-redirect')) {
