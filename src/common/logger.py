@@ -14,7 +14,7 @@ LOGGING_CONFIG = {
         'colored': {
             '()': 'colorlog.ColoredFormatter',
             'fmt': '%(log_color)s%(asctime)s %(levelname)-10s%(message)s%(reset)s',
-            'datefmt': '%y/%m/%d %H:%M:%S',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
             'reset': True,
             'log_colors': {
                 'DEBUG': 'white',
