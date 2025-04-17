@@ -1789,6 +1789,9 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
+msgid "Individual Screens ({num})"
+msgstr ""
+
 #, python-format
 msgid "Informations: %(num)d"
 msgstr ""
@@ -3211,9 +3214,6 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
-msgid "Screens ({num})"
-msgstr ""
-
 msgid "Screens:"
 msgstr ""
 
@@ -4503,7 +4503,7 @@ msgstr[1] ""
 msgid "{screen_type}-screen"
 msgstr ""
 
-#~ msgid "Points for loss (zero-point bye)"
+#~ msgid "Screens ({num})"
 #~ msgstr ""
 
 #~ msgid "Points for win (full-point bye)"
