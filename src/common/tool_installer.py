@@ -77,7 +77,8 @@ class ToolInstaller(ABC):
                 f.write(chunk)
         print_interactive_success('Done.')
 
-    def install_archive_and_delete(self, archive_path: Path, install_dir: Path):
+    @staticmethod
+    def install_archive_and_delete(archive_path: Path, install_dir: Path):
         print_interactive_info(f'Installing to {install_dir}...')
         install_dir.mkdir(parents=True, exist_ok=True)
         shutil.unpack_archive(archive_path, install_dir)

@@ -81,7 +81,7 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
         return self.is_installed
 
 
-class FileInstaller(WebLibInstaller):
+class WebLibFileInstaller(WebLibInstaller):
     def __init__(
         self,
         name: str,
@@ -180,37 +180,37 @@ class InstallationChecker:
             'https://github.com/patrick-steele-idem/morphdom/archive/refs/tags/v{version}.zip',
             'morphdom-{version}.zip',
         ),
-        FileInstaller(
+        WebLibFileInstaller(
             'morphdom',
             PapiWebConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',
             'jquery/jquery-{version}.min.js',
         ),
-        FileInstaller(
+        WebLibFileInstaller(
             'HTMX',
             PapiWebConfig.htmx_version,
             'https://unpkg.com/htmx.org@{version}/dist/htmx.min.js',
             'htmx/htmx-{version}/htmx.min.js',
         ),
-        FileInstaller(
+        WebLibFileInstaller(
             'HTMX Preload extension',
             PapiWebConfig.htmx_preload_version,
             'https://unpkg.com/htmx-ext-preload@{version}',
             'htmx/preload-{version}/preload.js',
         ),
-        FileInstaller(
+        WebLibFileInstaller(
             'HTMX Remove me extension',
             PapiWebConfig.htmx_remove_me_version,
             'https://unpkg.com/htmx-ext-remove-me@{version}',
             'htmx/remove-me-{version}/remove-me.js',
         ),
-        FileInstaller(
+        WebLibFileInstaller(
             'HTMX Multi swap extension',
             PapiWebConfig.htmx_multi_swap_version,
             'https://unpkg.com/htmx-ext-multi-swap@{version}',
             'htmx/multi-swap-{version}/multi-swap.js',
         ),
-        FileInstaller(
+        WebLibFileInstaller(
             'jQuery',
             PapiWebConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',

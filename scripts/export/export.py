@@ -232,6 +232,7 @@ def build_test():
         TEST_DIR.mkdir(parents=True)
     else:
         print_interactive_info(f'Updating test environment in {TEST_DIR}...')
+        shutil.rmtree(TEST_DIR / '_internal', ignore_errors=True)
     with ZipFile(ZIP_FILE, 'r') as zip_file:
         zip_file.extractall(TEST_DIR)
 
