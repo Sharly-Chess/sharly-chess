@@ -2069,6 +2069,10 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_screen(self, screen_id: int):
         self._delete_screen_stored_screen_sets(screen_id)
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
+        self.execute(
+            'UPDATE `client_controller` SET `screen_id` = NULL WHERE screen_id = ?;',
+            (screen_id,),
+        )
         self.set_last_update()
 
     def _delete_tournament_stored_screens(self, tournament_id: int):
@@ -2348,6 +2352,10 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
+        self.execute(
+            'UPDATE `client_controller` SET `rotator_id` = NULL WHERE rotator_id = ?;',
+            (rotator_id,),
+        )
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------
