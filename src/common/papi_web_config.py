@@ -208,10 +208,6 @@ class PapiWebConfig(metaclass=Singleton):
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')
     bootstrap_icons_version: Version = Version('1.11.3')
-    assert (
-        BASE_DIR
-        / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}'
-    ).is_dir()
     htmx_version: Version = Version('1.9.12')
     assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
     jquery_version: Version = Version('3.7.1')

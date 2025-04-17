@@ -37,7 +37,11 @@ from common.logger import (
 )
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
-from common.installation_checker import BootstrapInstaller, InstallationChecker
+from common.installation_checker import (
+    BootstrapInstaller,
+    InstallationChecker,
+    BootstrapIconsInstaller,
+)
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
 from scripts.i18n.i18n_update import I18nUpdater
@@ -129,20 +133,12 @@ def build_exe():
         bootstrap_installer.version_install_dir / lib_file
         for lib_file in BootstrapInstaller.lib_files
     ]
+    bootstrap_icons_installer: BootstrapIconsInstaller = BootstrapIconsInstaller()
+    files += [
+        bootstrap_icons_installer.version_install_dir / lib_file
+        for lib_file in BootstrapIconsInstaller.lib_files
+    ]
     lib_dir = static_dir / 'lib'
-    bootstrap_icons_dir = (
-        lib_dir
-        / 'bootstrap-icons'
-        / f'bootstrap-icons-{PapiWebConfig.bootstrap_icons_version}'
-    )
-    files += [
-        bootstrap_icons_dir / 'font' / 'bootstrap-icons.min.css',
-    ]
-    files += [
-        file
-        for file in (bootstrap_icons_dir / 'font' / 'fonts').glob('**/*')
-        if file.is_file()
-    ]
     jquery_file = lib_dir / 'jquery' / f'jquery-{PapiWebConfig.jquery_version}.min.js'
     files += [
         jquery_file,

@@ -291,9 +291,6 @@ msgstr "Authentification réussie !"
 msgid "Auto-update"
 msgstr "Mise à jour"
 
-msgid "Automatically installing BBP Pairings for developers in experimental mode."
-msgstr "Installation automatique de BBP Pairings pour les développeur·euses en mode expérimental."
-
 msgid "Automatically launch a browser when starting the server"
 msgstr "Lancement automatique du navigateur au démarrage du serveur"
 
@@ -1903,11 +1900,11 @@ msgstr "Ligue"
 msgid "League:"
 msgstr "Ligue :"
 
-msgid "Lib [{lib}] is missing."
-msgstr "La bibliothèque [{lib}] n'est pas installée."
-
 msgid "Libraries"
 msgstr "Bibliothèques"
+
+msgid "Library [{lib}] is missing."
+msgstr "La bibliothèque [{lib}] n'est pas installée."
 
 msgid "Lic."
 msgstr "Lic."

@@ -291,9 +291,6 @@ msgstr ""
 msgid "Auto-update"
 msgstr ""
 
-msgid "Automatically installing BBP Pairings for developers in experimental mode."
-msgstr ""
-
 msgid "Automatically launch a browser when starting the server"
 msgstr ""
 
@@ -1903,10 +1900,10 @@ msgstr "League"
 msgid "League:"
 msgstr ""
 
-msgid "Lib [{lib}] is missing."
+msgid "Libraries"
 msgstr ""
 
-msgid "Libraries"
+msgid "Library [{lib}] is missing."
 msgstr ""
 
 msgid "Lic."
@@ -4338,22 +4335,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-#~ msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
-
-#~ msgid "Installation is correct."
-#~ msgstr ""
-
-#~ msgid "Installation of [{lib}]."
-#~ msgstr ""
-
-#~ msgid "Installation of [{self.name}] failed."
-#~ msgstr ""
-
-#~ msgid "Needed lib [{lib}] is missing."
-#~ msgstr ""
-
-#~ msgid "Needed lib [{self.name}] is missing."
-#~ msgstr ""
 

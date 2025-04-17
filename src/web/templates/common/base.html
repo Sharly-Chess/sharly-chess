@@ -8,7 +8,7 @@
             {# https://github.com/twbs/bootstrap/releases #}
             <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ papi_web_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
             {# https://github.com/twbs/icons/releases #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-' ~ papi_web_config.bootstrap_icons_version ~ '/font/bootstrap-icons.min.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}" type="text/css" />
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/user.css') }}" type="text/css" />
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/admin.css') }}" type="text/css" />

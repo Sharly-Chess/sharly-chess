@@ -39,11 +39,11 @@ class ToolInstaller(ABC):
         else:
             if not DEVEL_ENV:
                 print_interactive_error(
-                    _('Lib [{lib}] is missing.').format(lib=self.name)
+                    _('Library [{lib}] is missing.').format(lib=self.name)
                 )
                 return False
             print_interactive_warning(
-                _('Lib [{lib}] is missing.').format(lib=self.name)
+                _('Library [{lib}] is missing.').format(lib=self.name)
             )
             if not self.install():
                 print_interactive_error(
