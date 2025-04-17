@@ -216,9 +216,6 @@ class PapiWebConfig(metaclass=Singleton):
     sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
     morphdom_version: Version = Version('2.7.4')
-    assert (
-        BASE_DIR / f'src/web/static/lib/morphdom/morphdom-{morphdom_version}.min.js'
-    ).is_file()
 
     @overload
     def _url(self, ip: str) -> str: ...

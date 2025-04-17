@@ -38,7 +38,6 @@ from common.logger import (
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from common.installation_checker import (
-    BootstrapInstaller,
     InstallationChecker,
 )
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
@@ -129,13 +128,12 @@ def build_exe():
     files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
     for installer in InstallationChecker.web_lib_installers:
         files += [
-            installer.version_install_dir / lib_file
-            for lib_file in BootstrapInstaller.lib_files
+            installer.version_install_dir / lib_file for lib_file in installer.lib_files
         ]
     lib_dir = static_dir / 'lib'
     files += [
         lib_dir / 'htmx' / 'sortable.js',
-        lib_dir / 'morphdom' / f'morphdom-{PapiWebConfig.morphdom_version}.min.js',
+        lib_dir / 'htmx' / 'morphdom-swap.js',
     ]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [

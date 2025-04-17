@@ -169,6 +169,23 @@ class InstallationChecker:
             'https://github.com/vakata/jstree/archive/refs/tags/{version}.zip',
             'jstree-{version}.zip',
         ),
+        WebLibArchiveInstaller(
+            'MorphDom',
+            PapiWebConfig.morphdom_version,
+            'morphdom',
+            'morphdom-{version}',
+            [
+                'dist/morphdom-umd.min.js',
+            ],
+            'https://github.com/patrick-steele-idem/morphdom/archive/refs/tags/v{version}.zip',
+            'morphdom-{version}.zip',
+        ),
+        FileInstaller(
+            'morphdom',
+            PapiWebConfig.jquery_version,
+            'https://code.jquery.com/jquery-{version}.min.js',
+            'jquery/jquery-{version}.min.js',
+        ),
         FileInstaller(
             'HTMX',
             PapiWebConfig.htmx_version,
