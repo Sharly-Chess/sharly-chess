@@ -209,7 +209,9 @@ class PapiWebConfig(metaclass=Singleton):
     bootstrap_version: Version = Version('5.3.3')
     bootstrap_icons_version: Version = Version('1.11.3')
     htmx_version: Version = Version('1.9.12')
-    assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
+    htmx_preload_version: Version = Version('2.1.0')
+    htmx_remove_me_version: Version = Version('2.0.0')
+    htmx_multi_swap_version: Version = Version('2.0.0')
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.2')
     assert (

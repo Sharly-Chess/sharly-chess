@@ -138,16 +138,14 @@ def build_exe():
         bootstrap_icons_installer.version_install_dir / lib_file
         for lib_file in BootstrapIconsInstaller.lib_files
     ]
-    lib_dir = static_dir / 'lib'
-    jquery_file = lib_dir / 'jquery' / f'jquery-{PapiWebConfig.jquery_version}.min.js'
     files += [
-        jquery_file,
+        file_installer.check_file
+        for file_installer in InstallationChecker.file_installers
     ]
-    htmx_dir = lib_dir / 'htmx' / f'htmx-{PapiWebConfig.htmx_version}'
-    files += [file for file in htmx_dir.glob('**/*') if file.is_file()]
+    lib_dir = static_dir / 'lib'
     sortable_dir = lib_dir / 'sortable' / f'sortable-{PapiWebConfig.sortable_version}'
     files += [file for file in sortable_dir.glob('**/*') if file.is_file()]
-    htmx_sortable_file = lib_dir / 'htmx' / 'htmx-sortable.js'
+    htmx_sortable_file = lib_dir / 'htmx' / 'sortable.js'
     files += [
         htmx_sortable_file,
     ]

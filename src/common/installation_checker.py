@@ -3,6 +3,7 @@ from abc import ABC
 from pathlib import Path
 
 import requests
+from packaging.version import Version
 
 from common import experimental_features_enabled, REQUEST_TIMEOUT, TMP_DIR, BASE_DIR
 from common.i18n import _
@@ -111,30 +112,30 @@ class BootstrapIconsInstaller(WebLibInstaller):
         return self.is_installed
 
 
-class JQueryInstaller(WebLibInstaller):
-    def __init__(self):
-        super().__init__('jQuery', PapiWebConfig.jquery_version)
-        self.lib_install_dir: Path = self.lib_dir / 'jquery'
+class FileInstaller(WebLibInstaller):
+    def __init__(
+        self,
+        name: str,
+        version: Version,
+        url: str,
+        file_path: str,
+    ):
+        super().__init__(name, version)
+        self.url: str = url.format(version=self.version)
+        self.file_path: Path = Path(file_path.format(version=self.version))
 
     @property
     def check_file(self) -> Path:
-        return self.lib_install_dir / f'jquery-{self.version}.min.js'
+        return self.lib_dir / self.file_path
 
     def install(self) -> bool:
-        dist_filename: str = f'jquery-{self.version}.min.js'
-        dist_url: str = f'https://code.jquery.com/{dist_filename}'
-        self.lib_install_dir.mkdir(parents=True, exist_ok=True)
-        dist_file: Path = TMP_DIR / dist_filename
-        print_interactive_info(f'Downloading {dist_url}...')
-        response = requests.get(dist_url, stream=True, timeout=REQUEST_TIMEOUT)
+        self.check_file.parent.mkdir(parents=True, exist_ok=True)
+        print_interactive_info(f'Downloading {self.url} to {self.check_file}...')
+        response = requests.get(self.url, stream=True, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
-        with open(dist_file, 'wb') as f:
+        with open(self.check_file, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        print_interactive_success('Done.')
-        print_interactive_info(f'Installing to {self.lib_install_dir}...')
-        shutil.copy(dist_file, self.check_file)
-        dist_file.unlink(missing_ok=True)
         print_interactive_success('Done.')
         return self.is_installed
 
@@ -175,20 +176,56 @@ class OtherInstaller(WebLibInstaller):
 class InstallationChecker:
     """A class to check the installation of all the needed tools and libs."""
 
-    @staticmethod
-    def check() -> bool:
+    file_installers: list[ToolInstaller] = [
+        FileInstaller(
+            'HTMX',
+            PapiWebConfig.htmx_version,
+            'https://unpkg.com/htmx.org@{version}/dist/htmx.min.js',
+            'htmx/htmx-{version}/htmx.min.js',
+        ),
+        FileInstaller(
+            'HTMX Preload extension',
+            PapiWebConfig.htmx_preload_version,
+            'https://unpkg.com/htmx-ext-preload@{version}',
+            'htmx/preload-{version}/preload.js',
+        ),
+        FileInstaller(
+            'HTMX Remove me extension',
+            PapiWebConfig.htmx_remove_me_version,
+            'https://unpkg.com/htmx-ext-remove-me@{version}',
+            'htmx/remove-me-{version}/remove-me.js',
+        ),
+        FileInstaller(
+            'HTMX Multi swap extension',
+            PapiWebConfig.htmx_multi_swap_version,
+            'https://unpkg.com/htmx-ext-multi-swap@{version}',
+            'htmx/multi-swap-{version}/multi-swap.js',
+        ),
+        FileInstaller(
+            'jQuery',
+            PapiWebConfig.jquery_version,
+            'https://code.jquery.com/jquery-{version}.min.js',
+            'jquery/jquery-{version}.min.js',
+        ),
+    ]
+
+    @classmethod
+    def check(cls) -> bool:
         error: bool = False
         installers: list[ToolInstaller] = (
-            [
-                BbpPairingsInstaller(),
+            (
+                [
+                    BbpPairingsInstaller(),
+                ]
+                if experimental_features_enabled()
+                else []
+            )
+            + [
+                BootstrapInstaller(),
+                BootstrapIconsInstaller(),
             ]
-            if experimental_features_enabled()
-            else []
-        ) + [
-            BootstrapInstaller(),
-            BootstrapIconsInstaller(),
-            JQueryInstaller(),
-        ]
+            + cls.file_installers
+        )
         for installer in installers:
             if not installer.check_installation():
                 error = True
