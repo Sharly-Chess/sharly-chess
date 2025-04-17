@@ -283,7 +283,7 @@ msgid "Archived events ({num})"
 msgstr ""
 
 #, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -3793,6 +3793,9 @@ msgstr ""
 msgid "This will cause the table numbers to be reordered."
 msgstr ""
 
+msgid "This will delete any results for this round."
+msgstr ""
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr ""
@@ -4522,5 +4525,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?  This will delete any results for this round."
+#~ msgstr ""
+
+#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
 #~ msgstr ""
 

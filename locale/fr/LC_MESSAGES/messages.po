@@ -283,8 +283,8 @@ msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
 #, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
-msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s ? Cela supprimera tous les résultats de cette ronde."
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
+msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s ?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -3792,6 +3792,9 @@ msgstr "Cet écran est public (visible des utilisateur·ices)."
 
 msgid "This will cause the table numbers to be reordered."
 msgstr "Cela peut modifier l'ordre des tables."
+
+msgid "This will delete any results for this round."
+msgstr "Cela supprimera tous les résultats de cette ronde."
 
 #, python-format
 msgid "Tie-break #%(index)d:"
