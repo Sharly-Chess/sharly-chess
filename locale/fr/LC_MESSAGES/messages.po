@@ -1789,6 +1789,9 @@ msgstr "Chemin incorrect [{path}]."
 msgid "Increment (optional, seconds):"
 msgstr "Incrément (optionel, en secondes) :"
 
+msgid "Individual Screens ({num})"
+msgstr "Écrans simples ({num})"
+
 #, python-format
 msgid "Informations: %(num)d"
 msgstr "Informations : %(num)d"
@@ -3210,9 +3213,6 @@ msgstr "Familles d'écrans : %(num)d"
 
 msgid "Screens"
 msgstr "Écrans"
-
-msgid "Screens ({num})"
-msgstr "Écrans ({num})"
 
 msgid "Screens:"
 msgstr "Écrans :"
