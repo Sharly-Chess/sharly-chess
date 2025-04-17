@@ -66,3 +66,4 @@ __pycache__/
 /src/web/static/lib/htmx/multi-swap-*
 /src/web/static/lib/htmx/remove-me-*
 /src/web/static/lib/Sortable
+/src/web/static/lib/jstree

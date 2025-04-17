@@ -154,6 +154,21 @@ class InstallationChecker:
             'https://github.com/SortableJS/Sortable/archive/refs/tags/{version}.zip',
             'Sortable-{version}.zip',
         ),
+        WebLibArchiveInstaller(
+            'jsTree',
+            PapiWebConfig.jstree_version,
+            'jstree',
+            'jstree-{version}',
+            [
+                'dist/jstree.min.js',
+                'dist/themes/default/style.min.css',
+                'dist/themes/default/32px.png',
+                'dist/themes/default/40px.png',
+                'dist/themes/default/throbber.gif',
+            ],
+            'https://github.com/vakata/jstree/archive/refs/tags/{version}.zip',
+            'jstree-{version}.zip',
+        ),
         FileInstaller(
             'HTMX',
             PapiWebConfig.htmx_version,

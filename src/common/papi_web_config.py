@@ -215,9 +215,6 @@ class PapiWebConfig(metaclass=Singleton):
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
-    assert (
-        BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'
-    ).is_dir()
     morphdom_version: Version = Version('2.7.4')
     assert (
         BASE_DIR / f'src/web/static/lib/morphdom/morphdom-{morphdom_version}.min.js'

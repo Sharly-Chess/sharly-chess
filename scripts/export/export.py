@@ -135,14 +135,7 @@ def build_exe():
     lib_dir = static_dir / 'lib'
     files += [
         lib_dir / 'htmx' / 'sortable.js',
-    ]
-    jstree_dir = lib_dir / 'jstree' / f'jstree-{PapiWebConfig.jstree_version}-dist'
-    files += [file for file in jstree_dir.glob('**/*') if file.is_file()]
-    morphdom_file = (
-        lib_dir / 'morphdom' / f'morphdom-{PapiWebConfig.morphdom_version}.min.js'
-    )
-    files += [
-        morphdom_file,
+        lib_dir / 'morphdom' / f'morphdom-{PapiWebConfig.morphdom_version}.min.js',
     ]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [

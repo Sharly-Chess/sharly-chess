@@ -23,9 +23,9 @@
             <script src="{{ url_for('static', file_path='/lib/Sortable/Sortable-' ~ papi_web_config.sortable_version ~ '/Sortable.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}"></script>
             {# https://github.com/vakata/jstree #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/themes/default/style.min.css') }}" type="text/css" />
-            <script src="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/jstree.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-2.7.4.min.js') }}"></script>
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ papi_web_config.jstree_version ~ '/dist/themes/default/style.min.css') }}" type="text/css" />
+            <script src="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ papi_web_config.jstree_version ~ '/dist/jstree.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ papi_web_config.morphdom_version ~ '.min.js') }}"></script>
             <script>
                 htmx.defineExtension('morphdom-swap', {
                     isInlineSwap: function(swapStyle) {
