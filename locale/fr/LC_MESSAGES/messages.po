@@ -310,9 +310,6 @@ msgstr "Authentification réussie !"
 msgid "Auto-update"
 msgstr "Mise à jour"
 
-msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr "Installation automatique de BBP Pairings pour les développeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
-
 msgid "Automatically launch a browser when starting the server"
 msgstr "Lancement automatique du navigateur au démarrage du serveur"
 
@@ -1780,6 +1777,9 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la ronde actuel
 msgid "In play"
 msgstr "En jeu"
 
+msgid "Incorrect installation, exiting."
+msgstr "Installation incorrecte, abandon."
+
 msgid "Incorrect password."
 msgstr "Mot de passe incorrect."
 
@@ -1810,6 +1810,12 @@ msgstr "Création d'une famille d'écrans de saisie."
 
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."
+
+msgid "Installation of [{lib}] failed."
+msgstr "L'installation de la bibliothèque [{lib}] a échoué."
+
+msgid "Installed [{lib}]."
+msgstr "La bibliothèque [{lib}] a été installée."
 
 msgid "International Master"
 msgstr "Maître International"
@@ -1969,6 +1975,9 @@ msgstr "Ligue :"
 
 msgid "Libraries"
 msgstr "Bibliothèques"
+
+msgid "Library [{lib}] is missing."
+msgstr "La bibliothèque [{lib}] n'est pas installée."
 
 msgid "Lic."
 msgstr "Lic."

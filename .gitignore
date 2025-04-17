@@ -58,3 +58,13 @@ __pycache__/
 
 # PyInstaller spec files
 /*.spec
+/src/web/static/lib/bootstrap
+/src/web/static/lib/bootstrap-icons
+/src/web/static/lib/jquery
+/src/web/static/lib/htmx/htmx-*
+/src/web/static/lib/htmx/preload-*
+/src/web/static/lib/htmx/multi-swap-*
+/src/web/static/lib/htmx/remove-me-*
+/src/web/static/lib/Sortable
+/src/web/static/lib/jstree
+/src/web/static/lib/morphdom

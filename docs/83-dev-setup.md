@@ -55,13 +55,11 @@ python -m venv .venv-export
 
 L'archive ZIP est créée dans le répertoire `/export` et un environnement de test est créé dans `/export-test`.
 
-## Installation de bbpPairings
+## Installation des outils et des bibliothèques
 
-```
-python scripts/bbp_pairings/install_bbp_pairings.py
-```
-
-Le script installe l'exécutable dans le répertoire `tools/bbpPairings/bbpPairings-vx.y.z`.
+À partir de la version 2.6, les librairies ne sont plus stockées sur le dépôt GitHub mais installées :
+- automatiquement dans l'environnement des développeurs au premier lancement du serveur ;
+- manuellement en lançant le script ``scrpts/tools_and_libs/install_tools_and_libs.py``.
 
 ## Mise à jour des drapeaux des fédérations
 

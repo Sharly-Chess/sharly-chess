@@ -207,32 +207,15 @@ class PapiWebConfig(metaclass=Singleton):
 
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')
-    assert (
-        BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist'
-    ).is_dir()
     bootstrap_icons_version: Version = Version('1.11.3')
-    assert (
-        BASE_DIR
-        / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}'
-    ).is_dir()
     htmx_version: Version = Version('2.0.4')
-    assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
+    htmx_preload_version: Version = Version('2.1.0')
+    htmx_remove_me_version: Version = Version('2.0.0')
+    htmx_multi_swap_version: Version = Version('2.0.0')
     jquery_version: Version = Version('3.7.1')
-    assert (
-        BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js'
-    ).is_file()
-    sortable_version: Version = Version('1.15.2')
-    assert (
-        BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}'
-    ).is_dir()
+    sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
-    assert (
-        BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'
-    ).is_dir()
     morphdom_version: Version = Version('2.7.4')
-    assert (
-        BASE_DIR / f'src/web/static/lib/morphdom/morphdom-{morphdom_version}.min.js'
-    ).is_file()
 
     @overload
     def _url(self, ip: str) -> str: ...

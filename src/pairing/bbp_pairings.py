@@ -17,10 +17,6 @@ class BbpPairings:
 
     BYE_ID = 0
 
-    @property
-    def is_installed(self) -> bool:
-        return self.executable_path.exists()
-
     bbp_pairings_dir: Path = BASE_DIR / 'tools' / 'bbpPairings'
 
     @property

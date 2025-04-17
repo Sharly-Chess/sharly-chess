@@ -16,6 +16,7 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 
 from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DEVEL_ENV
 from common.i18n import _, set_locale
+from common.installation_checker import InstallationChecker
 from common.logger import (
     get_logger,
     input_interactive,
@@ -55,8 +56,11 @@ class Engine:
             print_interactive_warning(
                 _('Not connected, can not check Papi-web version.')
             )
-        # Engines inheriting from this class should not do anything if property updated is true.
-        self.updated: bool = False
+        # Engines inherited this class should stop if this flag is True.
+        self.error: bool = False
+        if not InstallationChecker.check():
+            self.error = True
+            return
         if new_stable_version:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
             no_answer = _('N *** THE LETTER TO ANSWER NO')
@@ -72,7 +76,7 @@ class Engine:
                     )
                 )
                 if choice == yes_answer:
-                    self.updated = True
+                    self.error = True
                     if not self._install_new_version(new_stable_version):
                         logger.error(
                             _('The installation of version [{version}] failed.').format(
