@@ -133,7 +133,9 @@ class ClientControllerAdminController(BaseEventAdminController):
             public = bool(WebContext.form_data_to_bool(data, 'public'))
         match action:
             case 'create' | 'clone' | 'update':
-                pass
+                name = WebContext.form_data_to_str(data, 'name') or ''
+                if not name:
+                    errors['name'] = _('Please enter the client controller name.')
             case 'delete':
                 if web_context.admin_client_controller is None:
                     raise RuntimeError(
@@ -342,7 +344,7 @@ class ClientControllerAdminController(BaseEventAdminController):
             return self._admin_event_client_controllers_render(
                 request,
                 event_uniq_id=event_uniq_id,
-                modal='family',
+                modal='client_controller',
                 action=action,
                 client_controller_id=client_controller_id,
                 data=data,

@@ -74,7 +74,7 @@ class ClientController:
     @property
     def assigned_object(self) -> Screen | Family | Rotator | None:
         if self.screen_id:
-            return self.event.screens_by_id[self.screen_id]
+            return self.event.non_family_screens_by_id[self.screen_id]
         if self.rotator_id:
             return self.event.rotators_by_id[self.rotator_id]
         return None
@@ -93,7 +93,7 @@ class ClientController:
     @property
     def screen(self) -> Screen | None:
         if self.screen_id:
-            return self.event.screens_by_id[self.screen_id]
+            return self.event.non_family_screens_by_id[self.screen_id]
         if self.rotator_id:
             rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
             if rotator and rotator.rotating_screens:

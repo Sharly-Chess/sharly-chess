@@ -709,7 +709,7 @@ class Event:
         return screens_by_uniq_id
 
     @cached_property
-    def screens_by_id(self) -> dict[int, Screen]:
+    def non_family_screens_by_id(self) -> dict[int, Screen]:
         if self.errors:
             return {}
         screens_by_id: dict[int, Screen] = {
