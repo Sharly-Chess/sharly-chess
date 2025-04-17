@@ -4,11 +4,22 @@
     {% if admin_auth %}
         {{ macros.client_controller_visibility_icon(client_controller, 'pe-1') }}
     {% endif %}
-    {{ client_controller.uniq_id }}
+    {{ client_controller.name }}
 {% endblock %}
 
 {% block card_title %}
+    {{ client_controller.uniq_id }}
 {% endblock %}
 
 {% block card_text %}
+    {{ _('Currently displaying:') }}
+    {% if client_controller.screen_uniq_id %}
+        {{ _('Screen:') }} {{ client_controller.screen_uniq_id }}
+    {% elif client_controller.family_uniq_id %}
+        {{ _('Family:') }} {{ client_controller.family_uniq_id }}
+    {% elif client_controller.rotator_uniq_id %}
+        {{ _('Rotator:') }} {{ client_controller.rotator_uniq_id }}
+    {% else %}
+        {{ _('No screens are currently assigned to this client controller.') }}
+    {% endif %}
 {% endblock %}
