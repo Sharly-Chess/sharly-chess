@@ -8,8 +8,8 @@
 {% block cards_container_right_buttons %}
     {% with id='admin-families-show-details', name='admin_families_show_details', show=admin_families_show_details %}
         <div
-                class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
+            class="form-check form-switch d-inline-block pe-3 mt-2"
+            {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screen families on the cards below.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-families-tab', event_uniq_id=admin_event.uniq_id) }}"
@@ -23,23 +23,23 @@
         </div>
     {% endwith %}
     <span
-            class="dropdown-end pe-0"
-            {% if not admin_event.tournaments_by_id %}
-                {{ macros.tooltip_attributes(
-                    'info',
-                    _('You must create a tournament before creating a screen family.'),
-                    'left'
-                ) }}
-            {% endif %}
+        class="dropdown-end pe-0"
+        {% if not admin_event.tournaments_by_id %}
+            {{ macros.tooltip_attributes(
+                'info',
+                _('You must create a tournament before creating a screen family.'),
+                'left'
+            ) }}
+        {% endif %}
     >
         <button
-                class="btn btn-primary dropdown-toggle mx-auto"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                {% if not admin_event.tournaments_by_id %}
-                    disabled
-                {% endif %}
+            class="btn btn-primary dropdown-toggle mx-auto"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            {% if not admin_event.tournaments_by_id %}
+                disabled
+            {% endif %}
         >
             <i class="bi-plus-square pe-1"></i>
             {{ _('Create a screen family') }}
@@ -76,8 +76,23 @@
                 {% include 'family_card.html' %}
             {% endfor %}
         {% else %}
-            <div class="col-12 mb-3">
-                {{ _('No screen families.') }}
+            <div class="mx-auto text-center" style="max-width: 500px;">
+                <h5 class="my-5">
+                    {{ _('No screen families') }}
+                </h5>
+                <p>
+                    {{ _('Families are used to split a large amount of information across multiple screens.') }}
+                </p>
+                <p>
+                    {{ _('You define the type of data to display (results, pairings, ranking...) and details such as the ' +
+                    'number of screens to split the players across, and the individual screens will be generated automatically.') }}
+                </p>
+                <p>
+                    {{ _('Unlike individual Screens, families can be used to display information about a single tournament.') }}
+                </p>
+                <p>
+                    {{ _('Create a family now to get started.') }}
+                </p>
             </div>
         {% endif %}
     </div>

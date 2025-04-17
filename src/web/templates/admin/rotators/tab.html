@@ -61,8 +61,19 @@
                 {% include 'rotator_card.html' %}
             {% endfor %}
         {% else %}
-            <div class="col-12 mb-3">
-                {{ _('No rotators.') }}
+            <div class="mx-auto text-center" style="max-width: 500px;">
+                <h5 class="my-5">
+                    {{ _('No rotators') }}
+                </h5>
+                <p>
+                    {{ _('Too much information to display on a single projector?') }}
+                </p>
+                <p>
+                    {{ _('Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event.') }}
+                </p>
+                <p>
+                    {{ _('Create a rotator now to get started.') }}
+                </p>
             </div>
         {% endif %}
     </div>
