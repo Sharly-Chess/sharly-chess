@@ -28,6 +28,8 @@
             {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the users).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the users).') %}
+        {% elif object_type == 'client_controller' %}
+            {% set _tooltip_text=tooltip_public_text or _('This client controller is public (visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
@@ -41,6 +43,8 @@
             {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the users).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the users).') %}
+        {% elif object_type == 'client_controller' %}
+            {% set _tooltip_text=tooltip_private_text or _('This client controller is private (not visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
@@ -115,6 +119,12 @@
     <!-- rotator_visibility_icon() -->
     {{ visibility_icon('rotator', rotator.public, '', '', class) }}
     <!-- end rotator_visibility_icon() -->
+{% endmacro %}
+
+{% macro client_controller_visibility_icon(client_controller, class) %}
+    <!-- client_controller_visibility_icon() -->
+    {{ visibility_icon('client_controller', client_controller.public, '', '', class) }}
+    <!-- end client_controller_visibility_icon() -->
 {% endmacro %}
 
 {% macro background_script(background_info) %}

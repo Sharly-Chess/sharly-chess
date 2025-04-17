@@ -20,6 +20,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
+from data.client_controller import ClientController
 from data.family import Family
 from data.player import Player, Club, Federation
 from data.rotator import Rotator
@@ -736,6 +737,57 @@ class Event:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         return self._get_unused_item_uniq_id(
             base_uniq_id or _('rotator'), self.rotators_by_uniq_id
+        )
+
+    @cached_property
+    def client_controllers_by_id(self) -> dict[int, ClientController]:
+        if self.errors:
+            return {}
+        client_controllers_by_id: dict[int, ClientController] = {
+            stored_client_controller.id: ClientController(
+                self, stored_client_controller
+            )
+            for stored_client_controller in self.stored_event.stored_client_controllers
+            if stored_client_controller.id is not None
+        }
+        if self.errors:
+            self.add_warning(
+                _(
+                    'Errors have been found on client_controllers; tournaments, screens, families and rotators will not be loaded.'
+                )
+            )
+        return client_controllers_by_id
+
+    @cached_property
+    def client_controllers_by_uniq_id(self) -> dict[str, ClientController]:
+        return {
+            client_controller.uniq_id: client_controller
+            for client_controller in self.client_controllers_by_id.values()
+            if client_controller.uniq_id is not None
+        }
+
+    def get_unused_client_controller_uniq_id(
+        self,
+        base_uniq_id: str | None = None,
+    ) -> str:
+        """Returns the first unused client controller uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('client-controller'), self.client_controllers_by_uniq_id
+        )
+
+    def get_unused_client_controller_name(
+        self,
+        base_name: str | None = None,
+    ) -> str:
+        """Returns the first unused client controller name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        return self._get_unused_item_name(
+            base_name or _('New client controller'),
+            [
+                client_controller.name
+                for client_controller in self.client_controllers_by_id.values()
+            ],
         )
 
     @property
