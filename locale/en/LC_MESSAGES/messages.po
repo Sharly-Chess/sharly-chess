@@ -283,7 +283,7 @@ msgid "Archived events ({num})"
 msgstr ""
 
 #, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -1789,6 +1789,9 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
+msgid "Individual Screens ({num})"
+msgstr ""
+
 #, python-format
 msgid "Informations: %(num)d"
 msgstr ""
@@ -3211,9 +3214,6 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
-msgid "Screens ({num})"
-msgstr ""
-
 msgid "Screens:"
 msgstr ""
 
@@ -3791,6 +3791,9 @@ msgid "This screen is public (visible by the users)."
 msgstr ""
 
 msgid "This will cause the table numbers to be reordered."
+msgstr ""
+
+msgid "This will delete any results for this round."
 msgstr ""
 
 #, python-format
@@ -4503,7 +4506,7 @@ msgstr[1] ""
 msgid "{screen_type}-screen"
 msgstr ""
 
-#~ msgid "Points for loss (zero-point bye)"
+#~ msgid "Screens ({num})"
 #~ msgstr ""
 
 #~ msgid "Points for win (full-point bye)"
@@ -4522,5 +4525,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?  This will delete any results for this round."
+#~ msgstr ""
+
+#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
 #~ msgstr ""
 
