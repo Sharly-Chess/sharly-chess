@@ -9,10 +9,8 @@
 {% endblock %}
 {% block card_text %}
     {% with object_type=client_controller.assigned_type, uniq_id=client_controller.assigned_object.uniq_id %}
-        {% if uniq_id and object_type == "screen" and ":" not in uniq_id %}
+        {% if uniq_id and object_type == "screen" %}
             {{ _('Currently displaying screen:') }} <b>{{ uniq_id }}</b>
-        {% elif uniq_id and (object_type == "family" or ":" in uniq_id) %}
-            {{ _('Currently displaying family:') }} <b>{{ uniq_id }}</b>
         {% elif uniq_id and object_type == "rotator" %}
             {{ _('Currently displaying rotator:') }} <b>{{ uniq_id }}</b>
         {% else %}

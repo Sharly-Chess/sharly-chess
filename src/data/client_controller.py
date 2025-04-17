@@ -54,43 +54,29 @@ class ClientController:
         return name
 
     @property
-    def screen_uniq_id(self) -> str | None:
-        return self.stored_client_controller.screen_uniq_id
+    def screen_id(self) -> int | None:
+        return self.stored_client_controller.screen_id
 
-    @screen_uniq_id.setter
-    def screen_uniq_id(self, new_id):
-        self.stored_client_controller.screen_uniq_id = new_id
-        self.stored_client_controller.family_uniq_id = None
-        self.stored_client_controller.rotator_uniq_id = None
-
-    @property
-    def family_uniq_id(self) -> str | None:
-        return self.stored_client_controller.family_uniq_id
-
-    @family_uniq_id.setter
-    def family_uniq_id(self, new_id):
-        self.stored_client_controller.family_uniq_id = new_id
-        self.stored_client_controller.screen_uniq_id = None
-        self.stored_client_controller.rotator_uniq_id = None
+    @screen_id.setter
+    def screen_id(self, new_id):
+        self.stored_client_controller.screen_id = new_id
+        self.stored_client_controller.rotator_id = None
 
     @property
-    def rotator_uniq_id(self) -> str | None:
-        return self.stored_client_controller.rotator_uniq_id
+    def rotator_id(self) -> int | None:
+        return self.stored_client_controller.rotator_id
 
-    @rotator_uniq_id.setter
-    def rotator_uniq_id(self, new_id):
-        self.stored_client_controller.rotator_uniq_id = new_id
-        self.stored_client_controller.screen_uniq_id = None
-        self.stored_client_controller.family_uniq_id = None
+    @rotator_id.setter
+    def rotator_id(self, new_id):
+        self.stored_client_controller.rotator_id = new_id
+        self.stored_client_controller.screen_id = None
 
     @property
     def assigned_object(self) -> Screen | Family | Rotator | None:
-        if self.screen_uniq_id:
-            return self.event.screens_by_uniq_id[self.screen_uniq_id]
-        if self.family_uniq_id:
-            return self.event.families_by_uniq_id[self.family_uniq_id]
-        if self.rotator_uniq_id:
-            return self.event.rotators_by_uniq_id[self.rotator_uniq_id]
+        if self.screen_id:
+            return self.event.screens_by_id[self.screen_id]
+        if self.rotator_id:
+            return self.event.rotators_by_id[self.rotator_id]
         return None
 
     @property
@@ -100,45 +86,30 @@ class ClientController:
             return None
         if isinstance(object, Screen):
             return 'screen'
-        if isinstance(object, Family):
-            return 'family'
         if isinstance(object, Rotator):
             return 'rotator'
         raise ValueError(f'type=[{type(object)}]')
 
     @property
     def screen(self) -> Screen | None:
-        if self.screen_uniq_id:
-            return self.event.screens_by_uniq_id[self.screen_uniq_id]
-        if self.family_uniq_id:
-            family: Family = self.event.families_by_uniq_id[self.family_uniq_id]
-            return (
-                family.screens_by_uniq_id[family.calculated_first_screen_id]
-                if family.calculated_first_screen_id
-                else None
-            )
-        if self.rotator_uniq_id:
-            rotator: Rotator | None = self.event.rotators_by_uniq_id[
-                self.rotator_uniq_id
-            ]
+        if self.screen_id:
+            return self.event.screens_by_id[self.screen_id]
+        if self.rotator_id:
+            rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
             if rotator and rotator.rotating_screens:
-                return self.event.rotators_by_uniq_id[
-                    self.rotator_uniq_id
-                ].rotating_screens[0]
+                return self.event.rotators_by_id[self.rotator_id].rotating_screens[0]
         return None
 
     @property
     def rotator(self) -> Rotator | None:
-        if self.rotator_uniq_id:
-            return self.event.rotators_by_uniq_id[self.rotator_uniq_id]
+        if self.rotator_id:
+            return self.event.rotators_by_id[self.rotator_id]
         return None
 
     @property
     def delay(self) -> int:
-        if self.rotator_uniq_id:
-            rotator: Rotator | None = self.event.rotators_by_uniq_id[
-                self.rotator_uniq_id
-            ]
+        if self.rotator_id:
+            rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
             if rotator:
                 return rotator.delay
         return PapiWebConfig.user_screen_update_delay

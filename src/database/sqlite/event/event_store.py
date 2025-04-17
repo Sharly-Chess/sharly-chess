@@ -166,9 +166,8 @@ class StoredClientController:
     name: str | None
     public: bool = True
     errors: dict[str, str] = field(default_factory=dict[str, str])
-    screen_uniq_id: str | None = None
-    family_uniq_id: str | None = None
-    rotator_uniq_id: str | None = None
+    screen_id: int | None = None
+    rotator_id: int | None = None
 
 
 @dataclass
