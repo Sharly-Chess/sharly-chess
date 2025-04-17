@@ -40,7 +40,6 @@ from database.sqlite.event import migrations as event_migrations
 from common.installation_checker import (
     BootstrapInstaller,
     InstallationChecker,
-    BootstrapIconsInstaller,
 )
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
@@ -128,26 +127,14 @@ def build_exe():
     ]
     files += [file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()]
     files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
-    bootstrap_installer: BootstrapInstaller = BootstrapInstaller()
-    files += [
-        bootstrap_installer.version_install_dir / lib_file
-        for lib_file in BootstrapInstaller.lib_files
-    ]
-    bootstrap_icons_installer: BootstrapIconsInstaller = BootstrapIconsInstaller()
-    files += [
-        bootstrap_icons_installer.version_install_dir / lib_file
-        for lib_file in BootstrapIconsInstaller.lib_files
-    ]
-    files += [
-        file_installer.check_file
-        for file_installer in InstallationChecker.file_installers
-    ]
+    for installer in InstallationChecker.web_lib_installers:
+        files += [
+            installer.version_install_dir / lib_file
+            for lib_file in BootstrapInstaller.lib_files
+        ]
     lib_dir = static_dir / 'lib'
-    sortable_dir = lib_dir / 'sortable' / f'sortable-{PapiWebConfig.sortable_version}'
-    files += [file for file in sortable_dir.glob('**/*') if file.is_file()]
-    htmx_sortable_file = lib_dir / 'htmx' / 'sortable.js'
     files += [
-        htmx_sortable_file,
+        lib_dir / 'htmx' / 'sortable.js',
     ]
     jstree_dir = lib_dir / 'jstree' / f'jstree-{PapiWebConfig.jstree_version}-dist'
     files += [file for file in jstree_dir.glob('**/*') if file.is_file()]

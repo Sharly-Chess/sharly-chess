@@ -20,7 +20,7 @@
             <script src="{{ url_for('static', file_path='/lib/htmx/remove-me-' ~ papi_web_config.htmx_remove_me_version ~ '/remove-me.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/multi-swap-' ~ papi_web_config.htmx_multi_swap_version ~ '/multi-swap.js') }}"></script>
             {# https://github.com/SortableJS/Sortable #}
-            <script src="{{ url_for('static', file_path='/lib/sortable/sortable-1.15.2/Sortable.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/Sortable/Sortable-' ~ papi_web_config.sortable_version ~ '/Sortable.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}"></script>
             {# https://github.com/vakata/jstree #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/themes/default/style.min.css') }}" type="text/css" />

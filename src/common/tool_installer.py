@@ -1,15 +1,18 @@
+import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+import requests
 from packaging.version import Version
 
-from common import DEVEL_ENV
+from common import DEVEL_ENV, REQUEST_TIMEOUT
 from common.i18n import _
 from common.logger import (
     get_logger,
     print_interactive_warning,
     print_interactive_success,
     print_interactive_error,
+    print_interactive_info,
 )
 
 logger = get_logger()
@@ -60,3 +63,23 @@ class ToolInstaller(ABC):
     @abstractmethod
     def install(self) -> bool:
         """Install the needed stuff, returns True on success, False otherwise."""
+
+    @staticmethod
+    def download_file(
+        url: str,
+        dest_file: Path,
+    ):
+        print_interactive_info(f'Downloading {url}...')
+        response = requests.get(url, stream=True, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        with open(dest_file, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print_interactive_success('Done.')
+
+    def install_archive_and_delete(self, archive_path: Path, install_dir: Path):
+        print_interactive_info(f'Installing to {install_dir}...')
+        install_dir.mkdir(parents=True, exist_ok=True)
+        shutil.unpack_archive(archive_path, install_dir)
+        archive_path.unlink(missing_ok=True)
+        print_interactive_success('Done.')

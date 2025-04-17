@@ -213,10 +213,7 @@ class PapiWebConfig(metaclass=Singleton):
     htmx_remove_me_version: Version = Version('2.0.0')
     htmx_multi_swap_version: Version = Version('2.0.0')
     jquery_version: Version = Version('3.7.1')
-    sortable_version: Version = Version('1.15.2')
-    assert (
-        BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}'
-    ).is_dir()
+    sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
     assert (
         BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'

@@ -1,11 +1,7 @@
-import shutil
 import platform
 from pathlib import Path
 
-import requests
 
-from common import REQUEST_TIMEOUT
-from common.logger import print_interactive_info, print_interactive_success
 from common.tool_installer import ToolInstaller
 from pairing.bbp_pairings import BbpPairings
 
@@ -39,14 +35,5 @@ class BbpPairingsInstaller(ToolInstaller):
         build_url: str = f'{self.project_url}/releases/download/v{self.version}/bbpPairings-v{self.version}-{build_filename}'
         install_dir.mkdir(parents=True, exist_ok=True)
         archive_path: Path = install_dir / build_filename
-        print_interactive_info(f'Downloading {build_url}...')
-        response = requests.get(build_url, stream=True, timeout=REQUEST_TIMEOUT)
-        response.raise_for_status()
-        with open(archive_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        print_interactive_success('Done.')
-        print_interactive_info(f'Installing to {install_dir}...')
-        shutil.unpack_archive(archive_path, install_dir)
-        archive_path.unlink(missing_ok=True)
-        print_interactive_success('Done.')
+        self.download_file(build_url, archive_path)
+        self.install_archive_and_delete(archive_path, install_dir)
