@@ -102,11 +102,11 @@ class ClientController:
 
         assert assigned_object.uniq_id is not None
         if self.assigned_type == 'screen':
-            return _('Currently displaying screen: {uniq_id}').format(
+            return _('Currently displaying screen [{uniq_id}]').format(
                 uniq_id=assigned_object.uniq_id
             )
         elif self.assigned_type == 'rotator':
-            return _('Currently displaying rotator: {uniq_id}').format(
+            return _('Currently displaying rotator [{uniq_id}]').format(
                 uniq_id=assigned_object.uniq_id
             )
         else:

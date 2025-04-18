@@ -116,13 +116,6 @@ class Event:
             and last_load_date > self.stored_event.last_update
         )
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded.'
-                )
-            )
-            return
 
     @property
     def uniq_id(self) -> str:
@@ -493,12 +486,6 @@ class Event:
             for stored_timer in self.stored_event.stored_timers
             if stored_timer.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'
-                )
-            )
         return timers_by_id
 
     @cached_property
@@ -528,12 +515,6 @@ class Event:
             for stored_tournament in self.stored_event.stored_tournaments
             if stored_tournament.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on tournaments; screens, families and rotators will not be loaded.'
-                )
-            )
         return tournaments_by_id
 
     @cached_property
@@ -599,12 +580,6 @@ class Event:
             for stored_screen in self.stored_event.stored_screens
             if stored_screen.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on screens; families and rotators will not be loaded.'
-                )
-            )
         return screens_by_id
 
     @cached_property
@@ -658,10 +633,6 @@ class Event:
             for stored_family in self.stored_event.stored_families
             if stored_family.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _('Errors have been found on families; rotators will not be loaded.')
-            )
         return families_by_id
 
     @cached_property
@@ -724,8 +695,6 @@ class Event:
             for stored_rotator in self.stored_event.stored_rotators
             if stored_rotator.id is not None
         }
-        if self.errors:
-            self.add_warning(_('Errors have been found on rotators.'))
         return rotators_by_id
 
     @cached_property
@@ -750,12 +719,6 @@ class Event:
             for stored_client_controller in self.stored_event.stored_client_controllers
             if stored_client_controller.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on client_controllers; tournaments, screens, families and rotators will not be loaded.'
-                )
-            )
         return client_controllers_by_id
 
     @cached_property
