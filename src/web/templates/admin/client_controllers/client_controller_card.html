@@ -29,6 +29,19 @@
 {% endblock %}
 
 {% block card_buttons_right %}
+    {% if client_controller.assigned_object %}
+    <span {{ macros.tooltip_attributes('info', _('Remove the screen from the client controller.'), 'top') }}>
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-patch="{{ url_for('admin-client-controller-clear', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
+        </span>
+    {% endif %}
     <span {{ macros.tooltip_attributes('info', _('Delete the client controller.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-danger"

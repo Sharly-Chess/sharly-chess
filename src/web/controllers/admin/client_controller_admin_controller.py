@@ -551,3 +551,41 @@ class ClientControllerAdminController(BaseEventAdminController):
             _('Failed to assign the object to the controller.'),
         )
         return self.render_messages(request)
+
+    @patch(
+        path='/admin/admin-client-controller-clear/{event_uniq_id:str}/{client_controller_id:int}',
+        name='admin-client-controller-clear',
+    )
+    async def htmx_admin_client_controller_clear(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        client_controller_id: int | None,
+    ) -> Template | ClientRedirect:
+        web_context: ClientControllerAdminWebContext = ClientControllerAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            client_controller_id=client_controller_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        if web_context.admin_client_controller is None:
+            raise RuntimeError('admin_client_controller not defined')
+
+        web_context.admin_client_controller.screen_id = None
+        web_context.admin_client_controller.rotator_id = None
+        event_loader: EventLoader = EventLoader.get(request=request)
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
+            event_database.update_stored_client_controller(
+                web_context.admin_client_controller.stored_client_controller
+            )
+            event_database.commit()
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_client_controllers_render(
+            request, event_uniq_id=event_uniq_id
+        )
