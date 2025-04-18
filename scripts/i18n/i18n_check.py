@@ -1,7 +1,6 @@
 import re
 import sys
 import time
-from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
 
@@ -21,7 +20,7 @@ sys.path.extend(
     )
 )
 
-from scripts.i18n.i18n_babel import run_babel_command
+from scripts.i18n.i18n_babel import BabelWrapper
 
 from common.i18n import (  # Noqa: E402
     DEFAULT_LOCALE,
@@ -55,57 +54,6 @@ class LocaleInfo:
         self.mandatory_messages: dict[str, Message] = {}
         self.empty_mandatory_messages: dict[str, Message] = {}
         self.flagged_messages: dict[str, dict[str, Message]] = {}
-
-    def update_and_compile(
-        self,
-        pot_file: Path,
-    ):
-        """Updates the PO file from the POT file,
-        compiles the PO file to the MO file."""
-        if not self.po_file.is_file():
-            print_interactive_info(f'- {self.po_file.parent}...')
-            self.po_file.parent.mkdir(parents=True, exist_ok=True)
-            run_babel_command(
-                'init',
-                [
-                    f'--locale={self.id}',
-                    f'--input-file={pot_file}',
-                    f'--output-file={self.po_file}',
-                ],
-                quiet=True,
-            )
-        print_interactive_info(f'- {self.po_file}...')
-        run_babel_command(
-            'update',
-            [
-                f'--locale={self.id}',
-                f'--output-dir={self.locale_dir}',
-                f'--input-file={pot_file}',
-                f'--output-file={self.po_file}',
-                '--no-fuzzy-matching',
-                '--no-wrap',
-                '--omit-header',
-            ],
-            quiet=True,
-        )
-        self.compile()
-
-    def compile(
-        self,
-    ):
-        """Compiles the PO file to the MO file."""
-        print_interactive_info(f'- {self.mo_file}...')
-        run_babel_command(
-            'compile',
-            [
-                '--use-fuzzy',
-            ]
-            + [
-                f'--directory={self.locale_dir}',
-                f'--locale={self.id}',
-            ],
-            quiet=False,
-        )
 
     @staticmethod
     def escape_gh_md(string: str) -> str:
@@ -300,54 +248,35 @@ class LocaleInfo:
                     )
 
 
-class I18nUpdater:
+class I18nChecker:
     def __init__(self):
         # The path of the i18n files (this script should be run from the dev root).
         self.locale_dir: Path = Path('locale')
         self.pot_file: Path = self.locale_dir / 'messages.pot'
-        self.doc_dir: Path = Path('docs')
-        self.doc_file: Path = self.doc_dir / '86-i18n.md'
+        self.ok: bool = True
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
-        self.extract()
-        self.locale_infos: dict[str, LocaleInfo] = OrderedDict()
-        for locale in locales:
-            self.locale_infos[locale] = LocaleInfo(locale, self.locale_dir)
-        print_interactive_info('Updating PO files...')
-        for locale_info in self.locale_infos.values():
-            locale_info.update_and_compile(self.pot_file)
-        print_interactive_info('Compiling PO files...')
-        for locale_info in self.locale_infos.values():
-            if not locale_info.error_messages:
-                locale_info.compile()
+        self.locale_infos: dict[str, LocaleInfo] = {
+            locale: LocaleInfo(locale, self.locale_dir) for locale in locales
+        }
+        BabelWrapper.extract_i18n_strings(verbose=False)
+        for locale, locale_info in self.locale_infos.items():
+            BabelWrapper.update_po_file(locale, verbose=True)
+            locale_info.control()
+            locale_info.print_summary()
+            BabelWrapper.update_mo_file(locale, verbose=True)
         self.print_summary()
         print_interactive_info('Writing MD files...')
         self.write_markdown()
-
-    def extract(
-        self,
-    ):
-        """The configuration file used to extract stings from the source files."""
-        extract_config_file: Path = Path() / 'scripts' / 'i18n' / 'babel.cfg'
-        run_babel_command(
-            'extract',
-            [
-                f'--mapping-file={extract_config_file}',
-                f'--output-file={self.pot_file}',
-                '--sort-output',
-                '--add-location=never',
-                '--no-wrap',
-                '--omit-header',
-                '.',
-            ],
-            quiet=True,
-        )
+        print_interactive_info('Checking translations...')
+        self.check()
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
+        doc_file: Path = Path('docs') / '86-i18n.md'
         lines_before_comment: list[str] = []
         lines_after_comment: list[str] = []
         # Read the lines until the expected comment is found
-        with open(self.doc_file, 'rt', encoding='utf-8') as f:
+        with open(doc_file, 'rt', encoding='utf-8') as f:
             comment: str = '<!-- DO NOT EDIT! (START) -->'
             comment_found: bool = False
             for line in f:
@@ -357,7 +286,7 @@ class I18nUpdater:
                     break
             if not comment_found:
                 print_interactive_error(
-                    f'Could not edit [{self.doc_file}] (comment [{comment}] not found).'
+                    f'Could not edit [{doc_file}] (comment [{comment}] not found).'
                 )
                 return
             comment: str = '<!-- DO NOT EDIT! (END) -->'
@@ -369,7 +298,7 @@ class I18nUpdater:
                     lines_after_comment.append(line)
             if not comment_found:
                 print_interactive_error(
-                    f'Could not edit [{self.doc_file}] (comment [{comment}] not found).'
+                    f'Could not edit [{doc_file}] (comment [{comment}] not found).'
                 )
                 return
         lines: list[str] = []
@@ -425,26 +354,25 @@ class I18nUpdater:
         lines.append(
             f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n'
         )
-        with open(self.doc_file, 'w', encoding='utf-8') as f:
+        with open(doc_file, 'w', encoding='utf-8') as f:
             for line in lines_before_comment + lines + lines_after_comment:
                 f.write(line)
-        print_interactive_info(f'  -  {self.doc_file}.')
+        print_interactive_info(f'  -  {doc_file}.')
 
     def print_summary(self):
         """Print a summary of all the locales."""
         for locale_info in self.locale_infos.values():
             locale_info.print_summary()
 
-    def check(self) -> bool:
+    def check(self):
         print_interactive_info('Checking locales...')
-        perfect: bool = True
         for locale, locale_info in self.locale_infos.items():
             if locale in locales:
                 if locale_info.empty_mandatory_messages:
                     print_interactive_error(
                         'Mandatory translations are missing for some locales.'
                     )
-                    perfect = False
+                    self.ok = False
                     break
         for locale, locale_info in self.locale_infos.items():
             if locale in locales:
@@ -452,7 +380,7 @@ class I18nUpdater:
                     print_interactive_warning(
                         'Translations are missing for some locales.'
                     )
-                    perfect = False
+                    self.ok = False
                     break
         for locale, locale_info in self.locale_infos.items():
             if locale in locales:
@@ -460,12 +388,11 @@ class I18nUpdater:
                     print_interactive_warning(
                         'Translations are flagged for some locales.'
                     )
-                    perfect = False
+                    self.ok = False
                     break
-        if perfect:
+        if self.ok:
             print_interactive_success('Translations seem perfect.')
-        return perfect
 
 
 if __name__ == '__main__':
-    I18nUpdater().check()
+    I18nChecker()

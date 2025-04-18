@@ -2,9 +2,9 @@
 
 # Papi-web - Internationalization - Models
 
-The translations for new locales added to i18n_update.py use Huggingface models.
+The translations for new locales use Huggingface models.
 
-This page shows how models are installed and used by `i18n_update.py` (below what was done to get a working translation to French).
+This page shows how models are installed and used by `i18n_check.py` (below what was done to get a working translation to French).
 
 The model used is MarianMT:
 - https://huggingface.co/docs/transformers/main/en/model_doc/marian#transformers.MarianMTModel

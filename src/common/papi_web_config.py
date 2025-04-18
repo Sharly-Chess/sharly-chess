@@ -61,9 +61,6 @@ class PapiWebConfig(metaclass=Singleton):
     }
 
     def __init__(self):
-        if not DEFAULT_LOCALE:
-            # This happens only for developers when no MO files are available
-            raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
         self.stored_config: StoredConfig = self.load()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
