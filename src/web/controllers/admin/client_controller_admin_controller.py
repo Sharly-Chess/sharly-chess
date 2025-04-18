@@ -7,6 +7,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.client_controller import ClientController
@@ -560,10 +561,15 @@ class ClientControllerAdminController(BaseEventAdminController):
                 request,
                 message,
             )
-        else:
-            Message.error(
-                request,
-                _('Failed to assign the object to the controller.'),
+            return HTMXTemplate(
+                template_name='common/empty.html',
+                re_swap='none',
+                trigger_event='request_refresh',
+                after='receive',
             )
 
+        Message.error(
+            request,
+            _('Failed to assign the object to the controller.'),
+        )
         return self.render_messages(request)
