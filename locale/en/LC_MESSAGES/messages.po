@@ -267,6 +267,9 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
+msgid "An error occurred."
+msgstr ""
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
@@ -280,10 +283,6 @@ msgid "Archived event"
 msgstr ""
 
 msgid "Archived events ({num})"
-msgstr ""
-
-#, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -709,6 +708,10 @@ msgstr ""
 msgid "Connections ChessEvent"
 msgstr ""
 
+#, python-format
+msgid "Consulted round: %(round)d"
+msgstr ""
+
 msgid "Contact and registration"
 msgstr ""
 
@@ -784,6 +787,10 @@ msgid "Current events ({num})"
 msgstr ""
 
 msgid "Current round"
+msgstr ""
+
+#, python-format
+msgid "Current round: %(round)d"
 msgstr ""
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
@@ -942,6 +949,9 @@ msgid "Display the exit button"
 msgstr ""
 
 msgid "Do nothing"
+msgstr ""
+
+msgid "Do you want to allow pairings editing for this round?"
 msgstr ""
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
@@ -2525,9 +2535,6 @@ msgstr ""
 msgid "Overwrite"
 msgstr ""
 
-msgid "Overwrite mode is not available for previous rounds."
-msgstr ""
-
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr ""
 
@@ -2568,9 +2575,6 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
-msgid "Pairings already generated."
-msgstr ""
-
 msgid "Pairings by board"
 msgstr ""
 
@@ -2589,7 +2593,7 @@ msgstr ""
 msgid "Pairings for round #{round}"
 msgstr ""
 
-msgid "Pairings generation unavailable for this round."
+msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
 msgstr ""
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
@@ -2907,6 +2911,9 @@ msgid "Properties (ranking)"
 msgstr ""
 
 msgid "Properties (results entry)"
+msgstr ""
+
+msgid "Protected pairings editing"
 msgstr ""
 
 msgid "Pts *** POINTS FOR PRINT VIEW"
@@ -3372,6 +3379,9 @@ msgstr ""
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 
+msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
+msgstr ""
+
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
 msgstr ""
 
@@ -3802,9 +3812,6 @@ msgstr ""
 msgid "This will cause the table numbers to be reordered."
 msgstr ""
 
-msgid "This will delete any results for this round."
-msgstr ""
-
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr ""
@@ -4095,14 +4102,7 @@ msgstr ""
 msgid "Unpair"
 msgstr ""
 
-msgid "Unpair all boards"
-msgstr ""
-
 msgid "Unpair all the boards of this round."
-msgstr ""
-
-#, python-format
-msgid "Unpair round %(round_number)s"
 msgstr ""
 
 msgid "Unpaired"
@@ -4234,6 +4234,9 @@ msgstr ""
 msgid "Warning: the deletion of an event is permanent!"
 msgstr ""
 
+msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
+msgstr ""
+
 #, python-format
 msgid "Warnings: %(num)d"
 msgstr ""
@@ -4314,6 +4317,9 @@ msgid "Yes"
 msgstr ""
 
 msgid "Yesterday"
+msgstr ""
+
+msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr ""
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
@@ -4514,28 +4520,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Screens ({num})"
-#~ msgstr ""
-
-#~ msgid "Points for win (full-point bye)"
-#~ msgstr ""
-
-#~ msgid "Zero-point bye"
-#~ msgstr ""
-
-#~ msgid "Byes"
-#~ msgstr "Byes"
-
-#~ msgid "player-byes"
-#~ msgstr ""
-
-#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
-#~ msgstr ""
-
-#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?  This will delete any results for this round."
-#~ msgstr ""
-
-#~ msgid "Are you sure you want to unpair all boards for round %(round_number)s?<br />This will delete any results for this round."
-#~ msgstr ""
 

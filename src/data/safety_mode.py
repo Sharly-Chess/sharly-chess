@@ -3,26 +3,12 @@ from enum import StrEnum, auto
 from functools import cache
 
 from common.exception import PapiWebException
-from common.i18n import _
 
 
 class SafetyMode(StrEnum):
     SAFE = 'SAFE'
     UNSAFE = 'UNSAFE'
     FIDE_INCOMPATIBLE = 'FIDE_INCOMPATIBLE'
-
-    @property
-    def name(self) -> str:
-        cls = self.__class__
-        match self:
-            case cls.SAFE:
-                return _('Safe')
-            case cls.UNSAFE:
-                return _('Unsafe')
-            case cls.FIDE_INCOMPATIBLE:
-                return _('FIDE incompatible')
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
     @property
     def danger_level(self) -> int:
@@ -67,29 +53,6 @@ class Action(StrEnum):
     COLOR_PERMUTE = 'COLOR_PERMUTE'
     RESULT_UPDATE = 'RESULT_UPDATE'
     BYE_UPDATE = 'BYE_UPDATE'
-
-    @property
-    def name(self) -> str:
-        cls = self.__class__
-        match self:
-            case cls.FULL_PAIRING:
-                return _('Full pairing')
-            case cls.PARTIAL_PAIRING:
-                return _('Partial pairing')
-            case cls.MANUAL_PAIRING:
-                return _('Manual pairing')
-            case cls.FULL_UNPAIRING:
-                return _('Full unpairing')
-            case cls.MANUAL_UNPAIRING:
-                return _('Manual unpairing')
-            case cls.COLOR_PERMUTE:
-                return _('Permute board colors')
-            case cls.RESULT_UPDATE:
-                return _('Update results')
-            case cls.BYE_UPDATE:
-                return _('Update byes')
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
 
 @dataclass

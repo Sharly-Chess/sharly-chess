@@ -2,29 +2,28 @@
 
 # Papi-web - Actions
 
-Cette page sur la branche ``doc-actions`` propose un synopsis des actions des 'onglets Tournois, Joueur·euses et Appariements.
+Cette page propose un synopsis des actions des onglets Tournois, Joueur·euses et Appariements.
 
 ## Définition du statut des rondes
 
-| Ronde                                | Définition                                                                                                                            |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| Ronde en cours                       | La dernière ronde avec des appariements.                                                                                              |
-| Ronde précédente                     | La ronde qui précéde immédiatement la ronde en cours (N-1).                                                                           |
-| Rondes passées                       | Les rondes qui précédent la ronde précédente (N-2, N-3, ...).                                                                         |
-| Ronde suivante                       | La ronde qui suit immédiatement la ronde en cours (N+1).                                                                              |
-| Rondes futures                       | Les rondes qui suivent la ronde suivante (N+2, N+3, ...).                                                                             |
-| Dernière ronde publiée               | La dernière ronde publiée est la dernière ronde pour laquelle l'arbitre principal·e a passé le statut de « brouillon » à « publiée ». |
+| Ronde                  | Définition                                                                                                                            |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| Ronde courante         | La dernière ronde avec des appariements.                                                                                              |
+| Ronde précédente       | La ronde qui précéde immédiatement la ronde en cours (N-1).                                                                           |
+| Rondes passées         | Les rondes qui précédent la ronde précédente (N-2, N-3, ...).                                                                         |
+| Ronde suivante         | La ronde qui suit immédiatement la ronde en cours (N+1).                                                                              |
+| Rondes futures         | Les rondes qui suivent la ronde suivante (N+2, N+3, ...).                                                                             |
+| Dernière ronde publiée | La dernière ronde publiée est la dernière ronde pour laquelle l'arbitre principal·e a passé le statut de « brouillon » à « publiée ». |
 
 > [!NOTE]
 >
-> **Ronde en cours** : la définition jusque-là de la ronde en cours était : la première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat.
-> C'est exactement ce qui est implémenté par ``Tournament.current_round()``.
-> Avec cette définition, la ronde en cours changeait lors des appariements sont défaits sur une ronde précédente, ce qui était complètement contre-intuitif.
+> **Ronde courante** : la définition jusque-là de la ronde courante était : la première ronde avec des joueur·euses non apparié·es ou des appariements sans résultat.
+> Avec cette définition, la ronde en cours changeait lorsque des appariements étaient défaits sur une ronde précédente, ce qui était complètement contre-intuitif.
 >
 > **Dernière ronde publiée** : Cette notion n'existe pas encore et sera implémentée lorsque le stockage Access sera abandonné.
 > Dans la version actuelle, toutes les rondes avec appariements sont considérées comme publiées (le statut de brouillon n'existe pas).
 >
-> Les notions du tableau ci-dessous sont relatives au tournoi. la notion de ronde affichée (ou sélectionnée, ou courante) est relative à l'interface web, c'est la ronde active sur l'onglet Appariements.
+> Les notions du tableau ci-dessous sont relatives au tournoi. La notion de ronde consultée est relative à l'interface web, c'est la ronde active sur l'onglet Appariements.
 
 ## Modification des Tournois
 
@@ -77,7 +76,7 @@ A compléter (certaines modifications des tournois ne devraient pas être autori
 
 ### Description des actions
 
-| Action / Ronde                 |                    Passée                     |                    Précédente                     |                   En cours                   |        Première<br/>non<br/>appariée         |                    Future                     |
+| Action / Ronde                 |                    Passée                     |                    Précédente                     |                   Courante                   |        Première<br/>non<br/>appariée         |                    Future                     |
 |--------------------------------|:---------------------------------------------:|:-------------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
 | Appariement total              | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   | :white_circle: :white_circle: :white_circle: |      :white_check_mark: :ok: :pushpin:       | :no_entry_sign: :white_circle: :white_circle: |
 | Appariement complémentaire     | :no_entry_sign: :white_circle: :white_circle: |   :no_entry_sign: :white_circle: :white_circle:   | :white_check_mark: :grey_question: :pushpin: | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |

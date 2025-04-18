@@ -4,42 +4,47 @@
     <div class="modal-dialog modal-dialog-centered pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('Warning: Protected action') }}</div>
+                <div class="modal-title fs-4 fw-bold">{{ _('Protected pairings editing') }}</div>
             </div>
             <div class="modal-body">
-                {{
-                    _('Consulted round: %(round)d', round=admin_round) ~ ' - ' ~
-                    _('Current round: %(round)d', round=admin_tournament.current_round)
-                }}
-                <br/>
-                {{ _('For the consulted round, the action "%(action)s" is protected.', action=action.name) }}
-                <br/>
-                {{ _(
-                    'You are currently in mode "%(current_mode)s", this action requires mode "%(required_mode)s".',
-                    current_mode=safety_mode.name,
-                    required_mode=required_mode.name,
-                ) }}
-                <br/>
-                {{ _('Do you want to switch to the required mode?') }}
-                <br/>
-                {{ _('This will enable the following actions:') }}
-                <ul>
-                    {% for enabled_action in enabled_actions %}
-                        <li>{{ enabled_action.name }}</li>
-                    {% endfor %}
-                </ul>
+                {% if required_mode == 'FIDE_INCOMPATIBLE' and not admin_tournament.finished %}
+                    <h5 class="text-danger">
+                        {{ _('Warning: you are trying to execute an operation forbidden by the FIDE rules.') }}
+                    </h5>
+                {% endif %}
+                <h6>
+                    {{
+                        _('Consulted round: %(round)d', round=admin_round) ~ ' - ' ~
+                        _('Current round: %(round)d', round=admin_tournament.current_round)
+                    }}
+                </h6>
+
+                <p>
+                    {{ _(
+                        'The FIDE rules stipulate that only the pairings of the round '
+                        '<b>prior</b> to the current one may be modified. Changes to '
+                        'pairings previous to this should be made at the <b>end</b> of '
+                        'the tournament, <b>after</b> the rankings have been published, '
+                        'and solely for the computation of the FIDE ratings.'
+                    ) }}
+                </p>
+                <h6>
+                    {{ _('Do you want to allow pairings editing for this round?') }}
+                </h6>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                    <i class="bi-x-circle-fill pe-1"></i>
                     {{ _('Cancel') }}
                 </button>
                 <button
-                    class="btn btn-danger text-nowrap"
+                    class="btn btn-primary text-nowrap"
                     hx-post="{{ url_for('admin-pairings-update-safety-mode', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, mode=required_mode) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 >
-                    {{ _('Switch to mode "%(mode)s"', mode=required_mode.name) }}
+                    <i class="bi-check-circle-fill pe-1"></i>
+                    {{ _('Allow') }}
                 </button>
             </div>
         </div>

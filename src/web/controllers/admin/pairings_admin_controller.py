@@ -267,24 +267,12 @@ class PairingsAdminController(BaseEventAdminController):
                     'board': web_context.admin_board,
                 }
             case 'safety-mode':
-                round_status = web_context.round_status
-                required_mode = PermissionHandler.required_mode(
-                    round_status, protected_action
-                )
-                enabled_actions: list[Action] = []
-                safety_mode = web_context.safety_mode
-                assert safety_mode is not None
-                if safety_mode == SafetyMode.SAFE:
-                    enabled_actions += PermissionHandler.unsafe_actions(round_status)
-                if required_mode == SafetyMode.FIDE_INCOMPATIBLE:
-                    enabled_actions += PermissionHandler.fide_incompatible_actions(
-                        round_status
-                    )
                 template_context |= {
                     'modal': modal,
                     'action': protected_action,
-                    'enabled_actions': enabled_actions,
-                    'required_mode': required_mode,
+                    'required_mode': PermissionHandler.required_mode(
+                        web_context.round_status, protected_action
+                    ),
                 }
             case 'unfinished-round':
                 template_context |= {

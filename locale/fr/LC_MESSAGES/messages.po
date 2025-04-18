@@ -267,6 +267,9 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
+msgid "An error occurred."
+msgstr "Une erreur est survenue."
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
@@ -281,10 +284,6 @@ msgstr "Évènement archivé"
 
 msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
-
-#, python-format
-msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
-msgstr "Êtes vous sûr de vouloir désapparier tous les échiquiers de la ronde %(round_number)s ?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -709,6 +708,10 @@ msgstr "La connexion au serveur a échoué : {error}."
 msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
 
+#, python-format
+msgid "Consulted round: %(round)d"
+msgstr "Ronde consultée : %(round)d"
+
 msgid "Contact and registration"
 msgstr "Contact et inscription"
 
@@ -785,6 +788,10 @@ msgstr "Évènements en cours ({num})"
 
 msgid "Current round"
 msgstr "Ronde en cours"
+
+#, python-format
+msgid "Current round: %(round)d"
+msgstr "Ronde courante : %(round)d"
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
@@ -943,6 +950,9 @@ msgstr "Afficher un bouton de sortie d'écran"
 
 msgid "Do nothing"
 msgstr "Ne rien faire"
+
+msgid "Do you want to allow pairings editing for this round?"
+msgstr "Voulez vous autoriser l'édition des appariements pour cette ronde ?"
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ?"
@@ -2525,9 +2535,6 @@ msgstr "Plus de 65"
 msgid "Overwrite"
 msgstr "Remplacement"
 
-msgid "Overwrite mode is not available for previous rounds."
-msgstr "Le mode remplacement n'est pas disponible pour les rondes qui précèdent la ronde courante."
-
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 
@@ -2568,9 +2575,6 @@ msgstr "Exempt·e"
 msgid "Pairings"
 msgstr "Appariements"
 
-msgid "Pairings already generated."
-msgstr "Les appariements ont déjà été générés."
-
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
@@ -2589,8 +2593,8 @@ msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
 
-msgid "Pairings generation unavailable for this round."
-msgstr "La génération d'appariements n'est pas disponible pour cette ronde."
+msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
+msgstr "La génération d'appriements n'est pas autorisée si une ronde passée a au moins un résultat manquant ou un·e joueur·euse non-apparié·e."
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
@@ -2908,6 +2912,9 @@ msgstr "Propriétés (classement)"
 
 msgid "Properties (results entry)"
 msgstr "Propriétés (saisie des résultats)"
+
+msgid "Protected pairings editing"
+msgstr "Édition d'appariements protégés"
 
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
@@ -3372,6 +3379,9 @@ msgstr "L'identifiant FFE est un entier positif."
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
+msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
+msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
+
 msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
 msgstr "L'identifiant l'évènement sur la plateforme ChessEvent (par défaut l'identifiant de l'évènement ChessEvent défini pour l'évènement Papi-web du tournoi)."
 
@@ -3802,9 +3812,6 @@ msgstr "Cet écran est public (visible des utilisateur·ices)."
 msgid "This will cause the table numbers to be reordered."
 msgstr "Cela peut modifier l'ordre des tables."
 
-msgid "This will delete any results for this round."
-msgstr "Cela supprimera tous les résultats de cette ronde."
-
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
@@ -4095,15 +4102,8 @@ msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 msgid "Unpair"
 msgstr "Désapparier"
 
-msgid "Unpair all boards"
-msgstr "Désapparier tous les échiquiers"
-
 msgid "Unpair all the boards of this round."
 msgstr "Désapparier tous les échiquiers de cette ronde."
-
-#, python-format
-msgid "Unpair round %(round_number)s"
-msgstr "Désapparier la ronde %(round_number)s"
 
 msgid "Unpaired"
 msgstr "Non-apparié·es"
@@ -4234,6 +4234,9 @@ msgstr "Attention : la suppression d'un tournoi est définitive !"
 msgid "Warning: the deletion of an event is permanent!"
 msgstr "Attention : la suppression d'un évènement est définitive !"
 
+msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
+msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
+
 #, python-format
 msgid "Warnings: %(num)d"
 msgstr "Avertissements : %(num)d"
@@ -4315,6 +4318,9 @@ msgstr "Oui"
 
 msgid "Yesterday"
 msgstr "Hier"
+
+msgid "You are in an unsafe editing mode. Change the round to exit this mode."
+msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr "Vous utilisez une version plus récente que la dernière version stable disponible ([{version}]), vous ne seriez pas développeur·euse ? ;-)"
@@ -4514,10 +4520,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Number of players : %(num)d"
-#~ msgstr "Nombre de joueur·euses : %(num)d"
-
-#~ msgid "Thanks :-)"
-#~ msgstr "Merci :-)"
 
