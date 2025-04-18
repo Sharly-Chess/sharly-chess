@@ -20,6 +20,7 @@ from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
+    StoredClientController,
     StoredTournament,
     StoredEvent,
     StoredTimer,
@@ -937,6 +938,9 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_families = list(self.load_stored_families())
         stored_event.stored_screens = list(self.load_stored_screens())
         stored_event.stored_rotators = list(self.load_stored_rotators())
+        stored_event.stored_client_controllers = list(
+            self.load_stored_client_controllers()
+        )
         return stored_event
 
     def update_stored_event(self, stored_event: StoredEvent) -> StoredEvent:
@@ -2065,6 +2069,10 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_screen(self, screen_id: int):
         self._delete_screen_stored_screen_sets(screen_id)
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
+        self.execute(
+            'UPDATE `client_controller` SET `screen_id` = NULL WHERE screen_id = ?;',
+            (screen_id,),
+        )
         self.set_last_update()
 
     def _delete_tournament_stored_screens(self, tournament_id: int):
@@ -2344,4 +2352,113 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
+        self.execute(
+            'UPDATE `client_controller` SET `rotator_id` = NULL WHERE rotator_id = ?;',
+            (rotator_id,),
+        )
+        self.set_last_update()
+
+    # ---------------------------------------------------------------------------------
+    # StoredClientController
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_client_controller(
+        cls, row: dict[str, Any]
+    ) -> StoredClientController:
+        return StoredClientController(
+            id=row['id'],
+            uniq_id=row['uniq_id'],
+            name=row['name'],
+            screen_id=row['screen_id'],
+            rotator_id=row['rotator_id'],
+            public=cls.load_bool_from_database_field(row['public']),
+        )
+
+    def get_stored_client_controller(
+        self, client_controller_id: int
+    ) -> StoredClientController | None:
+        self.execute(
+            'SELECT * FROM `client_controller` WHERE `id` = ?',
+            (client_controller_id,),
+        )
+        row: dict[str, Any]
+        if row := self.fetchone():
+            return self._row_to_stored_client_controller(row)
+        return None
+
+    def load_stored_client_controllers(
+        self,
+    ) -> Iterator[StoredClientController]:
+        self.execute(
+            'SELECT * FROM `client_controller` ORDER BY `uniq_id`',
+            (),
+        )
+        yield from map(self._row_to_stored_client_controller, self.fetchall())
+
+    def _write_stored_client_controller(
+        self,
+        stored_client_controller: StoredClientController,
+    ) -> StoredClientController:
+        fields: list[str] = [
+            'uniq_id',
+            'name',
+            'public',
+            'screen_id',
+            'rotator_id',
+            'last_update',
+        ]
+        params: list = [
+            stored_client_controller.uniq_id,
+            stored_client_controller.name,
+            stored_client_controller.public,
+            stored_client_controller.screen_id,
+            stored_client_controller.rotator_id,
+            time.time(),
+        ]
+        if stored_client_controller.id is None:
+            protected_fields = [f'`{f}`' for f in fields]
+            self.execute(
+                f'INSERT INTO `client_controller`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
+                tuple(params),
+            )
+            client_controller_id: int | None = self._last_inserted_id()
+            if client_controller_id is None:
+                raise RuntimeError('Client controller insertion failed')
+            fetched_stored_client_controller = self.get_stored_client_controller(
+                client_controller_id
+            )
+        else:
+            field_sets = [f'`{f}` = ?' for f in fields]
+            params += [stored_client_controller.id]
+            self.execute(
+                f'UPDATE `client_controller` SET {", ".join(field_sets)} WHERE `id` = ?',
+                tuple(params),
+            )
+            fetched_stored_client_controller = self.get_stored_client_controller(
+                stored_client_controller.id
+            )
+        if fetched_stored_client_controller is None:
+            raise RuntimeError('Client controller write failed')
+        self.set_last_update()
+        return fetched_stored_client_controller
+
+    def add_stored_client_controller(
+        self,
+        stored_client_controller: StoredClientController,
+    ) -> StoredClientController:
+        assert stored_client_controller.id is None
+        return self._write_stored_client_controller(stored_client_controller)
+
+    def update_stored_client_controller(
+        self,
+        stored_client_controller: StoredClientController,
+    ) -> StoredClientController:
+        assert stored_client_controller.id is not None
+        return self._write_stored_client_controller(stored_client_controller)
+
+    def delete_stored_client_controller(self, client_controller_id: int):
+        self.execute(
+            'DELETE FROM `client_controller` WHERE `id` = ?;', (client_controller_id,)
+        )
         self.set_last_update()

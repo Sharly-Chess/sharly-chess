@@ -1,4 +1,4 @@
-{% for message in messages %}
+{% for message in messages|reverse %}
     <div
         class="alert {{ message.html_class }} alert-dismissible fade show p-2 d-flex align-items-start gap-2"
         role="alert"

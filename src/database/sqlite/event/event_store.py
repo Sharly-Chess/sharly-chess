@@ -160,6 +160,17 @@ class StoredRotator:
 
 
 @dataclass
+class StoredClientController:
+    id: int | None
+    uniq_id: str
+    name: str | None
+    public: bool = True
+    errors: dict[str, str] = field(default_factory=dict[str, str])
+    screen_id: int | None = None
+    rotator_id: int | None = None
+
+
+@dataclass
 class StoredEvent:
     uniq_id: str
     name: str
@@ -188,6 +199,9 @@ class StoredEvent:
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
+    stored_client_controllers: list[StoredClientController] = field(
+        default_factory=list[StoredClientController]
+    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
     # Plugins can add their own tournament data
