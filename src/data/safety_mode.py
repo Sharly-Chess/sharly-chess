@@ -201,11 +201,12 @@ class PermissionHandler:
     @classmethod
     @cache
     def required_mode(cls, round_status: RoundStatus, action: Action) -> SafetyMode:
-        return next(
-            permission.rules[round_status]
-            for permission in cls.PERMISSIONS
-            if permission.action == action
+        permission = next(
+            permission for permission in cls.PERMISSIONS if permission.action == action
         )
+        if round_status not in permission.rules:
+            raise PapiWebException(f'{action=}, {round_status=}')
+        return permission.rules[round_status]
 
     @classmethod
     def validate_action(

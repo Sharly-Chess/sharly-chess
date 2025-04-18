@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from typing import Annotated, Any
 
@@ -16,7 +17,7 @@ from data.loader import EventLoader
 from data.board import Board
 from data.event import Event
 from data.player import Player
-from data.permission import RoundStatus, SafetyMode, PermissionHandler, Action
+from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, Action
 from data.tournament import Tournament
 from pairing.bbp_pairings import BbpPairings
 from utils.enum import Result
@@ -38,11 +39,22 @@ class PageIdentifier:
     tournament_id: int
     round_: int
 
+    def to_json(self) -> str:
+        return json.dumps(
+            {
+                'event_uniq_id': self.event_uniq_id,
+                'tournament_id': self.tournament_id,
+                'round_': self.round_,
+            }
+        )
+
+    @classmethod
+    def from_json(cls, json_str) -> 'PageIdentifier':
+        data = json.loads(json_str)
+        return cls(**data)
+
 
 class PairingsAdminWebContext(BaseEventAdminWebContext):
-    page_identifier: PageIdentifier | None = None
-    safety_mode: SafetyMode = SafetyMode.SAFE
-
     def __init__(
         self,
         request: HTMXRequest,
@@ -136,17 +148,28 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         if player_id is not None:
             self.admin_player = next((p for p in unpaired if p.id == player_id), None)
 
-        cls = self.__class__
-        if not tournament_id:
-            cls.page_identifier = None
-            cls.safety_mode = SafetyMode.SAFE
-        else:
+        self.safety_mode = SafetyMode.SAFE
+        if tournament_id:
             page_identifier = PageIdentifier(
                 event_uniq_id, tournament_id, self.admin_round
             )
-            if not cls.page_identifier or cls.page_identifier != page_identifier:
-                cls.page_identifier = page_identifier
-                cls.safety_mode = SafetyMode.SAFE
+            session_page_identifier = (
+                SessionHandler.get_session_admin_pairings_page_identifier(request)
+            )
+            if (
+                not session_page_identifier
+                or page_identifier != session_page_identifier
+            ):
+                SessionHandler.set_session_admin_pairings_page_identifier(
+                    request, page_identifier
+                )
+                SessionHandler.set_session_admin_pairings_safety_mode(
+                    request, SafetyMode.SAFE
+                )
+            else:
+                self.safety_mode = (
+                    SessionHandler.get_session_admin_pairings_safety_mode(request)
+                )
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -931,7 +954,9 @@ class PairingsAdminController(BaseEventAdminController):
         mode: str,
     ) -> Template | ClientRedirect:
         try:
-            PairingsAdminWebContext.safety_mode = SafetyMode(mode)
+            SessionHandler.set_session_admin_pairings_safety_mode(
+                request, SafetyMode(mode)
+            )
         except ValueError:
             logger.error(f'Unknown safety mode [{mode}]')
             Message.error(request, _('An error occurred.'))
