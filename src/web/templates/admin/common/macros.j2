@@ -751,13 +751,15 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
         </button>
         <ul class="dropdown-menu">
             {% for client_controller in client_controllers %}
-                <button
-                    class="dropdown-item text-start cursor-pointer"
-                    hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
-                    hx-indicator="#please-wait"
-                >
-                    <b>{{ client_controller.name }}</b> {% if client_controller.assigned_object %}({{ _('replace <b>%(object_uniq_id)s</b>', object_uniq_id=client_controller.assigned_object.uniq_id) }}){% endif %}
-                </button>
+                <li>
+                    <button
+                        class="dropdown-item text-start cursor-pointer"
+                        hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
+                            hx-indicator="#please-wait"
+                    >
+                        <b>{{ client_controller.name }}</b> {% if client_controller.assigned_object %}({{ _('replace <b>%(object_uniq_id)s</b>', object_uniq_id=client_controller.assigned_object.uniq_id) }}){% endif %}
+                    </button>
+                </li>
             {% endfor %}
         </ul>
     </div>
