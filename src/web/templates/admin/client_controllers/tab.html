@@ -3,6 +3,9 @@
 {% block cards_container_title %}
     {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
     {{ admin_event.name }} - {{ _('Client Controllers') }}
+    {{ macros.refresh_listener(
+        hx_get=url_for('admin-event-client-controllers-tab', event_uniq_id=admin_event.uniq_id),
+    ) }}
 {% endblock %}
 
 {% block cards_container_right_buttons %}

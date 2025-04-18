@@ -185,10 +185,20 @@ class ClientControllerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+
+        sorted_screens: list[Screen] = sorted(
+            web_context.admin_event.basic_screens_by_id.values(),
+            key=lambda screen: (
+                screen.stored_screen.type if screen.stored_screen else None,
+                screen.stored_screen.uniq_id if screen.stored_screen else None,
+            ),
+        )
+
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
             'admin_event_tab': 'admin-event-client-controllers-tab',
+            'sorted_screens': sorted_screens,
         }
 
         match modal:
