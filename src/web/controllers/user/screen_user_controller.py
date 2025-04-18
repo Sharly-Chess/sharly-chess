@@ -16,6 +16,7 @@ from utils.enum import ScreenType
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
+    ClientControllerUserWebContext,
     RotatorUserWebContext,
     ScreenUserWebContext,
 )
@@ -83,7 +84,7 @@ class ScreenUserController(BaseScreenUserController):
         else:
             Message.error(request, _('Incorrect password.'))
             SessionHandler.store_password(request, web_context.user_event, None)
-        return self._render_messages(request)
+        return self.render_messages(request)
 
     @staticmethod
     def _user_screen_set_refresh_needed(
@@ -114,7 +115,7 @@ class ScreenUserController(BaseScreenUserController):
     @classmethod
     def _user_screen_refresh_needed(
         cls,
-        web_context: BasicScreenOrFamilyUserWebContext,
+        web_context: BasicScreenOrFamilyUserWebContext | ClientControllerUserWebContext,
         date: float,
     ) -> bool:
         if web_context.screen:
@@ -158,7 +159,7 @@ class ScreenUserController(BaseScreenUserController):
                                 return True
                 case _:
                     raise ValueError(f'type={web_context.screen.type}')
-        else:
+        elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
             assert web_context.family is not None
             assert web_context.family.event is not None
             if (
@@ -249,6 +250,55 @@ class ScreenUserController(BaseScreenUserController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
+        rotator_screen_index: int = 0,
+    ) -> None:
+        pass
+
+    @get(
+        path=[
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}/{rotator_screen_index:int}',
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}',
+        ],
+        name='user-client-controller',
+    )
+    async def htmx_user_client_controller(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        client_controller_id: int,
+        rotator_screen_index: int = 0,
+    ) -> Template | ClientRedirect | Reswap:
+        web_context: ClientControllerUserWebContext = ClientControllerUserWebContext(
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+            client_controller_id=client_controller_id,
+            rotator_screen_index=rotator_screen_index,
+        )
+        if web_context.error:
+            return web_context.error
+
+        date: float | None = self.get_if_modified_since(request)
+        if date is None or self._user_screen_refresh_needed(web_context, date):
+            return self._user_screen_render(web_context)
+        else:
+            return Reswap(
+                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
+            )
+
+    @head(
+        path=[
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}/{rotator_screen_index:int}',
+            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}',
+        ],
+        name='user-client-controller-head',
+        status_code=HTTP_304_NOT_MODIFIED,
+    )
+    async def htmx_user_client_controller_head(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        client_controller_id: int,
         rotator_screen_index: int = 0,
     ) -> None:
         pass

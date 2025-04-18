@@ -9,6 +9,8 @@ from litestar.response import Template
 
 from common.i18n import _
 from common.logger import get_logger
+from common.papi_web_config import PapiWebConfig
+from data.client_controller import ClientController
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
@@ -36,6 +38,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         screen_uniq_id: str | None,
         rotator_id: int | None,
         rotator_screen_index: int | None,
+        client_controller_id: int | None,
     ):
         super().__init__(
             request, data=data, event_uniq_id=event_uniq_id, user_event_tab=None
@@ -43,6 +46,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         self.screen: Screen | None = None
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = rotator_screen_index or 0
+        self.client_controller: ClientController | None = None
         if self.error:
             return
         assert self.user_event is not None
@@ -58,7 +62,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
                 )
                 return
             self.user_event_tab = self.screen.type.value
-        else:
+        elif rotator_id:
             assert rotator_id is not None
             try:
                 self.rotator = self.user_event.rotators_by_id[rotator_id]
@@ -75,6 +79,27 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             )
             self.screen = self.rotator.rotating_screens[self.rotator_screen_index]
             self.user_event_tab = 'rotators'
+        else:
+            assert client_controller_id is not None
+            try:
+                self.client_controller = self.user_event.client_controllers_by_id[
+                    client_controller_id
+                ]
+            except KeyError:
+                self._redirect_error(
+                    f'Client controller [{client_controller_id}] not found.'
+                )
+                return
+
+            if rotator := self.client_controller.rotator:
+                self.rotator_screen_index = self.rotator_screen_index % len(
+                    rotator.rotating_screens
+                )
+                self.screen = rotator.rotating_screens[self.rotator_screen_index]
+            else:
+                self.screen = self.client_controller.screen
+
+            self.user_event_tab = 'client_controllers'
 
     @property
     def login_needed(self) -> bool:
@@ -101,13 +126,15 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
 
     @property
     def background_image(self) -> str | None:
-        assert self.screen is not None
-        return self.screen.background_image
+        return self.screen.background_image if self.screen else None
 
     @property
     def background_color(self) -> str:
-        assert self.screen is not None
-        return self.screen.background_color
+        return (
+            self.screen.background_color
+            if self.screen
+            else PapiWebConfig.default_background_color
+        )
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -115,6 +142,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             'rotator': self.rotator,
             'rotator_screen_index': self.rotator_screen_index,
             'screen': self.screen,
+            'client_controller': self.client_controller,
             'login_needed': self.login_needed,
         }
 
@@ -139,6 +167,7 @@ class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
             screen_uniq_id=screen_uniq_id,
             rotator_id=None,
             rotator_screen_index=None,
+            client_controller_id=None,
         )
         if self.error:
             return
@@ -166,6 +195,30 @@ class RotatorUserWebContext(ScreenOrRotatorUserWebContext):
             screen_uniq_id=None,
             rotator_id=rotator_id,
             rotator_screen_index=rotator_screen_index,
+            client_controller_id=None,
+        )
+
+
+class ClientControllerUserWebContext(ScreenOrRotatorUserWebContext):
+    def __init__(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str] | None,
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        client_controller_id: int,
+        rotator_screen_index: int = 0,
+    ):
+        super().__init__(
+            request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            screen_uniq_id=None,
+            rotator_id=None,
+            rotator_screen_index=rotator_screen_index,
+            client_controller_id=client_controller_id,
         )
 
 
@@ -213,17 +266,20 @@ class BaseScreenUserController(BaseUserController):
         cls,
         web_context: ScreenOrRotatorUserWebContext,
     ) -> Template | ClientRedirect:
-        assert web_context.screen is not None
         # Allow plugin to provide extra columns
-        per_plugin_columns: Iterable[Iterable[ExtraColumn]] = (
-            plugin_manager.hook.get_extra_screen_columns(screen=web_context.screen.type)
-        )
+        per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []
+        if web_context.screen is not None:
+            per_plugin_columns: Iterable[Iterable[ExtraColumn]] = (
+                plugin_manager.hook.get_extra_screen_columns(
+                    screen=web_context.screen.type
+                )
+            )
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        if web_context.screen.type == ScreenType.RANKING:
+        if web_context.screen and web_context.screen.type == ScreenType.RANKING:
             for tournament in {
                 screen_set.tournament
                 for screen_set in web_context.screen.screen_sets_sorted_by_order

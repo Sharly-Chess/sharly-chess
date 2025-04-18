@@ -147,6 +147,12 @@ class BaseEventAdminController(BaseAdminController):
                         'template': 'timers/tab.html',
                         'separator': 'true',
                     },
+                    'admin-event-client-controllers-tab': {
+                        'title': _('Client Controllers ({num})').format(
+                            num=len(admin_event.client_controllers_by_id) or '-'
+                        ),
+                        'template': 'client_controllers/tab.html',
+                    },
                 },
             },
         }
