@@ -13,8 +13,8 @@ LOGGING_CONFIG = {
     'formatters': {
         'colored': {
             '()': 'colorlog.ColoredFormatter',
-            'fmt': '%(log_color)s%(asctime)s %(levelname)-10s%(message)s%(reset)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'fmt': '%(log_color)s%(levelname)-10s%(message)s%(reset)s',
+            'datefmt': None,
             'reset': True,
             'log_colors': {
                 'DEBUG': 'white',
@@ -28,7 +28,7 @@ LOGGING_CONFIG = {
         },
         'standard': {
             'format': '%(asctime)s %(levelname)-10s%(message)s',
-            'datefmt': '%y/%m/%d %H:%M:%S',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
             'style': '%',
         },
     },
