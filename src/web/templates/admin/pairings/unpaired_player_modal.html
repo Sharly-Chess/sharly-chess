@@ -74,31 +74,33 @@
                                 </button>
                             </span>
                         {% endif %}
-                        <span
-                            class="w-100"
-                            {% if admin_tournament.check_in_open %}
-                                {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
-                            {% endif %}
-                        >
-                            <button
-                                class="btn btn-outline-primary w-100 {% if exempt_player %}d-flex flex-column align-items-center gap-1{% endif %}"
-                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='PAIR') }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
+                        {% if 'MANUAL_PAIRING' in existing_actions %}
+                            <span
+                                class="w-100"
                                 {% if admin_tournament.check_in_open %}
-                                    disabled
+                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
                                 {% endif %}
                             >
-                                {% if exempt_player %}
-                                    {{ _('Pair as BLACK vs %(player)s', player=exempt_player.first_name ~ ' ' ~ exempt_player.last_name) }}
-                                    <div class="text-danger italic" style="font-size: 0.9rem;">
-                                        {{ _('This will cause the table numbers to be reordered.') }}
-                                    </div>
-                                {% else %}
-                                    {{ _('Pair as WHITE') }}
-                                {% endif %}
-                            </button>
-                        </span>
+                                <button
+                                    class="btn btn-outline-primary w-100 {% if exempt_player %}d-flex flex-column align-items-center gap-1{% endif %}"
+                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='PAIR') }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    {% if admin_tournament.check_in_open %}
+                                        disabled
+                                    {% endif %}
+                                >
+                                    {% if exempt_player %}
+                                        {{ _('Pair as BLACK vs %(player)s', player=exempt_player.first_name ~ ' ' ~ exempt_player.last_name) }}
+                                        <div class="text-danger italic" style="font-size: 0.9rem;">
+                                            {{ _('This will cause the table numbers to be reordered.') }}
+                                        </div>
+                                    {% else %}
+                                        {{ _('Pair as WHITE') }}
+                                    {% endif %}
+                                </button>
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="modal-footer">
