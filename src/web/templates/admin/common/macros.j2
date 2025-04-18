@@ -756,7 +756,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                     hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
                     hx-indicator="#please-wait"
                 >
-                    <b>{{ client_controller.name }}</b> ({{ client_controller.assigned_description(_('No screen currently assigned')) }})
+                    <b>{{ client_controller.name }}</b> ({{ client_controller.assigned_description or _('Unassigned') }})
                 </button>
             {% endfor %}
         </ul>

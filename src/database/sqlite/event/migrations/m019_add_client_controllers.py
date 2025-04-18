@@ -14,7 +14,9 @@ class Migration(BaseMigration):
             '    `rotator_id` INTEGER,'
             '    `last_update` FLOAT,'
             '    PRIMARY KEY(`id` AUTOINCREMENT),'
-            '    UNIQUE(`uniq_id`)'
+            '    UNIQUE(`uniq_id`),'
+            '    FOREIGN KEY (`screen_id`) REFERENCES `screen`(`id`) ON DELETE SET NULL,'
+            '    FOREIGN KEY (`rotator_id`) REFERENCES `rotator`(`id`) ON DELETE SET NULL'
             ')'
         )
 

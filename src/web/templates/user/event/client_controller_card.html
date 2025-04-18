@@ -12,5 +12,5 @@
 {% endblock %}
 
 {% block card_text %}
-    {{ client_controller.assigned_description() }}
+    {{ client_controller.assigned_description() or _('No screen currently assigned')}}
 {% endblock %}

@@ -428,28 +428,6 @@ class ClientControllerAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @post(
-        path='/admin/client-controller-clone/{event_uniq_id:str}/{client_controller_id:int}',
-        name='admin-client-controller-clone',
-    )
-    async def htmx_admin_client_controller_clone(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        client_controller_id: int | None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template | ClientRedirect:
-        return self._admin_client_controller_update(
-            request,
-            event_uniq_id=event_uniq_id,
-            action='clone',
-            client_controller_id=client_controller_id,
-            data=data,
-        )
-
     @patch(
         path='/admin/client-controller-update/{event_uniq_id:str}/{client_controller_id:int}',
         name='admin-client-controller-update',

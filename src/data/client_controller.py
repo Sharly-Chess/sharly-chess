@@ -74,7 +74,7 @@ class ClientController:
     def assigned_object(self) -> Screen | Rotator | None:
         try:
             if self.screen_id:
-                return self.event.non_family_screens_by_id[self.screen_id]
+                return self.event.basic_screens_by_id[self.screen_id]
             if self.rotator_id:
                 return self.event.rotators_by_id[self.rotator_id]
         except KeyError:
@@ -92,15 +92,13 @@ class ClientController:
             return 'rotator'
         raise ValueError(f'type=[{type(object)}]')
 
+    @property
     def assigned_description(
         self,
-        default: str = _(
-            'No screens are currently assigned to this client controller.'
-        ),
-    ) -> str:
+    ) -> str | None:
         assigned_object = self.assigned_object
         if assigned_object is None:
-            return default
+            return None
 
         assert assigned_object.uniq_id is not None
         if self.assigned_type == 'screen':
@@ -112,13 +110,13 @@ class ClientController:
                 uniq_id=assigned_object.uniq_id
             )
         else:
-            return default
+            return None
 
     @property
     def screen(self) -> Screen | None:
         try:
             if self.screen_id:
-                return self.event.non_family_screens_by_id[self.screen_id]
+                return self.event.basic_screens_by_id[self.screen_id]
             if self.rotator_id:
                 rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
                 if rotator and rotator.rotating_screens:
