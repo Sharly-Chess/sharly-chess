@@ -1,21 +1,22 @@
 import logging
 import sys
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 
-# Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager  # Noqa
+from utils.scripts import init_script
 
-from common.exception import PapiWebException
-from common.logger import (
+arguments = init_script()
+
+from common.exception import PapiWebException  # Noqa E402
+from common.logger import (  # Noqa E402
     print_interactive_info,
     print_interactive_error,
     print_interactive_success,
     set_console_log_level,
 )
-from data.loader import EventLoader
-from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.migration_database import MigrationDatabase
+from data.loader import EventLoader  # Noqa E402
+from database.sqlite.config.config_database import ConfigDatabase  # Noqa E402
+from database.sqlite.event.event_database import EventDatabase  # Noqa E402
+from database.sqlite.migration_database import MigrationDatabase  # Noqa E402
 
 
 if __name__ == '__main__':
@@ -58,7 +59,7 @@ if __name__ == '__main__':
         action='store_true',
         help='Validate the databases.',
     )
-    args: Namespace = parser.parse_args()
+    args = parser.parse_args(arguments)
     if not args.events and not args.all_events and not args.config:
         print_interactive_error(
             'No database selected, use one of the options '
@@ -84,7 +85,7 @@ if __name__ == '__main__':
     if args.config:
         databases.append(ConfigDatabase(not args.validate))
     else:
-        for event_id in args.events or EventLoader().event_uniq_ids:
+        for event_id in args.events or EventLoader().all_event_ids():
             databases.append(EventDatabase(event_id, not args.validate))
 
     if args.validate:
