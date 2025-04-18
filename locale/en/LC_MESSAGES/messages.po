@@ -1774,10 +1774,10 @@ msgstr ""
 msgid "Impossible to set a round number lower than current round #{round}."
 msgstr ""
 
-msgid "Incorrect installation, exiting."
+msgid "In play"
 msgstr ""
 
-msgid "In play"
+msgid "Incorrect installation, exiting."
 msgstr ""
 
 msgid "Incorrect password."

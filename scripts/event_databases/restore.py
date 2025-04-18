@@ -3,12 +3,13 @@ from argparse import ArgumentParser
 
 from packaging.version import Version
 
-# Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager  # Noqa
+from utils.scripts import init_script
 
-from common import PAPI_WEB_VERSION
-from common.logger import print_interactive_error, print_interactive_info
-from data.loader import EventBackup, EventBackupLoader
+arguments = init_script()
+
+from common import PAPI_WEB_VERSION  # Noqa: E402
+from common.logger import print_interactive_error, print_interactive_info  # Noqa: E402
+from data.loader import EventBackup, EventBackupLoader  # Noqa: E402
 
 
 if __name__ == '__main__':
@@ -38,7 +39,7 @@ if __name__ == '__main__':
         ),
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
     loader = EventBackupLoader()
     event_id = args.event
     if args.version:
