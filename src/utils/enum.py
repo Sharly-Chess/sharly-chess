@@ -525,7 +525,6 @@ class TournamentPairing(IntEnum):
     pairings.
     Swiss Dutch with acceleration and Berger-table tournaments are supported."""
 
-    UNKNOWN = 0
     STANDARD = 1
     HALEY = 2
     HALEY_SOFT = 3
@@ -572,8 +571,6 @@ class TournamentPairing(IntEnum):
     def __str__(self) -> str:
         # TODO Translate this (if used)!
         match self:
-            case TournamentPairing.UNKNOWN:
-                return 'Inconnu'
             case TournamentPairing.STANDARD:
                 return 'Système suisse standard'
             case TournamentPairing.HALEY:
