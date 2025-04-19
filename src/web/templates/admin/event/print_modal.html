@@ -35,7 +35,13 @@
                     </div>
                 </div>
                 {% for option in print_options %}
-                    <div class="row" id="{{ option.container_id }}" style="display:none">
+                    <div
+                        class="row"
+                        id="{{ option.container_id }}"
+                        {% if option.id not in current_document_option_ids %}
+                            style="display:none"
+                        {% endif %}
+                    >
                         {% include option.template_name %}
                     </div>
                 {% endfor %}

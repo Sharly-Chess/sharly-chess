@@ -62,9 +62,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
         from data.print_documents import PrintPlayerSplitterManager
 
         split_by = self._get_option(PlayerSplitPrintOption).value
-        splitter: PlayerSplitter = PrintPlayerSplitterManager.get_object(
-            split_by
-        )
+        splitter: PlayerSplitter = PrintPlayerSplitterManager.get_object(split_by)
         return splitter.split_players(self.ordered_players)
 
     @staticmethod
@@ -154,18 +152,18 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
     @override
     def validate_options(self):
         super().validate_options()
-        ranking_round = self._get_option(RoundPrintOption).value
-        if ranking_round is None:
+        ranking_round = self._get_option(RoundPrintOption)
+        if ranking_round.value is None:
             return
         assert self.tournament is not None
-        if ranking_round > self.tournament.rounds:
+        if ranking_round.value > self.tournament.rounds:
             raise OptionError(
                 _('Not part of the selected tournament ({rounds} rounds).').format(
                     rounds=self.tournament.rounds
                 ),
                 ranking_round,
             )
-        if ranking_round > self.tournament.max_ranking_round:
+        if ranking_round.value > self.tournament.max_ranking_round:
             raise OptionError(
                 _('Round not finished (last finished: {round}).').format(
                     round=self.tournament.max_ranking_round
@@ -248,17 +246,17 @@ class BoardPrintDocument(PrintDocument, ABC):
     def validate_options(self):
         super().validate_options()
         assert self.tournament is not None
-        at_round = self._get_option(RoundPrintOption).value
+        at_round = self._get_option(RoundPrintOption)
         if at_round is None:
             return
-        if at_round > self.tournament.rounds:
+        if at_round.value > self.tournament.rounds:
             raise OptionError(
                 _('Not part of the selected tournament ({rounds} rounds).').format(
                     rounds=self.tournament.rounds
                 ),
                 at_round,
             )
-        if at_round > self.tournament.current_round:
+        if at_round.value > self.tournament.current_round:
             raise OptionError(
                 _('Round not paired (last paired: {round}).').format(
                     round=self.tournament.current_round
