@@ -709,8 +709,8 @@ msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
 
 #, python-format
-msgid "Consulted round: %(round)d"
-msgstr "Ronde consultée : %(round)d"
+msgid "Displayed round: %(round)d"
+msgstr "Ronde affichée : %(round)d"
 
 msgid "Contact and registration"
 msgstr "Contact et inscription"

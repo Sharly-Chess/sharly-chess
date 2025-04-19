@@ -709,7 +709,7 @@ msgid "Connections ChessEvent"
 msgstr ""
 
 #, python-format
-msgid "Consulted round: %(round)d"
+msgid "Displayed round: %(round)d"
 msgstr ""
 
 msgid "Contact and registration"
