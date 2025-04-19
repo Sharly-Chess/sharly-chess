@@ -278,7 +278,7 @@ msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
 msgid "Any number of devices can be controlled by the same client controller."
-msgstr "Un pilote d'écran peut piloter plusieurs clients."
+msgstr "Un pilote d’écran peut contrôler l’affichage sur plusieurs appareils."
 
 msgid "Application"
 msgstr "Application"
@@ -782,8 +782,14 @@ msgstr "Créer un pilote d'écran"
 msgid "Create a client controller now to get started."
 msgstr "Créez un pilote d'écran maintenant commencer."
 
+msgid "Create a family now to get started."
+msgstr "Créer une famille d’écrans pour commencer."
+
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
+
+msgid "Create a rotator now to get started."
+msgstr "Créer un écran rotatif pour commencer."
 
 msgid "Create a screen"
 msgstr "Créer un écran"
@@ -791,8 +797,14 @@ msgstr "Créer un écran"
 msgid "Create a screen family"
 msgstr "Créer une famille d'écrans"
 
+msgid "Create a screen now to get started."
+msgstr "Créer un écran pour commencer."
+
 msgid "Create a timer"
 msgstr "Créer un chronomètre"
+
+msgid "Create a timer now to get started."
+msgstr "Créer un chronomètre pour commencer. "
 
 msgid "Create a tournament"
 msgstr "Créer un tournoi"
@@ -802,6 +814,9 @@ msgstr "Créer un évènement"
 
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
+
+msgid "Create as many controllers as you need, then on your other devices choose to display a client controller rather than a specific screen, family or rotator."
+msgstr "Créez autant de pilotes d’écran que nécessaire, puis, sur vos autres appareils, choisissez d’afficher un pilote d’écran plutôt qu’un écran individuel, une famille d’écrans ou un écran rotatif spécifique."
 
 msgid "Create file"
 msgstr "Créer le fichier"
@@ -1541,6 +1556,9 @@ msgstr "Familles"
 msgid "Families ({num})"
 msgstr "Familles ({num})"
 
+msgid "Families are used to split a large amount of information across multiple screens."
+msgstr "Les familles d’écrans sont utilisées pour répartir une grande quantité d’informations sur plusieurs écrans."
+
 msgid "Family [{family_uniq_id}] has been created."
 msgstr "La famile [{family_uniq_id}] a été créée."
 
@@ -1700,6 +1718,9 @@ msgstr "Depuis le serveur Papi-web"
 msgid "From the local network (LAN/WAN)"
 msgstr "Depuis le réseau local (LAN/WAN)"
 
+msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgstr "Depuis votre ordinateur principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
+
 msgid "Full-Point Bye"
 msgstr "Point joker entier"
 
@@ -1855,6 +1876,9 @@ msgstr "Temps initial (optionel, en secondes) :"
 
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisation d'une session vers [{url}]..."
+
+msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
@@ -2453,9 +2477,6 @@ msgstr "Aucun chronomètre défini"
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
-msgid "No timers."
-msgstr "Aucun chronomètre."
-
 msgid "No title"
 msgstr "Aucun titre"
 
@@ -2535,6 +2556,9 @@ msgstr "Sur des écrans de taille fixe :"
 
 msgid "Once"
 msgstr "Une fois"
+
+msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
+msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
 
 msgid "One event found, press Enter (Q to quit): "
 msgstr "Un unique évènement trouvé, tapez Entrée (Q pour quitter) : "
@@ -3181,6 +3205,9 @@ msgstr "Écrans rotatifs"
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
 
+msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
+msgstr "Les écrans rotatifs permettent d’alterner entre plusieurs écrans, ou familles d’écrans, afin d’afficher une grande quantité d’informations lors de votre événement."
+
 #, python-format
 msgid "Rotators: %(num)d"
 msgstr "Écrans rotatifs : %(num)d"
@@ -3309,6 +3336,9 @@ msgstr "Familles d'écrans : %(num)d"
 
 msgid "Screens"
 msgstr "Écrans"
+
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
 
 msgid "Screens:"
 msgstr "Écrans :"
@@ -3975,6 +4005,9 @@ msgstr "Chronomètres"
 msgid "Timers ({num})"
 msgstr "Chronomètres ({num})"
 
+msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
+msgstr "Les chronomètres peuvent être placés sur n’importe quel écran, famille d’écrans ou écran rotatif pour afficher un compte à rebours jusqu’à la prochaine ronde ou un autre événement important."
+
 #, python-format
 msgid "Timers: %(num)d"
 msgstr "Chronomètres : %(num)d"
@@ -3984,6 +4017,9 @@ msgstr "Aujourd'hui"
 
 msgid "Too many byes for player [{player_name}]."
 msgstr "Trop de points joker pour le joueur [{player_name}]."
+
+msgid "Too much information to display on a single projector?"
+msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
 msgid "Top cut must be at most equal to bottom cut."
 msgstr "La troncature haute doit au moins être égale à la troncature basse."
@@ -4193,6 +4229,9 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
+
+msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
+msgstr "Contrairement aux écrans individuels, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
 
 msgid "Unpair"
 msgstr "Désapparier"
@@ -4427,6 +4466,12 @@ msgstr "Vous utilisez une version plus récente que la dernière version stable 
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr "Vous utilisez une version non stable plus récente que la dernière version stable disponible ({version})."
 
+msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
+msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans individuels seront générés automatiquement."
+
+msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
+msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
+
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr "Vous devez créer un écran ou une famille d'écrans avant de pouvoir créer des écrans rotatifs."
 
@@ -4622,4 +4667,13 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "No timers."
+#~ msgstr "Aucun chronomètre."
+
+#~ msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
+#~ msgstr "Vous pouvez également créer des écrans permettant aux joueur·euses de saisir eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
+
+#~ msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+#~ msgstr "Vous pouvez utiliser les Écrans pour afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
 
