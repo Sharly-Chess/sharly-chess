@@ -295,6 +295,9 @@ msgstr ""
 msgid "Archived events ({num})"
 msgstr ""
 
+msgid "Are you sure you wish to proceed?"
+msgstr ""
+
 msgid "Argument --server is deprecated, ignored."
 msgstr ""
 
@@ -748,10 +751,6 @@ msgstr ""
 msgid "Connections ChessEvent"
 msgstr ""
 
-#, python-format
-msgid "Displayed round: %(round)d"
-msgstr ""
-
 msgid "Contact and registration"
 msgstr ""
 
@@ -1007,10 +1006,14 @@ msgstr ""
 msgid "Display the exit button"
 msgstr ""
 
+#, python-format
+msgid "Displayed round: %(round)d"
+msgstr ""
+
 msgid "Do nothing"
 msgstr ""
 
-msgid "Do you want to allow pairings editing for this round?"
+msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr ""
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
@@ -2961,6 +2964,9 @@ msgstr ""
 msgid "Private event"
 msgstr ""
 
+msgid "Proceed"
+msgstr ""
+
 msgid "Progressive"
 msgstr ""
 
@@ -4425,6 +4431,12 @@ msgid "Yesterday"
 msgstr ""
 
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
+msgstr ""
+
+msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
+msgstr ""
+
+msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"

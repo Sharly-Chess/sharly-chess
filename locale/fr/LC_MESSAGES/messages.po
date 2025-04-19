@@ -295,6 +295,9 @@ msgstr "Évènement archivé"
 msgid "Archived events ({num})"
 msgstr "Évènements archivés ({num})"
 
+msgid "Are you sure you wish to proceed?"
+msgstr "Êtes vous sûr de vouloir continuer ?"
+
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
 
@@ -748,10 +751,6 @@ msgstr "La connexion au serveur a échoué : {error}."
 msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
 
-#, python-format
-msgid "Displayed round: %(round)d"
-msgstr "Ronde affichée : %(round)d"
-
 msgid "Contact and registration"
 msgstr "Contact et inscription"
 
@@ -1007,10 +1006,14 @@ msgstr "Afficher seulement les joueur·euses apparié·es"
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
+#, python-format
+msgid "Displayed round: %(round)d"
+msgstr "Ronde affichée : %(round)d"
+
 msgid "Do nothing"
 msgstr "Ne rien faire"
 
-msgid "Do you want to allow pairings editing for this round?"
+msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr "Voulez vous autoriser l'édition des appariements pour cette ronde ?"
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
@@ -2961,6 +2964,9 @@ msgstr "Imprimer les participant·es, les résultats, les classements..."
 msgid "Private event"
 msgstr "Évènement privé"
 
+msgid "Proceed"
+msgstr "Continuer"
+
 msgid "Progressive"
 msgstr "Cumulatif"
 
@@ -4426,6 +4432,12 @@ msgstr "Hier"
 
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
+
+msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
+msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."
+
+msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
+msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
 msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
 msgstr "Vous utilisez une version plus récente que la dernière version stable disponible ([{version}]), vous ne seriez pas développeur·euse ? ;-)"

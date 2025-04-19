@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import StrEnum, auto
+from enum import StrEnum
 from functools import cache
 
 from common.exception import PapiWebException
@@ -25,11 +25,11 @@ class SafetyMode(StrEnum):
 
 
 class RoundStatus(StrEnum):
-    PAST = auto()
-    PREVIOUS = auto()
-    CURRENT = auto()
-    NEXT = auto()
-    FUTURE = auto()
+    PAST = 'PAST'
+    PREVIOUS = 'PREVIOUS'
+    CURRENT = 'CURRENT'
+    NEXT = 'NEXT'
+    FUTURE = 'FUTURE'
 
     @classmethod
     def from_round(cls, round_: int, current_round: int):
