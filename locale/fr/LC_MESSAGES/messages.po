@@ -783,7 +783,7 @@ msgid "Create a client controller now to get started."
 msgstr "Créez un pilote d'écran maintenant commencer."
 
 msgid "Create a family now to get started."
-msgstr "Créez une famille d’écrans pour commencer."
+msgstr "Créer une famille d’écrans pour commencer."
 
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
