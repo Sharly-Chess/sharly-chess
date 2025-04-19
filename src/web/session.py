@@ -253,8 +253,8 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> list[Federation]:
         return [
-            Federation(federation)
-            for federation in request.session.get(
+            Federation(federation_name)
+            for federation_name in request.session.get(
                 cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, []
             )
         ]
@@ -272,8 +272,8 @@ class SessionHandler:
     @classmethod
     def get_session_admin_players_filter_clubs(cls, request: HTMXRequest) -> list[Club]:
         return [
-            Club(club)
-            for club in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
+            Club(club_name)
+            for club_name in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY: str = 'admin_players_filter_clubs_search'
@@ -303,8 +303,8 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> list[PlayerGender]:
         return [
-            PlayerGender(gender)
-            for gender in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
+            PlayerGender(gender_value)
+            for gender_value in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
@@ -350,8 +350,8 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> list[PlayerCategory]:
         return [
-            PlayerCategory(category)
-            for category in request.session.get(
+            PlayerCategory(category_value)
+            for category_value in request.session.get(
                 cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, []
             )
         ]
