@@ -89,6 +89,10 @@ msgstr "(par défaut)"
 msgid "(no screens)"
 msgstr "(aucun écran)"
 
+#, python-format
+msgid "(replace [%(object_uniq_id)s])"
+msgstr "(remplace [%(object_uniq_id)s])"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -186,6 +190,9 @@ msgstr "Actions :"
 msgid "Add"
 msgstr "Ajouter"
 
+msgid "Add a client controller to the event."
+msgstr "Ajouter un écran piloté"
+
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage des appariements par échiquier."
 
@@ -269,6 +276,9 @@ msgstr "Autoriser"
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
+
+msgid "Any number of devices can be controlled by the same client controller."
+msgstr "Un pilote d'écran peut piloter plusieurs clients."
 
 msgid "Application"
 msgstr "Application"
@@ -600,6 +610,36 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
 
+msgid "Client Controllers"
+msgstr "Pilotes d'écran"
+
+msgid "Client Controllers ({num})"
+msgstr "Pilotes d'écrans ({num})"
+
+msgid "Client controller"
+msgstr "Pilote d'écran"
+
+msgid "Client controller [{client_controller_uniq_id}] has been created."
+msgstr "Le pilote d'écran [{client_controller_uniq_id}] a été créé."
+
+msgid "Client controller [{client_controller_uniq_id}] has been deleted."
+msgstr "Le pilote d'écran [{client_controller_uniq_id}] a été supprimé."
+
+msgid "Client controller [{client_controller_uniq_id}] has been updated."
+msgstr "Le pilote d'écran [{client_controller_uniq_id}] a été modifié."
+
+msgid "Client controller [{uniq_id}] already exists."
+msgstr "Le pilote d'écran [{uniq_id}] existe déjà."
+
+msgid "Client controller creation"
+msgstr "Création d'un pilote d'écran"
+
+msgid "Client controllers ({num})"
+msgstr "Pilotes d'écrans ({num})"
+
+msgid "Client controllers allow you to control screens at your event from your main computer."
+msgstr "Les pilotes d'écran vous permettent de contrôler les écrans de votre évènement depuis le serveur."
+
 msgid "Clone"
 msgstr "Dupliquer"
 
@@ -736,6 +776,12 @@ msgstr "Impossible de décompresser les données."
 msgid "Create"
 msgstr "Créer"
 
+msgid "Create a client controller"
+msgstr "Créer un pilote d'écran"
+
+msgid "Create a client controller now to get started."
+msgstr "Créez un pilote d'écran maintenant commencer."
+
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
 
@@ -785,6 +831,12 @@ msgstr "Évènements en cours ({num})"
 
 msgid "Current round"
 msgstr "Ronde en cours"
+
+msgid "Currently displaying rotator [{uniq_id}]"
+msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
+
+msgid "Currently displaying screen [{uniq_id}]"
+msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
 msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
@@ -862,6 +914,9 @@ msgstr "Délai :"
 msgid "Delete"
 msgstr "Supprimer"
 
+msgid "Delete the client controller."
+msgstr "Supprimer le pilote d'écran."
+
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
 
@@ -876,6 +931,10 @@ msgstr "Supprimer le tournoi"
 
 msgid "Deletion date"
 msgstr "Date de suppression"
+
+#, python-format
+msgid "Deletion of client controller [%(client_controller_uniq_id)s]"
+msgstr "Suppression du pilote d'écran [%(client_controller_uniq_id)s]"
 
 #, python-format
 msgid "Deletion of event [%(event_uniq_id)s]"
@@ -1075,6 +1134,9 @@ msgstr "Exemple : Link vers mon écran"
 msgid "E.g.: Main tournament"
 msgstr "Exemple : Tournoi principal"
 
+msgid "E.g.: My client controller"
+msgstr "Exemple : Mon pilote d'écran"
+
 msgid "E.g.: My favourite club!"
 msgstr "Exemple : Mon club favori !"
 
@@ -1135,6 +1197,9 @@ msgstr "Exemple : pierre.dupont@chess.com"
 msgid "E.g.: main"
 msgstr "Exemple : principal"
 
+msgid "E.g.: my-client-controller"
+msgstr "Exemple : mon-pilote-d-ecran"
+
 msgid "E.g.: my-rotator"
 msgstr "Exemple : mon-ecran-rotatif"
 
@@ -1165,6 +1230,9 @@ msgstr "Éditer les propriétés du·de la joueur·euse."
 msgid "Edit the player's tournament record."
 msgstr "Modifier l'historique du·de la joueur·euse."
 
+msgid "Edit the properties of the client controller."
+msgstr "Éditer les propriétés du pilote d'écran."
+
 msgid "Edit the properties of the rotator."
 msgstr "Éditer les propriétés de l'écran rotatif."
 
@@ -1185,6 +1253,10 @@ msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
 
 msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
+
+#, python-format
+msgid "Edition of client controller [%(client_controller_uniq_id)s]"
+msgstr "Édition du pilote d'écran [%(client_controller_uniq_id)s]"
 
 #, python-format
 msgid "Edition of default timers for event [%(event_uniq_id)s]"
@@ -1280,24 +1352,6 @@ msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
 msgid "Error while creating the database: {error}."
 msgstr "Erreur lors de la création de la base de données: {error}."
-
-msgid "Errors have been found on families; rotators will not be loaded."
-msgstr "Des erreurs ont été trouvées sur les familles ; les écrans rotatifs ne seront pas chargés."
-
-msgid "Errors have been found on rotators."
-msgstr "Des erreurs ont été trouvées sur les écrans rotatifs."
-
-msgid "Errors have been found on screens; families and rotators will not be loaded."
-msgstr "Des erreurs ont été trouvées sur les écrans ; les familles et écrans rotatifs ne seront pas chargés."
-
-msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
-msgstr "Des erreurs ont été trouvées sur l'évènement : les chronomètres, les tournois, écrans, familles et écrans rotatifs ne seront pas chargés."
-
-msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
-msgstr "Des erreurs ont été trouvées sur les chronomètres ; les tournois, écrans, familles et écrans rotatifs ne seront pas chargés."
-
-msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
-msgstr "Des erreurs ont été trouvées sur les tournois ; les écrans, familles et écrans rotatifs ne seront pas chargés."
 
 #, python-format
 msgid "Errors: %(num)d"
@@ -1914,7 +1968,7 @@ msgid "Kashdan"
 msgstr "Kashdan"
 
 msgid "Keyboard shortcuts:"
-msgstr "Raccourcis clavier :"
+msgstr "Raccourcis clavier :"
 
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
@@ -2194,6 +2248,12 @@ msgstr "Navigation"
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nr"
 
+msgid "Neither screen nor rotator currently assigned"
+msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
+
+msgid "New client controller"
+msgstr "Nouveau pilote d'écran"
+
 msgid "New event"
 msgstr "Nouvel évènement"
 
@@ -2254,6 +2314,12 @@ msgstr "Image de fond non définie, par défaut [{background_image}]"
 
 msgid "No category"
 msgstr "Aucune catégorie"
+
+msgid "No client controllers"
+msgstr "Aucun pilote d'écran"
+
+msgid "No client controllers."
+msgstr "Aucun pilote d'écran."
 
 msgid "No current events."
 msgstr "Aucun évènement en cours."
@@ -2443,8 +2509,8 @@ msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
 
 #, python-format
-msgid "Number of players : %(num)d"
-msgstr ""
+msgid "Number of players: %(num)d"
+msgstr "Nombre de joueur·euses : %(num)d"
 
 msgid "Number of wins"
 msgstr "Nombre de victoires"
@@ -2477,16 +2543,19 @@ msgid "Ongoing"
 msgstr "En cours"
 
 msgid "Only arbiters can see private events."
-msgstr "Seuls les arbitres peuvent voir les évènements privés."
+msgstr "Seul·es les arbitres peuvent voir les évènements privés."
 
 msgid "Only arbiters can see private screen families."
-msgstr "Seuls les arbitres peuvent voir les écrans des familles privées."
+msgstr "Seul·es les arbitres peuvent voir les écrans des familles privées."
 
 msgid "Only arbiters can see private screens."
-msgstr "Seuls les arbitres peuvent voir les écrans privés."
+msgstr "Seul·es les arbitres peuvent voir les écrans privés."
+
+msgid "Only arbiters can view private client controllers."
+msgstr "Seul·es les arbitres peuvent voir les pilotes d'écran privés."
 
 msgid "Only arbiters can view private rotators."
-msgstr "Seuls les arbitres peuvent voir les écrans rotatifs privés."
+msgstr "Seul·es les arbitres peuvent voir les écrans rotatifs privés."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
@@ -2759,6 +2828,12 @@ msgstr "Veuillez entrer une date valide."
 msgid "Please enter a valid time."
 msgstr "Veuillez entrer une heure valide."
 
+msgid "Please enter the client controller ID."
+msgstr "Veuillez entrer l'identifiant du pilotle d'écran."
+
+msgid "Please enter the client controller name."
+msgstr "Veuillez entrer le nom du pilotle d'écran."
+
 msgid "Please enter the date of birth."
 msgstr "Veuillez entrer la date de naissance."
 
@@ -2912,6 +2987,9 @@ msgstr "Propriétés (saisie des résultats)"
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
+msgid "Public client controller"
+msgstr "Pilote d'écran public"
+
 msgid "Public event"
 msgstr "Évènement public"
 
@@ -3017,6 +3095,9 @@ msgstr "Actualiser la page."
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
+msgid "Remove the screen from the client controller."
+msgstr "Supprimer la redirection du pilote vers cet écran."
+
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
 
@@ -3069,6 +3150,9 @@ msgstr "Rde.Ech"
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
+
+msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgstr "L'écran rotatif [{rotator_uniq_id}] est utilisé par le pilote d'écran [{client_controller_uniq_id}]."
 
 msgid "Rotator [{rotator_uniq_id}] has been created."
 msgstr "L'écran rotatif [{rotator_uniq_id}] a été créé."
@@ -3191,6 +3275,9 @@ msgstr "Score"
 
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr "Écran [{pattern}] introuvable pour le menu de l'écran [{screen_uniq_id}]."
+
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'écran [{client_controller_uniq_id}]."
 
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "L'écran [{screen_uniq_id}] a été créé."
@@ -3361,7 +3448,7 @@ msgid "Texts before and after the hour below are optional for round numbers, man
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
 msgid "Thanks :-)"
-msgstr ""
+msgstr "Merci :-)"
 
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tournament_uniq_id}]."
@@ -3408,8 +3495,11 @@ msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Papi-w
 msgid "The Unique ID, used for data storage and export."
 msgstr "L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export."
 
+msgid "The Unique ID, used to reference the client controller."
+msgstr "L\"identifiant unique, utilisé pour référencer le pilote d'écran."
+
 msgid "The Unique ID, used to reference the rotator."
-msgstr "L'identifiant unique, utilisé pour référencer l'écran rotatif'."
+msgstr "L'identifiant unique, utilisé pour référencer l'écran rotatif."
 
 msgid "The Unique ID, used to reference the screen family."
 msgstr "L'identifiant unique, utilisé pour référencer la famille d'écrans."
@@ -3538,6 +3628,9 @@ msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
+
+msgid "The name of the client controller, optional."
+msgstr "Le nom du pilote d'écran, facultatif."
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le nom de l'évènement sur la plateforme ChessEvent (par défaut, peut être modifié pour chaque tournoi)."
@@ -3717,6 +3810,9 @@ msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernièr
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr "Les familles à afficher en rotation (les familles d'écrans de saisie apparaissent en italique car elles ne devraient normalement pas être incluses dans les écrans rotatifs)."
 
+msgid "The screens displayed by the client controller are controlled by the administrator."
+msgstr "Les écrans utilisés par le pilote d'écran sont désignés par l'administrateur·ice."
+
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
 
@@ -3762,6 +3858,12 @@ msgstr "Le type de classement utilsé."
 
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
+
+msgid "This client controller is private (not visible by the users)."
+msgstr "Ce pilote d'écran est privé (non visible des utilisateur·ices)."
+
+msgid "This client controller is public (visible by the users)."
+msgstr "Ce pilote d'écran est public (visible des utilisateur·ices)."
 
 msgid "This event is private (by default, screens are not visible by the users)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des utilisateur·ices)."
@@ -4211,7 +4313,10 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
-msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
+msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
+
+msgid "Warning: the deletion of a client controller is permanent!"
+msgstr "Attention : la suppression d'un pilolte d'écran est définitive !"
 
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
@@ -4382,6 +4487,9 @@ msgstr "échiquiers {board_numbers}"
 msgid "by default"
 msgstr "par défaut"
 
+msgid "client-controller"
+msgstr "pilote-d-ecran"
+
 msgid "event"
 msgstr "évènement"
 
@@ -4514,10 +4622,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Number of players : %(num)d"
-#~ msgstr "Nombre de joueur·euses : %(num)d"
-
-#~ msgid "Thanks :-)"
-#~ msgstr "Merci :-)"
 
