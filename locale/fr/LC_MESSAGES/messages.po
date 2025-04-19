@@ -1877,6 +1877,9 @@ msgstr "Temps initial (optionel, en secondes) :"
 msgid "Initializing a session to [{url}]..."
 msgstr "Initialisation d'une session vers [{url}]..."
 
+msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
+
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
 
@@ -2555,7 +2558,7 @@ msgid "Once"
 msgstr "Une fois"
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
-msgstr "Une fois créés, vous pouvez sélectionner le minuteur à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
+msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
 
 msgid "One event found, press Enter (Q to quit): "
 msgstr "Un unique évènement trouvé, tapez Entrée (Q pour quitter) : "
@@ -3334,6 +3337,9 @@ msgstr "Familles d'écrans : %(num)d"
 msgid "Screens"
 msgstr "Écrans"
 
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
+
 msgid "Screens:"
 msgstr "Écrans :"
 
@@ -4000,7 +4006,7 @@ msgid "Timers ({num})"
 msgstr "Chronomètres ({num})"
 
 msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
-msgstr "Les minuteurs peuvent être placés sur n’importe quel écran, famille d’écrans ou écran rotatif pour afficher un compte à rebours jusqu’à la prochaine ronde ou un autre événement important."
+msgstr "Les chronomètres peuvent être placés sur n’importe quel écran, famille d’écrans ou écran rotatif pour afficher un compte à rebours jusqu’à la prochaine ronde ou un autre événement important."
 
 #, python-format
 msgid "Timers: %(num)d"
@@ -4224,8 +4230,8 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 
-msgid "Unlike individual Screens, families can be used to display information about a single tournament."
-msgstr "Contrairement aux écrans individuels, les familles d’écrans peuvent être utilisées pour afficher des informations sur un seul tournoi."
+msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
+msgstr "Contrairement aux écrans individuels, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
 
 msgid "Unpair"
 msgstr "Désapparier"
@@ -4460,17 +4466,11 @@ msgstr "Vous utilisez une version plus récente que la dernière version stable 
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr "Vous utilisez une version non stable plus récente que la dernière version stable disponible ({version})."
 
-msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
-msgstr "Vous pouvez également créer des écrans permettant aux joueur·euses de saisir eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
-
 msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans individuels seront générés automatiquement."
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
 msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
-
-msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr "Vous pouvez utiliser les Écrans pour afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
 
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr "Vous devez créer un écran ou une famille d'écrans avant de pouvoir créer des écrans rotatifs."
@@ -4670,4 +4670,10 @@ msgstr "ecran-{screen_type}"
 
 #~ msgid "No timers."
 #~ msgstr "Aucun chronomètre."
+
+#~ msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
+#~ msgstr "Vous pouvez également créer des écrans permettant aux joueur·euses de saisir eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
+
+#~ msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+#~ msgstr "Vous pouvez utiliser les Écrans pour afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
 

@@ -1877,6 +1877,9 @@ msgstr ""
 msgid "Initializing a session to [{url}]..."
 msgstr ""
 
+msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgstr ""
+
 msgid "Input screen creation"
 msgstr ""
 
@@ -3334,6 +3337,9 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+msgstr ""
+
 msgid "Screens:"
 msgstr ""
 
@@ -4224,7 +4230,7 @@ msgstr ""
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
-msgid "Unlike individual Screens, families can be used to display information about a single tournament."
+msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
 msgstr ""
 
 msgid "Unpair"
@@ -4460,16 +4466,10 @@ msgstr ""
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
-msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
-msgstr ""
-
 msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
 msgstr ""
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
-msgstr ""
-
-msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 msgstr ""
 
 msgid "You must create a screen or a family of screens before creating a rotator."
@@ -4669,5 +4669,11 @@ msgid "{screen_type}-screen"
 msgstr ""
 
 #~ msgid "No timers."
+#~ msgstr ""
+
+#~ msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
+#~ msgstr ""
+
+#~ msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 #~ msgstr ""
 
