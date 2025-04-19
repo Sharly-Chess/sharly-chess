@@ -155,10 +155,16 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    {% with compact=true, tournament_id=tournament.id %}
+    {% with compact=true, tournament=tournament %}
         {% include '/admin/players/players_diff.html' %}
     {% endwith %}
-    <span {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}>
+    <span
+            {% if not tournament.file_exists %}
+                {{ macros.tooltip_attributes('warning', _('Printing is not possible when the Papi file is not found.'), 'top') }}
+            {% else %}
+                {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}
+            {% endif %}
+    >
         <button
             class="btn btn-sm btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}?tournament_id={{ tournament.id }}"
@@ -167,6 +173,9 @@
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not tournament.file_exists %}
+                disabled
+            {% endif %}
         >
             <i class="bi bi-printer-fill"></i>
         </button>

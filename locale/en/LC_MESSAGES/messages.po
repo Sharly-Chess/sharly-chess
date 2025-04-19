@@ -2309,9 +2309,6 @@ msgstr ""
 msgid "Not connected, impossible to update."
 msgstr ""
 
-msgid "Not part of the selected tournament ({rounds} rounds)."
-msgstr ""
-
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr ""
 
@@ -2725,6 +2722,9 @@ msgstr ""
 msgid "Print players, results, etc."
 msgstr ""
 
+msgid "Printing is not possible when the Papi file is not found."
+msgstr ""
+
 msgid "Private event"
 msgstr ""
 
@@ -2954,12 +2954,6 @@ msgstr ""
 
 #, python-format
 msgid "Round #%(round)d is running."
-msgstr ""
-
-msgid "Round not finished (last finished: {round})."
-msgstr ""
-
-msgid "Round not paired (last paired: {round})."
 msgstr ""
 
 msgid "Round number or text:"
@@ -3573,6 +3567,9 @@ msgstr ""
 msgid "The type of document to print."
 msgstr ""
 
+msgid "There is no pairings for this round (last round with pairings: #{round})."
+msgstr ""
+
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
@@ -3598,6 +3595,12 @@ msgid "This rotator is private (not visible by the users)."
 msgstr ""
 
 msgid "This rotator is public (visible by the users)."
+msgstr ""
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr ""
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
 msgid "This screen family is private (not visible by the users)."
@@ -3929,6 +3932,9 @@ msgid "Update the players' information from an external data source."
 msgstr ""
 
 msgid "Updating"
+msgstr ""
+
+msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 msgstr ""
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
@@ -4268,10 +4274,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Do you want to recover the configuration of version [{version}] [{y_uc}/{n_lc}]?"
-#~ msgstr ""
-
-#~ msgid "Papi-web project"
-#~ msgstr ""
 
