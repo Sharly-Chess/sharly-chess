@@ -4461,7 +4461,7 @@ msgid "You are using un unstable version more recent than the last stable versio
 msgstr "Vous utilisez une version non stable plus récente que la dernière version stable disponible ({version})."
 
 msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
-msgstr "Vous pouvez également créer des écrans permettant aux joueurs de saisir eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
+msgstr "Vous pouvez également créer des écrans permettant aux joueur·euses de saisir eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
 
 msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueurs, et les écrans individuels seront générés automatiquement."
