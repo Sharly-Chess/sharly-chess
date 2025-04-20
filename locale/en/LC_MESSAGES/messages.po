@@ -784,7 +784,13 @@ msgstr ""
 msgid "Create a client controller now to get started."
 msgstr ""
 
+msgid "Create a family now to get started."
+msgstr ""
+
 msgid "Create a rotator"
+msgstr ""
+
+msgid "Create a rotator now to get started."
 msgstr ""
 
 msgid "Create a screen"
@@ -793,7 +799,13 @@ msgstr ""
 msgid "Create a screen family"
 msgstr ""
 
+msgid "Create a screen now to get started."
+msgstr ""
+
 msgid "Create a timer"
+msgstr ""
+
+msgid "Create a timer now to get started."
 msgstr ""
 
 msgid "Create a tournament"
@@ -803,6 +815,9 @@ msgid "Create an event"
 msgstr ""
 
 msgid "Create and add default screens"
+msgstr ""
+
+msgid "Create as many controllers as you need, then on your other devices choose to display a client controller rather than a specific screen, family or rotator."
 msgstr ""
 
 msgid "Create file"
@@ -1554,6 +1569,9 @@ msgstr ""
 msgid "Families ({num})"
 msgstr ""
 
+msgid "Families are used to split a large amount of information across multiple screens."
+msgstr ""
+
 msgid "Family [{family_uniq_id}] has been created."
 msgstr ""
 
@@ -1713,6 +1731,9 @@ msgstr ""
 msgid "From the local network (LAN/WAN)"
 msgstr ""
 
+msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgstr ""
+
 msgid "Full-Point Bye"
 msgstr ""
 
@@ -1867,6 +1888,9 @@ msgid "Initial time (optional, seconds):"
 msgstr ""
 
 msgid "Initializing a session to [{url}]..."
+msgstr ""
+
+msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
 msgstr ""
 
 msgid "Input screen creation"
@@ -2466,9 +2490,6 @@ msgstr ""
 msgid "No timers"
 msgstr ""
 
-msgid "No timers."
-msgstr ""
-
 msgid "No title"
 msgstr ""
 
@@ -2547,6 +2568,9 @@ msgid "On fixed size screens:"
 msgstr ""
 
 msgid "Once"
+msgstr ""
+
+msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr ""
 
 msgid "One event found, press Enter (Q to quit): "
@@ -3194,6 +3218,9 @@ msgstr ""
 msgid "Rotators ({num})"
 msgstr ""
 
+msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
+msgstr ""
+
 #, python-format
 msgid "Rotators: %(num)d"
 msgstr ""
@@ -3321,6 +3348,9 @@ msgid "Screen families: %(num)d"
 msgstr ""
 
 msgid "Screens"
+msgstr ""
+
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 msgstr ""
 
 msgid "Screens:"
@@ -3988,6 +4018,9 @@ msgstr ""
 msgid "Timers ({num})"
 msgstr ""
 
+msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
+msgstr ""
+
 #, python-format
 msgid "Timers: %(num)d"
 msgstr ""
@@ -3996,6 +4029,9 @@ msgid "Today"
 msgstr ""
 
 msgid "Too many byes for player [{player_name}]."
+msgstr ""
+
+msgid "Too much information to display on a single projector?"
 msgstr ""
 
 msgid "Top cut must be at most equal to bottom cut."
@@ -4205,6 +4241,9 @@ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
+msgstr ""
+
+msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
 msgstr ""
 
 msgid "Unpair"
@@ -4445,6 +4484,12 @@ msgstr ""
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
+msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
+msgstr ""
+
+msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
+msgstr ""
+
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr ""
 
@@ -4640,4 +4685,13 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "No timers."
+#~ msgstr ""
+
+#~ msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
+#~ msgstr ""
+
+#~ msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+#~ msgstr ""
 

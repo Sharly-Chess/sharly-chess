@@ -98,84 +98,104 @@
 
 {% block cards_container_cards %}
     {% with screens=admin_event.screens_sorted_by_uniq_id if admin_screens_show_family_screens else admin_event.basic_screens_by_uniq_id.values() %}
-        {% for screen_type, screen_data in {
-            'input': {
-                'title': _('Results entry'),
-                'checkbox_tooltip_text': _('Show/hide the input screens.'),
-                'icon_class': 'bi-pencil',
-            },
-            'boards': {
-                'title': _('Pairings by board'),
-                'checkbox_tooltip_text': _('Show/hide the boards screens.'),
-                'icon_class': 'bi-card',
-            },
-            'players': {
-                'title': _('Pairings by player'),
-                'checkbox_tooltip_text': _('Show/hide the players screens.'),
-                'icon_class': 'bi-people',
-            },
-            'results': {
-                'title': _('Last results'),
-                'checkbox_tooltip_text': _('Show/hide the results screens.'),
-                'icon_class': 'bi-1-square',
-            },
-            'ranking': {
-                'title': _('Ranking'),
-                'checkbox_tooltip_text': _('Show/hide the ranking screens.'),
-                'icon_class': 'bi-trophy',
-            },
-            'image': {
-                'title': _('Image'),
-                'checkbox_tooltip_text': _('Show/hide the image screens.'),
-                'icon_class': 'bi-image',
-            },
-        }.items() %}
-            <div class="row">
-                <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
-                    {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
-                        <button
-                            type="button"
-                            class="collapse-button {% if not screen_type in admin_screens_screen_types %}collapsed{% endif %}"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#{{ id }}"
-                            aria-expanded="{{ 'true' if screen_type in admin_screens_screen_types else 'false' }}"
-                            hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
-                            hx-swap="none"
-                        >
-                            <span
-                                class="form-check-label d-inline-flex align-items-center gap-2"
-                                {{ macros.tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
+        {% if not screens %}
+            <div class="mx-auto" style="max-width: 500px;">
+                <h5 class="mt-2 my-5 text-center">
+                    {{ _('No screens') }}
+                </h5>
+                <p>
+                    {{ _('You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network.') }}
+                </p>
+                <p>
+                    {{ _('Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments.') }}
+                </p>
+                <p>
+                    {{ _('Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue.') }}
+                </p>
+                <p>
+                    {{ _('Create a screen now to get started.') }}
+                </p>
+            </div>
+        {% else %}
+            {% for screen_type, screen_data in {
+                'input': {
+                    'title': _('Results entry'),
+                    'checkbox_tooltip_text': _('Show/hide the input screens.'),
+                    'icon_class': 'bi-pencil',
+                },
+                'boards': {
+                    'title': _('Pairings by board'),
+                    'checkbox_tooltip_text': _('Show/hide the boards screens.'),
+                    'icon_class': 'bi-card',
+                },
+                'players': {
+                    'title': _('Pairings by player'),
+                    'checkbox_tooltip_text': _('Show/hide the players screens.'),
+                    'icon_class': 'bi-people',
+                },
+                'results': {
+                    'title': _('Last results'),
+                    'checkbox_tooltip_text': _('Show/hide the results screens.'),
+                    'icon_class': 'bi-1-square',
+                },
+                'ranking': {
+                    'title': _('Ranking'),
+                    'checkbox_tooltip_text': _('Show/hide the ranking screens.'),
+                    'icon_class': 'bi-trophy',
+                },
+                'image': {
+                    'title': _('Image'),
+                    'checkbox_tooltip_text': _('Show/hide the image screens.'),
+                    'icon_class': 'bi-image',
+                },
+            }.items() %}
+                <div class="row">
+                    <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
+                        {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
+                            <button
+                                type="button"
+                                class="collapse-button {% if not screen_type in admin_screens_screen_types %}collapsed{% endif %}"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#{{ id }}"
+                                aria-expanded="{{ 'true' if screen_type in admin_screens_screen_types else 'false' }}"
+                                hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
+                                hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
+                                hx-swap="none"
                             >
-                                <i class="bi bi-chevron-down"></i>
-                                {{ macros.screen_type_icon(screen_type, false) }}
-                                {{ screen_data.title }}
-                            </span>
-                        </button>
-                    {% endwith %}
+                                <span
+                                    class="form-check-label d-inline-flex align-items-center gap-2"
+                                    {{ macros.tooltip_attributes('info', screen_data.checkbox_tooltip_text, 'top') }}
+                                >
+                                    <i class="bi bi-chevron-down"></i>
+                                    {{ macros.screen_type_icon(screen_type, false) }}
+                                    {{ screen_data.title }}
+                                </span>
+                            </button>
+                        {% endwith %}
+                    </div>
                 </div>
-            </div>
 
-            <div class="collapse {% if screen_type in admin_screens_screen_types %}show{% endif %}" id="admin-screens-show-{{ screen_type }}">
-                {% set ns = namespace(screen_found=false) %}
-                <div class="row mb-5">
-                    {% for screen in screens %}
-                        {% if screen.type == screen_type %}
-                            {% set ns.screen_found=true %}
-                            {% with
-                                card_class='' if not screen.family else 'bg-secondary-subtle text-secondary'
-                            %}
-                                {% include 'screen_card.html' %}
-                            {% endwith %}
+                <div class="collapse {% if screen_type in admin_screens_screen_types %}show{% endif %}" id="admin-screens-show-{{ screen_type }}">
+                    {% set ns = namespace(screen_found=false) %}
+                    <div class="row mb-5">
+                        {% for screen in screens %}
+                            {% if screen.type == screen_type %}
+                                {% set ns.screen_found=true %}
+                                {% with
+                                    card_class='' if not screen.family else 'bg-secondary-subtle text-secondary'
+                                %}
+                                    {% include 'screen_card.html' %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if not ns.screen_found %}
+                            <div class="col-12 my-3">
+                                {{ _('No such screens.') }}
+                            </div>
                         {% endif %}
-                    {% endfor %}
-                    {% if not ns.screen_found %}
-                        <div class="col-12 my-3">
-                            {{ _('No such screens.') }}
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        {% endif %}
     {% endwith %}
 {% endblock %}
