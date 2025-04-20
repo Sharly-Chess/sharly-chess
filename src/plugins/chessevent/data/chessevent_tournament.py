@@ -35,7 +35,7 @@ class ChessEventTournament:
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError
             self.pairing = reader.get_enum(
-                'pairing', TournamentPairing, TournamentPairing.UNKNOWN
+                'pairing', TournamentPairing, TournamentPairing.STANDARD
             )
             self.time_control = reader.get('time_control', str)
             self.location = reader.get('location', str)

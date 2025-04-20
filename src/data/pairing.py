@@ -6,7 +6,7 @@ from trf.Player import Game as TrfGame
 from utils.enum import Result, BoardColor
 
 
-@dataclass(frozen=True)
+@dataclass
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
 
