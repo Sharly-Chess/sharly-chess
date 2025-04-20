@@ -28,9 +28,7 @@ jobs:
           venv .venv
           .venv/Scripts/Activate.ps1
           pip install -e .[export]
-          python scripts/ffe/generate_ffe_sql_server_credentials.py \
-            --host="$env:FFE_HOST" --user="$env:FFE_USER" \
-            --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
+          python scripts/ffe/generate_ffe_sql_server_credentials.py --host="$env:FFE_HOST" --user="$env:FFE_USER" --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
           python scripts/export/export.py
       - name: Create release
         uses: softprops/action-gh-release@v2
