@@ -507,7 +507,7 @@ class ClientControllerAdminController(BaseEventAdminController):
             raise RuntimeError('admin_event not defined')
         if web_context.admin_client_controller is None:
             raise RuntimeError('admin_client_controller not defined')
-        message: str | None = None
+        message: str
         match type:
             case 'screen':
                 screen: Screen = web_context.admin_event.screens_by_uniq_id[
@@ -534,33 +534,26 @@ class ClientControllerAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'type=[{type}]')
 
-        if message:
-            event_loader: EventLoader = EventLoader.get(request=request)
-            with EventDatabase(
-                web_context.admin_event.uniq_id, write=True
-            ) as event_database:
-                event_database.update_stored_client_controller(
-                    web_context.admin_client_controller.stored_client_controller
-                )
-                event_database.commit()
-            event_loader.clear_cache(event_uniq_id)
-
-            Message.success(
-                request,
-                message,
+        event_loader: EventLoader = EventLoader.get(request=request)
+        with EventDatabase(
+            web_context.admin_event.uniq_id, write=True
+        ) as event_database:
+            event_database.update_stored_client_controller(
+                web_context.admin_client_controller.stored_client_controller
             )
-            return HTMXTemplate(
-                template_name='common/empty.html',
-                re_swap='none',
-                trigger_event='request_refresh',
-                after='receive',
-            )
+            event_database.commit()
+        event_loader.clear_cache(event_uniq_id)
 
-        Message.error(
+        Message.success(
             request,
-            _('Failed to assign the object to the controller.'),
+            message,
         )
-        return self.render_messages(request)
+        return HTMXTemplate(
+            template_name='common/empty.html',
+            re_swap='none',
+            trigger_event='request_refresh',
+            after='receive',
+        )
 
     @patch(
         path='/admin/admin-client-controller-clear/{event_uniq_id:str}/{client_controller_id:int}',

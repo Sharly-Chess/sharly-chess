@@ -8,7 +8,7 @@
     {{ client_controller.uniq_id }}
 {% endblock %}
 {% block card_text %}
-    {{ client_controller.assigned_description or _('No screen currently assigned') }}
+    {{ client_controller.assigned_description or _('Neither screen nor rotator currently assigned') }}
 {% endblock %}
 
 {% block card_buttons_left %}
