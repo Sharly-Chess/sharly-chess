@@ -1028,6 +1028,9 @@ msgstr ""
 msgid "Do nothing"
 msgstr ""
 
+msgid "Do you want to allow manual pairings for this round?"
+msgstr ""
+
 msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr ""
 
@@ -1702,6 +1705,9 @@ msgstr ""
 
 #, python-format
 msgid "Font size adjustment for the screen where 100%% is the default font size."
+msgstr ""
+
+msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr ""
 
 msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
@@ -2693,6 +2699,9 @@ msgid "Pairings generation not allowed if previous rounds have missing results o
 msgstr ""
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Pairings should strictly abid by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr ""
 
 msgid "Papi file"
@@ -4252,6 +4261,10 @@ msgstr ""
 msgid "Unpair all the boards of this round."
 msgstr ""
 
+#, python-format
+msgid "Unpair round #%(round)d"
+msgstr ""
+
 msgid "Unpaired"
 msgstr ""
 
@@ -4271,6 +4284,9 @@ msgid "Unpaired: displayed"
 msgstr ""
 
 msgid "Unpaired: hidden"
+msgstr ""
+
+msgid "Unpairing a published round can be very inconvenient for players. In addition, it causes a probable loss of data, as all the results inputted and the manual adjustments would be lost."
 msgstr ""
 
 msgid "Unrated Draw"

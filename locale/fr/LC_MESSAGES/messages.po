@@ -1028,6 +1028,9 @@ msgstr "Ronde affichée : %(round)d"
 msgid "Do nothing"
 msgstr "Ne rien faire"
 
+msgid "Do you want to allow manual pairings for this round?"
+msgstr "Voulez vous autoriser les appariements manuels pour cette ronde ?"
+
 msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr "Voulez vous autoriser l'édition des appariements pour cette ronde ?"
 
@@ -1703,6 +1706,9 @@ msgstr "Ajustement de la taille de police (%%) :"
 #, python-format
 msgid "Font size adjustment for the screen where 100%% is the default font size."
 msgstr "Ajustement de la taille de police pour l'écran, 100%% par défaut."
+
+msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
+msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
 
 msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
 msgstr "Fore Bu."
@@ -2694,6 +2700,9 @@ msgstr "La génération d'appriements n'est pas autorisée si une ronde passée 
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
+
+msgid "Pairings should strictly abid by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être décidés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
 
 msgid "Papi file"
 msgstr "Fichier Papi"
@@ -4252,6 +4261,10 @@ msgstr "Désapparier"
 msgid "Unpair all the boards of this round."
 msgstr "Désapparier tous les échiquiers de cette ronde."
 
+#, python-format
+msgid "Unpair round #%(round)d"
+msgstr "Désapparier la ronde n°%(round)d"
+
 msgid "Unpaired"
 msgstr "Non-apparié·es"
 
@@ -4272,6 +4285,9 @@ msgstr "Non apparié·es : affiché·es"
 
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
+
+msgid "Unpairing a published round can be very inconvenient for players. In addition, it causes a probable loss of data, as all the results inputted and the manual adjustments would be lost."
+msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, cette action est irréversible, les résultats saisis et les ajustements manuels seront donc perdus."
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
