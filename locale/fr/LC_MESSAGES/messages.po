@@ -2309,9 +2309,6 @@ msgstr "Hors-ligne, impossible de vérifier la version de Papi-web."
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
 
-msgid "Not part of the selected tournament ({rounds} rounds)."
-msgstr "Ne fait pas partie du tournoi sélectionné ({rounds} rondes)."
-
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], famille ignorée."
 
@@ -2725,6 +2722,9 @@ msgstr "Imprimer"
 msgid "Print players, results, etc."
 msgstr "Imprimer les participant·es, les résultats, les classements..."
 
+msgid "Printing is not possible when the Papi file is not found."
+msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas trouvé."
+
 msgid "Private event"
 msgstr "Évènement privé"
 
@@ -2955,12 +2955,6 @@ msgstr "La ronde %(round)d est terminée."
 #, python-format
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
-
-msgid "Round not finished (last finished: {round})."
-msgstr "Ronde non terminée (dernière terminée : {round})."
-
-msgid "Round not paired (last paired: {round})."
-msgstr "Ronde non-appariée (derniers appariements: ronde {round})."
 
 msgid "Round number or text:"
 msgstr "Numéro de ronde ou texte :"
@@ -3573,6 +3567,9 @@ msgstr "Le tournoi à imprimer."
 msgid "The type of document to print."
 msgstr "Le type de document à imprimer."
 
+msgid "There is no pairings for this round (last round with pairings: #{round})."
+msgstr "Ronde non-appariée (derniers appariements: ronde {round})."
+
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
 
@@ -3599,6 +3596,12 @@ msgstr "Cet écran rotatif est privé (non visible des utilisateur·ices)."
 
 msgid "This rotator is public (visible by the users)."
 msgstr "Cet écran rotatif est public (visible des utilisateur·ices)."
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : {round})."
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} rondes)."
 
 msgid "This screen family is private (not visible by the users)."
 msgstr "Cette famille d'écrans est privée (non visible des utilisateur·ices)."
@@ -3930,6 +3933,9 @@ msgstr "Mettre à jour les informations des joueur·euses à partir d'une source
 
 msgid "Updating"
 msgstr "Mise à jour"
+
+msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
+msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
@@ -4268,7 +4274,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "The FIDE database is not available."
-#~ msgstr "La base de données FIDE n'est pas disponible."
 
