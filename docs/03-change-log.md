@@ -3,8 +3,19 @@
 # Papi-web - ChangeLog
 
 ## Version 2.6 - 2025
+- Ajout de l'onglet Appariements
+- Ajout de la gestion des appariements manuels
+- Ajout des contrôleurs de clients
+- Simplification du menu principal
 - Déplacement des utilitaires de ``bin/`` vers ``tools/``
-- Ajout des exports PGN
+- Ajout des exports PGN et TRF16
+
+## Version 2.5.6 - 17 avril 2025
+- Correction d'un bug d'affichage des écrans multi-colonnes (#416)
+
+## Version 2.5.5 - 13 avril 2025
+- Correction d'un bug d'affichage des écrans d'appariements (#401)
+- Correction d'un bug à la suppression d'un résultat
 
 ## Version 2.5.4 - 12 avril 2025
 - Correction d'un bug de filtrage des clubs et fédérations sur l'onglet Joueur·euses

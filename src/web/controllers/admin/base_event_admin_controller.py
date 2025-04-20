@@ -97,7 +97,7 @@ class BaseEventAdminController(BaseAdminController):
                 'icon_class': 'bi-sign-stop',
             },
         }
-        nav_tabs: dict[str, dict[str, str]] = {
+        nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {
             'admin-event-config-tab': {
                 'title': admin_event.uniq_id,
                 'template': 'event/tab.html',
@@ -115,29 +115,45 @@ class BaseEventAdminController(BaseAdminController):
                 ),
                 'template': 'players/tab.html',
             },
-            'admin-event-screens-tab': {
-                'title': _('Screens ({num})').format(
-                    num=len(admin_event.basic_screens_by_id) or '-'
-                ),
-                'template': 'screens/tab.html',
+            'admin-event-pairings-tab': {
+                'title': _('Pairings'),
+                'template': 'pairings/tab.html',
             },
-            'admin-event-families-tab': {
-                'title': _('Families ({num})').format(
-                    num=len(admin_event.families_by_id) or '-'
-                ),
-                'template': 'families/tab.html',
-            },
-            'admin-event-rotators-tab': {
-                'title': _('Rotators ({num})').format(
-                    num=len(admin_event.rotators_by_id) or '-'
-                ),
-                'template': 'rotators/tab.html',
-            },
-            'admin-event-timers-tab': {
-                'title': _('Timers ({num})').format(
-                    num=len(admin_event.timers_by_id) or '-'
-                ),
-                'template': 'timers/tab.html',
+            'admin-event-views': {
+                'title': _('Screens'),
+                'submenu': {
+                    'admin-event-screens-tab': {
+                        'title': _('Individual Screens ({num})').format(
+                            num=len(admin_event.basic_screens_by_id) or '-'
+                        ),
+                        'template': 'screens/tab.html',
+                    },
+                    'admin-event-families-tab': {
+                        'title': _('Families ({num})').format(
+                            num=len(admin_event.families_by_id) or '-'
+                        ),
+                        'template': 'families/tab.html',
+                    },
+                    'admin-event-rotators-tab': {
+                        'title': _('Rotators ({num})').format(
+                            num=len(admin_event.rotators_by_id) or '-'
+                        ),
+                        'template': 'rotators/tab.html',
+                    },
+                    'admin-event-timers-tab': {
+                        'title': _('Timers ({num})').format(
+                            num=len(admin_event.timers_by_id) or '-'
+                        ),
+                        'template': 'timers/tab.html',
+                        'separator': 'true',
+                    },
+                    'admin-event-client-controllers-tab': {
+                        'title': _('Client Controllers ({num})').format(
+                            num=len(admin_event.client_controllers_by_id) or '-'
+                        ),
+                        'template': 'client_controllers/tab.html',
+                    },
+                },
             },
         }
 
@@ -159,6 +175,7 @@ class BaseEventAdminController(BaseAdminController):
                 template_name='admin/modals.html',
                 context=template_context,
                 re_target='#modal-wrapper',
+                re_swap='innerHTML',
                 trigger_event='modal_opened',
                 after='settle',
             )

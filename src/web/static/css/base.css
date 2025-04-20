@@ -46,6 +46,11 @@ nav .btn-link:hover {
     color: var(--bs-nav-hover-color);
 }
 
+.btn-group>span:not(:last-child)>.btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 .please-wait {
     pointer-events: none;
     height: 80px;
@@ -363,6 +368,24 @@ body[data-bs-theme=light] .btn-primary {
     vertical-align: middle;
 }
 
+[data-bs-theme=dark] table.prominent tr.highlight td {
+    background-color: rgba(var(--bs-primary-rgb), 0.70);
+    color: var(--pw-contrast-text);
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight-warning td {
+    background-color: var(--bs-form-invalid-color);
+    color: var(--pw-contrast-text);
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
+    --bs-btn-color: var(--bs-body-bg);
+    --bs-btn-border-color: var(--bs-body-bg);
+    --bs-btn-hover-color: var(--bs-primary);
+    --bs-btn-hover-bg: var(--bs-body-bg);
+    --bs-btn-hover-border-color: var(--bs-body-bg);
+}
+
 table > tbody > tr.odd > * {
     --bs-table-color-type: var(--bs-table-striped-color);
     --bs-table-bg-type: var(--bs-table-striped-bg);
@@ -389,4 +412,42 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     to {
         transform: rotate(360deg);
     }
+}
+
+.message-debug {
+    border: 1px solid rgb(var(--bs-secondary-rgb));
+    background-color: rgb(var(--bs-secondary-rgb));
+    color: rgb(var(--bs-light-rgb));
+}
+
+.message-info {
+    border: 1px solid rgb(var(--bs-info-rgb));
+    background-color: rgb(var(--bs-info-rgb));
+    color: rgb(var(--bs-dark-rgb));
+}
+
+.message-success {
+    border: 1px solid rgb(var(--bs-success-rgb));
+    background-color: rgb(var(--bs-success-rgb));
+    color: rgb(var(--bs-light-rgb));
+}
+
+.message-warning {
+    border: 1px solid rgb(var(--bs-warning-rgb));
+    background-color: rgb(var(--bs-warning-rgb));
+    color: rgb(var(--bs-dark-rgb));
+}
+
+.message-error {
+    border: 1px solid rgb(var(--bs-danger-rgb));
+    background-color: rgb(var(--bs-danger-rgb));
+    color: rgb(var(--bs-light-rgb));
+}
+
+.message-info .btn-close, .message-warning .btn-close {
+    --bs-btn-close-white-filter: unset;
+}
+
+.alert .btn-close {
+    filter: var(--bs-btn-close-white-filter);
 }

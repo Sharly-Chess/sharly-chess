@@ -14,7 +14,19 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(count)d boards without result"
+msgstr ""
+
+#, python-format
+msgid "%(count)d players unpaired"
+msgstr ""
+
+#, python-format
 msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+msgstr ""
+
+#, python-format
+msgid "%(first_name)s %(last_name)s - Round %(num)s"
 msgstr ""
 
 #, python-format
@@ -75,6 +87,10 @@ msgid "(by default)"
 msgstr ""
 
 msgid "(no screens)"
+msgstr ""
+
+#, python-format
+msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
 
 msgid "- *** NAME FOR GENDER NONE"
@@ -174,6 +190,9 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
+msgid "Add a client controller to the event."
+msgstr ""
+
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr ""
 
@@ -240,6 +259,9 @@ msgstr ""
 msgid "Alert message:"
 msgstr ""
 
+msgid "All"
+msgstr ""
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
 msgstr ""
 
@@ -255,6 +277,9 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
+msgid "Any number of devices can be controlled by the same client controller."
+msgstr ""
+
 msgid "Application"
 msgstr ""
 
@@ -265,6 +290,10 @@ msgid "Archived event"
 msgstr ""
 
 msgid "Archived events ({num})"
+msgstr ""
+
+#, python-format
+msgid "Are you sure you want to unpair all boards for round %(round_number)s?"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -290,9 +319,6 @@ msgstr ""
 
 msgid "Auto-update"
 msgstr ""
-
-msgid "Automatically installing BBP Pairings for developers with PAPI_WEB_EXPERIMENTAL=1."
-msgstr "Installation automatique de BBP Pairings pour les developpeur·euses avec PAPI_WEB_EXPERIMENTAL=1."
 
 msgid "Automatically launch a browser when starting the server"
 msgstr ""
@@ -349,6 +375,9 @@ msgstr "Bd."
 msgid "Black"
 msgstr ""
 
+msgid "Black Wins"
+msgstr ""
+
 msgid "Black games"
 msgstr ""
 
@@ -367,8 +396,15 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
+msgid "Board"
+msgstr ""
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
+msgstr ""
+
+#, python-format
+msgid "Board %(board_number)s"
 msgstr ""
 
 msgid "Board & color"
@@ -426,6 +462,13 @@ msgstr ""
 msgid "By player"
 msgstr ""
 
+#, python-format
+msgid "Bye limit (%(limit)d) is already reached for this tournament."
+msgstr ""
+
+msgid "Byes *** Players with byes"
+msgstr "Byes"
+
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
@@ -445,6 +488,12 @@ msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
 msgid "Cancel"
+msgstr ""
+
+msgid "Cancel Half-Point Bye"
+msgstr ""
+
+msgid "Cancel Zero-Point Bye"
 msgstr ""
 
 msgid "Candidate Master"
@@ -561,6 +610,36 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
+msgid "Client Controllers"
+msgstr ""
+
+msgid "Client Controllers ({num})"
+msgstr ""
+
+msgid "Client controller"
+msgstr ""
+
+msgid "Client controller [{client_controller_uniq_id}] has been created."
+msgstr ""
+
+msgid "Client controller [{client_controller_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Client controller [{client_controller_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Client controller [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Client controller creation"
+msgstr ""
+
+msgid "Client controllers ({num})"
+msgstr ""
+
+msgid "Client controllers allow you to control screens at your event from your main computer."
+msgstr ""
+
 msgid "Clone"
 msgstr ""
 
@@ -581,6 +660,9 @@ msgid "Cloning of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 msgid "Close"
+msgstr ""
+
+msgid "Close check in"
 msgstr ""
 
 #, python-format
@@ -673,6 +755,9 @@ msgstr ""
 msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
 msgstr ""
 
+msgid "Continue"
+msgstr ""
+
 msgid "Continuously"
 msgstr ""
 
@@ -691,7 +776,19 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
+msgid "Create a client controller"
+msgstr ""
+
+msgid "Create a client controller now to get started."
+msgstr ""
+
+msgid "Create a family now to get started."
+msgstr ""
+
 msgid "Create a rotator"
+msgstr ""
+
+msgid "Create a rotator now to get started."
 msgstr ""
 
 msgid "Create a screen"
@@ -700,7 +797,13 @@ msgstr ""
 msgid "Create a screen family"
 msgstr ""
 
+msgid "Create a screen now to get started."
+msgstr ""
+
 msgid "Create a timer"
+msgstr ""
+
+msgid "Create a timer now to get started."
 msgstr ""
 
 msgid "Create a tournament"
@@ -710,6 +813,9 @@ msgid "Create an event"
 msgstr ""
 
 msgid "Create and add default screens"
+msgstr ""
+
+msgid "Create as many controllers as you need, then on your other devices choose to display a client controller rather than a specific screen, family or rotator."
 msgstr ""
 
 msgid "Create file"
@@ -736,6 +842,15 @@ msgid "Crosstable after round #{round}"
 msgstr ""
 
 msgid "Current events ({num})"
+msgstr ""
+
+msgid "Current round"
+msgstr ""
+
+msgid "Currently displaying rotator [{uniq_id}]"
+msgstr ""
+
+msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
 msgid "Custom files recovered: {num} (from directory [{dir}])."
@@ -814,6 +929,9 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete the client controller."
+msgstr ""
+
 msgid "Delete the rotator."
 msgstr ""
 
@@ -827,6 +945,10 @@ msgid "Delete the tournament."
 msgstr ""
 
 msgid "Deletion date"
+msgstr ""
+
+#, python-format
+msgid "Deletion of client controller [%(client_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1027,6 +1149,9 @@ msgstr ""
 msgid "E.g.: Main tournament"
 msgstr ""
 
+msgid "E.g.: My client controller"
+msgstr ""
+
 msgid "E.g.: My favourite club!"
 msgstr ""
 
@@ -1087,6 +1212,9 @@ msgstr ""
 msgid "E.g.: main"
 msgstr ""
 
+msgid "E.g.: my-client-controller"
+msgstr ""
+
 msgid "E.g.: my-rotator"
 msgstr ""
 
@@ -1117,6 +1245,9 @@ msgstr ""
 msgid "Edit the player's tournament record."
 msgstr ""
 
+msgid "Edit the properties of the client controller."
+msgstr ""
+
 msgid "Edit the properties of the rotator."
 msgstr ""
 
@@ -1136,6 +1267,10 @@ msgid "Edit the sets of boards displayed on the screen."
 msgstr ""
 
 msgid "Edit the sets of players displayed on the screen."
+msgstr ""
+
+#, python-format
+msgid "Edition of client controller [%(client_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1231,24 +1366,6 @@ msgid "Error when updating database [{database}]."
 msgstr ""
 
 msgid "Error while creating the database: {error}."
-msgstr ""
-
-msgid "Errors have been found on families; rotators will not be loaded."
-msgstr ""
-
-msgid "Errors have been found on rotators."
-msgstr ""
-
-msgid "Errors have been found on screens; families and rotators will not be loaded."
-msgstr ""
-
-msgid "Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded."
-msgstr ""
-
-msgid "Errors have been found on timers; tournaments, screens, families and rotators will not be loaded."
-msgstr ""
-
-msgid "Errors have been found on tournaments; screens, families and rotators will not be loaded."
 msgstr ""
 
 #, python-format
@@ -1439,6 +1556,9 @@ msgstr ""
 msgid "Families ({num})"
 msgstr ""
 
+msgid "Families are used to split a large amount of information across multiple screens."
+msgstr ""
+
 msgid "Family [{family_uniq_id}] has been created."
 msgstr ""
 
@@ -1551,6 +1671,9 @@ msgstr ""
 msgid "First player:"
 msgstr ""
 
+msgid "First round"
+msgstr ""
+
 msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
 msgstr "Fixed board"
 
@@ -1574,10 +1697,10 @@ msgstr "Fore Bu."
 msgid "Fore Buchholz"
 msgstr ""
 
-msgid "Forfeit gain"
+msgid "Forfeit Loss"
 msgstr ""
 
-msgid "Forfeit loss"
+msgid "Forfeit Win"
 msgstr ""
 
 msgid "French Chess Federation"
@@ -1595,14 +1718,17 @@ msgstr ""
 msgid "From the local network (LAN/WAN)"
 msgstr ""
 
-msgid "Full-point bye (deprecated)"
+msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgstr ""
+
+msgid "Full-Point Bye"
+msgstr ""
+
+msgid "Full-Point Bye (deprecated)"
 msgstr ""
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
-
-msgid "Gain"
-msgstr ""
 
 msgid "Games played"
 msgstr ""
@@ -1613,7 +1739,7 @@ msgstr ""
 msgid "Games won"
 msgstr ""
 
-msgid "Games won with black"
+msgid "Games won with Black"
 msgstr ""
 
 msgid "Gender"
@@ -1625,7 +1751,7 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
-msgid "Generate pairings for the next round."
+msgid "Generate pairings for this round."
 msgstr ""
 
 msgid "Getting fees for tournament [{ffe_id}]..."
@@ -1649,13 +1775,19 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
-msgid "Half-point bye"
+msgid "Half-Point Bye"
 msgstr ""
 
 msgid "Hello,"
 msgstr ""
 
 msgid "Hide the exit button"
+msgstr ""
+
+msgid "Highlight"
+msgstr ""
+
+msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
 msgid "Hour [{uniq_id}] already exists."
@@ -1710,7 +1842,17 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+#, python-format
+msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
+msgstr ""
+
 msgid "Impossible to set a round number lower than current round #{round}."
+msgstr ""
+
+msgid "In play"
+msgstr ""
+
+msgid "Incorrect installation, exiting."
 msgstr ""
 
 msgid "Incorrect password."
@@ -1720,6 +1862,9 @@ msgid "Incorrect path [{path}]."
 msgstr ""
 
 msgid "Increment (optional, seconds):"
+msgstr ""
+
+msgid "Individual Screens ({num})"
 msgstr ""
 
 #, python-format
@@ -1732,6 +1877,9 @@ msgstr ""
 msgid "Initializing a session to [{url}]..."
 msgstr ""
 
+msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgstr ""
+
 msgid "Input screen creation"
 msgstr ""
 
@@ -1739,6 +1887,12 @@ msgid "Input screen family creation"
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr ""
+
+msgid "Installation of [{lib}] failed."
+msgstr ""
+
+msgid "Installed [{lib}]."
 msgstr ""
 
 msgid "International Master"
@@ -1837,6 +1991,9 @@ msgstr "Ka."
 msgid "Kashdan"
 msgstr ""
 
+msgid "Keyboard shortcuts:"
+msgstr ""
+
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
 
@@ -1895,6 +2052,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Libraries"
+msgstr ""
+
+msgid "Library [{lib}] is missing."
 msgstr ""
 
 msgid "Lic."
@@ -2068,6 +2228,10 @@ msgstr ""
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
+#, python-format
+msgid "Moving on to round #%(round)d"
+msgstr ""
+
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
@@ -2102,8 +2266,17 @@ msgstr ""
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
+msgid "Navigation"
+msgstr ""
+
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nb."
+
+msgid "Neither screen nor rotator currently assigned"
+msgstr ""
+
+msgid "New client controller"
+msgstr ""
 
 msgid "New event"
 msgstr ""
@@ -2112,6 +2285,9 @@ msgid "New tournament"
 msgstr ""
 
 msgid "New version [{version}] has been installed in [{dir}]."
+msgstr ""
+
+msgid "Next round"
 msgstr ""
 
 msgid "No"
@@ -2163,6 +2339,12 @@ msgstr ""
 msgid "No category"
 msgstr ""
 
+msgid "No client controllers"
+msgstr ""
+
+msgid "No client controllers."
+msgstr ""
+
 msgid "No current events."
 msgstr ""
 
@@ -2208,6 +2390,9 @@ msgstr ""
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr ""
 
+msgid "No pairings."
+msgstr ""
+
 msgid "No passed events."
 msgstr ""
 
@@ -2239,6 +2424,9 @@ msgid "No recording"
 msgstr ""
 
 msgid "No response from GitHub."
+msgstr ""
+
+msgid "No result"
 msgstr ""
 
 msgid "No results."
@@ -2287,9 +2475,6 @@ msgid "No timer defined"
 msgstr ""
 
 msgid "No timers"
-msgstr ""
-
-msgid "No timers."
 msgstr ""
 
 msgid "No title"
@@ -2345,7 +2530,7 @@ msgid "Number of games won"
 msgstr ""
 
 #, python-format
-msgid "Number of players : %(num)d"
+msgid "Number of players: %(num)d"
 msgstr ""
 
 msgid "Number of wins"
@@ -2372,6 +2557,9 @@ msgstr ""
 msgid "Once"
 msgstr ""
 
+msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
+msgstr ""
+
 msgid "One event found, press Enter (Q to quit): "
 msgstr ""
 
@@ -2385,6 +2573,9 @@ msgid "Only arbiters can see private screen families."
 msgstr ""
 
 msgid "Only arbiters can see private screens."
+msgstr ""
+
+msgid "Only arbiters can view private client controllers."
 msgstr ""
 
 msgid "Only arbiters can view private rotators."
@@ -2424,6 +2615,15 @@ msgstr ""
 msgid "Over 65"
 msgstr ""
 
+msgid "Overwrite"
+msgstr ""
+
+msgid "Overwrite mode is not available for previous rounds."
+msgstr ""
+
+msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
+msgstr ""
+
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Owed"
 
@@ -2431,6 +2631,9 @@ msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
 msgstr "Owed/paid"
 
 msgid "Owed:"
+msgstr ""
+
+msgid "PERMUTE WHITE/BLACK"
 msgstr ""
 
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
@@ -2445,10 +2648,20 @@ msgstr ""
 msgid "Pair"
 msgstr ""
 
-msgid "Pairing allocated bye"
+#, python-format
+msgid "Pair as BLACK vs %(player)s"
+msgstr ""
+
+msgid "Pair as WHITE"
+msgstr ""
+
+msgid "Pairing Allocated Bye"
 msgstr ""
 
 msgid "Pairings"
+msgstr ""
+
+msgid "Pairings already generated."
 msgstr ""
 
 msgid "Pairings by board"
@@ -2463,7 +2676,13 @@ msgstr ""
 msgid "Pairings by player ({num})"
 msgstr ""
 
+msgid "Pairings disabled while check-in is open."
+msgstr ""
+
 msgid "Pairings for round #{round}"
+msgstr ""
+
+msgid "Pairings generation unavailable for this round."
 msgstr ""
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
@@ -2633,6 +2852,12 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
+msgid "Please enter the client controller ID."
+msgstr ""
+
+msgid "Please enter the client controller name."
+msgstr ""
+
 msgid "Please enter the date of birth."
 msgstr ""
 
@@ -2699,19 +2924,25 @@ msgstr ""
 msgid "Please enter valid date and time."
 msgstr ""
 
+msgid "Please use Papi to generate pairings."
+msgstr ""
+
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
 msgid "Plugins"
 msgstr ""
 
-msgid "Points for draw (half-point bye)"
+msgid "Points"
 msgstr ""
 
-msgid "Points for gain (full-point bye)"
+msgid "Points for draw (Half-Point Bye)"
 msgstr ""
 
-msgid "Points for loss (zero-point bye)"
+msgid "Points for loss (Zero-Point Bye)"
+msgstr ""
+
+msgid "Points for win (Full-Point Bye)"
 msgstr ""
 
 #, python-format
@@ -2736,6 +2967,9 @@ msgid "Port: {port}"
 msgstr ""
 
 msgid "Present"
+msgstr ""
+
+msgid "Previous round"
 msgstr ""
 
 msgid "Print"
@@ -2776,6 +3010,9 @@ msgstr ""
 
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
+
+msgid "Public client controller"
+msgstr ""
 
 msgid "Public event"
 msgstr ""
@@ -2882,6 +3119,9 @@ msgstr ""
 msgid "Remove the player from the event."
 msgstr ""
 
+msgid "Remove the screen from the client controller."
+msgstr ""
+
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
@@ -2922,6 +3162,9 @@ msgstr ""
 msgid "Results upload OK"
 msgstr ""
 
+msgid "Return to tournament"
+msgstr ""
+
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Rk."
 
@@ -2930,6 +3173,9 @@ msgstr ""
 
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
+msgstr ""
+
+msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
 msgstr ""
 
 msgid "Rotator [{rotator_uniq_id}] has been created."
@@ -2957,6 +3203,9 @@ msgid "Rotators"
 msgstr ""
 
 msgid "Rotators ({num})"
+msgstr ""
+
+msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
 msgstr ""
 
 #, python-format
@@ -3054,6 +3303,9 @@ msgstr ""
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgstr ""
+
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr ""
 
@@ -3085,7 +3337,7 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
-msgid "Screens ({num})"
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 msgstr ""
 
 msgid "Screens:"
@@ -3273,6 +3525,9 @@ msgstr ""
 msgid "The Unique ID, used for data storage and export."
 msgstr ""
 
+msgid "The Unique ID, used to reference the client controller."
+msgstr ""
+
 msgid "The Unique ID, used to reference the rotator."
 msgstr ""
 
@@ -3402,6 +3657,9 @@ msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
+msgstr ""
+
+msgid "The name of the client controller, optional."
 msgstr ""
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3582,6 +3840,9 @@ msgstr ""
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
+msgid "The screens displayed by the client controller are controlled by the administrator."
+msgstr ""
+
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
@@ -3628,6 +3889,12 @@ msgstr ""
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
+msgid "This client controller is private (not visible by the users)."
+msgstr ""
+
+msgid "This client controller is public (visible by the users)."
+msgstr ""
+
 msgid "This event is private (by default, screens are not visible by the users)."
 msgstr ""
 
@@ -3662,6 +3929,12 @@ msgid "This screen is private (not visible by the users)."
 msgstr ""
 
 msgid "This screen is public (visible by the users)."
+msgstr ""
+
+msgid "This will cause the table numbers to be reordered."
+msgstr ""
+
+msgid "This will delete any results for this round."
 msgstr ""
 
 #, python-format
@@ -3732,11 +4005,20 @@ msgstr ""
 msgid "Timers ({num})"
 msgstr ""
 
+msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
+msgstr ""
+
 #, python-format
 msgid "Timers: %(num)d"
 msgstr ""
 
 msgid "Today"
+msgstr ""
+
+msgid "Too many byes for player [{player_name}]."
+msgstr ""
+
+msgid "Too much information to display on a single projector?"
 msgstr ""
 
 msgid "Top cut must be at most equal to bottom cut."
@@ -3898,13 +4180,13 @@ msgstr ""
 msgid "U8"
 msgstr ""
 
+msgid "UNPAIR"
+msgstr ""
+
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
 msgid "URL [{url}] responded code [{code}]."
-msgstr ""
-
-msgid "USE AT YOUR OWN RISKS"
 msgstr ""
 
 msgid "Unable to create Papi files."
@@ -3948,6 +4230,25 @@ msgstr ""
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
+msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
+msgstr ""
+
+msgid "Unpair"
+msgstr ""
+
+msgid "Unpair all boards"
+msgstr ""
+
+msgid "Unpair all the boards of this round."
+msgstr ""
+
+#, python-format
+msgid "Unpair round %(round_number)s"
+msgstr ""
+
+msgid "Unpaired"
+msgstr ""
+
 msgid "Unpaired *** FEMALE"
 msgstr "Unpaired"
 
@@ -3964,6 +4265,15 @@ msgid "Unpaired: displayed"
 msgstr ""
 
 msgid "Unpaired: hidden"
+msgstr ""
+
+msgid "Unrated Draw"
+msgstr ""
+
+msgid "Unrated Loss"
+msgstr ""
+
+msgid "Unrated Win"
 msgstr ""
 
 msgid "Upcoming events ({num})"
@@ -4037,6 +4347,16 @@ msgstr "WIM"
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""
 
+msgid "Warning: experimental features are enabled!"
+msgstr ""
+
+#, python-format
+msgid "Warning: round #%(round)d is not finished."
+msgstr ""
+
+msgid "Warning: the deletion of a client controller is permanent!"
+msgstr ""
+
 msgid "Warning: the deletion of a player is permanent!"
 msgstr ""
 
@@ -4092,13 +4412,22 @@ msgstr ""
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a half-point bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr ""
 
 msgid "White"
 msgstr ""
 
+msgid "White wins"
+msgstr ""
+
+msgid "Win"
+msgstr ""
+
 msgid "Wins"
+msgstr ""
+
+msgid "Withdraw from tournament"
 msgstr ""
 
 msgid "Woman Candidate Master"
@@ -4137,6 +4466,12 @@ msgstr ""
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
+msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
+msgstr ""
+
+msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
+msgstr ""
+
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr ""
 
@@ -4153,6 +4488,9 @@ msgid "Your choice (by default {default}): "
 msgstr ""
 
 msgid "Your choice: "
+msgstr ""
+
+msgid "Zero-Point Bye"
 msgstr ""
 
 msgid "[Papi-web {version}] Request for the integration of custom files"
@@ -4192,6 +4530,9 @@ msgid "boards {board_numbers}"
 msgstr ""
 
 msgid "by default"
+msgstr ""
+
+msgid "client-controller"
 msgstr ""
 
 msgid "event"
@@ -4326,4 +4667,13 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "No timers."
+#~ msgstr ""
+
+#~ msgid "You can also create screens that allow players to enter their own results on a computer or tablet that you make available at the venue."
+#~ msgstr ""
+
+#~ msgid "You may use Screens to display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+#~ msgstr ""
 

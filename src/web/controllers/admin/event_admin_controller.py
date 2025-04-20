@@ -20,8 +20,9 @@ from data.player import Player
 from data.print_documents import (
     PrintDocument,
     PrintDocumentManager,
-    PrintDocumentOptionManager
+    PrintDocumentOptionManager,
 )
+from data.print_documents.documents import PlayerListPrintDocument
 from utils.enum import TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -37,6 +38,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.urls import (
+    admin_event_pairings_url,
     admin_event_players_url,
     admin_event_tournaments_url,
     admin_event_config_url,
@@ -125,7 +127,8 @@ class EventAdminController(BaseEventAdminController):
                     if len(event.tournaments_sorted_by_uniq_id) == 1:
                         tournament_id = event.tournaments_sorted_by_uniq_id[0].id
                     data = {
-                        'tournament_id': WebContext.value_to_form_data(tournament_id)
+                        'tournament_id': WebContext.value_to_form_data(tournament_id),
+                        'document': PlayerListPrintDocument.static_id(),
                     } | {
                         option.id: WebContext.value_to_form_data(option.default_value)
                         for option in print_options
@@ -136,10 +139,19 @@ class EventAdminController(BaseEventAdminController):
                     ]
                     for document in PrintDocumentManager.objects()
                 }
+                current_document_option_ids = []
+                if document_id := data.get('document', None):
+                    current_document_option_ids = [
+                        option.id
+                        for option in PrintDocumentManager.get_type(
+                            document_id
+                        ).default_options()
+                    ]
                 template_context |= {
                     'modal': 'print',
                     'tournament_options': web_context.get_tournament_options(),
-                    'document_options': {'': '-'} | PrintDocumentManager.options(),
+                    'document_options': PrintDocumentManager.options(),
+                    'current_document_option_ids': current_document_option_ids,
                     'print_options': print_options,
                     'containers_by_document': containers_by_document,
                     'data': data,
@@ -168,6 +180,17 @@ class EventAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        started_tournaments: list[Tournament] = [
+            tournament
+            for tournament in web_context.admin_event.tournaments_by_uniq_id.values()
+            if tournament.started
+        ]
+        if len(started_tournaments) > 0:
+            return Redirect(
+                admin_event_pairings_url(
+                    request, web_context.admin_event.uniq_id, started_tournaments[0].id
+                )
+            )
         if web_context.admin_event.player_count:
             return Redirect(
                 admin_event_players_url(request, web_context.admin_event.uniq_id)

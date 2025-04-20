@@ -20,6 +20,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
+from data.client_controller import ClientController
 from data.family import Family
 from data.player import Player, Club, Federation
 from data.rotator import Rotator
@@ -115,13 +116,6 @@ class Event:
             and last_load_date > self.stored_event.last_update
         )
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on the event; timers, tournaments, screens, families and rotators will not be loaded.'
-                )
-            )
-            return
 
     @property
     def uniq_id(self) -> str:
@@ -492,12 +486,6 @@ class Event:
             for stored_timer in self.stored_event.stored_timers
             if stored_timer.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on timers; tournaments, screens, families and rotators will not be loaded.'
-                )
-            )
         return timers_by_id
 
     @cached_property
@@ -527,12 +515,6 @@ class Event:
             for stored_tournament in self.stored_event.stored_tournaments
             if stored_tournament.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on tournaments; screens, families and rotators will not be loaded.'
-                )
-            )
         return tournaments_by_id
 
     @cached_property
@@ -598,12 +580,6 @@ class Event:
             for stored_screen in self.stored_event.stored_screens
             if stored_screen.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _(
-                    'Errors have been found on screens; families and rotators will not be loaded.'
-                )
-            )
         return screens_by_id
 
     @cached_property
@@ -657,10 +633,6 @@ class Event:
             for stored_family in self.stored_event.stored_families
             if stored_family.id is not None
         }
-        if self.errors:
-            self.add_warning(
-                _('Errors have been found on families; rotators will not be loaded.')
-            )
         return families_by_id
 
     @cached_property
@@ -723,8 +695,6 @@ class Event:
             for stored_rotator in self.stored_event.stored_rotators
             if stored_rotator.id is not None
         }
-        if self.errors:
-            self.add_warning(_('Errors have been found on rotators.'))
         return rotators_by_id
 
     @cached_property
@@ -736,6 +706,68 @@ class Event:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         return self._get_unused_item_uniq_id(
             base_uniq_id or _('rotator'), self.rotators_by_uniq_id
+        )
+
+    @cached_property
+    def client_controllers_by_id(self) -> dict[int, ClientController]:
+        if self.errors:
+            return {}
+        client_controllers_by_id: dict[int, ClientController] = {
+            stored_client_controller.id: ClientController(
+                self, stored_client_controller
+            )
+            for stored_client_controller in self.stored_event.stored_client_controllers
+            if stored_client_controller.id is not None
+        }
+        return client_controllers_by_id
+
+    @cached_property
+    def client_controllers_by_uniq_id(self) -> dict[str, ClientController]:
+        return {
+            client_controller.uniq_id: client_controller
+            for client_controller in self.client_controllers_by_id.values()
+        }
+
+    @cached_property
+    def client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
+        return sorted(
+            self.client_controllers_by_id.values(),
+            key=attrgetter('uniq_id'),
+        )
+
+    @cached_property
+    def public_client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
+        return sorted(
+            filter(attrgetter('public'), self.client_controllers_by_id.values()),
+            key=attrgetter('uniq_id'),
+        )
+
+    def get_unused_client_controller_uniq_id(
+        self,
+        base_uniq_id: str | None = None,
+    ) -> str:
+        """Returns the first unused client controller uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
+        return self._get_unused_item_uniq_id(
+            base_uniq_id or _('client-controller'),
+            [
+                client_controller.uniq_id
+                for client_controller in self.client_controllers_by_id.values()
+            ],
+        )
+
+    def get_unused_client_controller_name(
+        self,
+        base_name: str | None = None,
+    ) -> str:
+        """Returns the first unused client controller name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        return self._get_unused_item_name(
+            base_name or _('New client controller'),
+            [
+                client_controller.name
+                for client_controller in self.client_controllers_by_id.values()
+            ],
         )
 
     @property

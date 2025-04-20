@@ -15,9 +15,7 @@ from utils.enum import TrfType, Result, BoardColor
 class BbpPairings:
     version: Version = Version('5.0.1')
 
-    @property
-    def is_installed(self) -> bool:
-        return self.executable_path.exists()
+    BYE_ID = 0
 
     bbp_pairings_dir: Path = BASE_DIR / 'tools' / 'bbpPairings'
 
@@ -29,19 +27,21 @@ class BbpPairings:
     def executable_path(self) -> Path:
         return self.executable_dir / 'bbpPairings.exe'
 
-    def generate_pairings(self, tournament: Tournament):
-        """Generate the pairings of a tournament's next round"""
-        if tournament.finished or tournament.playing:
+    def generate_pairings(self, tournament: Tournament, round_: int):
+        """Generate the pairings of a tournament's round"""
+
+        if not tournament.pairings_generation_allowed(round_):
             raise ValueError(
-                'Impossible to generate pairings '
-                'if tournament is finished '
-                'or if a round is ongoing.'
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.uniq_id}].'
             )
 
         trf_file_path = TMP_DIR / 'tournament.trfx'
         pairings_file_path = TMP_DIR / 'pairings.txt'
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
-            trf.dump(trf_file, tournament.to_trf(TrfType.TRF_BX))
+            trf.dump(
+                trf_file, tournament.to_trf(TrfType.TRF_BX, after_round=round_ - 1)
+            )
         try:
             subprocess.run(
                 [
@@ -57,28 +57,28 @@ class BbpPairings:
             os.remove(trf_file_path)
         try:
             with open(pairings_file_path, encoding='utf-8') as pairing_file:
-                self._pairings_from_file(pairing_file, tournament)
+                self._pairings_from_file(pairing_file, tournament, round_)
         finally:
             os.remove(pairings_file_path)
-        tournament.update_round_pairings(tournament.current_round + 1)
+        tournament.update_round_pairings(round_)
 
-    @staticmethod
-    def _pairings_from_file(file: TextIO, tournament: Tournament):
-        exempt_id: int = 0
+    @classmethod
+    def _pairings_from_file(cls, file: TextIO, tournament: Tournament, round_: int):
         file.readline()  # table_count
-        next_round = tournament.current_round + 1
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_trf_id[white_trf_id]
-            if black_trf_id != exempt_id:
+            if black_trf_id != cls.BYE_ID:
                 black_player = tournament.players_by_trf_id[black_trf_id]
-                white_player.pairings[next_round] = Pairing(
+                white_player.pairings[round_] = Pairing(
                     BoardColor.WHITE, black_player.id, Result.NO_RESULT
                 )
-                black_player.pairings[next_round] = Pairing(
+                black_player.pairings[round_] = Pairing(
                     BoardColor.BLACK, white_player.id, Result.NO_RESULT
                 )
-            else:
-                white_player.pairings[next_round] = Pairing(
-                    BoardColor.WHITE, 1, Result.PAIRING_ALLOCATED_BYE
+            elif not white_player.pairings[
+                round_
+            ].next_round_bye and not tournament.round_has_pab(round_):
+                white_player.pairings[round_] = Pairing(
+                    BoardColor.WHITE, None, Result.PAIRING_ALLOCATED_BYE
                 )

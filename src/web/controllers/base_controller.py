@@ -17,13 +17,12 @@ from litestar.params import Body
 from litestar.response import Template
 from phonenumbers.phonenumberutil import NumberParseException
 
-from common import check_rgb_str, DEVEL_ENV, EXPERIMENTAL_FEATURES
+from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.i18n import (
     set_locale,
     locale_localized_name,
     locale_flag_url,
-    trusted_locales,
-    _,
+    locales,
     get_locale,
 )
 from common.logger import get_logger
@@ -342,24 +341,16 @@ class WebContext:
         now: float = time.time()
         locale_infos: dict[str, Any] = {}
         locale_options: dict[str, str] = {}
-        for locale in papi_web_config.locales:
+        for locale in locales:
             name: str = f'{locale_localized_name(locale)}'
-            name_and_warning: str
-            if locale in trusted_locales:
-                name_and_warning = name
-            else:
-                warning_str: str = _('USE AT YOUR OWN RISKS', locale=locale)
-                name_and_warning = f'{name} ({warning_str})'
             locale_infos[locale] = {
                 'name': name,
-                'name_and_warning': name_and_warning,
                 'flag_url': locale_flag_url(locale),
-                'experimental': locale not in trusted_locales,
             }
             locale_options[locale] = name
         return {
             'DEVEL_ENV': DEVEL_ENV,
-            'EXPERIMENTAL_FEATURES': EXPERIMENTAL_FEATURES,
+            'EXPERIMENTAL_FEATURES': experimental_features_enabled(),
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'papi_web_config': papi_web_config,
@@ -386,7 +377,9 @@ class BaseController(Controller):
         return ClientRedirect(redirect_to=index_url(request))
 
     @staticmethod
-    def _render_messages(request: HTMXRequest) -> Template:
+    def render_messages(
+        request: HTMXRequest,
+    ) -> Template:
         return HTMXTemplate(
             template_name='common/messages.html',
             re_swap='afterbegin',

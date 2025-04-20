@@ -17,11 +17,11 @@ class Message:
     ERROR = 40
 
     CLASS = {
-        DEBUG: 'border border-secondary bg-secondary-subtle',
-        INFO: 'border border-info bg-info-subtle',
-        SUCCESS: 'border border-success bg-success-subtle',
-        WARNING: 'border border-warning bg-success-warning-subtle',
-        ERROR: 'border border-danger bg-danger-subtle',
+        DEBUG: 'message-debug',
+        INFO: 'message-info',
+        SUCCESS: 'message-success',
+        WARNING: 'message-warning',
+        ERROR: 'message-error',
     }
 
     AUTO_REMOVE = {

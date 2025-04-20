@@ -6,64 +6,27 @@
             <title>{% block title %}Papi-web{% endblock %}</title>
             <link rel="shortcut icon" type="image/png" href="{{ url_for('static', file_path='/images/papi-web.ico') }}"/>
             {# https://github.com/twbs/bootstrap/releases #}
-            <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-5.3.3-dist/css/bootstrap.min.css') }}" rel="stylesheet">
+            <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ papi_web_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
             {# https://github.com/twbs/icons/releases #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-' ~ papi_web_config.bootstrap_icons_version ~ '/font/bootstrap-icons.min.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}" type="text/css" />
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/user.css') }}" type="text/css" />
             <link rel="stylesheet" href="{{ url_for('static', file_path='/css/admin.css') }}" type="text/css" />
             {# https://jquery.com/download/ #}
-            <script src="{{ url_for('static', file_path='/lib/jquery/jquery-3.7.1.min.js') }}"></script>
-            {# https://unpkg.com/browse/htmx.org@1.9.12/dist/ #}
-            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/htmx.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/ext/remove-me.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/ext/preload.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-1.9.12/ext/multi-swap.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/jquery/jquery-' ~ papi_web_config.jquery_version ~ '.min.js') }}"></script>
+            {# https://unpkg.com/browse/htmx.org@<htmx_version>/dist/ #}
+            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-' ~ papi_web_config.htmx_version ~ '/htmx.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/preload-' ~ papi_web_config.htmx_preload_version ~ '/preload.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/remove-me-' ~ papi_web_config.htmx_remove_me_version ~ '/remove-me.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/multi-swap-' ~ papi_web_config.htmx_multi_swap_version ~ '/multi-swap.js') }}"></script>
             {# https://github.com/SortableJS/Sortable #}
-            <script src="{{ url_for('static', file_path='/lib/sortable/sortable-1.15.2/Sortable.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/htmx-sortable.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/Sortable/Sortable-' ~ papi_web_config.sortable_version ~ '/Sortable.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}"></script>
             {# https://github.com/vakata/jstree #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/themes/default/style.min.css') }}" type="text/css" />
-            <script src="{{ url_for('static', file_path='/lib/jstree/jstree-3.3.17-dist/jstree.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-2.7.4.min.js') }}"></script>
-            <script>
-                htmx.defineExtension('morphdom-swap', {
-                    isInlineSwap: function(swapStyle) {
-                        return swapStyle === 'morphdom' || swapStyle === 'morphdom-innerHTML' || swapStyle === 'morphdom-outerHTML'
-                    },
-                    handleSwap: function(swapStyle, target, fragment, settleInfo) {
-                        options = {
-                            onNodeAdded: function (node) {
-                                if (node.nodeName === 'SCRIPT' && node.src) {
-                                    var script = document.createElement('script');
-                                    script.src = node.src;
-                                    node.replaceWith(script)
-                                }
-                            },
-                            onBeforeElUpdated: function (fromEl, toEl) {
-                                if (fromEl.nodeName === "SCRIPT" && toEl.nodeName === "SCRIPT") {
-                                    console.log('onBeforeElUpdated')
-                                    var script = document.createElement('script');
-                                    [...toEl.attributes].forEach( attr => { script.setAttribute(attr.nodeName, attr.nodeValue) })
-                                    script.innerHTML = toEl.innerHTML;
-                                    fromEl.replaceWith(script)
-                                    return false;
-                                }
-                                return true;
-                            }
-                        }
-                        if (swapStyle === 'morphdom') {
-                            if (fragment.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-                                morphdom(target, fragment.firstElementChild || fragment.firstChild, options)
-                                return [target]
-                            } else {
-                                morphdom(target, fragment.outerHTML, options)
-                                return [target]
-                            }
-                        }
-                    }
-                })
-            </script>
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ papi_web_config.jstree_version ~ '/dist/themes/default/style.min.css') }}" type="text/css" />
+            <script src="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ papi_web_config.jstree_version ~ '/dist/jstree.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ papi_web_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}"></script>
             <script>
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
@@ -79,12 +42,11 @@
                     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
 
-                  setSize();
+                setSize();
 
-                  window.addEventListener('resize', setSize);
-                  window.addEventListener('htmx:afterSettle', setSize);
-            </script>
-            <script>
+                window.addEventListener('resize', setSize);
+                window.addEventListener('htmx:afterSettle', setSize);
+
                 function closeTooltips () {
                     $('body .tooltip').remove();
                     $('body .tooltip-inner').remove();
@@ -192,21 +154,18 @@
                 window.addEventListener("do_print", function(event) {
                     closeModal();
                     const form = document.createElement('form');
-                    form.method = 'POST';
+                    form.method = 'get';
                     form.action = window.location.origin +
                         '/admin/tournament-print-view/' +
                         event.detail.event_uniq_id + '/' +
                         event.detail.tournament_id + '/' +
                         event.detail.document;
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'options';
+                    input.value = Object.keys(event.detail.options).map(k => k + '=' + event.detail.options[k]).join('|');
+                    form.appendChild(input);
                     form.target = 'PrintWindow';
-                    const options = event.detail.options;
-                    for (const key in options) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = options[key];
-                        form.appendChild(input);
-                    }
                     document.body.appendChild(form);
                     form.submit();
                     document.body.removeChild(form);
@@ -219,7 +178,7 @@
         hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
     >
-        <div id="messages" class="w-50 position-fixed top-0 end-0 m-2" style="z-index: 100">
+        <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
             {% include 'messages.html' %}
         </div>
         <div
@@ -294,10 +253,16 @@
         </script>
     </body>
     {% if not request.htmx %}
-        <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ papi_web_config.bootstrap_version ~ '-dist/js/bootstrap.bundle.min.js') }}"></script>
         <script>
             closeTooltips();
             activateTooltips();
+
+            if (typeof bootstrap !== 'undefined') {
+                // Allow the tooltip content to have a style attribute
+                bootstrap.Tooltip.Default.allowList['*'].push('style')
+            }
+
             var confirm_when_leaving = true;
             document.addEventListener('htmx:beforeOnLoad', function(evt) {
                 if (evt.detail.xhr.getResponseHeader('hx-redirect')) {

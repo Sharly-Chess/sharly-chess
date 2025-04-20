@@ -27,7 +27,6 @@ from plugins.manager import plugin_manager  # Noqa
 from common import BASE_DIR
 from pairing.bbp_pairings import BbpPairings
 from common import PAPI_WEB_VERSION
-from common.i18n import trusted_locales, untrusted_locales
 from common.papi_web_config import PapiWebConfig
 from common.logger import (
     get_logger,
@@ -38,6 +37,9 @@ from common.logger import (
 )
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
+from common.installation_checker import (
+    InstallationChecker,
+)
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
 from scripts.i18n.i18n_update import I18nUpdater
@@ -124,48 +126,14 @@ def build_exe():
     ]
     files += [file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()]
     files += [file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()]
+    for installer in InstallationChecker.web_lib_installers:
+        files += [
+            installer.version_install_dir / lib_file for lib_file in installer.lib_files
+        ]
     lib_dir = static_dir / 'lib'
-    bootstrap_dir = (
-        lib_dir / 'bootstrap' / f'bootstrap-{PapiWebConfig.bootstrap_version}-dist'
-    )
     files += [
-        bootstrap_dir / 'css' / 'bootstrap.min.css',
-        bootstrap_dir / 'css' / 'bootstrap.min.css.map',
-        bootstrap_dir / 'js' / 'bootstrap.bundle.min.js',
-        bootstrap_dir / 'js' / 'bootstrap.bundle.min.js.map',
-    ]
-    bootstrap_icons_dir = (
-        lib_dir
-        / 'bootstrap-icons'
-        / f'bootstrap-icons-{PapiWebConfig.bootstrap_icons_version}'
-    )
-    files += [
-        bootstrap_icons_dir / 'font' / 'bootstrap-icons.min.css',
-    ]
-    files += [
-        file
-        for file in (bootstrap_icons_dir / 'font' / 'fonts').glob('**/*')
-        if file.is_file()
-    ]
-    jquery_file = lib_dir / 'jquery' / f'jquery-{PapiWebConfig.jquery_version}.min.js'
-    files += [
-        jquery_file,
-    ]
-    htmx_dir = lib_dir / 'htmx' / f'htmx-{PapiWebConfig.htmx_version}'
-    files += [file for file in htmx_dir.glob('**/*') if file.is_file()]
-    sortable_dir = lib_dir / 'sortable' / f'sortable-{PapiWebConfig.sortable_version}'
-    files += [file for file in sortable_dir.glob('**/*') if file.is_file()]
-    htmx_sortable_file = lib_dir / 'htmx' / 'htmx-sortable.js'
-    files += [
-        htmx_sortable_file,
-    ]
-    jstree_dir = lib_dir / 'jstree' / f'jstree-{PapiWebConfig.jstree_version}-dist'
-    files += [file for file in jstree_dir.glob('**/*') if file.is_file()]
-    morphdom_file = (
-        lib_dir / 'morphdom' / f'morphdom-{PapiWebConfig.morphdom_version}.min.js'
-    )
-    files += [
-        morphdom_file,
+        lib_dir / 'htmx' / 'sortable.js',
+        lib_dir / 'htmx' / 'morphdom-swap.js',
     ]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [
@@ -264,6 +232,7 @@ def build_test():
         TEST_DIR.mkdir(parents=True)
     else:
         print_interactive_info(f'Updating test environment in {TEST_DIR}...')
+        shutil.rmtree(TEST_DIR / '_internal', ignore_errors=True)
     with ZipFile(ZIP_FILE, 'r') as zip_file:
         zip_file.extractall(TEST_DIR)
 
@@ -320,15 +289,17 @@ def update_readme():
 
 
 def main():
+    if not InstallationChecker.check():
+        return
     clean(clean_zip=True)
     bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
     if not bbp_pairings.is_installed:
         print_interactive_info('Installing BBP Pairings....')
         bbp_pairings.install()
-    if not I18nUpdater(trusted_locales, untrusted_locales).check_trusted_locales():
+    if not I18nUpdater().check():
         if (
             input_interactive(
-                'Translations are not perfect for trusted locales, do you want to continue (y/N):'
+                'Translations are not perfect, do you want to continue (y/N):'
             ).upper()
             or 'N'
         ) != 'Y':

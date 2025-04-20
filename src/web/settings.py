@@ -19,12 +19,16 @@ from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
 
 from plugins.manager import plugin_manager
+from web.controllers.admin.client_controller_admin_controller import (
+    ClientControllerAdminController,
+)
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.rotator_admin_controller import RotatorAdminController
 from web.controllers.admin.screen_admin_controller import ScreenAdminController
+from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.background_controller import BackgroundController
@@ -68,11 +72,13 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     IndexAdminController,
     EventAdminController,
     TournamentAdminController,
+    PairingsAdminController,
     ScreenAdminController,
     TimerAdminController,
     FamilyAdminController,
     RotatorAdminController,
     PlayerAdminController,
+    ClientControllerAdminController,
     FideSearchController,
     static_files_router,
     # Plugin controllers

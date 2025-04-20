@@ -13,7 +13,7 @@
     data-bs-placement="{{ tooltip_placement or 'top' }}"
     data-bs-html="true"
     data-bs-custom-class="{% if tooltip_type == 'error' %}papi-web-tooltip-error{% elif tooltip_type == 'warning' %}papi-web-tooltip-warning{% else %}papi-web-tooltip-info{% endif %}"
-    data-bs-title="<i class='{% if tooltip_type == 'error' %}bi-exclamation-triangle-fill{% elif tooltip_type == 'warning' %}bi-exclamation-triangle{% else %}bi-info-circle-fill{% endif %}'></i> {{ tooltip_text }}"
+    data-bs-title="<i class='{% if tooltip_type == 'error' %}bi-exclamation-triangle-fill{% elif tooltip_type == 'warning' %}bi-exclamation-triangle{% elif tooltip_type == 'info' %}bi-info-circle-fill{% endif %}'></i> {{ tooltip_text }}"
     hx-on::before-send="$('body .tooltip').remove(); $('body .tooltip-inner').remove(); $('body .tooltip-arrow').remove();"
 {% endmacro %}
 
@@ -28,6 +28,8 @@
             {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the users).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the users).') %}
+        {% elif object_type == 'client_controller' %}
+            {% set _tooltip_text=tooltip_public_text or _('This client controller is public (visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
@@ -41,6 +43,8 @@
             {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the users).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the users).') %}
+        {% elif object_type == 'client_controller' %}
+            {% set _tooltip_text=tooltip_private_text or _('This client controller is private (not visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
@@ -117,6 +121,23 @@
     <!-- end rotator_visibility_icon() -->
 {% endmacro %}
 
+{% macro client_controller_icon() %}
+    <!-- client_controller_icon() -->
+    <span
+        class="fw-bold"
+        {{ tooltip_attributes('info', _('The screens displayed by the client controller are controlled by the administrator.'), 'top') }}
+    >
+        <i class="bi bi-box-arrow-in-right"></i>
+    </span>
+    <!-- end client_controller_icon() -->
+{% endmacro %}
+
+{% macro client_controller_visibility_icon(client_controller, class) %}
+    <!-- client_controller_visibility_icon() -->
+    {{ visibility_icon('client_controller', client_controller.public, '', '', class) }}
+    <!-- end client_controller_visibility_icon() -->
+{% endmacro %}
+
 {% macro background_script(background_info) %}
     <!-- background_script() -->
     <!-- This is needed since it's not possible to change body attributes using HTMX -->
@@ -188,4 +209,33 @@
     {% for column in columns %}
         <td class="{{ column.classes }}">{{ column.value(value) }}</td>
     {% endfor %}
+{% endmacro %}
+
+{% macro experimental_warning(
+    show
+) %}
+    {% if show %}
+        <div>
+            <i
+                class="text-danger bi bi-exclamation-triangle-fill"
+                {{ tooltip_attributes('warning', _('Warning: experimental features are enabled!'), 'right') }}
+            ></i>
+        <div>
+    {% endif %}
+{% endmacro %}
+
+{% macro refresh_listener(
+    hx_get,
+    hx_include
+)%}
+    <div
+        class="d-none"
+        hx-get={{ hx_get }}
+        {% if hx_include %}
+            hx-include={{ hx_include }}
+        {% endif %}
+        hx-trigger="request_refresh from:body"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    ></div>
 {% endmacro %}

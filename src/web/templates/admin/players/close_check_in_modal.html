@@ -34,11 +34,10 @@
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) }}"
-                preload
-                hx-target="body"
-                hx-trigger="click, keyup[key=='Escape'] from:body"
-                hx-indicator="#please-wait"
+                data-bs-dismiss="modal"
+
+                {# We refresh the page to turn the check-in switch back on #}
+                hx-on:click="document.body.dispatchEvent(new CustomEvent('request_refresh'))"
             >
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}

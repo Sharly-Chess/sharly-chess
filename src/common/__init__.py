@@ -1,5 +1,4 @@
 import importlib.metadata
-import os
 import re
 import sys
 import time
@@ -18,15 +17,18 @@ PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 
-# True when experimental features are enabled (relying on an environment variable), False otherwise.
-EXPERIMENTAL_FEATURES_ENV_VAR: str = 'PAPI_WEB_EXPERIMENTAL'
-EXPERIMENTAL_FEATURES: bool = os.environ.get(
-    EXPERIMENTAL_FEATURES_ENV_VAR, ''
-).upper() in [
-    'ON',
-    'TRUE',
-    '1',
-]
+# True when experimental features are enabled (relying on an engine option), False otherwise.
+_EXPERIMENTAL_FEATURES: bool = False
+
+
+def enable_experimental_features(enabled: bool):
+    global _EXPERIMENTAL_FEATURES
+    _EXPERIMENTAL_FEATURES = enabled
+
+
+def experimental_features_enabled() -> bool:
+    global _EXPERIMENTAL_FEATURES
+    return _EXPERIMENTAL_FEATURES
 
 
 REQUEST_TIMEOUT: int = 10

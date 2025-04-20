@@ -9,7 +9,7 @@
         <div
             class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
             {% if tournament.rounds %}
-                {{ macros.tooltip_attributes('info', _('Number of players : %(num)d', num=tournament.players_by_id|length), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Number of players: %(num)d', num=tournament.players_by_id|length), 'top') }}
             {% endif %}
         >
             <i class="bi-people-fill pe-1"></i>
@@ -119,21 +119,6 @@
             {{ _('Edit') }}
         </button>
     </span>
-
-    {% if EXPERIMENTAL_FEATURES and tournament.pairings_generation_allowed %}
-        <span {{ macros.tooltip_attributes('info', _('Generate pairings for the next round.'), 'top') }}>
-            <button
-                class="btn btn-sm btn-outline-primary text-nowrap"
-                hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                preload
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <i class="bi-shuffle pe-1"></i>
-                {{ _('Pair') }}
-            </button>
-        </span>
-    {% endif %}
 
     {% if EXPERIMENTAL_FEATURES %}
         <div class="dropdown d-inline">

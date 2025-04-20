@@ -15,10 +15,8 @@ from litestar.status_codes import HTTP_200_OK
 from common.i18n import (
     _,
     DEFAULT_LOCALE,
-    EXPERIMENTAL_FEATURES,
     locale_localized_name,
-    trusted_locales,
-    untrusted_locales,
+    locales,
 )
 from common.papi_web_config import PapiWebConfig
 from database.sqlite.config.config_database import ConfigDatabase
@@ -80,7 +78,7 @@ class IndexAdminController(BaseAdminController):
             else:
                 federation = Federation(federation_name)
         locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
-        if locale and locale not in papi_web_config.locales:
+        if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
@@ -272,14 +270,7 @@ class IndexAdminController(BaseAdminController):
                 )
                 locale_options: dict[str, str] = {
                     '': '-',
-                } | {
-                    locale: locale_localized_name(locale) for locale in trusted_locales
-                }
-                if EXPERIMENTAL_FEATURES:
-                    locale_options |= {
-                        locale: locale_localized_name(locale)
-                        for locale in untrusted_locales
-                    }
+                } | {locale: locale_localized_name(locale) for locale in locales}
                 locale_options[''] = _('By default - {option}').format(
                     option=locale_options[DEFAULT_LOCALE]
                 )
@@ -515,7 +506,7 @@ class IndexAdminController(BaseAdminController):
         locale: str,
     ) -> Template | ClientRedirect:
         papi_web_config: PapiWebConfig = PapiWebConfig()
-        if locale in papi_web_config.locales:
+        if locale in locales:
             stored_config: StoredConfig = papi_web_config.stored_config
             stored_config.locale = locale
             with ConfigDatabase(write=True) as config_database:

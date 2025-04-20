@@ -9,12 +9,11 @@ import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
-from common import BASE_DIR, EXPERIMENTAL_FEATURES, EVENTS_DIR, PAPI_WEB_VERSION
+from common import BASE_DIR, EVENTS_DIR, PAPI_WEB_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
     _,
-    trusted_locales,
-    untrusted_locales,
+    locales,
     set_locale,
     get_locale,
     locale_localized_name,
@@ -66,9 +65,6 @@ class PapiWebConfig(metaclass=Singleton):
             # This happens only for developers when no MO files are available
             raise FileNotFoundError('No MO files found, please run i18n_update.')
         self.web_port: int | None = None
-        self.locales: list[str] = trusted_locales.copy()
-        if EXPERIMENTAL_FEATURES:
-            self.locales += untrusted_locales
         self.stored_config: StoredConfig = self.load()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
@@ -76,9 +72,9 @@ class PapiWebConfig(metaclass=Singleton):
         if not self.stored_config.locale:
             set_locale(get_locale())
             print_interactive_input(_('The following languages are available:'))
-            locale_range = range(1, len(self.locales) + 1)
+            locale_range = range(1, len(locales) + 1)
             for num in locale_range:
-                locale: str = self.locales[num - 1]
+                locale: str = locales[num - 1]
                 print_interactive_input(
                     f'  - [{num}] {locale} ({locale_localized_name(locale)})'
                 )
@@ -92,7 +88,7 @@ class PapiWebConfig(metaclass=Singleton):
                 except ValueError:
                     pass
             with ConfigDatabase(write=True) as config_database:
-                self.stored_config.locale = self.locales[locale_num - 1]
+                self.stored_config.locale = locales[locale_num - 1]
                 config_database.update_stored_config(self.stored_config)
                 config_database.commit()
         # TODO (up to here)
@@ -211,32 +207,15 @@ class PapiWebConfig(metaclass=Singleton):
 
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')
-    assert (
-        BASE_DIR / f'src/web/static/lib/bootstrap/bootstrap-{bootstrap_version}-dist'
-    ).is_dir()
     bootstrap_icons_version: Version = Version('1.11.3')
-    assert (
-        BASE_DIR
-        / f'src/web/static/lib/bootstrap-icons/bootstrap-icons-{bootstrap_icons_version}'
-    ).is_dir()
-    htmx_version: Version = Version('1.9.12')
-    assert (BASE_DIR / f'src/web/static/lib/htmx/htmx-{htmx_version}').is_dir()
+    htmx_version: Version = Version('2.0.4')
+    htmx_preload_version: Version = Version('2.1.0')
+    htmx_remove_me_version: Version = Version('2.0.0')
+    htmx_multi_swap_version: Version = Version('2.0.0')
     jquery_version: Version = Version('3.7.1')
-    assert (
-        BASE_DIR / f'src/web/static/lib/jquery/jquery-{jquery_version}.min.js'
-    ).is_file()
-    sortable_version: Version = Version('1.15.2')
-    assert (
-        BASE_DIR / f'src/web/static/lib/sortable/sortable-{sortable_version}'
-    ).is_dir()
+    sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
-    assert (
-        BASE_DIR / f'src/web/static/lib/jstree/jstree-{jstree_version}-dist'
-    ).is_dir()
     morphdom_version: Version = Version('2.7.4')
-    assert (
-        BASE_DIR / f'src/web/static/lib/morphdom/morphdom-{morphdom_version}.min.js'
-    ).is_file()
 
     @overload
     def _url(self, ip: str) -> str: ...
