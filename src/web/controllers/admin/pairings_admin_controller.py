@@ -13,7 +13,6 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from common.logger import get_logger
-from data.loader import EventLoader
 from data.board import Board
 from data.event import Event
 from data.player import Player
@@ -110,12 +109,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         unpaired: list[Player] = []
         if self.admin_tournament is not None:
-            self.admin_tournament.calculate_points_before_round(
-                before_round=self.admin_round
-            )
-            self.admin_boards, unpaired = self.admin_tournament.build_boards(
-                self.admin_round
-            )
+            for player in self.admin_tournament.players:
+                self.admin_tournament.set_player_points(
+                    player, before_round=self.admin_round
+                )
+            self.admin_boards = self.admin_tournament.build_boards(self.admin_round)
+            unpaired = self.admin_tournament.get_unpaired_players(self.admin_boards)
 
         if SessionHandler.get_session_admin_pairings_show_without_results(request):
             self.admin_filtered_boards = [
@@ -470,9 +469,7 @@ class PairingsAdminController(BaseEventAdminController):
                 Result.from_papi_value(result),
                 web_context.admin_round,
             )
-            EventLoader.get(request=request).reload_tournament(
-                event.uniq_id, tournament.id
-            )
+            tournament.clear_cache()
             web_context = PairingsAdminWebContext(
                 request,
                 data=None,
@@ -575,7 +572,7 @@ class PairingsAdminController(BaseEventAdminController):
         assert board is not None
         assert tournament is not None
         tournament.unpair_boards([board], round)
-        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament.id)
+        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -748,8 +745,11 @@ class PairingsAdminController(BaseEventAdminController):
 
         if web_context.error:
             return web_context.error
-        assert web_context.admin_tournament is not None
-        assert web_context.admin_player is not None
+
+        tournament = web_context.admin_tournament
+        player = web_context.admin_player
+        assert tournament is not None
+        assert player is not None
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = web_context.admin_round or 1
@@ -763,12 +763,12 @@ class PairingsAdminController(BaseEventAdminController):
                     r: Result.ZERO_POINT_BYE
                     for r in range(
                         round_for_participation,
-                        web_context.admin_tournament.rounds + 1,
+                        tournament.rounds + 1,
                     )
-                    if web_context.admin_player.pairings[r].unplayed
+                    if player.pairings[r].unplayed
                 }
             case 'RETURN':
-                if round_for_participation < web_context.admin_tournament.current_round:
+                if round_for_participation < tournament.current_round:
                     new_byes[round_for_participation] = Result.NO_RESULT
                 else:
                     # Return for the rest of the tournament
@@ -776,22 +776,22 @@ class PairingsAdminController(BaseEventAdminController):
                         r: Result.NO_RESULT
                         for r in range(
                             round_for_participation,
-                            web_context.admin_tournament.rounds + 1,
+                            tournament.rounds + 1,
                         )
                     }
             case 'HPB':
                 byes: int = 0
-                for pairing in web_context.admin_player.pairings.values():
+                for pairing in player.pairings.values():
                     match pairing.result:
                         case Result.HALF_POINT_BYE:
                             byes += 1
                         case Result.FULL_POINT_BYE:
                             byes += 2
-                if byes >= web_context.admin_tournament.max_byes:
+                if byes >= tournament.max_byes:
                     Message.error(
                         request,
                         _('Too many byes for player [{player_name}].').format(
-                            player_name=web_context.admin_player.last_name
+                            player_name=player.last_name
                         ),
                     )
                 else:
@@ -802,21 +802,20 @@ class PairingsAdminController(BaseEventAdminController):
                     None,
                 )
                 if exempt_player is not None:
-                    web_context.admin_tournament.create_round_pairing(
+                    tournament.create_round_pairing(
                         round_for_participation,
                         exempt_player.id,
-                        web_context.admin_player.id,
+                        player.id,
                     )
                 else:
-                    web_context.admin_tournament.create_round_pairing(
+                    tournament.create_round_pairing(
                         round_for_participation,
-                        web_context.admin_player.id,
+                        player.id,
                         None,
                     )
 
-        web_context.admin_tournament.set_player_byes(web_context.admin_player, new_byes)
-        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
-
+        tournament.set_player_byes(player, new_byes)
+        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -867,7 +866,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.admin_tournament
         assert tournament is not None
         BbpPairings().generate_pairings(tournament, web_context.admin_round)
-        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
+        tournament.clear_cache()
         Message.success(
             request,
             _(
@@ -920,7 +919,7 @@ class PairingsAdminController(BaseEventAdminController):
         boards = web_context.admin_boards
         assert boards is not None
         tournament.unpair_boards(boards, round)
-        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
+        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1045,14 +1044,16 @@ class PairingsAdminController(BaseEventAdminController):
             data=None,
         )
 
+        admin_player = web_context.admin_player
         if web_context.error:
             return web_context.error
-        if web_context.admin_player is None:
+        if admin_player is None:
             raise RuntimeError('admin_player not defined')
-        admin_player: Player = web_context.admin_player
-        assert admin_player.tournament is not None
-        admin_player.tournament.check_in_player(admin_player, bool(check_in))
-        EventLoader.get(request=request).reload_tournament(event_uniq_id, tournament_id)
+
+        tournament = admin_player.tournament
+        assert tournament is not None
+        tournament.check_in_player(admin_player, bool(check_in))
+        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
