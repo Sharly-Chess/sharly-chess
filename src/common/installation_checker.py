@@ -181,7 +181,7 @@ class InstallationChecker:
             'morphdom-{version}.zip',
         ),
         WebLibFileInstaller(
-            'morphdom',
+            'jQuery',
             PapiWebConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',
             'jquery/jquery-{version}.min.js',

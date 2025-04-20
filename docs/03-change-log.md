@@ -10,6 +10,9 @@
 - Déplacement des utilitaires de ``bin/`` vers ``tools/``
 - Ajout des exports PGN et TRF16
 
+## Version 2.5.7 - 20 avril 2025
+- Correction d'un bug sur les impressions
+
 ## Version 2.5.6 - 17 avril 2025
 - Correction d'un bug d'affichage des écrans multi-colonnes (#416)
 
