@@ -514,26 +514,14 @@ class Tournament:
         If *clear_papi_tournament_info* or *clear_players_by_id*,
         the values will need to be fetched again from the Papi Database."""
         cached_property_names = [
-            'boards',
-            'unpaired_players',
-            'current_round',
-            'playing',
-            'players_by_check_in_status',
-            'check_in_counts',
-            'players_by_fide_id',
-            'players_by_trf_id',
-            'players_by_name_with_unpaired',
-            'players_by_name_without_unpaired',
-            'gender_counts',
-            'federation_counts',
-            'club_counts',
-            'dependent_families',
-            'dependent_screens',
+            name
+            for name in dir(self)
+            if isinstance(getattr(type(self), name, None), cached_property)
         ]
-        if clear_players_by_id:
-            cached_property_names.append('players_by_id')
-        if clear_papi_tournament_info:
-            cached_property_names.append('papi_tournament_info')
+        if not clear_players_by_id:
+            cached_property_names.remove('players_by_id')
+        if not clear_papi_tournament_info:
+            cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
@@ -1037,15 +1025,6 @@ class Tournament:
                 event_database.commit()
                 papi_database.commit()
         player.check_in = check_in
-
-    def read_player_dict(
-        self,
-        player_papi_id: int,
-    ) -> dict[str, str | int | float | None]:
-        """Reads a player from the Papi database and returns it as a dict
-        (used to move players from one tournament to another one)."""
-        with PapiDatabase(self.file) as papi_database:
-            return papi_database.read_player_dict(player_papi_id)
 
     def add_player(
         self,
