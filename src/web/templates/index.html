@@ -21,8 +21,9 @@
                                         dropdown-item
                                         text-start
                                         {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                                        "
                                     {% if l != locale %}
-                                        hx-get="{{ url }}"
+                                        hx-get="{{ url_for('index') }}"
                                         hx-vals='{"locale": "{{ l }}"}'
                                         preload
                                         hx-target="body"
