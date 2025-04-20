@@ -24,8 +24,8 @@ jobs:
           FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
           FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
         run: |
-          pip install venv
-          venv .venv
+          python -m pip install venv
+          python -m venv .venv
           .venv/Scripts/Activate.ps1
           pip install -e .[export]
           python scripts/ffe/generate_ffe_sql_server_credentials.py --host="$env:FFE_HOST" --user="$env:FFE_USER" --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
