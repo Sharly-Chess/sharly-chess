@@ -2701,7 +2701,7 @@ msgstr "La génération d'appriements n'est pas autorisée si une ronde passée 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Pairings should strictly abid by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être décidés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
 
 msgid "Papi file"
@@ -4286,8 +4286,10 @@ msgstr "Non apparié·es : affiché·es"
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
 
-msgid "Unpairing a published round can be very inconvenient for players. In addition, it causes a probable loss of data, as all the results inputted and the manual adjustments would be lost."
-msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, cette action est irréversible, les résultats saisis et les ajustements manuels seront donc perdus."
+msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
+msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
+
+
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"

@@ -16,8 +16,8 @@
                     <p>
                         {{ _(
                             'Unpairing a published round can be very inconvenient for players. '
-                            'In addition, it causes a probable loss of data, as all the '
-                            'results inputted and the manual adjustments would be lost.'
+                            'Additionally, you will lose all data associated with this round, '
+                            'including results and manual adjustments.'
                         ) }}
                     </p>
                     <p>
@@ -29,7 +29,7 @@
                 {% elif round_status == 'NEXT' and action == 'MANUAL_PAIRING' %}
                     <p>
                         {{ _(
-                            'Pairings should strictly abid by the rules of the tournament, '
+                            'Pairings should strictly abide by the rules of the tournament, '
                             'and not be biased by the arbiter. For this reason, '
                             'pairing manually is strongly discouraged.'
                         ) }}

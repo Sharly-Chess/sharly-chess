@@ -2701,7 +2701,7 @@ msgstr ""
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Pairings should strictly abid by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr ""
 
 msgid "Papi file"
@@ -4286,7 +4286,7 @@ msgstr ""
 msgid "Unpaired: hidden"
 msgstr ""
 
-msgid "Unpairing a published round can be very inconvenient for players. In addition, it causes a probable loss of data, as all the results inputted and the manual adjustments would be lost."
+msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr ""
 
 msgid "Unrated Draw"
