@@ -352,6 +352,14 @@ body[data-bs-theme=light] .btn-primary {
     vertical-align: middle;
 }
 
+[data-bs-theme=dark] table.prominent.table-danger-header thead th {
+    background-color: var(--bs-danger);
+    color: white;
+    padding: 5px;
+    border-bottom: 7px solid var(--bs-body-bg);
+    vertical-align: middle;
+}
+
 [data-bs-theme=dark] table.prominent thead td {
     padding: 5px;
 }

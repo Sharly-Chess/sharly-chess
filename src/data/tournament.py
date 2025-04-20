@@ -531,6 +531,7 @@ class Tournament:
     def round_has_pairings(self, round_: int) -> bool:
         return any(
             player.pairings[round_].opponent_id is not None
+            or player.pairings[round_].exempt
             for player in self.players_by_id.values()
         )
 

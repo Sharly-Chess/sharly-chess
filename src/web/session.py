@@ -5,10 +5,12 @@ from litestar.contrib.htmx.request import HTMXRequest
 
 from common.papi_web_config import PapiWebConfig
 from data.player import Federation, Club
+from data.safety_mode import SafetyMode
 from utils.enum import PlayerGender, PlayerCategory
 
 if TYPE_CHECKING:
     from data.event import Event
+    from web.controllers.admin.pairings_admin_controller import PageIdentifier
 
 
 class SessionHandler:
@@ -242,17 +244,19 @@ class SessionHandler:
     def set_session_admin_players_filter_federations(
         cls, request: HTMXRequest, federations: list[Federation]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY] = federations
+        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY] = [
+            federation.name for federation in federations
+        ]
 
     @classmethod
     def get_session_admin_players_filter_federations(
         cls, request: HTMXRequest
     ) -> list[Federation]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, Federation) else Federation(d['name'])
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, [])
+            Federation(federation_name)
+            for federation_name in request.session.get(
+                cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, []
+            )
         ]
 
     ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = 'admin_players_filter_clubs'
@@ -261,15 +265,15 @@ class SessionHandler:
     def set_session_admin_players_filter_clubs(
         cls, request: HTMXRequest, clubs: list[Club]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY] = clubs
+        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY] = [
+            club.name for club in clubs
+        ]
 
     @classmethod
     def get_session_admin_players_filter_clubs(cls, request: HTMXRequest) -> list[Club]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, Club) else Club(d['name'])
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
+            Club(club_name)
+            for club_name in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY: str = 'admin_players_filter_clubs_search'
@@ -290,17 +294,17 @@ class SessionHandler:
     def set_session_admin_players_filter_genders(
         cls, request: HTMXRequest, genders: list[PlayerGender]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY] = genders
+        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY] = [
+            gender.value for gender in genders
+        ]
 
     @classmethod
     def get_session_admin_players_filter_genders(
         cls, request: HTMXRequest
     ) -> list[PlayerGender]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, PlayerGender) else PlayerGender(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
+            PlayerGender(gender_value)
+            for gender_value in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
         ]
 
     ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
@@ -337,17 +341,19 @@ class SessionHandler:
     def set_session_admin_players_filter_categories(
         cls, request: HTMXRequest, categories: list[PlayerCategory]
     ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY] = categories
+        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY] = [
+            category.value for category in categories
+        ]
 
     @classmethod
     def get_session_admin_players_filter_categories(
         cls, request: HTMXRequest
     ) -> list[PlayerCategory]:
-        # type-casting is needed because the value returned by Session.get is serialized
-        # when stored from a previous request (and kept as-is if stored by the current request)
         return [
-            d if isinstance(d, PlayerCategory) else PlayerCategory(d)
-            for d in request.session.get(cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, [])
+            PlayerCategory(category_value)
+            for category_value in request.session.get(
+                cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, []
+            )
         ]
 
     ADMIN_PLAYERS_FILTER_NAME_KEY: str = 'admin_players_filter_name'
@@ -359,3 +365,39 @@ class SessionHandler:
     @classmethod
     def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
+
+    ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'
+
+    @classmethod
+    def set_session_admin_pairings_safety_mode(
+        cls, request: HTMXRequest, safety_mode: SafetyMode
+    ):
+        request.session[cls.ADMIN_PAIRINGS_SAFETY_MODE_KEY] = safety_mode.value
+
+    @classmethod
+    def get_session_admin_pairings_safety_mode(cls, request: HTMXRequest) -> SafetyMode:
+        return SafetyMode(
+            request.session.get(cls.ADMIN_PAIRINGS_SAFETY_MODE_KEY, SafetyMode.SAFE)
+        )
+
+    ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY = 'admin_pairings_page_identifier'
+
+    @classmethod
+    def set_session_admin_pairings_page_identifier(
+        cls, request: HTMXRequest, page_identifier: 'PageIdentifier'
+    ):
+        request.session[cls.ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY] = (
+            page_identifier.to_json()
+        )
+
+    @classmethod
+    def get_session_admin_pairings_page_identifier(
+        cls, request: HTMXRequest
+    ) -> 'PageIdentifier | None':
+        from web.controllers.admin.pairings_admin_controller import PageIdentifier
+
+        if page_identifier := request.session.get(
+            cls.ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY, None
+        ):
+            return PageIdentifier.from_json(page_identifier)
+        return None

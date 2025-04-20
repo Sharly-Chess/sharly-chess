@@ -81,7 +81,7 @@
                     <section class="pb-1">
                         <div
                             class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
-                            style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+                            style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1.5rem;"
                         >
                             {% call() macros.section_title() %}
                                 {% if user_event_tab == 'rotators' %}
@@ -93,7 +93,7 @@
                                 {% endif %}
                             {% endcall %}
                         </div>
-                        <div class="container-fluid">
+                        <div class="container-fluid" style="--bs-gutter-x: 0;">
                             <div class="row">
                                 {% if user_event_tab == 'rotators' %}
                                     {% if nav_tab.rotators %}
