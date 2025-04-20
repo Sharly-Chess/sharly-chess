@@ -1,0 +1,16 @@
+{% extends '../common/card.html' %}
+
+{% block card_header %}
+    {% if admin_auth %}
+        {{ macros.client_controller_visibility_icon(client_controller, 'pe-1') }}
+    {% endif %}
+    {{ client_controller.name }}
+{% endblock %}
+
+{% block card_title %}
+    {{ client_controller.uniq_id }}
+{% endblock %}
+
+{% block card_text %}
+    {{ client_controller.assigned_description or _('Neither screen nor rotator currently assigned')}}
+{% endblock %}

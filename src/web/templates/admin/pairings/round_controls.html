@@ -78,7 +78,7 @@
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
-            {% if admin_round >= admin_tournament.rounds %}
+            {% if admin_round >= admin_tournament.current_round %}
                 disabled
             {% endif %}
         >

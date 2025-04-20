@@ -54,6 +54,8 @@
                 <div class="pe-2">
                     {% if nav_id == 'rotators' %}
                         {{ macros.rotator_icon() }}
+                    {% elif nav_id == 'client_controllers' %}
+                        {{ macros.client_controller_icon() }}
                     {% else %}
                         {{ macros.screen_type_icon(nav_id, true) }}
                     {% endif %}
@@ -79,17 +81,19 @@
                     <section class="pb-1">
                         <div
                             class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
-                            style="max-width: calc(var(--vw, 100vw) - 4rem); position: sticky; left: 1.5rem;"
+                            style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1.5rem;"
                         >
                             {% call() macros.section_title() %}
                                 {% if user_event_tab == 'rotators' %}
                                     {{ macros.rotator_icon() }} {{ user_event.name }} - {{ nav_tab.title }}
+                                {% elif user_event_tab == 'client_controllers' %}
+                                    {{ macros.client_controller_icon() }} {{ user_event.name }} - {{ nav_tab.title }}
                                 {% else %}
                                     {{ macros.screen_type_icon(nav_id, true) }} {{ user_event.name }} - {{ nav_tab.title }}
                                 {% endif %}
                             {% endcall %}
                         </div>
-                        <div class="container-fluid">
+                        <div class="container-fluid" style="--bs-gutter-x: 0;">
                             <div class="row">
                                 {% if user_event_tab == 'rotators' %}
                                     {% if nav_tab.rotators %}
@@ -106,6 +110,23 @@
                                     {% else %}
                                         <div class="col-12 mb-3">
                                             {{ _('No rotators.') }}
+                                        </div>
+                                    {% endif %}
+                                {% elif user_event_tab == 'client_controllers' %}
+                                    {% if nav_tab.client_controllers %}
+                                        {% for client_controller in nav_tab.client_controllers %}
+                                            {% with
+                                                card_url=url_for('user-client-controller', event_uniq_id=user_event.uniq_id, client_controller_id=client_controller.id),
+                                                card_class=('bg-light' if client_controller.public else 'border-danger') if admin_auth else 'bg-light',
+                                                card_background_url=client_controller.event.background_url,
+                                                card_background_color=client_controller.event.background_color
+                                            %}
+                                                {% include 'event/client_controller_card.html' %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="col-12 mb-3">
+                                            {{ _('No client controllers.') }}
                                         </div>
                                     {% endif %}
                                 {% else %}

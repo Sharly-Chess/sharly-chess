@@ -9,7 +9,7 @@
         <div
             class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
             {% if tournament.rounds %}
-                {{ macros.tooltip_attributes('info', _('Number of players : %(num)d', num=tournament.players_by_id|length), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Number of players: %(num)d', num=tournament.players_by_id|length), 'top') }}
             {% endif %}
         >
             <i class="bi-people-fill pe-1"></i>

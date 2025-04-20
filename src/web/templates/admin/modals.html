@@ -19,8 +19,8 @@
     {% include 'players/players_diff_modal.html' %}
 {% elif modal == 'unpaired-player' %}
     {% include 'pairings/unpaired_player_modal.html' %}
-{% elif modal == 'confirm-unpair-all' %}
-    {% include 'pairings/confirm_unpair_all_modal.html' %}
+{% elif modal == 'safety-mode' %}
+    {% include 'pairings/safety_mode_modal.html' %}
 {% elif modal == 'pairing' %}
     {% include 'pairings/pairing_modal.html' %}
 {% elif modal == 'unfinished-round' %}
@@ -39,6 +39,8 @@
     {% include 'timers/timer_modal.html' %}
 {% elif modal == 'timer_hours' %}
     {% include 'timers/timer_hours_modal.html' %}
+{% elif modal == 'client_controller' %}
+    {% include 'client_controllers/client_controller_modal.html' %}
 {% elif modal == 'database' %}
     {% include 'common/database/database_modal.html' %}
 {% elif modal %}
