@@ -2,7 +2,8 @@ name: Sharly-Chess export
 
 on:
   push:
-    tags: "*"
+    tags:
+      - "*"
 
 jobs:
   export-sharly-chess:
