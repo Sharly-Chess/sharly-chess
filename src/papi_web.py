@@ -69,4 +69,5 @@ except Exception:
     except Exception:
         print(message)
     print('An error occurred.')
-input('Press Enter to end.')
+if not DEVEL_ENV:
+    input('Press Enter to end.')

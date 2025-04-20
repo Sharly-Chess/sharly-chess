@@ -42,7 +42,7 @@ from common.installation_checker import (
 )
 from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
-from scripts.i18n.i18n_update import I18nUpdater
+from scripts.i18n.i18n_check import I18nChecker
 
 logger: Logger = get_logger()
 
@@ -296,7 +296,7 @@ def main():
     if not bbp_pairings.is_installed:
         print_interactive_info('Installing BBP Pairings....')
         bbp_pairings.install()
-    if not I18nUpdater().check():
+    if not I18nChecker().ok:
         if (
             input_interactive(
                 'Translations are not perfect, do you want to continue (y/N):'

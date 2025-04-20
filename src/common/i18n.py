@@ -9,12 +9,14 @@ from string import capwords
 from babel import Locale
 
 from common import BASE_DIR, DEVEL_ENV
+from common.exception import PapiWebException
 from common.logger import get_logger
+from scripts.i18n.i18n_babel import BabelWrapper
 
 logger: Logger = get_logger()
 
 _i18n_script = Path(sys.argv[0]).name in [
-    'i18n_update.py',
+    'i18n_check.py',
     'i18n_translate.py',
 ]
 
@@ -22,68 +24,45 @@ _i18n_script = Path(sys.argv[0]).name in [
 DEFAULT_LOCALE: str = 'en'
 logger.debug('Default locale: %s', DEFAULT_LOCALE)
 
-""" The directory where to find the i18n files. """
+# The directory where to find the i18n files.
 _locale_dir: Path = BASE_DIR / 'locale'
 logger.debug('Locale folder: %s', _locale_dir)
 
-
-""" Build a dict of all the translations with the available locales retrieved from the filesystem. """
+# Build a dict of all the translations with the available locales retrieved from the filesystem.
 locales: list[str] = []
-_all_translations: dict[str, GNUTranslations] = {}
 for l_entry in _locale_dir.iterdir():
     if l_entry.is_dir():
         mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
         if mo_file.is_file():
-            locale_name: str = l_entry.name
-            try:
-                _all_translations[locale_name] = gettext_lib.translation(
-                    'messages',
-                    _locale_dir,
-                    [
-                        locale_name,
-                    ],
-                )
-                locales.append(locale_name)
-                if DEVEL_ENV and not _i18n_script:
-                    # Check that the MO files are up-to-date.
-                    po_file: Path = mo_file.with_suffix('.po')
-                    if (
-                        po_file.is_file()
-                        and mo_file.lstat().st_mtime < po_file.lstat().st_mtime
-                    ):
-                        logger.warning('MO file [%s] is out of date.', mo_file)
-            except Exception as ex:
-                logger.critical('Could not load locale [%s]: %s.', locale_name, ex)
-                sys.exit(1)
-        else:
-            if not _i18n_script:
-                logger.critical(
-                    'Invalid locale [%s] (MO file [%s] not found), exiting.',
-                    l_entry.name,
-                    mo_file,
-                )
-                sys.exit()
-
-
-# Considering the case when no translation is available is needed
-# when the compilation of the PO files failed and no MO files are available.
-if not locales:
-    if not _i18n_script:
-        if DEVEL_ENV:
-            logger.critical('Please run i18n_update.py (no locale found), exiting.')
-        else:
-            logger.critical('No locale found, exiting.')
-        sys.exit(1)
-    DEFAULT_LOCALE = ''
-    # locales are built on the PO files found if no MO files found
-    logger.warning('No MO files founds, loading locales from PO files...')
-    for l_entry in _locale_dir.iterdir():
-        if l_entry.is_dir():
+            locales.append(l_entry.name)
+        elif _i18n_script:
+            # locales are built on the PO files found if no MO files found
             po_file: Path = l_entry / 'LC_MESSAGES' / 'messages.po'
             if po_file.is_file():
                 locales.append(l_entry.name)
-    if not locales:
-        logger.critical('No PO files found, exiting.')
+        else:
+            raise PapiWebException(
+                f'Invalid locale [{l_entry.name}] (MO file [{mo_file}] not found), exiting.'
+            )
+
+# For developers only, look if the i18n strings have changed to refresh the MO files if needed
+if DEVEL_ENV and not _i18n_script:
+    BabelWrapper.refresh_i18n_files(locales, verbose=False)
+
+# Now load the translations.
+_all_translations: dict[str, GNUTranslations] = {}
+for loc in locales:
+    try:
+        _all_translations[loc] = gettext_lib.translation(
+            'messages',
+            _locale_dir,
+            [
+                loc,
+            ],
+        )
+    except Exception as ex:
+        raise PapiWebException(f'Could not load locale [{loc}]: {ex}.')
+
 logger.debug('Locales found: %s', ', '.join(locales))
 
 # The translators (assigned to the locales).
