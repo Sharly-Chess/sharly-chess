@@ -1,9 +1,10 @@
 import re
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, date
 from enum import StrEnum
 from logging import Logger
 from pathlib import Path
-from typing import NamedTuple, Pattern, Any
+from typing import Pattern, Any
 
 from common.logger import get_logger
 from data.pairing import Pairing
@@ -48,17 +49,18 @@ class RoundFields:
         return ', '.join(f'`{field}` = ?' for field in self.all)
 
 
-class TournamentInfo(NamedTuple):
+@dataclass
+class PapiTournamentInfo:
     """Basic tournament information tuple."""
 
-    rounds: int
-    pairing: TournamentPairing
-    rating: TournamentRating
-    rating_limit1: int
-    rating_limit2: int
-    tie_breaks: list[TieBreak]
-    point_value_type: PointValueType
-    arbiter: str
+    rounds: int = 0
+    pairing: TournamentPairing = TournamentPairing.STANDARD
+    rating: TournamentRating = TournamentRating.STANDARD
+    rating_limit1: int = 0
+    rating_limit2: int = 0
+    tie_breaks: list[TieBreak] = field(default_factory=list[TieBreak])
+    point_value_type: PointValueType = PointValueType.STANDARD
+    arbiter: str = ''
 
 
 class PapiVariable(StrEnum):
@@ -96,27 +98,39 @@ class PapiDatabase(AccessDatabase):
     def commit(self):
         self._commit()
 
-    def read_variable(self, variable: PapiVariable) -> str:
-        query: str = 'SELECT `Value` FROM `info` WHERE `Variable` = ?'
-        self._execute(query, (variable.value,))
-        return self._fetchval()
+    def read_variables(self, variables: list[PapiVariable]) -> dict[PapiVariable, str]:
+        if not variables:
+            return {}
+        self._execute(
+            (
+                'SELECT `Variable`, `Value` FROM `info` WHERE `Variable` '
+                f'IN ({", ".join("?" for _ in range(len(variables)))})'
+            ),
+            tuple(variable.value for variable in variables),
+        )
+        return {PapiVariable(row['Variable']): row['Value'] for row in self._fetchall()}
 
     def update_variable(self, variable: PapiVariable, value: str | int):
         query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
         self._execute(query, (value, variable.value))
 
-    def read_info(self) -> TournamentInfo:
+    def read_info(self) -> PapiTournamentInfo:
         """Reads the database and returns basic information about the
         tournament."""
-        rounds: int = int(self.read_variable(PapiVariable.ROUNDS))
-        pairing: TournamentPairing = TournamentPairing.from_papi_value(
-            self.read_variable(PapiVariable.PAIRING)
+        values = self.read_variables(
+            [
+                PapiVariable.ROUNDS,
+                PapiVariable.PAIRING,
+                PapiVariable.RATING,
+                PapiVariable.RATING_LIMIT1,
+                PapiVariable.RATING_LIMIT2,
+                PapiVariable.TIE_BREAK1,
+                PapiVariable.TIE_BREAK2,
+                PapiVariable.TIE_BREAK3,
+                PapiVariable.POINT_VALUE_TYPE,
+                PapiVariable.ARBITER,
+            ]
         )
-        rating: TournamentRating = TournamentRating.from_papi_value(
-            self.read_variable(PapiVariable.RATING)
-        )
-        rating_limit1: int = int(self.read_variable(PapiVariable.RATING_LIMIT1))
-        rating_limit2: int = int(self.read_variable(PapiVariable.RATING_LIMIT2))
         tie_break_type_by_id = PapiTieBreakManager.type_by_papi_id()
         tie_breaks: list[TieBreak] = []
         for variable in (
@@ -124,22 +138,20 @@ class PapiDatabase(AccessDatabase):
             PapiVariable.TIE_BREAK2,
             PapiVariable.TIE_BREAK3,
         ):
-            papi_id = self.read_variable(variable)
+            papi_id = values[variable]
             if tie_break_type := tie_break_type_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break_type())
-        point_value_type: PointValueType = PointValueType.from_papi_value(
-            self.read_variable(PapiVariable.POINT_VALUE_TYPE)
-        )
-        arbiter: str = self.read_variable(PapiVariable.ARBITER)
-        return TournamentInfo(
-            rounds,
-            pairing,
-            rating,
-            rating_limit1,
-            rating_limit2,
-            tie_breaks,
-            point_value_type,
-            arbiter,
+        return PapiTournamentInfo(
+            rounds=int(values[PapiVariable.ROUNDS]),
+            pairing=TournamentPairing.from_papi_value(values[PapiVariable.PAIRING]),
+            rating=TournamentRating.from_papi_value(values[PapiVariable.RATING]),
+            rating_limit1=int(values[PapiVariable.RATING_LIMIT1]),
+            rating_limit2=int(values[PapiVariable.RATING_LIMIT2]),
+            tie_breaks=tie_breaks,
+            point_value_type=PointValueType.from_papi_value(
+                values[PapiVariable.POINT_VALUE_TYPE]
+            ),
+            arbiter=values[PapiVariable.ARBITER],
         )
 
     def write_info(self, info: dict[PapiVariable, str | int]):

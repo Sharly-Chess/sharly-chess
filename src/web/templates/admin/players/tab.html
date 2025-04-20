@@ -14,7 +14,7 @@
 
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-1 ms-auto">
-            {% with compact=false, tournament_id=none %}
+            {% with compact=false, tournament=none %}
                 {% include 'players_diff.html' %}
             {% endwith %}
             {% if admin_event.players_sorted_by_name %}

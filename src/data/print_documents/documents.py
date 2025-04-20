@@ -158,14 +158,14 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
         assert self.tournament is not None
         if ranking_round.value > self.tournament.rounds:
             raise OptionError(
-                _('Not part of the selected tournament ({rounds} rounds).').format(
-                    rounds=self.tournament.rounds
-                ),
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
                 ranking_round,
             )
         if ranking_round.value > self.tournament.max_ranking_round:
             raise OptionError(
-                _('Round not finished (last finished: {round}).').format(
+                _('This round is not finished (last finished: #{round}).').format(
                     round=self.tournament.max_ranking_round
                 ),
                 ranking_round,
@@ -222,9 +222,9 @@ class BoardPrintDocument(PrintDocument, ABC):
     @property
     def boards(self) -> list[Board]:
         assert self.tournament is not None
-        self.tournament.calculate_points_before_round(before_round=self.at_round)
-        boards, _ = self.tournament.build_boards(self.at_round)
-        return boards
+        for player in self.tournament.players:
+            self.tournament.set_player_points(player, before_round=self.at_round)
+        return self.tournament.build_boards(self.at_round)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -251,16 +251,16 @@ class BoardPrintDocument(PrintDocument, ABC):
             return
         if at_round.value > self.tournament.rounds:
             raise OptionError(
-                _('Not part of the selected tournament ({rounds} rounds).').format(
-                    rounds=self.tournament.rounds
-                ),
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
                 at_round,
             )
         if at_round.value > self.tournament.current_round:
             raise OptionError(
-                _('Round not paired (last paired: {round}).').format(
-                    round=self.tournament.current_round
-                ),
+                _(
+                    'There is no pairings for this round (last round with pairings: #{round}).'
+                ).format(round=self.tournament.current_round),
                 at_round,
             )
 
