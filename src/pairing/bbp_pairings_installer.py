@@ -37,3 +37,4 @@ class BbpPairingsInstaller(ToolInstaller):
         archive_path: Path = install_dir / build_filename
         self.download_file(build_url, archive_path)
         self.install_archive_and_delete(archive_path, install_dir)
+        return self.is_installed
