@@ -31,10 +31,8 @@ logger: Logger = get_logger()
 class EventLoader:
     _valid_event_ids: list[str] = []
     _invalid_uniq_ids: list[str] = []
-
-    def __init__(self):
-        self._loaded_stored_events_by_id: dict[str, StoredEvent] = {}
-        self._loaded_events_by_id: dict[str, Event] = {}
+    _loaded_stored_events_by_id: dict[str, StoredEvent] = {}
+    _loaded_events_by_id: dict[str, Event] = {}
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -49,12 +47,13 @@ class EventLoader:
         """If `event_uniq_id` is provided, clears the load cache regarding the
         given event."""
         if event_uniq_id:
+            cls = self.__class__
             with suppress(KeyError):
-                del self._loaded_stored_events_by_id[event_uniq_id]
+                del cls._loaded_stored_events_by_id[event_uniq_id]
             with suppress(KeyError):
-                del self._loaded_events_by_id[event_uniq_id]
+                del cls._loaded_events_by_id[event_uniq_id]
             with suppress(ValueError):
-                self.__class__._valid_event_ids.remove(event_uniq_id)
+                cls._valid_event_ids.remove(event_uniq_id)
         cached_property_names = [
             'event_uniq_ids',
             'stored_events_by_id',
@@ -84,7 +83,7 @@ class EventLoader:
             return self._loaded_stored_events_by_id[uniq_id]
         except KeyError:
             with EventDatabase(uniq_id) as event_database:
-                self._loaded_stored_events_by_id[uniq_id] = (
+                self.__class__._loaded_stored_events_by_id[uniq_id] = (
                     event_database.load_stored_event()
                 )
             return self._loaded_stored_events_by_id[uniq_id]
@@ -173,7 +172,7 @@ class EventLoader:
         except KeyError:
             self.load_event_ids(uniq_id)
             stored_event: StoredEvent = self.load_stored_event(uniq_id)
-            self._loaded_events_by_id[uniq_id] = Event(stored_event)
+            self.__class__._loaded_events_by_id[uniq_id] = Event(stored_event)
             return self._loaded_events_by_id[uniq_id]
 
     def load_event(self, uniq_id: str) -> Event:
