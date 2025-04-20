@@ -2,24 +2,26 @@
 
 # Papi-web - Raccourcis clavier
 
-Cette page sur la branche ``doc-shortcuts`` permet une vision globale des raccourcis clavier utilisables dans l'application.
+Cette page est un document de travail sur les raccourcis clavier utilisables dans l'application, à destination des développeur·euses.
 
 ## Onglet Joueur·euses
 
 ### Raccourcis globaux
 
-| Raccourci Papi | Action                   | Proposition SC | Note                                   |
-|----------------|--------------------------|----------------|----------------------------------------|
-| ``F3``         | Ajouter un·e joueur·euse | ``A``          | TA : F3/F5 même fonctionnalité dans SC |
-| ``F5``         | Créer un·e joueur·euse   | ``A``          | YA : Rafraichissement du navigateur    |
+**Aucun raccourci clavier n'est implémenté sur la l'onglet Joueur·euses.**
+
+| Raccourci Papi | Action                   | Proposition SC | Note                |
+|----------------|--------------------------|----------------|---------------------|
+| ``F3``         | Ajouter un·e joueur·euse | ``A``          | ~~Non implémentée~~ |
+| ``F5``         | Créer un·e joueur·euse   | ``A``          | ~~Non implémentée~~ |
 
 ## Onglet Appariements
 
 ### Partie gauche (joueur·euses non apparié·es)
 
-Toutes les actions ne sont pas possibles en fonction de l'état du·de la joueur·euse.
+**Aucun raccourci clavier n'est implémenté pour la gestion des joueur·euses non apparié·es.**
 
-TA : pas de ligne courante sur cette partie.
+Toutes les actions ne sont pas possibles en fonction de l'état du·de la joueur·euse.
 
 | Raccourci Papi | Action                                   | Proposition SC | Note                                               |
 |----------------|------------------------------------------|----------------|----------------------------------------------------|
@@ -46,24 +48,28 @@ TA : pas de ligne courante sur cette partie.
 
 ### Partie droite (échiquiers)
 
-| Raccourci Papi | Action                                      | Proposition SC | Note                                |
-|----------------|---------------------------------------------|----------------|-------------------------------------|
-| ``0``          | Pas de résultat                             | ``0``          |                                     |
-| ``1``          | Gain Blancs                                 | ``1``          | Confirmation en cas de modification |
-| ``2``          | Gain Noirs                                  | ``2``          | Confirmation en cas de modification |
-| ``3``          | Nulle                                       | ``3``          | Confirmation en cas de modification |
-| ``P``          | Permuter                                    | ``P``          |                                     |
-| ``D``          | Désapparier                                 | ``D``          | Confirmation                        |
-| ``4``          | Gain Blancs forfait                         |                | Action rare                         |
-| ``5``          | Gain Noirs forfait                          |                | Action rare                         |
-| ``7``          | Double forfait                              |                | Action rare                         |
-| ``Down``       | Échiquier suivant                           | ``Down``       |                                     |
-| ``Up``         | Échiquier précédent                         | ``Up``         |                                     |
-|                | Premier échiquier                           | ``Home``       | TA : pas sur tous les claviers      |
-|                | Dernier échiquier                           | ``End``        | TA : pas sur tous les claviers      |
-|                | Passage sur la partie gauche (joueur·euses) | ``Left``       |                                     |
+**Seuls les raccourcis en gras sont implémentés.**
+
+| Raccourci Papi | Action                                      | Proposition SC | Note                           |
+|----------------|---------------------------------------------|----------------|--------------------------------|
+| ``0``          | **Pas de résultat**                         | ``0``          |                                |
+| ``1``          | **Gain Blancs**                             | ``1``          |                                |
+| ``2``          | **Gain Noirs**                              | ``2``          |                                |
+| ``3``          | **Nulle**                                   | ``3``          |                                |
+| ``P``          | Permuter                                    | ``P``          |                                |
+| ``D``          | Désapparier                                 | ``D``          | Confirmation                   |
+| ``4``          | Gain Blancs forfait                         |                | Action rare                    |
+| ``5``          | Gain Noirs forfait                          |                | Action rare                    |
+| ``7``          | Double forfait                              |                | Action rare                    |
+| ``Down``       | Échiquier suivant                           | ``Down``       |                                |
+| ``Up``         | Échiquier précédent                         | ``Up``         |                                |
+|                | Premier échiquier                           | ``Home``       | TA : pas sur tous les claviers |
+|                | Dernier échiquier                           | ``End``        | TA : pas sur tous les claviers |
+|                | Passage sur la partie gauche (joueur·euses) | ``Left``       |                                |
 
 ### Raccourcis globaux
+
+**Aucun raccourci clavier global n'est implémenté sur l'onglet Appariements.**
 
 | Raccourci Papi | Action                   | Proposition SC      | Note                                              |
 |----------------|--------------------------|---------------------|---------------------------------------------------|
