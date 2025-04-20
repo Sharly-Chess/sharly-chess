@@ -2702,7 +2702,7 @@ msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
-msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être décidés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
+msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
 
 msgid "Papi file"
 msgstr "Fichier Papi"
