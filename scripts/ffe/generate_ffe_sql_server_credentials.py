@@ -1,5 +1,7 @@
+import sys
 from argparse import ArgumentParser, Namespace
 from asyncio import run
+from pathlib import Path
 
 from common.exception import PapiWebException
 from common.logger import (
@@ -8,6 +10,17 @@ from common.logger import (
     print_interactive_success,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
+
+sys.path.extend(
+    map(
+        str,
+        [
+            Path(__file__).parents[2],  # The root path
+            Path(__file__).parents[2]
+            / 'src',  # The path to the sources of the application
+        ],
+    )
+)
 
 
 async def main():
