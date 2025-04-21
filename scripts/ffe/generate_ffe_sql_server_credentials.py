@@ -51,6 +51,13 @@ async def main():
         help='The name of the database.',
         required=True,
     )
+    # option --github is used when generating the EXE file from a GITHUB action
+    # not to test the SQL server connection (timeout).
+    parser.add_argument(
+        '--github',
+        help='Run on GitHub (do not test the SQL server).',
+        action='store_true',
+    )
     args: Namespace = parser.parse_args()
     FFESqlServer.dump_credentials(
         args.host,
@@ -61,16 +68,17 @@ async def main():
     print_interactive_success(
         f'The credentials have been written to {FFESqlServer.CREDENTIALS_FILE}.'
     )
-    print_interactive_info('Now testing the remote database...')
-    try:
-        async with FFESqlServer() as ffe_sql_server:
-            async for player in await ffe_sql_server.search_player(
-                'pascal aubry', limit=8
-            ):
-                print_interactive_info(f'{player=}')
-    except PapiWebException as exception:
-        print_interactive_error(f'{exception=}')
-    print_interactive_info('Done.')
+    if not args.no_test:
+        print_interactive_info('Now testing the remote database...')
+        try:
+            async with FFESqlServer() as ffe_sql_server:
+                async for player in await ffe_sql_server.search_player(
+                    'pascal aubry', limit=8
+                ):
+                    print_interactive_info(f'{player=}')
+        except PapiWebException as exception:
+            print_interactive_error(f'{exception=}')
+        print_interactive_info('Done.')
 
 
 if __name__ == '__main__':
