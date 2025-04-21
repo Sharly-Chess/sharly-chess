@@ -296,20 +296,21 @@ def update_readme():
 
 
 def main():
-    # option --version is used when generating the EXE file from a GITHUB action
+    # option --github is used when generating the EXE file from a GITHUB action
     # to verify that the name of the tag matches the Papi-web version.
     parser = argparse.ArgumentParser()
     parser.add_argument('--github', type=str)
     args = parser.parse_args()
+    print(f'{args=}')
     if args.github:
         if PAPI_WEB_VERSION != Version(args.github):
             raise ValueError(
-                f'Invalid version [{args.github}] (expected [{PAPI_WEB_VERSION}]).'
+                f'Version [{args.github}] does not match (expected [{PAPI_WEB_VERSION}]).'
             )
         else:
-            print_interactive_success(f'Version is valid ({args.github}).')
+            print_interactive_success(f'Version [{args.github}] is valid.')
     else:
-        print_interactive_info('Version not verified (not running on GitHub).')
+        print_interactive_info('The version is not verified (not running on GitHub).')
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
