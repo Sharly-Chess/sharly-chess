@@ -27,11 +27,11 @@ jobs:
           pip install -e .[export]
           python scripts/i18n/i18n_check.py
           python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_HOST" --user="$env:FFE_USER" --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
-          python scripts/export/export.py --github="${{ github.tag_name }}"
+          python scripts/export/export.py --github="${{ github.ref_name }}"
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          prerelease: contains("a", ${{ github.tag_name }}) || contains("b", ${{ github.tag_name }}) || contains("rc", ${{ github.tag_name }})
+          prerelease: contains("a", ${{ github.ref_name }}) || contains("b", ${{ github.ref_name }}) || contains("rc", ${{ github.ref_name }})
           files: |
-            export/papi-web-${{ github.tag_name }}.zip
+            export/papi-web-${{ github.ref_name }}.zip
