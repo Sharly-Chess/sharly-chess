@@ -20,7 +20,7 @@ sys.path.extend(
     )
 )
 
-from scripts.i18n.i18n_babel import BabelWrapper
+from utils.i18n_babel import BabelWrapper
 
 from common.i18n import (  # Noqa: E402
     DEFAULT_LOCALE,

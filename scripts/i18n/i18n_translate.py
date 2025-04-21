@@ -21,7 +21,7 @@ sys.path.extend(
     )
 )
 
-from scripts.i18n.i18n_babel import run_babel_command
+from utils.i18n_babel import run_babel_command
 
 from common.i18n import DEFAULT_LOCALE
 from common.logger import (
