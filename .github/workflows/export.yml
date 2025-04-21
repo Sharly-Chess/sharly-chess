@@ -9,6 +9,11 @@ jobs:
   export-sharly-chess:
     runs-on: windows-latest
     steps:
+      - name: Get current date
+        id: date
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: checkout
         uses: actions/checkout@4.2.2
       - name: Setup Python
@@ -31,7 +36,29 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
+          name: "Version ${{ github.ref_name }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
           draft: true
           prerelease: contains("a", ${{ github.ref_name }}) || contains("b", ${{ github.ref_name }}) || contains("rc", ${{ github.ref_name }})
           files: |
             export/papi-web-${{ github.ref_name }}.zip
+          body: "
+## Fonctionnement
+
+- Déplacement des utilitaires de ``bin/`` vers ``tools/`` (2.6.0)
+
+## Interface web
+
+- Simplification du menu principal (2.6.0)
+
+### Gestion des appariements
+
+- Ajout de l'onglet Appariements (2.6.0)
+- Ajout de la gestion des appariements manuels (2.6.0)
+- Ajout de l'appariement suisse (2.6.0 expérimental)
+- Ajout des exports PGN et TRF16 (2.6.0 expérimental)
+
+### Gestion des clients
+
+- Ajout des contrôleurs de clients (2.6.0)
+"
