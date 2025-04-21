@@ -1,5 +1,4 @@
 import gettext as gettext_lib
-import sys
 import threading
 from gettext import GNUTranslations
 from logging import Logger
@@ -14,11 +13,6 @@ from common.logger import get_logger
 from scripts.i18n.i18n_babel import BabelWrapper
 
 logger: Logger = get_logger()
-
-_i18n_script = Path(sys.argv[0]).name in [
-    'i18n_check.py',
-    'i18n_translate.py',
-]
 
 # The default locale used when no default locale is set in the configuration file.
 DEFAULT_LOCALE: str = 'en'
@@ -35,7 +29,7 @@ for l_entry in _locale_dir.iterdir():
         mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
         if mo_file.is_file():
             locales.append(l_entry.name)
-        elif _i18n_script:
+        elif DEVEL_ENV:
             # locales are built on the PO files found if no MO files found
             po_file: Path = l_entry / 'LC_MESSAGES' / 'messages.po'
             if po_file.is_file():

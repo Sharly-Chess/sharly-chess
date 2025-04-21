@@ -61,7 +61,11 @@ class BabelWrapper:
                     logger.log(
                         logging.INFO if verbose else logging.DEBUG, stripped_line
                     )
-        pot_fingerprint: bytes = cls.file_fingerprint(cls.pot_file)
+        pot_fingerprint: bytes
+        if cls.pot_file.is_file():
+            pot_fingerprint = cls.file_fingerprint(cls.pot_file)
+        else:
+            pot_fingerprint = bytearray()
         tmp_file: Path = cls.pot_file.with_suffix('.tmp')
         cls._run_babel_command(
             'extract',
