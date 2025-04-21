@@ -1,3 +1,4 @@
+import argparse
 import os
 import re
 import shutil
@@ -5,6 +6,8 @@ from pathlib import Path
 import sys
 from pkgutil import iter_modules
 from types import ModuleType
+
+from packaging.version import Version
 
 sys.path.extend(
     map(
@@ -24,7 +27,7 @@ from PyInstaller.__main__ import run
 # Needs to be imported first to avoid circular import
 from plugins.manager import plugin_manager  # Noqa
 
-from common import BASE_DIR
+from common import BASE_DIR, enable_experimental_features
 from pairing.bbp_pairings import BbpPairings
 from common import PAPI_WEB_VERSION
 from common.papi_web_config import PapiWebConfig
@@ -34,15 +37,18 @@ from common.logger import (
     input_interactive,
     print_interactive_error,
     print_interactive_success,
+    print_interactive_warning,
 )
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from common.installation_checker import (
     InstallationChecker,
 )
-from pairing.bbp_pairings_installer import BbpPairingsInstaller
 from plugins import PLUGINS_DIR
 from scripts.i18n.i18n_check import I18nChecker
+
+# Enable experimental features for force the installation of the experimental tools and libs before exporting
+enable_experimental_features(True)
 
 logger: Logger = get_logger()
 
@@ -289,21 +295,21 @@ def update_readme():
 
 
 def main():
+    # option --version is used when generating the EXE file from a GITHUB action
+    # to verify that the name of the tag matches the Papi-web version.
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', type=str)
+    args = parser.parse_args()
+    if args.version:
+        if PAPI_WEB_VERSION != Version(args.version):
+            raise ValueError(
+                f'Invalid version [{args.version}] (expected [{PAPI_WEB_VERSION}]).'
+            )
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
-    bbp_pairings: BbpPairingsInstaller = BbpPairingsInstaller()
-    if not bbp_pairings.is_installed:
-        print_interactive_info('Installing BBP Pairings....')
-        bbp_pairings.install()
     if not I18nChecker().ok:
-        if (
-            input_interactive(
-                'Translations are not perfect, do you want to continue (y/N):'
-            ).upper()
-            or 'N'
-        ) != 'Y':
-            return
+        print_interactive_warning('Translations are not perfect.')
     build_exe()
     create_project()
     create_zip()
