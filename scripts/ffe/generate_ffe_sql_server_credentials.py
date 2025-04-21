@@ -3,14 +3,6 @@ from argparse import ArgumentParser, Namespace
 from asyncio import run
 from pathlib import Path
 
-from common.exception import PapiWebException
-from common.logger import (
-    print_interactive_error,
-    print_interactive_info,
-    print_interactive_success,
-)
-from plugins.ffe.ffe_sql_server import FFESqlServer
-
 sys.path.extend(
     map(
         str,
@@ -21,6 +13,14 @@ sys.path.extend(
         ],
     )
 )
+
+from common.exception import PapiWebException
+from common.logger import (
+    print_interactive_error,
+    print_interactive_info,
+    print_interactive_success,
+)
+from plugins.ffe.ffe_sql_server import FFESqlServer
 
 
 async def main():
