@@ -596,6 +596,10 @@ class TournamentPairing(IntEnum):
             TournamentPairing.STANDARD,
         )
 
+    @property
+    def not_implemented(self) -> bool:
+        return self in (TournamentPairing.NICOIS, TournamentPairing.BERGER)
+
 
 class PlayerGender(IntEnum):
     NONE = 0
