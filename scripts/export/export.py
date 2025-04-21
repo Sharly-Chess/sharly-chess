@@ -7,7 +7,7 @@ import sys
 from pkgutil import iter_modules
 from types import ModuleType
 
-from packaging.version import Version
+from packaging.version import Version, InvalidVersion
 
 sys.path.extend(
     map(
@@ -304,7 +304,7 @@ def main():
     print(f'{args=}')
     if args.github:
         if PAPI_WEB_VERSION != Version(args.github):
-            raise ValueError(
+            raise InvalidVersion(
                 f'Version [{args.github}] does not match (expected [{PAPI_WEB_VERSION}]).'
             )
         else:
