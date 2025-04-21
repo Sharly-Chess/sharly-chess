@@ -68,7 +68,7 @@ async def main():
     print_interactive_success(
         f'The credentials have been written to {FFESqlServer.CREDENTIALS_FILE}.'
     )
-    if not args.no_test:
+    if not args.github:
         print_interactive_info('Now testing the remote database...')
         try:
             async with FFESqlServer() as ffe_sql_server:
