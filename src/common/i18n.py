@@ -46,7 +46,7 @@ for l_entry in _locale_dir.iterdir():
             )
 
 # For developers only, look if the i18n strings have changed to refresh the MO files if needed
-if DEVEL_ENV and not _i18n_script:
+if DEVEL_ENV:
     BabelWrapper.refresh_i18n_files(locales, verbose=False)
 
 # Now load the translations.
