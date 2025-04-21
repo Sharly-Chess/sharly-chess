@@ -221,6 +221,7 @@ def create_project():
 
 def create_zip():
     print_interactive_info(f'Creating archive {ZIP_FILE}...')
+    ZIP_FILE.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
         os.chdir(PROJECT_DIR)
         for folder_name, sub_folders, file_names in os.walk('.'):
@@ -305,6 +306,10 @@ def main():
             raise ValueError(
                 f'Invalid version [{args.version}] (expected [{PAPI_WEB_VERSION}]).'
             )
+        else:
+            print_interactive_success(f'Version is valid ({args.version}).')
+    else:
+        print_interactive_success('Version not verified (not running on GitHub).')
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
