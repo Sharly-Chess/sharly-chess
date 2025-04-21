@@ -6,7 +6,7 @@ on:
       - "*"
 
 permissions:
-  - contents: write
+  contents: write
 
 jobs:
   export-sharly-chess:
