@@ -9,19 +9,24 @@ jobs:
   export-sharly-chess:
     runs-on: windows-latest
     steps:
+      # get the current date to set the title of the release
       - name: Get current date
         id: date
         uses: Kaven-Universe/github-action-current-date-time@v1
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
-      - name: checkout
+      - name: Checkout repository
         uses: actions/checkout@4.2.2
       - name: Setup Python
         uses: actions/setup-python@v5.5.0
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           python-version: 3.12
-      - name: Install dependencies and export
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          pip install -e .[export]
+      - name: Generate FFE SQL credentials
         shell: pwsh
         env:
           FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
@@ -29,9 +34,14 @@ jobs:
           FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
           FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
         run: |
-          pip install -e .[export]
-          python scripts/i18n/i18n_check.py
           python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_HOST" --user="$env:FFE_USER" --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
+      - name: Generate i18n files
+        shell: pwsh
+        run: |
+          python scripts/i18n/i18n_check.py
+      - name: Generate ZIP file
+        shell: pwsh
+        run: |
           python scripts/export/export.py --github="${{ github.ref_name }}"
       - name: Create release
         uses: softprops/action-gh-release@v2
