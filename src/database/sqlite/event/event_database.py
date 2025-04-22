@@ -1351,11 +1351,14 @@ class EventDatabase(MigrationDatabase):
             return self._row_to_stored_tournament(row)
         return None
 
+    def get_stored_tournament_last_updates(self) -> dict[int, float]:
+        """Fetches the timestamp of the last update of each tournament.
+        Returns a dict of timestamp per tournament ID."""
+        self.execute('SELECT `id`, `last_update` FROM `tournament`')
+        return {row['id']: row['last_update'] for row in self.fetchall()}
+
     def load_stored_tournaments(self) -> Iterator[StoredTournament]:
-        self.execute(
-            'SELECT * FROM `tournament` ORDER BY `uniq_id`',
-            (),
-        )
+        self.execute('SELECT * FROM `tournament` ORDER BY `uniq_id`')
         yield from map(self._row_to_stored_tournament, self.fetchall())
 
     def _write_stored_tournament(

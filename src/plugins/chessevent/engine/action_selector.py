@@ -25,7 +25,12 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from utils.enum import Result
-from database.access.papi.papi_database import PapiDatabase, PapiVariable, UNPLAYED_COLOR, BYE_COLOR
+from database.access.papi.papi_database import (
+    PapiDatabase,
+    PapiVariable,
+    UNPLAYED_COLOR,
+    BYE_COLOR,
+)
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import PLUGIN_NAME
@@ -149,7 +154,7 @@ class ActionSelector(metaclass=Singleton):
         For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
         Returns the number of players added."""
         players_added: int = 0
-        with PapiDatabase(tournament.file, write=True) as papi_database:
+        with tournament.papi_write_database as papi_database:
             with EventDatabase(tournament.event.uniq_id, write=True) as event_database:
                 cls.write_chessevent_info(papi_database, chessevent_tournament)
                 for player_papi_id, chessevent_player in enumerate(
@@ -165,9 +170,11 @@ class ActionSelector(metaclass=Singleton):
                 event_database.set_tournament_check_in(tournament.id, True)
                 papi_database.open_check_in(1)
                 event_database.execute(
-                    'UPDATE `tournament` SET `chessevent_last_download_md5` = ? WHERE `id` = ?',
+                    'UPDATE `tournament` SET `chessevent_last_download_md5` = ?, '
+                    '`last_update` = ? WHERE `id` = ?',
                     (
                         chessevent_download_md5,
+                        time.time(),
                         tournament.id,
                     ),
                 )
