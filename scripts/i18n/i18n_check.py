@@ -6,6 +6,7 @@ from pathlib import Path
 from babel.messages import Catalog, Message
 from babel.messages.pofile import read_po, write_po
 
+from common import BASE_DIR
 from common.i18n.babel import BabelWrapper
 from common.i18n import (
     DEFAULT_LOCALE,
@@ -236,7 +237,7 @@ class LocaleInfo:
 class I18nChecker:
     def __init__(self):
         # The path of the i18n files (this script should be run from the dev root).
-        self.locale_dir: Path = Path('locale')
+        self.locale_dir: Path = BASE_DIR / 'locale'
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.ok: bool = True
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
@@ -257,7 +258,7 @@ class I18nChecker:
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
-        doc_file: Path = Path('docs') / '86-i18n.md'
+        doc_file: Path = BASE_DIR / 'docs' / '86-i18n.md'
         lines_before_comment: list[str] = []
         lines_after_comment: list[str] = []
         # Read the lines until the expected comment is found
