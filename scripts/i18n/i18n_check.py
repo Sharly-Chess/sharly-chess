@@ -1,5 +1,4 @@
 import re
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -7,29 +6,16 @@ from pathlib import Path
 from babel.messages import Catalog, Message
 from babel.messages.pofile import read_po, write_po
 
-sys.path.extend(
-    map(
-        str,
-        [
-            Path(__file__).parents[2],  # The root path
-            Path(__file__).parents[2]
-            / 'src',  # The path to the sources of the application
-            Path(__file__).parents[2]
-            / 'scripts',  # The path to the scripts of the application
-        ],
-    )
-)
-
-from scripts.i18n.i18n_babel import BabelWrapper
-
-from common.i18n import (  # Noqa: E402
+from common import BASE_DIR
+from common.i18n.babel import BabelWrapper
+from common.i18n import (
     DEFAULT_LOCALE,
     locale_localized_name,
     locale_flag_url,
     translators,
     locales,
 )
-from common.logger import (  # Noqa: E402
+from common.logger import (
     print_interactive_error,
     print_interactive_warning,
     print_interactive_info,
@@ -251,7 +237,7 @@ class LocaleInfo:
 class I18nChecker:
     def __init__(self):
         # The path of the i18n files (this script should be run from the dev root).
-        self.locale_dir: Path = Path('locale')
+        self.locale_dir: Path = BASE_DIR / 'locale'
         self.pot_file: Path = self.locale_dir / 'messages.pot'
         self.ok: bool = True
         print_interactive_info(f'Extracting i18n strings to {self.pot_file}...')
@@ -272,7 +258,7 @@ class I18nChecker:
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
-        doc_file: Path = Path('docs') / '86-i18n.md'
+        doc_file: Path = BASE_DIR / 'docs' / '86-i18n.md'
         lines_before_comment: list[str] = []
         lines_after_comment: list[str] = []
         # Read the lines until the expected comment is found

@@ -1,5 +1,4 @@
 import re
-import sys
 from pathlib import Path
 
 import requests
@@ -8,20 +7,8 @@ from babel.messages.pofile import read_po, write_po
 from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
-sys.path.extend(
-    map(
-        str,
-        [
-            Path(__file__).parents[2],  # The root path
-            Path(__file__).parents[2]
-            / 'src',  # The path to the sources of the application
-            Path(__file__).parents[2]
-            / 'scripts',  # The path to the scripts of the application
-        ],
-    )
-)
 
-from scripts.i18n.i18n_babel import run_babel_command
+from common.i18n.babel import BabelWrapper
 
 from common.i18n import DEFAULT_LOCALE
 from common.logger import (
@@ -45,18 +32,18 @@ class I18nTranslator:
         if not po_file.is_file():
             print_interactive_info(f'Creating [{po_file}] from [{pot_file}]...')
             po_file.parent.mkdir(parents=True, exist_ok=True)
-            run_babel_command(
+            BabelWrapper.run_babel_command(
                 'init',
                 [
                     f'--locale={target_locale}',
                     f'--input-file={pot_file}',
                     f'--output-file={po_file}',
                 ],
-                quiet=True,
+                verbose=False,
             )
             print_interactive_success(f'[{po_file}] created.')
         print_interactive_info(f'Updating {po_file} from the sources...')
-        run_babel_command(
+        BabelWrapper.run_babel_command(
             'update',
             [
                 f'--locale={target_locale}',
@@ -67,7 +54,7 @@ class I18nTranslator:
                 '--no-wrap',
                 '--omit-header',
             ],
-            quiet=True,
+            verbose=False,
         )
         print_interactive_success(f'[{po_file}] updated.')
         print_interactive_info('Loading the catalog ...')
@@ -154,13 +141,13 @@ class I18nTranslator:
             print_interactive_warning(f'Errors found, please check {po_file}.')
         mo_file: Path = po_file.with_suffix('.mo')
         print_interactive_success(f'Compiling [{po_file}] to [{mo_file}]...')
-        run_babel_command(
+        BabelWrapper.run_babel_command(
             'compile',
             [
                 f'--directory={locale_dir}',
                 f'--locale={target_locale}',
             ],
-            quiet=False,
+            verbose=True,
         )
         print_interactive_success(f'Written [{mo_file}]...')
 

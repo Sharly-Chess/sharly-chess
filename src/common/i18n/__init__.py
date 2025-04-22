@@ -10,7 +10,7 @@ from babel import Locale
 from common import BASE_DIR, DEVEL_ENV
 from common.exception import PapiWebException
 from common.logger import get_logger
-from scripts.i18n.i18n_babel import BabelWrapper
+from common.i18n.babel import BabelWrapper
 
 logger: Logger = get_logger()
 
