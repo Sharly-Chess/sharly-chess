@@ -1,5 +1,4 @@
 import re
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -7,29 +6,15 @@ from pathlib import Path
 from babel.messages import Catalog, Message
 from babel.messages.pofile import read_po, write_po
 
-sys.path.extend(
-    map(
-        str,
-        [
-            Path(__file__).parents[2],  # The root path
-            Path(__file__).parents[2]
-            / 'src',  # The path to the sources of the application
-            Path(__file__).parents[2]
-            / 'scripts',  # The path to the scripts of the application
-        ],
-    )
-)
-
-from utils.i18n_babel import BabelWrapper
-
-from common.i18n import (  # Noqa: E402
+from common.i18n.babel import BabelWrapper
+from common.i18n import (
     DEFAULT_LOCALE,
     locale_localized_name,
     locale_flag_url,
     translators,
     locales,
 )
-from common.logger import (  # Noqa: E402
+from common.logger import (
     print_interactive_error,
     print_interactive_warning,
     print_interactive_info,

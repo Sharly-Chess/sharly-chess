@@ -17,7 +17,7 @@ class BabelWrapper:
     pot_file: Path = locale_dir / 'messages.pot'
 
     @staticmethod
-    def _run_babel_command(
+    def run_babel_command(
         babel_command: str,
         babel_args: list,
         verbose: bool = False,
@@ -49,7 +49,7 @@ class BabelWrapper:
     @classmethod
     def extract_i18n_strings(cls, verbose: bool = False) -> bool:
         """Updates the POT file from the source files, returns True if the POT file has changed, False otherwise."""
-        extract_config_file: Path = Path() / 'scripts' / 'i18n' / 'babel.cfg'
+        extract_config_file: Path = Path('src') / 'common' / 'i18n' / 'babel.cfg'
         logger.log(
             logging.INFO if verbose else logging.DEBUG,
             'Babel configuration (%s):',
@@ -67,7 +67,7 @@ class BabelWrapper:
         else:
             pot_fingerprint = bytearray()
         tmp_file: Path = cls.pot_file.with_suffix('.tmp')
-        cls._run_babel_command(
+        cls.run_babel_command(
             'extract',
             [
                 f'--mapping-file={extract_config_file}',
@@ -102,7 +102,7 @@ class BabelWrapper:
             po_fingerprint = bytearray()
             logger.info('Initializing %s...', po_file)
             po_file.parent.mkdir(parents=True, exist_ok=True)
-            cls._run_babel_command(
+            cls.run_babel_command(
                 'init',
                 [
                     f'--locale={locale}',
@@ -118,7 +118,7 @@ class BabelWrapper:
         )
         tmp_file: Path = po_file.with_suffix('.tmp')
         shutil.copy(po_file, tmp_file)
-        cls._run_babel_command(
+        cls.run_babel_command(
             'update',
             [
                 f'--locale={locale}',
@@ -143,7 +143,7 @@ class BabelWrapper:
         logger.log(
             logging.INFO if verbose else logging.DEBUG, 'Compiling locale %s...', locale
         )
-        cls._run_babel_command(
+        cls.run_babel_command(
             'compile',
             [
                 '--use-fuzzy',
