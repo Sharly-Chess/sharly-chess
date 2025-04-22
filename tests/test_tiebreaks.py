@@ -274,7 +274,7 @@ class SwissTieBreakTestCase(AbstractTieBreakTestCase):
     def test_buchholz_cut1(self):
         tie_break_ = tie_breaks.BuchholzTieBreak([options.CutBottomTieBreakOption(1)])
         results = self.get_tie_break_player_values(
-            tie_break_, exclude_ids=[5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15]
+            tie_break_, only_ids=[5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15]
         )
         expected = {
             5: 7.5,
