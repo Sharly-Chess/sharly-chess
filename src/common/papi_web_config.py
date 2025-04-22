@@ -196,6 +196,9 @@ class PapiWebConfig(metaclass=Singleton):
     # The extension of YAML files.
     yml_ext: str = 'yml'
 
+    # ID of the event used for testing
+    test_event_uniq_id: str = 'test-event'
+
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
     jinja2_version: Version = Version(jinja2.__version__)
