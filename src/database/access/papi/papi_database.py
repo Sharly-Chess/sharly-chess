@@ -1,4 +1,5 @@
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, date
 from enum import StrEnum
@@ -87,9 +88,17 @@ class PapiDatabase(AccessDatabase):
     """The database class, using the Papi format of the French Chess Federation
     Tournament manager."""
 
-    def __init__(self, file: Path, write: bool = False):
+    def __init__(
+        self, file: Path, write: bool = False, on_exit: Callable | None = None
+    ):
         super().__init__(file, write)
         self.date_of_birth_pattern: Pattern = re.compile(r'^\d{1,2}/\d{1,2}/(\d{1,4})$')
+        self.on_exit = on_exit
+
+    def __exit__(self, exc_type, exc_val, tb):
+        super().__exit__(exc_type, exc_val, tb)
+        if self.on_exit:
+            self.on_exit()
 
     def create_empty(self):
         assert not self.file.exists()

@@ -449,10 +449,13 @@ class FFESession(Session):
         if error:
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+            now = time.time()
             event_database.execute(
-                'UPDATE `tournament` SET `ffe_last_upload` = ? WHERE `id` = ?',
+                'UPDATE `tournament` SET `ffe_last_upload` = ?, '
+                '`last_update` = ? WHERE `id` = ?',
                 (
-                    time.time(),
+                    now,
+                    now,
                     self.tournament.id,
                 ),
             )
@@ -558,10 +561,13 @@ class FFESession(Session):
             logger.error(error)
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+            now = time.time()
             event_database.execute(
-                'UPDATE `tournament` SET `ffe_last_rules_upload` = ? WHERE `id` = ?',
+                'UPDATE `tournament` SET `ffe_last_rules_upload` = ?, '
+                '`last_update` = ? WHERE `id` = ?',
                 (
-                    time.time(),
+                    now,
+                    now,
                     self.tournament.id,
                 ),
             )

@@ -88,6 +88,9 @@ class Tournament:
                 ).format(filename=self.filename),
                 tournament=self,
             )
+        self.stored_file_modified_timestamp: float | None = None
+        if self.file_exists:
+            self.stored_file_modified_timestamp = self.file_modified_timestamp
         self._players_by_id: dict[int, Player] | None = None
         self._papi_tournament_info: PapiTournamentInfo | None = None
         self._players_by_rank: dict[int, Player] | None = None
@@ -145,6 +148,14 @@ class Tournament:
     @property
     def file_exists(self) -> bool:
         return self.file.exists()
+
+    @property
+    def file_modified_timestamp(self) -> float:
+        return self.file.lstat().st_mtime
+
+    @property
+    def papi_write_database(self) -> PapiDatabase:
+        return PapiDatabase(self.file, write=True, on_exit=self.on_papi_write_exit)
 
     @property
     def start_timestamp(self) -> float:
@@ -517,11 +528,12 @@ class Tournament:
                 self._players_by_id = {}
         return self._papi_tournament_info, self._players_by_id
 
-    def clear_cache(
-        self,
-        clear_papi_tournament_info: bool = False,
-        clear_players_by_id: bool = False,
-    ):
+    def on_papi_write_exit(self):
+        """This function has to be executed after the Papi DB was opened
+        in write mode to ensure not reloading it unnecessarily."""
+        self.stored_file_modified_timestamp = self.file_modified_timestamp
+
+    def clear_cache(self, clear_papi_cache: bool = False):
         """Clears the cache of the tournament.
         If *clear_papi_tournament_info* or *clear_players_by_id*,
         the values will need to be fetched again from the Papi Database."""
@@ -530,13 +542,11 @@ class Tournament:
             for name in dir(self)
             if isinstance(getattr(type(self), name, None), cached_property)
         ]
-        if clear_players_by_id:
+        if clear_papi_cache:
             self._players_by_id = None
-        else:
-            cached_property_names.remove('players_by_id')
-        if clear_papi_tournament_info:
             self._papi_tournament_info = None
         else:
+            cached_property_names.remove('players_by_id')
             cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:
             if property_name in self.__dict__:
@@ -981,7 +991,8 @@ class Tournament:
         if round_ is None:
             round_ = self.current_round
 
-        with PapiDatabase(self.file, write=True) as papi_database:
+        print(self.stored_file_modified_timestamp)
+        with self.papi_write_database as papi_database:
             papi_database.set_player_result(
                 board.white_player.ref_id, round_, white_result, True
             )
@@ -989,6 +1000,8 @@ class Tournament:
                 board.black_player.ref_id, round_, black_result, True
             )
             papi_database.commit()
+        print(self.stored_file_modified_timestamp)
+        print(self.file_modified_timestamp)
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.add_stored_result(self.id, round_, board, white_result)
             event_database.commit()
