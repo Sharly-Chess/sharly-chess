@@ -5,6 +5,7 @@ import sys
 from logging import Logger
 from pathlib import Path
 
+from common import BASE_DIR
 from common.logger import get_logger
 
 from babel.messages.frontend import CommandLineInterface
@@ -13,7 +14,7 @@ logger: Logger = get_logger()
 
 
 class BabelWrapper:
-    locale_dir: Path = Path('locale')
+    locale_dir: Path = BASE_DIR / 'locale'
     pot_file: Path = locale_dir / 'messages.pot'
 
     @staticmethod
@@ -49,7 +50,7 @@ class BabelWrapper:
     @classmethod
     def extract_i18n_strings(cls, verbose: bool = False) -> bool:
         """Updates the POT file from the source files, returns True if the POT file has changed, False otherwise."""
-        extract_config_file: Path = Path('src') / 'common' / 'i18n' / 'babel.cfg'
+        extract_config_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / 'babel.cfg'
         logger.log(
             logging.INFO if verbose else logging.DEBUG,
             'Babel configuration (%s):',
