@@ -28,12 +28,11 @@ from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
-from database.sqlite.event.event_database import EventDatabase
 from utils.enum import (
     ScreenType,
     PlayerGender,
 )
-from database.sqlite.event.event_store import StoredEvent, StoredTournament
+from database.sqlite.event.event_store import StoredEvent
 
 logger: Logger = get_logger()
 
@@ -507,10 +506,6 @@ class Event:
             base_uniq_id or _('timer'), self.timers_by_uniq_id
         )
 
-    @property
-    def tournaments(self) -> Iterable[Tournament]:
-        return self.tournaments_by_id.values()
-
     @cached_property
     def tournaments_by_id(self) -> dict[int, Tournament]:
         if self.errors:
@@ -554,31 +549,6 @@ class Event:
             for tournament in self.tournaments_sorted_by_uniq_id
             if not tournament.finished and tournament.file_exists
         ]
-
-    def check_update(self):
-        """Verify that all the tournaments of the event are up to date.
-        If they are not, update them."""
-        stored_tournaments: list[StoredTournament] = []
-        modified = False
-        with EventDatabase(self.uniq_id) as database:
-            last_updates = database.get_stored_tournament_last_updates()
-            for stored_tournament in self.stored_event.stored_tournaments:
-                id_ = stored_tournament.id
-                assert id_ is not None
-                if stored_tournament.last_update == last_updates[id_]:
-                    stored_tournaments.append(stored_tournament)
-                else:
-                    modified = True
-                    new_stored_tournament = database.get_stored_tournament(id_)
-                    assert new_stored_tournament is not None
-                    stored_tournaments.append(new_stored_tournament)
-                    if tournament := self.tournaments_by_id[id_]:
-                        tournament.stored_tournament = new_stored_tournament
-                        tournament.clear_cache()
-        if modified:
-            self.stored_event.stored_tournaments = stored_tournaments
-        for tournament in self.tournaments:
-            tournament.check_papi_update()
 
     def get_unused_tournament_uniq_id(
         self,

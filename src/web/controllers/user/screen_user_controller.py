@@ -108,7 +108,7 @@ class ScreenUserController(BaseScreenUserController):
             case _:
                 raise ValueError(f'type={screen_set.type}')
         with suppress(FileNotFoundError):
-            if tournament.file_modified_timestamp > date:
+            if tournament.file.lstat().st_mtime > date:
                 return True
         return False
 

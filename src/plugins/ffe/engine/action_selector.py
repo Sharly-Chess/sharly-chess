@@ -53,7 +53,7 @@ class ActionSelector(metaclass=Singleton):
     def ffe_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
         try:
             ffe_last_upload = cls.ffe_last_upload(tournament)
-            if ffe_last_upload > tournament.file_modified_timestamp:
+            if ffe_last_upload > tournament.file.lstat().st_mtime:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
             if time() < ffe_last_upload + PapiWebConfig().ffe_upload_delay:

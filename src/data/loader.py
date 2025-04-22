@@ -167,14 +167,13 @@ class EventLoader:
     def _load_event(self, uniq_id: str, reload: bool) -> Event:
         if reload:
             self.clear_cache(uniq_id)
-        if uniq_id in self._loaded_events_by_id:
-            event = self._loaded_events_by_id[uniq_id]
-            event.check_update()
-            return event
-        self.load_event_ids(uniq_id)
-        stored_event: StoredEvent = self.load_stored_event(uniq_id)
-        self.__class__._loaded_events_by_id[uniq_id] = Event(stored_event)
-        return self._loaded_events_by_id[uniq_id]
+        try:
+            return self._loaded_events_by_id[uniq_id]
+        except KeyError:
+            self.load_event_ids(uniq_id)
+            stored_event: StoredEvent = self.load_stored_event(uniq_id)
+            self.__class__._loaded_events_by_id[uniq_id] = Event(stored_event)
+            return self._loaded_events_by_id[uniq_id]
 
     def load_event(self, uniq_id: str) -> Event:
         return self._load_event(uniq_id, reload=False)

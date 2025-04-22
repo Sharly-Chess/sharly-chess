@@ -25,12 +25,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from utils.enum import Result
-from database.access.papi.papi_database import (
-    PapiDatabase,
-    PapiVariable,
-    UNPLAYED_COLOR,
-    BYE_COLOR,
-)
+from database.access.papi.papi_database import PapiDatabase, PapiVariable, UNPLAYED_COLOR, BYE_COLOR
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import PLUGIN_NAME
@@ -170,11 +165,9 @@ class ActionSelector(metaclass=Singleton):
                 event_database.set_tournament_check_in(tournament.id, True)
                 papi_database.open_check_in(1)
                 event_database.execute(
-                    'UPDATE `tournament` SET `chessevent_last_download_md5` = ?, '
-                    '`last_update` = ? WHERE `id` = ?',
+                    'UPDATE `tournament` SET `chessevent_last_download_md5` = ? WHERE `id` = ?',
                     (
                         chessevent_download_md5,
-                        time.time(),
                         tournament.id,
                     ),
                 )

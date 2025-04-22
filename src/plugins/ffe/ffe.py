@@ -382,12 +382,10 @@ class FfePlugin(Plugin):
     def set_player_default_ratings(self, federation: str, player: 'Player'):
         if federation != 'FRA':
             return
-
         def set_rating(tournament_rating: TournamentRating, rating_value: int):
             player.ratings[tournament_rating] = PlayerRating(
                 rating_value, PlayerRatingType.ESTIMATED
             )
-
         if not player.get_rating(TournamentRating.RAPID).value:
             match player.category:
                 case PlayerCategory.U8 | PlayerCategory.U10:
@@ -588,6 +586,8 @@ class FfePlugin(Plugin):
         return {
             'ffe_id': self.get_data(data, 'ffe_id', None),
             'ffe_password': self.get_data(data, 'ffe_password', None),
+            'ffe_last_upload': self.get_data(data, 'ffe_last_upload', 0.0),
+            'ffe_last_rules_upload': self.get_data(data, 'ffe_last_rules_upload', 0.0),
         }
 
     @hookimpl

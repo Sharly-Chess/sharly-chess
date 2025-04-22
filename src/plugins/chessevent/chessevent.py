@@ -186,6 +186,9 @@ class ChessEventPlugin(Plugin):
             'chessevent_tournament_name': self.get_data(
                 td, 'chessevent_tournament_name', ''
             ),
+            'chessevent_last_download_md5': self.get_data(
+                td, 'chessevent_last_download_md5', ''
+            ),
         }
 
     @hookimpl
