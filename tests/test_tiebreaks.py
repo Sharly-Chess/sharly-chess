@@ -12,7 +12,7 @@ from plugins.ffe import ffe_tie_breaks
 from utils.tests import BaseTestCase
 
 
-class AbstractTieBreakTestCase(BaseTestCase, ABC):
+class TieBreakTestCase(BaseTestCase, ABC):
     @property
     @abstractmethod
     def tournament_uniq_id(self) -> str:
@@ -58,7 +58,7 @@ class AbstractTieBreakTestCase(BaseTestCase, ABC):
         )
 
 
-class SwissTieBreakTestCase(AbstractTieBreakTestCase):
+class SwissTieBreakTestCase(TieBreakTestCase):
     @property
     def tournament_uniq_id(self) -> str:
         return 'swiss'
@@ -762,7 +762,7 @@ class SwissTieBreakTestCase(AbstractTieBreakTestCase):
         self.assertEqual(results, expected)
 
 
-class RoundRobinTieBreaks(AbstractTieBreakTestCase):
+class RoundRobinTieBreakTestCase(TieBreakTestCase):
     @property
     def tournament_uniq_id(self) -> str:
         return 'round-robin'
