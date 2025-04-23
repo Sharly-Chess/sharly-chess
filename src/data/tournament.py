@@ -88,6 +88,9 @@ class Tournament:
                 ).format(filename=self.filename),
                 tournament=self,
             )
+        self.stored_file_modified_timestamp: float | None = None
+        if self.file_exists:
+            self.stored_file_modified_timestamp = self.file_modified_timestamp
         self._players_by_id: dict[int, Player] | None = None
         self._papi_tournament_info: PapiTournamentInfo | None = None
         self._players_by_rank: dict[int, Player] | None = None
@@ -145,6 +148,20 @@ class Tournament:
     @property
     def file_exists(self) -> bool:
         return self.file.exists()
+
+    @property
+    def file_modified_timestamp(self) -> float:
+        return self.file.lstat().st_mtime
+
+    @property
+    def papi_write_database(self) -> PapiDatabase:
+        """This database should be used instead of creating a new instance
+        in write mode to ensure not reloading it unnecessarily."""
+        return PapiDatabase(
+            self.file,
+            write=True,
+            on_exit=self.update_stored_file_modified_timestamp,
+        )
 
     @property
     def start_timestamp(self) -> float:
@@ -517,11 +534,17 @@ class Tournament:
                 self._players_by_id = {}
         return self._papi_tournament_info, self._players_by_id
 
-    def clear_cache(
-        self,
-        clear_papi_tournament_info: bool = False,
-        clear_players_by_id: bool = False,
-    ):
+    def check_papi_update(self):
+        if not self.file_exists:
+            self.clear_cache(clear_papi_cache=True)
+        elif self.stored_file_modified_timestamp != self.file_modified_timestamp:
+            self.clear_cache(clear_papi_cache=True)
+            self.update_stored_file_modified_timestamp()
+
+    def update_stored_file_modified_timestamp(self):
+        self.stored_file_modified_timestamp = self.file_modified_timestamp
+
+    def clear_cache(self, clear_papi_cache: bool = False):
         """Clears the cache of the tournament.
         If *clear_papi_tournament_info* or *clear_players_by_id*,
         the values will need to be fetched again from the Papi Database."""
@@ -530,13 +553,11 @@ class Tournament:
             for name in dir(self)
             if isinstance(getattr(type(self), name, None), cached_property)
         ]
-        if clear_players_by_id:
+        if clear_papi_cache:
             self._players_by_id = None
-        else:
-            cached_property_names.remove('players_by_id')
-        if clear_papi_tournament_info:
             self._papi_tournament_info = None
         else:
+            cached_property_names.remove('players_by_id')
             cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:
             if property_name in self.__dict__:
@@ -981,7 +1002,7 @@ class Tournament:
         if round_ is None:
             round_ = self.current_round
 
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             papi_database.set_player_result(
                 board.white_player.ref_id, round_, white_result, True
             )
@@ -1015,7 +1036,7 @@ class Tournament:
         assert board.white_player is not None
         assert board.black_player is not None
         assert board.id is not None
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             for player in (board.white_player, board.black_player):
                 papi_database.set_player_result(
                     player.ref_id, self.current_round, Result.NO_RESULT, True
@@ -1034,7 +1055,7 @@ class Tournament:
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             with EventDatabase(self.event.uniq_id, write=True) as event_database:
                 papi_database.check_in_player(player.id, check_in)
                 event_database.set_tournament_last_check_in_update(self.id)
@@ -1042,12 +1063,9 @@ class Tournament:
                 papi_database.commit()
         player.check_in = check_in
 
-    def add_player(
-        self,
-        player: Player,
-    ):
+    def add_player(self, player: Player):
         """Adds a new player to the tournament, returns the player's ID."""
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
                 player=player
             )
@@ -1106,7 +1124,7 @@ class Tournament:
     ):
         """Removes a player from the tournament, returns the deleted data as a dict if needed
         (used to move players from one tournament to another one)."""
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             papi_database.delete_player(player.ref_id)
             papi_database.commit()
 
@@ -1115,7 +1133,7 @@ class Tournament:
         player: Player,
     ):
         """Updates a player."""
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             papi_database.update_player(player)
             papi_database.commit()
 
@@ -1141,7 +1159,7 @@ class Tournament:
                 f'Black player {black_player.last_name} {black_player.first_name} already has an opponent for round {round_nb}.'
             )
 
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             white_player.pairings[round_nb] = Pairing(
                 BoardColor.WHITE,
                 black_player.id if black_player else 1,
@@ -1161,7 +1179,7 @@ class Tournament:
             papi_database.commit()
 
     def unpair_boards(self, boards: list[Board], round_: int):
-        with PapiDatabase(self.file, True) as database:
+        with self.papi_write_database as database:
             for board in boards:
                 for player in (board.white_player, board.black_player):
                     if not player:
@@ -1176,7 +1194,7 @@ class Tournament:
     def permute_board_colors(self, board: Board, round_: int):
         assert board.white_player is not None
         assert board.black_player is not None
-        with PapiDatabase(self.file, True) as database:
+        with self.papi_write_database as database:
             pairing = Pairing(BoardColor.BLACK, board.black_player.id, board.result)
             database.update_player_pairing(board.white_player, round_, pairing)
             self.players_by_id[board.white_player.id].pairings[round_] = pairing
@@ -1187,7 +1205,7 @@ class Tournament:
 
     def update_round_pairings(self, round_nb: int):
         """Updates the pairings of all players for a round."""
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             for player in self.players:
                 if round_nb in player.pairings:
                     papi_database.update_player_pairing(
@@ -1200,7 +1218,7 @@ class Tournament:
         values in common with the stored tournament."""
         if not self.file_exists:
             return
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             if (tie_breaks := self._update_tie_breaks()) is not None:
                 papi_database.update_tie_breaks(tie_breaks)
             papi_database.write_info(
@@ -1231,7 +1249,7 @@ class Tournament:
         )
         assert self.stored_tournament.id is not None
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            with PapiDatabase(self.file, write=True) as papi_database:
+            with self.papi_write_database as papi_database:
                 event_database.set_tournament_last_check_in_update(
                     self.stored_tournament.id
                 )
@@ -1253,7 +1271,7 @@ class Tournament:
             )
             event_database.set_tournament_check_in(self.id, False)
             event_database.commit()
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             papi_database.close_check_in(
                 self.current_round + 1,
                 (self.rounds + 1) if forfeit_last_rounds else None,
@@ -1265,7 +1283,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             event_database.set_tournament_last_result_update(player.tournament_id)
             event_database.commit()
-        with PapiDatabase(self.file, write=True) as papi_database:
+        with self.papi_write_database as papi_database:
             for round_, result in byes.items():
                 papi_database.set_player_result(
                     player.ref_id,

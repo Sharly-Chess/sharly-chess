@@ -31,7 +31,6 @@ from utils.enum import (
     PlayerTitle,
     Result,
 )
-from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.util import PlayerFFELicence
 from plugins.manager import plugin_manager
@@ -1657,7 +1656,7 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament: Tournament = web_context.admin_event.tournaments_by_id[
                     tournament_id
                 ]
-                with PapiDatabase(tournament.file, True) as database:
+                with tournament.papi_write_database as database:
                     for player in tournament_players:
                         database.update_player(player)
                     database.commit()
