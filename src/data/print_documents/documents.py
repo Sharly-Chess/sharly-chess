@@ -247,7 +247,7 @@ class BoardPrintDocument(PrintDocument, ABC):
         super().validate_options()
         assert self.tournament is not None
         at_round = self._get_option(RoundPrintOption)
-        if at_round is None:
+        if at_round.value is None:
             return
         if at_round.value > self.tournament.rounds:
             raise OptionError(
