@@ -37,9 +37,13 @@ class EventLoader:
     _loaded_events_expire_at: dict[str, datetime] = {}
 
     def __init__(self):
+        to_unload: list[str] = []
         for uniq_id, expires_at in self._loaded_events_expire_at.items():
             if expires_at < datetime.now():
-                self.unload_event(uniq_id)
+                to_unload.append(uniq_id)
+        for uniq_id in to_unload:
+            self.unload_event(uniq_id)
+            logger.debug(f'Cached event [{uniq_id}] expired')
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
