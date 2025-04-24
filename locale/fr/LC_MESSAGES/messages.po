@@ -2787,7 +2787,7 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] has a bye for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
