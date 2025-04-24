@@ -3,7 +3,7 @@ from decimal import Decimal
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 import pluggy  # type: ignore
 
 from common import APP_NAME

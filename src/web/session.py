@@ -1,7 +1,7 @@
 import time
 from typing import TYPE_CHECKING
 
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 
 from common.papi_web_config import PapiWebConfig
 from data.player import Federation, Club
@@ -304,7 +304,9 @@ class SessionHandler:
     ) -> list[PlayerGender]:
         return [
             PlayerGender(gender_value)
-            for gender_value in request.session.get(cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, [])
+            for gender_value in request.session.get(
+                cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, []
+            )
         ]
 
     ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'

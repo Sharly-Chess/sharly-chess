@@ -4,8 +4,7 @@ from typing import Annotated, Any, Iterable
 
 import xlsxwriter
 from litestar import get, patch, delete, post, Response
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect, File

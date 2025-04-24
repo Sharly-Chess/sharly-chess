@@ -1,7 +1,6 @@
 from litestar import get
 from litestar.config.response_cache import CACHE_FOREVER
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 
 from web.controllers.base_controller import BaseController, WebContext

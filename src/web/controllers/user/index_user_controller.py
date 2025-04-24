@@ -1,6 +1,5 @@
 from litestar import get
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, Reswap, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, Reswap, ClientRedirect
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 

@@ -2,8 +2,7 @@ from contextlib import suppress
 from typing import Annotated
 
 from litestar import head, post, get
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import Reswap, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, Reswap, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template

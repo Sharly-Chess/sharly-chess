@@ -5,8 +5,7 @@ from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch, delete
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import ClientRedirect, HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect

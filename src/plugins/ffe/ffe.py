@@ -8,7 +8,7 @@ from decimal import Decimal
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, override
 
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
@@ -58,8 +58,7 @@ class FfePlugin(Plugin):
     @property
     def description(self) -> str:
         return _(
-            'French Federation specific features '
-            '(player search, leagues, Papi compatibility)'
+            'French Federation specific features (player search, leagues, Papi compatibility)'
         )
 
     @property
