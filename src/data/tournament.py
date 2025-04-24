@@ -1258,9 +1258,9 @@ class Tournament:
                 papi_database.commit()
             event_database.commit()
 
-    def close_check_in(self, forfeit_last_rounds: bool):
-        """Closes the check-in for the tournament and sets all the players not checked-in as forfeit
-        for the next round (if forfeit_last_rounds, for the rest of the tournament)."""
+    def close_check_in(self, zpbs_last_rounds: bool):
+        """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
+        for the next round (if zpbs_last_rounds, for the rest of the tournament)."""
         assert self.check_in_open, (
             f'Check-in already closed for tournament [{self.uniq_id}].'
         )
@@ -1274,7 +1274,7 @@ class Tournament:
         with self.papi_write_database as papi_database:
             papi_database.close_check_in(
                 self.current_round + 1,
-                (self.rounds + 1) if forfeit_last_rounds else None,
+                (self.rounds + 1) if zpbs_last_rounds else None,
             )
             papi_database.commit()
 
