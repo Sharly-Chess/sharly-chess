@@ -301,6 +301,18 @@ msgstr ""
 msgid "Argument --server is deprecated, ignored."
 msgstr ""
 
+msgid "Assign a zero-point bye for the next round"
+msgstr ""
+
+msgid "Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds)."
+msgstr ""
+
+msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
+msgstr ""
+
+msgid "Assign zero-point byes for the rest of the tournament"
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -2043,9 +2055,6 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
-msgid "Last rounds no byes:"
-msgstr ""
-
 msgid "Last update"
 msgstr ""
 
@@ -2141,18 +2150,6 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
-msgstr ""
-
-msgid "Mark as forfeit for the coming round"
-msgstr ""
-
-msgid "Mark as forfeit for the rest of the tournament"
-msgstr ""
-
-msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
-msgstr ""
-
-msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
 msgstr ""
 
 #, python-format
@@ -2290,6 +2287,9 @@ msgstr ""
 
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nb."
+
+msgid "Nb. final rounds without byes:"
+msgstr ""
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
@@ -2787,7 +2787,7 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] has a bye for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
@@ -3710,7 +3710,7 @@ msgid "The number of columns used to display data."
 msgstr ""
 
 #, python-format
-msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgid "The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d)."
 msgstr ""
 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
@@ -4709,6 +4709,8 @@ msgid "{screen_type}-screen"
 msgstr ""
 
 #~ msgid "Default federation"
+#~ msgstr ""
+#~ msgid "Assign zero-point byes for the rest of the tournament"
 #~ msgstr ""
 
 #~ msgid "Default federation:"

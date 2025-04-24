@@ -432,8 +432,8 @@ class FFESession(Session):
         with PapiDatabase(tmp_file, write=True) as tmp_database:
             logger.debug("Deleting personal players' data...")
             tmp_database.delete_players_personal_data()
-            logger.debug('Deleting forfeits if no pairings...')
-            tmp_database.remove_forfeits_if_no_pairings()
+            logger.debug('Deleting ZPBs if no pairings...')
+            tmp_database.remove_zpbs_if_no_pairings()
             tmp_database.commit()
         html: str | None = self._read_url(
             url=url,
