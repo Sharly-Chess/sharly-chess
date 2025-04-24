@@ -1,341 +1,70 @@
-from dataclasses import dataclass, field
+from abc import abstractmethod, ABC
 from decimal import Decimal
-from typing import TYPE_CHECKING, cast
-import unittest
+from typing import Callable
 
 # Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager  # Noqa
+from plugins import manager  # Noqa E402
 
 from data.tie_breaks import tie_breaks, options
-from data.pairing import Pairing
-from utils.enum import (
-    Result,
-    BoardColor,
-    PlayerGender,
-    PlayerTitle,
-    TournamentPairing,
-    TournamentRating,
-)
-from data.player import TournamentPlayer, Federation
+from data.tournament import Tournament
+from data.player import Player
 from plugins.ffe import ffe_tie_breaks
-
-if TYPE_CHECKING:
-    from data.tournament import Tournament  # Noqa F401
+from utils.tests import BaseTestCase
 
 
-@dataclass
-class TieBreakTournament:
-    rounds: int
-    players_by_id: dict[int, TournamentPlayer] = field(default_factory=dict)
-    pairing: TournamentPairing = TournamentPairing.STANDARD
-    rating: TournamentRating = TournamentRating.STANDARD
-    point_values: dict[Result, float] | None = None
+class TieBreakTestCase(BaseTestCase, ABC):
+    @property
+    @abstractmethod
+    def tournament_uniq_id(self) -> str:
+        pass
 
+    @property
+    def tournament(self) -> Tournament:
+        return self.event.tournaments_by_uniq_id[self.tournament_uniq_id]
 
-class SwissTieBreaks(unittest.TestCase):
-    def setUp(self):
-        self.tournament = TieBreakTournament(
-            rounds=5,
-            players_by_id={
-                2: TournamentPlayer(
-                    2,
-                    'Bruno',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2150,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 10, Result.GAIN),
-                        2: Pairing(BoardColor.WHITE, 7, Result.GAIN),
-                        3: Pairing(BoardColor.BLACK, 1, Result.DRAW),
-                        4: Pairing(BoardColor.WHITE, 16, Result.GAIN),
-                        5: Pairing(BoardColor.BLACK, 3, Result.DRAW),
-                    },
-                ),
-                1: TournamentPlayer(
-                    1,
-                    'Alyx',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2200,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 9, Result.GAIN),
-                        2: Pairing(BoardColor.BLACK, 13, Result.DRAW),
-                        3: Pairing(BoardColor.WHITE, 2, Result.DRAW),
-                        4: Pairing(BoardColor.BLACK, 15, Result.GAIN),
-                        5: Pairing(BoardColor.WHITE, 4, Result.DRAW),
-                    },
-                ),
-                3: TournamentPlayer(
-                    3,
-                    'Charline',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2100,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 11, Result.DRAW),
-                        2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
-                        3: Pairing(BoardColor.WHITE, 8, Result.GAIN),
-                        4: Pairing(BoardColor.BLACK, 4, Result.DRAW),
-                        5: Pairing(BoardColor.WHITE, 2, Result.DRAW),
-                    },
-                ),
-                4: TournamentPlayer(
-                    4,
-                    'David',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2050,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 12, Result.GAIN),
-                        2: Pairing(None, None, Result.HALF_POINT_BYE),
-                        3: Pairing(BoardColor.WHITE, 13, Result.GAIN),
-                        4: Pairing(BoardColor.WHITE, 3, Result.DRAW),
-                        5: Pairing(BoardColor.BLACK, 1, Result.DRAW),
-                    },
-                ),
-                16: TournamentPlayer(
-                    16,
-                    'Stephan',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1450,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 8, Result.DRAW),
-                        2: Pairing(BoardColor.BLACK, 11, Result.GAIN),
-                        3: Pairing(BoardColor.WHITE, 7, Result.GAIN),
-                        4: Pairing(BoardColor.BLACK, 2, Result.LOSS),
-                        5: Pairing(BoardColor.WHITE, 15, Result.GAIN),
-                    },
-                ),
-                6: TournamentPlayer(
-                    6,
-                    'Franck',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1950,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 14, Result.LOSS),
-                        2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
-                        3: Pairing(None, None, Result.PAIRING_ALLOCATED_BYE),
-                        4: Pairing(BoardColor.WHITE, 10, Result.GAIN),
-                        5: Pairing(BoardColor.BLACK, 8, Result.GAIN),
-                    },
-                ),
-                5: TournamentPlayer(
-                    5,
-                    'Helene',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2000,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 13, Result.LOSS),
-                        2: Pairing(BoardColor.BLACK, 15, Result.LOSS),
-                        3: Pairing(BoardColor.WHITE, 11, Result.GAIN),
-                        4: Pairing(BoardColor.BLACK, 7, Result.DRAW),
-                        5: Pairing(BoardColor.WHITE, 10, Result.GAIN),
-                    },
-                ),
-                8: TournamentPlayer(
-                    8,
-                    'Irina',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1850,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 16, Result.DRAW),
-                        2: Pairing(BoardColor.WHITE, 14, Result.GAIN),
-                        3: Pairing(BoardColor.BLACK, 3, Result.LOSS),
-                        4: Pairing(BoardColor.WHITE, 13, Result.GAIN),
-                        5: Pairing(BoardColor.WHITE, 6, Result.LOSS),
-                    },
-                ),
-                11: TournamentPlayer(
-                    11,
-                    'Maria',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1700,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 3, Result.DRAW),
-                        2: Pairing(BoardColor.WHITE, 16, Result.LOSS),
-                        3: Pairing(BoardColor.BLACK, 5, Result.LOSS),
-                        4: Pairing(None, 9, Result.FORFEIT_GAIN),
-                        5: Pairing(BoardColor.WHITE, 7, Result.GAIN),
-                    },
-                ),
-                12: TournamentPlayer(
-                    12,
-                    'Nick',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1650,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 4, Result.LOSS),
-                        2: Pairing(None, None, Result.PAIRING_ALLOCATED_BYE),
-                        3: Pairing(None, 14, Result.FORFEIT_GAIN),
-                        4: Pairing(None, None, Result.ZERO_POINT_BYE),
-                        5: Pairing(None, None, Result.ZERO_POINT_BYE),
-                    },
-                ),
-                14: TournamentPlayer(
-                    14,
-                    'Paul',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1550,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
-                        2: Pairing(BoardColor.BLACK, 8, Result.LOSS),
-                        3: Pairing(None, 12, Result.FORFEIT_LOSS),
-                        4: Pairing(None, None, Result.ZERO_POINT_BYE),
-                        5: Pairing(BoardColor.BLACK, 13, Result.GAIN),
-                    },
-                ),
-                15: TournamentPlayer(
-                    15,
-                    'Reine',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1500,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 7, Result.LOSS),
-                        2: Pairing(BoardColor.WHITE, 5, Result.GAIN),
-                        3: Pairing(BoardColor.BLACK, 10, Result.GAIN),
-                        4: Pairing(BoardColor.WHITE, 1, Result.LOSS),
-                        5: Pairing(BoardColor.BLACK, 16, Result.LOSS),
-                    },
-                ),
-                7: TournamentPlayer(
-                    7,
-                    'Genevieve',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1900,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 15, Result.GAIN),
-                        2: Pairing(BoardColor.BLACK, 2, Result.LOSS),
-                        3: Pairing(BoardColor.BLACK, 16, Result.LOSS),
-                        4: Pairing(BoardColor.WHITE, 5, Result.DRAW),
-                        5: Pairing(BoardColor.BLACK, 11, Result.LOSS),
-                    },
-                ),
-                9: TournamentPlayer(
-                    9,
-                    'Jessica',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1800,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 1, Result.LOSS),
-                        2: Pairing(BoardColor.WHITE, 10, Result.LOSS),
-                        3: Pairing(None, None, Result.HALF_POINT_BYE),
-                        4: Pairing(None, 11, Result.FORFEIT_LOSS),
-                        5: Pairing(None, None, Result.PAIRING_ALLOCATED_BYE),
-                    },
-                ),
-                13: TournamentPlayer(
-                    13,
-                    'Opal',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1600,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 5, Result.GAIN),
-                        2: Pairing(BoardColor.WHITE, 1, Result.DRAW),
-                        3: Pairing(BoardColor.BLACK, 4, Result.LOSS),
-                        4: Pairing(BoardColor.BLACK, 8, Result.LOSS),
-                        5: Pairing(BoardColor.WHITE, 14, Result.LOSS),
-                    },
-                ),
-                10: TournamentPlayer(
-                    10,
-                    'Lais',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1750,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 2, Result.LOSS),
-                        2: Pairing(BoardColor.BLACK, 9, Result.GAIN),
-                        3: Pairing(BoardColor.WHITE, 15, Result.LOSS),
-                        4: Pairing(BoardColor.BLACK, 6, Result.LOSS),
-                        5: Pairing(BoardColor.BLACK, 5, Result.LOSS),
-                    },
-                ),
-            },
-            pairing=TournamentPairing.STANDARD,
+    @staticmethod
+    def get_exercise_id(player_id: int):
+        """The 2 tournaments used in these tests are from the TEC
+        'Exercises in Tie-Breaking' document. The id of the players in
+        the papi databases are similar but start from 2 instead of 1."""
+        return Player.player_papi_id_from_papi_web_id(player_id) - 1
+
+    def get_player_values[T](
+        self,
+        compute_player_value: Callable[[Player], T],
+        exclude_ids: list[int] | None = None,
+        only_ids: list[int] | None = None,
+    ) -> dict[int, T]:
+        player_values = {}
+        for player in self.tournament.players:
+            id_ = self.get_exercise_id(player.ref_id)
+            if not (
+                (exclude_ids and id_ in exclude_ids)
+                or (only_ids and id_ not in only_ids)
+            ):
+                player_values[id_] = compute_player_value(player)
+        return player_values
+
+    def get_tie_break_player_values[T](
+        self,
+        tie_break_: tie_breaks.TieBreak,
+        exclude_ids: list[int] | None = None,
+        only_ids: list[int] | None = None,
+    ):
+        return self.get_player_values(
+            lambda p: tie_break_.compute_player_value(p, after_round=None),
+            exclude_ids,
+            only_ids,
         )
-        for player in self.tournament.players_by_id.values():
-            player.tournament = cast('Tournament', self.tournament)
+
+
+class SwissTieBreakTestCase(TieBreakTestCase):
+    @property
+    def tournament_uniq_id(self) -> str:
+        return 'swiss'
 
     def test_points(self):
-        results = {
-            player.id: player.total_points()
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_player_values(lambda p: p.total_points())
         expected = {
             2: 4,
             1: 3.5,
@@ -358,10 +87,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_win(self):
         tie_break_ = tie_breaks.WinsTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 3,
             16: 3,
@@ -384,10 +110,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_won(self):
         tie_break_ = tie_breaks.GamesWonTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 3,
             16: 3,
@@ -410,10 +133,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_played_with_black(self):
         tie_break_ = tie_breaks.GamesPlayedWithBlackTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 3,
             1: 2,
@@ -436,10 +156,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_won_with_black(self):
         tie_break_ = tie_breaks.GamesWonWithBlackTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 1,
             1: 1,
@@ -462,10 +179,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_games_elected_to_play(self):
         tie_break_ = tie_breaks.RoundsElectedToPlayTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 5,
             1: 5,
@@ -488,10 +202,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_progressive_scores(self):
         tie_break_ = tie_breaks.ProgressiveScoresTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13,
             4: 11.5,
@@ -516,10 +227,7 @@ class SwissTieBreaks(unittest.TestCase):
         tie_break_ = tie_breaks.ProgressiveScoresTieBreak(
             [options.CutTieBreakOption(1)]
         )
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 12,
             3: 10.5,
@@ -542,10 +250,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz(self):
         tie_break_ = tie_breaks.BuchholzTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13,  # No problem exercise
             3: 15.5,  # 1 unplayed round in opponent each
@@ -568,12 +273,9 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz_cut1(self):
         tie_break_ = tie_breaks.BuchholzTieBreak([options.CutBottomTieBreakOption(1)])
-        results = {
-            i: tie_break_.compute_player_value(
-                self.tournament.players_by_id[i], after_round=None
-            )
-            for i in (5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15)
-        }
+        results = self.get_tie_break_player_values(
+            tie_break_, only_ids=[5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15]
+        )
         expected = {
             5: 7.5,
             8: 12,
@@ -592,13 +294,11 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_adjusted_score(self):
-        results = {
-            player.id: tie_breaks.TieBreakUtils.adjusted_score(
-                player,
-                after_round=self.tournament.rounds,
+        results = self.get_player_values(
+            lambda p: tie_breaks.TieBreakUtils.adjusted_score(
+                p, after_round=self.tournament.rounds
             )
-            for player in self.tournament.players_by_id.values()
-        }
+        )
         expected = {
             1: 3.5,
             2: 4.0,
@@ -620,12 +320,11 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_adjusted_score_fore(self):
-        results = {
-            player.id: tie_breaks.TieBreakUtils.adjusted_score(
-                player, after_round=self.tournament.rounds, adjust_fore=True
+        results = self.get_player_values(
+            lambda p: tie_breaks.TieBreakUtils.adjusted_score(
+                p, after_round=self.tournament.rounds, adjust_fore=True
             )
-            for player in self.tournament.players_by_id.values()
-        }
+        )
         expected = {
             2: 4,
             1: 3.5,
@@ -648,10 +347,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_fore_buchholz(self):
         tie_break_ = tie_breaks.ForeBuchholzTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13.5,
             3: 15,
@@ -674,10 +370,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz_legacy(self):
         tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13.0,
             3: 14.5,
@@ -700,10 +393,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz_cut_legacy(self):
         tie_break_ = ffe_tie_breaks.PapiBuchholzCutBottomTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 12.0,
             3: 12.5,
@@ -726,10 +416,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_buchholz_median_legacy(self):
         tie_break_ = ffe_tie_breaks.PapiMedianBuchholzTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 8.5,
             3: 8.5,
@@ -752,10 +439,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_aob(self):
         aob = tie_breaks.AverageOfBuchholzTieBreak().compute_player_value
-        results = {
-            player.id: round(aob(player, after_round=None), 2)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_player_values(lambda p: round(aob(p, after_round=None), 2))
         expected = {
             2: 13.6,
             3: 13.4,
@@ -778,10 +462,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_sonneborn_berger_swiss(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 9.5,
             3: 10.5,
@@ -804,10 +485,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_sb_cut1_swiss(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak([options.CutTieBreakOption(1)])
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 8.5,
             3: 9.25,
@@ -830,10 +508,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_aro(self):
         tie_break_ = tie_breaks.AverageRatingOpponentsTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 1880,
             3: 1940,
@@ -858,10 +533,7 @@ class SwissTieBreaks(unittest.TestCase):
         tie_break_ = tie_breaks.AverageRatingOpponentsTieBreak(
             [options.CutBottomTieBreakOption(1)]
         )
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 1988,
             3: 2000,
@@ -884,10 +556,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_tpr(self):
         tie_break_ = tie_breaks.TournamentPerformanceRatingTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 2120,
             3: 2089,
@@ -910,10 +579,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_tpr_legacy(self):
         tie_break_ = ffe_tie_breaks.PapiPerformanceTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 2180,
             4: 2093,
@@ -936,10 +602,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_apro(self):
         tie_break_ = tie_breaks.AveragePerformanceRatingOpponentsTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 1856,
             3: 1904,
@@ -977,11 +640,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_ptp(self):
         tie_break_ = tie_breaks.PerfectTournamentPerformanceTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-            if player.id not in (2, 14)
-        }
+        results = self.get_tie_break_player_values(tie_break_, exclude_ids=[2, 14])
         expected = {
             3: 2112,
             4: 2168,
@@ -1005,25 +664,16 @@ class SwissTieBreaks(unittest.TestCase):
         # I do not know why this happens, but it's the closest I got
         # to having all correct values
         self.assertEqual(
-            tie_break_.compute_player_value(
-                self.tournament.players_by_id[2], after_round=None
-            ),
-            2217,  # NOTE(Amaras): this should be 2216
-        )
-        self.assertEqual(
-            tie_break_.compute_player_value(
-                self.tournament.players_by_id[14], after_round=None
-            ),
-            1940,  # NOTE(Amaras): this should be 1942
+            self.get_tie_break_player_values(tie_break_, only_ids=[2, 14]),
+            {
+                2: 2217,  # NOTE(Amaras): this should be 2216
+                14: 1940,  # NOTE(Amaras): this should be 1942
+            },
         )
 
     def test_average_perfect_performance_opponents(self):
         tie_break_ = tie_breaks.AveragePerfectPerformanceTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-            if player.id not in (3, 13)
-        }
+        results = self.get_tie_break_player_values(tie_break_, exclude_ids=[3, 13])
         expected = {
             2: 1852,
             4: 1784,
@@ -1042,24 +692,16 @@ class SwissTieBreaks(unittest.TestCase):
         }
         self.assertEqual(results, expected)
         self.assertEqual(
-            tie_break_.compute_player_value(
-                self.tournament.players_by_id[3], after_round=None
-            ),
-            1935,  # NOTE(Amaras): should be 1934
-        )
-        self.assertEqual(
-            tie_break_.compute_player_value(
-                self.tournament.players_by_id[13], after_round=None
-            ),
-            1908,  # NOTE(Amaras): should be 1909
+            self.get_tie_break_player_values(tie_break_, only_ids=[3, 13]),
+            {
+                3: 1935,  # NOTE(Amaras): this should be 1934
+                13: 1908,  # NOTE(Amaras): this should be 1909
+            },
         )
 
     def test_kashdan(self):
         tie_break_ = tie_breaks.KashdanTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 16,
             4: 12,
@@ -1082,10 +724,7 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_kashdan_legacy(self):
         tie_break_ = ffe_tie_breaks.PapiKashdanTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 16,
             4: 14,
@@ -1108,12 +747,9 @@ class SwissTieBreaks(unittest.TestCase):
 
     def test_direct_encounter(self):
         tie_break_ = tie_breaks.DirectEncounterTieBreak()
-        results = {
-            i: tie_break_.compute_player_value(
-                self.tournament.players_by_id[i], after_round=None
-            )
-            for i in (1, 3, 4, 16, 5, 8, 11)
-        }
+        results = self.get_tie_break_player_values(
+            tie_break_, only_ids=[1, 3, 4, 16, 5, 8, 11]
+        )
         expected = {
             1: (2.5, False),
             3: (2.5, False),
@@ -1126,130 +762,18 @@ class SwissTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
 
-class RoundRobinTieBreaks(unittest.TestCase):
-    def setUp(self):
-        self.tournament = TieBreakTournament(
-            rounds=5,
-            pairing=TournamentPairing.BERGER,
-            players_by_id={
-                1: TournamentPlayer(
-                    1,
-                    'Alyx',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2200,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 5, Result.DRAW),
-                        2: Pairing(BoardColor.WHITE, 2, Result.GAIN),
-                        3: Pairing(BoardColor.BLACK, 3, Result.GAIN),
-                        4: Pairing(BoardColor.WHITE, 4, Result.LOSS),
-                        5: Pairing(BoardColor.BLACK, 6, Result.GAIN),
-                    },
-                ),
-                2: TournamentPlayer(
-                    2,
-                    'Bruno',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2150,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 6, Result.GAIN),
-                        2: Pairing(BoardColor.BLACK, 1, Result.LOSS),
-                        3: Pairing(BoardColor.WHITE, 5, Result.GAIN),
-                        4: Pairing(BoardColor.WHITE, 3, Result.DRAW),
-                        5: Pairing(BoardColor.BLACK, 4, Result.GAIN),
-                    },
-                ),
-                3: TournamentPlayer(
-                    3,
-                    'Charline',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2100,
-                    pairings={
-                        1: Pairing(BoardColor.WHITE, 4, Result.GAIN),
-                        2: Pairing(BoardColor.BLACK, 6, Result.GAIN),
-                        3: Pairing(BoardColor.WHITE, 1, Result.LOSS),
-                        4: Pairing(BoardColor.BLACK, 2, Result.DRAW),
-                        5: Pairing(BoardColor.WHITE, 5, Result.GAIN),
-                    },
-                ),
-                4: TournamentPlayer(
-                    4,
-                    'David',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2050,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 3, Result.LOSS),
-                        2: Pairing(BoardColor.BLACK, 5, Result.LOSS),
-                        3: Pairing(BoardColor.WHITE, 6, Result.DRAW),
-                        4: Pairing(BoardColor.BLACK, 1, Result.GAIN),
-                        5: Pairing(BoardColor.WHITE, 2, Result.LOSS),
-                    },
-                ),
-                5: TournamentPlayer(
-                    5,
-                    'Franck',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=1950,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 1, Result.DRAW),
-                        2: Pairing(BoardColor.WHITE, 4, Result.GAIN),
-                        3: Pairing(BoardColor.BLACK, 2, Result.LOSS),
-                        4: Pairing(BoardColor.WHITE, 6, Result.FORFEIT_LOSS),
-                        5: Pairing(BoardColor.BLACK, 3, Result.LOSS),
-                    },
-                ),
-                6: TournamentPlayer(
-                    6,
-                    'Helene',
-                    '',
-                    None,
-                    PlayerGender.NONE,
-                    0,
-                    Federation('FID'),
-                    PlayerTitle.NONE,
-                    estimation=2000,
-                    pairings={
-                        1: Pairing(BoardColor.BLACK, 2, Result.LOSS),
-                        2: Pairing(BoardColor.WHITE, 3, Result.LOSS),
-                        3: Pairing(BoardColor.BLACK, 4, Result.DRAW),
-                        4: Pairing(BoardColor.BLACK, 5, Result.FORFEIT_GAIN),
-                        5: Pairing(BoardColor.WHITE, 1, Result.LOSS),
-                    },
-                ),
-            },
-        )
-        for player in self.tournament.players_by_id.values():
-            player.tournament = cast('Tournament', self.tournament)
+class RoundRobinTieBreakTestCase(TieBreakTestCase):
+    @property
+    def tournament_uniq_id(self) -> str:
+        return 'round-robin'
 
     def test_all_players_met_each_other(self):
-        results = {
-            player.id: [pairing.opponent_id for pairing in player.pairings.values()]
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_player_values(
+            lambda player: [
+                self.get_exercise_id(pairing.opponent_id)
+                for pairing in player.pairings.values()
+            ]
+        )
         expected = {
             1: [5, 2, 3, 4, 6],
             2: [6, 1, 5, 3, 4],
@@ -1261,46 +785,31 @@ class RoundRobinTieBreaks(unittest.TestCase):
         self.assertEqual(results, expected)
 
     def test_points_are_correct(self):
-        results = {
-            player.id: player.total_points()
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_player_values(lambda p: p.total_points())
         expected = {1: 3.5, 2: 3.5, 3: 3.5, 4: 1.5, 5: 1.5, 6: 1.5}
         self.assertEqual(results, expected)
 
     def test_sonneborn_berger_round_robin(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {1: 9.25, 2: 6.25, 3: 6.25, 4: 4.25, 5: 3.25, 6: 2.25}
         self.assertEqual(results, expected)
 
     def test_sb_cut1_round_robin(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak([options.CutTieBreakOption(1)])
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {1: 9.25, 2: 4.75, 3: 4.75, 4: 4.25, 5: 3.25, 6: 1.5}
         self.assertEqual(results, expected)
 
     def test_koya(self):
         tie_break_ = tie_breaks.KoyaTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {1: 2, 2: 0.5, 3: 0.5, 4: 1, 5: 0.5, 6: 0}
         self.assertEqual(results, expected)
 
     def test_direct_encounter(self):
         tie_break_ = tie_breaks.DirectEncounterTieBreak()
-        results = {
-            player.id: tie_break_.compute_player_value(player, after_round=None)
-            for player in self.tournament.players_by_id.values()
-        }
+        results = self.get_tie_break_player_values(tie_break_)
         expected = {
             1: (2, True),
             2: (0.5, True),

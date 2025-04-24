@@ -220,6 +220,7 @@ class Engine:
                             for file in PapiWebConfig.database_yml_path.glob(
                                 f'*.{PapiWebConfig.yml_ext}'
                             )
+                            if file.stem != PapiWebConfig.test_event_uniq_id
                         ):
                             EventDatabase(event_id).create(populate=True)
                         break
