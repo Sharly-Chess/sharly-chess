@@ -139,6 +139,13 @@
                 });
 
                 window.addEventListener("modal_opened", function(event) {
+                    var myModalEl = document.getElementById('modal-wrapper');
+                    if (!myModalEl.classList.contains('show')) {
+                        {# The modal is usually opened at this point, following a user action,
+                           but this allows us to force open a modal from the server. #}
+                        const modal = new bootstrap.Modal('#modal-wrapper')
+                        modal.show();
+                    }
                     closeTooltips();
                     activateTooltips();
                     scrollToFirstError();
