@@ -52,7 +52,7 @@
 
                 {% with action='FULL_PAIRING' %}
                     {% if action in existing_actions %}
-                        {% if EXPERIMENTAL_FEATURES and not admin_tournament.pairing.not_implemented %}
+                        {% if EXPERIMENTAL_FEATURES and admin_tournament.pairing_variation.is_pairing_generation_implemented %}
                             <div
                                 {{ macros.tooltip_attributes(
                                     'info',

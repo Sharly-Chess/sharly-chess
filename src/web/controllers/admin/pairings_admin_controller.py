@@ -18,7 +18,6 @@ from data.event import Event
 from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, Action
 from data.tournament import Tournament
-from pairing.bbp_pairings import BbpPairings
 from utils.enum import Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -865,7 +864,9 @@ class PairingsAdminController(BaseEventAdminController):
 
         tournament = web_context.admin_tournament
         assert tournament is not None
-        BbpPairings().generate_pairings(tournament, web_context.admin_round)
+        tournament.pairing_variation.engine.generate_pairings(
+            tournament, web_context.admin_round
+        )
         tournament.clear_cache()
         Message.success(
             request,

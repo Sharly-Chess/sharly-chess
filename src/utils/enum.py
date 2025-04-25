@@ -5,6 +5,10 @@ from enum import Enum, StrEnum, IntEnum
 
 from common.i18n import _
 
+# TODO (Molrn) Move all Papi Enums to the FFE plugin
+# All from_papi_value / to_papi_value method should be replaced by a mapper
+# in which papi values are mapped to the enum values of the core Enum.
+
 
 class PapiResult(IntEnum):
     """An enum representing the results in the Papi database"""
@@ -397,46 +401,6 @@ class Result(IntEnum):
         )
 
 
-class TournamentType(IntEnum):
-    """An enumeration representing the supported types of tournaments."""
-
-    UNKNOWN = 0
-    SWISS = 1
-    CHAMPIONSHIP = 2
-
-    @classmethod
-    def from_papi_value(cls, value) -> 'TournamentType':
-        match value:
-            case 'Suisse':
-                return cls.SWISS
-            case 'ToutesRondes':
-                return cls.CHAMPIONSHIP
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case TournamentType.SWISS:
-                return 'Suisse'
-            case TournamentType.CHAMPIONSHIP:
-                return 'ToutesRondes'
-            case _:
-                raise ValueError(f'Unknown tie break: {self}')
-
-    def __str__(self) -> str:
-        # TODO Translate this (if used)!
-        match self:
-            case TournamentType.UNKNOWN:
-                return 'Inconnu'
-            case TournamentType.SWISS:
-                return 'Système suisse'
-            case TournamentType.CHAMPIONSHIP:
-                return 'Toutes rondes'
-            case _:
-                raise ValueError(f'Unknown tie break: {self}')
-
-
 class TournamentRating(IntEnum):
     """A wrapper around the tournament rating used stored in the papi db."""
 
@@ -518,87 +482,6 @@ class TournamentRating(IntEnum):
 
     def __str__(self) -> str:
         return self.name
-
-
-class TournamentPairing(IntEnum):
-    """An enumeration representing the supported types of tournament
-    pairings.
-    Swiss Dutch with acceleration and Berger-table tournaments are supported."""
-
-    STANDARD = 1
-    HALEY = 2
-    HALEY_SOFT = 3
-    SAD = 4
-    NICOIS = 5
-    BERGER = 6
-
-    @classmethod
-    def from_papi_value(cls, value) -> 'TournamentPairing':
-        match value:
-            case 'Standard':
-                return cls.STANDARD
-            case 'Haley':
-                return cls.HALEY
-            case 'HaleySoft':
-                return cls.HALEY_SOFT
-            case 'SAD':
-                return cls.SAD
-            case 'Nicois':
-                return cls.NICOIS
-            case 'Berger':
-                return cls.BERGER
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case TournamentPairing.STANDARD:
-                return 'Standard'
-            case TournamentPairing.HALEY:
-                return 'Haley'
-            case TournamentPairing.HALEY_SOFT:
-                return 'HaleySoft'
-            case TournamentPairing.SAD:
-                return 'SAD'
-            case TournamentPairing.NICOIS:
-                return 'Nicois'
-            case TournamentPairing.BERGER:
-                return 'Berger'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
-    def __str__(self) -> str:
-        # TODO Translate this (if used)!
-        match self:
-            case TournamentPairing.STANDARD:
-                return 'Système suisse standard'
-            case TournamentPairing.HALEY:
-                return 'Système de Haley'
-            case TournamentPairing.HALEY_SOFT:
-                return 'Système de Haley dégressif'
-            case TournamentPairing.SAD:
-                return 'Système accéléré dégressif (SAD)'
-            case TournamentPairing.NICOIS:
-                return 'Système accéléré niçois'
-            case TournamentPairing.BERGER:
-                return 'Berger'
-            case _:
-                raise ValueError(f'Unknown pairing type: {self}')
-
-    @property
-    def swiss(self) -> bool:
-        return self in (
-            TournamentPairing.HALEY,
-            TournamentPairing.HALEY_SOFT,
-            TournamentPairing.NICOIS,
-            TournamentPairing.SAD,
-            TournamentPairing.STANDARD,
-        )
-
-    @property
-    def not_implemented(self) -> bool:
-        return self in (TournamentPairing.NICOIS, TournamentPairing.BERGER)
 
 
 class PlayerGender(IntEnum):

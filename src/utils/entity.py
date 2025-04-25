@@ -3,6 +3,7 @@ For a feature to implement the architecture:
 - create classes implementing *IdentifiableEntity*
 - add a class implementing *EntityManager* listing all the classes
     (location: /src/data/entity_managers.py)"""
+
 from abc import ABC, abstractmethod
 
 
@@ -30,6 +31,11 @@ class IdentifiableEntity(ABC):
     @property
     def name(self) -> str:
         return self.static_name()
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, IdentifiableEntity):
+            return NotImplemented
+        return self.id == other.id
 
 
 class EntityManager[T: IdentifiableEntity](ABC):

@@ -3,11 +3,8 @@ from typing import Any
 
 from common.logger import get_logger
 from data.tie_breaks import tie_breaks, TieBreak
-from utils.enum import (
-    TournamentType,
-    TournamentPairing,
-    TournamentRating,
-)
+from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
+from utils.enum import TournamentRating
 from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.ffe import ffe_tie_breaks
@@ -30,12 +27,12 @@ class ChessEventTournament:
 
         try:
             self.name = reader.get('name', str)
-            self.type = reader.get_enum('type', TournamentType, TournamentType.UNKNOWN)
+            self.type = PapiPairingSystem.get_core_object(reader.get('type', str))
             self.rounds = reader.get('rounds', int)
             if self.rounds not in range(25):  # the 0-value is set by default later
-                raise ValueError
-            self.pairing = reader.get_enum(
-                'pairing', TournamentPairing, TournamentPairing.STANDARD
+                raise ValueError()
+            self.pairing = PapiPairingVariation.get_core_object(
+                reader.get('pairing', str)
             )
             self.time_control = reader.get('time_control', str)
             self.location = reader.get('location', str)

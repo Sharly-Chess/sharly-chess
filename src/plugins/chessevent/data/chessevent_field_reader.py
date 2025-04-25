@@ -1,5 +1,5 @@
 from typing import Any, Type, Optional, cast
-from enum import IntEnum
+from enum import Enum
 
 
 class ChessEventFieldReader:
@@ -29,7 +29,7 @@ class ChessEventFieldReader:
         return cast(T, value)
 
     def get_enum[T](
-        self, key: str, enum_cls: Type[IntEnum], default: Optional[T] = None
+        self, key: str, enum_cls: Type[Enum], default: Optional[T] = None
     ) -> T:
         try:
             val = self.get(key, int, None)

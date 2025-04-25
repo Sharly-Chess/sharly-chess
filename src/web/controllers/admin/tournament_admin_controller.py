@@ -23,6 +23,8 @@ from data.input_output import (
     TournamentExporterManager,
 )
 from data.loader import EventLoader
+from data.pairings import PairingSystem, PairingSystemManager
+from data.pairings.systems import SwissPairingSystem
 from data.print_documents import PrintDocumentManager
 from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
@@ -206,6 +208,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         path: str | None = None
         filename: str | None = None
+        pairing: str | None = None
         time_control_initial_time: int | None = None
         time_control_increment: int | None = None
         time_control_handicap_penalty_value: int | None = None
@@ -255,10 +258,14 @@ class TournamentAdminController(BaseEventAdminController):
                     data, 'last_rounds_no_byes'
                 )
                 location = WebContext.form_data_to_str(data, 'location')
+                pairing_system = WebContext.form_data_to_str(data, 'pairing_system')
+                pairing = WebContext.form_data_to_str(
+                    data, f'{pairing_system}_pairing_variation'
+                )
             case 'delete':
                 if web_context.admin_tournament is None:
                     raise RuntimeError(
-                        f'{web_context.admin_tournament=} for [{action=}'
+                        f'{web_context.admin_tournament=} for [{action=}]'
                     )
                 uniq_id = web_context.admin_tournament.uniq_id
                 name = web_context.admin_tournament.name
@@ -313,6 +320,7 @@ class TournamentAdminController(BaseEventAdminController):
             stop=stop,
             rounds=rounds or 1,
             rating=rating or TournamentRating.STANDARD.value,
+            pairing=pairing,
             errors=errors,
             plugin_data=plugin_data,
         )
@@ -370,11 +378,12 @@ class TournamentAdminController(BaseEventAdminController):
             ),
             'player_updater_options': PlayerUpdaterManager.options(),
         } | tournament_card_block_data
-
         match modal:
             case None:
                 pass
             case 'tournament':
+                pairing_systems = PairingSystemManager.objects()
+                pairing_system: PairingSystem = SwissPairingSystem()
                 if data is None:
                     uniq_id: str | None = None
                     name: str | None = None
@@ -418,7 +427,10 @@ class TournamentAdminController(BaseEventAdminController):
                     start: float | None = None
                     stop: float | None = None
                     rounds: int | None = None
-                    rating: TournamentRating | None = None
+                    rating: int | None = None
+                    pairing_variations: dict[str, str | None] = {
+                        system.variation_field_id: None for system in pairing_systems
+                    }
                     match action:
                         case 'update' | 'clone':
                             assert admin_tournament is not None
@@ -451,11 +463,16 @@ class TournamentAdminController(BaseEventAdminController):
                             location = stored_tournament.location
                             start = stored_tournament.start
                             stop = stored_tournament.stop
-                            rating = admin_tournament.rating
+                            rating = admin_tournament.rating.value
                             rounds = admin_tournament.rounds or 1
+                            pairing_system = admin_tournament.pairing_system
+                            pairing_variations[
+                                admin_tournament.pairing_system.variation_field_id
+                            ] = admin_tournament.pairing_variation.id
+
                         case 'create':
                             rounds = 1
-                            rating = TournamentRating.STANDARD
+                            rating = TournamentRating.STANDARD.value
                         case 'delete':
                             pass
                         case _:
@@ -484,51 +501,59 @@ class TournamentAdminController(BaseEventAdminController):
                         for data in per_plugin_form_data
                         for key, value in data.items()
                     }
-                    data = {
-                        'uniq_id': WebContext.value_to_form_data(uniq_id),
-                        'name': WebContext.value_to_form_data(name),
-                        'path': WebContext.value_to_form_data(path),
-                        'filename': WebContext.value_to_form_data(filename),
-                        'time_control_initial_time': WebContext.value_to_form_data(
-                            time_control_initial_time
-                        ),
-                        'time_control_increment': WebContext.value_to_form_data(
-                            time_control_increment
-                        ),
-                        'time_control_handicap_penalty_value': WebContext.value_to_form_data(
-                            time_control_handicap_penalty_value
-                        ),
-                        'time_control_handicap_penalty_step': WebContext.value_to_form_data(
-                            time_control_handicap_penalty_step
-                        ),
-                        'time_control_handicap_min_time': WebContext.value_to_form_data(
-                            time_control_handicap_min_time
-                        ),
-                        'record_illegal_moves': WebContext.value_to_form_data(
-                            record_illegal_moves
-                        ),
-                        'rules': WebContext.value_to_form_data(rules),
-                        'first_board_number': WebContext.value_to_form_data(
-                            first_board_number
-                        ),
-                        'paired_bye_result': WebContext.value_to_form_data(
-                            paired_bye_result
-                        ),
-                        'max_byes': WebContext.value_to_form_data(max_byes),
-                        'last_rounds_no_byes': WebContext.value_to_form_data(
-                            last_rounds_no_byes
-                        ),
-                        'tie_break_1': WebContext.value_to_form_data(tie_break_1),
-                        'tie_break_2': WebContext.value_to_form_data(tie_break_2),
-                        'tie_break_3': WebContext.value_to_form_data(tie_break_3),
-                        'location': WebContext.value_to_form_data(location),
-                        'start': WebContext.value_to_datetime_form_data(start),
-                        'stop': WebContext.value_to_datetime_form_data(stop),
-                        'rounds': WebContext.value_to_form_data(rounds),
-                        'rating': WebContext.value_to_form_data(
-                            rating.value if rating else None
-                        ),
-                    } | plugin_form_data
+                    data = (
+                        {
+                            'uniq_id': WebContext.value_to_form_data(uniq_id),
+                            'name': WebContext.value_to_form_data(name),
+                            'path': WebContext.value_to_form_data(path),
+                            'filename': WebContext.value_to_form_data(filename),
+                            'time_control_initial_time': WebContext.value_to_form_data(
+                                time_control_initial_time
+                            ),
+                            'time_control_increment': WebContext.value_to_form_data(
+                                time_control_increment
+                            ),
+                            'time_control_handicap_penalty_value': WebContext.value_to_form_data(
+                                time_control_handicap_penalty_value
+                            ),
+                            'time_control_handicap_penalty_step': WebContext.value_to_form_data(
+                                time_control_handicap_penalty_step
+                            ),
+                            'time_control_handicap_min_time': WebContext.value_to_form_data(
+                                time_control_handicap_min_time
+                            ),
+                            'record_illegal_moves': WebContext.value_to_form_data(
+                                record_illegal_moves
+                            ),
+                            'rules': WebContext.value_to_form_data(rules),
+                            'first_board_number': WebContext.value_to_form_data(
+                                first_board_number
+                            ),
+                            'paired_bye_result': WebContext.value_to_form_data(
+                                paired_bye_result
+                            ),
+                            'max_byes': WebContext.value_to_form_data(max_byes),
+                            'last_rounds_no_byes': WebContext.value_to_form_data(
+                                last_rounds_no_byes
+                            ),
+                            'tie_break_1': WebContext.value_to_form_data(tie_break_1),
+                            'tie_break_2': WebContext.value_to_form_data(tie_break_2),
+                            'tie_break_3': WebContext.value_to_form_data(tie_break_3),
+                            'location': WebContext.value_to_form_data(location),
+                            'start': WebContext.value_to_datetime_form_data(start),
+                            'stop': WebContext.value_to_datetime_form_data(stop),
+                            'rounds': WebContext.value_to_form_data(rounds),
+                            'rating': WebContext.value_to_form_data(rating),
+                            'pairing_system': WebContext.value_to_form_data(
+                                pairing_system.id
+                            ),
+                        }
+                        | {
+                            field: WebContext.value_to_form_data(variation)
+                            for field, variation in pairing_variations.items()
+                        }
+                        | plugin_form_data
+                    )
                     stored_tournament: StoredTournament = (
                         cls._admin_validate_tournament_update_data(
                             action, web_context, data
@@ -549,6 +574,9 @@ class TournamentAdminController(BaseEventAdminController):
                     'tie_break_options': {'': _('None')}
                     | PapiTieBreakManager.options(),
                     'rating_options': cls._get_rating_options(),
+                    'current_pairing_system': pairing_system,
+                    'pairing_systems': pairing_systems,
+                    'pairing_system_options': PairingSystemManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'file_exists': cls._extract_papi_file_path(
                         data, admin_event

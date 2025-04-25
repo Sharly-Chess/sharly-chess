@@ -9,7 +9,7 @@ from utils.enum import (
     PlayerTitle,
 )
 from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 
 logger: Logger = get_logger()
 

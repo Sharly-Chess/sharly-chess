@@ -9,7 +9,7 @@ from common.i18n import _
 from common.network import NetworkMonitor
 from plugins.ffe.engine.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

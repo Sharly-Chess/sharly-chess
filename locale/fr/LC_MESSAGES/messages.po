@@ -1,6 +1,9 @@
 msgid "  - [{q_uc}] Do not recover"
 msgstr "  - [{q_uc}] Ne rien récupérer"
 
+msgid "\"Niçois\" accelerated system"
+msgstr "Système accéléré Niçois"
+
 #, python-format
 msgid "#%(board_number)d"
 msgstr "n°%(board_number)d"
@@ -153,6 +156,12 @@ msgstr "Une fenêtre va s'ouvrir pour envoyer un mél au projet Papi-web ; si la
 
 msgid "Absent"
 msgstr "Absent·e"
+
+msgid "Accelerated pairings"
+msgstr "Appariements accélérés"
+
+msgid "Accelerated variations of the swiss pairing system."
+msgstr "Variantes accélérées du système d'appariements suisse."
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
@@ -373,6 +382,9 @@ msgstr "Image de fond :"
 
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Ech."
+
+msgid "Berger"
+msgstr "Berger"
 
 msgid "Black"
 msgstr "Noirs"
@@ -1794,6 +1806,9 @@ msgstr "Aller à l'écran."
 msgid "Grand Master"
 msgstr "Grand Maître International"
 
+msgid "Haley system"
+msgstr "Système de Haley"
+
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
@@ -2671,6 +2686,9 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
+msgid "Pairing system"
+msgstr "Système d'appariements"
+
 msgid "Pairings"
 msgstr "Appariements"
 
@@ -3003,6 +3021,9 @@ msgstr "Continuer"
 msgid "Progressive"
 msgstr "Cumulatif"
 
+msgid "Progressive accelerated system"
+msgstr "Système accéléré dégressif (SAD)"
+
 msgid "Progressive scores"
 msgstr "Cumulatif"
 
@@ -3261,6 +3282,9 @@ msgstr "Les numéros de ronde doivent être des entiers positifs."
 msgid "Round skipped"
 msgstr "Absent·e"
 
+msgid "Round-Robin"
+msgstr "Toutes-rondes"
+
 msgid "Round:"
 msgstr "Ronde :"
 
@@ -3415,6 +3439,9 @@ msgstr "Afficher/cacher les écrans d'affichage des résultats."
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
+msgid "Soft Haley system"
+msgstr "Système de Haley dégressif"
+
 msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
@@ -3457,6 +3484,9 @@ msgstr "Standard"
 msgid "Standard rating"
 msgstr "Classement standard"
 
+msgid "Standard swiss system"
+msgstr "Système suisse standard"
+
 msgid "Standard:"
 msgstr "Standard :"
 
@@ -3474,6 +3504,9 @@ msgstr "Somme des Buchholz"
 
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
+
+msgid "Swiss system"
+msgstr "Système suisse"
 
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
@@ -3871,6 +3904,9 @@ msgstr "La date et l'heure de début de l'évènement."
 #, python-format
 msgid "The start time of the tournament (defaults to %(datetime)s)."
 msgstr "L'horaire de début du tournoi (par défaut %(datetime)s)."
+
+msgid "The system used to generate the pairings."
+msgstr "Le système utilisé pour générer les appariements."
 
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
@@ -4292,8 +4328,6 @@ msgstr "Non apparié·es : caché·es"
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
 
-
-
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
 
@@ -4343,6 +4377,12 @@ msgstr "Ne pas utiliser de chronomètre"
 
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
+
+msgid "Variation"
+msgstr "Variante"
+
+msgid "Variation of the pairing system."
+msgstr "Variante du système d'appariements."
 
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr "La version [{version}] est déjà installée dans le répertoire [{dir}], veuillez supprimer ce répertoire avant d'installer."

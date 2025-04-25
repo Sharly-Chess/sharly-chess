@@ -1,5 +1,5 @@
 from functools import partial, cached_property
-from typing import override
+from typing import override, TYPE_CHECKING
 
 from common.exception import PapiWebException
 from common.i18n import _
@@ -9,13 +9,17 @@ from data.input_output.player_updaters import (
     PlayerUpdater,
     PlayerUpdaterField,
 )
+from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
+from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.utils import PluginUtils
 
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -132,3 +136,26 @@ class LeaguePlayerSplitter(PlayerSplitter):
     @staticmethod
     def get_split_key(player: Player) -> str:
         return get_data(player.plugin_data, 'league', '')
+
+
+class NicoisSwissVariation(SwissVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'NICOIS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('"Niçois" accelerated system')
+
+    @property
+    def is_pairing_generation_implemented(self) -> bool:
+        return False
+
+    @staticmethod
+    def compute_virtual_points(
+        tournament: 'Tournament',
+        player: Player,
+        at_round: int,
+    ) -> float:
+        # TODO (Molrn) implement Niçois pairing system
+        raise NotImplementedError()

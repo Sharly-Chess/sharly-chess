@@ -9,11 +9,12 @@ from typing import Pattern, Any
 
 from common.logger import get_logger
 from data.pairing import Pairing
+from data.pairings import PairingVariation
+from data.pairings.variations import StandardSwissVariation
 from data.player import Player, Federation, Club, PlayerRating
 from data.tie_breaks import TieBreak, PapiTieBreakManager
 from utils.enum import (
     Result,
-    TournamentPairing,
     PlayerGender,
     PlayerTitle,
     TournamentRating,
@@ -55,7 +56,7 @@ class PapiTournamentInfo:
     """Basic tournament information tuple."""
 
     rounds: int = 0
-    pairing: TournamentPairing = TournamentPairing.STANDARD
+    pairing_variation: PairingVariation = field(default_factory=StandardSwissVariation)
     rating: TournamentRating = TournamentRating.STANDARD
     rating_limit1: int = 0
     rating_limit2: int = 0
@@ -68,7 +69,8 @@ class PapiVariable(StrEnum):
     NAME = 'Nom'
     TYPE = 'Genre'
     ROUNDS = 'NbrRondes'
-    PAIRING = 'Pairing'
+    PAIRING_SYSTEM = 'Genre'
+    PAIRING_VARIATION = 'Pairing'
     TIME_CONTROL = 'Cadence'
     RATING = 'ClassElo'
     RATING_LIMIT1 = 'EloBase1'
@@ -129,7 +131,7 @@ class PapiDatabase(AccessDatabase):
         values = self.read_variables(
             [
                 PapiVariable.ROUNDS,
-                PapiVariable.PAIRING,
+                PapiVariable.PAIRING_VARIATION,
                 PapiVariable.RATING,
                 PapiVariable.RATING_LIMIT1,
                 PapiVariable.RATING_LIMIT2,
@@ -150,9 +152,14 @@ class PapiDatabase(AccessDatabase):
             papi_id = values[variable]
             if tie_break_type := tie_break_type_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break_type())
+
+        from plugins.ffe.utils import PapiPairingVariation
+
         return PapiTournamentInfo(
             rounds=int(values[PapiVariable.ROUNDS]),
-            pairing=TournamentPairing.from_papi_value(values[PapiVariable.PAIRING]),
+            pairing_variation=PapiPairingVariation.get_core_object(
+                values[PapiVariable.PAIRING_VARIATION]
+            ),
             rating=TournamentRating.from_papi_value(values[PapiVariable.RATING]),
             rating_limit1=int(values[PapiVariable.RATING_LIMIT1]),
             rating_limit2=int(values[PapiVariable.RATING_LIMIT2]),

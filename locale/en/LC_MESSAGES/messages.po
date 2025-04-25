@@ -1,6 +1,9 @@
 msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
+msgid "\"Niçois\" accelerated system"
+msgstr ""
+
 #, python-format
 msgid "#%(board_number)d"
 msgstr ""
@@ -152,6 +155,12 @@ msgid "A window will open to send an email to the Papi-web project; If the windo
 msgstr ""
 
 msgid "Absent"
+msgstr ""
+
+msgid "Accelerated pairings"
+msgstr ""
+
+msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
@@ -373,6 +382,9 @@ msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
+
+msgid "Berger"
+msgstr ""
 
 msgid "Black"
 msgstr ""
@@ -1794,6 +1806,9 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
+msgid "Haley system"
+msgstr ""
+
 msgid "Half-Point Bye"
 msgstr ""
 
@@ -2671,6 +2686,9 @@ msgstr ""
 msgid "Pairing Allocated Bye"
 msgstr ""
 
+msgid "Pairing system"
+msgstr ""
+
 msgid "Pairings"
 msgstr ""
 
@@ -3003,6 +3021,9 @@ msgstr ""
 msgid "Progressive"
 msgstr ""
 
+msgid "Progressive accelerated system"
+msgstr ""
+
 msgid "Progressive scores"
 msgstr ""
 
@@ -3261,6 +3282,9 @@ msgstr ""
 msgid "Round skipped"
 msgstr ""
 
+msgid "Round-Robin"
+msgstr ""
+
 msgid "Round:"
 msgstr ""
 
@@ -3415,6 +3439,9 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
+msgid "Soft Haley system"
+msgstr ""
+
 msgid "Sonnenborn-Berger"
 msgstr ""
 
@@ -3457,6 +3484,9 @@ msgstr ""
 msgid "Standard rating"
 msgstr ""
 
+msgid "Standard swiss system"
+msgstr ""
+
 msgid "Standard:"
 msgstr ""
 
@@ -3473,6 +3503,9 @@ msgid "Sum of Buchholz"
 msgstr ""
 
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
+msgid "Swiss system"
 msgstr ""
 
 msgid "T *** THE LETTER TO ANSWER TEST"
@@ -3870,6 +3903,9 @@ msgstr ""
 
 #, python-format
 msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
+msgid "The system used to generate the pairings."
 msgstr ""
 
 msgid "The text colour of the alert messages."
@@ -4341,6 +4377,12 @@ msgstr ""
 
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
+
+msgid "Variation"
+msgstr ""
+
+msgid "Variation of the pairing system."
+msgstr ""
 
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr ""

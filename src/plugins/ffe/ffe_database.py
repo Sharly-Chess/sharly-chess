@@ -28,7 +28,7 @@ from plugins import PLUGINS_DIR
 
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()

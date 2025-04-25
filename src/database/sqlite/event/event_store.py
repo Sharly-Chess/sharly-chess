@@ -55,6 +55,7 @@ class StoredTournament:
     location: str | None = None
     start: float | None = None
     stop: float | None = None
+    pairing: str | None = None
     check_in_open: bool = field(default=False)
     rounds: int = field(default=1)
     rating: int = field(default=1)
