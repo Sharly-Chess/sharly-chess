@@ -3,7 +3,7 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
 
 import xlsxwriter
-from litestar import get, patch, delete, post, Response
+from litestar import get, patch, post, Response
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.enums import RequestEncodingType
@@ -379,11 +379,13 @@ class EventAdminController(BaseEventAdminController):
             request, data=data, action='clone', event_uniq_id=event_uniq_id
         )
 
-    @delete(
+    @post(
         path='/admin/event-delete/{event_uniq_id:str}',
         name='admin-event-delete',
         status_code=HTTP_200_OK,
     )
+    # We have to use POST because hx-delete sends form parameters as query parameters,
+    # which are not read by Litestar in a DELETE request.
     async def htmx_admin_event_delete(
         self,
         request: HTMXRequest,

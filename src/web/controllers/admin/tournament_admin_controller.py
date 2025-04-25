@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 import urllib.parse
 
-from litestar import post, get, delete, patch
+from litestar import post, get, patch
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.contrib.htmx.response import ClientRedirect
@@ -889,11 +889,13 @@ class TournamentAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @delete(
+    @post(
         path='/admin/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete',
         status_code=HTTP_200_OK,
     )
+    # We have to use POST because hx-delete sends form parameters as query parameters,
+    # which are not read by Litestar in a DELETE request.
     async def htmx_admin_tournament_delete(
         self,
         request: HTMXRequest,
