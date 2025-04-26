@@ -916,7 +916,7 @@ msgstr ""
 msgid "Default directory of the Papi files:"
 msgstr ""
 
-msgid "Default federation:"
+msgid "Default federation"
 msgstr ""
 
 msgid "Default language"
@@ -4707,4 +4707,10 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Default federation"
+#~ msgstr ""
+
+#~ msgid "Default federation:"
+#~ msgstr ""
 

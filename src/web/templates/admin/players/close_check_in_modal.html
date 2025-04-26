@@ -35,9 +35,6 @@
                 type="button"
                 class="btn btn-secondary text-nowrap"
                 data-bs-dismiss="modal"
-
-                {# We refresh the page to turn the check-in switch back on #}
-                hx-on:click="document.body.dispatchEvent(new CustomEvent('request_refresh'))"
             >
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
@@ -75,3 +72,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    // We need to reload the page when the modal is dismissed, to turn the check-in switch back on.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>
