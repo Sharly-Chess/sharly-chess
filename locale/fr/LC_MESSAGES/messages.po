@@ -302,7 +302,7 @@ msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
 
 msgid "Assign a zero-point bye for the next round"
-msgstr "Marquer forfait pour la ronde à venir."
+msgstr "Marquer forfait pour la ronde à venir"
 
 msgid "Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds)."
 msgstr "Marquer les joueur·euses forfait pour la ronde à venir (pointage autorisé pour les rondes suivantes)."
