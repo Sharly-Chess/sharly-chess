@@ -311,7 +311,7 @@ msgid "Assign the players zero-point byes for the rest of the tournament (check-
 msgstr "Marquer les joueur·euses forfait pour le reste du tournoi (pas de pointage autorisé sans suppression des forfaits)."
 
 msgid "Assign zero-point byes for the rest of the tournament"
-msgstr "Marquer forfait pour la ronde à venir."
+msgstr "Marquer forfait pour la ronde à venir"
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
