@@ -63,12 +63,8 @@ nav .btn-link:hover {
     background-size: 100% auto;
     z-index: 2000;
 }
-.htmx-request .please-wait{
-    opacity: 1;
-    transition: opacity 200ms ease-in;
-    transition-delay: 500ms;
-}
-.htmx-request.please-wait{
+.htmx-request .please-wait,
+.htmx-request.please-wait {
     opacity: 1;
     transition: opacity 200ms ease-in;
     transition-delay: 500ms;
