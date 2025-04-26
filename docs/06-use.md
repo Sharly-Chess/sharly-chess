@@ -48,7 +48,7 @@ Si cette option n'est pas trouvée dans le fichier de configuration, il est dema
 experimentale_locales = off
 ```
 
-Par défaut les langages ayant un traducteur assigné sont présentés. En activant cette option, tous les langages du répertoire [`/locale`](../locale) peuvent être utilisés.
+Par défaut les langues ayant un traducteur assigné sont présentés. En activant cette option, tous les langues du répertoire [`/locale`](../locale) peuvent être utilisés.
 
 ### Messages (`[logging]`)
 
