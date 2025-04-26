@@ -15,6 +15,7 @@
             {# https://jquery.com/download/ #}
             <script src="{{ url_for('static', file_path='/lib/jquery/jquery-' ~ papi_web_config.jquery_version ~ '.min.js') }}"></script>
             {# https://unpkg.com/browse/htmx.org@<htmx_version>/dist/ #}
+            <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
             <script src="{{ url_for('static', file_path='/lib/htmx/htmx-' ~ papi_web_config.htmx_version ~ '/htmx.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/preload-' ~ papi_web_config.htmx_preload_version ~ '/preload.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/remove-me-' ~ papi_web_config.htmx_remove_me_version ~ '/remove-me.js') }}"></script>
@@ -37,7 +38,6 @@
                     document.documentElement.style.setProperty('--vh', `${vh}px`);
 
                     {#  We store the (dynamic) header height, useful for sticking things under it #}
-
                     let headerHeight = document.getElementById('header-wrapper')?.offsetHeight ?? 0;
                     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
@@ -236,7 +236,7 @@
         <div id="please-wait-wrapper">
             <div
                 id="please-wait"
-                class="please-wait htmx-indicator position-fixed top-50 start-50 translate-middle"
+                class="please-wait position-fixed top-50 start-50 translate-middle"
             ></div>
         </div>
         <div id="modal-wrapper"
