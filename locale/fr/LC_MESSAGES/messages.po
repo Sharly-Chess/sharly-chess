@@ -916,11 +916,11 @@ msgstr "Répertoire par défaut des fichiers Papi"
 msgid "Default directory of the Papi files:"
 msgstr "Répertoire par défaut des fichiers Papi :"
 
-msgid "Default federation:"
-msgstr "Fédération par défaut :"
+msgid "Default federation"
+msgstr "Fédération par défaut"
 
 msgid "Default language"
-msgstr "Langage par défaut :"
+msgstr "Langue par défaut"
 
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
@@ -1978,7 +1978,7 @@ msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr "Horaire non valide [{hour}] (avant l'horaire précédent [{previous_hour}])."
 
 msgid "Invalid locale [{locale}]."
-msgstr "Langage [{locale}] non valide."
+msgstr "Langue [{locale}] non valide."
 
 msgid "Invalid log level [{log_level}]."
 msgstr "Niveau de log non valide [{log_level}]."
@@ -2029,7 +2029,7 @@ msgid "Language"
 msgstr "Langue"
 
 msgid "Language:"
-msgstr "Langage :"
+msgstr "Langue :"
 
 msgid "Last board:"
 msgstr "Dernier échiquier :"
@@ -3588,7 +3588,7 @@ msgid "The default federation for your events."
 msgstr "La fédération par défaut de vos évènements."
 
 msgid "The default language used."
-msgstr "Le langage par défaut utilisé."
+msgstr "La langue utilisée par défaut."
 
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
