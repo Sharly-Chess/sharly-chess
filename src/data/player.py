@@ -406,8 +406,8 @@ class Player(TournamentPlayer):
 
     @cached_property
     def can_check_in_out(self) -> bool:
-        assert self.tournament is not None
         """Returns True if the player can check-in/out, i.e. does not have a ZPB for the next round."""
+        assert self.tournament is not None
         if self.tournament.finished:
             return False
         if self.tournament.playing:
