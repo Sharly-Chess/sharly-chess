@@ -4708,11 +4708,3 @@ msgstr[1] ""
 msgid "{screen_type}-screen"
 msgstr ""
 
-#~ msgid "Default federation"
-#~ msgstr ""
-#~ msgid "Assign zero-point byes for the rest of the tournament"
-#~ msgstr ""
-
-#~ msgid "Default federation:"
-#~ msgstr ""
-

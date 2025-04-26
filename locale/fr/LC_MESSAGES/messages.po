@@ -4707,7 +4707,3 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Assign zero-point byes for the rest of the tournament"
-#~ msgstr "Marquer forfait pour le reste du tournoi."
-
