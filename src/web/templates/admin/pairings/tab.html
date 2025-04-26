@@ -231,7 +231,7 @@
                 id="pairings-table"
                 class="table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
                 hx-put="{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                hx-trigger="{% for digit in range(0, 4) %}keydown[code=='Digit{{ digit }}' && no_error_rows()] from:body, keydown[code=='Numpad{{ digit }}' && no_error_rows()] from:body{%if not loop.last %},{% endif %}{% endfor %}"
+                hx-trigger="{% for digit in range(0, 4) %}keydown[pairing_board_id && code=='Digit{{ digit }}' && no_error_rows()] from:body, keydown[pairing_board_id && code=='Numpad{{ digit }}' && no_error_rows()] from:body{%if not loop.last %},{% endif %}{% endfor %}"
                 hx-vals="js:{key: event.code, board_id: pairing_board_id || 0, validate_result: $('button[id=\'highlight-mode\']').hasClass('active')}"
                 hx-target="body"
                 hx-swap="outerHTML"
