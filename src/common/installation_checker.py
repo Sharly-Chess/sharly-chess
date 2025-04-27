@@ -227,6 +227,8 @@ class InstallationChecker:
         for installer in installers:
             if not installer.check_installation():
                 error = True
+        if experimental_features_enabled():
+            installers.pop(0)
         if error:
             print_interactive_error(_('Incorrect installation, exiting.'))
         return not error
