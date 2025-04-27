@@ -21,7 +21,7 @@
                 {% elif action == 'update' %}
                     hx-patch="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-post="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}
@@ -374,10 +374,10 @@
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.number_input(
                                 name='last_rounds_no_byes',
-                                label=_('Last rounds no byes:'),
+                                label=_('Nb. final rounds without byes:'),
                                 placeholder=_('E.g.: %(num)d', num=3),
                                 help_text=_(
-                                    'The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d).',
+                                    'The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d).',
                                     default=papi_web_config.default_last_rounds_no_byes
                                 ),
                                 data=data, errors=errors

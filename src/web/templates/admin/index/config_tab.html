@@ -7,37 +7,38 @@
         {{ _('Papi-web settings') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
-        <div class="d-flex gap-2 ms-auto align-items-center">
-            <span {{ macros.tooltip_attributes('info', _('Edit the Papi-web settings.'), 'top') }}>
-                <button
-                    id="admin-config-edit-button"
-                    class="btn btn-outline-primary text-nowrap ms-1"
-                    hx-get="{{ url_for('admin-config-modal') }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-pencil-fill pe-1"></i>
-                    {{ _('Edit') }}
-                </button>
-            </span>
-            <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Create an event') }}
-                </button>
-            </span>
-        </div>
+    <div class="d-flex gap-2 ms-auto align-items-center">
+        <span {{ macros.tooltip_attributes('info', _('Edit the Papi-web settings.'), 'top') }}>
+            <button
+                id="admin-config-edit-button"
+                class="btn btn-outline-primary text-nowrap ms-1"
+                hx-get="{{ url_for('admin-config-modal') }}"
+                hx-trigger="click{% if admin_auth and papi_web_config.force_edit %}, load{% endif %}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-pencil-fill pe-1"></i>
+                {{ _('Edit') }}
+            </button>
+        </span>
+        <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
+                {{ _('Create an event') }}
+            </button>
+        </span>
+    </div>
 </div>
 
 <table class="table table-sm table-hover w-auto bg-light mx-auto justify-content-center">
@@ -81,7 +82,7 @@
             </td>
         </tr>
         <tr class="{{ row_cycler() }}">
-            <th scope="row" class="text-nowrap">{{ _('Default federation:') }}</th>
+            <th scope="row" class="text-nowrap">{{ _('Default federation') }}</th>
             <td>
                 <img
                     class="player-federation-flag pe-1"
@@ -210,8 +211,5 @@
         $('#htmx-version').html(htmx.version);
         $('#jquery-version').html(jQuery().jquery);
         $('#bootstrap-version').html(bootstrap.Tooltip.VERSION);
-        {% if admin_auth and papi_web_config.force_edit %}
-            $('#admin-config-edit-button').click();
-        {% endif %}
     });
 </script>

@@ -310,6 +310,18 @@ msgstr "Êtes vous sûr de vouloir continuer ?"
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
 
+msgid "Assign a zero-point bye for the next round"
+msgstr "Marquer forfait pour la ronde à venir"
+
+msgid "Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds)."
+msgstr "Marquer les joueur·euses forfait pour la ronde à venir (pointage autorisé pour les rondes suivantes)."
+
+msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
+msgstr "Marquer les joueur·euses forfait pour le reste du tournoi (pas de pointage autorisé sans suppression des forfaits)."
+
+msgid "Assign zero-point byes for the rest of the tournament"
+msgstr "Marquer forfait pour la ronde à venir"
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -928,11 +940,11 @@ msgstr "Répertoire par défaut des fichiers Papi"
 msgid "Default directory of the Papi files:"
 msgstr "Répertoire par défaut des fichiers Papi :"
 
-msgid "Default federation:"
-msgstr "Fédération par défaut :"
+msgid "Default federation"
+msgstr "Fédération par défaut"
 
 msgid "Default language"
-msgstr "Langage par défaut :"
+msgstr "Langue par défaut"
 
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
@@ -1993,7 +2005,7 @@ msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr "Horaire non valide [{hour}] (avant l'horaire précédent [{previous_hour}])."
 
 msgid "Invalid locale [{locale}]."
-msgstr "Langage [{locale}] non valide."
+msgstr "Langue [{locale}] non valide."
 
 msgid "Invalid log level [{log_level}]."
 msgstr "Niveau de log non valide [{log_level}]."
@@ -2044,7 +2056,7 @@ msgid "Language"
 msgstr "Langue"
 
 msgid "Language:"
-msgstr "Langage :"
+msgstr "Langue :"
 
 msgid "Last board:"
 msgstr "Dernier échiquier :"
@@ -2057,9 +2069,6 @@ msgstr "Derniers résultats"
 
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
-
-msgid "Last rounds no byes:"
-msgstr "Dernières rondes sans bye :"
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
@@ -2157,18 +2166,6 @@ msgstr "Homme"
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
-
-msgid "Mark as forfeit for the coming round"
-msgstr "Marquer forfait pour la ronde à venir."
-
-msgid "Mark as forfeit for the rest of the tournament"
-msgstr "Marquer forfait pour le reste du tournoi."
-
-msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
-msgstr "Marquer les joueur·euses forfait pour la ronde à venir (pointage autorisé pour les rondes suivantes)."
-
-msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
-msgstr "Marquer les joueur·euses forfait pour le reste du tournoi (pas de pointage autorisé sans suppression des forfaits)."
 
 #, python-format
 msgid "Max age: %(num)d minute"
@@ -2305,6 +2302,9 @@ msgstr "Navigation"
 
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nr"
+
+msgid "Nb. final rounds without byes:"
+msgstr "Dernières rondes sans bye :"
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
@@ -2805,7 +2805,7 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
@@ -3621,7 +3621,7 @@ msgid "The default federation for your events."
 msgstr "La fédération par défaut de vos évènements."
 
 msgid "The default language used."
-msgstr "Le langage par défaut utilisé."
+msgstr "La langue utilisée par défaut."
 
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
@@ -3743,7 +3743,7 @@ msgid "The number of columns used to display data."
 msgstr "Le nombre de colonnes utilisé pour afficher les données."
 
 #, python-format
-msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgid "The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d)."
 msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
@@ -4749,10 +4749,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "The variation of the pairing system."
-#~ msgstr "La variante du système d'appariements."
-
-#~ msgid "Variation of the pairing system."
-#~ msgstr ""
 

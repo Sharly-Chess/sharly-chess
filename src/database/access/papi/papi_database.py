@@ -481,8 +481,8 @@ class PapiDatabase(AccessDatabase):
             ),
         )
 
-    def remove_forfeits_if_no_pairings(self):
-        """Delete all forfeits if no pairings are found (at any round).
+    def remove_zpbs_if_no_pairings(self):
+        """Delete all ZPBs if no pairings are found (at any round).
         This fixes a display issue on the FFE website."""
         condition: str = ' OR '.join(
             f'`{RoundFields(round_).opponent}` IS NOT NULL' for round_ in range(1, 25)
@@ -490,7 +490,7 @@ class PapiDatabase(AccessDatabase):
         query: str = f'SELECT COUNT(`Ref`) FROM `joueur` WHERE {condition}'
         self._execute(query)
         if self._fetchval() == 0:
-            logger.info('Deleting forfeits...')
+            logger.info('Deleting ZPBs...')
             data: dict[str, str | int | None] = {}
             for round_ in range(1, 25):
                 rf = RoundFields(round_)
@@ -505,7 +505,7 @@ class PapiDatabase(AccessDatabase):
             self._execute(query, params)
             logger.info('Done.')
         else:
-            logger.info('No forfeits to delete.')
+            logger.info('No ZPBs to delete.')
 
     def get_checked_in_player_count(self) -> int:
         """Return the number players already checked in."""

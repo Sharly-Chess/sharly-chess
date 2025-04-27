@@ -1,3 +1,4 @@
+import copy
 import logging
 import re
 import time
@@ -704,7 +705,7 @@ class Event:
 
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
-        screens_by_uniq_id: dict[str, Screen] = self.basic_screens_by_uniq_id
+        screens_by_uniq_id: dict[str, Screen] = copy.copy(self.basic_screens_by_uniq_id)
         for family in self.families_by_id.values():
             screens_by_uniq_id |= family.screens_by_uniq_id
         return screens_by_uniq_id

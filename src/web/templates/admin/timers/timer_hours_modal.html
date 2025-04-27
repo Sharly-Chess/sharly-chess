@@ -44,10 +44,7 @@
                 {% if admin_timer_hour %}
                     disabled
                 {% else %}
-                    hx-get="{{ url_for('admin-event-timers-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait"
+                    data-bs-dismiss="modal"
                 {% endif %}
             >
                 <i class="bi-x-circle-fill pe-1"></i>
@@ -68,3 +65,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because the hours might have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>
