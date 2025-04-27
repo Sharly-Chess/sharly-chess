@@ -2,7 +2,7 @@ msgid "  - [{q_uc}] Do not recover"
 msgstr "  - [{q_uc}] Ne rien récupérer"
 
 msgid "\"Niçois\" accelerated system"
-msgstr "Système accéléré Niçois"
+msgstr "Système accéléré niçois"
 
 #, python-format
 msgid "#%(board_number)d"
@@ -3283,7 +3283,7 @@ msgid "Round skipped"
 msgstr "Absent·e"
 
 msgid "Round-Robin"
-msgstr "Toutes-rondes"
+msgstr "Toutes rondes"
 
 msgid "Round:"
 msgstr "Ronde :"
@@ -3941,6 +3941,9 @@ msgstr "Le type de document à imprimer."
 msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
+msgid "The variation of the pairing system."
+msgstr "La variante du système d'appariements."
+
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
@@ -4381,9 +4384,6 @@ msgstr "V"
 msgid "Variation"
 msgstr "Variante"
 
-msgid "Variation of the pairing system."
-msgstr "Variante du système d'appariements."
-
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr "La version [{version}] est déjà installée dans le répertoire [{dir}], veuillez supprimer ce répertoire avant d'installer."
 
@@ -4749,4 +4749,10 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "The variation of the pairing system."
+#~ msgstr "La variante du système d'appariements."
+
+#~ msgid "Variation of the pairing system."
+#~ msgstr ""
 

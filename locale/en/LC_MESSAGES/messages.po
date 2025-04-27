@@ -3941,6 +3941,9 @@ msgstr ""
 msgid "The type of rating to use for the tournament."
 msgstr ""
 
+msgid "The variation of the pairing system."
+msgstr ""
+
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
@@ -4381,9 +4384,6 @@ msgstr "V"
 msgid "Variation"
 msgstr ""
 
-msgid "Variation of the pairing system."
-msgstr ""
-
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr ""
 
@@ -4749,4 +4749,10 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "The variation of the pairing system."
+#~ msgstr ""
+
+#~ msgid "Variation of the pairing system."
+#~ msgstr ""
 
