@@ -28,7 +28,7 @@ from PyInstaller.__main__ import run
 from plugins.manager import plugin_manager  # Noqa
 
 from common import BASE_DIR, enable_experimental_features
-from pairing.bbp_pairings import BbpPairings
+from data.pairings.engines import BbpPairings
 from common import PAPI_WEB_VERSION
 from common.papi_web_config import PapiWebConfig
 from common.logger import (

@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING, override, Optional
 
 from packaging.version import Version
 
@@ -108,7 +108,7 @@ class ChessEventPlugin(Plugin):
         return '/chessevent_event_form_fields.html'
 
     @hookimpl
-    def get_event_form_data(self, event: 'Event | None') -> dict[str, Any]:
+    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
         if not event:
             return {
                 'chessevent_user_id': '',

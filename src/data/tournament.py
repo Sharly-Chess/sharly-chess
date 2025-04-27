@@ -31,7 +31,6 @@ from utils.enum import (
     BoardColor,
     PlayerGender,
     PointValueType,
-    TournamentPairing,
     Result,
     TournamentRating,
     TrfType,
@@ -49,7 +48,7 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.event import Event
-
+    from data.pairings import PairingVariation, PairingSystem
 
 logger: Logger = get_logger()
 
@@ -152,6 +151,10 @@ class Tournament:
     @property
     def file_modified_timestamp(self) -> float:
         return self.file.lstat().st_mtime
+
+    @property
+    def log_prefix(self) -> str:
+        return f'Event [{self.event.uniq_id}] - Tournament [{self.uniq_id}] - '
 
     @property
     def papi_write_database(self) -> PapiDatabase:
@@ -322,6 +325,14 @@ class Tournament:
         return TournamentRating(self.stored_tournament.rating)
 
     @property
+    def stored_pairing_variation(self) -> 'PairingVariation | None':
+        from data.pairings import PairingVariationManager
+
+        if variation_id := self.stored_tournament.pairing:
+            return PairingVariationManager.get_object(variation_id)
+        return None
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -339,8 +350,12 @@ class Tournament:
         return self.papi_tournament_info.rounds
 
     @property
-    def pairing(self) -> TournamentPairing:
-        return self.papi_tournament_info.pairing
+    def pairing_variation(self) -> 'PairingVariation':
+        return self.papi_tournament_info.pairing_variation
+
+    @property
+    def pairing_system(self) -> 'PairingSystem':
+        return self.pairing_variation.system()
 
     @property
     def rating(self) -> TournamentRating:
@@ -483,13 +498,7 @@ class Tournament:
 
     @property
     def print_real_points(self) -> bool:
-        match self.pairing:
-            case TournamentPairing.HALEY | TournamentPairing.HALEY_SOFT:
-                return self.current_round <= 2
-            case TournamentPairing.SAD if self.rounds is not None:
-                return self.current_round <= self.rounds - 2
-            case _:
-                return False
+        return self.pairing_variation.print_real_points(self.current_round, self.rounds)
 
     @property
     def point_values(self) -> dict[Result, float]:
@@ -688,63 +697,7 @@ class Tournament:
     def _calculate_player_virtual_points(
         self, player: Player, *, at_round: int
     ) -> float:
-        vpoints = Result.LOSS.points(self.point_values)
-        if self.pairing == TournamentPairing.HALEY:
-            if at_round <= 2 and player.rating >= self.rating_limit1:
-                vpoints = Result.GAIN.points(self.point_values)
-        elif self.pairing == TournamentPairing.HALEY_SOFT:
-            # Round 1: All players above rating_limit1 get 1 vpoint
-            # Round 2: All players above rating_limit1 get 1 vpoint
-            # Round 2: All other players get .5 vpoints
-            # bottom of page #138 on
-            # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
-            # please remove if OK
-            if at_round <= 2 and player.rating >= self.rating_limit1:
-                vpoints = Result.GAIN.points(self.point_values)
-            elif at_round == 2 and player.rating < self.rating_limit1:
-                vpoints = Result.DRAW.points(self.point_values)
-        elif self.pairing == TournamentPairing.SAD:
-            # Before the second to last round, we remove the virtual
-            # points, and use a simple Swiss Dutch system.
-            if at_round <= self.rounds - 2:
-                # Each 1.5 points earned, virtual points go up by 0.5
-                # No player can have more than 2 points.
-                # At the start, players are sorted in three groups
-                # based on their rating.
-                # Group A players start with 2 points
-                # Group B players start with 1 point
-                # Group C players start with 0 points.
-                # If a player reaches more than half of the possible score,
-                # their virtual points capital is raised to 2 points.
-
-                # NOTE(Amaras): // is implemented on float as well, so it's
-                # way simpler to implement than by applying the algorithm
-                # step by step.
-                points = player.points_before(at_round)
-                draw_points = Result.DRAW.points(self.point_values)
-                potential_vpoints = draw_points * (points // (3 * draw_points))
-                if player.rating >= self.rating_limit1:
-                    # Group A players get 2 virtual points
-                    vpoints = 2 * Result.GAIN.points(self.point_values)
-                elif player.rating >= self.rating_limit2:
-                    # Group B players start with 1 point
-                    # Players cannot have more than 2 points
-                    vpoints = min(
-                        2 * Result.GAIN.points(self.point_values),
-                        Result.GAIN.points(self.point_values) + potential_vpoints,
-                    )
-                else:
-                    # Group C players start with 0 points
-                    # Players cannot have more than 2 points
-                    vpoints = min(
-                        2 * Result.GAIN.points(self.point_values), potential_vpoints
-                    )
-                if 2 * points >= self.rounds * Result.GAIN.points(self.point_values):
-                    # If a player gets at least half the possible score,
-                    # their capital is set at 2 points.
-                    # Assumes a 0-0.5-1 scoring system.
-                    vpoints = 2 * Result.GAIN.points(self.point_values)
-        return vpoints
+        return self.pairing_variation.compute_virtual_points(self, player, at_round)
 
     def _estimate_players(self, players: Iterable[Player], *, after_round: int):
         """Estimate the players after round *after_round*."""
@@ -1212,32 +1165,43 @@ class Tournament:
                         player, round_nb, player.pairings[round_nb]
                     )
             papi_database.commit()
+        self.clear_cache()
 
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
+        from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
+
         if not self.file_exists:
             return
         with self.papi_write_database as papi_database:
-            if (tie_breaks := self._update_tie_breaks()) is not None:
-                papi_database.update_tie_breaks(tie_breaks)
-            papi_database.write_info(
-                {
-                    PapiVariable.ROUNDS: self.stored_rounds,
-                    PapiVariable.RATING: self.stored_rating.to_papi_value,
-                }
-            )
+            if self.stored_tie_breaks is not None:
+                papi_database.update_tie_breaks(
+                    [
+                        tie_break
+                        for tie_break in self.stored_tie_breaks
+                        if tie_break.papi_id is not None
+                    ]
+                )
+            papi_info: dict[PapiVariable, str | int] = {
+                PapiVariable.ROUNDS: self.stored_rounds,
+                PapiVariable.RATING: self.stored_rating.to_papi_value,
+            }
+            if self.stored_pairing_variation:
+                if variation := PapiPairingVariation.get_plugin_value(
+                    self.stored_pairing_variation
+                ):
+                    system = PapiPairingSystem.get_plugin_value(
+                        self.stored_pairing_variation.system()
+                    )
+                    assert system is not None
+                    papi_info |= {
+                        PapiVariable.PAIRING_VARIATION: variation,
+                        PapiVariable.PAIRING_SYSTEM: system,
+                    }
+            papi_database.write_info(papi_info)
             papi_database.commit()
-
-    def _update_tie_breaks(self) -> list[TieBreak] | None:
-        if self.stored_tie_breaks is None:
-            return None
-        self._tie_breaks = [
-            tie_break
-            for tie_break in self.stored_tie_breaks
-            if tie_break.papi_id is not None
-        ]
-        return self._tie_breaks
+        self.clear_cache(clear_papi_cache=True)
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players

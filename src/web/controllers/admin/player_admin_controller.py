@@ -32,7 +32,7 @@ from utils.enum import (
     Result,
 )
 from database.sqlite.fide.fide_database import FideDatabase
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraAdminColumn
 from web.controllers.admin.base_event_admin_controller import (

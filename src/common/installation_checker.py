@@ -14,7 +14,7 @@ from common.logger import (
 )
 from common.papi_web_config import PapiWebConfig
 from common.tool_installer import ToolInstaller
-from pairing.bbp_pairings_installer import BbpPairingsInstaller
+from data.pairings.bbp_pairings_installer import BbpPairingsInstaller
 
 
 class WebLibInstaller(ToolInstaller, ABC):
@@ -221,13 +221,9 @@ class InstallationChecker:
     @classmethod
     def check(cls) -> bool:
         error: bool = False
-        installers: list[ToolInstaller] = (
-            [
-                BbpPairingsInstaller(),
-            ]
-            if experimental_features_enabled()
-            else []
-        ) + cls.web_lib_installers
+        installers: list[ToolInstaller] = cls.web_lib_installers
+        if experimental_features_enabled():
+            installers.insert(0, BbpPairingsInstaller())
         for installer in installers:
             if not installer.check_installation():
                 error = True

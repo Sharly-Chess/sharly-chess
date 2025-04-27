@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairing import Pairing
+from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player, TournamentPlayer
 from data.tie_breaks import TieBreak
 from utils import StaticUtils
-from utils.enum import TournamentPairing, Result
+from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -53,7 +54,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
-        if tournament.pairing == TournamentPairing.BERGER:
+        if tournament.pairing_system == RoundRobinPairingSystem():
             return player.points_after(after_round)
         score = 0.0
         for round_index, pairing in player.pairings.items():
@@ -137,7 +138,8 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         }
-        if tournament.pairing == TournamentPairing.BERGER:
+        pairing_system = tournament.pairing_system
+        if pairing_system == RoundRobinPairingSystem():
             return sum(
                 self._papi_adjusted_score(
                     tournament.players_by_id[pairing.opponent_id],
@@ -149,8 +151,9 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
         for round_index, pairing in pairings.items():
-            should_add_dummy = tournament.pairing.swiss and pairing.unplayed
-
+            should_add_dummy = (
+                pairing_system == SwissPairingSystem() and pairing.unplayed
+            )
             if should_add_dummy:
                 dummy_points = self._papi_dummy_score(
                     player, pairing, after_round=after_round, round_index=round_index
@@ -159,7 +162,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
                 continue
             assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
-            if tournament.pairing.swiss:
+            if pairing_system == SwissPairingSystem():
                 opponent_adjusted_score = self._papi_adjusted_score(
                     opponent, after_round=after_round
                 )

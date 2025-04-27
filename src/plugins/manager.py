@@ -18,8 +18,10 @@ class AppPluginManager(PluginManager):
     def all_plugins(self) -> list[Plugin]:
         from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.ffe.ffe import FfePlugin
+        from plugins.pairing_acceleration.plugin import PairingAccelerationPlugin
 
         return [
+            PairingAccelerationPlugin(),
             FfePlugin(),
             ChessEventPlugin(),
         ]
