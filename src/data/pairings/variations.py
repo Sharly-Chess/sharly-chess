@@ -7,7 +7,6 @@ from data.pairings.engines import PairingEngine, BbpPairings, RoundRobinPairingE
 from data.pairings.systems import PairingSystem
 from data.player import Player
 from utils.entity import IdentifiableEntity
-from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -52,7 +51,7 @@ class PairingVariation(IdentifiableEntity, ABC):
         at_round: int,
     ) -> float:
         """Compute the virtual points of a player for round *at_round*."""
-        return Result.LOSS.points(tournament.point_values)
+        return 0.0
 
 
 class SwissVariation(PairingVariation, ABC):

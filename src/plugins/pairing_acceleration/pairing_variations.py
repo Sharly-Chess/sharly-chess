@@ -22,11 +22,9 @@ class HaleySwissVariation(SwissVariation):
     ) -> float:
         rating_limit = tournament.rating_limit1
         assert rating_limit is not None
-        point_values = tournament.point_values
-        vpoints = Result.LOSS.points(point_values)
         if at_round <= 2 and player.rating >= rating_limit:
-            vpoints = Result.GAIN.points(point_values)
-        return vpoints
+            return Result.GAIN.points(tournament.point_values)
+        return 0.0
 
     @staticmethod
     def print_real_points(current_round: int, rounds: int) -> bool:
@@ -56,13 +54,11 @@ class HaleySoftSwissVariation(SwissVariation):
         # please remove if OK
         rating_limit = tournament.rating_limit1
         assert rating_limit is not None
-        point_values = tournament.point_values
-        vpoints = Result.LOSS.points(point_values)
         if at_round <= 2 and player.rating >= rating_limit:
-            vpoints = Result.GAIN.points(point_values)
+            return Result.GAIN.points(tournament.point_values)
         elif at_round == 2 and player.rating < rating_limit:
-            vpoints = Result.DRAW.points(point_values)
-        return vpoints
+            return Result.DRAW.points(tournament.point_values)
+        return 0.0
 
     @staticmethod
     def print_real_points(current_round: int, rounds: int) -> bool:
@@ -84,20 +80,29 @@ class ProgressiveSwissVariation(SwissVariation):
         player: Player,
         at_round: int,
     ) -> float:
+        return ProgressiveSwissVariation._compute_progressive_virtual_points(
+            tournament, player, at_round
+        )
+
+    @staticmethod
+    def _compute_progressive_virtual_points(
+        tournament: Tournament,
+        player: Player,
+        at_round: int,
+        virtual_draw_points_per_real_draw_point: int = 3,
+    ) -> float:
         rating_limit1 = tournament.rating_limit1
         assert rating_limit1 is not None
         rating_limit2 = tournament.rating_limit1
         assert rating_limit2 is not None
 
-        point_values = tournament.point_values
-        draw_points = Result.DRAW.points(point_values)
-        gain_points = Result.GAIN.points(point_values)
-        loss_points = Result.LOSS.points(point_values)
+        draw_points = Result.DRAW.points(tournament.point_values)
+        gain_points = Result.GAIN.points(tournament.point_values)
 
         if at_round >= tournament.rounds - 1:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
-            return loss_points
+            return 0.0
 
         points = player.points_before(at_round)
         if 2 * points >= tournament.rounds * gain_points:
@@ -105,8 +110,10 @@ class ProgressiveSwissVariation(SwissVariation):
             # their capital is set at 2 points.
             return 2 * gain_points
 
-        # Players get a virtual draw point for each 3 real draw points
-        vpoints = draw_points * (points // (3 * draw_points))
+        # Players get a virtual draw points for real draw points
+        vpoints = draw_points * (
+            points // (virtual_draw_points_per_real_draw_point * draw_points)
+        )
 
         # Starting points: Group A - 2, Group B - 1, Group C - 0
         if player.rating >= rating_limit1:
