@@ -12,10 +12,12 @@ from data.input_output.player_updaters import (
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
+from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.utils import PluginUtils
+from utils.enum import Result
 
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -136,6 +138,11 @@ class LeaguePlayerSplitter(PlayerSplitter):
 
 
 class NicoisSwissVariation(SwissVariation):
+    """Variation of the Progressive swiss system,
+    with even more progressive virtual points.
+    A draw virtual point is added every 2 real draw points,
+    instead of 3 in the original Progressive system"""
+
     @staticmethod
     def variation_id() -> str:
         return 'NICOIS'
@@ -144,7 +151,45 @@ class NicoisSwissVariation(SwissVariation):
     def static_name() -> str:
         return _('"Niçois" accelerated system')
 
-    @property
-    def is_pairing_generation_implemented(self) -> bool:
-        # TODO (Molrn) implement Niçois pairing system
-        return False
+    @staticmethod
+    def compute_virtual_points(
+        tournament: Tournament,
+        player: Player,
+        at_round: int,
+    ) -> float:
+        rating_limit1 = tournament.rating_limit1
+        assert rating_limit1 is not None
+        rating_limit2 = tournament.rating_limit1
+        assert rating_limit2 is not None
+
+        point_values = tournament.point_values
+        draw_points = Result.DRAW.points(point_values)
+        gain_points = Result.GAIN.points(point_values)
+        loss_points = Result.LOSS.points(point_values)
+
+        if at_round >= tournament.rounds - 1:
+            # Before the second to last round, we remove the virtual
+            # points, and use a simple Swiss Dutch system.
+            return loss_points
+
+        points = player.points_before(at_round)
+        if 2 * points >= tournament.rounds * gain_points:
+            # If a player gets at least half the possible score,
+            # their capital is set at 2 points.
+            return 2 * gain_points
+
+        # Players get a virtual draw point for each 2 real draw points
+        vpoints = draw_points * (points // (2 * draw_points))
+
+        # Starting points: Group A - 2, Group B - 1, Group C - 0
+        if player.rating >= rating_limit1:
+            vpoints += 2 * gain_points
+        elif player.rating >= rating_limit2:
+            vpoints += gain_points
+
+        # Players cannot have more than 2 virtual points
+        return min(2 * gain_points, vpoints)
+
+    @staticmethod
+    def print_real_points(current_round: int, rounds: int) -> bool:
+        return current_round <= rounds - 2
