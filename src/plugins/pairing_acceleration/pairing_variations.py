@@ -1,11 +1,20 @@
+from abc import ABC
+
 from common.i18n import _
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.tournament import Tournament
+from plugins.pairing_acceleration import PLUGIN_NAME
 from utils.enum import Result
 
 
-class HaleySwissVariation(SwissVariation):
+class AccelerationSwissVariation(SwissVariation, ABC):
+    @classmethod
+    def static_id(cls) -> str:
+        return f'{PLUGIN_NAME}-{super().static_id()}'
+
+
+class HaleySwissVariation(AccelerationSwissVariation):
     @staticmethod
     def variation_id() -> str:
         return 'HALEY'
@@ -33,7 +42,7 @@ class HaleySwissVariation(SwissVariation):
         return current_round <= 2
 
 
-class HaleySoftSwissVariation(SwissVariation):
+class HaleySoftSwissVariation(AccelerationSwissVariation):
     @staticmethod
     def variation_id() -> str:
         return 'HALEY_SOFT'
@@ -69,7 +78,7 @@ class HaleySoftSwissVariation(SwissVariation):
         return current_round <= 2
 
 
-class ProgressiveSwissVariation(SwissVariation):
+class ProgressiveSwissVariation(AccelerationSwissVariation):
     @staticmethod
     def variation_id() -> str:
         return 'PROGRESSIVE'
