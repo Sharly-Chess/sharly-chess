@@ -572,6 +572,7 @@ class Tournament:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
         self._players_by_rank = None
+        self.event.clear_screen_cache(self.id)
 
     def pairings_generation_allowed(self, at_round: int) -> bool:
         """Check if pairing generation is allowed for round *at_round*."""
