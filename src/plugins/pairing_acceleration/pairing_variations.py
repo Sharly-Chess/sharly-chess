@@ -93,7 +93,7 @@ class ProgressiveSwissVariation(SwissVariation):
     ) -> float:
         rating_limit1 = tournament.rating_limit1
         assert rating_limit1 is not None
-        rating_limit2 = tournament.rating_limit1
+        rating_limit2 = tournament.rating_limit2
         assert rating_limit2 is not None
 
         draw_points = Result.DRAW.points(tournament.point_values)
