@@ -141,6 +141,9 @@ nav .btn-link:hover {
 .modal * + h4 {
     margin-top: 1.5rem
 }
+.modal-dialog:has(.empty-modal) {
+    display: none;
+}
 
 /* Colour themes */
 
