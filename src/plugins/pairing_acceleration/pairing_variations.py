@@ -89,7 +89,7 @@ class ProgressiveSwissVariation(SwissVariation):
         tournament: Tournament,
         player: Player,
         at_round: int,
-        virtual_draw_points_per_real_draw_point: int = 3,
+        real_virtual_draw_points_ratio: int = 3,
     ) -> float:
         rating_limit1 = tournament.rating_limit1
         assert rating_limit1 is not None
@@ -112,7 +112,7 @@ class ProgressiveSwissVariation(SwissVariation):
 
         # Players get a virtual draw points for real draw points
         vpoints = draw_points * (
-            points // (virtual_draw_points_per_real_draw_point * draw_points)
+            points // (real_virtual_draw_points_ratio * draw_points)
         )
 
         # Starting points: Group A - 2, Group B - 1, Group C - 0
