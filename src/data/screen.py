@@ -473,6 +473,17 @@ class Screen:
             key=lambda screen_set: screen_set.order or 0,
         )
 
+    def clear_cache_for_tournament(self, tournament_id: int | None = None):
+        """Clears the screen cache for the given tournament, or all tournaments if no tournament is provided"""
+        for screen_set in self.screen_sets_by_id.values():
+            screen_set.clear_boards_cache(tournament_id)
+        if self.type == ScreenType.RESULTS and (
+            tournament_id is None
+            or not self.results_tournament_ids
+            or tournament_id in self.results_tournament_ids
+        ):
+            self._clear_results_cache()
+
     @property
     def input_exit_button(self) -> bool:
         match self.type:
@@ -600,6 +611,9 @@ class Screen:
             return event_database.get_stored_results(
                 self.results_limit, self.results_tournament_ids, self.results_max_age
             )
+
+    def _clear_results_cache(self):
+        self.__dict__.pop('_results', None)
 
     @property
     def results_lists(self) -> Iterator[list[Result]]:

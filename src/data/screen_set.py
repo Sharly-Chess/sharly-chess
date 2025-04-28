@@ -290,6 +290,11 @@ class ScreenSet:
             assert self.tournament.boards is not None
             self._extract_data(self.tournament.boards)
 
+    def clear_boards_cache(self, tournament_id: int | None = None):
+        """Clears the boards cache if the set is for the given tournament, or regardless of the tournament if no tournament is provided"""
+        if tournament_id is None or self.tournament_id == tournament_id:
+            self.items_lists = None
+
     @property
     def boards_lists(self) -> list[list[Board]]:
         self._extract_boards()
