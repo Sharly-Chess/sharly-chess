@@ -1115,7 +1115,7 @@ class Tournament:
         with self.papi_write_database as papi_database:
             white_player.pairings[round_nb] = Pairing(
                 BoardColor.WHITE,
-                black_player.id if black_player else 1,
+                black_player.id if black_player else None,
                 Result.NO_RESULT if black_player else Result.PAIRING_ALLOCATED_BYE,
             )
             papi_database.update_player_pairing(
