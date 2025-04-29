@@ -3,6 +3,7 @@ from packaging.version import Version
 from common.i18n import _
 from data.pairings.variations import SwissVariation, StandardSwissVariation
 from plugins.hookspec import hookimpl
+from plugins.pairing_acceleration import PLUGIN_NAME
 from plugins.pairing_acceleration.pairing_variations import (
     HaleySwissVariation,
     HaleySoftSwissVariation,
@@ -14,7 +15,7 @@ from plugins.utils import Plugin, PluginUtils
 class PairingAccelerationPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
-        return 'pairing_acceleration'
+        return PLUGIN_NAME
 
     @staticmethod
     def static_name() -> str:

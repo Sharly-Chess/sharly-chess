@@ -54,7 +54,7 @@ class FfePlayerUpdater(PlayerUpdater):
 
     @staticmethod
     def static_id() -> str:
-        return 'ffe'
+        return f'{PLUGIN_NAME}-ffe'
 
     @override
     def fields(self) -> list[PlayerUpdaterField]:
@@ -125,7 +125,7 @@ class FfePlayerUpdater(PlayerUpdater):
 class LeaguePlayerSplitter(PlayerSplitter):
     @staticmethod
     def static_id() -> str:
-        return 'ffe_league'
+        return f'{PLUGIN_NAME}-ffe_league'
 
     @staticmethod
     def static_name() -> str:
@@ -141,6 +141,10 @@ class NicoisSwissVariation(SwissVariation):
     with even more progressive virtual points.
     A draw virtual point is added every 2 real draw points,
     instead of 3 in the original Progressive system"""
+
+    @classmethod
+    def static_id(cls) -> str:
+        return f'{PLUGIN_NAME}-{super().static_id()}'
 
     @staticmethod
     def variation_id() -> str:
