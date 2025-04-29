@@ -9,15 +9,15 @@ from data.input_output.player_updaters import (
     PlayerUpdater,
     PlayerUpdaterField,
 )
+from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
-from plugins.pairing_acceleration.pairing_variations import ProgressiveSwissVariation
 from plugins.utils import PluginUtils
-
+from utils.enum import Result
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -136,7 +136,7 @@ class LeaguePlayerSplitter(PlayerSplitter):
         return get_data(player.plugin_data, 'league', '')
 
 
-class NicoisSwissVariation(ProgressiveSwissVariation):
+class NicoisSwissVariation(SwissVariation):
     """Variation of the Progressive swiss system,
     with even more progressive virtual points.
     A draw virtual point is added every 2 real draw points,
@@ -156,6 +156,41 @@ class NicoisSwissVariation(ProgressiveSwissVariation):
         player: Player,
         at_round: int,
     ) -> float:
-        return ProgressiveSwissVariation._compute_progressive_virtual_points(
-            tournament, player, at_round, 2
-        )
+        rating_limit1 = tournament.rating_limit1
+        assert rating_limit1 is not None
+        rating_limit2 = tournament.rating_limit2
+        assert rating_limit2 is not None
+
+        draw_points = Result.DRAW.points(tournament.point_values)
+        gain_points = Result.GAIN.points(tournament.point_values)
+
+        if at_round >= tournament.rounds - 1:
+            # Before the second to last round, we remove the virtual
+            # points, and use a simple Swiss Dutch system.
+            return 0.0
+
+        points = player.points_before(at_round)
+        if 2 * points >= tournament.rounds * gain_points:
+            # If a player gets at least half the possible score,
+            # their capital is set at 2 points.
+            return 2 * gain_points
+
+        if player.rating >= rating_limit1:
+            # Group A: starts with 2 gain points (max)
+            return 2 * gain_points
+
+        if player.rating >= rating_limit2:
+            # Group B: starts with 1 gain point
+            # Earns a draw point at 3 real draw points, and a final one at 5
+            vpoints = gain_points
+            if points >= 3 * draw_points:
+                vpoints += draw_points
+                if points >= 5 * draw_points:
+                    vpoints += draw_points
+        else:
+            # Group C: starts with 0 virtual points
+            # Players get a virtual draw points for 2 real draw points
+            vpoints = draw_points * (points // (2 * draw_points))
+
+        # Players cannot have more than 2 virtual points
+        return min(2 * gain_points, vpoints)
