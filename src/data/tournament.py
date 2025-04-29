@@ -666,7 +666,7 @@ class Tournament:
             ]
             if sum(vpoints_history) > 0:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
-                    [f'{vpoints:>4}' for vpoints in vpoints_history]
+                    [f'{float(vpoints):>4}' for vpoints in vpoints_history]
                 )
         return fields
 
