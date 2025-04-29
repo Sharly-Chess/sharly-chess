@@ -141,7 +141,7 @@ class LeaguePlayerSplitter(PlayerSplitter):
 class NicoisSwissVariation(SwissVariation):
     @classmethod
     def static_id(cls) -> str:
-        return f'{PLUGIN_NAME}-{cls.system().id}_{cls.variation_id()}'
+        return f'{PLUGIN_NAME}-{super().static_id()}'
 
     @staticmethod
     def variation_id() -> str:
