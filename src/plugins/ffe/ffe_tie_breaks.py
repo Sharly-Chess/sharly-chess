@@ -9,6 +9,7 @@ from data.pairing import Pairing
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player, TournamentPlayer
 from data.tie_breaks import TieBreak
+from plugins.ffe import PLUGIN_NAME
 from utils import StaticUtils
 from utils.enum import Result
 
@@ -35,6 +36,15 @@ def papi_performance_bonus(fractional_score: float) -> int | float:
 class AbstractPapiTieBreak(TieBreak, ABC):
     """Implementation of the tie-breaks as in Papi.
     Computation inaccuracies are reproduced"""
+
+    @classmethod
+    def static_id(cls) -> str:
+        return f'{PLUGIN_NAME}-{cls.sub_id()}'
+
+    @staticmethod
+    @abstractmethod
+    def sub_id() -> str:
+        pass
 
     @staticmethod
     @abstractmethod  # AS the usage is for Papi, papi_id has to be implemented
@@ -184,7 +194,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         return _('Buchholz')
 
     @staticmethod
-    def static_id() -> str:
+    def sub_id() -> str:
         return 'PAPI_BUCHHOLZ'
 
     @staticmethod
@@ -214,7 +224,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
         return _('Buchholz cut bottom')
 
     @staticmethod
-    def static_id() -> str:
+    def sub_id() -> str:
         return 'PAPI_BUCHHOLZ_CUT_BOTTOM'
 
     @staticmethod
@@ -246,7 +256,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         return _('Median Buchholz')
 
     @staticmethod
-    def static_id() -> str:
+    def sub_id() -> str:
         return 'PAPI_MEDIAN_BUCHHOLZ'
 
     @staticmethod
@@ -281,7 +291,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
         return _('Performance')
 
     @staticmethod
-    def static_id() -> str:
+    def sub_id() -> str:
         return 'PAPI_PERFORMANCE'
 
     @staticmethod
@@ -338,7 +348,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
         return _('Sum of Buchholz')
 
     @staticmethod
-    def static_id() -> str:
+    def sub_id() -> str:
         return 'PAPI_BUCHHOLZ_SUM'
 
     @staticmethod
@@ -382,7 +392,7 @@ class PapiKashdanTieBreak(AbstractPapiTieBreak):
         return _('Kashdan')
 
     @staticmethod
-    def static_id() -> str:
+    def sub_id() -> str:
         return 'PAPI_KASHDAN'
 
     @staticmethod
