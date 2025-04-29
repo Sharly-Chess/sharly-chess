@@ -62,7 +62,9 @@ class PairingEngine(ABC):
         for player in tournament.players:
             tournament.set_player_points(player, before_round=round_)
         real_boards = tournament.build_boards(round_)
-        expected_boards = self._generate_boards(tournament, round_)
+        expected_boards = sorted(
+            self._generate_boards(tournament, round_), reverse=True
+        )
         for i in range(len(real_boards)):
             real = real_boards[i]
             if i >= len(expected_boards):
