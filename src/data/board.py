@@ -43,6 +43,18 @@ class Board:
     def result_str(self) -> str:
         return str(self.result) if self.result else ''
 
+    @property
+    def white_player_id(self) -> int | None:
+        if self.white_player:
+            return self.white_player.id
+        return None
+
+    @property
+    def black_player_id(self) -> int | None:
+        if self.black_player:
+            return self.black_player.id
+        return None
+
     def to_pgn(
         self,
         tournament: 'Tournament',

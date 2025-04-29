@@ -9,3 +9,15 @@ tournaments:
   round-robin:
     filename: "round-robin"
     name: "Round-robin individual tournament (TEC 'Exercises in Tie-Breaking' 2.2)"
+  haley:
+    filename: "haley"
+    name: "Papi-generated Haley tournament"
+  haley-soft:
+    filename: "haley-soft"
+    name: "Papi-generated Soft Haley tournament"
+  progressive:
+    filename: "progressive"
+    name: "Papi-generated Progressive tournament"
+  nicois:
+    filename: "nicois"
+    name: "Papi-generated 'Niçois' tournament"
