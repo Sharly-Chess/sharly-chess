@@ -30,7 +30,10 @@ class PairingTestCase(BaseTestCase):
             diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
             self.assertEqual(diff, [], f'round {round_}')
 
-    def test_swiss_standard(self):
+    def test_swiss_tec_standard(self):
+        self.assert_no_pairings_diff_in_tournament('tec-swiss')
+
+    def test_swiss_papi_standard(self):
         self.assert_no_pairings_diff_in_tournament('swiss')
 
     def test_swiss_haley(self):

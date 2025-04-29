@@ -61,7 +61,7 @@ class TieBreakTestCase(BaseTestCase, ABC):
 class SwissTieBreakTestCase(TieBreakTestCase):
     @property
     def tournament_uniq_id(self) -> str:
-        return 'swiss'
+        return 'tec-swiss'
 
     def test_points(self):
         results = self.get_player_values(lambda p: p.total_points())
@@ -765,7 +765,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 class RoundRobinTieBreakTestCase(TieBreakTestCase):
     @property
     def tournament_uniq_id(self) -> str:
-        return 'round-robin'
+        return 'tec-round-robin'
 
     def test_all_players_met_each_other(self):
         results = self.get_player_values(
