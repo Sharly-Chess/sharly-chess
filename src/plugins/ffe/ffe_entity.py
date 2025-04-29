@@ -1,5 +1,5 @@
 from functools import partial, cached_property
-from typing import override, TYPE_CHECKING
+from typing import override
 
 from common.exception import PapiWebException
 from common.i18n import _
@@ -17,9 +17,7 @@ from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.utils import PluginUtils
-
-if TYPE_CHECKING:
-    from data.tournament import Tournament
+from utils.enum import Result
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -139,6 +137,11 @@ class LeaguePlayerSplitter(PlayerSplitter):
 
 
 class NicoisSwissVariation(SwissVariation):
+    """Variation of the Progressive swiss system,
+    with even more progressive virtual points.
+    A draw virtual point is added every 2 real draw points,
+    instead of 3 in the original Progressive system"""
+
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}-{super().static_id()}'
@@ -151,15 +154,47 @@ class NicoisSwissVariation(SwissVariation):
     def static_name() -> str:
         return _('"Niçois" accelerated system')
 
-    @property
-    def is_pairing_generation_implemented(self) -> bool:
-        return False
-
     @staticmethod
     def compute_virtual_points(
-        tournament: 'Tournament',
+        tournament: Tournament,
         player: Player,
         at_round: int,
     ) -> float:
-        # TODO (Molrn) implement Niçois pairing system
-        raise NotImplementedError()
+        rating_limit1 = tournament.rating_limit1
+        assert rating_limit1 is not None
+        rating_limit2 = tournament.rating_limit2
+        assert rating_limit2 is not None
+
+        draw_points = Result.DRAW.points(tournament.point_values)
+        gain_points = Result.GAIN.points(tournament.point_values)
+
+        if at_round >= tournament.rounds - 1:
+            # Before the second to last round, we remove the virtual
+            # points, and use a simple Swiss Dutch system.
+            return 0.0
+
+        points = player.points_before(at_round)
+        if 2 * points >= tournament.rounds * gain_points:
+            # If a player gets at least half the possible score,
+            # their capital is set at 2 points.
+            return 2 * gain_points
+
+        if player.rating >= rating_limit1:
+            # Group A: starts with 2 gain points (max)
+            return 2 * gain_points
+
+        if player.rating >= rating_limit2:
+            # Group B: starts with 1 gain point
+            # Earns a draw point at 3 real draw points, and a final one at 5
+            vpoints = gain_points
+            if points >= 3 * draw_points:
+                vpoints += draw_points
+                if points >= 5 * draw_points:
+                    vpoints += draw_points
+        else:
+            # Group C: starts with 0 virtual points
+            # Players get a virtual draw points for 2 real draw points
+            vpoints = draw_points * (points // (2 * draw_points))
+
+        # Players cannot have more than 2 virtual points
+        return min(2 * gain_points, vpoints)
