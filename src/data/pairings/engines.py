@@ -28,6 +28,10 @@ class PairingEngine(ABC):
         If the pairing generation fails, raise a PapiWebException."""
 
     def generate_pairings(self, tournament: 'Tournament', round_: int):
+        """Generate the pairings of the round *round_* for tournament *tournament*.
+        Generated pairings are stored in the player pairings and in the Papi DB."""
+        if round_ > tournament.current_round + 1:
+            raise ValueError('Impossible to generate the pairings for a future round')
         boards = self._generate_boards(tournament, round_)
         for board in boards:
             white_player = board.white_player
@@ -45,6 +49,36 @@ class PairingEngine(ABC):
                     board.result,
                 )
         tournament.update_round_pairings(round_)
+
+    def pairings_diff(
+        self, tournament: 'Tournament', round_: int
+    ) -> list[tuple[Board | None, Board | None]]:
+        """For round *round_* of tournament *tournament*, get the diff between
+        the real pairings and the expected ones.
+        Returns a list of real board / expected board when the boards differ."""
+        if round_ > tournament.current_round:
+            raise ValueError(f'No pairings for round {round_}')
+        pairings_diff: list[tuple[Board | None, Board | None]] = []
+        for player in tournament.players:
+            tournament.set_player_points(player, before_round=round_)
+        real_boards = tournament.build_boards(round_)
+        expected_boards = sorted(
+            self._generate_boards(tournament, round_), reverse=True
+        )
+        for i in range(len(real_boards)):
+            real = real_boards[i]
+            if i >= len(expected_boards):
+                pairings_diff.append((real, None))
+                continue
+            expected = expected_boards[i]
+            if (
+                real.white_player_id != expected.white_player_id
+                or real.black_player_id != expected.black_player_id
+            ):
+                pairings_diff.append((real, expected))
+        for i in range(len(real_boards), len(expected_boards)):
+            pairings_diff.append((None, expected_boards[i]))
+        return pairings_diff
 
 
 class BbpPairings(PairingEngine):
@@ -71,8 +105,10 @@ class BbpPairings(PairingEngine):
                 f'of tournament [{tournament.uniq_id}].'
             )
 
-        trf_file_path = TMP_DIR / 'tournament.trfx'
-        pairings_file_path = TMP_DIR / 'pairings.txt'
+        pairings_dir = TMP_DIR / 'pairings'
+        pairings_dir.mkdir(exist_ok=True)
+        trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
+        pairings_file_path = pairings_dir / f'{tournament.uniq_id}-pairings.txt'
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(
                 trf_file, tournament.to_trf(TrfType.TRF_BX, after_round=round_ - 1)
@@ -113,9 +149,7 @@ class BbpPairings(PairingEngine):
                         black_player=tournament.players_by_trf_id[black_trf_id],
                     )
                 )
-            elif not white_player.pairings[
-                round_
-            ].next_round_bye and not tournament.round_has_pab(round_):
+            elif not white_player.pairings[round_].next_round_bye:
                 boards.append(
                     Board(
                         white_player=white_player,

@@ -626,7 +626,7 @@ class Tournament:
             ],
             federation=self.event.federation,
             xx_fields=(
-                self._trf_xx_fields(first_round_pairing)
+                self._trf_xx_fields(first_round_pairing, after_round + 1)
                 if trf_type == TrfType.TRF_BX
                 else {}
             ),
@@ -646,8 +646,7 @@ class Tournament:
     def _player_id_to_rank(self, player_id: int) -> int:
         return self.players_by_id[player_id].rank
 
-    def _trf_xx_fields(self, first_round_pairing: BoardColor):
-        next_round = self.current_round + 1
+    def _trf_xx_fields(self, first_round_pairing: BoardColor, next_round: int):
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
             'XXC': first_round_pairing.to_trf_first_round_pairing,
@@ -656,18 +655,18 @@ class Tournament:
                     str(trf_id)
                     for trf_id, player in self.players_by_trf_id.items()
                     if next_round in player.pairings
-                    and player.pairings[next_round].result.is_bye
+                    and player.pairings[next_round].next_round_bye
                 ]
             ),
         }
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, at_round=round_)
-                for round_ in range(1, next_round)
+                for round_ in range(1, next_round + 1)
             ]
             if sum(vpoints_history) > 0:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
-                    [f'{vpoints:>4}' for vpoints in vpoints_history]
+                    [f'{float(vpoints):>4}' for vpoints in vpoints_history]
                 )
         return fields
 
