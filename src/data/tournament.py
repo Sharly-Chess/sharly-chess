@@ -663,7 +663,7 @@ class Tournament:
         for trf_id, player in self.players_by_trf_id.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, at_round=round_)
-                for round_ in range(1, next_round)
+                for round_ in range(1, next_round + 1)
             ]
             if sum(vpoints_history) > 0:
                 fields[f'XXA {trf_id:>4}'] = ' '.join(
