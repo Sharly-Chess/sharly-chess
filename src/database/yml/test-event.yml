@@ -9,18 +9,18 @@ tournaments:
   tec-round-robin:
     filename: "tec-round-robin"
     name: "Round-robin individual tournament (TEC 'Exercises in Tie-Breaking' 2.2)"
-  swiss:
-    filename: "swiss"
+  papi-swiss:
+    filename: "papi-swiss"
     name: "Papi-generated standard swiss tournament"
-  haley:
-    filename: "haley"
+  papi-haley:
+    filename: "papi-haley"
     name: "Papi-generated Haley tournament"
-  haley-soft:
-    filename: "haley-soft"
+  papi-haley-soft:
+    filename: "papi-haley-soft"
     name: "Papi-generated Soft Haley tournament"
-  progressive:
-    filename: "progressive"
+  papi-progressive:
+    filename: "papi-progressive"
     name: "Papi-generated Progressive tournament"
-  nicois:
-    filename: "nicois"
+  papi-nicois:
+    filename: "papi-nicois"
     name: "Papi-generated 'Niçois' tournament"
