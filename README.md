@@ -3,7 +3,7 @@
 Sharly Chess - © Projet Sharly Chess 2013-2025 - https://github.com/Sharly-Chess/sharly-chess/ ([copyright](COPYRIGHT.md))
 
 <!-- DO NOT EDIT! (START) -->
-- **[Download the latest stable version (2.5.7)](https://github.com/Sharly-Chess/sharly-chess/releases/download/2.5.7/papi-web-2.5.7.zip)**
+- **[Download the latest stable version (2.5.8)](https://github.com/Sharly-Chess/sharly-chess/releases/download/2.5.8/papi-web-2.5.8.zip)**
 <!-- DO NOT EDIT! (END) -->
 
 ## Généralités
