@@ -25,7 +25,7 @@ If pertinent, add screenshots
 
 ## Environment
 - OS: Windows 10/11, etc.
-- Sharly Chess version: 2.x.y
+- Sharly Chess (Papi-web) version: 2.x.y
 - Any useful information
 
 ## Additional context
