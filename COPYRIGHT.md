@@ -1,8 +1,8 @@
 **[Retour au sommaire de la documentation](README.md)**
 
-# Papi-web - Copyright
+# Sharly Chess - Copyright
 
-Papi-web - © Projet Papi-web 2013-2025 - https://github.com/papi-web-org/papi-web
+Papi-web - © The Sharly Chess project 2013-2025 - https://github.com/Sharly-Chess/sharly-chess
 
 ## License
 

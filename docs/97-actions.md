@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Actions
+# Sharly Chess - Actions
 
 Cette page propose un synopsis des actions des onglets Tournois, Joueur·euses et Appariements.
 
