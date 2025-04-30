@@ -1,4 +1,7 @@
-<div id="admin-screen-sets-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-sets-modal">
+<div
+    id="admin-screen-sets-modal"
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-sets-modal"
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -40,11 +43,7 @@
                 {% if admin_screen_set %}
                     disabled
                 {% else %}
-                    hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    preload
-                    hx-target="body"
-                    hx-trigger="click, keyup[key=='Escape'] from:body"
-                    hx-indicator="#please-wait"
+                    data-bs-dismiss="modal"
                 {% endif %}
             >
                 <i class="bi-x-circle-fill"></i>
@@ -66,3 +65,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because the screen sets might have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

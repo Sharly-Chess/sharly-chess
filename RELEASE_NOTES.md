@@ -10,7 +10,7 @@
 
 - Ajout de l'onglet Appariements (2.6.0)
 - Ajout de la gestion des appariements manuels (2.6.0)
-- Ajout de l'appariement suisse (2.6.0 expérimental)
+- Ajout de l'appariement suisse classique et accéléré (2.6.0 expérimental)
 - Ajout des exports PGN et TRF16 (2.6.0 expérimental)
 
 ### Gestion des clients

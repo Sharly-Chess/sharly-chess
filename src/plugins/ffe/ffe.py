@@ -15,6 +15,7 @@ from packaging.version import Version
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.input_output import PlayerUpdater
+from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
@@ -26,12 +27,16 @@ from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
-from plugins.ffe.ffe_entity import FfePlayerUpdater, LeaguePlayerSplitter
+from plugins.ffe.ffe_entity import (
+    FfePlayerUpdater,
+    LeaguePlayerSplitter,
+    NicoisSwissVariation,
+)
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginEngineArgument, PluginUtils
@@ -724,6 +729,16 @@ class FfePlugin(Plugin):
             ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
             ffe_tie_breaks.PapiKashdanTieBreak,
         ]
+
+    # ---------------------------------------------------------------------------------
+    # Pairings
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_swiss_pairing_variation_types(
+        self, variation_types: list[type[SwissVariation]]
+    ):
+        variation_types.append(NicoisSwissVariation)
 
     # ---------------------------------------------------------------------------------
     # Shared utils

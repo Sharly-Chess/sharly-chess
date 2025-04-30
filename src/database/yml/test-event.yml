@@ -3,9 +3,24 @@ federation: "FID"
 public: true
 path: "tests/papi/"
 tournaments:
-  swiss:
-    filename: "swiss"
+  tec-swiss:
+    filename: "tec-swiss"
     name: "Swiss individual tournament (TEC 'Exercises in Tie-Breaking' 2.1)"
-  round-robin:
-    filename: "round-robin"
+  tec-round-robin:
+    filename: "tec-round-robin"
     name: "Round-robin individual tournament (TEC 'Exercises in Tie-Breaking' 2.2)"
+  papi-swiss:
+    filename: "papi-swiss"
+    name: "Papi-generated standard swiss tournament"
+  papi-haley:
+    filename: "papi-haley"
+    name: "Papi-generated Haley tournament"
+  papi-haley-soft:
+    filename: "papi-haley-soft"
+    name: "Papi-generated Soft Haley tournament"
+  papi-progressive:
+    filename: "papi-progressive"
+    name: "Papi-generated Progressive tournament"
+  papi-nicois:
+    filename: "papi-nicois"
+    name: "Papi-generated 'Niçois' tournament"

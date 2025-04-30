@@ -1,6 +1,9 @@
 msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
+msgid "\"Niçois\" accelerated system"
+msgstr ""
+
 #, python-format
 msgid "#%(board_number)d"
 msgstr ""
@@ -154,6 +157,12 @@ msgstr ""
 msgid "Absent"
 msgstr ""
 
+msgid "Accelerated pairings"
+msgstr ""
+
+msgid "Accelerated variations of the swiss pairing system."
+msgstr ""
+
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
@@ -301,6 +310,18 @@ msgstr ""
 msgid "Argument --server is deprecated, ignored."
 msgstr ""
 
+msgid "Assign a zero-point bye for the next round"
+msgstr ""
+
+msgid "Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds)."
+msgstr ""
+
+msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
+msgstr ""
+
+msgid "Assign zero-point byes for the rest of the tournament"
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -373,6 +394,9 @@ msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
+
+msgid "Berger"
+msgstr ""
 
 msgid "Black"
 msgstr ""
@@ -916,7 +940,7 @@ msgstr ""
 msgid "Default directory of the Papi files:"
 msgstr ""
 
-msgid "Default federation:"
+msgid "Default federation"
 msgstr ""
 
 msgid "Default language"
@@ -1794,6 +1818,9 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
+msgid "Haley system"
+msgstr ""
+
 msgid "Half-Point Bye"
 msgstr ""
 
@@ -2043,9 +2070,6 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
-msgid "Last rounds no byes:"
-msgstr ""
-
 msgid "Last update"
 msgstr ""
 
@@ -2141,18 +2165,6 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
-msgstr ""
-
-msgid "Mark as forfeit for the coming round"
-msgstr ""
-
-msgid "Mark as forfeit for the rest of the tournament"
-msgstr ""
-
-msgid "Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds)."
-msgstr ""
-
-msgid "Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed)."
 msgstr ""
 
 #, python-format
@@ -2290,6 +2302,9 @@ msgstr ""
 
 msgid "Nb. *** NB FOR PRINT VIEW"
 msgstr "Nb."
+
+msgid "Nb. final rounds without byes:"
+msgstr ""
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
@@ -2671,6 +2686,9 @@ msgstr ""
 msgid "Pairing Allocated Bye"
 msgstr ""
 
+msgid "Pairing system"
+msgstr ""
+
 msgid "Pairings"
 msgstr ""
 
@@ -2787,7 +2805,7 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] is forfeit for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(last_name)s %(first_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
@@ -3001,6 +3019,9 @@ msgid "Proceed"
 msgstr ""
 
 msgid "Progressive"
+msgstr ""
+
+msgid "Progressive accelerated system"
 msgstr ""
 
 msgid "Progressive scores"
@@ -3261,6 +3282,9 @@ msgstr ""
 msgid "Round skipped"
 msgstr ""
 
+msgid "Round-Robin"
+msgstr ""
+
 msgid "Round:"
 msgstr ""
 
@@ -3415,6 +3439,9 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
+msgid "Soft Haley system"
+msgstr ""
+
 msgid "Sonnenborn-Berger"
 msgstr ""
 
@@ -3457,6 +3484,9 @@ msgstr ""
 msgid "Standard rating"
 msgstr ""
 
+msgid "Standard swiss system"
+msgstr ""
+
 msgid "Standard:"
 msgstr ""
 
@@ -3473,6 +3503,9 @@ msgid "Sum of Buchholz"
 msgstr ""
 
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr ""
+
+msgid "Swiss system"
 msgstr ""
 
 msgid "T *** THE LETTER TO ANSWER TEST"
@@ -3710,7 +3743,7 @@ msgid "The number of columns used to display data."
 msgstr ""
 
 #, python-format
-msgid "The number of last rounds for which a player can get no byes (if not set, defaults to %(default)d)."
+msgid "The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d)."
 msgstr ""
 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
@@ -3872,6 +3905,9 @@ msgstr ""
 msgid "The start time of the tournament (defaults to %(datetime)s)."
 msgstr ""
 
+msgid "The system used to generate the pairings."
+msgstr ""
+
 msgid "The text colour of the alert messages."
 msgstr ""
 
@@ -3903,6 +3939,9 @@ msgid "The type of document to print."
 msgstr ""
 
 msgid "The type of rating to use for the tournament."
+msgstr ""
+
+msgid "The variation of the pairing system."
 msgstr ""
 
 msgid "There is no pairings for this round (last round with pairings: #{round})."
@@ -4342,6 +4381,9 @@ msgstr ""
 msgid "V *** THE LETTER TO ANSWER VISIBLE"
 msgstr "V"
 
+msgid "Variation"
+msgstr ""
+
 msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
 msgstr ""
 
@@ -4707,4 +4749,10 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "The variation of the pairing system."
+#~ msgstr ""
+
+#~ msgid "Variation of the pairing system."
+#~ msgstr ""
 

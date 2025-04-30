@@ -17,6 +17,7 @@ from plugins.utils import (
 
 if TYPE_CHECKING:
     from data.input_output import PlayerUpdater
+    from data.pairings.variations import SwissVariation
     from data.player import Player
     from data.print_documents import PrintDocument, PlayerSplitter
     from data.tie_breaks import TieBreak
@@ -290,6 +291,16 @@ class AppHookSpecs:
     @hookspec
     def get_extra_tie_break_classes(self) -> list[type['TieBreak']]:
         """Provide extra tournament tie breaks"""
+
+    # ---------------------------------------------------------------------------------
+    # Pairings
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_swiss_pairing_variation_types(
+        self, variation_types: list[type['SwissVariation']]
+    ):
+        """Provide extra swiss pairing variations."""
 
     # ---------------------------------------------------------------------------------
     # Shared utils

@@ -13,7 +13,7 @@ from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRating
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 
 logger: Logger = get_logger()
 
@@ -112,16 +112,13 @@ class FFESqlServer(SqlServer):
             title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
-                    row['Elo'],
-                    PlayerRatingType.from_papi_value(row['Fide'])
+                    row['Elo'], PlayerRatingType.from_papi_value(row['Fide'])
                 ),
                 TournamentRating.RAPID: PlayerRating(
-                    row['Rapide'],
-                    PlayerRatingType.from_papi_value(row['Fide03'])
+                    row['Rapide'], PlayerRatingType.from_papi_value(row['Fide03'])
                 ),
                 TournamentRating.BLITZ: PlayerRating(
-                    row['Elo06'],
-                    PlayerRatingType.from_papi_value(row['Fide06'])
+                    row['Elo06'], PlayerRatingType.from_papi_value(row['Fide06'])
                 ),
             },
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
@@ -168,10 +165,7 @@ class FFESqlServer(SqlServer):
                     f'WHERE joueur.NrFFE = ?'
                 )
                 await self.execute(query, (string,))
-                return (
-                    self._get_player_from_row(row)
-                    async for row in self.fetchall()
-                )
+                return (self._get_player_from_row(row) async for row in self.fetchall())
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
@@ -222,10 +216,7 @@ class FFESqlServer(SqlServer):
             query,
             tuple(params),
         )
-        return (
-            self._get_player_from_row(row)
-            async for row in self.fetchall()
-        )
+        return (self._get_player_from_row(row) async for row in self.fetchall())
 
     async def _get_player_by_id(
         self,
@@ -268,7 +259,4 @@ class FFESqlServer(SqlServer):
             f'WHERE joueur.NrFFE IN ({query_array})'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
-        return (
-            self._get_player_from_row(row)
-            async for row in self.fetchall()
-        )
+        return (self._get_player_from_row(row) async for row in self.fetchall())

@@ -1,6 +1,6 @@
 from litestar.plugins.htmx import HTMXRequest
 
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 
 
 class FFESessionHandler:

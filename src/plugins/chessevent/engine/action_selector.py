@@ -125,9 +125,9 @@ class ActionSelector(metaclass=Singleton):
         database.write_info(
             {
                 PapiVariable.NAME: chessevent_tournament.name,
-                PapiVariable.TYPE: chessevent_tournament.type.to_papi_value,
+                PapiVariable.TYPE: chessevent_tournament.type.value,
                 PapiVariable.ROUNDS: chessevent_tournament.rounds,
-                PapiVariable.PAIRING: chessevent_tournament.pairing.to_papi_value,
+                PapiVariable.PAIRING_VARIATION: chessevent_tournament.pairing.value,
                 PapiVariable.TIME_CONTROL: chessevent_tournament.time_control,
                 PapiVariable.LOCATION: chessevent_tournament.location,
                 PapiVariable.ARBITER: chessevent_tournament.arbiter,

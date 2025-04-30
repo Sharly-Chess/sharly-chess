@@ -18,10 +18,10 @@
                         <p>{{ _('Choose what to do after closing the check-in:') }}</p>
                         <ul>
                             <li>
-                                {{ _('Mark the players as forfeit for the rest of the tournament (no check-in allowed until the forfeits are removed).') }}
+                                {{ _('Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed).') }}
                             </li>
                             <li>
-                                {{ _('Mark the players as forfeit for the coming round (players will be able to check-in for the next rounds).') }}
+                                {{ _('Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds).') }}
                             </li>
                         </ul>
                     {% else %}
@@ -35,9 +35,6 @@
                 type="button"
                 class="btn btn-secondary text-nowrap"
                 data-bs-dismiss="modal"
-
-                {# We refresh the page to turn the check-in switch back on #}
-                hx-on:click="document.body.dispatchEvent(new CustomEvent('request_refresh'))"
             >
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
@@ -46,26 +43,26 @@
                 <button
                     class="text-nowrap white btn btn-primary"
                     aria-describedby="{{ id }}-help"
-                    hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-patch="{{ url_for('admin-tournament-close-check-in-zpb-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 >
-                    {{ _('Mark as forfeit for the rest of the tournament') }}
+                    {{ _('Assign zero-point byes for the rest of the tournament') }}
                 </button>
                 <button
                     class="text-nowrap white btn btn-primary"
                     aria-describedby="{{ id }}-help"
-                    hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-patch="{{ url_for('admin-tournament-close-check-in-zpb-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 >
-                    {{ _('Mark as forfeit for the coming round') }}
+                    {{ _('Assign a zero-point bye for the next round') }}
                 </button>
             {% else %}
                 <button
                     class="text-nowrap white btn btn-primary"
                     aria-describedby="{{ id }}-help"
-                    hx-patch="{{ url_for('admin-tournament-close-check-in-forfeit-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-patch="{{ url_for('admin-tournament-close-check-in-zpb-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 >
@@ -75,3 +72,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    // We need to reload the page when the modal is dismissed, to turn the check-in switch back on.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

@@ -14,6 +14,8 @@ sys.path.extend(
     )
 )
 
+import plugins.manager  # noqa
+
 from common.exception import PapiWebException
 from common.logger import (
     print_interactive_error,

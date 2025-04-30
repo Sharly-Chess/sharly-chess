@@ -9,11 +9,12 @@ from typing import Pattern, Any
 
 from common.logger import get_logger
 from data.pairing import Pairing
+from data.pairings import PairingVariation
+from data.pairings.variations import StandardSwissVariation
 from data.player import Player, Federation, Club, PlayerRating
 from data.tie_breaks import TieBreak, PapiTieBreakManager
 from utils.enum import (
     Result,
-    TournamentPairing,
     PlayerGender,
     PlayerTitle,
     TournamentRating,
@@ -55,7 +56,7 @@ class PapiTournamentInfo:
     """Basic tournament information tuple."""
 
     rounds: int = 0
-    pairing: TournamentPairing = TournamentPairing.STANDARD
+    pairing_variation: PairingVariation = field(default_factory=StandardSwissVariation)
     rating: TournamentRating = TournamentRating.STANDARD
     rating_limit1: int = 0
     rating_limit2: int = 0
@@ -68,7 +69,8 @@ class PapiVariable(StrEnum):
     NAME = 'Nom'
     TYPE = 'Genre'
     ROUNDS = 'NbrRondes'
-    PAIRING = 'Pairing'
+    PAIRING_SYSTEM = 'Genre'
+    PAIRING_VARIATION = 'Pairing'
     TIME_CONTROL = 'Cadence'
     RATING = 'ClassElo'
     RATING_LIMIT1 = 'EloBase1'
@@ -129,7 +131,7 @@ class PapiDatabase(AccessDatabase):
         values = self.read_variables(
             [
                 PapiVariable.ROUNDS,
-                PapiVariable.PAIRING,
+                PapiVariable.PAIRING_VARIATION,
                 PapiVariable.RATING,
                 PapiVariable.RATING_LIMIT1,
                 PapiVariable.RATING_LIMIT2,
@@ -150,9 +152,14 @@ class PapiDatabase(AccessDatabase):
             papi_id = values[variable]
             if tie_break_type := tie_break_type_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break_type())
+
+        from plugins.ffe.utils import PapiPairingVariation
+
         return PapiTournamentInfo(
             rounds=int(values[PapiVariable.ROUNDS]),
-            pairing=TournamentPairing.from_papi_value(values[PapiVariable.PAIRING]),
+            pairing_variation=PapiPairingVariation.get_core_object(
+                values[PapiVariable.PAIRING_VARIATION]
+            ),
             rating=TournamentRating.from_papi_value(values[PapiVariable.RATING]),
             rating_limit1=int(values[PapiVariable.RATING_LIMIT1]),
             rating_limit2=int(values[PapiVariable.RATING_LIMIT2]),
@@ -474,8 +481,8 @@ class PapiDatabase(AccessDatabase):
             ),
         )
 
-    def remove_forfeits_if_no_pairings(self):
-        """Delete all forfeits if no pairings are found (at any round).
+    def remove_zpbs_if_no_pairings(self):
+        """Delete all ZPBs if no pairings are found (at any round).
         This fixes a display issue on the FFE website."""
         condition: str = ' OR '.join(
             f'`{RoundFields(round_).opponent}` IS NOT NULL' for round_ in range(1, 25)
@@ -483,7 +490,7 @@ class PapiDatabase(AccessDatabase):
         query: str = f'SELECT COUNT(`Ref`) FROM `joueur` WHERE {condition}'
         self._execute(query)
         if self._fetchval() == 0:
-            logger.info('Deleting forfeits...')
+            logger.info('Deleting ZPBs...')
             data: dict[str, str | int | None] = {}
             for round_ in range(1, 25):
                 rf = RoundFields(round_)
@@ -498,7 +505,7 @@ class PapiDatabase(AccessDatabase):
             self._execute(query, params)
             logger.info('Done.')
         else:
-            logger.info('No forfeits to delete.')
+            logger.info('No ZPBs to delete.')
 
     def get_checked_in_player_count(self) -> int:
         """Return the number players already checked in."""

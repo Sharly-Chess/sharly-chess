@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 from common.tool_installer import ToolInstaller
-from pairing.bbp_pairings import BbpPairings
+from data.pairings.engines import BbpPairings
 
 
 class BbpPairingsInstaller(ToolInstaller):

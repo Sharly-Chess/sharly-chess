@@ -31,7 +31,7 @@ from utils.enum import (
     Result,
 )
 from database.sqlite.fide.fide_database import FideDatabase
-from plugins.ffe.util import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraAdminColumn
 from web.controllers.admin.base_event_admin_controller import (
@@ -1436,7 +1436,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-        forfeit_all_rounds: bool,
+        zpbs_all_rounds: bool,
     ) -> Template | ClientRedirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
@@ -1452,7 +1452,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_tournament is None:
             raise RuntimeError('admin_tournament not defined')
         admin_tournament: Tournament = web_context.admin_tournament
-        admin_tournament.close_check_in(forfeit_all_rounds)
+        admin_tournament.close_check_in(zpbs_all_rounds)
         Message.success(
             request,
             _('Check-in is closed for tournament [{tournament_uniq_id}].').format(
@@ -1469,10 +1469,10 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/tournament-close-check-in-forfeit-next-round/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-forfeit-next-round',
+        path='/admin/tournament-close-check-in-zpb-next-round/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-close-check-in-zpb-next-round',
     )
-    async def htmx_admin_tournament_close_check_in_forfeit_next_round(
+    async def htmx_admin_tournament_close_check_in_zpb_next_round(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -1487,14 +1487,14 @@ class PlayerAdminController(BaseEventAdminController):
             data=data,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            forfeit_all_rounds=False,
+            zpbs_all_rounds=False,
         )
 
     @patch(
-        path='/admin/tournament-close-check-in-forfeit-last-rounds/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-forfeit-last-rounds',
+        path='/admin/tournament-close-check-in-zpb-last-rounds/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-close-check-in-zpb-last-rounds',
     )
-    async def htmx_admin_close_tournament_check_in_forfeit_all_rounds(
+    async def htmx_admin_close_tournament_check_in_zpbs_all_rounds(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -1509,7 +1509,7 @@ class PlayerAdminController(BaseEventAdminController):
             data=data,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            forfeit_all_rounds=True,
+            zpbs_all_rounds=True,
         )
 
     def _admin_player_check_in_out(

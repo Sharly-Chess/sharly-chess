@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Protocol, TypeVar
 
 from common.i18n import _
 from data.pairing import Pairing
+from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks.options import (
     TieBreakOption,
@@ -22,7 +23,7 @@ from data.tie_breaks.options import (
     ExcludeIdsTieBreakOption,
 )
 from utils import StaticUtils
-from utils.enum import BoardColor, Result, TournamentPairing
+from utils.enum import BoardColor, Result
 from utils.option import OptionHandler, OptionError
 
 if TYPE_CHECKING:
@@ -56,7 +57,7 @@ class TieBreakUtils:
         games for the last round not determined over the board are considered as draws."""
         assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
-        if tournament.pairing == TournamentPairing.BERGER:
+        if tournament.pairing_system == RoundRobinPairingSystem():
             return player.points_after(after_round)
         score = 0.0
         for round_index, pairing in player.pairings.items():
@@ -456,7 +457,8 @@ class BuchholzTieBreak(TieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         }
-        if tournament.pairing == TournamentPairing.BERGER:
+        pairing_system = tournament.pairing_system
+        if pairing_system == RoundRobinPairingSystem():
             return sum(
                 TieBreakUtils.adjusted_score(
                     tournament.players_by_id[pairing.opponent_id],
@@ -468,7 +470,7 @@ class BuchholzTieBreak(TieBreak):
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
         for round_index, pairing in pairings.items():
-            should_add_dummy = tournament.pairing.swiss and (
+            should_add_dummy = pairing_system == SwissPairingSystem() and (
                 (pairing.unplayed and not played_modifier)
                 or (
                     played_modifier
@@ -494,7 +496,7 @@ class BuchholzTieBreak(TieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
-            if tournament.pairing.swiss:
+            if pairing_system == SwissPairingSystem():
                 opponent_adjusted_score = TieBreakUtils.adjusted_score(
                     opponent, after_round=after_round
                 )
@@ -767,7 +769,7 @@ class SonnebornBergerTieBreak(TieBreak):
             after_round = max(player.pairings)
         if cut >= after_round:
             return 0
-        if tournament.pairing == TournamentPairing.BERGER:
+        if tournament.pairing_system == RoundRobinPairingSystem():
             played_modifier = True
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -1483,7 +1485,7 @@ class DirectEncounterTieBreak(TieBreak):
             for pairing in player.pairings.values()
             if pairing.opponent_id in tied_opponents
         }
-        if tournament.pairing.swiss and not played_modifier:
+        if tournament.pairing_system == SwissPairingSystem() and not played_modifier:
             tied_pairings = {
                 opponent_id: pairing
                 for opponent_id, pairing in tied_pairings.items()

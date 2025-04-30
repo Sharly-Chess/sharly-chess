@@ -1,3 +1,4 @@
+import copy
 import logging
 import re
 import time
@@ -704,7 +705,7 @@ class Event:
 
     @cached_property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
-        screens_by_uniq_id: dict[str, Screen] = self.basic_screens_by_uniq_id
+        screens_by_uniq_id: dict[str, Screen] = copy.copy(self.basic_screens_by_uniq_id)
         for family in self.families_by_id.values():
             screens_by_uniq_id |= family.screens_by_uniq_id
         return screens_by_uniq_id
@@ -730,6 +731,11 @@ class Event:
     @cached_property
     def rotators_by_uniq_id(self) -> dict[str, Rotator]:
         return {rotator.uniq_id: rotator for rotator in self.rotators_by_id.values()}
+
+    def clear_screen_cache(self, tournament_id: int | None = None):
+        """Clears the screen cache for the given tournament, or all tournaments if no tournament is provided"""
+        for screen in self.screens_by_uniq_id.values():
+            screen.clear_cache_for_tournament(tournament_id)
 
     def get_unused_rotator_uniq_id(self, base_uniq_id: str | None = None) -> str:
         """Returns the first unused rotator uniq_id looking like base_uniq_id:

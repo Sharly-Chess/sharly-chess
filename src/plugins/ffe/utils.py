@@ -2,6 +2,9 @@ from enum import IntEnum
 from typing import Self
 
 from common.i18n import _
+from data.pairings import PairingVariation, PairingSystem, systems, variations
+from plugins.pairing_acceleration import pairing_variations as accelerations
+from plugins.utils import PluginCoreMapper
 
 
 class PlayerFFELicence(IntEnum):
@@ -65,3 +68,29 @@ class PlayerFFELicence(IntEnum):
                 return 'B'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+
+class PapiPairingSystem(PluginCoreMapper[str, PairingSystem]):
+    @classmethod
+    def _core_object_by_plugin_value(cls) -> dict[str, PairingSystem]:
+        return {
+            'Suisse': systems.SwissPairingSystem(),
+            'ToutesRondes': systems.RoundRobinPairingSystem(),
+        }
+
+
+class PapiPairingVariation(PluginCoreMapper[str, PairingVariation]):
+    """Mapper of the pairing variations in the Papi database."""
+
+    @classmethod
+    def _core_object_by_plugin_value(cls) -> dict[str, PairingVariation]:
+        from plugins.ffe.ffe_entity import NicoisSwissVariation
+
+        return {
+            'Standard': variations.StandardSwissVariation(),
+            'Haley': accelerations.HaleySwissVariation(),
+            'HaleySoft': accelerations.HaleySoftSwissVariation(),
+            'SAD': accelerations.ProgressiveSwissVariation(),
+            'Nicois': NicoisSwissVariation(),
+            'Berger': variations.BergerRoundRobinVariation(),
+        }

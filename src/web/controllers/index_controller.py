@@ -3,6 +3,7 @@ from litestar.config.response_cache import CACHE_FOREVER
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 
+from common.papi_web_config import PapiWebConfig
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
 
@@ -17,9 +18,12 @@ class IndexController(BaseController):
         self,
         request: HTMXRequest,
         locale: str | None,
-    ) -> Template:
+    ) -> Template | Redirect:
         self.set_locale(request, locale)
         web_context: WebContext = WebContext(request)
+        if web_context.admin_auth and PapiWebConfig().force_edit:
+            return Redirect(request.app.route_reverse('admin-tab', admin_tab='config'))
+
         return HTMXTemplate(
             template_name='index.html',
             context=web_context.template_context

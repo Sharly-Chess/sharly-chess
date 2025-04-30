@@ -17,7 +17,6 @@ from data.event import Event
 from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, Action
 from data.tournament import Tournament
-from pairing.bbp_pairings import BbpPairings
 from utils.enum import Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -196,7 +195,6 @@ class PairingsAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         trigger_event: str | None = None,
         params: dict[str, Any] | None = None,
-        full_refresh: bool = False,
         admin_pairings_show_without_results: bool | None = None,
         protected_action: Action | None = None,
     ) -> Template | ClientRedirect:
@@ -312,7 +310,7 @@ class PairingsAdminController(BaseEventAdminController):
             else None,
         }
 
-        if not full_refresh and web_context.admin_board is not None and modal is None:
+        if web_context.admin_board is not None and modal is None:
             return HTMXTemplate(
                 template_name='/admin/pairings/pairing_row_and_controls.html',
                 context=template_context,
@@ -437,7 +435,6 @@ class PairingsAdminController(BaseEventAdminController):
             )
 
         target_board_id: int | None
-        was_round_finished = tournament.is_round_finished(round_)
         if result not in (Result.admin_imputable_results()):
             return BaseController.redirect_error(request, f'Invalid result [{result}].')
 
@@ -492,7 +489,6 @@ class PairingsAdminController(BaseEventAdminController):
             board_id=board_id,
             trigger_event=trigger_event,
             params={'board_id': target_board_id},
-            full_refresh=tournament.is_round_finished(round_) != was_round_finished,
         )
 
     @staticmethod
@@ -863,7 +859,9 @@ class PairingsAdminController(BaseEventAdminController):
 
         tournament = web_context.admin_tournament
         assert tournament is not None
-        BbpPairings().generate_pairings(tournament, web_context.admin_round)
+        tournament.pairing_variation.engine.generate_pairings(
+            tournament, web_context.admin_round
+        )
         tournament.clear_cache()
         Message.success(
             request,
@@ -950,7 +948,6 @@ class PairingsAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             round_=round,
-            full_refresh=True,
         )
 
     @get(
