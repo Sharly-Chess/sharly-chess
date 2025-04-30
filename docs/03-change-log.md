@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.8 - 30 avril 2025
+- Correction d'un bug sur les droits d'inscription (#481)
+
 ## Version 2.5.7 - 20 avril 2025
 - Correction d'un bug sur les impressions
 

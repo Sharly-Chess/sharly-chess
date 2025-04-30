@@ -308,8 +308,8 @@ class PapiDatabase(AccessDatabase):
                 mail=row['EMail'] or '',
                 phone=row['Tel'] or '',
                 comment=row['Commentaire'] or '',
-                owed=float(row['InscriptionDu']) or 0.0,
-                paid=float(row['InscriptionRegle']) or 0.0,
+                owed=float(row['InscriptionDu'] or 0.0),
+                paid=float(row['InscriptionRegle'] or 0.0),
                 title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
                 ratings={tr: row[tr.papi_value_field] or 0 for tr in TournamentRating},
                 rating_types={
