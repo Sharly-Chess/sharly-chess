@@ -25,7 +25,7 @@ Si cela s'applique, merci de joindre des captures d'écran
 
 ## Environnement d'utilisation
 - OS : Windows 10/11, etc.
-- Version de Sharly Chess (Papi-web) : 2.4.x
+- Version de Sharly Chess : 2.x.y
 - Toute information supplémentaire pertinente
 
 ## Contexte additionnel
