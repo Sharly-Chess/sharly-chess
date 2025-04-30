@@ -8,12 +8,11 @@ Sharly Chess - © Projet Sharly Chess 2013-2025 - https://github.com/Sharly-Ches
 
 ## Généralités
 
-Sharly Chess is a tool for arbiting chess competitions.
+Sharly Chess is a tool for arbitrating chess competitions.
 
 - Refer to the [user documentation](https://sharly-chess.com) for installation and usage instructions.
 - [Detailed roadmap](/docs/02-roadmap.md)
 - [Contributors](/docs/04-contributors.md)
-- [Users](/docs/05-users.md)
 
 ## [Annexes techniques](docs/80-technical-annexes.md)
 
@@ -24,10 +23,3 @@ Sharly Chess is a tool for arbiting chess competitions.
 - Description de la base de données
 
 ## [Bac à sable](docs/90-sandbox.md)
-
-- TODO
-- License
-- Communication vers les joueur·euses
-- Stockage de données
-- Moteurs d'appariement
-- Rôles et autorisations
