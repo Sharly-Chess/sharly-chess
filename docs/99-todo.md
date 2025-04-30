@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - TODO
+# Sharly Chess - TODO
 
 ## Fonctionnalités demandées par les utilisateur·ices
 
@@ -28,5 +28,5 @@
 
 ## Autres réflexions en cours
 
-- [X] ~~Poser une ou plusieurs licences sur le code de Papi-web (PA/SP > 2.4.0)~~
+- [X] ~~Poser une ou plusieurs licences sur le code de Sharly Chess (PA/SP > 2.4.0)~~
 - [X] ~~Remplacement des fichiers de configuration INI par une interface web (PA > 2.4.0)~~

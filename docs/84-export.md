@@ -1,10 +1,10 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Annexe technique : Distribution du logiciel
+# Sharly Chess - Annexe technique : Distribution du logiciel
 
 ## Génération d'un exécutable pour Windows
 
-Papi-web est fourni aux utilisateur·ices finaux·ales sous la forme d'une archive contenant un exécutable pour simplifier son utilisation par des arbitres non-informaticien·nes.
+Sharly Chess est fourni aux utilisateur·ices finaux·ales sous la forme d'une archive contenant un exécutable pour simplifier son utilisation par des arbitres non-informaticien·nes.
 
 Le script `/scripts/export/export.py` :
 - crée le fichier `/export/papi-web-x.y.z.zip` utilisé pour distribuer le logiciel ;

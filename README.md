@@ -1,21 +1,19 @@
-# Papi-web, pour les arbitres 2.0
+# Sharly Chess, an arbiting tool
 
-Papi-web, programme de saisie des résultats dans Papi et de mise en ligne des résultats sur le site fédéral, a été développé à titre gracieux pour les arbitres et organisateur·trices de la Fédération Française des Échecs par Pascal AUBRY depuis 2013.
-
-Papi-web - © Projet Papi-web 2013-2025 - https://github.com/papi-web-org/papi-web ([copyright](COPYRIGHT.md))
+Sharly Chess - © Projet Sharly Chess 2013-2025 - https://github.com/Sharly-Chess/sharly-chess/ ([copyright](COPYRIGHT.md))
 
 <!-- DO NOT EDIT! (START) -->
-- **[Télécharger la dernière version stable (2.5.7)](https://github.com/papi-web-org/papi-web/releases/download/2.5.7/papi-web-2.5.7.zip)**
+- **[Download the latest stable version (2.5.7)](https://github.com/Sharly-Chess/sharly-chess/releases/download/2.5.7/papi-web-2.5.7.zip)**
 <!-- DO NOT EDIT! (END) -->
 
 ## Généralités
 
-- [Présentation](docs/01-summary.md)
-- [Nouveautés de la version 2 et roadmap](docs/02-roadmap.md) _([ChangeLog](docs/03-change-log.md), [mainteneur·euses et contributeur·ices](docs/04-contributors.md))_
-- [Installation et mise à jour](docs/05-install.md)
-- [Configuration et utilisation](docs/06-use.md)
+Sharly Chess is a tool for arbiting chess competitions.
 
-## [Foire Aux Questions](docs/50-faq.md)
+- Refer to the [user documentation](https://sharly-chess.com) for installation and usage instructions.
+- [Detailed roadmap](/docs/02-roadmap.md)
+- [Contributors](/docs/04-contributors.md)
+- [Users](/docs/05-users.md)
 
 ## [Annexes techniques](docs/80-technical-annexes.md)
 

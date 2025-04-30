@@ -1,8 +1,8 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Bac à sable
+# Sharly Chess - Bac à sable
 
-Cet espace est dédié à de possibles évolutions de Papi-web.
+Cet espace est dédié à de possibles évolutions de Sharly Chess.
 
 - [TODO list](99-todo.md)
 

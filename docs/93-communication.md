@@ -1,8 +1,8 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Communication vers les joueur·euses
+# Sharly Chess - Communication vers les joueur·euses
 
-Cette page est dédiée à la communication vers les joueur·euses, pour une mise en œuvre rapide dans Papi-web (version 2.2 ?).
+Cette page est dédiée à la communication vers les joueur·euses, pour une mise en œuvre rapide dans Sharly Chess (version 2.2 ?).
 
 ## Médias cibles
 
@@ -11,7 +11,7 @@ Les deux médias cibles suivants sont envisagés :
 - envoi de mél ;
 - envoi de SMS ou MMS.
 
-Dans les deux cas, les informations utilisées pour communiquer sont celles données par les joueur·euses à leur inscription (les informations saisies sur Chess Event sont récupérées par Papi-web).
+Dans les deux cas, les informations utilisées pour communiquer sont celles données par les joueur·euses à leur inscription (les informations saisies sur Chess Event sont récupérées par Sharly Chess).
 
 Voir : [Création des fichiers Papi des tournois à partir de Chess Event](37-chessevent.md)
 
@@ -118,7 +118,7 @@ Un moteur MailJet d'envoi par SMS est défini par les paramètres suivants.
 | Paramètre            | Type | Signification                                                          |
 |----------------------|------|------------------------------------------------------------------------|
 | `type`               | enum | Valeur `sms_mailjet`                                                   |
-| `mailjet_sms_from`   | str  | L'envoyeur (facultatif, par défaut `Papi-web`)                         |
+| `mailjet_sms_from`   | str  | L'envoyeur (facultatif, par défaut `Sharly Chess`)                         |
 | `mailjet_sms_token`  | str  | le jeton d'authentification sur l'API MailJet                          |
 
 L'envoi par SMS est plus complexe à mettre en place et payant, il faut s'appuyer sur un fournisseur d'envoi (par exemple ici [MailJet](https://mailjet.com)).

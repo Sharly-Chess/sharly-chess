@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Raccourcis clavier
+# Sharly Chess - Raccourcis clavier
 
 Cette page est un document de travail sur les raccourcis clavier utilisables dans l'application, à destination des développeur·euses.
 

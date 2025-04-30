@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Moteurs d'appariements
+# Sharly Chess - Moteurs d'appariements
 
 Cette page est dédiée à une analyse comparée des moteurs d'appariements.
 
@@ -26,7 +26,7 @@ Cette page est dédiée à une analyse comparée des moteurs d'appariements.
 
 [...] après la sortie de bbpPairings en août 2016, JaVaFo ne peut plus être considéré comme le meilleur produit du marché [...] (source : [JaVaFo](http://www.rrweb.org/javafo/JaVaFo.htm))
 
-## Intégration dans Papi-web
+## Intégration dans Sharly Chess
 
 Le plus simple pour effectuer les appariements semble être :
 - de générer le tournoi au format TRF

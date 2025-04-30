@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Annexe technique : Configuration d'un environnement de développement
+# Sharly Chess - Annexe technique : Configuration d'un environnement de développement
 
 At this time, [pascalaubry](https://github.com/pascalaubry) uses PyCharm 2024.3.1.1 (Community Edition) on up-to-date Windows 11.
 

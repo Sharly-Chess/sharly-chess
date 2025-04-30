@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Roadmap
+# Sharly Chess - Roadmap
 
 ## Roadmap macroscopique
 
@@ -33,7 +33,7 @@
 | Signature de l'exécutable Windows   |         -         |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        | :grey_question: | :grey_question: |
 | Support Linux                       |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |       :x:       |      :ok:       |
 | Support Mac                         |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |        :x:        |       :x:       |      :ok:       |
-| Config. Papi-web                    |      :x: PHP      |     :ok: INI      |     :ok: INI      |     :ok: INI      |     :ok: INI      |     :ok: INI      |     :ok: INI      |    :ok: INI     | :ok: INI/SQLite |
+| Config. Sharly Chess                    |      :x: PHP      |     :ok: INI      |     :ok: INI      |     :ok: INI      |     :ok: INI      |     :ok: INI      |     :ok: INI      |    :ok: INI     | :ok: INI/SQLite |
 | Config. évènements                  |      :x: PHP      |      :x: INI      |      :x: INI      |      :x: INI      |      :x: INI      |     :ok: web      |     :ok: web      |    :ok: web     |    :ok: web     |
 | Stockage tournois                   |    :x: Access     |    :x: Access     |    :x: Access     |    :x: Access     |    :x: Access     |    :x: Access     |    :x: Access     |   :x: Access    |   :ok: SQLite   |
 | Stockage évènements                 |         -         |     :x: File      |     :x: File      |     :x: File      |     :x: File      |    :ok: SQLite    |    :ok: SQLite    |   :ok: SQLite   |   :ok: SQLite   |

@@ -5,9 +5,9 @@
 >
 > ![](../src/web/static/images/papi-web-error.png)
 
-# Papi-web - Annexe technique : interfaçage avec Chess Event
+# Sharly Chess - Annexe technique : interfaçage avec Chess Event
 
-La configuration de Papi-web pour l'accès à la plateforme Chess Event est décrite dans la documentation utilisateur :
+La configuration de Sharly Chess pour l'accès à la plateforme Chess Event est décrite dans la documentation utilisateur :
 
 - [Création des fichiers Papi des tournois à partir de la plateforme d'inscription en ligne Chess Event](37-chessevent.md)
 

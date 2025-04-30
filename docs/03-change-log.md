@@ -1,6 +1,6 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - ChangeLog
+# Sharly Chess - ChangeLog
 
 ## Version 2.6.0 alpha 1 - 29 avril 2025
 - Ajout de l'onglet Appariements

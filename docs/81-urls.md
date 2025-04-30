@@ -1,8 +1,8 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Annexe technique : URLs utilisées par le serveur web
+# Sharly Chess - Annexe technique : URLs utilisées par le serveur web
 
-Cette page décrit les URLs utilisées par Papi-web.
+Cette page décrit les URLs utilisées par Sharly Chess.
 
 ## URLs publiques (affichées dans la barre d'URL)
 
