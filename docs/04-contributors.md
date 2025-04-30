@@ -6,6 +6,8 @@ Les mainteneur·euses de Sharly Chess sont les personnes en charge de l'évoluti
 
 - Pascal AUBRY ([pascalaubry](https://github.com/pascalaubry))
 - Sammy PLAT ([Amaras](https://github.com/Amaras))
+- Timothy ARMES ([timothyarmes](https://github.com/timothyarmes))
+- Youri AUBRY ([molrn](https://github.com/molrn))
 
 # Sharly Chess - Contributeur·ices
 
@@ -13,9 +15,9 @@ Les contributeur·ices de Sharly Chess sont les personnes qui ont contribué à 
 
 - Pascal AUBRY ([pascalaubry](https://github.com/pascalaubry))
 - Sammy PLAT ([Amaras](https://github.com/Amaras))
-- Adrien AVENIA ([adrienave](https://github.com/adrienave))
 - Timothy ARMES ([timothyarmes](https://github.com/timothyarmes))
 - Youri AUBRY ([molrn](https://github.com/molrn))
+- Adrien AVENIA ([adrienave](https://github.com/adrienave))
 
 Depuis la version 2.0, le code source est ouvert aux contributions sur GitHub, il ne tient qu'à vous de figurer sur la liste des contributeur·ices !
 
