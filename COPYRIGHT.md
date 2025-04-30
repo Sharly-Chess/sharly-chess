@@ -2,7 +2,7 @@
 
 # Sharly Chess - Copyright
 
-Sharly Chess - © Projet Sharly Chess 2013-2025 - https://github.com/papi-web-org/papi-web
+Papi-web - © Projet Sharly Chess 2013-2025 - https://github.com/Sharly-Chess/sharly-chess
 
 ## License
 
@@ -17,19 +17,19 @@ Vous pouvez aussi consulter les termes complets de la licence à l'adresse https
 Dans tous les cas, si vous redistribuez ce produit vous devez :
 
 - le distribuer sous licence AGLP V3 (ou supérieure) et donc mettre à disposition tous les sources ;
-- faire référence au produit d'origine (Sharly Chess) ;
+- faire référence au produit d'origine (Papi-web) ;
 - ne pas laisser d’ambiguïté sur l'origine du produit, qui pourrait laisser penser que vous en êtes l'auteur·ice ;
 
 Le terme distribution inclut ici toute livraison, même à un client unique, ainsi que la fourniture de services (hébergement, mode SaaS).
 
 ## Propriété
 
-En dehors du logiciel lui-même et des éléments issus de contributions disponibles sur la page de téléchargement, les données, images et documents disponibles sur ce site sont la propriété du projet Sharly Chess.
+En dehors du logiciel lui-même et des éléments issus de contributions disponibles sur la page de téléchargement, les données, images et documents disponibles sur ce site sont la propriété du projet Papi-web.
 
-Toute diffusion ou réutilisation sans l'accord explicite du projet Sharly Chess est interdite.
+Toute diffusion ou réutilisation sans l'accord explicite du projet Papi-web est interdite.
 
 Ceci inclut les documents et supports fournis lors des prestations dans le cadre de notre offre de services (formations ou autres).
 
 ### Remarque
 
-Sharly Chess a été placé sous licence AGPL à partir de la version 2.4.
+Papi-web a été placé sous licence AGPL à partir de la version 2.4.

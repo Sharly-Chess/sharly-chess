@@ -2,7 +2,7 @@
 
 # Sharly Chess - Communication vers les joueur·euses
 
-Cette page est dédiée à la communication vers les joueur·euses, pour une mise en œuvre rapide dans Sharly Chess (version 2.2 ?).
+Cette page est dédiée à la communication vers les joueur·euses, pour une mise en œuvre rapide dans Sharly Chess.
 
 ## Médias cibles
 
