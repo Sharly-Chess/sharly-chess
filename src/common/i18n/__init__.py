@@ -103,6 +103,8 @@ def get_locale() -> str:
 
 def set_locale(locale: str) -> bool:
     """Sets the locale for the current thread, returns True if the given locale is recognized."""
+    if hasattr(_thread_local_data, 'locale') and _thread_local_data.locale == locale:
+        return True
     if locale in locales:
         _thread_local_data.locale = locale
         logger.debug('Locale set to [%s].', locale)

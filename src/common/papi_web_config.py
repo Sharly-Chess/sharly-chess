@@ -89,7 +89,6 @@ class PapiWebConfig(metaclass=Singleton):
                 config_database.update_stored_config(self.stored_config)
                 config_database.commit()
         # TODO (up to here)
-        set_locale(self.locale)
 
     def reload(self):
         self.stored_config = self.load()
