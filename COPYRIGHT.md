@@ -2,7 +2,7 @@
 
 # Sharly Chess - Copyright
 
-Papi-web - © Projet Sharly Chess 2013-2025 - https://github.com/Sharly-Chess/sharly-chess
+Papi-web - © The Sharly Chess project 2013-2025 - https://github.com/Sharly-Chess/sharly-chess
 
 ## License
 
