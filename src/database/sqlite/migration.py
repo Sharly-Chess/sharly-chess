@@ -234,7 +234,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
 
             version = self.get_version()
             if version != self.latest_version:
-                self.set_version(version)
+                self.set_version(self.latest_version)
                 logger.debug(
                     self.log_prefix
                     + f'Version updated from [{version}] to [{self.latest_version}]'
