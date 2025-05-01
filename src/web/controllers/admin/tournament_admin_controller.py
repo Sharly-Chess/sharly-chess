@@ -99,7 +99,7 @@ class TournamentAdminController(BaseEventAdminController):
         rating: int | None = None
         start: float | None = None
         stop: float | None = None
-        if action ==':
+        if action == 'delete':
             if web_context.admin_tournament is None:
                 raise RuntimeError('admin_tournament not defined')
             if not uniq_id:
