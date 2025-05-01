@@ -1,17 +1,20 @@
-# Welcome to the Charly Chess contributing guide
+# _Sharly Chess_ - Contributing guide
+
 Thank you for investing your time in our project.
 
 ## New contributor guide
 
-To get an overview of the project, read the [README](../README.md) file.
-Please note that this project is licenced under the [GNU Affero Public Licence version 3.0](../LICENSE.md).
+To get an overview of the project, read the [user documentation](https://sharly-chess.com).
+
+Please note that this project is licenced under the [GNU Affero Public Licence version 3.0](https://sharly-chess.com/license).
 
 ## Start contributing
 
 ### Issues
 
-If you spot a problem in the program or want to request a feature, [search if an issue already exists](https://github.com/papi-web-org/papi-web/issues).
-If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com//papi-web-org/papi-web/issues/new/choose).
+If you spot a problem in the program or want to request a feature, [search if an issue already exists](https://github.com/sharly-chess/sharly-chess/issues).
+
+If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com//sharly-chess/sharly-chess/issues/new/choose).
 
 ### Contributing code
 
@@ -19,7 +22,7 @@ This project uses [Python 3.12](https://www.python.org/downloads/release/python-
 As such, this project does not support Linux or MacOS, or any other operating system.
 This will change in the future.
 
-If you want to contribute code, please [create a fork of our repository](https://github.com/papi-web-org/papi-web/fork), and clone it locally.
+If you want to contribute code, please [create a fork of our repository](https://github.com/sharly-chess/sharly-chess/fork), and clone it locally.
 
 To install the relevant packages for development, run: `pip install -e .[lint,tests]`
 
@@ -37,7 +40,7 @@ Make sure to run `pytest` and solve problems before sending your code to review.
 Once all the changes are made, create a Pull Request with a descriptive name, and why you made the changes.
 If you're solving an issue, link to it in when opening your PR.
 
-#### Code review
+### Code review
 
 Once you have opened your PR, we will try to start reviewing it as soon as possible.
 

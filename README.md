@@ -1,4 +1,4 @@
-# Sharly Chess
+# _Sharly Chess_
 
 _Sharly Chess - © Sharly Chess project 2013-2025_
 
@@ -7,8 +7,6 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 **Please visit [sharly-chess.com](https://sharly-chess.com).**
 
 ## Developer documentation
-
-- [Contributors](/docs/contributors.md)
 
 ### Technical appendices
 
@@ -23,3 +21,10 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Communication to players](docs/sandbox/communication-to-players.md)
 - [Authenticating the user](docs/sandbox/authentication-and-roles.md)
 - [Pairing actions](docs/sandbox/pairing-actions.md)
+
+### Contributing
+
+- [Contributing guide](docs/contributing/contributing-guide.md)
+- [Contributors](/docs/contributing/contributors.md)
+- [Copyright](https://sharly-chess.com/copyright)
+- [License](https://sharly-chess.com/license)
