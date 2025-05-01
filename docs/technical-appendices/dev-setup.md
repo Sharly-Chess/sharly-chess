@@ -1,7 +1,4 @@
-**[Retour au sommaire de la documentation](../README.md)**
-
-# Sharly Chess - Technical Appendix - Setting Up a Development Environment
-
+# _Sharly Chess_ - Setting Up a Development Environment
 
 You can use _PyCharm_ 2024.3.1.1 (_Community Edition_) on an up-to-date Windows 11 system.
 

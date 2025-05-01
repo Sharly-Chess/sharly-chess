@@ -1,25 +1,25 @@
-# Sharly Chess, an arbiting tool
+# Sharly Chess
 
-Sharly Chess - © Projet Sharly Chess 2013-2025 - https://github.com/Sharly-Chess/sharly-chess/ ([copyright](COPYRIGHT.md))
+_Sharly Chess - © Sharly Chess project 2013-2025_
 
-<!-- DO NOT EDIT! (START) -->
-- **[Download the latest stable version (2.5.8)](https://github.com/Sharly-Chess/sharly-chess/releases/download/2.5.8/papi-web-2.5.8.zip)**
-<!-- DO NOT EDIT! (END) -->
+## User documentation
 
-## Généralités
+**Please visit [sharly-chess.com](https://sharly-chess.com).**
 
-Sharly Chess is a tool for arbitrating chess competitions.
+## Developer documentation
 
-- Refer to the [user documentation](https://sharly-chess.com) for installation and usage instructions.
-- [Detailed roadmap](/docs/02-roadmap.md)
-- [Contributors](/docs/04-contributors.md)
+- [Contributors](/docs/contributors.md)
 
-## [Annexes techniques](docs/80-technical-annexes.md)
+### Technical appendices
 
-- URLs utilisées par le serveur web
-- Interface avec Chess Event
-- Installation d'un environnement de développement
-- Distribution du logiciel
-- Description de la base de données
+- [Detailed roadmap](docs/technical-appendices/detailed-roadmap.md)
+- [Interfaçing _Sharly Chess_ with _ChessEvent_](docs/technical-appendices/chessevent-interfacing.md)
+- [Setting up a development environment](docs/technical-appendices/dev-setup.md)
+- [Description of the databases](docs/technical-appendices/databases.md)
+- [Internationalization](docs/technical-appendices/i18n.md)
 
-## [Bac à sable](docs/90-sandbox.md)
+### Sandbox
+
+- [Communication to players](docs/sandbox/communication-to-players.md)
+- [Authenticating the user](docs/sandbox/authentication-and-roles.md)
+- [Pairing actions](docs/sandbox/pairing-actions.md)
