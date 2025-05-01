@@ -1,8 +1,8 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Annexe technique : Description des bases de données
+# Sharly Chess - Annexe technique : Description des bases de données
 
-## Base de données de configuration de Papi-web (`events/.scc`)
+## Base de données de configuration de Sharly Chess (`events/.scc`)
 
 ### Table `info` (configuration générale de l'application)
 
@@ -56,7 +56,7 @@
 | `public`                   | `INTEGER` |                            |            | Booléen :<br/>- `1` : l'évènement est public (visible par les utilisateur·ices sur l'interface publique') ;<br/>- `0` : l'évènement est réservé aux arbitres.                                                                                                         |
 | `path`                     | `TEXT`    |                            |            | Le chemin, relatif ou absolu, des fichiers Papi des tournois de l'évènement.                                                                                                                                                                                          |
 | `hide_background_image`    | `INTEGER` |                            |            | Booléen :<br/>- `1` : une image de fond est affichée sur les écrans ;<br/>- `0` : aucune image de fond n'est affichée.                                                                                                                                                |
-| `background_image`         | `TEXT`    |                            |            | Une URL ou le chemin relatif (dans le répertoire `/custom`) d'une image locale (par défaut, logo de Papi-web est utilisé).                                                                                                                                            |
+| `background_image`         | `TEXT`    |                            |            | Une URL ou le chemin relatif (dans le répertoire `/custom`) d'une image locale (par défaut, logo de Sharly Chess est utilisé).                                                                                                                                            |
 | `background_color`         | `TEXT`    |                            |            | La couleur de fond des écrans de l'évènement au format hexadécimal '`#RRGGBB` (par défaut `#E9ECEF`).                                                                                                                                                                 |
 | `update_password`          | `TEXT`    |                            |            | Le mot de passe à fournir pour utiliser les écrans de saisie.                                                                                                                                                                                                         |
 | `record_illegal_moves`     | `INTEGER` |                            |            | Le nombre maximum de coups illégaux que l'on peut enregistrer pour un·e joueur·euse par ronde par défaut (ce nombre peut être modifié pour chaque tournoi de l'évènement). Si ce nombre n'est pas précisé, aucun coup légal ne peut être enregistré (par défaut `0`). |

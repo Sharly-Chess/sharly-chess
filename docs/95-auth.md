@@ -1,10 +1,10 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Rôles et autorisations
+# Sharly Chess - Rôles et autorisations
 
 ## Rôles en version 2.4
 
-Dans la version actuelle (2.4), Papi-web distingue deux rôles :
+Dans la version actuelle (2.4), Sharly Chess distingue deux rôles :
 - **le rôle arbitre**, qui s'obtient en se connectant depuis le serveur 127.0.0.1), qui peut accéder :
   - aux pages d'administration, ou pages d'arbitrage ;
   - aux pages publiques, avec quelques privilèges supplémentaires.
@@ -70,7 +70,7 @@ Dans la version actuelle (2.4), Papi-web distingue deux rôles :
 ### Attribution des rôles
 
 L'octroi d'un rôle se fait :
-- par client (l'adresse IP de la machine qui accède au serveur Papi-web) ;
+- par client (l'adresse IP de la machine qui accède au serveur Sharly Chess) ;
 - par authentification (un identifiant et un mot de passe) ;
 - par client et par authentification.
 

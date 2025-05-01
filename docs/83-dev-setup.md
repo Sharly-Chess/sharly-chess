@@ -1,67 +1,73 @@
 **[Retour au sommaire de la documentation](../README.md)**
 
-# Papi-web - Annexe technique : Configuration d'un environnement de développement
+# Sharly Chess - Technical Appendix - Setting Up a Development Environment
 
-At this time, [pascalaubry](https://github.com/pascalaubry) uses PyCharm 2024.3.1.1 (Community Edition) on up-to-date Windows 11.
 
-Simply checkout from https://github.com/papi-web-org/papi-web and play ;-)
+You can use _PyCharm_ 2024.3.1.1 (_Community Edition_) on an up-to-date Windows 11 system.
 
-## Lancement des scripts depuis l'environnement de développement
+Clone the _GitHub_ repository https://github.com/sharly-chess/sharly-chess and start playing ;-)
 
-### Lancement du serveur web
+## Running Scripts from the Development Environment
+
+### Starting the Web Server
 
 ```
 python src/papi_web.py
 ```
 
-Set environment variable ``PAPI_WEB_EXPERIMENTAL`` to ``1`` to enable expérimental features:
+Use the `--experimental` option to enable experimental features:
 
-> [!WARNING]
-> USE EXPERIMENTAL FEATURES AT YOUR OWN RISKS!
+```
+python src/papi_web.py --experimental
+```
 
-### Lancement de l'interface avec le serveur FFE
+> :warning: USE EXPERIMENTAL FEATURES AT YOUR OWN RISK!
+
+### Starting the Interface with the FFE Server
+
+### Launching the interface with the FFE server
 
 ```
 python src/papi_web.py --ffe
 ```
 
-### Lancement de l'interface avec la plateforme ChessEvent
+### Launching the interface with the ChessEvent platform
 
 ```
 python src/papi_web.py --chessevent
 ```
 
-## Configuration de l'authentification sur le serveur FFE
+## Configuring Authentication with the FFE Server
+
+The `src/plugins/ffe/.credentials` file, used to connect to the federation's website, is not stored in the _GitHub_ repository.
+
+It must be generated in each developer’s environment (ask other developers for the login credentials):
 
 ```
 python scripts/ffe/generate_ffe_sql_server_credentials.py
 ```
 
-Le script génère le fichier `src/plugins/ffe/.credentials` utilisé pour se connecter au site fédéral.
+## Creating the Windows Executable
 
-Demander les codes de connexions aux autres développeur·euses :-)
+The _Windows_ executable is automatically produced by a _GitHub_ action triggered by a new tag in the _GitHub_ repository.
 
-## Création d'un exécutable Windows pour diffusion
+- [View the _GitHub_ action](https://github.com/sharly-chess/sharly-chess/actions/workflows/export.yml)
 
-PyInstaller inclut dans l'exécutable Windows tous les paquets trouvés dans l'environnement virtuel, qu'ils soient utilisés ou non.
+An unpublished (draft) version is automatically created by the action with the release notes (https://github.com/Sharly-Chess/sharly-chess/blob/dev/RELEASE_NOTES.md) and must be approved before publication.
 
-Un environnement virtuel dédié est donc utilisé ne comprenant que les paquets strictement nécessaires à l'exportation :
+## Installing Tools and Libraries
+
+As of version 2.6, libraries are no longer stored in the _GitHub_ repository and are installed:
+- automatically in the developer's environment at the first server launch;
+- manually by running the `install_libs.py` script.
 
 ```
-python -m venv .venv-export
-.venv-export\Scripts\python.exe -m pip install --upgrade pip
-.venv-export\Scripts\pip.exe install -e .[export]
+python scripts/libs/install_libs.py
 ```
 
-L'archive ZIP est créée dans le répertoire `/export` et un environnement de test est créé dans `/export-test`.
+## Updating Federation Flags
 
-## Installation des outils et des bibliothèques
-
-À partir de la version 2.6, les librairies ne sont plus stockées sur le dépôt GitHub mais installées :
-- automatiquement dans l'environnement des développeurs au premier lancement du serveur ;
-- manuellement en lançant le script ``scrpts/tools_and_libs/install_tools_and_libs.py``.
-
-## Mise à jour des drapeaux des fédérations
+Federation flags are stored in the _GitHub_ repository and can be updated using the `download_federation_flags.py` script:
 
 ```
 python scripts/federation_flags/download_federation_flags.py

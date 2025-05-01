@@ -1,6 +1,6 @@
 **[Return to documentation summary](../README.md)**
 
-# Papi-web - Internationalization - Models
+# Sharly Chess - Internationalization - Models
 
 The translations for new locales use Huggingface models.
 

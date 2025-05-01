@@ -1,137 +1,113 @@
-> [!CAUTION]
-> **CETTE PAGE DE DOCUMENTATION EST OBSOLÈTE.**
->
 > **[Retour au sommaire de la documentation](../README.md)**
 >
 > ![](../src/web/static/images/papi-web-error.png)
 
-# Papi-web - Annexe technique : interfaçage avec Chess Event
+# Sharly Chess - Technical Appendix - Interfacing with _ChessEvent_
 
-La configuration de Papi-web pour l'accès à la plateforme Chess Event est décrite dans la documentation utilisateur :
+_Sharly Chess_ can retrieve registrations made on the _ChessEvent_ platform by activating the _ChessEvent_ plugin:
 
-- [Création des fichiers Papi des tournois à partir de la plateforme d'inscription en ligne Chess Event](37-chessevent.md)
+- [The _ChessEvent_ plugin](/chessevent-plugin)
 
-Cette page en décrit les aspects techniques.
+This page describes the technical aspects of _Sharly Chess_'s interface with the _ChessEvent_ platform.
 
-## Authentification
+## Authentication
 
-Le téléchargement se fait sur authentification pour limiter la diffusion des coordonnées des joueur·euses (adresses mél et numéros de téléphone).
+Downloading requires authentication to limit the dissemination of player contact information (email addresses and phone numbers).
 
-Les identifiants utilisés pour l'authentification sont ceux de la plateforme Chess Event (administrateur, utilisateur ou gestionnaire d'évènement).
+The credentials used for authentication are those of the _ChessEvent_ platform (administrator, user, or event manager).
 
-Une connexion à la plateforme ChessEvent est définie par les informations suivantes :
-
-- l'identifiant FFE de l'utilisateur·trice sur la plateforme Chess Event (de la forme XNNNNN, facultatif) ;
-- le mot de passe l'utilisateur·trice sur la plateforme Chess Event (facultatif) ;
-- l'identifiant de l'évènement sur la plateforme Chess Event.
-
-## Connexion d'un tournoi
-
-Un tournoi est connecté à un tournoi de la plateforme Chess Event avec les informations suivantes :
-
-- une connexion à la plateforme ChessEvent (ci-dessus) ;
-- le nom du tournoi sur la plateforme Chess Event.
-
-## Requêtes de téléchargement
+## Download Requests
 
 ### URL
 
-L'URL de la requête est https://services.breizh-chess-online.fr/chessevent/download.
+The request URL is https://services.breizh-chess-online.fr/chessevent/download.
 
-### Paramètres
+### Parameters
 
-Tous les paramètres seront passés en clair dans le corps de la requête HTTPS sous la forme de paramètres (méthode POST).
+All parameters are passed in clear text in the payload of the HTTPS request (POST method).
 
-| Paramètre         | Description                                                        |
-|-------------------|--------------------------------------------------------------------|
-| `user_id`         | L'identifiant FFE de l'utilisateur·trice (de la forme XNNNNN).     |
-| `password`        | Le mot de passe l'utilisateur·trice sur la plateforme Chess Event. |
-| `event_id`        | L'identifiant de l'évènement sur la plateforme Chess Event.        |
-| `tournament_name` | Le nom du tournoi sur la plateforme Chess Event.                   |
+| Parameter          | Description                                       | Example                |
+|--------------------|---------------------------------------------------|------------------------|
+| `user_id`          | The user's FFE ID on the _ChessEvent_ platform.   | `C69548`               |
+| `password`         | The user's password on the _ChessEvent_ platform. | `my-password`          |
+| `event_id`         | The event ID on the _ChessEvent_ platform.        | `BRE_35_domloupfide36` |
+| `tournament_name`  | The tournament name on the _ChessEvent_ platform. | `Tournoi A`            |
 
-Exemple de paramètres :
-```
-- user_id=C69548
-- password=my-password
-- event_id=BRE_35_domloupfide36
-- tournament_name=Tournoi A
-```
+## Expected Data
 
-## Données attendues
+### Tournament Description
 
-### Description des tournois
+The data received is expected as a dictionary in JSON format (`Content-Type: application/json`).
 
-Les données sont attendues sous la forme d'un dictionnaire au format JSON (`Content-Type: application/json`).
+| Field                                       | Type        | Description                                                                                                                                                                                                                                                                  |
+|---------------------------------------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`                                      | `str`       | The name.                                                                                                                                                                                                                                                                    |
+| `type`                                      | `enum`      | The type:<br/>`1` = Swiss<br/>`2` = All Rounds                                                                                                                                                                                                                               |
+| `rounds`                                    | `int`       | The number of rounds.                                                                                                                                                                                                                                                        |
+| `pairing`                                   | `enum`      | The pairing:<br/>`1` = Standard<br/>`2` = Haley<br/>`3` = Soft Haley<br/>`4` = SAD<br/>`5` = Nice Accelerated<br/>`6` = Berger<br/>                                                                                                                                          |
+| `time_control`                              | `str`       | The time control.                                                                                                                                                                                                                                                            |
+| `location`                                  | `str`       | The location.                                                                                                                                                                                                                                                                |
+| `arbiter`                                   | `str`       | The arbiter.                                                                                                                                                                                                                                                                 |
+| `start`                                     | `timestamp` | The start date.                                                                                                                                                                                                                                                              |
+| `end`                                       | `timestamp` | The end date.                                                                                                                                                                                                                                                                |
+| `tie_break_1`, `tie_break_2`, `tie_break_3` | `enum`      | Tiebreakers:<br/>`0` = _no tiebreaker_<br/>`1` = Buchholz<br/>`2` = Truncated Buchholz<br/>`3` = Median Buchholz<br/>`4` = Cumulative<br/>`5` = Performance<br/>`6` = Sum of Buchholz<br/>`7` = Number of wins<br/>`8` = Kashdan<br/>`9` = Koya<br/>`10` = Sonnenborn-Berger |
+| `rating`                                    | `enum`      | The rankings used:<br/>`1` = Standard<br/>`2` = Rapid<br/>`3` = Blitz                                                                                                                                                                                                        |
+| `players`                                   | `list`      | The list of players (details below).                                                                                                                                                                                                                                         |
 
-| Champ                                       | Type        | Description                                                                                                                                                                                                                                                                             |
-|---------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`                                      | `str`       | Le nom.                                                                                                                                                                                                                                                                                 |
-| `type`                                      | `enum`      | Le type :<br/>`1` = Suisse<br/>`2` = Toutes rondes                                                                                                                                                                                                                                      |
-| `rounds`                                    | `int`       | Le nombre de rondes.                                                                                                                                                                                                                                                                    |
-| `pairing`                                   | `enum`      | L'appariement :<br/>`1` = Standard<br/>`2` = Haley<br/>`3` = Haley dégressif<br/>`4` = SAD<br/>`5` = Accéléré niçois<br/>`6` = Berger<br/>                                                                                                                                              |
-| `time_control`                              | `str`       | La cadence.                                                                                                                                                                                                                                                                             |
-| `location`                                  | `str`       | Le lieu.                                                                                                                                                                                                                                                                                |
-| `arbiter`                                   | `str`       | L'arbitre.                                                                                                                                                                                                                                                                              |
-| `start`                                     | `timestamp` | La date de début.                                                                                                                                                                                                                                                                       |
-| `end`                                       | `timestamp` | La date de fin.                                                                                                                                                                                                                                                                         |
-| `tie_break_1`, `tie_break_2`, `tie_break_3` | `enum`      | Les départages :<br/>`0` = _aucun départage_<br/>`1` = Buchholz<br/>`2` = Buchholz Tronqué<br/>`3` = Buchholz Médian<br/>`4` = Cumulatif<br/>`5` = Performance<br/>`6` = Somme des Buchholz<br/>`7` = Nombre de victoires<br/>`8` = Kashdan<br/>`9` = Koya<br/>`10` = Sonnenborn-Berger |
-| `rating`                                    | `enum`      | Le classement utilisé :<br/>`1` = Standard<br/>`2` = Rapide<br/>`3` = Blitz                                                                                                                                                                                                             |
-| `players`                                   | `list`      | La liste des joueur·euses (détails plus bas).                                                                                                                                                                                                                                           |
-
-Exemple de tournoi :
+Example of tournament:
 
 `{`<br/>
 &nbsp;&nbsp;`'name': '36e open Fide de Domloup',`<br/>
-&nbsp;&nbsp;`'type': 1,`  # Suisse<br/>
+&nbsp;&nbsp;`'type': 1,` # Swiss<br/>
 &nbsp;&nbsp;`'rounds': 5,`<br/>
-&nbsp;&nbsp;`'pairing': 1,`  # Standard<br/>
+&nbsp;&nbsp;`'pairing': 1,` # Standard<br/>
 &nbsp;&nbsp;`'time_control': 'G3600 + 30',`<br/>
 &nbsp;&nbsp;`'location': 'Domloup',`<br/>
 &nbsp;&nbsp;`'arbiter': 'AUBRY Pascal C69548',`<br/>
-&nbsp;&nbsp;`'start': 1708767000,`  # 2024-02-24 09:30<br/>
-&nbsp;&nbsp;`'end': 1708880400,`  # 2024-02-25 17:00<br/>
-&nbsp;&nbsp;`'tie_break_1': 2,`  # Buchholz tronqué<br/>
-&nbsp;&nbsp;`'tie_break_2': 3,`  # Buchholz médian<br/>
-&nbsp;&nbsp;`'tie_break_3': 5,`  # Performance<br/>
-&nbsp;&nbsp;`'rating': 1,`  # Standard<br/>
+&nbsp;&nbsp;`'start': 1708767000,` # 2024-02-24 09:30<br/>
+&nbsp;&nbsp;`'end': 1708880400,` # 2024-02-25 17:00<br/>
+&nbsp;&nbsp;`'tie_break_1': 2,` # Buchholz truncated<br/>
+&nbsp;&nbsp;`'tie_break_2': 3,` # Buchholz median<br/>
+&nbsp;&nbsp;`'tie_break_3': 5,` # Performance<br/>
+&nbsp;&nbsp;`'rating': 1,` # Standard<br/>
 &nbsp;&nbsp;`'players': [`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`...`<br/>
 &nbsp;&nbsp;`],`<br/>
 `}`
 
-### Description des joueur·euses
+### Player description
 
-| Champ                  | Type        | Description                                                                                                                                                                                                             |
-|------------------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `last_name`            | `str`       | Le nom de famille.                                                                                                                                                                                                      |
-| `first_name`           | `str`       | Le prénom.                                                                                                                                                                                                              |
-| `gender`               | `enum`      | Le genre :<br/>`0` = _aucun_<br/>`1` = Féminin<br/>`2` = Masculin                                                                                                                                                       |
-| `birth`                | `timestamp` | La date de naissance.                                                                                                                                                                                                   |
-| `federation`           | `str`       | Le code de la fédération (FED).                                                                                                                                                                                         |
-| `fide_id`              | `int`       | L'identifiant Fide.                                                                                                                                                                                                     |
-| `ffe_id`               | `str`       | L'identifiant FFE (champ RefFFE dans Papi).                                                                                                                                                                             |
-| `ffe_license`          | `enum`      | La licence :<br/>`0` = _aucune_<br/>`1` = Licence non renouvelée (N)<br/>`2` = Licence B<br/>`3` = Licence A                                                                                                            |
-| `ffe_licence_number`   | `str`       | Le numéro de licence FFE (champ NrFFE dans Papi, au format XNNNNN).                                                                                                                                                     |
-| `ffe_league`           | `str`       | Le code de la ligue (LIG).                                                                                                                                                                                              |
-| `ffe_club_id`          | `int`       | Le numéro d'identifiant du club.                                                                                                                                                                                        |
-| `ffe_club`             | `str`       | Le club.                                                                                                                                                                                                                |
-| `category`             | `enum`      | La catégorie :<br/>`0` = _aucune_<br/>`1` = U8 (Ppo)<br/>`2` = U10 (Pou)<br/>`3` = U12 (Pup)<br/>`4` = U14 (Ben)<br/>`5` = U16 (Min)<br/>`6` = U18 (Cad)<br/>`7` = U20 (Jun)<br/>`8` = Sen<br/>`9` = Sep<br/>`10` = Vet |
-| `standard_rating`      | `int`       | Le classement standard.                                                                                                                                                                                                 |
-| `standard_rating_type` | `enum`      | Le type de classement standard :<br/>`1` = Estimé<br/>`2` = National<br/>`3` = Fide                                                                                                                                     |
-| `rapid_rating`         | `int`       | Le classement rapide.                                                                                                                                                                                                   |
-| `rapid_rating_type`    | `enum`      | Le type de classement rapide (cf `standard_rating_type`).                                                                                                                                                               |
-| `blitz_rating`         | `int`       | Le classement blitz.                                                                                                                                                                                                    |
-| `blitz_rating_type`    | `enum`      | Le type de classement blitz (cf `standard_rating_type`).                                                                                                                                                                |
-| `title`                | `enum`      | Le titre :<br/>`0` = _aucun_<br/>`1` = Maître Fide féminin<br/>`2` = Maître Fide<br/>`3` = Maître International féminin<br/>`4` = Maître International<br/>`5` = Grand Maître féminin<br/>`6` = Grand Maître            |
-| `email`                | `str`       | L'adresse électronique'.                                                                                                                                                                                                |
-| `phone`                | `str`       | Le numéro de téléphone.                                                                                                                                                                                                 |
-| `fee`                  | `float`     | Le montant de l'inscription.                                                                                                                                                                                            |
-| `paid`                 | `float`     | La somme réglée.                                                                                                                                                                                                        |
-| `check_in`             | `bool`      | `true` si le·la joueur·euse a pointé, `false` sinon.                                                                                                                                                                    |
-| `board`                | `int`       | Un numéro d'échiquier fixe, `0` sinon.                                                                                                                                                                                  |
-| `skipped_rounds`       | `dict`      | Un dictionnaire avec pour clé les rondes non journées et pour valeur les points marqués `0.0` si forfait, `0.5` ou `1.0` si points joker.                                                                               |
+| Field                  | Type        | Description                                                                                                                                                                                                          |
+|------------------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `last_name`            | `str`       | The last name.                                                                                                                                                                                                       |
+| `first_name`           | `str`       | The first name.                                                                                                                                                                                                      |
+| `gender`               | `enum`      | The gender:<br/>`0` = _none_<br/>`1` = Female<br/>`2` = Male                                                                                                                                                         |
+| `birth`                | `timestamp` | The date of birth.                                                                                                                                                                                                   |
+| `federation`           | `str`       | The federation code (FED).                                                                                                                                                                                           |
+| `fide_id`              | `int`       | The Fide identifier.                                                                                                                                                                                                 |
+| `ffe_id`               | `str`       | The FFE identifier (RefFFE field in Papi).                                                                                                                                                                           |
+| `ffe_license`          | `enum`      | License:<br/>`0` = _none_<br/>`1` = License not renewed (N)<br/>`2` = License B<br/>`3` = License A                                                                                                                  |
+| `ffe_licence_number`   | `str`       | The FFE license number (`NrFFE` field in _Papi_, in `XNNNNN` format).                                                                                                                                                |
+| `ffe_league`           | `str`       | The league code (LIG).                                                                                                                                                                                               |
+| `ffe_club_id`          | `int`       | The club ID number.                                                                                                                                                                                                  |
+| `ffe_club`             | `str`       | The club.                                                                                                                                                                                                            |
+| `category`             | `enum`      | The category:<br/>`0` = _none_<br/>`1` = U8 (Ppo)<br/>`2` = U10 (Pou)<br/>`3` = U12 (Pup)<br/>`4` = U14 (Ben)<br/>`5` = U16 (Min)<br/>`6` = U18 (Cad)<br/>`7` = U20 (Jun)<br/>`8` = Sen<br/>`9` = Sep<br/>`10` = Vet |
+| `standard_rating`      | `int`       | The standard rating.                                                                                                                                                                                                 |
+| `standard_rating_type` | `enum`      | The standard rating type:<br/>`1` = Estimated<br/>`2` = National<br/>`3` = FIDE                                                                                                                                      |
+| `rapid_rating`         | `int`       | The rapid rating.                                                                                                                                                                                                    |
+| `rapid_rating_type`    | `enum`      | The rapid rating type (see `standard_rating_type`).                                                                                                                                                                  |
+| `blitz_rating`         | `int`       | The blitz rating.                                                                                                                                                                                                    |
+| `blitz_rating_type`    | `enum`      | The blitz rating type (see `standard_rating_type`).                                                                                                                                                                  |
+| `title`                | `enum`      | The title:<br/>`0` = _none_<br/>`1` = Woman's FIDE Master<br/>`2` = FIDE Master<br/>`3` = Woman International Master<br/>`4` = International Master<br/>`5` = Woman Grandmaster<br/>`6` = Grandmaster                |
+| `email`                | `str`       | The email address.                                                                                                                                                                                                   |
+| `phone`                | `str`       | The phone number.                                                                                                                                                                                                    |
+| `fee`                  | `float`     | The registration fee.                                                                                                                                                                                                |
+| `paid`                 | `float`     | The amount paid.                                                                                                                                                                                                     |
+| `check_in`             | `bool`      | `true` if the player checked in, `false` otherwise.                                                                                                                                                                  |
+| `board`                | `int`       | A fixed board number, `0` otherwise.                                                                                                                                                                                 |
+| `skipped_rounds`       | `dict`      | A dictionary with unplayed rounds as the key and the points scored as the value: `0.0` = Zero-Point Bye, `0.5` = Half-Point Bye, `1.0` = Full-Point Bye.                                                             |
 
-Exemple de joueur·euse :
+Example of player:
 
 `{`<br/>
 &nbsp;&nbsp;`'last_name': 'AUBRY',`<br/>
@@ -139,16 +115,16 @@ Exemple de joueur·euse :
 &nbsp;&nbsp;`'ffe_id': 'C69548',`<br/>
 &nbsp;&nbsp;`'fide_id': 20671806,`<br/>
 &nbsp;&nbsp;`'gender': 2,`<br/>
-&nbsp;&nbsp;`'birth': -41990400,`  # 1968-09-02<br/>
-&nbsp;&nbsp;`'category': 9,`  # Sep<br/>
-&nbsp;&nbsp;`'standard_rating': 1458,`<br/>
-&nbsp;&nbsp;`'standard_rating_type': 3,`  # F<br/>
-&nbsp;&nbsp;`'rapid_rating': 1440,`<br/>
-&nbsp;&nbsp;`'rapid_rating_type': 3,`  # F<br/>
-&nbsp;&nbsp;`'blitz_rating': 1440,`<br/>
-&nbsp;&nbsp;`'blitz_rating_type': 1,`  # E<br/>
+&nbsp;&nbsp;`'birth': -41990400,` # 1968-09-02<br/>
+&nbsp;&nbsp;`'category': 9,` # Sep<br/>
+&nbsp;&nbsp;`'standard_rating': 1664,`<br/>
+&nbsp;&nbsp;`'standard_rating_type': 3,` # F<br/>
+&nbsp;&nbsp;`'rapid_rating': 1664,`<br/>
+&nbsp;&nbsp;`'rapid_rating_type': 3,` # F<br/>
+&nbsp;&nbsp;`'blitz_rating': 1664,`<br/>
+&nbsp;&nbsp;`'blitz_rating_type': 1,` # E<br/>
 &nbsp;&nbsp;`'title': 0,`<br/>
-&nbsp;&nbsp;`'license': 3,  # A`<br/>
+&nbsp;&nbsp;`'license': 3, # A`<br/>
 &nbsp;&nbsp;`'federation': 'FRA',`<br/>
 &nbsp;&nbsp;`'league': 'BRE',`<br/>
 &nbsp;&nbsp;`'club_id': 1918,`<br/>
@@ -160,23 +136,23 @@ Exemple de joueur·euse :
 &nbsp;&nbsp;`'check_in': true,`<br/>
 &nbsp;&nbsp;`'board': 0,`<br/>
 &nbsp;&nbsp;`'skipped_rounds': {`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`1: 0.5,`  # bye ronde 1<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`2: 0.0,`  # absent ronde 3<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`1: 0.5,` # Half-Point Bye at round #1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`2: 0.0,` # Zero-Point Bye at round #3<br/>
 &nbsp;&nbsp;`}`<br/>
 `}`
 
-## Codes d'erreur
+## Error Codes
 
-En cas d'erreur, la réponse au format JSON ne contient qu'un champ `error: str` qui précise l'erreur rencontrée.
+In case of error, the JSON response contains only one `error: str` field that specifies the error encountered.
 
-Les codes d'erreur suivants sont utilisés :
+The following error codes are used:
 
-| Statut HTTP | Signification                                                                             | Champ `error`          |
-|-------------|-------------------------------------------------------------------------------------------|------------------------|
-| 200         | _succès_                                                                                  |                        |
-| 401         | Problème d'authentification (impossibilité de s'identifier sur la plateforme Chess Event) | `Unauthorized`         |
-| 403         | Problème d'autorisation (identifiants non autorisés pour l'évènement demandé)             | `Access forbidden`     |
-| 497         | Identifiant non trouvé                                                                    | `User not found`       |
-| 498         | Tournoi non trouvé                                                                        | `Tournament not found` |
-| 499         | Évènement non trouvé                                                                      | `Event not found`      |
-| 500         | Autres erreurs                                                                            | À préciser             |
+| HTTP Status  | Meaning                                                                  | `error` Field          |
+|--------------|--------------------------------------------------------------------------|------------------------|
+| 200          | _success_                                                                |                        |
+| 401          | Authentication problem (unable to log in to the _ChessEvent_ platform)   | `Unauthorized`         |
+| 403          | Authorization problem (unauthorized credentials for the requested event) | `Access forbidden`     |
+| 497          | User not found                                                           | `User not found`       |
+| 498          | Tournament not found                                                     | `Tournament not found` |
+| 499          | Event not found                                                          | `Event not found`      |
+| 500          | Other errors                                                             | Specify                |
