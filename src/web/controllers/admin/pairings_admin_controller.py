@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from typing import Annotated, Any
 
 from litestar import delete, get, patch, put, post
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -624,8 +623,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @put(
-        path='/admin/pairing/set-result-hotkey/'
-        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/admin/pairing/set-result-hotkey/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-event-set-result-hotkey',
         data=Body(media_type=RequestEncodingType.URL_ENCODED),
     )

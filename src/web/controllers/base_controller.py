@@ -9,8 +9,7 @@ from typing import Annotated, Any
 
 import phonenumbers
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body

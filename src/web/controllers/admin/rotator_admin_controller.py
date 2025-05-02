@@ -1,8 +1,7 @@
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template

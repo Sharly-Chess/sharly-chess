@@ -5,7 +5,7 @@ from typing import Annotated, Any
 
 import requests
 import validators
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 

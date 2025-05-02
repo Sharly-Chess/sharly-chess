@@ -1,4 +1,4 @@
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 
 from plugins.ffe.utils import PlayerFFELicence
 

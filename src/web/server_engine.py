@@ -8,7 +8,7 @@ import pyodbc  # type: ignore
 import requests
 import uvicorn
 from litestar import Litestar
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
 
 from common import REQUEST_TIMEOUT
