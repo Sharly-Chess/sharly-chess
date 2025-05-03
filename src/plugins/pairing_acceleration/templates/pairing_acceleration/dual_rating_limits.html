@@ -1,0 +1,52 @@
+{% with recommended=setting.recommended_value(admin_tournament) %}
+    <div class="row mb-3">
+        {{ admin_macros.number_input(
+            name=setting.lower_limit_field,
+            label=_('%(string)s:', string=_('Lower rating limit')),
+            help_text=_(
+                'Rating splitting groups B and C (recommended: %(recommended)d).',
+                recommended=recommended[0],
+            ) if recommended else _('Rating splitting groups B and C.'),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="row mb-3">
+        {{ admin_macros.number_input(
+            name=setting.upper_limit_field,
+            label=_('%(string)s:', string=_('Upper rating limit')),
+            help_text=_(
+                'Rating splitting groups A and B (recommended: %(recommended)d).',
+                recommended=recommended[1],
+            ) if recommended else _('Rating splitting groups A and B.'),
+            data=data, errors=errors
+        ) }}
+    </div>
+{% endwith %}
+
+{% with group_counts=setting.group_counts(
+    admin_tournament,
+    (data[setting.lower_limit_field]|int, data[setting.upper_limit_field]|int)
+) %}
+    <div class="row mb-3">
+        <span>
+            {{ _('%(string)s:', string=_('Groups')) }}
+            <span> A (<b id="group-a">{{ group_counts[0] }}</b>) - </span>
+            <span>B (<b id="group-b">{{ group_counts[1] }}</b>) - </span>
+            <span>C (<b id="group-c">{{ group_counts[2] }}</b>)</span>
+        </span>
+        <script>
+            $(
+                '#{{ setting.lower_limit_field }}, #{{ setting.upper_limit_field }}'
+            ).change(function () {
+                const ratings = {{ setting.player_ratings(admin_tournament)|tojson }};
+                const lowerLimit = $('#{{ setting.lower_limit_field }}').val() || 0;
+                const upperLimit = $('#{{ setting.upper_limit_field }}').val() || 0;
+                const groupA = ratings.filter(value => upperLimit <= value).length;
+                const groupC = ratings.filter(value => lowerLimit > value).length;
+                $('#group-a').html(groupA);
+                $('#group-b').html(Math.max(ratings.length - (groupA + groupC), 0));
+                $('#group-c').html(groupC);
+            });
+        </script>
+    </div>
+{% endwith %}

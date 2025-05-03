@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-12 col-md-10 mb-3">
+        <span
+            {% if admin_tournament.started %}
+                {{ macros.tooltip_attributes(
+                    'info',
+                    _("Seed color can't be modified once the tournament has started."),
+                    'top'
+                ) }}
+            {% endif %}
+        >
+            {{ admin_macros.select_input(
+                name=setting.id,
+                label=_('%(string)s:', string=setting.name),
+                help_text=_('Color attributed to the highest ranked player at the first round.'),
+                select_options=setting.options,
+                disabled=admin_tournament.started,
+                data=data, errors=errors
+            ) }}
+        </span>
+
+    </div>
+    <div class="col-12 col-md-2 mb-3 mt-4 pt-1">
+        <span {{ macros.tooltip_attributes('info', _('Randomly select a seed color.'), 'top') }}>
+            <button
+                id="random-color-seed"
+                class="text-nowrap white btn btn-primary"
+                {% if data[setting.id] != '' %}
+                    disabled
+                {% endif %}
+            >
+                <i class="bi-shuffle"></i>
+            </button>
+        </span>
+        <script>
+            $('#random-color-seed').click(function(event) {
+                event.preventDefault();
+                const select = document.getElementById('{{ setting.id|replace('_', '-') }}');
+                select.selectedIndex = Math.floor(Math.random() * 2) + 1;
+                $(this).prop('disabled', true);
+            });
+            $('#{{ setting.id|replace('_', '-') }}').change(function() {
+                const randomButton = document.getElementById('random-color-seed');
+                randomButton.disabled = $(this).val() !== '';
+            });
+        </script>
+    </div>
+</div>

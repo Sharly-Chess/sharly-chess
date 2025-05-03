@@ -1,10 +1,15 @@
 from abc import ABC
 
 from common.i18n import _
+from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.tournament import Tournament
 from plugins.pairing_acceleration import PLUGIN_NAME
+from plugins.pairing_acceleration.pairing_settings import (
+    RatingLimitSetting,
+    DualRatingLimitsSetting,
+)
 from utils.enum import Result
 
 
@@ -22,6 +27,10 @@ class HaleySwissVariation(AccelerationSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Haley system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [RatingLimitSetting()]
 
     @staticmethod
     def compute_virtual_points(
@@ -48,6 +57,10 @@ class HaleySoftSwissVariation(AccelerationSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Soft Haley system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [RatingLimitSetting()]
 
     @staticmethod
     def compute_virtual_points(
@@ -82,6 +95,10 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Progressive accelerated system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [DualRatingLimitsSetting()]
 
     @staticmethod
     def compute_virtual_points(

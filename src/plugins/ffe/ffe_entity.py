@@ -9,6 +9,7 @@ from data.input_output.player_updaters import (
     PlayerUpdater,
     PlayerUpdaterField,
 )
+from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
@@ -16,6 +17,7 @@ from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
+from plugins.pairing_acceleration.pairing_settings import DualRatingLimitsSetting
 from plugins.utils import PluginUtils
 from utils.enum import Result
 
@@ -153,6 +155,10 @@ class NicoisSwissVariation(SwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('"Niçois" accelerated system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [DualRatingLimitsSetting()]
 
     @staticmethod
     def compute_virtual_points(

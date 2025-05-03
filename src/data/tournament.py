@@ -358,6 +358,17 @@ class Tournament:
         return self.pairing_variation.system()
 
     @property
+    def pairing_settings(self) -> dict[str, Any] | None:
+        return self.stored_tournament.pairing_settings
+
+    @cached_property
+    def are_pairing_settings_valid(self) -> bool:
+        return not self.pairing_variation.settings or (
+            self.pairing_settings is not None
+            and self.pairing_variation.validate_settings(self)
+        )
+
+    @property
     def rating(self) -> TournamentRating:
         return self.papi_tournament_info.rating
 
@@ -576,8 +587,10 @@ class Tournament:
 
     def pairings_generation_allowed(self, at_round: int) -> bool:
         """Check if pairing generation is allowed for round *at_round*."""
-        return not self.check_in_open and all(
-            self.is_round_finished(round_) for round_ in range(1, at_round)
+        return (
+            not self.check_in_open
+            and self.are_pairing_settings_valid
+            and all(self.is_round_finished(round_) for round_ in range(1, at_round))
         )
 
     def is_round_finished(self, round_: int) -> bool:
@@ -601,10 +614,7 @@ class Tournament:
         return 1 <= round_ <= self.rounds
 
     def to_trf(
-        self,
-        trf_type: TrfType,
-        first_round_pairing: BoardColor = BoardColor.WHITE,
-        after_round: int | None = None,
+        self, trf_type: TrfType, after_round: int | None = None
     ) -> TrfTournament:
         if after_round is None:
             after_round = self.rounds
@@ -626,7 +636,7 @@ class Tournament:
             ],
             federation=self.event.federation,
             xx_fields=(
-                self._trf_xx_fields(first_round_pairing, after_round + 1)
+                self._trf_xx_fields(after_round + 1)
                 if trf_type == TrfType.TRF_BX
                 else {}
             ),
@@ -646,10 +656,12 @@ class Tournament:
     def _player_id_to_rank(self, player_id: int) -> int:
         return self.players_by_id[player_id].rank
 
-    def _trf_xx_fields(self, first_round_pairing: BoardColor, next_round: int):
+    def _trf_xx_fields(self, next_round: int):
+        from data.pairings.settings import ColorSeedSetting
+
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
-            'XXC': first_round_pairing.to_trf_first_round_pairing,
+            'XXC': ColorSeedSetting.get_value(self).to_trf_first_round_pairing,
             'XXZ': ' '.join(
                 [
                     str(trf_id)

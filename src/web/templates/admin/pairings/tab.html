@@ -49,7 +49,6 @@
                         {{ _('Close check in') }}
                     </button>
                 {% endif %}
-
                 {% with action='FULL_PAIRING' %}
                     {% if action in existing_actions %}
                         {% if EXPERIMENTAL_FEATURES and admin_tournament.pairing_variation.is_pairing_generation_implemented %}
@@ -58,6 +57,8 @@
                                     'info',
                                     _('Pairings disabled while check-in is open.')
                                     if admin_tournament.check_in_open
+                                    else _('Settings need to be configured before generating the pairings')
+                                    if not admin_tournament.are_pairing_settings_valid
                                     else _(
                                         'Pairings generation not allowed if previous '
                                         'rounds have missing results or unpaired players.'
@@ -92,6 +93,25 @@
                                 {{ _('Please use Papi to generate pairings.') }}
                             </div>
                         {% endif %}
+                        <span
+                            {{ macros.tooltip_attributes(
+                                'info', _('Configure the settings of the pairing system.'), 'top'
+                            ) }}
+                        >
+                            <button
+                                class="btn btn-outline-primary text-nowrap"
+                                hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                                hx-trigger="click"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                preload
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            >
+                                <i class="bi-gear pe-1"></i>
+                                {{ _('Settings') }}
+                            </button>
+                        </span>
                     {% endif %}
                 {% endwith %}
                 {% with action='FULL_UNPAIRING' %}
