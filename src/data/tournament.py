@@ -361,6 +361,16 @@ class Tournament:
     def pairing_settings(self) -> dict[str, Any] | None:
         return self.stored_tournament.pairing_settings
 
+    def set_default_pairing_settings(self):
+        stored_settings: dict[str, Any] = {
+            setting.id: setting.to_stored_value(setting.default_value(self))
+            for setting in self.pairing_variation.settings
+        }
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(self.id, stored_settings)
+            database.commit()
+        self.stored_tournament.pairing_settings = stored_settings
+
     @cached_property
     def are_pairing_settings_valid(self) -> bool:
         return not self.pairing_variation.settings or (
@@ -371,14 +381,6 @@ class Tournament:
     @property
     def rating(self) -> TournamentRating:
         return self.papi_tournament_info.rating
-
-    @property
-    def rating_limit1(self) -> int:
-        return self.papi_tournament_info.rating_limit1
-
-    @property
-    def rating_limit2(self) -> int:
-        return self.papi_tournament_info.rating_limit2
 
     @property
     def point_value_type(self) -> PointValueType:

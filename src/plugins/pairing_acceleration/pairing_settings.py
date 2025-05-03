@@ -84,7 +84,7 @@ class RatingLimitSetting(PairingSetting[int]):
     def _check_rating_limit(cls, tournament: 'Tournament', rating_limit: int) -> bool:
         a_group, b_group = cls.group_counts(tournament, rating_limit)
         total = a_group + b_group
-        return total >= 2 and total / 4 < b_group < 3 * total / 4
+        return total >= 2 and total / 4 <= b_group <= 3 * total / 4
 
     def save_to_papi_database(self, papi_database: PapiDatabase, object_: int):
         with papi_database:
@@ -203,7 +203,7 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
 
     @classmethod
     def _check_group_count(cls, group_count: int, total: int) -> bool:
-        return total >= 3 and total / 4 < group_count < total / 2
+        return total >= 3 and total / 4 <= group_count <= total / 2
 
     def save_to_papi_database(
         self, papi_database: PapiDatabase, object_: tuple[int, int]

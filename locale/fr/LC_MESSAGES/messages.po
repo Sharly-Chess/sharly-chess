@@ -3160,14 +3160,14 @@ msgstr "Limite ELO"
 
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
-msgstr "Classement ELO séparant les groupes A et B (recommandé: %(recommended)d)."
+msgstr "Classement ELO séparant les groupes A et B (recommandation : %(recommended)d)."
 
 msgid "Rating splitting groups A and B."
 msgstr "Classement ELO séparant les groupes A et B."
 
 #, python-format
 msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
-msgstr "Classement ELO séparant les groupes B et C (recommandé: %(recommended)d)."
+msgstr "Classement ELO séparant les groupes B et C (recommandation : %(recommended)d)."
 
 msgid "Rating splitting groups B and C."
 msgstr "Classement ELO séparant les groupes B et C."

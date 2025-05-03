@@ -38,8 +38,7 @@ class HaleySwissVariation(AccelerationSwissVariation):
         player: Player,
         at_round: int,
     ) -> float:
-        rating_limit = tournament.rating_limit1
-        assert rating_limit is not None
+        rating_limit = RatingLimitSetting.get_value(tournament)
         if at_round <= 2 and player.rating >= rating_limit:
             return Result.GAIN.points(tournament.point_values)
         return 0.0
@@ -74,8 +73,7 @@ class HaleySoftSwissVariation(AccelerationSwissVariation):
         # bottom of page #138 on
         # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
         # please remove if OK
-        rating_limit = tournament.rating_limit1
-        assert rating_limit is not None
+        rating_limit = RatingLimitSetting.get_value(tournament)
         if at_round <= 2 and player.rating >= rating_limit:
             return Result.GAIN.points(tournament.point_values)
         elif at_round == 2 and player.rating < rating_limit:
@@ -117,10 +115,7 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
         at_round: int,
         real_virtual_draw_points_ratio: int = 3,
     ) -> float:
-        rating_limit1 = tournament.rating_limit1
-        assert rating_limit1 is not None
-        rating_limit2 = tournament.rating_limit2
-        assert rating_limit2 is not None
+        lower_limit, upper_limit = DualRatingLimitsSetting.get_value(tournament)
 
         draw_points = Result.DRAW.points(tournament.point_values)
         gain_points = Result.GAIN.points(tournament.point_values)
@@ -142,9 +137,9 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
         )
 
         # Starting points: Group A - 2, Group B - 1, Group C - 0
-        if player.rating >= rating_limit1:
+        if player.rating >= upper_limit:
             vpoints += 2 * gain_points
-        elif player.rating >= rating_limit2:
+        elif player.rating >= lower_limit:
             vpoints += gain_points
 
         # Players cannot have more than 2 virtual points

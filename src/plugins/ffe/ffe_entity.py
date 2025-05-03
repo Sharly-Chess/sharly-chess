@@ -166,10 +166,7 @@ class NicoisSwissVariation(SwissVariation):
         player: Player,
         at_round: int,
     ) -> float:
-        rating_limit1 = tournament.rating_limit1
-        assert rating_limit1 is not None
-        rating_limit2 = tournament.rating_limit2
-        assert rating_limit2 is not None
+        lower_limit, upper_limit = DualRatingLimitsSetting.get_value(tournament)
 
         draw_points = Result.DRAW.points(tournament.point_values)
         gain_points = Result.GAIN.points(tournament.point_values)
@@ -185,11 +182,11 @@ class NicoisSwissVariation(SwissVariation):
             # their capital is set at 2 points.
             return 2 * gain_points
 
-        if player.rating >= rating_limit1:
+        if player.rating >= upper_limit:
             # Group A: starts with 2 gain points (max)
             return 2 * gain_points
 
-        if player.rating >= rating_limit2:
+        if player.rating >= lower_limit:
             # Group B: starts with 1 gain point
             # Earns a draw point at 3 real draw points, and a final one at 5
             vpoints = gain_points
