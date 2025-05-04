@@ -71,7 +71,7 @@ Tournament: {{to_name}}
 Pairing for round #{{ro_number}}:
 {% if pa_paired %}
 {% if pa_paired_bye }}
-Paired Allocated Bye
+Pairing Allocated Bye
 {% else %}
 Opponent: {{op_name}} {{op_rating}}{{op_rating_type}} [{{op_points}}]
 Color: {{pa_color}}

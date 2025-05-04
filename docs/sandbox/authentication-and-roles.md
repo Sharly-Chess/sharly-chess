@@ -24,6 +24,17 @@ In version 2.4, _Sharly Chess_ distinguishes two roles:
 - **Result officer** (of an event)
 - **Spectator** (of an event)
 
+> [!NOTE]
+> Amaras 20250501
+>
+> We should adapt the FIDE hierarchical system:
+> - One Chief Arbiter with admin-like rights over the event,
+> - One or several Deputy Chief Arbiter(s) with lower rights over basically the whole event
+> - Sector Arbiter(s) with rights over their part of their sector
+> - Match Arbiter(s) who can set and (maybe) correct results for the event (your results officer)
+> - Pairings Officer(s) with full pairings management rights over the part of the event they are assigned to (part of their duty is check-in, of course)
+> In Continental and World events, the CA, DCA and SA roles are mostly management positions (although they can intervene on games if Match Arbiters can't do it, of course), so they wouldn't play with the software once the rights are set up. Match Arbiters are focused on the games, so can enter results, but that's about it (although they should be able to correct wrong results). Pairings Officer are the ones doing the bulk of the work on the pairings software (especially in case of team tournaments)
+
 ### Actions autorisées par rôle
 
 |                                  |  Administrator  | Organizer | Chief arbiter  |    Arbiter     | Check-in officer | Result officer | Spectator |
@@ -79,7 +90,7 @@ Roles are assigned:
 In the example below:
 - Connections from the server automatically have all roles (not configurable);
 - Connections from the client ``192.168.1.115`` and authenticated with the username ``big-boss`` have the organization and chief referee roles for all tournaments;
-- Connections authenticated with the usernames ``boss-1`` and ``boss-2`` have the referee role, for tournaments A/B and C/D respectively;
+- Connections authenticated with the usernames ``boss-1`` and ``boss-2`` have the arbiter role, for tournaments A/B and C/D respectively;
 - The last two workstations allow check-in and results entry, respectively;
 - Other unauthenticated clients can view the display screens.
 
