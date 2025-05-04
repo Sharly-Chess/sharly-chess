@@ -811,7 +811,7 @@ msgstr ""
 msgid "Create and add default screens"
 msgstr ""
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen, family or rotator."
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr ""
 
 msgid "Create file"
