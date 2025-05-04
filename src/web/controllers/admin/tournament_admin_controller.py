@@ -1,3 +1,4 @@
+import copy
 import time
 from datetime import datetime
 from pathlib import Path
@@ -28,7 +29,7 @@ from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
 from utils.enum import TournamentRating
-from database.access.papi.papi_database import PapiDatabase
+from database.access.papi.papi_database import PapiDatabase, PapiTournamentInfo
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.hookspec import ExtraColumn
@@ -571,7 +572,6 @@ class TournamentAdminController(BaseEventAdminController):
                     'tie_break_options': {'': _('None')}
                     | PapiTieBreakManager.options(),
                     'rating_options': cls._get_rating_options(),
-                    'current_pairing_system': pairing_system,
                     'pairing_systems': pairing_systems,
                     'pairing_system_options': PairingSystemManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
@@ -691,15 +691,39 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
+        file = self._extract_papi_file_path(data, web_context.admin_event)
+        if file.exists():
+            with PapiDatabase(file) as database:
+                papi_tournament_info = database.read_info()
+        else:
+            papi_tournament_info = PapiTournamentInfo()
         return HTMXTemplate(
             template_name='admin/tournaments/file_status.html',
             context=template_context
             | {
-                'file_exists': self._extract_papi_file_path(
-                    data, web_context.admin_event
-                ).exists(),
+                'file_exists': file.exists(),
+                'replacement_data': self.papi_tournament_info_to_form_data(
+                    papi_tournament_info
+                ),
             },
         )
+
+    @staticmethod
+    def papi_tournament_info_to_form_data(info: PapiTournamentInfo) -> dict[str, str]:
+        tie_breaks = copy.copy(info.tie_breaks)
+        tie_break_1, tie_break_2, tie_break_3 = (
+            tie_breaks.pop(0).id if tie_breaks else '' for __ in range(3)
+        )
+        pairing_system = info.pairing_variation.system()
+        return {
+            'rounds': str(info.rounds),
+            'rating': str(info.rating.value),
+            'pairing_system': pairing_system.id,
+            pairing_system.variation_field_id: info.pairing_variation.id,
+            'tie_break_1': tie_break_1,
+            'tie_break_2': tie_break_2,
+            'tie_break_3': tie_break_3,
+        }
 
     @staticmethod
     def _extract_papi_file_path(data: dict[str, str], event: Event) -> Path:
