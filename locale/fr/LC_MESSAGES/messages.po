@@ -199,7 +199,7 @@ msgstr "Actions :"
 msgid "Add"
 msgstr "Ajouter"
 
-msgid "Add a client controller to the event."
+msgid "Add a display controller to the event."
 msgstr "Ajouter un écran piloté"
 
 msgid "Add a family of screens to display the pairings by alphabetical order."
@@ -289,7 +289,7 @@ msgstr "Une erreur est survenue."
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
-msgid "Any number of devices can be controlled by the same client controller."
+msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’écran peut contrôler l’affichage sur plusieurs appareils."
 
 msgid "Application"
@@ -636,36 +636,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
 
-msgid "Client Controllers"
-msgstr "Pilotes d'écran"
-
-msgid "Client Controllers ({num})"
-msgstr "Pilotes d'écrans ({num})"
-
-msgid "Client controller"
-msgstr "Pilote d'écran"
-
-msgid "Client controller [{client_controller_uniq_id}] has been created."
-msgstr "Le pilote d'écran [{client_controller_uniq_id}] a été créé."
-
-msgid "Client controller [{client_controller_uniq_id}] has been deleted."
-msgstr "Le pilote d'écran [{client_controller_uniq_id}] a été supprimé."
-
-msgid "Client controller [{client_controller_uniq_id}] has been updated."
-msgstr "Le pilote d'écran [{client_controller_uniq_id}] a été modifié."
-
-msgid "Client controller [{uniq_id}] already exists."
-msgstr "Le pilote d'écran [{uniq_id}] existe déjà."
-
-msgid "Client controller creation"
-msgstr "Création d'un pilote d'écran"
-
-msgid "Client controllers ({num})"
-msgstr "Pilotes d'écrans ({num})"
-
-msgid "Client controllers allow you to control screens at your event from your main computer."
-msgstr "Les pilotes d'écran vous permettent de contrôler les écrans de votre évènement depuis le serveur."
-
 msgid "Clone"
 msgstr "Dupliquer"
 
@@ -802,10 +772,10 @@ msgstr "Impossible de décompresser les données."
 msgid "Create"
 msgstr "Créer"
 
-msgid "Create a client controller"
+msgid "Create a display controller"
 msgstr "Créer un pilote d'écran"
 
-msgid "Create a client controller now to get started."
+msgid "Create a display controller now to get started."
 msgstr "Créez un pilote d'écran maintenant commencer."
 
 msgid "Create a family now to get started."
@@ -841,7 +811,7 @@ msgstr "Créer un évènement"
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a client controller rather than a specific screen, family or rotator."
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen, family or rotator."
 msgstr "Créez autant de pilotes d’écran que nécessaire, puis, sur vos autres appareils, choisissez d’afficher un pilote d’écran plutôt qu’un écran individuel, une famille d’écrans ou un écran rotatif spécifique."
 
 msgid "Create file"
@@ -959,7 +929,7 @@ msgstr "Délai :"
 msgid "Delete"
 msgstr "Supprimer"
 
-msgid "Delete the client controller."
+msgid "Delete the display controller."
 msgstr "Supprimer le pilote d'écran."
 
 msgid "Delete the rotator."
@@ -978,8 +948,8 @@ msgid "Deletion date"
 msgstr "Date de suppression"
 
 #, python-format
-msgid "Deletion of client controller [%(client_controller_uniq_id)s]"
-msgstr "Suppression du pilote d'écran [%(client_controller_uniq_id)s]"
+msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
+msgstr "Suppression du pilote d'écran [%(display_controller_uniq_id)s]"
 
 #, python-format
 msgid "Deletion of event [%(event_uniq_id)s]"
@@ -1029,6 +999,33 @@ msgstr "Affichage"
 
 msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
+
+msgid "Display controller"
+msgstr "Pilote d'écran"
+
+msgid "Display controller [{display_controller_uniq_id}] has been created."
+msgstr "Le pilote d'écran [{display_controller_uniq_id}] a été créé."
+
+msgid "Display controller [{display_controller_uniq_id}] has been deleted."
+msgstr "Le pilote d'écran [{display_controller_uniq_id}] a été supprimé."
+
+msgid "Display controller [{display_controller_uniq_id}] has been updated."
+msgstr "Le pilote d'écran [{display_controller_uniq_id}] a été modifié."
+
+msgid "Display controller [{uniq_id}] already exists."
+msgstr "Le pilote d'écran [{uniq_id}] existe déjà."
+
+msgid "Display controller creation"
+msgstr "Création d'un pilote d'écran"
+
+msgid "Display controllers"
+msgstr "Pilotes d'écran"
+
+msgid "Display controllers ({num})"
+msgstr "Pilotes d'écrans ({num})"
+
+msgid "Display controllers allow you to control screens at your event from your main computer."
+msgstr "Les pilotes d'écran vous permettent de contrôler les écrans de votre évènement depuis le serveur."
 
 msgid "Display link not found, check that a Papi file has already been sent."
 msgstr "Lien d'affichage non trouvé, vérifier qu'un fichier Papi a déjà été téléchargé."
@@ -1189,7 +1186,7 @@ msgstr "Exemple : Link vers mon écran"
 msgid "E.g.: Main tournament"
 msgstr "Exemple : Tournoi principal"
 
-msgid "E.g.: My client controller"
+msgid "E.g.: My display controller"
 msgstr "Exemple : Mon pilote d'écran"
 
 msgid "E.g.: My favourite club!"
@@ -1252,7 +1249,7 @@ msgstr "Exemple : pierre.dupont@chess.com"
 msgid "E.g.: main"
 msgstr "Exemple : principal"
 
-msgid "E.g.: my-client-controller"
+msgid "E.g.: my-display-controller"
 msgstr "Exemple : mon-pilote-d-ecran"
 
 msgid "E.g.: my-rotator"
@@ -1285,7 +1282,7 @@ msgstr "Éditer les propriétés du·de la joueur·euse."
 msgid "Edit the player's tournament record."
 msgstr "Modifier l'historique du·de la joueur·euse."
 
-msgid "Edit the properties of the client controller."
+msgid "Edit the properties of the display controller."
 msgstr "Éditer les propriétés du pilote d'écran."
 
 msgid "Edit the properties of the rotator."
@@ -1310,12 +1307,12 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
 #, python-format
-msgid "Edition of client controller [%(client_controller_uniq_id)s]"
-msgstr "Édition du pilote d'écran [%(client_controller_uniq_id)s]"
-
-#, python-format
 msgid "Edition of default timers for event [%(event_uniq_id)s]"
 msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
+
+#, python-format
+msgid "Edition of display controller [%(display_controller_uniq_id)s]"
+msgstr "Édition du pilote d'écran [%(display_controller_uniq_id)s]"
 
 #, python-format
 msgid "Edition of event [%(event_uniq_id)s]"
@@ -2309,7 +2306,7 @@ msgstr "Dernières rondes sans bye :"
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
-msgid "New client controller"
+msgid "New display controller"
 msgstr "Nouveau pilote d'écran"
 
 msgid "New event"
@@ -2373,12 +2370,6 @@ msgstr "Image de fond non définie, par défaut [{background_image}]"
 msgid "No category"
 msgstr "Aucune catégorie"
 
-msgid "No client controllers"
-msgstr "Aucun pilote d'écran"
-
-msgid "No client controllers."
-msgstr "Aucun pilote d'écran."
-
 msgid "No current events."
 msgstr "Aucun évènement en cours."
 
@@ -2390,6 +2381,12 @@ msgstr "Aucun répertoire défini pour les fichiers Papi, par défaut [{path}]."
 
 msgid "No directory set for the Papi file, by default [{path}]."
 msgstr "Aucun répertoire défini pour le fichier Papi, par défaut [{path}]."
+
+msgid "No display controllers"
+msgstr "Aucun pilote d'écran"
+
+msgid "No display controllers."
+msgstr "Aucun pilote d'écran."
 
 msgid "No errors"
 msgstr "Aucune erreur"
@@ -2606,7 +2603,7 @@ msgstr "Seul·es les arbitres peuvent voir les écrans des familles privées."
 msgid "Only arbiters can see private screens."
 msgstr "Seul·es les arbitres peuvent voir les écrans privés."
 
-msgid "Only arbiters can view private client controllers."
+msgid "Only arbiters can view private display controllers."
 msgstr "Seul·es les arbitres peuvent voir les pilotes d'écran privés."
 
 msgid "Only arbiters can view private rotators."
@@ -2883,17 +2880,17 @@ msgstr "Veuillez entrer une date valide."
 msgid "Please enter a valid time."
 msgstr "Veuillez entrer une heure valide."
 
-msgid "Please enter the client controller ID."
-msgstr "Veuillez entrer l'identifiant du pilotle d'écran."
-
-msgid "Please enter the client controller name."
-msgstr "Veuillez entrer le nom du pilotle d'écran."
-
 msgid "Please enter the date of birth."
 msgstr "Veuillez entrer la date de naissance."
 
 msgid "Please enter the date of the first hour."
 msgstr "Veuillez entrer la date du premier horaire."
+
+msgid "Please enter the display controller ID."
+msgstr "Veuillez entrer l'identifiant du pilotle d'écran."
+
+msgid "Please enter the display controller name."
+msgstr "Veuillez entrer le nom du pilotle d'écran."
 
 msgid "Please enter the end date of the event."
 msgstr "Veuillez entrer la date de fin de l'évènement."
@@ -3054,7 +3051,7 @@ msgstr "Édition d'appariements protégés"
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
-msgid "Public client controller"
+msgid "Public display controller"
 msgstr "Pilote d'écran public"
 
 msgid "Public event"
@@ -3162,7 +3159,7 @@ msgstr "Actualiser la page."
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
-msgid "Remove the screen from the client controller."
+msgid "Remove the screen from the display controller."
 msgstr "Supprimer la redirection du pilote vers cet écran."
 
 msgid "Renaming the database failed: {ex}."
@@ -3218,8 +3215,8 @@ msgstr "Rde.Ech"
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
 
-msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
-msgstr "L'écran rotatif [{rotator_uniq_id}] est utilisé par le pilote d'écran [{client_controller_uniq_id}]."
+msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
+msgstr "L'écran rotatif [{rotator_uniq_id}] est utilisé par le pilote d'écran [{display_controller_uniq_id}]."
 
 msgid "Rotator [{rotator_uniq_id}] has been created."
 msgstr "L'écran rotatif [{rotator_uniq_id}] a été créé."
@@ -3343,8 +3340,8 @@ msgstr "Score"
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr "Écran [{pattern}] introuvable pour le menu de l'écran [{screen_uniq_id}]."
 
-msgid "Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
-msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'écran [{client_controller_uniq_id}]."
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
+msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'écran [{display_controller_uniq_id}]."
 
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "L'écran [{screen_uniq_id}] a été créé."
@@ -3577,7 +3574,7 @@ msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Papi-w
 msgid "The Unique ID, used for data storage and export."
 msgstr "L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export."
 
-msgid "The Unique ID, used to reference the client controller."
+msgid "The Unique ID, used to reference the display controller."
 msgstr "L\"identifiant unique, utilisé pour référencer le pilote d'écran."
 
 msgid "The Unique ID, used to reference the rotator."
@@ -3711,7 +3708,7 @@ msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
 
-msgid "The name of the client controller, optional."
+msgid "The name of the display controller, optional."
 msgstr "Le nom du pilote d'écran, facultatif."
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3892,7 +3889,7 @@ msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernièr
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr "Les familles à afficher en rotation (les familles d'écrans de saisie apparaissent en italique car elles ne devraient normalement pas être incluses dans les écrans rotatifs)."
 
-msgid "The screens displayed by the client controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the administrator."
 msgstr "Les écrans utilisés par le pilote d'écran sont désignés par l'administrateur·ice."
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -3950,10 +3947,10 @@ msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée 
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
 
-msgid "This client controller is private (not visible by the users)."
+msgid "This display controller is private (not visible by the users)."
 msgstr "Ce pilote d'écran est privé (non visible des utilisateur·ices)."
 
-msgid "This client controller is public (visible by the users)."
+msgid "This display controller is public (visible by the users)."
 msgstr "Ce pilote d'écran est public (visible des utilisateur·ices)."
 
 msgid "This event is private (by default, screens are not visible by the users)."
@@ -4427,7 +4424,7 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
-msgid "Warning: the deletion of a client controller is permanent!"
+msgid "Warning: the deletion of a display controller is permanent!"
 msgstr "Attention : la suppression d'un pilolte d'écran est définitive !"
 
 msgid "Warning: the deletion of a player is permanent!"
@@ -4617,7 +4614,7 @@ msgstr "échiquiers {board_numbers}"
 msgid "by default"
 msgstr "par défaut"
 
-msgid "client-controller"
+msgid "display-controller"
 msgstr "pilote-d-ecran"
 
 msgid "event"

@@ -21,7 +21,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.client_controller import ClientController
+from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
 from data.rotator import Rotator
@@ -745,64 +745,64 @@ class Event:
         )
 
     @cached_property
-    def client_controllers_by_id(self) -> dict[int, ClientController]:
+    def display_controllers_by_id(self) -> dict[int, DisplayController]:
         if self.errors:
             return {}
-        client_controllers_by_id: dict[int, ClientController] = {
-            stored_client_controller.id: ClientController(
-                self, stored_client_controller
+        display_controllers_by_id: dict[int, DisplayController] = {
+            stored_display_controller.id: DisplayController(
+                self, stored_display_controller
             )
-            for stored_client_controller in self.stored_event.stored_client_controllers
-            if stored_client_controller.id is not None
+            for stored_display_controller in self.stored_event.stored_display_controllers
+            if stored_display_controller.id is not None
         }
-        return client_controllers_by_id
+        return display_controllers_by_id
 
     @cached_property
-    def client_controllers_by_uniq_id(self) -> dict[str, ClientController]:
+    def display_controllers_by_uniq_id(self) -> dict[str, DisplayController]:
         return {
-            client_controller.uniq_id: client_controller
-            for client_controller in self.client_controllers_by_id.values()
+            display_controller.uniq_id: display_controller
+            for display_controller in self.display_controllers_by_id.values()
         }
 
     @cached_property
-    def client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
+    def display_controllers_sorted_by_uniq_id(self) -> list[DisplayController]:
         return sorted(
-            self.client_controllers_by_id.values(),
+            self.display_controllers_by_id.values(),
             key=attrgetter('uniq_id'),
         )
 
     @cached_property
-    def public_client_controllers_sorted_by_uniq_id(self) -> list[ClientController]:
+    def public_display_controllers_sorted_by_uniq_id(self) -> list[DisplayController]:
         return sorted(
-            filter(attrgetter('public'), self.client_controllers_by_id.values()),
+            filter(attrgetter('public'), self.display_controllers_by_id.values()),
             key=attrgetter('uniq_id'),
         )
 
-    def get_unused_client_controller_uniq_id(
+    def get_unused_display_controller_uniq_id(
         self,
         base_uniq_id: str | None = None,
     ) -> str:
-        """Returns the first unused client controller uniq_id looking like base_uniq_id:
+        """Returns the first unused display controller uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
         return self._get_unused_item_uniq_id(
-            base_uniq_id or _('client-controller'),
+            base_uniq_id or _('display-controller'),
             [
-                client_controller.uniq_id
-                for client_controller in self.client_controllers_by_id.values()
+                display_controller.uniq_id
+                for display_controller in self.display_controllers_by_id.values()
             ],
         )
 
-    def get_unused_client_controller_name(
+    def get_unused_display_controller_name(
         self,
         base_name: str | None = None,
     ) -> str:
-        """Returns the first unused client controller name looking like base_name:
+        """Returns the first unused display controller name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         return self._get_unused_item_name(
-            base_name or _('New client controller'),
+            base_name or _('New display controller'),
             [
-                client_controller.name
-                for client_controller in self.client_controllers_by_id.values()
+                display_controller.name
+                for display_controller in self.display_controllers_by_id.values()
             ],
         )
 

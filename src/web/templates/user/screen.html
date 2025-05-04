@@ -22,7 +22,7 @@
                 {% endif %}
             {% endif %}
         </script>
-        {% if not rotator and not client_controller %}
+        {% if not rotator and not display_controller %}
             {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
             {% if menu_screens %}
                 <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
@@ -46,12 +46,12 @@
             {% include 'screen/timer.html' %}
         {% endif %}
         {% if not board %}{# no refresher when the result modal is shown #}
-            {% if client_controller %}
+            {% if display_controller %}
                 <div
-                    class="refresher client-controller-refresher"
+                    class="refresher display-controller-refresher"
                     hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
-                    hx-get="{{ url_for('user-client-controller', event_uniq_id=user_event.uniq_id, client_controller_id=client_controller.id, rotator_screen_index=rotator_screen_index + 1) }}"
-                    hx-trigger="every {{ client_controller.delay }}s"
+                    hx-get="{{ url_for('user-display-controller', event_uniq_id=user_event.uniq_id, display_controller_id=display_controller.id, rotator_screen_index=rotator_screen_index + 1) }}"
+                    hx-trigger="every {{ display_controller.delay }}s"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 ></div>

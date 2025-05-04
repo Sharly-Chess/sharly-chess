@@ -199,7 +199,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-msgid "Add a client controller to the event."
+msgid "Add a display controller to the event."
 msgstr ""
 
 msgid "Add a family of screens to display the pairings by alphabetical order."
@@ -289,7 +289,7 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
-msgid "Any number of devices can be controlled by the same client controller."
+msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
@@ -636,36 +636,6 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
-msgid "Client Controllers"
-msgstr ""
-
-msgid "Client Controllers ({num})"
-msgstr ""
-
-msgid "Client controller"
-msgstr ""
-
-msgid "Client controller [{client_controller_uniq_id}] has been created."
-msgstr ""
-
-msgid "Client controller [{client_controller_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Client controller [{client_controller_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Client controller [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Client controller creation"
-msgstr ""
-
-msgid "Client controllers ({num})"
-msgstr ""
-
-msgid "Client controllers allow you to control screens at your event from your main computer."
-msgstr ""
-
 msgid "Clone"
 msgstr ""
 
@@ -802,10 +772,10 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-msgid "Create a client controller"
+msgid "Create a display controller"
 msgstr ""
 
-msgid "Create a client controller now to get started."
+msgid "Create a display controller now to get started."
 msgstr ""
 
 msgid "Create a family now to get started."
@@ -841,7 +811,7 @@ msgstr ""
 msgid "Create and add default screens"
 msgstr ""
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a client controller rather than a specific screen, family or rotator."
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen, family or rotator."
 msgstr ""
 
 msgid "Create file"
@@ -959,7 +929,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid "Delete the client controller."
+msgid "Delete the display controller."
 msgstr ""
 
 msgid "Delete the rotator."
@@ -978,7 +948,7 @@ msgid "Deletion date"
 msgstr ""
 
 #, python-format
-msgid "Deletion of client controller [%(client_controller_uniq_id)s]"
+msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1028,6 +998,33 @@ msgid "Display"
 msgstr ""
 
 msgid "Display all the players, paired and unpaired"
+msgstr ""
+
+msgid "Display controller"
+msgstr ""
+
+msgid "Display controller [{display_controller_uniq_id}] has been created."
+msgstr ""
+
+msgid "Display controller [{display_controller_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Display controller [{display_controller_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Display controller [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Display controller creation"
+msgstr ""
+
+msgid "Display controllers"
+msgstr ""
+
+msgid "Display controllers ({num})"
+msgstr ""
+
+msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr ""
 
 msgid "Display link not found, check that a Papi file has already been sent."
@@ -1189,7 +1186,7 @@ msgstr ""
 msgid "E.g.: Main tournament"
 msgstr ""
 
-msgid "E.g.: My client controller"
+msgid "E.g.: My display controller"
 msgstr ""
 
 msgid "E.g.: My favourite club!"
@@ -1252,7 +1249,7 @@ msgstr ""
 msgid "E.g.: main"
 msgstr ""
 
-msgid "E.g.: my-client-controller"
+msgid "E.g.: my-display-controller"
 msgstr ""
 
 msgid "E.g.: my-rotator"
@@ -1285,7 +1282,7 @@ msgstr ""
 msgid "Edit the player's tournament record."
 msgstr ""
 
-msgid "Edit the properties of the client controller."
+msgid "Edit the properties of the display controller."
 msgstr ""
 
 msgid "Edit the properties of the rotator."
@@ -1310,11 +1307,11 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
 #, python-format
-msgid "Edition of client controller [%(client_controller_uniq_id)s]"
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgid "Edition of display controller [%(display_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -2309,7 +2306,7 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
-msgid "New client controller"
+msgid "New display controller"
 msgstr ""
 
 msgid "New event"
@@ -2373,12 +2370,6 @@ msgstr ""
 msgid "No category"
 msgstr ""
 
-msgid "No client controllers"
-msgstr ""
-
-msgid "No client controllers."
-msgstr ""
-
 msgid "No current events."
 msgstr ""
 
@@ -2389,6 +2380,12 @@ msgid "No directory set for Papi files, by default [{path}]."
 msgstr ""
 
 msgid "No directory set for the Papi file, by default [{path}]."
+msgstr ""
+
+msgid "No display controllers"
+msgstr ""
+
+msgid "No display controllers."
 msgstr ""
 
 msgid "No errors"
@@ -2606,7 +2603,7 @@ msgstr ""
 msgid "Only arbiters can see private screens."
 msgstr ""
 
-msgid "Only arbiters can view private client controllers."
+msgid "Only arbiters can view private display controllers."
 msgstr ""
 
 msgid "Only arbiters can view private rotators."
@@ -2883,16 +2880,16 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
-msgid "Please enter the client controller ID."
-msgstr ""
-
-msgid "Please enter the client controller name."
-msgstr ""
-
 msgid "Please enter the date of birth."
 msgstr ""
 
 msgid "Please enter the date of the first hour."
+msgstr ""
+
+msgid "Please enter the display controller ID."
+msgstr ""
+
+msgid "Please enter the display controller name."
 msgstr ""
 
 msgid "Please enter the end date of the event."
@@ -3054,7 +3051,7 @@ msgstr ""
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
-msgid "Public client controller"
+msgid "Public display controller"
 msgstr ""
 
 msgid "Public event"
@@ -3162,7 +3159,7 @@ msgstr ""
 msgid "Remove the player from the event."
 msgstr ""
 
-msgid "Remove the screen from the client controller."
+msgid "Remove the screen from the display controller."
 msgstr ""
 
 msgid "Renaming the database failed: {ex}."
@@ -3218,7 +3215,7 @@ msgstr ""
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
 msgid "Rotator [{rotator_uniq_id}] has been created."
@@ -3343,7 +3340,7 @@ msgstr ""
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-msgid "Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been created."
@@ -3577,7 +3574,7 @@ msgstr ""
 msgid "The Unique ID, used for data storage and export."
 msgstr ""
 
-msgid "The Unique ID, used to reference the client controller."
+msgid "The Unique ID, used to reference the display controller."
 msgstr ""
 
 msgid "The Unique ID, used to reference the rotator."
@@ -3711,7 +3708,7 @@ msgstr ""
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr ""
 
-msgid "The name of the client controller, optional."
+msgid "The name of the display controller, optional."
 msgstr ""
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3892,7 +3889,7 @@ msgstr ""
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
-msgid "The screens displayed by the client controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the administrator."
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -3950,10 +3947,10 @@ msgstr ""
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
-msgid "This client controller is private (not visible by the users)."
+msgid "This display controller is private (not visible by the users)."
 msgstr ""
 
-msgid "This client controller is public (visible by the users)."
+msgid "This display controller is public (visible by the users)."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the users)."
@@ -4427,7 +4424,7 @@ msgstr ""
 msgid "Warning: round #%(round)d is not finished."
 msgstr ""
 
-msgid "Warning: the deletion of a client controller is permanent!"
+msgid "Warning: the deletion of a display controller is permanent!"
 msgstr ""
 
 msgid "Warning: the deletion of a player is permanent!"
@@ -4617,7 +4614,7 @@ msgstr ""
 msgid "by default"
 msgstr ""
 
-msgid "client-controller"
+msgid "display-controller"
 msgstr ""
 
 msgid "event"

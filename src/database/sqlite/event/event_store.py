@@ -161,7 +161,7 @@ class StoredRotator:
 
 
 @dataclass
-class StoredClientController:
+class StoredDisplayController:
     id: int | None
     uniq_id: str
     name: str | None
@@ -200,8 +200,8 @@ class StoredEvent:
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
-    stored_client_controllers: list[StoredClientController] = field(
-        default_factory=list[StoredClientController]
+    stored_display_controllers: list[StoredDisplayController] = field(
+        default_factory=list[StoredDisplayController]
     )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
