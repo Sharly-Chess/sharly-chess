@@ -17,7 +17,7 @@ class TieBreakManager(EntityManager[TieBreak]):
             tie_breaks.GamesWonWithBlackTieBreak,
             tie_breaks.ProgressiveScoresTieBreak,
             tie_breaks.RoundsElectedToPlayTieBreak,
-            tie_breaks.BuchholzTieBreak,
+            tie_breaks.StandardBuchholzTieBreak,
             tie_breaks.ForeBuchholzTieBreak,
             tie_breaks.SumOfBuchholzTieBreak,
             tie_breaks.AverageOfBuchholzTieBreak,

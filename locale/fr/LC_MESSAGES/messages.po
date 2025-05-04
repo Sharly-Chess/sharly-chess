@@ -3506,7 +3506,7 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
 
 msgid "Swiss system"
-msgstr "Système suisse"
+msgstr ""
 
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
@@ -4007,6 +4007,9 @@ msgstr "Départage n°%(index)d :"
 
 msgid "Tie-break already in use."
 msgstr "Départage déjà utilisé."
+
+msgid "Tie-break incompatible with the \"{system}\" pairing system."
+msgstr "Départage incompatible avec le système d'appariements \"{system}\"."
 
 msgid "Tie-breaks"
 msgstr "Départages"
@@ -4749,4 +4752,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "Swiss"
+#~ msgstr "Suisse"
 

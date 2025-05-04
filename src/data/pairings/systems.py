@@ -41,7 +41,7 @@ class SwissPairingSystem(PairingSystem):
     def variation_manager(self) -> EntityManager['PairingVariation']:
         from data.pairings.managers import SwissVariationManager
 
-        return SwissVariationManager()
+        return SwissVariationManager()  # type: ignore
 
 
 class RoundRobinPairingSystem(PairingSystem):
@@ -57,4 +57,4 @@ class RoundRobinPairingSystem(PairingSystem):
     def variation_manager(self) -> EntityManager['PairingVariation']:
         from data.pairings.managers import RoundRobinVariationManager
 
-        return RoundRobinVariationManager()
+        return RoundRobinVariationManager()  # type: ignore
