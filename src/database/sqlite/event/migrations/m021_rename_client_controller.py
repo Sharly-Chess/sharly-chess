@@ -9,5 +9,5 @@ class Migration(BaseMigration):
 
     def backward(self):
         self.database.execute(
-            'ALTER TABLE `display_controller` DROP COLUMN `client_controller`'
+            'ALTER TABLE `display_controller` RENAME TO `client_controller`'
         )
