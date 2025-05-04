@@ -1228,7 +1228,7 @@ msgstr ""
 msgid "E.g.: World championship"
 msgstr ""
 
-msgid "E.g.: c:\\chess\tournaments"
+msgid "E.g.: c:\\chess\\tournaments"
 msgstr ""
 
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"

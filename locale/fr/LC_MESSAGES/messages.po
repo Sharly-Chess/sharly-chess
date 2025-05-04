@@ -1228,7 +1228,7 @@ msgstr "Exemple : Tournoi A"
 msgid "E.g.: World championship"
 msgstr "Exemple: Championnat du monde"
 
-msgid "E.g.: c:\\chess\tournaments"
+msgid "E.g.: c:\\chess\\tournaments"
 msgstr "E.g.: c:\\echecs\\tournois"
 
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
