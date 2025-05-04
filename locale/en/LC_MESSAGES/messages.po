@@ -4008,6 +4008,9 @@ msgstr ""
 msgid "Tie-break already in use."
 msgstr ""
 
+msgid "Tie-break incompatible with the \"{system}\" pairing system."
+msgstr ""
+
 msgid "Tie-breaks"
 msgstr ""
 
@@ -4754,5 +4757,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Variation of the pairing system."
+#~ msgstr ""
+
+#~ msgid "Swiss"
 #~ msgstr ""
 

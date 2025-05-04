@@ -249,7 +249,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz(self):
-        tie_break_ = tie_breaks.BuchholzTieBreak()
+        tie_break_ = tie_breaks.StandardBuchholzTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13,  # No problem exercise
@@ -272,7 +272,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_cut1(self):
-        tie_break_ = tie_breaks.BuchholzTieBreak([options.CutBottomTieBreakOption(1)])
+        tie_break_ = tie_breaks.StandardBuchholzTieBreak(
+            [options.CutBottomTieBreakOption(1)]
+        )
         results = self.get_tie_break_player_values(
             tie_break_, only_ids=[5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15]
         )
@@ -295,7 +297,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_adjusted_score(self):
         results = self.get_player_values(
-            lambda p: tie_breaks.TieBreakUtils.adjusted_score(
+            lambda p: tie_breaks.TieBreak.adjusted_score(
                 p, after_round=self.tournament.rounds
             )
         )
@@ -321,7 +323,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_adjusted_score_fore(self):
         results = self.get_player_values(
-            lambda p: tie_breaks.TieBreakUtils.adjusted_score(
+            lambda p: tie_breaks.TieBreak.adjusted_score(
                 p, after_round=self.tournament.rounds, adjust_fore=True
             )
         )
@@ -369,7 +371,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_legacy(self):
-        tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak()
+        tie_break_ = ffe_tie_breaks.PapiStandardBuchholzTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13.0,

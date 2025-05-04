@@ -96,6 +96,7 @@ class TournamentAdminController(BaseEventAdminController):
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
         rounds: int | None = None
+        pairing: str | None = None
         rating: int | None = None
         start: float | None = None
         stop: float | None = None
@@ -135,68 +136,81 @@ class TournamentAdminController(BaseEventAdminController):
 
                     case _:
                         raise ValueError(f'action=[{action}]')
-                rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
-                if rounds < 1:
-                    errors[field] = _('A positive integer is expected.')
-                elif action == 'update':
-                    tournament = web_context.admin_tournament
-                    assert tournament is not None
-                    if rounds and rounds < tournament.current_round:
-                        errors['rounds'] = _(
-                            'Impossible to set a round number lower than current round #{round}.'
-                        ).format(round=tournament.current_round)
-                rating = (
-                    WebContext.form_data_to_int(data, field := 'rating')
-                    or TournamentRating.STANDARD.value
+            rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+            if rounds < 1:
+                errors[field] = _('A positive integer is expected.')
+            elif action == 'update':
+                tournament = web_context.admin_tournament
+                assert tournament is not None
+                if rounds and rounds < tournament.current_round:
+                    errors['rounds'] = _(
+                        'Impossible to set a round number lower than current round #{round}.'
+                    ).format(round=tournament.current_round)
+            rating = (
+                WebContext.form_data_to_int(data, field := 'rating')
+                or TournamentRating.STANDARD.value
+            )
+            try:
+                TournamentRating(rating)
+            except ValueError:
+                errors[field] = f'Unknown rating [{rating}]'
+            event = web_context.admin_event
+            start_str = WebContext.form_data_to_str(data, field := 'start')
+            if start_str:
+                start = time.mktime(
+                    datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
                 )
-                try:
-                    TournamentRating(rating)
-                except ValueError:
-                    errors[field] = f'Unknown rating [{rating}]'
-                event = web_context.admin_event
-                start_str = WebContext.form_data_to_str(data, field := 'start')
-                if start_str:
-                    start = time.mktime(
-                        datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
+                if not event.start <= start <= event.stop:
+                    errors[field] = _(
+                        'Time outside of event time range ({start} - {stop}).'
+                    ).format(
+                        start=event.formatted_start_date_time,
+                        stop=event.formatted_stop_date_time,
                     )
-                    if not event.start <= start <= event.stop:
-                        errors[field] = _(
-                            'Time outside of event time range ({start} - {stop}).'
-                        ).format(
-                            start=event.formatted_start_date_time,
-                            stop=event.formatted_stop_date_time,
-                        )
-                stop_str = WebContext.form_data_to_str(data, field := 'stop')
-                if stop_str:
-                    stop = time.mktime(
-                        datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
+            stop_str = WebContext.form_data_to_str(data, field := 'stop')
+            if stop_str:
+                stop = time.mktime(
+                    datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
+                )
+                if not event.start <= stop <= event.stop:
+                    errors[field] = _(
+                        'Time outside of event time range ({start} - {stop}).'
+                    ).format(
+                        start=event.formatted_start_date_time,
+                        stop=event.formatted_stop_date_time,
                     )
-                    if not event.start <= stop <= event.stop:
-                        errors[field] = _(
-                            'Time outside of event time range ({start} - {stop}).'
-                        ).format(
-                            start=event.formatted_start_date_time,
-                            stop=event.formatted_stop_date_time,
-                        )
-                    elif start and stop < start:
-                        errors[field] = _('End time needs to be after start time.')
+                elif start and stop < start:
+                    errors[field] = _('End time needs to be after start time.')
 
-                tie_breaks = []
-                tie_break_type_by_id: dict[str, type[TieBreak]] = (
-                    TieBreakManager.type_by_id()
-                )
-                used_tie_break_ids: list[str] = []
-                for index in range(1, 4):
-                    field = f'tie_break_{index}'
-                    tie_break_id = WebContext.form_data_to_str(data, field)
-                    if not tie_break_id:
-                        continue
-                    if tie_break_id in used_tie_break_ids:
-                        errors[field] = _('Tie-break already in use.')
+            pairing_system = PairingSystemManager.get_object(
+                WebContext.form_data_to_str(data, 'pairing_system') or ''
+            )
+            pairing = WebContext.form_data_to_str(
+                data, f'{pairing_system.id}_pairing_variation'
+            )
+
+            tie_breaks = []
+            tie_break_type_by_id: dict[str, type[TieBreak]] = (
+                TieBreakManager.type_by_id()
+            )
+            used_tie_break_ids: list[str] = []
+            for index in (1, 2, 3):
+                field = f'tie_break_{index}'
+                tie_break_id = WebContext.form_data_to_str(data, field)
+                if not tie_break_id:
+                    continue
+                if tie_break_id in used_tie_break_ids:
+                    errors[field] = _('Tie-break already in use.')
+                    break
+                used_tie_break_ids.append(tie_break_id)
+                if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
+                    tie_break = tie_break_type()
+                    if pairing_system in tie_break.forbidden_pairing_systems:
+                        errors[field] = _(
+                            'Tie-break incompatible with the "{system}" pairing system.'
+                        ).format(system=pairing_system.name)
                         break
-                    used_tie_break_ids.append(tie_break_id)
-                    if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
-                        tie_breaks.append(tie_break_type().to_dict())
+                    tie_breaks.append(tie_break.to_dict())
 
                 create_file = WebContext.form_data_to_bool(data, 'create_file')
                 file_path = cls._extract_papi_file_path(data, web_context.admin_event)
@@ -205,7 +219,6 @@ class TournamentAdminController(BaseEventAdminController):
 
         path: str | None = None
         filename: str | None = None
-        pairing: str | None = None
         time_control_initial_time: int | None = None
         time_control_increment: int | None = None
         time_control_handicap_penalty_value: int | None = None
@@ -255,10 +268,6 @@ class TournamentAdminController(BaseEventAdminController):
                     data, 'last_rounds_no_byes'
                 )
                 location = WebContext.form_data_to_str(data, 'location')
-                pairing_system = WebContext.form_data_to_str(data, 'pairing_system')
-                pairing = WebContext.form_data_to_str(
-                    data, f'{pairing_system}_pairing_variation'
-                )
             case 'delete':
                 if web_context.admin_tournament is None:
                     raise RuntimeError(

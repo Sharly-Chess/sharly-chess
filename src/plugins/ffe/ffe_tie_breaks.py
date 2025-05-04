@@ -9,6 +9,7 @@ from data.pairing import Pairing
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player, TournamentPlayer
 from data.tie_breaks import TieBreak
+from data.tie_breaks.tie_breaks import BuchholzTieBreak, PerformanceTieBreak
 from plugins.ffe import PLUGIN_NAME
 from utils import StaticUtils
 from utils.enum import Result
@@ -33,7 +34,7 @@ def papi_performance_bonus(fractional_score: float) -> int | float:
     return bonus
 
 
-class AbstractPapiTieBreak(TieBreak, ABC):
+class PapiTieBreak(TieBreak, ABC):
     """Implementation of the tie-breaks as in Papi.
     Computation inaccuracies are reproduced"""
 
@@ -52,7 +53,7 @@ class AbstractPapiTieBreak(TieBreak, ABC):
         pass
 
 
-class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
+class PapiBuchholzTieBreak(PapiTieBreak, BuchholzTieBreak, ABC):
     @staticmethod
     def _papi_adjusted_score(
         player: TournamentPlayer,
@@ -188,7 +189,7 @@ class AbstractPapiBuchholzTieBreak(AbstractPapiTieBreak, ABC):
         return sum(scores[cut_btm:])
 
 
-class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
+class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Buchholz')
@@ -218,7 +219,7 @@ class PapiBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         return self.compute_papi_buchholz_player_value(player, after_round=after_round)
 
 
-class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
+class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Buchholz cut bottom')
@@ -250,7 +251,7 @@ class PapiBuchholzCutBottomTieBreak(AbstractPapiBuchholzTieBreak):
         )
 
 
-class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
+class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Median Buchholz')
@@ -285,7 +286,7 @@ class PapiMedianBuchholzTieBreak(AbstractPapiBuchholzTieBreak):
         )
 
 
-class PapiPerformanceTieBreak(AbstractPapiTieBreak):
+class PapiPerformanceTieBreak(PapiTieBreak, PerformanceTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Performance')
@@ -342,7 +343,7 @@ class PapiPerformanceTieBreak(AbstractPapiTieBreak):
         return round(average + bonus)
 
 
-class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
+class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Sum of Buchholz')
@@ -378,7 +379,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round and pairing.opponent_id is not None
         ]
-        tie_break = PapiBuchholzTieBreak()
+        tie_break = PapiStandardBuchholzTieBreak()
         return sum(
             tie_break.compute_player_value(opponent, after_round=after_round)
             for opponent in opponents
@@ -386,7 +387,7 @@ class PapiSumOfBuchholzTieBreak(AbstractPapiTieBreak):
         )
 
 
-class PapiKashdanTieBreak(AbstractPapiTieBreak):
+class PapiKashdanTieBreak(PapiTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Kashdan')
