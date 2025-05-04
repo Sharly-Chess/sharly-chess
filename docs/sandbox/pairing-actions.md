@@ -13,7 +13,7 @@ This page provides an overview of the actions in the tournaments, players, and p
 | Future rounds        | The rounds following the next round (N+2, N+3, ...)                                       | Rondes futures                     |
 | Last published round | The last round for which the chief arbiter changed the status from "draft" to "published" | Dernière ronde publiée             |
 
-{: .note }
+> [!NOTE]
 > :information_source:
 > - The concept of **last published round** does not yet exist and will be implemented when Access storage is discontinued.
 > In the current version, all rounds with pairings are considered published (draft status does not exist).
@@ -25,10 +25,10 @@ To be completed (some tournament modifications should not be allowed after a tou
 
 ## Player Modifications (Elo, FIDE title, or name)
 
-{: .tip }
+> [!TIP]
 > :point_right: Changes to player information other than Elo, FIDE title, or name have no impact on pairings and ratings.
 
-{: .note }
+> [!NOTE]
 > :information_source:
 > - _Papi_ recalculates pairing numbers every round (contrary to FIDE regulations).
 > - Within a certain period of time after the publication of the results of round N (or before publication of the results), the change takes effect for the ratings of round N and the pairings of round N+1.
@@ -44,7 +44,7 @@ To be completed (some tournament modifications should not be allowed after a tou
 | Before the end of the publication deadline for round 3 results | :white_check_mark: |   :pushpin:    |                round 4                 |                                     |
 | From the publication of round 4 pairings                       | :white_check_mark: |   :pushpin:    |                   no                   | round N+1 or N+2<br/>as appropriate |
 
-{: .tip }
+> [!TIP]
 > :point_right: Compliance with FIDE regulations:
 > - :white_check_mark: Action authorized by FIDE
 >
@@ -52,7 +52,7 @@ To be completed (some tournament modifications should not be allowed after a tou
 > - :white_circle: No recording
 > - :pushpin: Recording in the database
 
-{: .warning }
+> [!WARNING]
 > :warning: Sammy doit confirmer auprès de la DNA que le classement peut être modifié à n'importe quel moment car cela peut influer sur les départages.
 
 ## Editing Pairings and Results
@@ -78,7 +78,7 @@ An incorrect result or color in round N can be reported (FIDE regulations):
 | Editing a result      |      :no_entry_sign: :warning: :pushpin:      |   :white_check_mark: :grey_question: :pushpin:    |    :white_check_mark: :ok: :white_circle:    | :white_circle: :white_circle: :white_circle: | :white_circle: :white_circle: :white_circle:  |
 | Modification of byes  |      :no_entry_sign: :warning: :pushpin:      | :ballot_box_with_check: :grey_question: :pushpin: | :ballot_box_with_check: :ok: :white_circle:  | :ballot_box_with_check: :ok: :white_circle:  |  :ballot_box_with_check: :ok: :white_circle:  |
 
-{: .tip }
+> [!TIP]
 > :point_right: Compliance with FIDE regulations:
 > - :white_circle: _Irrelevant action_
 > - :no_entry_sign: Action not authorized by FIDE

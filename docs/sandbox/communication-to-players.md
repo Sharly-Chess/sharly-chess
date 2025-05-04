@@ -31,37 +31,37 @@ Arbiters must be able to rely on standard messages, for example, to:
 
 All messages must be customizable using the following tokens.
 
-| Scope                         | *Token*                   | Replacement                                                           |
-|-------------------------------|---------------------------|-----------------------------------------------------------------------|
-| Event (**ev***ent*)           | `{{ev_name}}`             | The name of the event                                                 |
-| Tournament (**to***urnament*) | `{{to_name}}`             | The name of the tournament                                            |
-|                               | `{{to_ffe_url}}`          | The URL of the tournament listing on the federal website              |
-| Current Round (**ro***und*)   | `{{ro_number}}`           | The number of the current round                                       |
-|                               | `{{ro_datetime}}`         | The date and time of the current round                                |
-|                               | `{{ro_time}}`             | The time of the current round                                         |
-| Player (**pl***ayer*)         | `{{pl_last_name}}`        | The player's last name                                                |
-|                               | `{{pl_first_name}}`       | The player's last name                                                |
-|                               | `{{pl_gender}}`           | The player's last name                                                |
-|                               | `{{pl_name}}`             | The player's full name                                                |
-|                               | `{{pl_rating}}`           | The player's rating                                                   |
-|                               | `{{pl_rating_type}}`      | The player's rating type (Fide, National, Estimated)                  |
-|                               | `{{pl_points}}`           | The player's points                                                   |
-|                               | `{{pl_standings_points}}` | The player's actual points                                            |
-| Pairing (**pa***iring*)       | `{{pa_paired}}`           | True if the player is paired, False otherwise                         |
-|                               | `{{pa_paired_bye}}`       | True if the player is bye, False otherwise                            |
-|                               | `{{pa_unpaired}}`         | True if the player is unpaired, False otherwise                       |
-|                               | `{{pa_unpaired_hp_bye}}`  | True if the player is unpaired with a half-point bye, False otherwise |
-|                               | `{{pa_unpaired_fp_bye}}`  | True if the player is unpaired with a bye, False otherwise            |
-|                               | `{{pa_board}}`            | The board number of the pairing                                       |
-|                               | `{{pa_color}}`            | The color of the pairing                                              |
-| Opponent (**op***ponent*)     | `{{op_last_name}}`        | The opponent's last name                                              |
-|                               | `{{op_first_name}}`       | The opponent's last name                                              |
-|                               | `{{op_gender}}`           | The opponent's last name                                              |
-|                               | `{{op_name}}`             | The opponent's full name                                              |
-|                               | `{{op_rating}}`           | The opponent's rating                                                 |
-|                               | `{{op_rating_type}}`      | The opponent's rating type (Fide, National, Estimé)                   |
-|                               | `{{op_points}}`           | The opponent's number of points                                       |
-|                               | `{{op_standings_points}}` | The player's actual number of points                                  |
+| Scope                         | *Token*                   | Replacement                                                               |
+|-------------------------------|---------------------------|---------------------------------------------------------------------------|
+| Event (**ev***ent*)           | `{{ev_name}}`             | The name of the event                                                     |
+| Tournament (**to***urnament*) | `{{to_name}}`             | The name of the tournament                                                |
+|                               | `{{to_ffe_url}}`          | The URL of the tournament listing on the federal website                  |
+| Current Round (**ro***und*)   | `{{ro_number}}`           | The number of the current round                                           |
+|                               | `{{ro_datetime}}`         | The date and time of the current round                                    |
+|                               | `{{ro_time}}`             | The time of the current round                                             |
+| Player (**pl***ayer*)         | `{{pl_last_name}}`        | The player's last name                                                    |
+|                               | `{{pl_first_name}}`       | The player's last name                                                    |
+|                               | `{{pl_gender}}`           | The player's last name                                                    |
+|                               | `{{pl_name}}`             | The player's full name                                                    |
+|                               | `{{pl_rating}}`           | The player's rating                                                       |
+|                               | `{{pl_rating_type}}`      | The player's rating type (Fide, National, Estimated)                      |
+|                               | `{{pl_points}}`           | The player's points                                                       |
+|                               | `{{pl_standings_points}}` | The player's actual points                                                |
+| Pairing (**pa***iring*)       | `{{pa_paired}}`           | True if the player is paired, False otherwise                             |
+|                               | `{{pa_paired_bye}}`       | True if the player is assigned the Pairing Allocated Bye, False otherwise |
+|                               | `{{pa_unpaired}}`         | True if the player is unpaired, False otherwise                           |
+|                               | `{{pa_unpaired_hp_bye}}`  | True if the player is unpaired with a half-point bye, False otherwise     |
+|                               | `{{pa_unpaired_fp_bye}}`  | True if the player is unpaired with a bye, False otherwise                |
+|                               | `{{pa_board}}`            | The board number of the pairing                                           |
+|                               | `{{pa_color}}`            | The color of the pairing                                                  |
+| Opponent (**op***ponent*)     | `{{op_last_name}}`        | The opponent's last name                                                  |
+|                               | `{{op_first_name}}`       | The opponent's last name                                                  |
+|                               | `{{op_gender}}`           | The opponent's last name                                                  |
+|                               | `{{op_name}}`             | The opponent's full name                                                  |
+|                               | `{{op_rating}}`           | The opponent's rating                                                     |
+|                               | `{{op_rating_type}}`      | The opponent's rating type (Fide, National, Estimé)                       |
+|                               | `{{op_points}}`           | The opponent's number of points                                           |
+|                               | `{{op_standings_points}}` | The player's actual number of points                                      |
 
 The Jinja template engine is used for content customization, which allows, for example, the use of the alternatives `{% if %}`...`{% else %}`...`{% endif %}`:
 
