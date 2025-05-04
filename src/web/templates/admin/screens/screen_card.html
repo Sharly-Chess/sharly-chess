@@ -232,7 +232,7 @@
             </button>
         </span>
     {% endif %}
-    {{ admin_macros.client_controller_assign_dropdown(admin_event.client_controllers_sorted_by_uniq_id, 'screen', screen.uniq_id) }}
+    {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_uniq_id, 'screen', screen.uniq_id) }}
     {% if not screen.family %}
         <span {{ macros.tooltip_attributes('info', 'Clone the screen.', 'top') }}>
             <button

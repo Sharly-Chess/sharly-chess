@@ -71,7 +71,7 @@ class ChessEventTournament:
     @staticmethod
     def _load_tie_breaks(tournament_info: dict) -> list[TieBreak]:
         tie_break_by_chessevent_id = {
-            1: ffe_tie_breaks.PapiBuchholzTieBreak(),
+            1: ffe_tie_breaks.PapiStandardBuchholzTieBreak(),
             2: ffe_tie_breaks.PapiBuchholzCutBottomTieBreak(),
             3: ffe_tie_breaks.PapiMedianBuchholzTieBreak(),
             4: tie_breaks.ProgressiveScoresTieBreak(),

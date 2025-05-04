@@ -722,7 +722,7 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_extra_tie_break_classes(self) -> list[type[TieBreak]]:
         return [
-            ffe_tie_breaks.PapiBuchholzTieBreak,
+            ffe_tie_breaks.PapiStandardBuchholzTieBreak,
             ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
             ffe_tie_breaks.PapiMedianBuchholzTieBreak,
             ffe_tie_breaks.PapiPerformanceTieBreak,

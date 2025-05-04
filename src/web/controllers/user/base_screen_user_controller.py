@@ -9,7 +9,7 @@ from litestar.response import Template
 from common.i18n import _
 from common.logger import get_logger
 from common.papi_web_config import PapiWebConfig
-from data.client_controller import ClientController
+from data.display_controller import DisplayController
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
@@ -37,7 +37,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         screen_uniq_id: str | None,
         rotator_id: int | None,
         rotator_screen_index: int | None,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
     ):
         super().__init__(
             request, data=data, event_uniq_id=event_uniq_id, user_event_tab=None
@@ -45,7 +45,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         self.screen: Screen | None = None
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = rotator_screen_index or 0
-        self.client_controller: ClientController | None = None
+        self.display_controller: DisplayController | None = None
         if self.error:
             return
         assert self.user_event is not None
@@ -79,26 +79,26 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             self.screen = self.rotator.rotating_screens[self.rotator_screen_index]
             self.user_event_tab = 'rotators'
         else:
-            assert client_controller_id is not None
+            assert display_controller_id is not None
             try:
-                self.client_controller = self.user_event.client_controllers_by_id[
-                    client_controller_id
+                self.display_controller = self.user_event.display_controllers_by_id[
+                    display_controller_id
                 ]
             except KeyError:
                 self._redirect_error(
-                    f'Client controller [{client_controller_id}] not found.'
+                    f'Display controller [{display_controller_id}] not found.'
                 )
                 return
 
-            if rotator := self.client_controller.rotator:
+            if rotator := self.display_controller.rotator:
                 self.rotator_screen_index = self.rotator_screen_index % len(
                     rotator.rotating_screens
                 )
                 self.screen = rotator.rotating_screens[self.rotator_screen_index]
             else:
-                self.screen = self.client_controller.screen
+                self.screen = self.display_controller.screen
 
-            self.user_event_tab = 'client_controllers'
+            self.user_event_tab = 'display_controllers'
 
     @property
     def login_needed(self) -> bool:
@@ -141,7 +141,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             'rotator': self.rotator,
             'rotator_screen_index': self.rotator_screen_index,
             'screen': self.screen,
-            'client_controller': self.client_controller,
+            'display_controller': self.display_controller,
             'login_needed': self.login_needed,
         }
 
@@ -166,7 +166,7 @@ class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
             screen_uniq_id=screen_uniq_id,
             rotator_id=None,
             rotator_screen_index=None,
-            client_controller_id=None,
+            display_controller_id=None,
         )
         if self.error:
             return
@@ -194,11 +194,11 @@ class RotatorUserWebContext(ScreenOrRotatorUserWebContext):
             screen_uniq_id=None,
             rotator_id=rotator_id,
             rotator_screen_index=rotator_screen_index,
-            client_controller_id=None,
+            display_controller_id=None,
         )
 
 
-class ClientControllerUserWebContext(ScreenOrRotatorUserWebContext):
+class DisplayControllerUserWebContext(ScreenOrRotatorUserWebContext):
     def __init__(
         self,
         request: HTMXRequest,
@@ -207,7 +207,7 @@ class ClientControllerUserWebContext(ScreenOrRotatorUserWebContext):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-        client_controller_id: int,
+        display_controller_id: int,
         rotator_screen_index: int = 0,
     ):
         super().__init__(
@@ -217,7 +217,7 @@ class ClientControllerUserWebContext(ScreenOrRotatorUserWebContext):
             screen_uniq_id=None,
             rotator_id=None,
             rotator_screen_index=rotator_screen_index,
-            client_controller_id=client_controller_id,
+            display_controller_id=display_controller_id,
         )
 
 

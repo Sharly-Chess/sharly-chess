@@ -9,12 +9,12 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from data.client_controller import ClientController
+from data.display_controller import DisplayController
 from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredClientController
+from database.sqlite.event.event_store import StoredDisplayController
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -23,12 +23,12 @@ from web.controllers.base_controller import WebContext
 from web.messages import Message
 
 
-class ClientControllerAdminWebContext(BaseEventAdminWebContext):
+class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -42,34 +42,34 @@ class ClientControllerAdminWebContext(BaseEventAdminWebContext):
         )
         if self.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        self.admin_client_controller: ClientController | None = None
+        self.admin_display_controller: DisplayController | None = None
         if self.error:
             return
-        if client_controller_id:
+        if display_controller_id:
             try:
-                self.admin_client_controller = (
-                    self.admin_event.client_controllers_by_id[client_controller_id]
+                self.admin_display_controller = (
+                    self.admin_event.display_controllers_by_id[display_controller_id]
                 )
             except KeyError:
                 self._redirect_error(
-                    f'Client controller [{client_controller_id}] not found.'
+                    f'Display controller [{display_controller_id}] not found.'
                 )
                 return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'admin_client_controller': self.admin_client_controller,
+            'admin_display_controller': self.admin_display_controller,
         }
 
 
-class ClientControllerAdminController(BaseEventAdminController):
+class DisplayControllerAdminController(BaseEventAdminController):
     @staticmethod
-    def _admin_validate_client_controller_update_data(
+    def _admin_validate_display_controller_update_data(
         action: str,
-        web_context: ClientControllerAdminWebContext,
+        web_context: DisplayControllerAdminWebContext,
         data: dict[str, str] | None = None,
-    ) -> StoredClientController:
+    ) -> StoredDisplayController:
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -78,9 +78,9 @@ class ClientControllerAdminController(BaseEventAdminController):
             case 'create':
                 pass
             case 'update' | 'clone' | 'delete':
-                if web_context.admin_client_controller is None:
+                if web_context.admin_display_controller is None:
                     raise RuntimeError(
-                        f'{web_context.admin_client_controller=} for [{action=}]'
+                        f'{web_context.admin_display_controller=} for [{action=}]'
                     )
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -95,7 +95,7 @@ class ClientControllerAdminController(BaseEventAdminController):
             pass
         else:
             if not uniq_id:
-                errors[field] = _('Please enter the client controller ID.')
+                errors[field] = _('Please enter the display controller ID.')
             else:
                 match action:
                     case 'create' | 'clone':
@@ -105,27 +105,27 @@ class ClientControllerAdminController(BaseEventAdminController):
                             )
                         if (
                             uniq_id
-                            in web_context.admin_event.client_controllers_by_uniq_id
+                            in web_context.admin_event.display_controllers_by_uniq_id
                         ):
                             errors[field] = _(
-                                'Client controller [{uniq_id}] already exists.'
+                                'Display controller [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
-                        if web_context.admin_client_controller is None:
+                        if web_context.admin_display_controller is None:
                             raise RuntimeError(
-                                f'{web_context.admin_client_controller=} for [{action=}]'
+                                f'{web_context.admin_display_controller=} for [{action=}]'
                             )
                         if web_context.admin_event is None:
                             raise RuntimeError(
                                 f'{web_context.admin_event=} for [{action=}]'
                             )
                         if (
-                            uniq_id != web_context.admin_client_controller.uniq_id
+                            uniq_id != web_context.admin_display_controller.uniq_id
                             and uniq_id
-                            in web_context.admin_event.client_controllers_by_uniq_id
+                            in web_context.admin_event.display_controllers_by_uniq_id
                         ):
                             errors[field] = _(
-                                'Client controller [{uniq_id}] already exists.'
+                                'Display controller [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
@@ -135,27 +135,29 @@ class ClientControllerAdminController(BaseEventAdminController):
             case 'create' | 'clone' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
-                    errors['name'] = _('Please enter the client controller name.')
+                    errors['name'] = _('Please enter the display controller name.')
             case 'delete':
-                if web_context.admin_client_controller is None:
+                if web_context.admin_display_controller is None:
                     raise RuntimeError(
-                        f'{web_context.admin_client_controller=} for [{action=}]'
+                        f'{web_context.admin_display_controller=} for [{action=}]'
                     )
                 uniq_id = uniq_id or ''
-                name = web_context.admin_client_controller.stored_client_controller.name
+                name = (
+                    web_context.admin_display_controller.stored_display_controller.name
+                )
             case _:
                 raise ValueError(f'action=[{action}]')
 
         assert uniq_id is not None
 
         id: int | None = None
-        if web_context.admin_client_controller and action not in [
+        if web_context.admin_display_controller and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_client_controller.id
+            id = web_context.admin_display_controller.id
 
-        return StoredClientController(
+        return StoredDisplayController(
             id=id,
             uniq_id=uniq_id,
             public=bool(public),
@@ -164,21 +166,23 @@ class ClientControllerAdminController(BaseEventAdminController):
         )
 
     @classmethod
-    def _admin_event_client_controllers_render(
+    def _admin_event_display_controllers_render(
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
         modal: str | None = None,
         action: str | None = None,
-        client_controller_id: int | None = None,
+        display_controller_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        web_context: ClientControllerAdminWebContext = ClientControllerAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            client_controller_id=client_controller_id,
-            data=data,
+        web_context: DisplayControllerAdminWebContext = (
+            DisplayControllerAdminWebContext(
+                request,
+                event_uniq_id=event_uniq_id,
+                display_controller_id=display_controller_id,
+                data=data,
+            )
         )
         if web_context.error:
             return web_context.error
@@ -196,33 +200,33 @@ class ClientControllerAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
-            'admin_event_tab': 'admin-event-client-controllers-tab',
+            'admin_event_tab': 'admin-event-display-controllers-tab',
             'sorted_screens': sorted_screens,
         }
 
         match modal:
             case None:
                 pass
-            case 'client_controller':
+            case 'display_controller':
                 if data is None:
                     uniq_id: str | None = None
                     name: str | None = None
                     public: bool | None = None
                     match action:
                         case 'update':
-                            assert web_context.admin_client_controller is not None
-                            uniq_id = web_context.admin_client_controller.stored_client_controller.uniq_id
-                            name = web_context.admin_client_controller.stored_client_controller.name
+                            assert web_context.admin_display_controller is not None
+                            uniq_id = web_context.admin_display_controller.stored_display_controller.uniq_id
+                            name = web_context.admin_display_controller.stored_display_controller.name
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_client_controller_uniq_id()
-                            name = web_context.admin_event.get_unused_client_controller_name()
+                            uniq_id = web_context.admin_event.get_unused_display_controller_uniq_id()
+                            name = web_context.admin_event.get_unused_display_controller_name()
                         case 'clone':
-                            assert web_context.admin_client_controller is not None
-                            uniq_id = web_context.admin_event.get_unused_client_controller_uniq_id(
-                                base_uniq_id=web_context.admin_client_controller.stored_client_controller.uniq_id
+                            assert web_context.admin_display_controller is not None
+                            uniq_id = web_context.admin_event.get_unused_display_controller_uniq_id(
+                                base_uniq_id=web_context.admin_display_controller.stored_display_controller.uniq_id
                             )
-                            name = web_context.admin_event.get_unused_client_controller_name(
-                                base_name=web_context.admin_client_controller.stored_client_controller.name,
+                            name = web_context.admin_event.get_unused_display_controller_name(
+                                base_name=web_context.admin_display_controller.stored_display_controller.name,
                             )
                         case 'delete':
                             pass
@@ -230,11 +234,11 @@ class ClientControllerAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            if web_context.admin_client_controller is None:
+                            if web_context.admin_display_controller is None:
                                 raise RuntimeError(
-                                    f'{web_context.admin_client_controller=} for [{action=}]'
+                                    f'{web_context.admin_display_controller=} for [{action=}]'
                                 )
-                            public = web_context.admin_client_controller.stored_client_controller.public
+                            public = web_context.admin_display_controller.stored_display_controller.public
                         case 'create':
                             public = True
                         case 'delete':
@@ -246,12 +250,12 @@ class ClientControllerAdminController(BaseEventAdminController):
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                     }
-                    stored_client_controller: StoredClientController = (
-                        cls._admin_validate_client_controller_update_data(
+                    stored_display_controller: StoredDisplayController = (
+                        cls._admin_validate_display_controller_update_data(
                             action, web_context, data
                         )
                     )
-                    errors = stored_client_controller.errors
+                    errors = stored_display_controller.errors
                 if errors is None:
                     errors = {}
 
@@ -266,64 +270,64 @@ class ClientControllerAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/client_controllers',
-        name='admin-event-client-controllers-tab',
+        path='/admin/event/{event_uniq_id:str}/display_controllers',
+        name='admin-event-display-controllers-tab',
         cache=1,
     )
-    async def htmx_admin_event_client_controllers_tab(
+    async def htmx_admin_event_display_controllers_tab(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_client_controllers_render(
+        return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
         )
 
     @get(
-        path='/admin/client-controller-modal/create/{event_uniq_id:str}',
-        name='admin-client-controller-create-modal',
+        path='/admin/display-controller-modal/create/{event_uniq_id:str}',
+        name='admin-display-controller-create-modal',
         cache=1,
     )
-    async def htmx_admin_client_controller_create_modal(
+    async def htmx_admin_display_controller_create_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_client_controllers_render(
+        return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='client_controller',
+            modal='display_controller',
             action='create',
-            client_controller_id=None,
+            display_controller_id=None,
         )
 
     @get(
-        path='/admin/client-controller-modal/{action:str}/{event_uniq_id:str}/{client_controller_id:int}',
-        name='admin-client-controller-modal',
+        path='/admin/display-controller-modal/{action:str}/{event_uniq_id:str}/{display_controller_id:int}',
+        name='admin-display-controller-modal',
         cache=1,
     )
-    async def htmx_admin_client_controller_modal(
+    async def htmx_admin_display_controller_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         action: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
     ) -> Template | ClientRedirect:
-        return self._admin_event_client_controllers_render(
+        return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='client_controller',
+            modal='display_controller',
             action=action,
-            client_controller_id=client_controller_id,
+            display_controller_id=display_controller_id,
         )
 
-    def _admin_client_controller_update(
+    def _admin_display_controller_update(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         action: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -331,11 +335,11 @@ class ClientControllerAdminController(BaseEventAdminController):
     ) -> Template | ClientRedirect:
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
-                web_context: ClientControllerAdminWebContext = (
-                    ClientControllerAdminWebContext(
+                web_context: DisplayControllerAdminWebContext = (
+                    DisplayControllerAdminWebContext(
                         request,
                         event_uniq_id=event_uniq_id,
-                        client_controller_id=client_controller_id,
+                        display_controller_id=display_controller_id,
                         data=data,
                     )
                 )
@@ -345,20 +349,20 @@ class ClientControllerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        stored_client_controller: StoredClientController = (
-            self._admin_validate_client_controller_update_data(
+        stored_display_controller: StoredDisplayController = (
+            self._admin_validate_display_controller_update_data(
                 action, web_context, data
             )
         )
-        if stored_client_controller.errors:
-            return self._admin_event_client_controllers_render(
+        if stored_display_controller.errors:
+            return self._admin_event_display_controllers_render(
                 request,
                 event_uniq_id=event_uniq_id,
-                modal='client_controller',
+                modal='display_controller',
                 action=action,
-                client_controller_id=client_controller_id,
+                display_controller_id=display_controller_id,
                 data=data,
-                errors=stored_client_controller.errors,
+                errors=stored_display_controller.errors,
             )
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
@@ -366,61 +370,61 @@ class ClientControllerAdminController(BaseEventAdminController):
         ) as event_database:
             match action:
                 case 'create' | 'clone':
-                    stored_client_controller = (
-                        event_database.add_stored_client_controller(
-                            stored_client_controller
+                    stored_display_controller = (
+                        event_database.add_stored_display_controller(
+                            stored_display_controller
                         )
                     )
                     event_database.commit()
                     Message.success(
                         request,
                         _(
-                            'Client controller [{client_controller_uniq_id}] has been created.'
+                            'Display controller [{display_controller_uniq_id}] has been created.'
                         ).format(
-                            client_controller_uniq_id=stored_client_controller.uniq_id
+                            display_controller_uniq_id=stored_display_controller.uniq_id
                         ),
                     )
                 case 'update':
-                    stored_client_controller = (
-                        event_database.update_stored_client_controller(
-                            stored_client_controller
+                    stored_display_controller = (
+                        event_database.update_stored_display_controller(
+                            stored_display_controller
                         )
                     )
                     event_database.commit()
                     Message.success(
                         request,
                         _(
-                            'Client controller [{client_controller_uniq_id}] has been updated.'
+                            'Display controller [{display_controller_uniq_id}] has been updated.'
                         ).format(
-                            client_controller_uniq_id=stored_client_controller.uniq_id
+                            display_controller_uniq_id=stored_display_controller.uniq_id
                         ),
                     )
                 case 'delete':
-                    assert web_context.admin_client_controller is not None
-                    event_database.delete_stored_client_controller(
-                        web_context.admin_client_controller.id
+                    assert web_context.admin_display_controller is not None
+                    event_database.delete_stored_display_controller(
+                        web_context.admin_display_controller.id
                     )
                     event_database.commit()
                     Message.success(
                         request,
                         _(
-                            'Client controller [{client_controller_uniq_id}] has been deleted.'
+                            'Display controller [{display_controller_uniq_id}] has been deleted.'
                         ).format(
-                            client_controller_uniq_id=web_context.admin_client_controller.uniq_id
+                            display_controller_uniq_id=web_context.admin_display_controller.uniq_id
                         ),
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)
-        return self._admin_event_client_controllers_render(
+        return self._admin_event_display_controllers_render(
             request, event_uniq_id=event_uniq_id
         )
 
     @post(
-        path='/admin/client-controller-create/{event_uniq_id:str}',
-        name='admin-client-controller-create',
+        path='/admin/display-controller-create/{event_uniq_id:str}',
+        name='admin-display-controller-create',
     )
-    async def htmx_admin_client_controller_create(
+    async def htmx_admin_display_controller_create(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -429,105 +433,107 @@ class ClientControllerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_client_controller_update(
+        return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
             action='create',
-            client_controller_id=None,
+            display_controller_id=None,
             data=data,
         )
 
     @patch(
-        path='/admin/client-controller-update/{event_uniq_id:str}/{client_controller_id:int}',
-        name='admin-client-controller-update',
+        path='/admin/display-controller-update/{event_uniq_id:str}/{display_controller_id:int}',
+        name='admin-display-controller-update',
     )
-    async def htmx_admin_client_controller_update(
+    async def htmx_admin_display_controller_update(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_client_controller_update(
+        return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
             action='update',
-            client_controller_id=client_controller_id,
+            display_controller_id=display_controller_id,
             data=data,
         )
 
     @delete(
-        path='/admin/client-controller-delete/{event_uniq_id:str}/{client_controller_id:int}',
-        name='admin-client-controller-delete',
+        path='/admin/display-controller-delete/{event_uniq_id:str}/{display_controller_id:int}',
+        name='admin-display-controller-delete',
         status_code=HTTP_200_OK,
     )
-    async def htmx_admin_client_controller_delete(
+    async def htmx_admin_display_controller_delete(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_client_controller_update(
+        return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
             action='delete',
-            client_controller_id=client_controller_id,
+            display_controller_id=display_controller_id,
             data=data,
         )
 
     @patch(
-        path='/admin/client-controller-assign/{event_uniq_id:str}/{client_controller_id:int}/{type:str}/{object_uniq_id:str}',
-        name='admin-client-controller-assign',
+        path='/admin/display-controller-assign/{event_uniq_id:str}/{display_controller_id:int}/{type:str}/{object_uniq_id:str}',
+        name='admin-display-controller-assign',
     )
-    async def htmx_admin_client_controller_assign(
+    async def htmx_admin_display_controller_assign(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
         type: str,
         object_uniq_id: str,
     ) -> Template | ClientRedirect:
-        web_context: ClientControllerAdminWebContext = ClientControllerAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            client_controller_id=client_controller_id,
-            data=None,
+        web_context: DisplayControllerAdminWebContext = (
+            DisplayControllerAdminWebContext(
+                request,
+                event_uniq_id=event_uniq_id,
+                display_controller_id=display_controller_id,
+                data=None,
+            )
         )
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        if web_context.admin_client_controller is None:
-            raise RuntimeError('admin_client_controller not defined')
+        if web_context.admin_display_controller is None:
+            raise RuntimeError('admin_display_controller not defined')
         message: str
         match type:
             case 'screen':
                 screen: Screen = web_context.admin_event.screens_by_uniq_id[
                     object_uniq_id
                 ]
-                web_context.admin_client_controller.screen_id = screen.id
+                web_context.admin_display_controller.screen_id = screen.id
                 message = _(
-                    'Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
+                    'Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}].'
                 ).format(
-                    client_controller_uniq_id=web_context.admin_client_controller.uniq_id,
+                    display_controller_uniq_id=web_context.admin_display_controller.uniq_id,
                     screen_uniq_id=screen.uniq_id,
                 )
             case 'rotator':
                 rotator: Rotator = web_context.admin_event.rotators_by_uniq_id[
                     object_uniq_id
                 ]
-                web_context.admin_client_controller.rotator_id = rotator.id
+                web_context.admin_display_controller.rotator_id = rotator.id
                 message = _(
-                    'Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}].'
+                    'Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}].'
                 ).format(
-                    client_controller_uniq_id=web_context.admin_client_controller.uniq_id,
+                    display_controller_uniq_id=web_context.admin_display_controller.uniq_id,
                     rotator_uniq_id=rotator.uniq_id,
                 )
             case _:
@@ -537,8 +543,8 @@ class ClientControllerAdminController(BaseEventAdminController):
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
-            event_database.update_stored_client_controller(
-                web_context.admin_client_controller.stored_client_controller
+            event_database.update_stored_display_controller(
+                web_context.admin_display_controller.stored_display_controller
             )
             event_database.commit()
         event_loader.clear_cache(event_uniq_id)
@@ -555,39 +561,41 @@ class ClientControllerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/admin-client-controller-clear/{event_uniq_id:str}/{client_controller_id:int}',
-        name='admin-client-controller-clear',
+        path='/admin/admin-display-controller-clear/{event_uniq_id:str}/{display_controller_id:int}',
+        name='admin-display-controller-clear',
     )
-    async def htmx_admin_client_controller_clear(
+    async def htmx_admin_display_controller_clear(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int | None,
+        display_controller_id: int | None,
     ) -> Template | ClientRedirect:
-        web_context: ClientControllerAdminWebContext = ClientControllerAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            client_controller_id=client_controller_id,
-            data=None,
+        web_context: DisplayControllerAdminWebContext = (
+            DisplayControllerAdminWebContext(
+                request,
+                event_uniq_id=event_uniq_id,
+                display_controller_id=display_controller_id,
+                data=None,
+            )
         )
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        if web_context.admin_client_controller is None:
-            raise RuntimeError('admin_client_controller not defined')
+        if web_context.admin_display_controller is None:
+            raise RuntimeError('admin_display_controller not defined')
 
-        web_context.admin_client_controller.screen_id = None
-        web_context.admin_client_controller.rotator_id = None
+        web_context.admin_display_controller.screen_id = None
+        web_context.admin_display_controller.rotator_id = None
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
-            event_database.update_stored_client_controller(
-                web_context.admin_client_controller.stored_client_controller
+            event_database.update_stored_display_controller(
+                web_context.admin_display_controller.stored_display_controller
             )
             event_database.commit()
         event_loader.clear_cache(event_uniq_id)
-        return self._admin_event_client_controllers_render(
+        return self._admin_event_display_controllers_render(
             request, event_uniq_id=event_uniq_id
         )

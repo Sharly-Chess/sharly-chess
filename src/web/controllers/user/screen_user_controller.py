@@ -15,7 +15,7 @@ from utils.enum import ScreenType
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
-    ClientControllerUserWebContext,
+    DisplayControllerUserWebContext,
     RotatorUserWebContext,
     ScreenUserWebContext,
 )
@@ -114,7 +114,8 @@ class ScreenUserController(BaseScreenUserController):
     @classmethod
     def _user_screen_refresh_needed(
         cls,
-        web_context: BasicScreenOrFamilyUserWebContext | ClientControllerUserWebContext,
+        web_context: BasicScreenOrFamilyUserWebContext
+        | DisplayControllerUserWebContext,
         date: float,
     ) -> bool:
         if web_context.screen:
@@ -255,23 +256,23 @@ class ScreenUserController(BaseScreenUserController):
 
     @get(
         path=[
-            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}/{rotator_screen_index:int}',
-            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}',
+            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
+            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
-        name='user-client-controller',
+        name='user-display-controller',
     )
-    async def htmx_user_client_controller(
+    async def htmx_user_display_controller(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int,
+        display_controller_id: int,
         rotator_screen_index: int = 0,
     ) -> Template | ClientRedirect | Reswap:
-        web_context: ClientControllerUserWebContext = ClientControllerUserWebContext(
+        web_context: DisplayControllerUserWebContext = DisplayControllerUserWebContext(
             request,
             data=None,
             event_uniq_id=event_uniq_id,
-            client_controller_id=client_controller_id,
+            display_controller_id=display_controller_id,
             rotator_screen_index=rotator_screen_index,
         )
         if web_context.error:
@@ -287,17 +288,17 @@ class ScreenUserController(BaseScreenUserController):
 
     @head(
         path=[
-            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}/{rotator_screen_index:int}',
-            '/user/client-controller/{event_uniq_id:str}/{client_controller_id:int}',
+            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
+            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
-        name='user-client-controller-head',
+        name='user-display-controller-head',
         status_code=HTTP_304_NOT_MODIFIED,
     )
-    async def htmx_user_client_controller_head(
+    async def htmx_user_display_controller_head(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        client_controller_id: int,
+        display_controller_id: int,
         rotator_screen_index: int = 0,
     ) -> None:
         pass

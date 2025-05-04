@@ -306,7 +306,7 @@
                                         'right'
                                     )
                                 }}
-                                {% if pairing_system != current_pairing_system %}
+                                {% if pairing_system.id != data['pairing_system'] %}
                                     style="display:none"
                                 {% endif %}
                             >

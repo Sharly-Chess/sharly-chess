@@ -1,21 +1,21 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ macros.client_controller_visibility_icon(client_controller, 'pe-1') }}{{ client_controller.name }}
+    {{ macros.display_controller_visibility_icon(display_controller, 'pe-1') }}{{ display_controller.name }}
 {% endblock %}
 
 {% block card_title %}
-    {{ client_controller.uniq_id }}
+    {{ display_controller.uniq_id }}
 {% endblock %}
 {% block card_text %}
-    {{ client_controller.assigned_description or _('Neither screen nor rotator currently assigned') }}
+    {{ display_controller.assigned_description or _('Neither screen nor rotator currently assigned') }}
 {% endblock %}
 
 {% block card_buttons_left %}
-    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the client controller.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the display controller.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for('admin-client-controller-modal', action='update', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id) }}"
+            hx-get="{{ url_for('admin-display-controller-modal', action='update', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload
@@ -29,7 +29,7 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a client controller.', 'top') }}>
+    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a display controller.', 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button"
             data-bs-toggle="dropdown"
@@ -42,7 +42,7 @@
                 <li>
                     <button
                         class="dropdown-item text-start cursor-pointer"
-                        hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type="screen", object_uniq_id=basic_screen.uniq_id) }}"
+                        hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type="screen", object_uniq_id=basic_screen.uniq_id) }}"
                         hx-indicator="#please-wait"
                     >
                         {{ macros.screen_type_icon(basic_screen.type) }}
@@ -57,7 +57,7 @@
                 <li>
                     <button
                         class="dropdown-item text-start cursor-pointer"
-                        hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type="rotator", object_uniq_id=rotator.uniq_id) }}"
+                        hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type="rotator", object_uniq_id=rotator.uniq_id) }}"
                         hx-indicator="#please-wait"
                     >
                         {{ macros.rotator_icon() }}
@@ -68,11 +68,11 @@
 
         </ul>
     </div>
-    {% if client_controller.assigned_object %}
-        <span {{ macros.tooltip_attributes('info', _('Remove the screen from the client controller.'), 'top') }}>
+    {% if display_controller.assigned_object %}
+        <span {{ macros.tooltip_attributes('info', _('Remove the screen from the display controller.'), 'top') }}>
             <button
                 class="btn btn-sm btn-outline-primary"
-                hx-patch="{{ url_for('admin-client-controller-clear', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id) }}"
+                hx-patch="{{ url_for('admin-display-controller-clear', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
                 preload
@@ -81,10 +81,10 @@
             </button>
         </span>
     {% endif %}
-    <span {{ macros.tooltip_attributes('info', _('Delete the client controller.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Delete the display controller.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-danger"
-            hx-get="{{ url_for('admin-client-controller-modal', action='delete', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id) }}"
+            hx-get="{{ url_for('admin-display-controller-modal', action='delete', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload
