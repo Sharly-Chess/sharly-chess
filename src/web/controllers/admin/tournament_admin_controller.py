@@ -6,9 +6,7 @@ from typing import Annotated, Any
 import urllib.parse
 
 from litestar import post, get, patch
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate
-from litestar.contrib.htmx.response import ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
@@ -145,8 +143,7 @@ class TournamentAdminController(BaseEventAdminController):
                     assert tournament is not None
                     if rounds and rounds < tournament.current_round:
                         errors['rounds'] = _(
-                            'Impossible to set a round number '
-                            'lower than current round #{round}.'
+                            'Impossible to set a round number lower than current round #{round}.'
                         ).format(round=tournament.current_round)
                 rating = (
                     WebContext.form_data_to_int(data, field := 'rating')

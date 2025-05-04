@@ -1,5 +1,7 @@
 ## Fonctionnement
 
+- Mise à jour de toute la documentation
+- Mise en ligne du site web https://sharly-chess.com
 - Déplacement des utilitaires de ``bin/`` vers ``tools/`` (2.6.0)
 
 ## Interface web

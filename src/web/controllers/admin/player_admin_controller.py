@@ -4,8 +4,7 @@ from logging import Logger
 from typing import Annotated, Any, Iterable
 
 from litestar import get, patch, delete, post
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect

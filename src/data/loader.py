@@ -9,7 +9,7 @@ from logging import Logger
 from operator import attrgetter
 from pathlib import Path
 
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
 from common import (
