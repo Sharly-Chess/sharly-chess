@@ -55,5 +55,5 @@ class IndexController(BaseController):
         request: HTMXRequest,
     ) -> Redirect:
         return Redirect(
-            request.app.route_reverse('static', file_path='/images/papi-web.ico')
+            request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
         )
