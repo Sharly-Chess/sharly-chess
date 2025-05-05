@@ -2880,7 +2880,7 @@ msgid "Please choose the event:"
 msgstr "Veuillez choisir l'évènement :"
 
 msgid "Please choose the seed color."
-msgstr "Veuillez choisir la couleur source."
+msgstr "Veuillez choisir la couleur initiale."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
@@ -3434,10 +3434,10 @@ msgid "Searching..."
 msgstr "Recherche en cours..."
 
 msgid "Seed color"
-msgstr "Couleur source"
+msgstr "Couleur initiale"
 
 msgid "Seed color can't be modified once the tournament has started."
-msgstr "La couleur source ne peut être modifiée une fois que le tournoi a commencé."
+msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
