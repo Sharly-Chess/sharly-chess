@@ -1325,6 +1325,7 @@ class EventDatabase(MigrationDatabase):
             max_byes=row['max_byes'],
             last_rounds_no_byes=row['last_rounds_no_byes'],
             pairing=row['pairing'],
+            pairing_settings=cls.load_json_from_database_field(row['pairing_settings']),
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
@@ -1515,6 +1516,20 @@ class EventDatabase(MigrationDatabase):
             'UPDATE `tournament` SET `check_in_open` = ?, `last_check_in_update` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
+                time.time(),
+                tournament_id,
+            ),
+        )
+
+    def set_tournament_pairing_settings(
+        self, tournament_id: int, pairing_settings: dict[str, Any]
+    ):
+        self.execute(
+            'UPDATE `tournament` SET '
+            '`pairing_settings` = ?, `last_update` = ? '
+            'WHERE `id` = ?',
+            (
+                self.dump_to_json_database_field(pairing_settings),
                 time.time(),
                 tournament_id,
             ),

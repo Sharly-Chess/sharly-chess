@@ -17,6 +17,7 @@ from data.event import Event
 from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, Action
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -193,6 +194,7 @@ class PairingsAdminController(BaseEventAdminController):
         board_id: int | None = None,
         player_id: int | None = None,
         data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
         trigger_event: str | None = None,
         params: dict[str, Any] | None = None,
         admin_pairings_show_without_results: bool | None = None,
@@ -281,6 +283,18 @@ class PairingsAdminController(BaseEventAdminController):
                             if board.result == Result.NO_RESULT
                         ]
                     ),
+                }
+            case 'pairing-settings':
+                assert admin_tournament is not None
+                if data is None:
+                    data = {}
+                    for setting in admin_tournament.pairing_variation.settings:
+                        data |= setting.default_form_data(admin_tournament)
+                template_context |= {
+                    'modal': modal,
+                    'pairing_settings': admin_tournament.pairing_variation.settings,
+                    'data': data,
+                    'errors': errors or {},
                 }
         round_ = web_context.admin_round
         template_context |= {
@@ -1049,6 +1063,101 @@ class PairingsAdminController(BaseEventAdminController):
         assert tournament is not None
         tournament.check_in_player(admin_player, bool(check_in))
         tournament.clear_cache()
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+
+    @get(
+        path='/admin/pairings/settings-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-settings-modal',
+    )
+    async def admin_pairings_settings_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            player_id=None,
+            data=None,
+        )
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        data: dict[str, str] = {}
+        for setting in tournament.pairing_variation.settings:
+            data |= setting.get_form_data(tournament)
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+            modal='pairing-settings',
+            data=data,
+        )
+
+    @patch(
+        path='/admin/pairings/settings-update/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-settings-update',
+    )
+    async def htmx_admin_pairings_settings_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            player_id=None,
+            data=data,
+        )
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        errors: dict[str, str] = {}
+        stored_settings: dict[str, Any] = {}
+        for setting in tournament.pairing_variation.settings:
+            setting_errors = setting.get_data_errors(tournament, data)
+            if setting_errors:
+                errors |= setting_errors
+            else:
+                stored_settings[setting.id] = setting.to_stored_value(
+                    setting.from_form_data(data)
+                )
+        if errors:
+            return self._admin_event_pairings_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                tournament_id=tournament_id,
+                round_=round,
+                data=data,
+                errors=errors,
+                modal='pairing-settings',
+            )
+        with EventDatabase(event_uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(tournament.id, stored_settings)
+            database.commit()
+        for setting in tournament.pairing_variation.settings:
+            setting.save_to_papi_database(
+                tournament.papi_write_database, stored_settings[setting.id]
+            )
+        tournament.clear_cache(clear_papi_cache=True)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

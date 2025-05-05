@@ -724,6 +724,9 @@ msgstr "Commentaire :"
 msgid "Configuration"
 msgstr "Configuration"
 
+msgid "Configure the settings of the pairing system."
+msgstr "Configurer les paramètres du système d'appariements."
+
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
@@ -1815,6 +1818,17 @@ msgstr "Aller à l'écran."
 msgid "Grand Master"
 msgstr "Grand Maître International"
 
+msgid "Groups"
+msgstr "Groupes"
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr "Les groupes doivent être composés d'au moins 25%% et d'au plus 50%% des joueur·euses."
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr "Les groupes doivent être composés d'au moins 25%% des joueur·euses."
+
 msgid "Haley system"
 msgstr "Système de Haley"
 
@@ -2141,6 +2155,9 @@ msgstr "Recherche d'une version plus récente sur GitHub ([{url}])..."
 
 msgid "Loss"
 msgstr "Défaite"
+
+msgid "Lower rating limit"
+msgstr "Limite Elo basse"
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -2683,6 +2700,9 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
+msgid "Pairing settings"
+msgstr "Paramètres d'appariements"
+
 msgid "Pairing system"
 msgstr "Système d'appariements"
 
@@ -2858,6 +2878,9 @@ msgstr "Veuillez choisir le document."
 
 msgid "Please choose the event:"
 msgstr "Veuillez choisir l'évènement :"
+
+msgid "Please choose the seed color."
+msgstr "Veuillez choisir la couleur initiale."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
@@ -3079,6 +3102,9 @@ msgstr "R %(round)d"
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
+msgid "Randomly select a seed color."
+msgstr "Sélectionner la couleur au hasard."
+
 msgid "Ranking"
 msgstr "Classement"
 
@@ -3125,6 +3151,23 @@ msgstr "Elo"
 
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
+
+msgid "Rating limit"
+msgstr "Limite Elo"
+
+#, python-format
+msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
+msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
+
+msgid "Rating splitting groups A and B."
+msgstr "Classement Elo séparant les groupes A et B."
+
+#, python-format
+msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
+msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recommended)d)."
+
+msgid "Rating splitting groups B and C."
+msgstr "Classement ELO séparant les groupes B et C."
 
 msgid "Rating:"
 msgstr "Classement :"
@@ -3390,6 +3433,12 @@ msgstr "Recherche"
 msgid "Searching..."
 msgstr "Recherche en cours..."
 
+msgid "Seed color"
+msgstr "Couleur initiale"
+
+msgid "Seed color can't be modified once the tournament has started."
+msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
@@ -3408,6 +3457,12 @@ msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Settings must be configured before generating the pairings."
+msgstr "Les paramètres doivent être configurés avant de générer les appariements."
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
@@ -3502,8 +3557,8 @@ msgstr "Somme des Buchholz"
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
 
-msgid "Swiss system"
-msgstr "Système suisse"
+msgid "Swiss"
+msgstr "Suisse"
 
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
@@ -3603,6 +3658,9 @@ msgstr "La couleur de fond des messages d'alerte."
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
+
+msgid "The color attributed to the highest ranked player at the first round."
+msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
@@ -4375,6 +4433,12 @@ msgstr "Mettre en ligne les résultats des tournois."
 msgid "Upload the rules of the tournaments"
 msgstr "Mettre en ligne le règlement des tournois"
 
+msgid "Upper limit expected to be greater than lower limit."
+msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
+
+msgid "Upper rating limit"
+msgstr "Limite Elo haute"
+
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
 
@@ -4749,7 +4813,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Swiss"
-#~ msgstr "Suisse"
 

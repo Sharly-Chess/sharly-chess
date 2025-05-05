@@ -9,6 +9,7 @@ from data.input_output.player_updaters import (
     PlayerUpdater,
     PlayerUpdaterField,
 )
+from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
@@ -16,6 +17,7 @@ from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
+from plugins.pairing_acceleration.pairing_settings import DualRatingLimitsSetting
 from plugins.utils import PluginUtils
 from utils.enum import Result
 
@@ -154,16 +156,17 @@ class NicoisSwissVariation(SwissVariation):
     def static_name() -> str:
         return _('"Niçois" accelerated system')
 
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [DualRatingLimitsSetting()]
+
     @staticmethod
     def compute_virtual_points(
         tournament: Tournament,
         player: Player,
         at_round: int,
     ) -> float:
-        rating_limit1 = tournament.rating_limit1
-        assert rating_limit1 is not None
-        rating_limit2 = tournament.rating_limit2
-        assert rating_limit2 is not None
+        lower_limit, upper_limit = DualRatingLimitsSetting.get_value(tournament)
 
         draw_points = Result.DRAW.points(tournament.point_values)
         gain_points = Result.GAIN.points(tournament.point_values)
@@ -179,11 +182,11 @@ class NicoisSwissVariation(SwissVariation):
             # their capital is set at 2 points.
             return 2 * gain_points
 
-        if player.rating >= rating_limit1:
+        if player.rating >= upper_limit:
             # Group A: starts with 2 gain points (max)
             return 2 * gain_points
 
-        if player.rating >= rating_limit2:
+        if player.rating >= lower_limit:
             # Group B: starts with 1 gain point
             # Earns a draw point at 3 real draw points, and a final one at 5
             vpoints = gain_points

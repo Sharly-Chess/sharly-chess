@@ -37,6 +37,7 @@ class PairingTestCase(BaseTestCase):
 
     def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
         tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
+        tournament.set_default_pairing_settings()
         for round_ in range(1, tournament.current_round + 1):
             diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
             self.assertEqual(diff, [], f'round {round_}')
