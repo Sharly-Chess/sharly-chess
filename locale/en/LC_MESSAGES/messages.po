@@ -4774,6 +4774,84 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+msgid "{0} day"
+msgstr ""
+
+msgid "{0} day and {1} hour"
+msgstr ""
+
+msgid "{0} day and {1} hours"
+msgstr ""
+
+msgid "{0} days"
+msgstr ""
+
+msgid "{0} days and {1} hour"
+msgstr ""
+
+msgid "{0} days and {1} hours"
+msgstr ""
+
+msgid "{0} hour"
+msgstr ""
+
+msgid "{0} hour and {1} minute"
+msgstr ""
+
+msgid "{0} hour and {1} minutes"
+msgstr ""
+
+msgid "{0} hours"
+msgstr ""
+
+msgid "{0} hours and {1} minute"
+msgstr ""
+
+msgid "{0} hours and {1} minutes"
+msgstr ""
+
+msgid "{0} minute"
+msgstr ""
+
+msgid "{0} minute and {1} second"
+msgstr ""
+
+msgid "{0} minute and {1} seconds"
+msgstr ""
+
+msgid "{0} minutes"
+msgstr ""
+
+msgid "{0} minutes and {1} second"
+msgstr ""
+
+msgid "{0} minutes and {1} seconds"
+msgstr ""
+
+msgid "{0} second"
+msgstr ""
+
+msgid "{0} seconds"
+msgstr ""
+
+msgid "{0} week"
+msgstr ""
+
+msgid "{0} week and {1} day"
+msgstr ""
+
+msgid "{0} week and {1} days"
+msgstr ""
+
+msgid "{0} weeks"
+msgstr ""
+
+msgid "{0} weeks and {1} day"
+msgstr ""
+
+msgid "{0} weeks and {1} days"
+msgstr ""
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""

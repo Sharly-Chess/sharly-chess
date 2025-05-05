@@ -4774,6 +4774,84 @@ msgstr "contre"
 msgid "yes"
 msgstr "oui"
 
+msgid "{0} day"
+msgstr "{0} jour"
+
+msgid "{0} day and {1} hours"
+msgstr "{0} jour et {1} heure"
+
+msgid "{0} day and {1} hours"
+msgstr "{0} jour et {1} heures"
+
+msgid "{0} days"
+msgstr "{0} jours"
+
+msgid "{0} days and {1} hour"
+msgstr "{0} jours et {1} heure"
+
+msgid "{0} days and {1} hours"
+msgstr "{0} jours et {1} heure"
+
+msgid "{0} hour"
+msgstr "{0} heures"
+
+msgid "{0} hour and {1} minute"
+msgstr "{0} heures et {1} minute"
+
+msgid "{0} hour and {1} minutes"
+msgstr "{0} heures et {1} minutes"
+
+msgid "{0} hours"
+msgstr "{0} heures"
+
+msgid "{0} hours and {1} minute"
+msgstr "{0} heures et {1} minute"
+
+msgid "{0} hours and {1} minutes"
+msgstr "{0} heures et {1} minutes"
+
+msgid "{0} minute"
+msgstr "{0} minute"
+
+msgid "{0} minute and {1} second"
+msgstr "{0} minute et {1} seconde"
+
+msgid "{0} minute and {1} seconds"
+msgstr "{0} minute et {1} secondes"
+
+msgid "{0} minutes"
+msgstr "{0} minutes"
+
+msgid "{0} minutes and {1} second"
+msgstr "{0} minutes et {1} seconde"
+
+msgid "{0} minutes and {1} seconds"
+msgstr "{0} minutes et {1} secondes"
+
+msgid "{0} second"
+msgstr "{0} seconde"
+
+msgid "{0} seconds"
+msgstr "{0} secondes"
+
+msgid "{0} week"
+msgstr "{0} semaine"
+
+msgid "{0} week and {1} day"
+msgstr "{0} semaine et {1} day"
+
+msgid "{0} week and {1} days"
+msgstr "{0} semaine et {1} days"
+
+msgid "{0} weeks"
+msgstr "{0} semaines"
+
+msgid "{0} weeks and {1} day"
+msgstr "{0} semaines et {1} jour"
+
+msgid "{0} weeks and {1} days"
+msgstr "{0} semaines et {1} jours"
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."

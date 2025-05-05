@@ -27,25 +27,82 @@ function update_timer_values(clock_html, text_html, color) {
 function two_digits(n) {
 	return ('0' + n).slice(-2);
 }
-function duration(dur) {
-	sec = dur % 60;
-	sec_txt = sec + ' seconde' + (sec>1 ? 's' : '');
-	dur = (dur - sec)/60;
-	min = dur % 60;
-	min_txt = min + ' minute' + (min>1 ? 's' : '');
-	dur = (dur - min)/60;
-	hou = dur % 24;
-	hou_txt = hou + ' heure' + (hou>1 ? 's' : '');
-	dur = (dur - hou)/24;
-	day = dur % 7;
-	day_txt = day + ' jour' + (day>1 ? 's' : '');
-	wee = (dur - day)/7;
-	wee_txt = wee + ' semaine' + (wee>1 ? 's' : '');
-	if (wee > 0) { return wee_txt + (day > 0 ? ' et ' + day_txt : ''); }
-	if (day > 0) { return day_txt + (hou > 0 ? ' et ' + hou_txt : ''); }
-	if (hou > 0) { return hou_txt + (min > 0 ? ' et ' + min_txt : ''); }
-	if (min > 0) { return min_txt + (sec > 0 ? ' et ' + sec_txt : ''); }
-	return sec_txt;
+function duration(duration) {
+	seconds = duration % 60;
+	duration = (duration - seconds)/60;
+	minutes = duration % 60;
+	duration = (duration - minutes)/60;
+	hours = duration % 24;
+	duration = (duration - hours)/24;
+	days = duration % 7;
+	weeks = (duration - days)/7;
+	switch (weeks) {
+	    case 0:
+            switch (days) {
+                case 0:
+                    switch (hours) {
+                        case 0:
+                            switch (minutes) {
+                                case 0:
+                                    switch (seconds) {
+                                        case 0:
+                                        case 1:
+                                            return "{{ _('{0} second') }}".format(seconds)
+                                        default:
+                                            return "{{ _('{0} seconds') }}".format(seconds)
+                                    }
+                                case 1:
+                                    switch (minutes) {
+                                        case 0: return "{{ _('{0} minute') }}".format(minutes)
+                                        case 1: return "{{ _('{0} minute and {1} second') }}".format(minutes, seconds)
+                                        default: return "{{ _('{0} minute and {1} seconds') }}".format(minutes, seconds)
+                                    }
+                                default:
+                                    switch (minutes) {
+                                        case 0: return "{{ _('{0} minutes') }}".format(minutes)
+                                        case 1: return "{{ _('{0} minutes and {1} second') }}".format(minutes, seconds)
+                                        default: return "{{ _('{0} minutes and {1} seconds') }}".format(minutes, seconds)
+                                    }
+                            }
+                        case 1:
+                            switch (minutes) {
+                                case 0: return "{{ _('{0} hour') }}".format(hours)
+                                case 1: return "{{ _('{0} hour and {1} minute') }}".format(hours, minutes)
+                                default: return "{{ _('{0} hour and {1} minutes') }}".format(hours, minutes)
+                            }
+                        default:
+                            switch (minutes) {
+                                case 0: return "{{ _('{0} hours') }}".format(hours)
+                                case 1: return "{{ _('{0} hours and {1} minute') }}".format(hours, minutes)
+                                default: return "{{ _('{0} hours and {1} minutes') }}".format(hours, minutes)
+                            }
+                    }
+                case 1:
+                    switch (hours) {
+                        case 0: return "{{ _('{0} day') }}".format(days)
+                        case 1: return "{{ _('{0} day and {1} hour') }}".format(days, hours)
+                        default: return "{{ _('{0} day and {1} hours') }}".format(days, hours)
+                    }
+                default:
+                    switch (hours) {
+                        case 0: return "{{ _('{0} days') }}".format(days)
+                        case 1: return "{{ _('{0} days and {1} hour') }}".format(days, hours)
+                        default: return "{{ _('{0} days and {1} hours') }}".format(days, hours)
+                    }
+            }
+	    case 1:
+            switch (days) {
+                case 0: return "{{ _('{0} week') }}".format(weeks)
+                case 1: return "{{ _('{0} week and {1} day') }}".format(weeks, days)
+                default: return "{{ _('{0} week and {1} days') }}".format(weeks, days)
+            }
+	    default:
+            switch (days) {
+                case 0: return "{{ _('{0} weeks') }}".format(weeks)
+                case 1: return "{{ _('{0} weeks and {1} day') }}".format(weeks, days)
+                default: return "{{ _('{0} weeks and {1} days') }}".format(weeks, days)
+            }
+	}
 }
 function update_timer() {
 	now = new Date();
