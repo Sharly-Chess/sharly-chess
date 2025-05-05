@@ -1825,11 +1825,11 @@ msgid "Groups"
 msgstr ""
 
 #, python-format
-msgid "Groups must be composed of at least 25% and at most 50% of players."
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
 msgstr ""
 
 #, python-format
-msgid "Groups must be composed of at least 25% of players."
+msgid "Groups must be composed of at least 25%% of players."
 msgstr ""
 
 msgid "Haley system"

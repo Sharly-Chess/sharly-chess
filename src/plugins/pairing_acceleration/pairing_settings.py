@@ -37,9 +37,8 @@ class RatingLimitSetting(PairingSetting[int]):
         if not self._check_rating_limit(tournament, int(data[self.id])):
             return {
                 self.id: _(
-                    # TODO pascal
-                    'Groups must be composed of at least 25% of players.'
-                )
+                    'Groups must be composed of at least 25%% of players.'
+                ).replace('%%', '%')
             }
         return {}
 
@@ -142,10 +141,9 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
             field = self.lower_limit_field if index <= 1 else self.upper_limit_field
             return {
                 field: _(
-                    # TODO pascal
                     'Groups must be composed of at least '
-                    '25% and at most 50% of players.'
-                )
+                    '25%% and at most 50%% of players.'
+                ).replace('%%', '%')
             }
         return {}
 
