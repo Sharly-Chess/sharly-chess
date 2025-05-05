@@ -4777,7 +4777,7 @@ msgstr "oui"
 msgid "{0} day"
 msgstr "{0} jour"
 
-msgid "{0} day and {1} hours"
+msgid "{0} day and {1} hour"
 msgstr "{0} jour et {1} heure"
 
 msgid "{0} day and {1} hours"
