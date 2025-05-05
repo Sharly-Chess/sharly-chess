@@ -690,9 +690,6 @@ msgstr "Club :"
 msgid "Color"
 msgstr "Couleur"
 
-msgid "The color attributed to the highest ranked player at the first round."
-msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
-
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
 
@@ -3661,6 +3658,9 @@ msgstr "La couleur de fond des messages d'alerte."
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
+
+msgid "The color attributed to the highest ranked player at the first round."
+msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."

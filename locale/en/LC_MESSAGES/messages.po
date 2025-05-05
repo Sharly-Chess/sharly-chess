@@ -690,9 +690,6 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-msgid "The color attributed to the highest ranked player at the first round."
-msgstr ""
-
 msgid "Colors and delays"
 msgstr ""
 
@@ -3660,6 +3657,9 @@ msgid "The background colour of the alert messages."
 msgstr ""
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr ""
+
+msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
