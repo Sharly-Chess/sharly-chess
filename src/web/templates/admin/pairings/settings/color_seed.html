@@ -12,7 +12,7 @@
             {{ admin_macros.select_input(
                 name=setting.id,
                 label=_('%(string)s:', string=setting.name),
-                help_text=_('Color attributed to the highest ranked player at the first round.'),
+                help_text=_('The color attributed to the highest ranked player at the first round.'),
                 select_options=setting.options,
                 disabled=admin_tournament.started,
                 data=data, errors=errors

@@ -57,7 +57,7 @@
                                     'info',
                                     _('Pairings disabled while check-in is open.')
                                     if admin_tournament.check_in_open
-                                    else _('Settings need to be configured before generating the pairings')
+                                    else _('Settings must be configured before generating the pairings.')
                                     if not admin_tournament.are_pairing_settings_valid
                                     else _(
                                         'Pairings generation not allowed if previous '

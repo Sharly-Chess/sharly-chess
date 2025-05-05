@@ -690,7 +690,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-msgid "Color attributed to the highest ranked player at the first round."
+msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
 msgid "Colors and delays"
@@ -3464,7 +3464,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-msgid "Settings need to be configured before generating the pairings"
+msgid "Settings must be configured before generating the pairings."
 msgstr ""
 
 msgid "Sharly Chess project"

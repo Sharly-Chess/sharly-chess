@@ -690,8 +690,8 @@ msgstr "Club :"
 msgid "Color"
 msgstr "Couleur"
 
-msgid "Color attributed to the highest ranked player at the first round."
-msgstr "Couleur attribuée au joueur le mieux classé à la première ronde."
+msgid "The color attributed to the highest ranked player at the first round."
+msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
@@ -1826,11 +1826,11 @@ msgstr "Groupes"
 
 #, python-format
 msgid "Groups must be composed of at least 25%% and at most 50%% of players."
-msgstr "Les groupes doivent être composés d'au moins 25%% et d'au plus 50%% des joueurs."
+msgstr "Les groupes doivent être composés d'au moins 25%% et d'au plus 50%% des joueur·euses."
 
 #, python-format
 msgid "Groups must be composed of at least 25%% of players."
-msgstr "Les groupes doivent être composés d'au moins 25%% des joueurs."
+msgstr "Les groupes doivent être composés d'au moins 25%% des joueur·euses."
 
 msgid "Haley system"
 msgstr "Système de Haley"
@@ -2160,7 +2160,7 @@ msgid "Loss"
 msgstr "Défaite"
 
 msgid "Lower rating limit"
-msgstr "Limite ELO basse"
+msgstr "Limite Elo basse"
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -3106,7 +3106,7 @@ msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
 msgid "Randomly select a seed color."
-msgstr "Sélectionner une couleur source au hasard."
+msgstr "Sélectionner la couleur au hasard."
 
 msgid "Ranking"
 msgstr "Classement"
@@ -3156,18 +3156,18 @@ msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
 msgid "Rating limit"
-msgstr "Limite ELO"
+msgstr "Limite Elo"
 
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
-msgstr "Classement ELO séparant les groupes A et B (recommandation : %(recommended)d)."
+msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
 
 msgid "Rating splitting groups A and B."
-msgstr "Classement ELO séparant les groupes A et B."
+msgstr "Classement Elo séparant les groupes A et B."
 
 #, python-format
 msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
-msgstr "Classement ELO séparant les groupes B et C (recommandation : %(recommended)d)."
+msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recommended)d)."
 
 msgid "Rating splitting groups B and C."
 msgstr "Classement ELO séparant les groupes B et C."
@@ -3464,8 +3464,8 @@ msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 msgid "Settings"
 msgstr "Paramètres"
 
-msgid "Settings need to be configured before generating the pairings"
-msgstr "Les paramètres ont besoin d'être configurés avant de générer les appariements."
+msgid "Settings must be configured before generating the pairings."
+msgstr "Les paramètres doivent être configurés avant de générer les appariements."
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
@@ -4434,10 +4434,10 @@ msgid "Upload the rules of the tournaments"
 msgstr "Mettre en ligne le règlement des tournois"
 
 msgid "Upper limit expected to be greater than lower limit."
-msgstr "La limite ELO haute doit être supérieure à la limite ELO basse."
+msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
 
 msgid "Upper rating limit"
-msgstr "Limite ELO haute"
+msgstr "Limite Elo haute"
 
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
