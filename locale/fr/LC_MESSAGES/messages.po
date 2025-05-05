@@ -3557,8 +3557,8 @@ msgstr "Somme des Buchholz"
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
 
-msgid "Swiss system"
-msgstr "Système suisse"
+msgid "Swiss"
+msgstr "Suisse"
 
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
@@ -4813,7 +4813,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Swiss"
-#~ msgstr "Suisse"
 

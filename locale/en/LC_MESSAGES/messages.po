@@ -3557,7 +3557,7 @@ msgstr ""
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr ""
 
-msgid "Swiss system"
+msgid "Swiss"
 msgstr ""
 
 msgid "T *** THE LETTER TO ANSWER TEST"
