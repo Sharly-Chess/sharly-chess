@@ -167,7 +167,6 @@ function update_timer() {
 		return;
 	}
 	if (time < {{ timer_hour.timestamp_next }}) { // {{ timer_hour.datetime_str_next }} color_3 {{ timer_hour.text_after }}
-		console.log('color_3');
 		color = 'rgb({{ color_3_r }},{{ color_3_g }},{{ color_3_b }})';
 		dur = duration_string(time - {{ timer_hour.timestamp }});
 		text_html = '{{ timer_hour.text_after }}'.replace('%s', dur);
