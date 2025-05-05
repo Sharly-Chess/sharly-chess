@@ -4774,88 +4774,19 @@ msgstr "contre"
 msgid "yes"
 msgstr "oui"
 
-msgid "{0} day"
-msgstr "{0} jour"
-
-msgid "{0} day and {1} hour"
-msgstr "{0} jour et {1} heure"
-
-msgid "{0} day and {1} hours"
-msgstr "{0} jour et {1} heures"
-
-msgid "{0} days"
-msgstr "{0} jours"
-
-msgid "{0} days and {1} hour"
-msgstr "{0} jours et {1} heure"
-
-msgid "{0} days and {1} hours"
-msgstr "{0} jours et {1} heure"
-
-msgid "{0} hour"
-msgstr "{0} heures"
-
-msgid "{0} hour and {1} minute"
-msgstr "{0} heures et {1} minute"
-
-msgid "{0} hour and {1} minutes"
-msgstr "{0} heures et {1} minutes"
-
-msgid "{0} hours"
-msgstr "{0} heures"
-
-msgid "{0} hours and {1} minute"
-msgstr "{0} heures et {1} minute"
-
-msgid "{0} hours and {1} minutes"
-msgstr "{0} heures et {1} minutes"
-
-msgid "{0} minute"
-msgstr "{0} minute"
-
-msgid "{0} minute and {1} second"
-msgstr "{0} minute et {1} seconde"
-
-msgid "{0} minute and {1} seconds"
-msgstr "{0} minute et {1} secondes"
-
-msgid "{0} minutes"
-msgstr "{0} minutes"
-
-msgid "{0} minutes and {1} second"
-msgstr "{0} minutes et {1} seconde"
-
-msgid "{0} minutes and {1} seconds"
-msgstr "{0} minutes et {1} secondes"
-
-msgid "{0} second"
-msgstr "{0} seconde"
-
-msgid "{0} seconds"
-msgstr "{0} secondes"
-
-msgid "{0} week"
-msgstr "{0} semaine"
-
-msgid "{0} week and {1} day"
-msgstr "{0} semaine et {1} day"
-
-msgid "{0} week and {1} days"
-msgstr "{0} semaine et {1} days"
-
-msgid "{0} weeks"
-msgstr "{0} semaines"
-
-msgid "{0} weeks and {1} day"
-msgstr "{0} semaines et {1} jour"
-
-msgid "{0} weeks and {1} days"
-msgstr "{0} semaines et {1} jours"
-
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
+
+msgid "{days} day"
+msgstr "{days} jour"
+
+msgid "{days} day and {hours} hour"
+msgstr "{days} jour et {hours} heure"
+
+msgid "{days} day and {hours} hours"
+msgstr "{days} jour et {hours} heures"
 
 msgid "{days} days"
 msgstr "{days} jours"
@@ -4863,8 +4794,50 @@ msgstr "{days} jours"
 msgid "{days} days ago"
 msgstr "Il y a {days} jours"
 
+msgid "{days} days and {hours} hour"
+msgstr "{days} jours et {hours} heure"
+
+msgid "{days} days and {hours} hours"
+msgstr "{days} jours et {hours} heures"
+
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
+
+msgid "{hours} hour"
+msgstr "{hours} hour"
+
+msgid "{hours} hour and {minutes} minute"
+msgstr "{hours} heure et {minutes} minute"
+
+msgid "{hours} hour and {minutes} minutes"
+msgstr "{hours} heure et {minutes} minutes"
+
+msgid "{hours} hours"
+msgstr "{hours} heures"
+
+msgid "{hours} hours and {minutes} minute"
+msgstr "{hours} heures et {minutes} minute"
+
+msgid "{hours} hours and {minutes} minutes"
+msgstr "{hours} heures et {minutes} minutes"
+
+msgid "{minutes} minute"
+msgstr "{minutes} minute"
+
+msgid "{minutes} minute and {seconds} second"
+msgstr "{minutes} minute et {seconds} seconde"
+
+msgid "{minutes} minute and {seconds} seconds"
+msgstr "{minutes} minute et {seconds} secondes"
+
+msgid "{minutes} minutes"
+msgstr F{minutes} minutes"
+
+msgid "{minutes} minutes and {seconds} second"
+msgstr F{minutes} minutes et {seconds} seconde"
+
+msgid "{minutes} minutes and {seconds} seconds"
+msgstr "{minutes} minutes et {seconds} secondes"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
@@ -4891,4 +4864,28 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+msgid "{seconds} second"
+msgstr "{seconds} seconde"
+
+msgid "{seconds} seconds"
+msgstr "{seconds} secondes"
+
+msgid "{weeks} week"
+msgstr "{weeks} semaine"
+
+msgid "{weeks} week and {days} day"
+msgstr "{weeks} semaine et {days} jour"
+
+msgid "{weeks} week and {days} days"
+msgstr "{weeks} semaine et {days} jours"
+
+msgid "{weeks} weeks"
+msgstr "{weeks} semaines"
+
+msgid "{weeks} weeks and {days} day"
+msgstr "{weeks} semaines et {days} jour"
+
+msgid "{weeks} weeks and {days} days"
+msgstr "{weeks} semaines et {days} jours"
 
