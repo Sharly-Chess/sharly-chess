@@ -184,7 +184,8 @@ class TournamentAdminController(BaseEventAdminController):
                     errors[field] = _('End time needs to be after start time.')
 
             pairing_system = PairingSystemManager.get_object(
-                WebContext.form_data_to_str(data, 'pairing_system') or ''
+                WebContext.form_data_to_str(data, 'pairing_system')
+                or SwissPairingSystem.static_id()
             )
             pairing = WebContext.form_data_to_str(
                 data, f'{pairing_system.id}_pairing_variation'
