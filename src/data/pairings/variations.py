@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from data.pairings import systems
 from data.pairings.engines import PairingEngine, BbpPairings, RoundRobinPairingEngine
+from data.pairings.settings import PairingSetting, ColorSeedSetting
 from data.pairings.systems import PairingSystem
 from data.player import Player
 from utils.entity import IdentifiableEntity
@@ -44,6 +45,11 @@ class PairingVariation(IdentifiableEntity, ABC):
     def print_real_points(current_round: int, rounds: int) -> bool:
         return False
 
+    @property
+    @abstractmethod
+    def settings(self) -> list[PairingSetting]:
+        """List of pairing settings required for the variation to work."""
+
     @staticmethod
     def compute_virtual_points(
         tournament: 'Tournament',
@@ -52,6 +58,12 @@ class PairingVariation(IdentifiableEntity, ABC):
     ) -> float:
         """Compute the virtual points of a player for round *at_round*."""
         return 0.0
+
+    def validate_settings(self, tournament: 'Tournament') -> bool:
+        return all(
+            setting.is_set(tournament) and setting.is_valid(tournament)
+            for setting in self.settings
+        )
 
 
 class SwissVariation(PairingVariation, ABC):
@@ -66,6 +78,10 @@ class SwissVariation(PairingVariation, ABC):
     @property
     def engine(self) -> PairingEngine:
         return BbpPairings()
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return [ColorSeedSetting()]
 
 
 class RoundRobinVariation(PairingVariation, ABC):
@@ -102,3 +118,7 @@ class BergerRoundRobinVariation(RoundRobinVariation):
     @property
     def is_pairing_generation_implemented(self) -> bool:
         return False
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []

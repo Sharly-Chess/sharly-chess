@@ -35,7 +35,7 @@ class SwissPairingSystem(PairingSystem):
 
     @staticmethod
     def static_name() -> str:
-        return _('Swiss system')
+        return _('Swiss')
 
     @property
     def variation_manager(self) -> EntityManager['PairingVariation']:

@@ -38,7 +38,7 @@ class PapiWebConfig(metaclass=Singleton):
     # The default log level, used by default.
     default_log_level: int = logging.INFO
 
-    # The port ued by the Uvicorn web server.
+    # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'
 
     # The ports the web server tries to start on, tried one after the other.

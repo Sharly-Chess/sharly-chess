@@ -200,7 +200,7 @@ msgid "Add"
 msgstr "Ajouter"
 
 msgid "Add a display controller to the event."
-msgstr "Ajouter un écran piloté"
+msgstr "Ajouter un pilote d'afficheurs."
 
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage des appariements par échiquier."
@@ -290,7 +290,7 @@ msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
 msgid "Any number of devices can be controlled by the same display controller."
-msgstr "Un pilote d’écran peut contrôler l’affichage sur plusieurs appareils."
+msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
 
 msgid "Application"
 msgstr "Application"
@@ -724,6 +724,9 @@ msgstr "Commentaire :"
 msgid "Configuration"
 msgstr "Configuration"
 
+msgid "Configure the settings of the pairing system."
+msgstr "Configurer les paramètres du système d'appariements."
+
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
@@ -773,10 +776,10 @@ msgid "Create"
 msgstr "Créer"
 
 msgid "Create a display controller"
-msgstr "Créer un pilote d'écran"
+msgstr "Créer un pilote d'afficheurs"
 
 msgid "Create a display controller now to get started."
-msgstr "Créez un pilote d'écran maintenant commencer."
+msgstr "Créez un pilote d'afficheurs maintenant commencer."
 
 msgid "Create a family now to get started."
 msgstr "Créer une famille d’écrans pour commencer."
@@ -811,8 +814,8 @@ msgstr "Créer un évènement"
 msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen, family or rotator."
-msgstr "Créez autant de pilotes d’écran que nécessaire, puis, sur vos autres appareils, choisissez d’afficher un pilote d’écran plutôt qu’un écran individuel, une famille d’écrans ou un écran rotatif spécifique."
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran individuel ou un écran rotatif spécifique."
 
 msgid "Create file"
 msgstr "Créer le fichier"
@@ -930,7 +933,7 @@ msgid "Delete"
 msgstr "Supprimer"
 
 msgid "Delete the display controller."
-msgstr "Supprimer le pilote d'écran."
+msgstr "Supprimer le pilote d'afficheurs."
 
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
@@ -949,7 +952,7 @@ msgstr "Date de suppression"
 
 #, python-format
 msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
-msgstr "Suppression du pilote d'écran [%(display_controller_uniq_id)s]"
+msgstr "Suppression du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 
 #, python-format
 msgid "Deletion of event [%(event_uniq_id)s]"
@@ -1001,31 +1004,31 @@ msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
 
 msgid "Display controller"
-msgstr "Pilote d'écran"
+msgstr "Pilote d'afficheurs"
 
 msgid "Display controller [{display_controller_uniq_id}] has been created."
-msgstr "Le pilote d'écran [{display_controller_uniq_id}] a été créé."
+msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été créé."
 
 msgid "Display controller [{display_controller_uniq_id}] has been deleted."
-msgstr "Le pilote d'écran [{display_controller_uniq_id}] a été supprimé."
+msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été supprimé."
 
 msgid "Display controller [{display_controller_uniq_id}] has been updated."
-msgstr "Le pilote d'écran [{display_controller_uniq_id}] a été modifié."
+msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été modifié."
 
 msgid "Display controller [{uniq_id}] already exists."
-msgstr "Le pilote d'écran [{uniq_id}] existe déjà."
+msgstr "Le pilote d'afficheurs [{uniq_id}] existe déjà."
 
 msgid "Display controller creation"
-msgstr "Création d'un pilote d'écran"
+msgstr "Création d'un pilote d'afficheurs"
 
 msgid "Display controllers"
-msgstr "Pilotes d'écran"
+msgstr "Pilotes d'afficheurs"
 
 msgid "Display controllers ({num})"
-msgstr "Pilotes d'écrans ({num})"
+msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
-msgstr "Les pilotes d'écran vous permettent de contrôler les écrans de votre évènement depuis le serveur."
+msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
 
 msgid "Display link not found, check that a Papi file has already been sent."
 msgstr "Lien d'affichage non trouvé, vérifier qu'un fichier Papi a déjà été téléchargé."
@@ -1250,7 +1253,7 @@ msgid "E.g.: main"
 msgstr "Exemple : principal"
 
 msgid "E.g.: my-display-controller"
-msgstr "Exemple : mon-pilote-d-ecran"
+msgstr "Exemple : mon-pilote-d-afficheurs"
 
 msgid "E.g.: my-rotator"
 msgstr "Exemple : mon-ecran-rotatif"
@@ -1283,7 +1286,7 @@ msgid "Edit the player's tournament record."
 msgstr "Modifier l'historique du·de la joueur·euse."
 
 msgid "Edit the properties of the display controller."
-msgstr "Éditer les propriétés du pilote d'écran."
+msgstr "Éditer les propriétés du pilote d'afficheurs."
 
 msgid "Edit the properties of the rotator."
 msgstr "Éditer les propriétés de l'écran rotatif."
@@ -1312,7 +1315,7 @@ msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_
 
 #, python-format
 msgid "Edition of display controller [%(display_controller_uniq_id)s]"
-msgstr "Édition du pilote d'écran [%(display_controller_uniq_id)s]"
+msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 
 #, python-format
 msgid "Edition of event [%(event_uniq_id)s]"
@@ -1815,6 +1818,17 @@ msgstr "Aller à l'écran."
 msgid "Grand Master"
 msgstr "Grand Maître International"
 
+msgid "Groups"
+msgstr "Groupes"
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr "Les groupes doivent être composés d'au moins 25%% et d'au plus 50%% des joueur·euses."
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr "Les groupes doivent être composés d'au moins 25%% des joueur·euses."
+
 msgid "Haley system"
 msgstr "Système de Haley"
 
@@ -2142,6 +2156,9 @@ msgstr "Recherche d'une version plus récente sur GitHub ([{url}])..."
 msgid "Loss"
 msgstr "Défaite"
 
+msgid "Lower rating limit"
+msgstr "Limite Elo basse"
+
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
@@ -2307,7 +2324,7 @@ msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
 msgid "New display controller"
-msgstr "Nouveau pilote d'écran"
+msgstr "Nouveau pilote d'afficheurs"
 
 msgid "New event"
 msgstr "Nouvel évènement"
@@ -2383,10 +2400,10 @@ msgid "No directory set for the Papi file, by default [{path}]."
 msgstr "Aucun répertoire défini pour le fichier Papi, par défaut [{path}]."
 
 msgid "No display controllers"
-msgstr "Aucun pilote d'écran"
+msgstr "Aucun pilote d'afficheurs"
 
 msgid "No display controllers."
-msgstr "Aucun pilote d'écran."
+msgstr "Aucun pilote d'afficheurs."
 
 msgid "No errors"
 msgstr "Aucune erreur"
@@ -2683,6 +2700,9 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
+msgid "Pairing settings"
+msgstr "Paramètres d'appariements"
+
 msgid "Pairing system"
 msgstr "Système d'appariements"
 
@@ -2859,6 +2879,9 @@ msgstr "Veuillez choisir le document."
 msgid "Please choose the event:"
 msgstr "Veuillez choisir l'évènement :"
 
+msgid "Please choose the seed color."
+msgstr "Veuillez choisir la couleur initiale."
+
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
@@ -2887,10 +2910,10 @@ msgid "Please enter the date of the first hour."
 msgstr "Veuillez entrer la date du premier horaire."
 
 msgid "Please enter the display controller ID."
-msgstr "Veuillez entrer l'identifiant du pilotle d'écran."
+msgstr "Veuillez entrer l'identifiant du pilote d'afficheurs."
 
 msgid "Please enter the display controller name."
-msgstr "Veuillez entrer le nom du pilotle d'écran."
+msgstr "Veuillez entrer le nom du pilote d'afficheurs."
 
 msgid "Please enter the end date of the event."
 msgstr "Veuillez entrer la date de fin de l'évènement."
@@ -3052,7 +3075,7 @@ msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
 msgid "Public display controller"
-msgstr "Pilote d'écran public"
+msgstr "Pilote d'afficheurs public"
 
 msgid "Public event"
 msgstr "Évènement public"
@@ -3078,6 +3101,9 @@ msgstr "R %(round)d"
 
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
+
+msgid "Randomly select a seed color."
+msgstr "Sélectionner la couleur au hasard."
 
 msgid "Ranking"
 msgstr "Classement"
@@ -3126,6 +3152,23 @@ msgstr "Elo"
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
+msgid "Rating limit"
+msgstr "Limite Elo"
+
+#, python-format
+msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
+msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
+
+msgid "Rating splitting groups A and B."
+msgstr "Classement Elo séparant les groupes A et B."
+
+#, python-format
+msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
+msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recommended)d)."
+
+msgid "Rating splitting groups B and C."
+msgstr "Classement ELO séparant les groupes B et C."
+
 msgid "Rating:"
 msgstr "Classement :"
 
@@ -3160,7 +3203,7 @@ msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
 msgid "Remove the screen from the display controller."
-msgstr "Supprimer la redirection du pilote vers cet écran."
+msgstr "Supprimer la redirection du pilote d'afficheurs vers cet écran."
 
 msgid "Renaming the database failed: {ex}."
 msgstr "Le renommage de la base de données a échoué : {ex}"
@@ -3216,7 +3259,7 @@ msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
 
 msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
-msgstr "L'écran rotatif [{rotator_uniq_id}] est utilisé par le pilote d'écran [{display_controller_uniq_id}]."
+msgstr "L'écran rotatif [{rotator_uniq_id}] est utilisé par le pilote d'afficheurs [{display_controller_uniq_id}]."
 
 msgid "Rotator [{rotator_uniq_id}] has been created."
 msgstr "L'écran rotatif [{rotator_uniq_id}] a été créé."
@@ -3341,7 +3384,7 @@ msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr "Écran [{pattern}] introuvable pour le menu de l'écran [{screen_uniq_id}]."
 
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
-msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'écran [{display_controller_uniq_id}]."
+msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheurs [{display_controller_uniq_id}]."
 
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "L'écran [{screen_uniq_id}] a été créé."
@@ -3390,6 +3433,12 @@ msgstr "Recherche"
 msgid "Searching..."
 msgstr "Recherche en cours..."
 
+msgid "Seed color"
+msgstr "Couleur initiale"
+
+msgid "Seed color can't be modified once the tournament has started."
+msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
@@ -3408,6 +3457,12 @@ msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Settings must be configured before generating the pairings."
+msgstr "Les paramètres doivent être configurés avant de générer les appariements."
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
@@ -3502,8 +3557,8 @@ msgstr "Somme des Buchholz"
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
 
-msgid "Swiss system"
-msgstr ""
+msgid "Swiss"
+msgstr "Suisse"
 
 msgid "T *** THE LETTER TO ANSWER TEST"
 msgstr "T"
@@ -3575,7 +3630,7 @@ msgid "The Unique ID, used for data storage and export."
 msgstr "L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export."
 
 msgid "The Unique ID, used to reference the display controller."
-msgstr "L\"identifiant unique, utilisé pour référencer le pilote d'écran."
+msgstr "L'identifiant unique, utilisé pour référencer le pilote d'afficheurs."
 
 msgid "The Unique ID, used to reference the rotator."
 msgstr "L'identifiant unique, utilisé pour référencer l'écran rotatif."
@@ -3603,6 +3658,9 @@ msgstr "La couleur de fond des messages d'alerte."
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
+
+msgid "The color attributed to the highest ranked player at the first round."
+msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
@@ -3709,7 +3767,7 @@ msgid "The name of the Papi file without [.papi] extension (defaults to the uniq
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
 
 msgid "The name of the display controller, optional."
-msgstr "Le nom du pilote d'écran, facultatif."
+msgstr "Le nom du pilote d'afficheurs, facultatif."
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le nom de l'évènement sur la plateforme ChessEvent (par défaut, peut être modifié pour chaque tournoi)."
@@ -3890,7 +3948,7 @@ msgid "The screen families to rotate (the input screen families are emphasised b
 msgstr "Les familles à afficher en rotation (les familles d'écrans de saisie apparaissent en italique car elles ne devraient normalement pas être incluses dans les écrans rotatifs)."
 
 msgid "The screens displayed by the display controller are controlled by the administrator."
-msgstr "Les écrans utilisés par le pilote d'écran sont désignés par l'administrateur·ice."
+msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
@@ -3948,10 +4006,10 @@ msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
 
 msgid "This display controller is private (not visible by the users)."
-msgstr "Ce pilote d'écran est privé (non visible des utilisateur·ices)."
+msgstr "Ce pilote d'afficheurs est privé (non visible des utilisateur·ices)."
 
 msgid "This display controller is public (visible by the users)."
-msgstr "Ce pilote d'écran est public (visible des utilisateur·ices)."
+msgstr "Ce pilote d'afficheurs est public (visible des utilisateur·ices)."
 
 msgid "This event is private (by default, screens are not visible by the users)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des utilisateur·ices)."
@@ -4375,6 +4433,12 @@ msgstr "Mettre en ligne les résultats des tournois."
 msgid "Upload the rules of the tournaments"
 msgstr "Mettre en ligne le règlement des tournois"
 
+msgid "Upper limit expected to be greater than lower limit."
+msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
+
+msgid "Upper rating limit"
+msgstr "Limite Elo haute"
+
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
 
@@ -4425,7 +4489,7 @@ msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
 msgid "Warning: the deletion of a display controller is permanent!"
-msgstr "Attention : la suppression d'un pilolte d'écran est définitive !"
+msgstr "Attention : la suppression d'un pilote d'afficheurs est définitive !"
 
 msgid "Warning: the deletion of a player is permanent!"
 msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
@@ -4615,7 +4679,7 @@ msgid "by default"
 msgstr "par défaut"
 
 msgid "display-controller"
-msgstr "pilote-d-ecran"
+msgstr "pilote-d-afficheur"
 
 msgid "event"
 msgstr "évènement"
@@ -4749,7 +4813,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Swiss"
-#~ msgstr "Suisse"
 

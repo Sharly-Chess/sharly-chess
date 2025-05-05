@@ -724,6 +724,9 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Configure the settings of the pairing system."
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -811,7 +814,7 @@ msgstr ""
 msgid "Create and add default screens"
 msgstr ""
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen, family or rotator."
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr ""
 
 msgid "Create file"
@@ -1815,6 +1818,17 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
+msgid "Groups"
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr ""
+
 msgid "Haley system"
 msgstr ""
 
@@ -2140,6 +2154,9 @@ msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr ""
 
 msgid "Loss"
+msgstr ""
+
+msgid "Lower rating limit"
 msgstr ""
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
@@ -2683,6 +2700,9 @@ msgstr ""
 msgid "Pairing Allocated Bye"
 msgstr ""
 
+msgid "Pairing settings"
+msgstr ""
+
 msgid "Pairing system"
 msgstr ""
 
@@ -2857,6 +2877,9 @@ msgid "Please choose the document."
 msgstr ""
 
 msgid "Please choose the event:"
+msgstr ""
+
+msgid "Please choose the seed color."
 msgstr ""
 
 msgid "Please choose the tournament."
@@ -3079,6 +3102,9 @@ msgstr "R %(round)d"
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
+msgid "Randomly select a seed color."
+msgstr ""
+
 msgid "Ranking"
 msgstr ""
 
@@ -3125,6 +3151,23 @@ msgstr ""
 
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
+
+msgid "Rating limit"
+msgstr ""
+
+#, python-format
+msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
+msgstr ""
+
+msgid "Rating splitting groups A and B."
+msgstr ""
+
+#, python-format
+msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
+msgstr ""
+
+msgid "Rating splitting groups B and C."
+msgstr ""
 
 msgid "Rating:"
 msgstr ""
@@ -3390,6 +3433,12 @@ msgstr ""
 msgid "Searching..."
 msgstr ""
 
+msgid "Seed color"
+msgstr ""
+
+msgid "Seed color can't be modified once the tournament has started."
+msgstr ""
+
 msgid "Select the players and the data to update:"
 msgstr ""
 
@@ -3407,6 +3456,12 @@ msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...
 msgstr ""
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings must be configured before generating the pairings."
 msgstr ""
 
 msgid "Sharly Chess project"
@@ -3502,7 +3557,7 @@ msgstr ""
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr ""
 
-msgid "Swiss system"
+msgid "Swiss"
 msgstr ""
 
 msgid "T *** THE LETTER TO ANSWER TEST"
@@ -3602,6 +3657,9 @@ msgid "The background colour of the alert messages."
 msgstr ""
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr ""
+
+msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
@@ -4375,6 +4433,12 @@ msgstr ""
 msgid "Upload the rules of the tournaments"
 msgstr ""
 
+msgid "Upper limit expected to be greater than lower limit."
+msgstr ""
+
+msgid "Upper rating limit"
+msgstr ""
+
 msgid "Use no timer"
 msgstr ""
 
@@ -4749,13 +4813,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "The variation of the pairing system."
-#~ msgstr ""
-
-#~ msgid "Variation of the pairing system."
-#~ msgstr ""
-
-#~ msgid "Swiss"
-#~ msgstr ""
 
