@@ -31,7 +31,7 @@ To be completed (some tournament modifications should not be allowed after a tou
 > [!NOTE]
 > :information_source:
 > - _Papi_ recalculates pairing numbers every round (contrary to FIDE regulations).
-> - Within a certain period of time after the publication of the results of round N (or before publication of the results), the change takes effect for the ratings of round N and the pairings of round N+1.
+> - Within a certain period of time after the publication of the results of round N (or before publication of the results), the change takes effect for the standings of round N and the pairings of round N+1.
 > After the publication of round N+1, the ratings are changed starting with round N+2.
 
 | Time                                                           |  FIDE Authorized   |  Registration  | Recalculation<br/>numbers<br/>pairings |      Modification<br/>ratings       |
@@ -51,9 +51,6 @@ To be completed (some tournament modifications should not be allowed after a tou
 > :point_right: Recording of non-standard actions:
 > - :white_circle: No recording
 > - :pushpin: Recording in the database
-
-> [!WARNING]
-> :warning: Sammy doit confirmer auprès de la DNA que le classement peut être modifié à n'importe quel moment car cela peut influer sur les départages.
 
 ## Editing Pairings and Results
 

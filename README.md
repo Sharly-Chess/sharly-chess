@@ -4,7 +4,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 
 ## User documentation
 
-**Please visit [sharly-chess.com](https://sharly-chess.com).**
+**Please visit [sharly-chess.com](https://sharly-chess.com)** (installation guide [here](https://sharly-chess.com/installation)).
 
 ## Developer documentation
 
