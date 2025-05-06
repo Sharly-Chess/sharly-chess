@@ -132,6 +132,24 @@ msgstr "50+"
 msgid "65+"
 msgstr "65+"
 
+msgid "<first> and <second>"
+msgstr "<first> et <second>"
+
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr "<smart_count> jour |||| <smart_count> jours"
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr "<smart_count> heure |||| <smart_count> heures"
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr "<smart_count> minute |||| <smart_count> minutes"
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr "<smart_count> seconde |||| <smart_count> secondes"
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr "<smart_count> semaine |||| <smart_count> semaines"
+
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facultatif)."
 
@@ -4779,65 +4797,14 @@ msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
 
-msgid "{days} day"
-msgstr "{days} jour"
-
-msgid "{days} day and {hours} hour"
-msgstr "{days} jour et {hours} heure"
-
-msgid "{days} day and {hours} hours"
-msgstr "{days} jour et {hours} heures"
-
 msgid "{days} days"
 msgstr "{days} jours"
 
 msgid "{days} days ago"
 msgstr "Il y a {days} jours"
 
-msgid "{days} days and {hours} hour"
-msgstr "{days} jours et {hours} heure"
-
-msgid "{days} days and {hours} hours"
-msgstr "{days} jours et {hours} heures"
-
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
-
-msgid "{hours} hour"
-msgstr "{hours} hour"
-
-msgid "{hours} hour and {minutes} minute"
-msgstr "{hours} heure et {minutes} minute"
-
-msgid "{hours} hour and {minutes} minutes"
-msgstr "{hours} heure et {minutes} minutes"
-
-msgid "{hours} hours"
-msgstr "{hours} heures"
-
-msgid "{hours} hours and {minutes} minute"
-msgstr "{hours} heures et {minutes} minute"
-
-msgid "{hours} hours and {minutes} minutes"
-msgstr "{hours} heures et {minutes} minutes"
-
-msgid "{minutes} minute"
-msgstr "{minutes} minute"
-
-msgid "{minutes} minute and {seconds} second"
-msgstr "{minutes} minute et {seconds} seconde"
-
-msgid "{minutes} minute and {seconds} seconds"
-msgstr "{minutes} minute et {seconds} secondes"
-
-msgid "{minutes} minutes"
-msgstr F{minutes} minutes"
-
-msgid "{minutes} minutes and {seconds} second"
-msgstr F{minutes} minutes et {seconds} seconde"
-
-msgid "{minutes} minutes and {seconds} seconds"
-msgstr "{minutes} minutes et {seconds} secondes"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
@@ -4864,28 +4831,3 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-msgid "{seconds} second"
-msgstr "{seconds} seconde"
-
-msgid "{seconds} seconds"
-msgstr "{seconds} secondes"
-
-msgid "{weeks} week"
-msgstr "{weeks} semaine"
-
-msgid "{weeks} week and {days} day"
-msgstr "{weeks} semaine et {days} jour"
-
-msgid "{weeks} week and {days} days"
-msgstr "{weeks} semaine et {days} jours"
-
-msgid "{weeks} weeks"
-msgstr "{weeks} semaines"
-
-msgid "{weeks} weeks and {days} day"
-msgstr "{weeks} semaines et {days} jour"
-
-msgid "{weeks} weeks and {days} days"
-msgstr "{weeks} semaines et {days} jours"
-

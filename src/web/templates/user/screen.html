@@ -14,14 +14,18 @@
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}
-        <script>
-            {% if screen.timer %}
+        {% if screen.timer %}
+            <script>
+                <!-- polyglot.js -->
+                {% include 'screen/polyglot.js' %}
+            </script>
+            <script>
                 {% if not screen.timer.error %}
                     <!-- timer.js -->
                     {% include 'screen/timer.js' %}
                 {% endif %}
-            {% endif %}
-        </script>
+            </script>
+        {% endif %}
         {% if not rotator and not display_controller %}
             {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
             {% if menu_screens %}

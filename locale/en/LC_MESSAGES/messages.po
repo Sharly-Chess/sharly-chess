@@ -132,6 +132,24 @@ msgstr ""
 msgid "65+"
 msgstr ""
 
+msgid "<first> and <second>"
+msgstr ""
+
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr ""
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr ""
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr ""
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr ""
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr ""
+
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr ""
 
@@ -4779,64 +4797,13 @@ msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "{days} day"
-msgstr ""
-
-msgid "{days} day and {hours} hour"
-msgstr ""
-
-msgid "{days} day and {hours} hours"
-msgstr ""
-
 msgid "{days} days"
 msgstr ""
 
 msgid "{days} days ago"
 msgstr ""
 
-msgid "{days} days and {hours} hour"
-msgstr ""
-
-msgid "{days} days and {hours} hours"
-msgstr ""
-
 msgid "{family_type}-screen"
-msgstr ""
-
-msgid "{hours} hour"
-msgstr ""
-
-msgid "{hours} hour and {minutes} minute"
-msgstr ""
-
-msgid "{hours} hour and {minutes} minutes"
-msgstr ""
-
-msgid "{hours} hours"
-msgstr ""
-
-msgid "{hours} hours and {minutes} minute"
-msgstr ""
-
-msgid "{hours} hours and {minutes} minutes"
-msgstr ""
-
-msgid "{minutes} minute"
-msgstr ""
-
-msgid "{minutes} minute and {seconds} second"
-msgstr ""
-
-msgid "{minutes} minute and {seconds} seconds"
-msgstr ""
-
-msgid "{minutes} minutes"
-msgstr ""
-
-msgid "{minutes} minutes and {seconds} second"
-msgstr ""
-
-msgid "{minutes} minutes and {seconds} seconds"
 msgstr ""
 
 msgid "{number} players written to the database."
@@ -4864,28 +4831,3 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-msgid "{seconds} second"
-msgstr ""
-
-msgid "{seconds} seconds"
-msgstr ""
-
-msgid "{weeks} week"
-msgstr ""
-
-msgid "{weeks} week and {days} day"
-msgstr ""
-
-msgid "{weeks} week and {days} days"
-msgstr ""
-
-msgid "{weeks} weeks"
-msgstr ""
-
-msgid "{weeks} weeks and {days} day"
-msgstr ""
-
-msgid "{weeks} weeks and {days} days"
-msgstr ""
-
