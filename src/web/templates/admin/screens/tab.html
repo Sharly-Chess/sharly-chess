@@ -1,8 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
-    {{ admin_event.name }} - {{ _('Screens') }}
+    {{ _('Simple Screens') }}{{ macros.doc_icon(_('/simple-screens'), '') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id),
     ) }}

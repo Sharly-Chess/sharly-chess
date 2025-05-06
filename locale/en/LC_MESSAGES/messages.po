@@ -114,7 +114,40 @@ msgstr ""
 msgid "- View the files on filebin.net: {bin_url}"
 msgstr ""
 
+msgid "/creating-an-event"
+msgstr ""
+
+msgid "/display-controllers"
+msgstr ""
+
+msgid "/managing-pairings"
+msgstr ""
+
+msgid "/managing-players"
+msgstr ""
+
+msgid "/managing-tournaments"
+msgstr ""
+
 msgid "/move"
+msgstr ""
+
+msgid "/player-databases"
+msgstr ""
+
+msgid "/rotators"
+msgstr ""
+
+msgid "/running-an-event"
+msgstr ""
+
+msgid "/screen-families"
+msgstr ""
+
+msgid "/simple-screens"
+msgstr ""
+
+msgid "/timers"
 msgstr ""
 
 msgid "1 *** THE LETTER TO ANSWER ONCE"
@@ -3513,6 +3546,9 @@ msgid "Show/hide the results screens."
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+msgid "Simple Screens"
 msgstr ""
 
 msgid "Soft Haley system"

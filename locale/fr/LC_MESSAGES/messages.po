@@ -114,8 +114,41 @@ msgstr "- Version {version}: aucun évènement"
 msgid "- View the files on filebin.net: {bin_url}"
 msgstr "- Voir les fichiers sur filebin.net : {bin_url}"
 
+msgid "/creating-an-event"
+msgstr "/fr/creer-un-evenement/"
+
+msgid "/display-controllers"
+msgstr "/fr/pilotes-d-afficheur/"
+
+msgid "/managing-pairings"
+msgstr "/fr/gerer-les-appariements/"
+
+msgid "/managing-players"
+msgstr "/fr/gerer-les-joueurs-euses/"
+
+msgid "/managing-tournaments"
+msgstr "/fr/gerer-les-tournois/"
+
 msgid "/move"
 msgstr "/cp"
+
+msgid "/player-databases"
+msgstr "/fr/bases-de-donnees-joueureuses"
+
+msgid "/rotators"
+msgstr "/fr/ecrans-rotatifs/"
+
+msgid "/running-an-event"
+msgstr "/fr/gerer-un-evenement/"
+
+msgid "/screen-families"
+msgstr "/fr/familles-d-ecrans"
+
+msgid "/simple-screens"
+msgstr "/fr/ecrans-simples/"
+
+msgid "/timers"
+msgstr "/fr/chronometres/"
 
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
@@ -3515,6 +3548,9 @@ msgstr "Afficher/cacher les écrans d'affichage des résultats."
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
+msgid "Simple Screens"
+msgstr ""
+
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
@@ -4843,4 +4879,5 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
 

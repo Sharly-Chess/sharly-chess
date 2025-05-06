@@ -1,8 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
-    {{ admin_event.name }} - {{ _('Rotators') }}
+    {{ _('Rotators') }}{{ macros.doc_icon(_('/rotators'), '') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
