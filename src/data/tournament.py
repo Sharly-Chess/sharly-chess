@@ -1182,14 +1182,13 @@ class Tournament:
         if not self.file_exists:
             return
         with self.papi_write_database as papi_database:
-            if self.stored_tie_breaks is not None:
-                papi_database.update_tie_breaks(
-                    [
-                        tie_break
-                        for tie_break in self.stored_tie_breaks
-                        if tie_break.papi_id is not None
-                    ]
-                )
+            papi_database.update_tie_breaks(
+                [
+                    tie_break
+                    for tie_break in self.stored_tie_breaks or []
+                    if tie_break.papi_id is not None
+                ]
+            )
             papi_info: dict[PapiVariable, str | int] = {
                 PapiVariable.ROUNDS: self.stored_rounds,
                 PapiVariable.RATING: self.stored_rating.to_papi_value,
