@@ -15,7 +15,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.event import Event
 from data.player import Player
-from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, PairingAction
+from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
@@ -277,11 +277,14 @@ class PairingsAdminController(BaseEventAdminController):
                     'board': web_context.admin_board,
                 }
             case 'safety-mode':
+                assert admin_tournament is not None
                 template_context |= {
                     'modal': modal,
                     'action': protected_action,
-                    'required_mode': PermissionHandler.required_mode(
-                        web_context.round_status, protected_action
+                    'required_mode': (
+                        admin_tournament.pairing_system.permission_handler.required_mode(
+                            web_context.round_status, protected_action
+                        )
                     ),
                 }
             case 'unfinished-round':
