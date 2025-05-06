@@ -29,6 +29,10 @@
             <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ papi_web_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}"></script>
             <script>
+                <!-- polyglot.js -->
+                {% include '/common/polyglot.js' %}
+            </script>
+            <script>
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
                     {#  This is necessary since dvh/dwh is broken on Chrome #}
@@ -236,7 +240,7 @@
         <div id="please-wait-wrapper">
             <div
                 id="please-wait"
-                class="please-wait position-fixed top-50 start-50 translate-middle"
+                class="htmx-indicator position-fixed top-50 start-50 translate-middle"
             ></div>
         </div>
         <div id="modal-wrapper"
