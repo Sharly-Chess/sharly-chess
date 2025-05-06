@@ -16,10 +16,6 @@
         {% endif %}
         {% if screen.timer %}
             <script>
-                <!-- polyglot.js -->
-                {% include 'screen/polyglot.js' %}
-            </script>
-            <script>
                 {% if not screen.timer.error %}
                     <!-- timer.js -->
                     {% include 'screen/timer.js' %}

@@ -1,3 +1,12 @@
+{% with timer=screen.timer %}
+{% with color_1_r=timer.color_1_rgb.0, color_1_g=timer.color_1_rgb.1, color_1_b=timer.color_1_rgb.2 %}
+{% with color_2_r=timer.color_2_rgb.0, color_2_g=timer.color_2_rgb.1, color_2_b=timer.color_2_rgb.2 %}
+{% with color_3_r=timer.color_3_rgb.0, color_3_g=timer.color_3_rgb.1, color_3_b=timer.color_3_rgb.2 %}
+{% with delay_1=timer.delays.1, delay_2=timer.delays.2, delay_3=timer.delays.3 %}
+
+var timer;
+var timer_clock;
+var timer_text;
 var polyglot = new Polyglot({
     locale: '{{ locale }}',
     phrases: {
@@ -14,15 +23,6 @@ var polyglot = new Polyglot({
     },
 });
 
-{% with timer=screen.timer %}
-{% with color_1_r=timer.color_1_rgb.0, color_1_g=timer.color_1_rgb.1, color_1_b=timer.color_1_rgb.2 %}
-{% with color_2_r=timer.color_2_rgb.0, color_2_g=timer.color_2_rgb.1, color_2_b=timer.color_2_rgb.2 %}
-{% with color_3_r=timer.color_3_rgb.0, color_3_g=timer.color_3_rgb.1, color_3_b=timer.color_3_rgb.2 %}
-{% with delay_1=timer.delays.1, delay_2=timer.delays.2, delay_3=timer.delays.3 %}
-
-var timer;
-var timer_clock;
-var timer_text;
 function start_update_timer_interval() {
 	timer = document.getElementById('timer');
 	timer_clock = document.getElementById('timer-clock');
@@ -44,17 +44,6 @@ function update_timer_values(clock_html, text_html, color) {
 }
 function two_digits(n) {
 	return ('0' + n).slice(-2);
-}
-var format = function (str, col) {
-    col = typeof col === 'object' ? col : Array.prototype.slice.call(arguments, 1);
-    return str.replace(/\{\{|\}\}|\{(\w+)\}/g, function (m, n) {
-        if (m == "{% raw %}{{{% endraw %}") { return "{"; }
-        if (m == "{% raw %}}}}}{% endraw %}") { return "}"; }
-        return col[n];
-    });
-};
-String.prototype.format = function (col) {
-    return format(this,col);
 }
 function duration_string(dur) {
 	seconds = dur % 60;
