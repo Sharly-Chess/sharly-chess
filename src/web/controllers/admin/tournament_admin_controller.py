@@ -792,78 +792,82 @@ class TournamentAdminController(BaseEventAdminController):
                     'Tournament [{tournament_uniq_id}] has been deleted.'
                 ).format(tournament_uniq_id=web_context.admin_tournament.uniq_id)
             else:
-                stored_tournament = event_database.add_stored_tournament(
-                    stored_tournament
-                )
-                Tournament(
-                    web_context.admin_event, stored_tournament
-                ).update_papi_database_from_stored_tournament()
-                if 'add_screens' in data:
-                    for type_, menu, name in [
-                        (
-                            'input',
-                            '@input',
-                            _('Results entry'),
-                        ),
-                        (
-                            'boards',
-                            '@boards',
-                            _('Pairings by board'),
-                        ),
-                        (
-                            'players',
-                            '@players',
-                            _('Pairings by player'),
-                        ),
-                        (
-                            'ranking',
-                            '@ranking',
-                            _('Ranking'),
-                        ),
-                    ]:
-                        stored_screen: StoredScreen = event_database.add_stored_screen(
-                            StoredScreen(
-                                id=None,
-                                uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                    base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'
-                                ),
-                                type=type_,
-                                public=True,
-                                name=name,
-                                columns=1,
-                                font_size=None,
-                                menu_link=True,
-                                menu_text=None,
-                                menu=menu,
-                                timer_id=None,
-                                input_exit_button=None,
-                                players_show_unpaired=None,
-                                results_limit=None,
-                                results_max_age=None,
-                                results_tournament_ids=[],
-                                background_image=None,
-                                background_color=None,
-                                message_default=True,
-                                message_text=None,
-                            )
-                        )
-                        assert stored_screen.id is not None
-                        assert stored_tournament.id is not None
-                        event_database.add_stored_screen_set(
-                            stored_screen.id, stored_tournament.id
-                        )
-                    success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been created '
-                        'and default screens have been added.'
-                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
-                elif action == 'update':
+                if action == 'update':
+                    stored_tournament = event_database.update_stored_tournament(
+                        stored_tournament
+                    )
                     success_message = _(
                         'Tournament [{tournament_uniq_id}] has been updated.'
                     ).format(tournament_uniq_id=stored_tournament.uniq_id)
                 else:
-                    success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been created.'
-                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    stored_tournament = event_database.add_stored_tournament(
+                        stored_tournament
+                    )
+                    if 'add_screens' in data:
+                        for type_, menu, name in [
+                            (
+                                'input',
+                                '@input',
+                                _('Results entry'),
+                            ),
+                            (
+                                'boards',
+                                '@boards',
+                                _('Pairings by board'),
+                            ),
+                            (
+                                'players',
+                                '@players',
+                                _('Pairings by player'),
+                            ),
+                            (
+                                'ranking',
+                                '@ranking',
+                                _('Ranking'),
+                            ),
+                        ]:
+                            stored_screen: StoredScreen = event_database.add_stored_screen(
+                                StoredScreen(
+                                    id=None,
+                                    uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
+                                        base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'
+                                    ),
+                                    type=type_,
+                                    public=True,
+                                    name=name,
+                                    columns=1,
+                                    font_size=None,
+                                    menu_link=True,
+                                    menu_text=None,
+                                    menu=menu,
+                                    timer_id=None,
+                                    input_exit_button=None,
+                                    players_show_unpaired=None,
+                                    results_limit=None,
+                                    results_max_age=None,
+                                    results_tournament_ids=[],
+                                    background_image=None,
+                                    background_color=None,
+                                    message_default=True,
+                                    message_text=None,
+                                )
+                            )
+                            assert stored_screen.id is not None
+                            assert stored_tournament.id is not None
+                            event_database.add_stored_screen_set(
+                                stored_screen.id, stored_tournament.id
+                            )
+                        success_message = _(
+                            'Tournament [{tournament_uniq_id}] has been created '
+                            'and default screens have been added.'
+                        ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    else:
+                        success_message = _(
+                            'Tournament [{tournament_uniq_id}] has been created.'
+                        ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                Tournament(
+                    web_context.admin_event, stored_tournament
+                ).update_papi_database_from_stored_tournament()
             event_database.commit()
         Message.success(request, success_message)
         event_loader.clear_cache(event_uniq_id)
