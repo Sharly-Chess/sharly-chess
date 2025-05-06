@@ -34,15 +34,15 @@ To be completed (some tournament modifications should not be allowed after a tou
 > - Within a certain period of time after the publication of the results of round N (or before publication of the results), the change takes effect for the standings of round N and the pairings of round N+1.
 > After the publication of round N+1, the ratings are changed starting with round N+2.
 
-| Time                                                           |  FIDE Authorized   |  Registration  | Recalculation<br/>numbers<br/>pairings |      Modification<br/>ratings       |
-|----------------------------------------------------------------|:------------------:|:--------------:|:--------------------------------------:|:-----------------------------------:|
-| Before publication of round 1 pairings                         | :white_check_mark: | :white_circle: |                round 1                 |                                     |
-| Before publication of round 1 results                          | :white_check_mark: |   :pushpin:    |                round 2                 |               round 1               |
-| After publication of round 2 pairings                          | :white_check_mark: |   :pushpin:    |                round 3                 |               round 3               |
-| Before publication of round 2 results                          | :white_check_mark: |   :pushpin:    |                round 3                 |               round 2               |
-| After publication of round 3 pairings                          | :white_check_mark: |   :pushpin:    |                round 4                 |               round 4               |
-| Before the end of the publication deadline for round 3 results | :white_check_mark: |   :pushpin:    |                round 4                 |                                     |
-| From the publication of round 4 pairings                       | :white_check_mark: |   :pushpin:    |                   no                   | round N+1 or N+2<br/>as appropriate |
+| Time                                                           |  FIDE Authorized   |  Registration  | Round to<br/>recalculate<br/>pairings |      Modification<br/>ratings       |
+|----------------------------------------------------------------|:------------------:|:--------------:|:-------------------------------------:|:-----------------------------------:|
+| Before publication of round 1 pairings                         | :white_check_mark: | :white_circle: |             round 1                   |                                     |
+| Before publication of round 1 results                          | :white_check_mark: |   :pushpin:    |                round 2                |               round 1               |
+| After publication of round 2 pairings                          | :white_check_mark: |   :pushpin:    |                round 3                |               round 3               |
+| Before publication of round 2 results                          | :white_check_mark: |   :pushpin:    |                round 3                |               round 2               |
+| After publication of round 3 pairings                          | :white_check_mark: |   :pushpin:    |                round 4                |               round 4               |
+| Before the end of the publication deadline for round 3 results | :white_check_mark: |   :pushpin:    |                round 4                |                                     |
+| From the publication of round 4 pairings                       | :white_check_mark: |   :pushpin:    |                  no                   | round N+1 or N+2<br/>as appropriate |
 
 > [!TIP]
 > :point_right: Compliance with FIDE regulations:
