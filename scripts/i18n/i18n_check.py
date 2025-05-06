@@ -258,7 +258,7 @@ class I18nChecker:
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
-        doc_file: Path = BASE_DIR / 'docs' / '86-i18n.md'
+        doc_file: Path = BASE_DIR / 'docs' / 'technical-appendices' / 'i18n.md'
         lines_before_comment: list[str] = []
         lines_after_comment: list[str] = []
         # Read the lines until the expected comment is found
