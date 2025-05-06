@@ -132,6 +132,24 @@ msgstr "50+"
 msgid "65+"
 msgstr "65+"
 
+msgid "<first> and <second>"
+msgstr "<first> et <second>"
+
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr "<smart_count> jour |||| <smart_count> jours"
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr "<smart_count> heure |||| <smart_count> heures"
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr "<smart_count> minute |||| <smart_count> minutes"
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr "<smart_count> seconde |||| <smart_count> secondes"
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr "<smart_count> semaine |||| <smart_count> semaines"
+
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facultatif)."
 
@@ -4819,4 +4837,3 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-

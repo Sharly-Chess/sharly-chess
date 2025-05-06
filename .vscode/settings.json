@@ -50,6 +50,7 @@
     "endcall",
     "endfor",
     "endmacro",
+    "endraw",
     "endwith",
     "euse",
     "euses",

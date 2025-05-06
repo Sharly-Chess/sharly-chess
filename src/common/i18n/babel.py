@@ -77,6 +77,7 @@ class BabelWrapper:
                 '--add-location=never',
                 '--no-wrap',
                 '--omit-header',
+                '--ignore-dirs="src\\web\\static\\lib\\*"',
                 f'{BASE_DIR}',
             ],
             verbose=verbose,
