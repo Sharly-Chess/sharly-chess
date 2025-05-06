@@ -24,4 +24,18 @@
             </button>
         </div>
     {% endif %}
+
+    {% if round_status == 'CURRENT' and not admin_tournament.playing and not admin_tournament.finished %}
+        <div {{ macros.tooltip_attributes('info', _('Mark this round as over and define the next one as active.'), 'top') }}>
+            <button
+                class="btn btn-outline-primary text-nowrap"
+                hx-put="{{ url_for('admin-tournament-set-current-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, current_round=admin_round + 1) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+            >
+                {{ _('End round') }}
+            </button>
+        </div>
+    {% endif %}
 </span>

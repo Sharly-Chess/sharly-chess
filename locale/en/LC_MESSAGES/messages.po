@@ -1396,6 +1396,9 @@ msgstr ""
 msgid "End of upload (Ctrl-C)"
 msgstr ""
 
+msgid "End round"
+msgstr ""
+
 msgid "End time needs to be after start time."
 msgstr ""
 
@@ -2197,6 +2200,9 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
+msgstr ""
+
+msgid "Mark this round as over and define the next one as active."
 msgstr ""
 
 #, python-format

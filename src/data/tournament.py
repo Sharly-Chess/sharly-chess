@@ -90,8 +90,7 @@ class Tournament:
         self.stored_file_modified_timestamp: float | None = None
         if self.file_exists:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
-        self._players_by_id: dict[int, Player] | None = None
-        self._papi_tournament_info: PapiTournamentInfo | None = None
+        self._players: list[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
@@ -397,18 +396,20 @@ class Tournament:
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
         _, players_by_id = self.read_papi()
-        players = players_by_id.values()
-        current_round = self._get_current_round(players)
-        illegal_moves: Counter[int] = self.get_illegal_moves(current_round)
-        for player in players:
+        self._players = players_by_id.values()
+        illegal_moves: Counter[int] = self.get_illegal_moves(self.current_round)
+        for player in self.players:
             player.illegal_moves = illegal_moves[player.id]
             player.tournament = self
-            self.set_player_points(player, before_round=current_round)
-        self._estimate_players(players, after_round=current_round)
+            self.set_player_points(player, before_round=self.current_round)
+        self._estimate_players(self.players, after_round=self.current_round)
+        self._players = None
         return players_by_id
 
     @property
     def players(self) -> Iterable[Player]:
+        if self._players is not None:
+            return self._players
         return self.players_by_id.values()
 
     @cached_property
@@ -523,16 +524,9 @@ class Tournament:
 
     @cached_property
     def current_round(self) -> int:
-        return self._get_current_round(self.players)
-
-    def _get_current_round(self, players: Iterable[Player]) -> int:
-        return next(
-            (
-                round_
-                for round_ in reversed(range(1, self.rounds + 1))
-                if self._round_has_pairings(players, round_)
-            ),
-            0,
+        return (
+            self.stored_tournament.current_round
+            or self.pairing_system.default_current_round(self)
         )
 
     @cached_property
@@ -542,19 +536,13 @@ class Tournament:
         ) and not self.is_round_finished(self.current_round)
 
     def read_papi(self) -> tuple[PapiTournamentInfo, dict[int, Player]]:
-        if self._papi_tournament_info is None or self._players_by_id is None:
-            if self.file_exists:
-                with PapiDatabase(self.file) as database:
-                    if self._papi_tournament_info is None:
-                        self._papi_tournament_info = database.read_info()
-                    if self._players_by_id is None:
-                        self._players_by_id = database.read_players(
-                            self.id, self._papi_tournament_info.rounds
-                        )
-            else:
-                self._papi_tournament_info = PapiTournamentInfo()
-                self._players_by_id = {}
-        return self._papi_tournament_info, self._players_by_id
+        if self.file_exists:
+            with PapiDatabase(self.file) as database:
+                info = database.read_info()
+                players = database.read_players(self.id, info.rounds)
+                return info, players
+        else:
+            return PapiTournamentInfo(), {}
 
     def check_papi_update(self):
         if not self.file_exists:
@@ -567,18 +555,13 @@ class Tournament:
         self.stored_file_modified_timestamp = self.file_modified_timestamp
 
     def clear_cache(self, clear_papi_cache: bool = False):
-        """Clears the cache of the tournament.
-        If *clear_papi_tournament_info* or *clear_players_by_id*,
-        the values will need to be fetched again from the Papi Database."""
+        """Clears the cache of the tournament."""
         cached_property_names = [
             name
             for name in dir(self)
             if isinstance(getattr(type(self), name, None), cached_property)
         ]
-        if clear_papi_cache:
-            self._players_by_id = None
-            self._papi_tournament_info = None
-        else:
+        if not clear_papi_cache:
             cached_property_names.remove('players_by_id')
             cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:
@@ -599,21 +582,20 @@ class Tournament:
             for player in self.players
         )
 
-    def round_has_result(self, round_) -> bool:
+    def round_has_result(self, round_: int) -> bool:
         return any(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.players
         )
 
-    def round_has_pairings(self, round_: int) -> bool:
-        return self._round_has_pairings(self.players, round_)
+    def round_has_played_result(self, round_: int) -> bool:
+        return any(player.pairings[round_].played for player in self.players)
 
-    @staticmethod
-    def _round_has_pairings(players: Iterable[Player], round_: int) -> bool:
+    def round_has_pairings(self, round_: int) -> bool:
         return any(
             player.pairings[round_].opponent_id is not None
             or player.pairings[round_].exempt
-            for player in players
+            for player in self.players
         )
 
     def round_has_pab(self, round_: int) -> bool:

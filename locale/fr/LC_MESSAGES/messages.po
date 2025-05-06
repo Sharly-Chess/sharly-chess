@@ -1396,6 +1396,9 @@ msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes
 msgid "End of upload (Ctrl-C)"
 msgstr "Fin de mise en ligne (Ctrl-C)"
 
+msgid "End round"
+msgstr "Terminer la ronde"
+
 msgid "End time needs to be after start time."
 msgstr "L'horaire de fin doit être après l'horaire de début."
 
@@ -2198,6 +2201,9 @@ msgstr "Homme"
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
+
+msgid "Mark this round as over and define the next one as active."
+msgstr "Marquer cette ronde comme terminée et définir la suivante comme active."
 
 #, python-format
 msgid "Max age: %(num)d minute"

@@ -1209,3 +1209,24 @@ class PairingsAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             round_=round,
         )
+
+    @put(
+        path='/admin/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',
+        name='admin-tournament-set-current-round',
+    )
+    async def htmx_admin_tournament_set_current_round(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        current_round: int,
+    ) -> Template | ClientRedirect:
+        with EventDatabase(event_uniq_id, True) as database:
+            database.set_tournament_current_round(tournament_id, current_round)
+            database.commit()
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=current_round,
+        )
