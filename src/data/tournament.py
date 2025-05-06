@@ -90,7 +90,7 @@ class Tournament:
         self.stored_file_modified_timestamp: float | None = None
         if self.file_exists:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
-        self._players: list[Player] | None = None
+        self._players: Iterable[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
@@ -396,6 +396,10 @@ class Tournament:
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
         _, players_by_id = self.read_papi()
+        # The computation of the property `current_round` needs to access a players' iterable.
+        # Calling `self.players` in the context of this function creates a circular dependency
+        # as it itself calls `self.players_by_id`.
+        # To avoid this dependency, `self._players` is temporarily allocated.
         self._players = players_by_id.values()
         illegal_moves: Counter[int] = self.get_illegal_moves(self.current_round)
         for player in self.players:
