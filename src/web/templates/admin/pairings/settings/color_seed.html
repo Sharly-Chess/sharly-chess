@@ -17,6 +17,9 @@
                 disabled=admin_tournament.started,
                 data=data, errors=errors
             ) }}
+            {% if admin_tournament.started %}
+                <input type="hidden" name="{{ setting.id }}" value="{{ data[setting.id] }}" />
+            {% endif %}
         </span>
 
     </div>

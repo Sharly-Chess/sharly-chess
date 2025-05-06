@@ -589,10 +589,8 @@ class Tournament:
 
     def pairings_generation_allowed(self, at_round: int) -> bool:
         """Check if pairing generation is allowed for round *at_round*."""
-        return (
-            not self.check_in_open
-            and self.are_pairing_settings_valid
-            and all(self.is_round_finished(round_) for round_ in range(1, at_round))
+        return self.pairing_variation.engine.is_pairings_generation_allowed(
+            self, at_round
         )
 
     def is_round_finished(self, round_: int) -> bool:
@@ -600,6 +598,15 @@ class Tournament:
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.players
         )
+
+    def round_has_result(self, round_) -> bool:
+        return any(
+            player.pairings[round_].result != Result.NO_RESULT
+            for player in self.players
+        )
+
+    def round_has_pairings(self, round_: int) -> bool:
+        return self._round_has_pairings(self.players, round_)
 
     @staticmethod
     def _round_has_pairings(players: Iterable[Player], round_: int) -> bool:

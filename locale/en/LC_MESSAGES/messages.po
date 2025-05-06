@@ -4361,8 +4361,14 @@ msgstr ""
 msgid "Unpair all the boards of this round."
 msgstr ""
 
+msgid "Unpair all the rounds the tournament."
+msgstr ""
+
 #, python-format
 msgid "Unpair round #%(round)d"
+msgstr ""
+
+msgid "Unpair tournament"
 msgstr ""
 
 msgid "Unpaired"

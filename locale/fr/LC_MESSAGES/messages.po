@@ -4361,9 +4361,15 @@ msgstr "Désapparier"
 msgid "Unpair all the boards of this round."
 msgstr "Désapparier tous les échiquiers de cette ronde."
 
+msgid "Unpair all the rounds the tournament."
+msgstr "Désapparier toutes les rondes du tournoi."
+
 #, python-format
 msgid "Unpair round #%(round)d"
 msgstr "Désapparier la ronde n°%(round)d"
+
+msgid "Unpair tournament"
+msgstr "Désapparier le tournoi"
 
 msgid "Unpaired"
 msgstr "Non-apparié·es"
