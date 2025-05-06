@@ -1,14 +1,10 @@
-> **[Retour au sommaire de la documentation](../README.md)**
->
-> ![](../src/web/static/images/papi-web-error.png)
-
-# Sharly Chess - Technical Appendix - Interfacing with _ChessEvent_
+# _Sharly Chess_ - Interfacing with _ChessEvent_
 
 _Sharly Chess_ can retrieve registrations made on the _ChessEvent_ platform by activating the _ChessEvent_ plugin:
 
-- [The _ChessEvent_ plugin](/chessevent-plugin)
+- [The _ChessEvent_ plugin](https://sharly-chess.com/chessevent-plugin) (user documentation)
 
-This page describes the technical aspects of _Sharly Chess_'s interface with the _ChessEvent_ platform.
+This page describes the technical aspects of _Sharly Chess_'s interfacing with the _ChessEvent_ platform.
 
 ## Authentication
 

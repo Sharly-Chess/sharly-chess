@@ -1,6 +1,5 @@
 import argparse
 import os
-import re
 import shutil
 from pathlib import Path
 import sys
@@ -34,8 +33,6 @@ from common.papi_web_config import PapiWebConfig
 from common.logger import (
     get_logger,
     print_interactive_info,
-    input_interactive,
-    print_interactive_error,
     print_interactive_success,
     print_interactive_warning,
 )
@@ -244,57 +241,6 @@ def build_test():
         zip_file.extractall(TEST_DIR)
 
 
-def update_readme():
-    readme: Path = Path('README.md')
-    if not re.match(r'^\d+\.\d+\.\d+$', str(PAPI_WEB_VERSION)):
-        return
-    if (
-        input_interactive(
-            f'Do you want to update {readme} with version {PAPI_WEB_VERSION} (y/N)?'
-        ).upper()
-        or 'N'
-    ) != 'Y':
-        return
-    print_interactive_info(f'Updating {readme}...')
-    lines_before_comment: list[str] = []
-    lines_after_comment: list[str] = []
-    # Read the lines until the expected comment is found
-    with open(readme, 'rt', encoding='utf-8') as f:
-        comment: str = '<!-- DO NOT EDIT! (START) -->'
-        comment_found: bool = False
-        for line in f:
-            lines_before_comment.append(line)
-            if line.startswith(comment):
-                comment_found = True
-                break
-        if not comment_found:
-            print_interactive_error(
-                f'Could not edit [{readme}] (comment [{comment}] not found).'
-            )
-            return
-        comment: str = '<!-- DO NOT EDIT! (END) -->'
-        comment_found: bool = False
-        for line in f:
-            if line.startswith(comment):
-                comment_found = True
-            if comment_found:
-                lines_after_comment.append(line)
-        if not comment_found:
-            print_interactive_error(
-                f'Could not edit [{readme}] (comment [{comment}] not found).'
-            )
-            return
-    lines: list[str] = [
-        f'- **[Télécharger la dernière version stable ({PAPI_WEB_VERSION})]'
-        '(https://github.com/papi-web-org/papi-web/releases/download/'
-        f'{PAPI_WEB_VERSION}/papi-web-{PAPI_WEB_VERSION}.zip)**\n'
-    ]
-    with open(readme, 'w', encoding='utf-8') as f:
-        for line in lines_before_comment + lines + lines_after_comment:
-            f.write(line)
-    print_interactive_success(f'Successfully updated {readme}.')
-
-
 def main():
     # option --github is used when generating the EXE file from a GITHUB action
     # to verify that the name of the tag matches the Papi-web version.
@@ -321,7 +267,6 @@ def main():
     create_zip()
     build_test()
     clean(clean_zip=False)
-    update_readme()
 
 
 main()
