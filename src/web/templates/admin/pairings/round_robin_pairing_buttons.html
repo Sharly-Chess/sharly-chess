@@ -5,13 +5,13 @@
         hx-swap-oob="true"
     {% endif %}
 >
-    {% if not admin_tournament.started %}
+    {% if not admin_tournament.is_fully_paired %}
         <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
             {{ _('Please use Papi to generate pairings.') }}
         </div>
     {% endif %}
 
-    {% if admin_tournament.pairing_system.is_tournament_unpairing_available(admin_tournament) %}
+    {% if admin_tournament.has_pairings and not admin_tournament.has_results %}
         <div {{ macros.tooltip_attributes('info', _('Unpair all the rounds the tournament.'), 'top') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"

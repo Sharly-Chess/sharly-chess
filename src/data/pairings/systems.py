@@ -206,11 +206,3 @@ class RoundRobinPairingSystem(PairingSystem):
             ),
             0,
         )
-
-    @staticmethod
-    def is_tournament_unpairing_available(tournament: 'Tournament') -> bool:
-        return all(
-            tournament.round_has_pairings(round_)
-            and not tournament.round_has_result(round_)
-            for round_ in range(1, tournament.rounds + 1)
-        )

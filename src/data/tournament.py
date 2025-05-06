@@ -534,6 +534,22 @@ class Tournament:
         )
 
     @cached_property
+    def is_fully_paired(self) -> bool:
+        return all(self.is_round_paired(round_) for round_ in range(1, self.rounds + 1))
+
+    @cached_property
+    def has_results(self) -> bool:
+        return any(
+            self.round_has_result(round_) for round_ in range(1, self.rounds + 1)
+        )
+
+    @cached_property
+    def has_pairings(self) -> bool:
+        return any(
+            self.round_has_pairings(round_) for round_ in range(1, self.rounds + 1)
+        )
+
+    @cached_property
     def playing(self) -> bool:
         return self.is_round_in_tournament(
             self.current_round
@@ -583,6 +599,13 @@ class Tournament:
     def is_round_finished(self, round_: int) -> bool:
         return all(
             player.pairings[round_].result != Result.NO_RESULT
+            for player in self.players
+        )
+
+    def is_round_paired(self, round_: int) -> bool:
+        return all(
+            player.pairings[round_].opponent_id is not None
+            or player.pairings[round_].result.is_bye
             for player in self.players
         )
 
