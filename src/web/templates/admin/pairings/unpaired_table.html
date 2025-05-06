@@ -10,7 +10,9 @@
         <tr>
             <th>{{ title }}</th>
             <th></th>
-            <th></th>
+            {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
+                <th></th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -39,41 +41,43 @@
                         </div>
                     </td>
                     <td class="{{ class }} text-end">{{ player.get_rating(admin_tournament.rating) }}</td>
-                    <td class="{{ class }} text-center" width="1">
-                        <div
-                            {% if pairing and pairing.zero_point_bye %}
-                               {{ macros.tooltip_attributes('info', _('Zero-Point Bye'), 'right') }}
-                            {% elif pairing and pairing.half_point_bye %}
-                               {{ macros.tooltip_attributes('info', _('Half-Point Bye'), 'right') }}
-                            {% elif pairing and pairing.full_point_bye %}
-                               {{ macros.tooltip_attributes('info', _('Full-Point Bye (deprecated)'), 'right') }}
-                            {% else %}
-                                {{ macros.tooltip_attributes('info', _('Pair'), 'right') }}
-                            {% endif %}
-                        >
-                            <button
-                                class="btn btn-sm btn-outline-primary py-2"
-                                style="width: 2rem; line-height: 0;"
-                                hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
-                                hx-trigger="click"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                preload
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                            >
+                    {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
+                        <td class="{{ class }} text-center" width="1">
+                            <div
                                 {% if pairing and pairing.zero_point_bye %}
-                                    <i class="bi bi-0-circle-fill"></i>
+                                   {{ macros.tooltip_attributes('info', _('Zero-Point Bye'), 'right') }}
                                 {% elif pairing and pairing.half_point_bye %}
-                                    <i class="bi bi-circle-half"></i>
+                                   {{ macros.tooltip_attributes('info', _('Half-Point Bye'), 'right') }}
                                 {% elif pairing and pairing.full_point_bye %}
-                                    <i class="bi bi-1-circle-fill"></i>
+                                   {{ macros.tooltip_attributes('info', _('Full-Point Bye (deprecated)'), 'right') }}
                                 {% else %}
-                                    <i class="bi-shuffle pe-1"></i>
+                                    {{ macros.tooltip_attributes('info', _('Pair'), 'right') }}
                                 {% endif %}
-                            </button>
-                        </div>
-                    </td>
+                            >
+                                <button
+                                    class="btn btn-sm btn-outline-primary py-2"
+                                    style="width: 2rem; line-height: 0;"
+                                    hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                                    hx-trigger="click"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    preload
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    {% if pairing and pairing.zero_point_bye %}
+                                        <i class="bi bi-0-circle-fill"></i>
+                                    {% elif pairing and pairing.half_point_bye %}
+                                        <i class="bi bi-circle-half"></i>
+                                    {% elif pairing and pairing.full_point_bye %}
+                                        <i class="bi bi-1-circle-fill"></i>
+                                    {% else %}
+                                        <i class="bi-shuffle pe-1"></i>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endwith %}
         {% endfor %}

@@ -132,6 +132,24 @@ msgstr "50+"
 msgid "65+"
 msgstr "65+"
 
+msgid "<first> and <second>"
+msgstr "<first> et <second>"
+
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr "<smart_count> jour |||| <smart_count> jours"
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr "<smart_count> heure |||| <smart_count> heures"
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr "<smart_count> minute |||| <smart_count> minutes"
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr "<smart_count> seconde |||| <smart_count> secondes"
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr "<smart_count> semaine |||| <smart_count> semaines"
+
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facultatif)."
 
@@ -4361,9 +4379,15 @@ msgstr "Désapparier"
 msgid "Unpair all the boards of this round."
 msgstr "Désapparier tous les échiquiers de cette ronde."
 
+msgid "Unpair all the rounds the tournament."
+msgstr "Désapparier toutes les rondes du tournoi."
+
 #, python-format
 msgid "Unpair round #%(round)d"
 msgstr "Désapparier la ronde n°%(round)d"
+
+msgid "Unpair tournament"
+msgstr "Désapparier le tournoi"
 
 msgid "Unpaired"
 msgstr "Non-apparié·es"

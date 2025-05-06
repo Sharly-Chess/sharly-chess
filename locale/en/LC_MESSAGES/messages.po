@@ -132,6 +132,24 @@ msgstr ""
 msgid "65+"
 msgstr ""
 
+msgid "<first> and <second>"
+msgstr ""
+
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr ""
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr ""
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr ""
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr ""
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr ""
+
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr ""
 
@@ -4361,8 +4379,14 @@ msgstr ""
 msgid "Unpair all the boards of this round."
 msgstr ""
 
+msgid "Unpair all the rounds the tournament."
+msgstr ""
+
 #, python-format
 msgid "Unpair round #%(round)d"
+msgstr ""
+
+msgid "Unpair tournament"
 msgstr ""
 
 msgid "Unpaired"
