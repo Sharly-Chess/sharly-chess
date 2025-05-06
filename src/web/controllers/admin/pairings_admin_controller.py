@@ -15,7 +15,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.event import Event
 from data.player import Player
-from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, Action
+from data.safety_mode import RoundStatus, SafetyMode, PermissionHandler, PairingAction
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
@@ -124,17 +124,23 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         self.admin_unpaired = []
         self.admin_bye_players = []
-        for player in sorted(unpaired, key=lambda p: p.last_name):
-            if player.pairings[self.admin_round] and player.pairings[
-                self.admin_round
-            ].result in (
-                Result.ZERO_POINT_BYE,
-                Result.HALF_POINT_BYE,
-                Result.FULL_POINT_BYE,
-            ):
-                self.admin_bye_players.append(player)
-            else:
-                self.admin_unpaired.append(player)
+        if (
+            self.admin_tournament
+            and self.admin_tournament.pairing_system.split_unpaired_and_bye_players
+        ):
+            for player in sorted(unpaired, key=lambda p: p.last_name):
+                if player.pairings[self.admin_round] and player.pairings[
+                    self.admin_round
+                ].result in (
+                    Result.ZERO_POINT_BYE,
+                    Result.HALF_POINT_BYE,
+                    Result.FULL_POINT_BYE,
+                ):
+                    self.admin_bye_players.append(player)
+                else:
+                    self.admin_unpaired.append(player)
+        else:
+            self.admin_unpaired = sorted(unpaired, key=lambda p: p.last_name)
 
         self.admin_board: Board | None = None
         if board_id is not None and self.admin_boards is not None:
@@ -171,14 +177,20 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        allowed_actions = []
+        existing_actions = []
+        if self.admin_tournament:
+            permission_handler = self.admin_tournament.pairing_system.permission_handler
+            allowed_actions = permission_handler.allowed_actions(
+                self.round_status, self.safety_mode
+            )
+            existing_actions = permission_handler.existing_actions(self.round_status)
         return super().template_context | {
             'admin_tournament': self.admin_tournament,
             'round_status': self.round_status,
             'safety_mode': self.safety_mode,
-            'allowed_actions': PermissionHandler.allowed_actions(
-                self.round_status, self.safety_mode
-            ),
-            'existing_actions': PermissionHandler.existing_actions(self.round_status),
+            'allowed_actions': allowed_actions,
+            'existing_actions': existing_actions,
         }
 
 
@@ -198,7 +210,7 @@ class PairingsAdminController(BaseEventAdminController):
         trigger_event: str | None = None,
         params: dict[str, Any] | None = None,
         admin_pairings_show_without_results: bool | None = None,
-        protected_action: Action | None = None,
+        protected_action: PairingAction | None = None,
     ) -> Template | ClientRedirect:
         if admin_pairings_show_without_results is not None:
             SessionHandler.set_session_admin_pairings_show_without_results(
@@ -311,7 +323,7 @@ class PairingsAdminController(BaseEventAdminController):
             'admin_unpaired': web_context.admin_unpaired,
             'admin_bye_players': web_context.admin_bye_players,
             'pairings_generation_allowed': admin_tournament
-            and (admin_tournament.pairings_generation_allowed(round_)),
+            and admin_tournament.pairings_generation_allowed(round_),
             'board': web_context.admin_board,
             'extra_row_class': 'highlight highlight-warning'
             if trigger_event == 'highlight_board_with_warning'
@@ -461,8 +473,8 @@ class PairingsAdminController(BaseEventAdminController):
                     board_id, web_context.admin_filtered_boards
                 )
         else:
-            if not PermissionHandler.validate_action(
-                Action.RESULT_UPDATE,
+            if not tournament.pairing_system.permission_handler.validate_action(
+                PairingAction.RESULT_UPDATE,
                 web_context.round_status,
                 web_context.safety_mode,
             ):
@@ -472,7 +484,7 @@ class PairingsAdminController(BaseEventAdminController):
                     tournament_id=tournament_id,
                     round_=round_,
                     modal='safety-mode',
-                    protected_action=Action.RESULT_UPDATE,
+                    protected_action=PairingAction.RESULT_UPDATE,
                 )
             tournament.add_result(
                 board,
@@ -563,8 +575,13 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=None,
             data=None,
         )
-        if not PermissionHandler.validate_action(
-            Action.MANUAL_UNPAIRING,
+        board = web_context.admin_board
+        tournament = web_context.admin_tournament
+        assert board is not None
+        assert tournament is not None
+
+        if not tournament.pairing_system.permission_handler.validate_action(
+            PairingAction.MANUAL_UNPAIRING,
             web_context.round_status,
             web_context.safety_mode,
         ):
@@ -574,12 +591,8 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament_id=tournament_id,
                 round_=round,
                 modal='safety-mode',
-                protected_action=Action.MANUAL_UNPAIRING,
+                protected_action=PairingAction.MANUAL_UNPAIRING,
             )
-        board = web_context.admin_board
-        tournament = web_context.admin_tournament
-        assert board is not None
-        assert tournament is not None
         tournament.unpair_boards([board], round)
         tournament.clear_cache()
         return self._admin_event_pairings_render(
@@ -611,8 +624,12 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=None,
             data=None,
         )
-        if not PermissionHandler.validate_action(
-            Action.COLOR_PERMUTE,
+        board = web_context.admin_board
+        tournament = web_context.admin_tournament
+        assert board is not None
+        assert tournament is not None
+        if not tournament.pairing_system.permission_handler.validate_action(
+            PairingAction.COLOR_PERMUTE,
             web_context.round_status,
             web_context.safety_mode,
         ):
@@ -622,12 +639,8 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament_id=tournament_id,
                 round_=round,
                 modal='safety-mode',
-                protected_action=Action.COLOR_PERMUTE,
+                protected_action=PairingAction.COLOR_PERMUTE,
             )
-        board = web_context.admin_board
-        tournament = web_context.admin_tournament
-        assert board is not None
-        assert tournament is not None
         tournament.permute_board_colors(board, round)
         return self._admin_event_pairings_render(
             request,
@@ -734,10 +747,16 @@ class PairingsAdminController(BaseEventAdminController):
             board_id=None,
             player_id=player_id,
         )
+        tournament = web_context.admin_tournament
+        player = web_context.admin_player
+        assert tournament is not None
+        assert player is not None
         protected_action = (
-            Action.MANUAL_PAIRING if action == 'PAIR' else Action.BYE_UPDATE
+            PairingAction.MANUAL_PAIRING
+            if action == 'PAIR'
+            else PairingAction.BYE_UPDATE
         )
-        if not PermissionHandler.validate_action(
+        if not tournament.pairing_system.permission_handler.validate_action(
             protected_action,
             web_context.round_status,
             web_context.safety_mode,
@@ -753,11 +772,6 @@ class PairingsAdminController(BaseEventAdminController):
 
         if web_context.error:
             return web_context.error
-
-        tournament = web_context.admin_tournament
-        player = web_context.admin_player
-        assert tournament is not None
-        assert player is not None
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = web_context.admin_round or 1
@@ -851,8 +865,12 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=None,
             data=None,
         )
-        if not PermissionHandler.validate_action(
-            Action.FULL_PAIRING,
+        if web_context.error:
+            return web_context.error
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        if not tournament.pairing_system.permission_handler.validate_action(
+            PairingAction.FULL_PAIRING,
             web_context.round_status,
             web_context.safety_mode,
         ):
@@ -862,17 +880,9 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament_id=tournament_id,
                 round_=round,
                 modal='safety-mode',
-                protected_action=Action.FULL_PAIRING,
+                protected_action=PairingAction.FULL_PAIRING,
             )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        if web_context.admin_tournament is None:
-            raise RuntimeError('admin_tournament not defined')
 
-        tournament = web_context.admin_tournament
-        assert tournament is not None
         tournament.pairing_variation.engine.generate_pairings(
             tournament, web_context.admin_round
         )
@@ -914,20 +924,18 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=None,
             data=None,
         )
-        PermissionHandler.validate_action(
-            Action.FULL_UNPAIRING,
+        if web_context.error:
+            return web_context.error
+        tournament = web_context.admin_tournament
+        boards = web_context.admin_boards
+        assert tournament is not None
+        assert boards is not None
+
+        tournament.pairing_system.permission_handler.validate_action(
+            PairingAction.FULL_UNPAIRING,
             web_context.round_status,
             web_context.safety_mode,
         )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        tournament = web_context.admin_tournament
-        if tournament is None:
-            raise RuntimeError('admin_tournament not defined')
-        boards = web_context.admin_boards
-        assert boards is not None
         tournament.unpair_boards(boards, round)
         tournament.clear_cache()
         return self._admin_event_pairings_render(
@@ -935,6 +943,40 @@ class PairingsAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             round_=round,
+        )
+
+    @post(
+        path='/admin/pairings/unpair-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-pairings-unpair-tournament',
+    )
+    async def admin_pairings_unpair_tournament(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+            board_id=None,
+            player_id=None,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        for round_ in reversed(range(1, tournament.rounds + 1)):
+            boards = tournament.build_boards(round_)
+            tournament.unpair_boards(boards, round_)
+        tournament.clear_cache()
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=1,
         )
 
     @post(
@@ -977,9 +1019,9 @@ class PairingsAdminController(BaseEventAdminController):
         action: str,
     ) -> Template | ClientRedirect:
         modal: str | None = 'safety-mode'
-        protected_action: Action | None = None
+        protected_action: PairingAction | None = None
         try:
-            protected_action = Action(action)
+            protected_action = PairingAction(action)
         except ValueError:
             logger.error(f'Unknown pairing action [{action}]')
             Message.error(request, _('An error occurred.'))

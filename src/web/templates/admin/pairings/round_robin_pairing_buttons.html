@@ -1,0 +1,27 @@
+<span
+    id="pairing-buttons"
+    class="d-flex gap-2"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    {% if not admin_tournament.started %}
+        <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
+            {{ _('Please use Papi to generate pairings.') }}
+        </div>
+    {% endif %}
+
+    {% if admin_tournament.pairing_system.is_tournament_unpairing_available(admin_tournament) %}
+        <div {{ macros.tooltip_attributes('info', _('Unpair all the rounds the tournament.'), 'top') }}>
+            <button
+                class="btn btn-outline-primary text-nowrap"
+                hx-post="{{ url_for('admin-pairings-unpair-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+            >
+                {{ _('Unpair tournament') }}
+            </button>
+        </div>
+    {% endif %}
+</span>

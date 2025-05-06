@@ -30,8 +30,11 @@ class PairingEngine(ABC):
     def generate_pairings(self, tournament: 'Tournament', round_: int):
         """Generate the pairings of the round *round_* for tournament *tournament*.
         Generated pairings are stored in the player pairings and in the Papi DB."""
-        if round_ > tournament.current_round + 1:
-            raise ValueError('Impossible to generate the pairings for a future round')
+        if not self.is_pairings_generation_allowed(tournament, round_):
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.uniq_id}].'
+            )
         boards = self._generate_boards(tournament, round_)
         for board in boards:
             white_player = board.white_player
@@ -49,6 +52,13 @@ class PairingEngine(ABC):
                     board.result,
                 )
         tournament.update_round_pairings(round_)
+
+    @classmethod
+    @abstractmethod
+    def is_pairings_generation_allowed(
+        cls, tournament: 'Tournament', at_round: int
+    ) -> bool:
+        """Determines if the pairings generation for round *at_round* is allowed."""
 
     def pairings_diff(
         self, tournament: 'Tournament', round_: int
@@ -96,15 +106,20 @@ class BbpPairings(PairingEngine):
     def executable_path(self) -> Path:
         return self.executable_dir / 'bbpPairings.exe'
 
-    def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
-        """Generate the pairings of a tournament's round"""
-
-        if not tournament.pairings_generation_allowed(round_):
-            raise ValueError(
-                f'Pairings generation not allowed for round {round_} '
-                f'of tournament [{tournament.uniq_id}].'
+    @classmethod
+    def is_pairings_generation_allowed(
+        cls, tournament: 'Tournament', at_round: int
+    ) -> bool:
+        return (
+            not tournament.check_in_open
+            and tournament.are_pairing_settings_valid
+            and at_round <= tournament.current_round + 1
+            and all(
+                tournament.is_round_finished(round_) for round_ in range(1, at_round)
             )
+        )
 
+    def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
         pairings_dir = TMP_DIR / 'pairings'
         pairings_dir.mkdir(exist_ok=True)
         trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
@@ -160,6 +175,16 @@ class BbpPairings(PairingEngine):
 
 
 class RoundRobinPairingEngine(PairingEngine):
+    @classmethod
+    def is_pairings_generation_allowed(
+        cls, tournament: 'Tournament', at_round: int
+    ) -> bool:
+        return (
+            not tournament.check_in_open
+            and tournament.are_pairing_settings_valid
+            and tournament.rounds == len(tournament.players_by_id) - 1
+        )
+
     def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
         # TODO implement Round-Robin pairings
         raise NotImplementedError()

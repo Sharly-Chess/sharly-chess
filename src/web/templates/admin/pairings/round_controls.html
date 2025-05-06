@@ -52,14 +52,14 @@
     <span {{ macros.tooltip_attributes('info', _('Next round'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            {% if admin_tournament.is_round_finished(admin_round) %}
-                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
-                hx-replace-url="true"
-            {% else %}
+            {% if admin_tournament.pairing_system.show_unfinished_round_modal and not admin_tournament.is_round_finished(admin_round) %}
                 hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                 preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
+            {% else %}
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
+                hx-replace-url="true"
             {% endif %}
             hx-target="body"
             hx-indicator="#please-wait"
