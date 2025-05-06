@@ -51,7 +51,7 @@ nav .btn-link:hover {
     border-bottom-right-radius: 0;
 }
 
-.please-wait {
+.htmx-indicator {
     opacity: 0;
     pointer-events: none;
     height: 80px;
@@ -63,8 +63,8 @@ nav .btn-link:hover {
     background-size: 100% auto;
     z-index: 2000;
 }
-.htmx-request .please-wait,
-.htmx-request.please-wait {
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
     opacity: 1;
     transition: opacity 200ms ease-in;
     transition-delay: 500ms;
