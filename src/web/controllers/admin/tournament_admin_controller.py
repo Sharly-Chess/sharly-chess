@@ -485,21 +485,16 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    match action:
-                        case 'update':
-                            assert admin_tournament is not None
-                            assert admin_tournament.stored_tournament is not None
-                            filename = admin_tournament.stored_tournament.filename
-                            if admin_tournament.file_exists:
-                                tie_breaks = admin_tournament.tie_breaks
-                                tie_break_1, tie_break_2, tie_break_3 = (
-                                    tie_breaks.pop(0).id if tie_breaks else None
-                                    for __ in range(3)
-                                )
-                        case 'clone' | 'create' | 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
+                    if action == 'update':
+                        assert admin_tournament is not None
+                        assert admin_tournament.stored_tournament is not None
+                        filename = admin_tournament.stored_tournament.filename
+                        if admin_tournament.file_exists:
+                            tie_breaks = admin_tournament.tie_breaks
+                            tie_break_1, tie_break_2, tie_break_3 = (
+                                tie_breaks.pop(0).id if tie_breaks else None
+                                for __ in range(3)
+                            )
 
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
                         tournament=web_context.admin_tournament
@@ -789,8 +784,22 @@ class TournamentAdminController(BaseEventAdminController):
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
-            match action:
-                case 'create' | 'clone':
+            if action == 'delete':
+                assert tournament_id is not None
+                assert web_context.admin_tournament is not None
+                event_database.delete_stored_tournament(tournament_id)
+                success_message = _(
+                    'Tournament [{tournament_uniq_id}] has been deleted.'
+                ).format(tournament_uniq_id=web_context.admin_tournament.uniq_id)
+            else:
+                if action == 'update':
+                    stored_tournament = event_database.update_stored_tournament(
+                        stored_tournament
+                    )
+                    success_message = _(
+                        'Tournament [{tournament_uniq_id}] has been updated.'
+                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                else:
                     stored_tournament = event_database.add_stored_tournament(
                         stored_tournament
                     )
@@ -848,62 +857,23 @@ class TournamentAdminController(BaseEventAdminController):
                             event_database.add_stored_screen_set(
                                 stored_screen.id, stored_tournament.id
                             )
-                    event_database.commit()
-                    if 'add_screens' in data:
-                        Message.success(
-                            request,
-                            _(
-                                'Tournament [{tournament_uniq_id}] has been created and default screens have been '
-                                'added.'
-                            ).format(tournament_uniq_id=stored_tournament.uniq_id),
-                        )
+                        success_message = _(
+                            'Tournament [{tournament_uniq_id}] has been created '
+                            'and default screens have been added.'
+                        ).format(tournament_uniq_id=stored_tournament.uniq_id)
                     else:
-                        Message.success(
-                            request,
-                            _(
-                                'Tournament [{tournament_uniq_id}] has been created.'
-                            ).format(tournament_uniq_id=stored_tournament.uniq_id),
-                        )
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_tournaments_render(
-                        request, event_uniq_id=event_uniq_id
-                    )
-                case 'update':
-                    stored_tournament = event_database.update_stored_tournament(
-                        stored_tournament
-                    )
-                    Tournament(
-                        web_context.admin_event, stored_tournament
-                    ).update_papi_database_from_stored_tournament()
-                    event_database.commit()
-                    Message.success(
-                        request,
-                        _('Tournament [{tournament_uniq_id}] has been updated.').format(
-                            tournament_uniq_id=stored_tournament.uniq_id
-                        ),
-                    )
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_tournaments_render(
-                        request, event_uniq_id=event_uniq_id
-                    )
-                case 'delete':
-                    assert web_context.admin_tournament is not None
-                    event_database.delete_stored_tournament(
-                        web_context.admin_tournament.id
-                    )
-                    event_database.commit()
-                    Message.success(
-                        request,
-                        _('Tournament [{tournament_uniq_id}] has been deleted.').format(
-                            tournament_uniq_id=web_context.admin_tournament.uniq_id
-                        ),
-                    )
-                    event_loader.clear_cache(event_uniq_id)
-                    return self._admin_event_tournaments_render(
-                        request, event_uniq_id=event_uniq_id
-                    )
-                case _:
-                    raise ValueError(f'action=[{action}]')
+                        success_message = _(
+                            'Tournament [{tournament_uniq_id}] has been created.'
+                        ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                Tournament(
+                    web_context.admin_event, stored_tournament
+                ).update_papi_database_from_stored_tournament()
+            event_database.commit()
+        Message.success(request, success_message)
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_tournaments_render(
+            request, event_uniq_id=event_uniq_id
+        )
 
     @post(
         path='/admin/tournament-create/{event_uniq_id:str}',

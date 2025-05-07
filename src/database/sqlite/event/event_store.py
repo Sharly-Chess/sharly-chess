@@ -57,6 +57,7 @@ class StoredTournament:
     stop: float | None = None
     pairing: str | None = None
     pairing_settings: dict[str, Any] | None = None
+    current_round: int | None = None
     check_in_open: bool = field(default=False)
     rounds: int = field(default=1)
     rating: int = field(default=1)

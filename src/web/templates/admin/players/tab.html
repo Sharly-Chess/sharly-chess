@@ -8,8 +8,7 @@
         style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1.5rem;"
     >
         {% call() macros.section_title() %}
-            {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
-            {{ admin_event.name }} - {{ _('Players') }}
+            {{ _('Players') }}{{ macros.doc_icon(_('players'), '') }}
         {% endcall %}
 
         <div class="flex-grow-1"></div>

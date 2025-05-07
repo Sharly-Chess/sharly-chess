@@ -1,9 +1,6 @@
 
 {% macro section_title() %}
-    <div
-        class="fs-4 bg-primary pt-1 pb-1 mt-3 mb-4 text-contrast pe-4 position-relative"
-        style="border-radius: 0 1000px 1000px 0; padding-left: 2rem; left: -1.5rem;"
-    >
+    <div class="section-title">
         {{ caller() }}
     </div>
 {% endmacro %}
@@ -57,6 +54,12 @@
         <i class="{{ _icon_class }}"></i>
     </span>
     <!-- end visibility_icon() -->
+{% endmacro %}
+
+{% macro doc_icon(url, class) %}
+    <a href="https://sharly-chess.com/{% if locale != 'en' %}{{ locale }}/{% endif %}h/{{ url }}" target="_blank" class="{{ class }}">
+        <i class="bi-info-circle"></i>
+    </a>
 {% endmacro %}
 
 {% macro event_visibility_icon(event, class) %}

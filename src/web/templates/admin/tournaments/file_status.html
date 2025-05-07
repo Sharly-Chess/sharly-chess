@@ -39,7 +39,13 @@
         const tooltip = new bootstrap.Tooltip(element);
         tooltip.{% if file_exists %}disable(){% else %}enable(){% endif %};
         {% if replacement_data %}
-            inputElement.value = {{ replacement_data|tojson }}[inputElement.name];
+            const replacementData = {{ replacement_data|tojson }};
+            if (inputElement.name in replacementData) {
+                inputElement.value = replacementData[inputElement.name];
+                inputElement.dispatchEvent(
+                    new Event('change', {bubbles: true, cancelable: true})
+                );
+            }
         {% endif %}
     });
 </script>

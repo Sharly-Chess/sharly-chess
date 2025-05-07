@@ -1396,6 +1396,9 @@ msgstr ""
 msgid "End of upload (Ctrl-C)"
 msgstr ""
 
+msgid "End round"
+msgstr ""
+
 msgid "End time needs to be after start time."
 msgstr ""
 
@@ -2197,6 +2200,9 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
+msgstr ""
+
+msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
 #, python-format
@@ -3509,6 +3515,9 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
+msgid "Simple Screens"
+msgstr ""
+
 msgid "Soft Haley system"
 msgstr ""
 
@@ -4711,10 +4720,22 @@ msgstr ""
 msgid "event ID does not match."
 msgstr ""
 
+msgid "events"
+msgstr ""
+
+msgid "events-create"
+msgstr ""
+
 msgid "no"
 msgstr ""
 
 msgid "no background image"
+msgstr ""
+
+msgid "pairings"
+msgstr ""
+
+msgid "players"
 msgstr ""
 
 msgid "players from #{first} to #{last}"
@@ -4736,6 +4757,9 @@ msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
 msgid "players on {parts} screens"
+msgstr ""
+
+msgid "players-databases"
 msgstr ""
 
 msgid "ranking from #{first} to #{last}"
@@ -4774,6 +4798,21 @@ msgstr ""
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
+msgid "screens-display-controllers"
+msgstr ""
+
+msgid "screens-families"
+msgstr ""
+
+msgid "screens-rotators"
+msgstr ""
+
+msgid "screens-simple"
+msgstr ""
+
+msgid "screens-timers"
+msgstr ""
+
 msgid "the whole ranking"
 msgstr ""
 
@@ -4790,6 +4829,9 @@ msgid "tournament"
 msgstr ""
 
 msgid "tournament ID does not match."
+msgstr ""
+
+msgid "tournaments"
 msgstr ""
 
 msgid "vs"
@@ -4837,4 +4879,3 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
