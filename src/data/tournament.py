@@ -341,7 +341,7 @@ class Tournament:
 
     @cached_property
     def papi_tournament_info(self) -> PapiTournamentInfo:
-        papi_tournament_info, _ = self.read_papi()
+        papi_tournament_info, _ = self.papi_values
         return papi_tournament_info
 
     @property
@@ -395,7 +395,7 @@ class Tournament:
 
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
-        _, players_by_id = self.read_papi()
+        _, players_by_id = self.papi_values
         # The computation of the property `current_round` needs to access a players' iterable.
         # Calling `self.players` in the context of this function creates a circular dependency
         # as it itself calls `self.players_by_id`.
@@ -555,7 +555,8 @@ class Tournament:
             self.current_round
         ) and not self.is_round_finished(self.current_round)
 
-    def read_papi(self) -> tuple[PapiTournamentInfo, dict[int, Player]]:
+    @cached_property
+    def papi_values(self) -> tuple[PapiTournamentInfo, dict[int, Player]]:
         if self.file_exists:
             with PapiDatabase(self.file) as database:
                 info = database.read_info()
@@ -582,6 +583,7 @@ class Tournament:
             if isinstance(getattr(type(self), name, None), cached_property)
         ]
         if not clear_papi_cache:
+            cached_property_names.remove('papi_values')
             cached_property_names.remove('players_by_id')
             cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:

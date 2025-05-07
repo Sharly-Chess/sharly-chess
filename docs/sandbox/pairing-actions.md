@@ -4,20 +4,22 @@ This page provides an overview of the actions in the tournaments, players, and p
 
 ## Round status definition
 
-| Round                | Definition                                                                                | FR                                 |
-|----------------------|-------------------------------------------------------------------------------------------|------------------------------------|
-| Current round        | The last round with pairings                                                              | Ronde courante (ou ronde en cours) |
-| Previous round       | The round immediately preceding the current round (N-1)                                   | Ronde précédente                   |
-| Past rounds          | The rounds preceding the previous round (N-2, N-3, ...)                                   | Rondes passées                     |
-| Next round           | The round immediately following the current round (N+1)                                   | Ronde suivante                     |
-| Future rounds        | The rounds following the next round (N+2, N+3, ...)                                       | Rondes futures                     |
-| Last published round | The last round for which the chief arbiter changed the status from "draft" to "published" | Dernière ronde publiée             |
+| Round                           | Definition                                                                                | FR                               |
+|---------------------------------|-------------------------------------------------------------------------------------------|----------------------------------|
+| Current round (or active round) | The last round with pairings (N)                                                          | Ronde courante (ou ronde active) |
+| Previous round                  | The round immediately preceding the current round (N-1)                                   | Ronde précédente                 |
+| Past rounds                     | The rounds preceding the previous round (N-2, N-3, ...)                                   | Rondes passées                   |
+| Next round                      | The round immediately following the current round (N+1)                                   | Ronde suivante                   |
+| Future rounds                   | The rounds following the next round (N+2, N+3, ...)                                       | Rondes futures                   |
+| Last published round            | The last round for which the chief arbiter changed the status from "draft" to "published" | Dernière ronde publiée           |
 
 > [!NOTE]
 > :information_source:
 > - The concept of **last published round** does not yet exist and will be implemented when Access storage is discontinued.
 > In the current version, all rounds with pairings are considered published (draft status does not exist).
-> - The concepts in the table below are tournament-specific. The concept of a displayed or selected round is relative to the web interface; it is the active round in the Pairings tab.
+> - The concepts in the table below are tournament-specific. The concept of a displayed or selected round is relative to the web interface; it is the displayed round in the Pairings tab.
+> - The current round is defined differently in the context of a Round-Robin tournament, as `the last round with pairings` is always the last one.
+> The definition shifts to `The last round with a played result` (i.e. not a bye or a forfeit result).
 
 ## Tournament modifications
 
@@ -36,7 +38,7 @@ To be completed (some tournament modifications should not be allowed after a tou
 
 | Time                                                           |  FIDE Authorized   |  Registration  | Round to<br/>recalculate<br/>pairings |      Modification<br/>ratings       |
 |----------------------------------------------------------------|:------------------:|:--------------:|:-------------------------------------:|:-----------------------------------:|
-| Before publication of round 1 pairings                         | :white_check_mark: | :white_circle: |             round 1                   |                                     |
+| Before publication of round 1 pairings                         | :white_check_mark: | :white_circle: |                round 1                |                                     |
 | Before publication of round 1 results                          | :white_check_mark: |   :pushpin:    |                round 2                |               round 1               |
 | After publication of round 2 pairings                          | :white_check_mark: |   :pushpin:    |                round 3                |               round 3               |
 | Before publication of round 2 results                          | :white_check_mark: |   :pushpin:    |                round 3                |               round 2               |
@@ -63,6 +65,9 @@ An incorrect result or color in round N can be reported (FIDE regulations):
 - The result is only used for the FIDE export, not for the final ratings or subsequent pairings.
 
 ### Action Descriptions
+
+> [!NOTE]
+> :information_source: These actions and their restrictions are only relevant in the context of a swiss tournament
 
 | Action / Round        |                     Past                      |                     Previous                      |                   Current                    |           First<br/>un<br/>paired            |                    Future                     |
 |-----------------------|:---------------------------------------------:|:-------------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|:---------------------------------------------:|
