@@ -2202,8 +2202,8 @@ msgstr "Homme"
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
 
-msgid "Mark this round as over and define the next one as active."
-msgstr "Marquer cette ronde comme terminée et définir la suivante comme active."
+msgid "Mark this round as over and define the next one as the current round."
+msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
 
 #, python-format
 msgid "Max age: %(num)d minute"

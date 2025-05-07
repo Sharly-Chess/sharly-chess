@@ -4,20 +4,20 @@ This page provides an overview of the actions in the tournaments, players, and p
 
 ## Round status definition
 
-| Round                           | Definition                                                                                | FR                               |
-|---------------------------------|-------------------------------------------------------------------------------------------|----------------------------------|
-| Current round (or active round) | The last round with pairings (N)                                                          | Ronde courante (ou ronde active) |
-| Previous round                  | The round immediately preceding the current round (N-1)                                   | Ronde précédente                 |
-| Past rounds                     | The rounds preceding the previous round (N-2, N-3, ...)                                   | Rondes passées                   |
-| Next round                      | The round immediately following the current round (N+1)                                   | Ronde suivante                   |
-| Future rounds                   | The rounds following the next round (N+2, N+3, ...)                                       | Rondes futures                   |
-| Last published round            | The last round for which the chief arbiter changed the status from "draft" to "published" | Dernière ronde publiée           |
+| Round                | Definition                                                                                | FR                                 |
+|----------------------|-------------------------------------------------------------------------------------------|------------------------------------|
+| Current round        | The last round with pairings                                                              | Ronde courante (ou ronde en cours) |
+| Previous round       | The round immediately preceding the current round (N-1)                                   | Ronde précédente                   |
+| Past rounds          | The rounds preceding the previous round (N-2, N-3, ...)                                   | Rondes passées                     |
+| Next round           | The round immediately following the current round (N+1)                                   | Ronde suivante                     |
+| Future rounds        | The rounds following the next round (N+2, N+3, ...)                                       | Rondes futures                     |
+| Last published round | The last round for which the chief arbiter changed the status from "draft" to "published" | Dernière ronde publiée             |
 
 > [!NOTE]
 > :information_source:
 > - The concept of **last published round** does not yet exist and will be implemented when Access storage is discontinued.
 > In the current version, all rounds with pairings are considered published (draft status does not exist).
-> - The concepts in the table below are tournament-specific. The concept of a displayed or selected round is relative to the web interface; it is the displayed round in the Pairings tab.
+> - The concepts in the table below are tournament-specific. The concept of a displayed or selected round is relative to the web interface; it is the active round in the Pairings tab.
 > - The current round is defined differently in the context of a Round-Robin tournament, as `the last round with pairings` is always the last one.
 > The definition shifts to `The last round with a played result` (i.e. not a bye or a forfeit result).
 

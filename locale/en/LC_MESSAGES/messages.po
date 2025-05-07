@@ -2202,7 +2202,7 @@ msgstr "Male"
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
 
-msgid "Mark this round as over and define the next one as active."
+msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
 #, python-format
