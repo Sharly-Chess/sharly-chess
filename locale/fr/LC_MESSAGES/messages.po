@@ -124,7 +124,7 @@ msgid "/managing-pairings"
 msgstr "/fr/gerer-les-appariements/"
 
 msgid "/managing-players"
-msgstr "/fr/gerer-les-joueurs-euses/"
+msgstr "/fr/gerer-les-joueureuses/"
 
 msgid "/managing-tournaments"
 msgstr "/fr/gerer-les-tournois/"
