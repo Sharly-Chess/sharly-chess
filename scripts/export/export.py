@@ -246,7 +246,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--github', type=str)
     args = parser.parse_args()
-    print(f'{args=}')
     if args.github:
         if PAPI_WEB_VERSION != Version(args.github):
             raise InvalidVersion(

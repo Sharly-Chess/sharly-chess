@@ -1,4 +1,4 @@
-{% import '/common/macros.j2' as macros %}
+{% import '/common/macros.j2' as macros with context %}
 
 {% for search_message in search_messages %}
     <li class="dropdown-item no-hover text-nowrap {{ search_message[1] }}">
