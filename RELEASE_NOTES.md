@@ -7,6 +7,7 @@
 ## Interface web
 
 - Simplification du menu principal (2.6.0)
+- Ajout de liens d'aide de l'application vers le site web (2.6.0)
 
 ### Gestion des appariements
 

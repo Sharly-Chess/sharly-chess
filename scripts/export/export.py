@@ -62,7 +62,6 @@ INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
-ICON_FILE: Path = SOURCE_DIR / 'web' / 'static' / 'images' / 'papi-web.ico'
 FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
 
 
@@ -101,7 +100,7 @@ def build_exe():
         '--hiddenimport=pyexcel_io.writers',
         '--hiddenimport=colorlog',
         '--paths=.',
-        '--icon=src/web/static/images/papi-web.ico',
+        '--icon=src/web/static/images/sharly-chess.ico',
         '--optimize',
         '1',
         'src/papi_web.py',
