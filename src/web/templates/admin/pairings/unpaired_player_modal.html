@@ -1,4 +1,4 @@
-{% import '/common/macros.j2' as macros %}
+{% import '/common/macros.j2' as macros with context %}
 
 {% with
     no_bye_possible = admin_round >= player.tournament.rounds - player.tournament.last_rounds_no_byes,
