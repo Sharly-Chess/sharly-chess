@@ -62,6 +62,10 @@ class PairingSystem(IdentifiableEntity, ABC):
         """ID of the container of the variation field in the form."""
         return f'{self.variation_field_id}_container'
 
+    @abstractmethod
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        """Get the current round to use as default when it is not defined in the DB."""
+
 
 class SwissPairingSystem(PairingSystem):
     @staticmethod
@@ -139,6 +143,17 @@ class SwissPairingSystem(PairingSystem):
         ]
         return PermissionHandler(permissions)
 
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        """Last round with pairings."""
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, tournament.rounds + 1))
+                if tournament.round_has_pairings(round_)
+            ),
+            0,
+        )
+
 
 class RoundRobinPairingSystem(PairingSystem):
     @staticmethod
@@ -181,10 +196,13 @@ class RoundRobinPairingSystem(PairingSystem):
             ]
         )
 
-    @staticmethod
-    def is_tournament_unpairing_available(tournament: 'Tournament') -> bool:
-        return all(
-            tournament.round_has_pairings(round_)
-            and not tournament.round_has_result(round_)
-            for round_ in range(1, tournament.rounds + 1)
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        """Last round with played results."""
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, tournament.rounds + 1))
+                if tournament.round_has_played_result(round_)
+            ),
+            0,
         )
