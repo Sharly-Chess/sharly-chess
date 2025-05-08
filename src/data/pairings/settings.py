@@ -144,3 +144,93 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     @property
     def options(self) -> dict[str, str]:
         return {'': '-'} | {color.value: color.name for color in BoardColor}
+
+
+class BergerNumbersSetting(PairingSetting[dict[int, int]]):
+    @staticmethod
+    def static_id() -> str:
+        return 'BERGER_NUMBERS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Berger numbers')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/berger_numbers.html'
+
+    def from_form_data(self, data: dict[str, str]) -> dict[int, int]:
+        return {
+            int(field.replace(self.player_field_base, '')): int(data[field])
+            for field in self._berger_number_fields(data)
+        }
+
+    def to_form_data(self, object_: dict[int, int]) -> dict[str, str]:
+        return {
+            self.player_field_base + str(player_id): str(pairing_number)
+            for player_id, pairing_number in object_.items()
+        }
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        pairing_numbers: set[int] = set()
+        for field in self._berger_number_fields(data):
+            value = data[field]
+            if not value or (int_value := int(value)) < 1:
+                errors[field] = _('A positive integer is expected.')
+            elif int_value > tournament.player_count:
+                errors[field] = _(
+                    "The pairing number can't be greater than the player count."
+                )
+            elif int_value in pairing_numbers:
+                errors[field] = _('The pairing number is already attributed.')
+            else:
+                pairing_numbers.add(int_value)
+        return errors
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> dict[int, int]:
+        return {
+            int(player_id): pairing_number
+            for player_id, pairing_number in value.items()
+        }
+
+    @classmethod
+    def to_stored_value(cls, object_: dict[int, int]) -> Any:
+        return {
+            str(player_id): pairing_number
+            for player_id, pairing_number in object_.items()
+        }
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> dict[int, int]:
+        return {
+            player.id: rank
+            for rank, player in tournament.players_by_starting_rank.items()
+        }
+
+    @classmethod
+    def is_valid(cls, tournament: 'Tournament') -> bool:
+        assert tournament.pairing_settings is not None
+        berger_numbers = cls.from_stored_value(
+            tournament.pairing_settings[cls.static_id()]
+        )
+        for player in tournament.players:
+            if player.id not in berger_numbers:
+                return False
+            if berger_numbers[player.id] > tournament.player_count:
+                return False
+        return True
+
+    @property
+    def player_field_base(self) -> str:
+        """Base of the ID of the form field allowing to input the berger number
+        of a player. The player ID is supposed to be concatenated to the base."""
+        return 'berger_number_'
+
+    def _berger_number_fields(self, data: dict[str, str]):
+        return [
+            field for field in data.keys() if field.startswith(self.player_field_base)
+        ]

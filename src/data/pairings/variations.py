@@ -3,8 +3,12 @@ from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairings import systems
-from data.pairings.engines import PairingEngine, BbpPairings, RoundRobinPairingEngine
-from data.pairings.settings import PairingSetting, ColorSeedSetting
+from data.pairings.engines import PairingEngine, BbpPairings, BergerPairingEngine
+from data.pairings.settings import (
+    PairingSetting,
+    ColorSeedSetting,
+    BergerNumbersSetting,
+)
 from data.pairings.systems import PairingSystem
 from data.player import Player
 from utils.entity import IdentifiableEntity
@@ -33,13 +37,6 @@ class PairingVariation(IdentifiableEntity, ABC):
     @abstractmethod
     def engine(self) -> PairingEngine:
         """Pairing engine that generates the pairings of a tournament."""
-
-    @property
-    def is_pairing_generation_implemented(self) -> bool:
-        """Flag replacing the 'Pair' button by a
-        'Generate pairings in Papi' message."""
-        # TODO remove once all Papi pairing variations have been implemented
-        return True
 
     @staticmethod
     def print_real_points(current_round: int, rounds: int) -> bool:
@@ -91,10 +88,6 @@ class RoundRobinVariation(PairingVariation, ABC):
     def system() -> PairingSystem:
         return systems.RoundRobinPairingSystem()
 
-    @property
-    def engine(self) -> PairingEngine:
-        return RoundRobinPairingEngine()
-
 
 class StandardSwissVariation(SwissVariation):
     @staticmethod
@@ -116,9 +109,9 @@ class BergerRoundRobinVariation(RoundRobinVariation):
         return _('Berger')
 
     @property
-    def is_pairing_generation_implemented(self) -> bool:
-        return False
+    def settings(self) -> list[PairingSetting]:
+        return [BergerNumbersSetting()]
 
     @property
-    def settings(self) -> list[PairingSetting]:
-        return []
+    def engine(self) -> PairingEngine:
+        return BergerPairingEngine()

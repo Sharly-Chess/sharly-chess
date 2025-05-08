@@ -5,8 +5,21 @@ from utils.tests import BaseTestCase
 
 
 class PairingTestCase(BaseTestCase):
-    """Tests for all the pairing systems. For each swiss system,
-    a tournament has been generated with Papi using the following process:
+    """Tests for all the pairing systems."""
+
+    def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
+        tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
+        tournament.set_default_pairing_settings()
+        for round_ in range(1, tournament.current_round + 1):
+            diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
+            self.assertEqual(diff, [], f'round {round_}')
+
+    # ---------------------------------------------------------------------------------
+    # Swiss pairing systems
+    # ---------------------------------------------------------------------------------
+    """
+    For each swiss system, a tournament has been generated
+    with Papi using the following process:
         - Start from a tournament with the players of the TEC exercise file*
         - Settings:
             - pair first player as white
@@ -35,13 +48,6 @@ class PairingTestCase(BaseTestCase):
     * https://tec.fide.com/2024/03/18/tie-break-exercise/
     """
 
-    def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
-        tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
-        tournament.set_default_pairing_settings()
-        for round_ in range(1, tournament.current_round + 1):
-            diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
-            self.assertEqual(diff, [], f'round {round_}')
-
     def test_swiss_tec_standard(self):
         self.assert_no_pairings_diff_in_tournament('tec-swiss')
 
@@ -62,3 +68,10 @@ class PairingTestCase(BaseTestCase):
     def _test_swiss_papi_nicois(self):
         # TODO figure out what is wrong with round 3
         self.assert_no_pairings_diff_in_tournament('papi-nicois')
+
+    # ---------------------------------------------------------------------------------
+    # Round-Robin pairing systems
+    # ---------------------------------------------------------------------------------
+
+    def test_round_robin_tec_berger(self):
+        self.assert_no_pairings_diff_in_tournament('tec-round-robin')
