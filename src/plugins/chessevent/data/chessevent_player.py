@@ -1,17 +1,75 @@
+from enum import IntEnum
 from logging import Logger
 from typing import Any
 
+from common.i18n import _
 from common.logger import get_logger
 from utils.enum import (
     PlayerGender,
     PlayerCategory,
     PlayerRatingType,
-    PlayerTitle,
 )
 from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.ffe.utils import PlayerFFELicence
 
 logger: Logger = get_logger()
+
+
+class ChessEventPlayerTitle(IntEnum):
+    """The possible FIDE titles for ChessEvent players: GM, WGM, IM, WIM, FM, WFM.
+    Also includes the "no title" case, but does not include CM nor WCM.
+    This is for Papi-compatibility reasons."""
+
+    NONE = 0
+    WOMAN_FIDE_MASTER = 1
+    FIDE_MASTER = 2
+    WOMAN_INTERNATIONAL_MASTER = 3
+    INTERNATIONAL_MASTER = 4
+    WOMAN_GRANDMASTER = 5
+    GRANDMASTER = 6
+
+    @property
+    def to_papi_value(self) -> str:
+        match self:
+            case ChessEventPlayerTitle.NONE:
+                return ''
+            case ChessEventPlayerTitle.WOMAN_FIDE_MASTER:
+                return 'ff'
+            case ChessEventPlayerTitle.FIDE_MASTER:
+                return 'f'
+            case ChessEventPlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return 'mf'
+            case ChessEventPlayerTitle.INTERNATIONAL_MASTER:
+                return 'm'
+            case ChessEventPlayerTitle.WOMAN_GRANDMASTER:
+                return 'gf'
+            case ChessEventPlayerTitle.GRANDMASTER:
+                return 'g'
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case ChessEventPlayerTitle.NONE:
+                return ''
+            case ChessEventPlayerTitle.WOMAN_FIDE_MASTER:
+                return _('WFM *** SHORT NAME FOR Woman Fide Master')
+            case ChessEventPlayerTitle.FIDE_MASTER:
+                return _('FM *** SHORT NAME FOR Fide Master')
+            case ChessEventPlayerTitle.WOMAN_INTERNATIONAL_MASTER:
+                return _('WIM *** SHORT NAME FOR Woman International Master')
+            case ChessEventPlayerTitle.INTERNATIONAL_MASTER:
+                return _('IM *** SHORT NAME FOR International Master')
+            case ChessEventPlayerTitle.WOMAN_GRANDMASTER:
+                return _('WGM *** SHORT NAME FOR Woman Grand Master')
+            case ChessEventPlayerTitle.GRANDMASTER:
+                return _('GM *** SHORT NAME FOR Grand Master')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    def __str__(self) -> str:
+        return self.short_name
 
 
 class ChessEventPlayer:
@@ -70,7 +128,9 @@ class ChessEventPlayer:
             self.blitz_rating_type = reader.get_enum(
                 'blitz_rating_type', PlayerRatingType, PlayerRatingType.ESTIMATED
             )
-            self.title = reader.get_enum('title', PlayerTitle, PlayerTitle.NONE)
+            self.title = reader.get_enum(
+                'title', ChessEventPlayerTitle, ChessEventPlayerTitle.NONE
+            )
 
             self.email = reader.get('email', str)
             self.phone = reader.get('phone', str)
