@@ -1016,6 +1016,9 @@ class PairingsAdminController(BaseEventAdminController):
         for round_ in reversed(range(1, tournament.rounds + 1)):
             boards = tournament.build_boards(round_)
             tournament.unpair_boards(boards, round_)
+        with EventDatabase(event_uniq_id, True) as database:
+            database.set_tournament_current_round(tournament_id, 0)
+            database.commit()
         tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
