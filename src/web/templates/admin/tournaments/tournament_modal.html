@@ -328,10 +328,8 @@
                 <button
                     type="submit"
                     form="modal-form"
-                    hx-indicator="#please-wait"name="add_screens"
-                    hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                    name="add_screens"
+                    class="text-nowrap white btnbtn-primary"
                 >
                     <i class="bi-floppy-fill"></i>
                     <i class="bi-plus-square-fill pe-1"></i>
