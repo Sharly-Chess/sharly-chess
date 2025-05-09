@@ -2,6 +2,7 @@ from logging import Logger
 from typing import Any
 
 from common.logger import get_logger
+from plugins.utils import PluginCoreMapper
 from utils.enum import (
     PlayerGender,
     PlayerCategory,
@@ -14,54 +15,43 @@ from plugins.ffe.utils import PlayerFFELicence
 logger: Logger = get_logger()
 
 
+class ChessEventFFELicence(PluginCoreMapper[int, PlayerFFELicence]):
+    @staticmethod
+    def _core_object_by_plugin_value() -> dict[int, PlayerFFELicence]:
+        return {
+            0: PlayerFFELicence.NONE,
+            1: PlayerFFELicence.N,
+            2: PlayerFFELicence.B,
+            3: PlayerFFELicence.A,
+        }
+
+
+class ChessEventRatingType(PluginCoreMapper[int, PlayerRatingType]):
+    @staticmethod
+    def _core_object_by_plugin_value() -> dict[int, PlayerRatingType]:
+        return {
+            1: PlayerRatingType.NATIONAL,
+            2: PlayerRatingType.ESTIMATED,
+            3: PlayerRatingType.FIDE,
+        }
+
+
+class ChessEventTitle(PluginCoreMapper[int, PlayerTitle]):
+    @staticmethod
+    def _core_object_by_plugin_value() -> dict[int, PlayerTitle]:
+        return {
+            0: PlayerTitle.NONE,
+            1: PlayerTitle.WOMAN_FIDE_MASTER,
+            2: PlayerTitle.FIDE_MASTER,
+            3: PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            4: PlayerTitle.INTERNATIONAL_MASTER,
+            5: PlayerTitle.WOMAN_GRANDMASTER,
+            6: PlayerTitle.GRANDMASTER,
+        }
+
+
 class ChessEventPlayer:
     """A class representing a player information on ChessEvent."""
-
-    @staticmethod
-    def ffe_license_from_chessevent_value(value: int) -> PlayerFFELicence:
-        match value:
-            case 0:
-                return PlayerFFELicence.NONE
-            case 1:
-                return PlayerFFELicence.N
-            case 2:
-                return PlayerFFELicence.B
-            case 3:
-                return PlayerFFELicence.A
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @staticmethod
-    def rating_type_from_chessevent_value(value: int) -> PlayerRatingType:
-        match value:
-            case 1:
-                return PlayerRatingType.NATIONAL
-            case 2:
-                return PlayerRatingType.ESTIMATED
-            case 3:
-                return PlayerRatingType.FIDE
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @staticmethod
-    def title_from_chessevent_value(value: int) -> PlayerTitle:
-        match value:
-            case 0:
-                return PlayerTitle.NONE
-            case 1:
-                return PlayerTitle.WOMAN_FIDE_MASTER
-            case 2:
-                return PlayerTitle.FIDE_MASTER
-            case 3:
-                return PlayerTitle.WOMAN_INTERNATIONAL_MASTER
-            case 4:
-                return PlayerTitle.INTERNATIONAL_MASTER
-            case 5:
-                return PlayerTitle.WOMAN_GRANDMASTER
-            case 6:
-                return PlayerTitle.GRANDMASTER
-            case _:
-                raise ValueError(f'Unknown value: {value}')
 
     def __init__(
         self,
@@ -79,7 +69,7 @@ class ChessEventPlayer:
             self.birth = float(reader.get('birth', int))
 
             self.ffe_id = reader.get('ffe_id', int)
-            self.ffe_license = self.ffe_license_from_chessevent_value(
+            self.ffe_license = ChessEventFFELicence.get_core_object(
                 reader.get('ffe_license', int)
             )
             self.ffe_license_number = reader.get('ffe_license_number', str)
@@ -91,18 +81,18 @@ class ChessEventPlayer:
                 'category', PlayerCategory, PlayerCategory.NONE
             )
             self.standard_rating = reader.get('standard_rating', int)
-            self.standard_rating_type = self.rating_type_from_chessevent_value(
+            self.standard_rating_type = ChessEventRatingType.get_core_object(
                 reader.get('standard_rating_type', int)
             )
             self.rapid_rating = reader.get('rapid_rating', int)
-            self.rapide_rating_type = self.rating_type_from_chessevent_value(
+            self.rapide_rating_type = ChessEventRatingType.get_core_object(
                 reader.get('rapid_rating_type', int)
             )
             self.blitz_rating = reader.get('blitz_rating', int)
-            self.blitz_rating_type = self.rating_type_from_chessevent_value(
+            self.blitz_rating_type = ChessEventRatingType.get_core_object(
                 reader.get('blitz_rating_type', int)
             )
-            self.title = self.title_from_chessevent_value(reader.get('title', int))
+            self.title = ChessEventTitle.get_core_object(reader.get('title', int))
 
             self.email = reader.get('email', str)
             self.phone = reader.get('phone', str)
