@@ -872,8 +872,8 @@ class PlayerRatingType(IntEnum):
 
 
 class PlayerTitle(IntEnum):
-    """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM.
-    Also includes the "no title" case, but does not include CM nor WCM.
+    """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
+    Also includes the "no title" case.
     This is for Papi-compatibility reasons."""
 
     NONE = 0

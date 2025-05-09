@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple, Protocol, Hashable
 
 from packaging.version import Version
 
@@ -181,6 +181,39 @@ class Plugin(IdentifiableEntity, ABC):
         default: Any = None,
     ) -> Any:
         return PluginUtils.get_plugin_data(self.id, plugin_data, field, default)
+
+
+class SupportsEquals(Protocol):
+    def __eq__(self, other: object) -> bool: ...
+
+
+class PluginCoreMapper[PluginType: Hashable, CoreType: SupportsEquals](ABC):
+    """Class mapping plugin specific values to objects of the core.
+    Example: map values of a database to their representation."""
+
+    @staticmethod
+    @abstractmethod
+    def _core_object_by_plugin_value() -> dict[PluginType, CoreType]:
+        """Objects from the core mapped by plugin value.
+        Every possible value should be represented."""
+
+    @classmethod
+    def get_core_object(cls, plugin_value: PluginType) -> CoreType:
+        """Retrieve the core object associated to the plugin value."""
+        return cls._core_object_by_plugin_value()[plugin_value]
+
+    @classmethod
+    def get_plugin_value(cls, core_object: CoreType) -> PluginType | None:
+        """Get a plugin value from a core object.
+        Returns None if the core object does not exist in the plugin."""
+        return next(
+            (
+                plugin_value
+                for plugin_value, mapped_core_object in cls._core_object_by_plugin_value().items()
+                if mapped_core_object == core_object
+            ),
+            None,
+        )
 
 
 @dataclass

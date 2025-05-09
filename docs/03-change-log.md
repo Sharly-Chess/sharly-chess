@@ -2,6 +2,9 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.9 - 9 mai 2025
+- Correction d'un bug sur les titres des joueur·euses importé·es depuis ChesssEvent
+
 ## Version 2.5.8 - 30 avril 2025
 - Correction d'un bug sur les droits d'inscription (#481)
 
