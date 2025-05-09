@@ -4913,36 +4913,3 @@ msgstr[1] ""
 msgid "{screen_type}-screen"
 msgstr ""
 
-#~ msgid "events"
-#~ msgstr ""
-
-#~ msgid "events-create"
-#~ msgstr ""
-
-#~ msgid "pairings"
-#~ msgstr ""
-
-#~ msgid "players"
-#~ msgstr ""
-
-#~ msgid "players-databases"
-#~ msgstr ""
-
-#~ msgid "screens-display-controllers"
-#~ msgstr ""
-
-#~ msgid "screens-families"
-#~ msgstr ""
-
-#~ msgid "screens-rotators"
-#~ msgstr ""
-
-#~ msgid "screens-single"
-#~ msgstr ""
-
-#~ msgid "screens-timers"
-#~ msgstr ""
-
-#~ msgid "tournaments"
-#~ msgstr ""
-
