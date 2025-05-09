@@ -417,11 +417,15 @@ class Tournament:
         return self.players_by_id.values()
 
     @cached_property
+    def player_count(self) -> int:
+        return len(self.players_by_id)
+
+    @cached_property
     def players_by_fide_id(self) -> dict[int, Player]:
         return {player.fide_id: player for player in self.players if player.fide_id}
 
     @cached_property
-    def players_by_trf_id(self) -> dict[int, Player]:
+    def players_by_starting_rank(self) -> dict[int, Player]:
         ordered_players = sorted(
             self.players,
             key=lambda player: player.starting_rank_sort_key,
@@ -592,9 +596,8 @@ class Tournament:
         self._players_by_rank = None
         self.event.clear_screen_cache(self.id)
 
-    def pairings_generation_allowed(self, at_round: int) -> bool:
-        """Check if pairing generation is allowed for round *at_round*."""
-        return self.pairing_variation.engine.is_pairings_generation_allowed(
+    def pairings_generation_disabled_message(self, at_round: int) -> str | None:
+        return self.pairing_variation.engine.pairings_generation_disabled_message(
             self, at_round
         )
 
@@ -652,7 +655,7 @@ class Tournament:
                     after_round=after_round,
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
                 )
-                for player in self.players_by_trf_id.values()
+                for player in self.players_by_starting_rank.values()
             ],
             federation=self.event.federation,
             xx_fields=(
@@ -668,7 +671,7 @@ class Tournament:
         )
 
     def _player_id_to_trf_id(self, player_id: int) -> int:
-        for value, player in self.players_by_trf_id.items():
+        for value, player in self.players_by_starting_rank.items():
             if player.id == player_id:
                 return value
         raise KeyError(f'Id of unknown player: {player_id}')
@@ -685,13 +688,13 @@ class Tournament:
             'XXZ': ' '.join(
                 [
                     str(trf_id)
-                    for trf_id, player in self.players_by_trf_id.items()
+                    for trf_id, player in self.players_by_starting_rank.items()
                     if next_round in player.pairings
                     and player.pairings[next_round].next_round_bye
                 ]
             ),
         }
-        for trf_id, player in self.players_by_trf_id.items():
+        for trf_id, player in self.players_by_starting_rank.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, at_round=round_)
                 for round_ in range(1, next_round + 1)
@@ -878,7 +881,7 @@ class Tournament:
             # set 0.0 tie-break values for all the players
             for player in self.players:
                 player.compute_tie_break_values(after_round=0)
-            self._players_by_rank = self.players_by_trf_id
+            self._players_by_rank = self.players_by_starting_rank
         for rank, player in self._players_by_rank.items():
             player.rank = rank
         return self._players_by_rank

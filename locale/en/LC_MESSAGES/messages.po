@@ -416,6 +416,12 @@ msgstr "Bd."
 msgid "Berger"
 msgstr ""
 
+msgid "Berger number"
+msgstr ""
+
+msgid "Berger numbers"
+msgstr ""
+
 msgid "Black"
 msgstr ""
 
@@ -1815,6 +1821,9 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
+msgid "Generate pairings for all the rounds of the tournament."
+msgstr ""
+
 msgid "Generate pairings for this round."
 msgstr ""
 
@@ -2721,6 +2730,9 @@ msgstr ""
 msgid "Pair as WHITE"
 msgstr ""
 
+msgid "Pair tournament"
+msgstr ""
+
 msgid "Pairing Allocated Bye"
 msgstr ""
 
@@ -2751,7 +2763,13 @@ msgstr ""
 msgid "Pairings for round #{round}"
 msgstr ""
 
+msgid "Pairings generated for all rounds of tournament [{tournament_uniq_id}]."
+msgstr ""
+
 msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
+msgstr ""
+
+msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr ""
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
@@ -3515,6 +3533,9 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
+msgid "Shuffle"
+msgstr ""
+
 msgid "Simple Screens"
 msgstr ""
 
@@ -3862,6 +3883,12 @@ msgstr ""
 msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
 msgstr ""
 
+msgid "The pairing number can't be greater than the player count."
+msgstr ""
+
+msgid "The pairing number is already attributed."
+msgstr ""
+
 msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
 msgstr ""
 
@@ -3966,6 +3993,9 @@ msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
 
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr ""
+
+msgid "The round count is incompatible with the number of players (expected: {expected})."
 msgstr ""
 
 msgid "The round for which the document is printed (Defaults to the last possible round)."
@@ -4162,6 +4192,9 @@ msgid "Timers: %(num)d"
 msgstr ""
 
 msgid "Today"
+msgstr ""
+
+msgid "Too few players to generate the pairings (minimum: {min})"
 msgstr ""
 
 msgid "Too many byes for player [{player_name}]."

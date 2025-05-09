@@ -1,12 +1,26 @@
 # Needs to be imported first to avoid circular import
+from data.pairings.engines import BergerPairingEngine
 from plugins import manager  # Noqa E402
 
 from utils.tests import BaseTestCase
 
 
 class PairingTestCase(BaseTestCase):
-    """Tests for all the pairing systems. For each swiss system,
-    a tournament has been generated with Papi using the following process:
+    """Tests for all the pairing systems."""
+
+    def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
+        tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
+        tournament.set_default_pairing_settings()
+        for round_ in range(1, tournament.current_round + 1):
+            diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
+            self.assertEqual(diff, [], f'round {round_}')
+
+    # ---------------------------------------------------------------------------------
+    # Swiss pairing systems
+    # ---------------------------------------------------------------------------------
+    """
+    For each swiss system, a tournament has been generated
+    with Papi using the following process:
         - Start from a tournament with the players of the TEC exercise file*
         - Settings:
             - pair first player as white
@@ -35,13 +49,6 @@ class PairingTestCase(BaseTestCase):
     * https://tec.fide.com/2024/03/18/tie-break-exercise/
     """
 
-    def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
-        tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
-        tournament.set_default_pairing_settings()
-        for round_ in range(1, tournament.current_round + 1):
-            diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
-            self.assertEqual(diff, [], f'round {round_}')
-
     def test_swiss_tec_standard(self):
         self.assert_no_pairings_diff_in_tournament('tec-swiss')
 
@@ -62,3 +69,135 @@ class PairingTestCase(BaseTestCase):
     def _test_swiss_papi_nicois(self):
         # TODO figure out what is wrong with round 3
         self.assert_no_pairings_diff_in_tournament('papi-nicois')
+
+    # ---------------------------------------------------------------------------------
+    # Berger
+    # ---------------------------------------------------------------------------------
+
+    def assert_generated_berger_table_equals_fide_table(
+        self, player_count: int, fide_table: dict[int, list[tuple[int, int]]]
+    ):
+        """Assert that the generated Berger table for *player_count* players
+        is the same as the one defined in the FIDE handbook (section C.05.Annex 1)
+        """
+        self.assertEqual(
+            BergerPairingEngine.generate_berger_table(player_count), fide_table
+        )
+
+    def test_berger_4_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            4,
+            {
+                1: [(1, 4), (2, 3)],
+                2: [(4, 3), (1, 2)],
+                3: [(2, 4), (3, 1)],
+            },
+        )
+
+    def test_berger_6_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            6,
+            {
+                1: [(1, 6), (2, 5), (3, 4)],
+                2: [(6, 4), (5, 3), (1, 2)],
+                3: [(2, 6), (3, 1), (4, 5)],
+                4: [(6, 5), (1, 4), (2, 3)],
+                5: [(3, 6), (4, 2), (5, 1)],
+            },
+        )
+
+    def test_berger_8_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            8,
+            {
+                1: [(1, 8), (2, 7), (3, 6), (4, 5)],
+                2: [(8, 5), (6, 4), (7, 3), (1, 2)],
+                3: [(2, 8), (3, 1), (4, 7), (5, 6)],
+                4: [(8, 6), (7, 5), (1, 4), (2, 3)],
+                5: [(3, 8), (4, 2), (5, 1), (6, 7)],
+                6: [(8, 7), (1, 6), (2, 5), (3, 4)],
+                7: [(4, 8), (5, 3), (6, 2), (7, 1)],
+            },
+        )
+
+    def test_berger_10_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            10,
+            {
+                1: [(1, 10), (2, 9), (3, 8), (4, 7), (5, 6)],
+                2: [(10, 6), (7, 5), (8, 4), (9, 3), (1, 2)],
+                3: [(2, 10), (3, 1), (4, 9), (5, 8), (6, 7)],
+                4: [(10, 7), (8, 6), (9, 5), (1, 4), (2, 3)],
+                5: [(3, 10), (4, 2), (5, 1), (6, 9), (7, 8)],
+                6: [(10, 8), (9, 7), (1, 6), (2, 5), (3, 4)],
+                7: [(4, 10), (5, 3), (6, 2), (7, 1), (8, 9)],
+                8: [(10, 9), (1, 8), (2, 7), (3, 6), (4, 5)],
+                9: [(5, 10), (6, 4), (7, 3), (8, 2), (9, 1)],
+            },
+        )
+
+    def test_berger_12_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            12,
+            {
+                1: [(1, 12), (2, 11), (3, 10), (4, 9), (5, 8), (6, 7)],
+                2: [(12, 7), (8, 6), (9, 5), (10, 4), (11, 3), (1, 2)],
+                3: [(2, 12), (3, 1), (4, 11), (5, 10), (6, 9), (7, 8)],
+                4: [(12, 8), (9, 7), (10, 6), (11, 5), (1, 4), (2, 3)],
+                5: [(3, 12), (4, 2), (5, 1), (6, 11), (7, 10), (8, 9)],
+                6: [(12, 9), (10, 8), (11, 7), (1, 6), (2, 5), (3, 4)],
+                7: [(4, 12), (5, 3), (6, 2), (7, 1), (8, 11), (9, 10)],
+                8: [(12, 10), (11, 9), (1, 8), (2, 7), (3, 6), (4, 5)],
+                9: [(5, 12), (6, 4), (7, 3), (8, 2), (9, 1), (10, 11)],
+                10: [(12, 11), (1, 10), (2, 9), (3, 8), (4, 7), (5, 6)],
+                11: [(6, 12), (7, 5), (8, 4), (9, 3), (10, 2), (11, 1)],
+            },
+        )
+
+    def test_berger_14_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            14,
+            {
+                1: [(1, 14), (2, 13), (3, 12), (4, 11), (5, 10), (6, 9), (7, 8)],
+                2: [(14, 8), (9, 7), (10, 6), (11, 5), (12, 4), (13, 3), (1, 2)],
+                3: [(2, 14), (3, 1), (4, 13), (5, 12), (6, 11), (7, 10), (8, 9)],
+                4: [(14, 9), (10, 8), (11, 7), (12, 6), (13, 5), (1, 4), (2, 3)],
+                5: [(3, 14), (4, 2), (5, 1), (6, 13), (7, 12), (8, 11), (9, 10)],
+                6: [(14, 10), (11, 9), (12, 8), (13, 7), (1, 6), (2, 5), (3, 4)],
+                7: [(4, 14), (5, 3), (6, 2), (7, 1), (8, 13), (9, 12), (10, 11)],
+                8: [(14, 11), (12, 10), (13, 9), (1, 8), (2, 7), (3, 6), (4, 5)],
+                9: [(5, 14), (6, 4), (7, 3), (8, 2), (9, 1), (10, 13), (11, 12)],
+                10: [(14, 12), (13, 11), (1, 10), (2, 9), (3, 8), (4, 7), (5, 6)],
+                11: [(6, 14), (7, 5), (8, 4), (9, 3), (10, 2), (11, 1), (12, 13)],
+                12: [(14, 13), (1, 12), (2, 11), (3, 10), (4, 9), (5, 8), (6, 7)],
+                13: [(7, 14), (8, 6), (9, 5), (10, 4), (11, 3), (12, 2), (13, 1)],
+            },
+        )
+
+    def test_berger_16_players_table(self):
+        fide_berger_table = {
+            1: [(1, 16), (2, 15), (3, 14), (4, 13), (5, 12), (6, 11), (7, 10), (8, 9)],
+            2: [(16, 9), (10, 8), (11, 7), (12, 6), (13, 5), (14, 4), (15, 3), (1, 2)],
+            3: [(2, 16), (3, 1), (4, 15), (5, 14), (6, 13), (7, 12), (8, 11), (9, 10)],
+            4: [(16, 10), (11, 9), (12, 8), (13, 7), (14, 6), (15, 5), (1, 4), (2, 3)],
+            5: [(3, 16), (4, 2), (5, 1), (6, 15), (7, 14), (8, 13), (9, 12), (10, 11)],
+            6: [(16, 11), (12, 10), (13, 9), (14, 8), (15, 7), (1, 6), (2, 5), (3, 4)],
+            7: [(4, 16), (5, 3), (6, 2), (7, 1), (8, 15), (9, 14), (10, 13), (11, 12)],
+            8: [(16, 12), (13, 11), (14, 10), (15, 9), (1, 8), (2, 7), (3, 6), (4, 5)],
+            9: [(5, 16), (6, 4), (7, 3), (8, 2), (9, 1), (10, 15), (11, 14), (12, 13)],
+            10: [(16, 13), (14, 12), (15, 11), (1, 10), (2, 9), (3, 8), (4, 7), (5, 6)],
+            11: [(6, 16), (7, 5), (8, 4), (9, 3), (10, 2), (11, 1), (12, 15), (13, 14)],
+            12: [(16, 14), (15, 13), (1, 12), (2, 11), (3, 10), (4, 9), (5, 8), (6, 7)],
+            13: [(7, 16), (8, 6), (9, 5), (10, 4), (11, 3), (12, 2), (13, 1), (14, 15)],
+            14: [(16, 15), (1, 14), (2, 13), (3, 12), (4, 11), (5, 10), (6, 9), (7, 8)],
+            15: [(8, 16), (9, 7), (10, 6), (11, 5), (12, 4), (13, 3), (14, 2), (15, 1)],
+        }
+        self.assert_generated_berger_table_equals_fide_table(16, fide_berger_table)
+
+    def test_berger_tec(self):
+        self.assert_no_pairings_diff_in_tournament('tec-round-robin')
+
+    def test_berger_papi(self):
+        # Papi-generated Berger tournament for 15 players.
+        # Pairing numbers are attributed as the starting rank
+        self.assert_no_pairings_diff_in_tournament('papi-berger')

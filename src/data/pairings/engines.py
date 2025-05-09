@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import subprocess
+from functools import cache
 from pathlib import Path
 from typing import TextIO, TYPE_CHECKING
 
@@ -8,9 +9,12 @@ from packaging.version import Version
 
 from common import TMP_DIR, BASE_DIR
 from common.exception import PapiWebException
+from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.pairing import Pairing
+from data.pairings.settings import BergerNumbersSetting
+from data.player import Player
 from utils.enum import TrfType, Result, BoardColor
 
 if TYPE_CHECKING:
@@ -27,10 +31,14 @@ class PairingEngine(ABC):
         Bye players should not be taken into account.
         If the pairing generation fails, raise a PapiWebException."""
 
+    @abstractmethod
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        """Returns an explanation message if the player count is invalid, or None if it is."""
+
     def generate_pairings(self, tournament: 'Tournament', round_: int):
         """Generate the pairings of the round *round_* for tournament *tournament*.
         Generated pairings are stored in the player pairings and in the Papi DB."""
-        if not self.is_pairings_generation_allowed(tournament, round_):
+        if self.pairings_generation_disabled_message(tournament, round_):
             raise ValueError(
                 f'Pairings generation not allowed for round {round_} '
                 f'of tournament [{tournament.uniq_id}].'
@@ -53,12 +61,16 @@ class PairingEngine(ABC):
                 )
         tournament.update_round_pairings(round_)
 
-    @classmethod
-    @abstractmethod
-    def is_pairings_generation_allowed(
-        cls, tournament: 'Tournament', at_round: int
-    ) -> bool:
-        """Determines if the pairings generation for round *at_round* is allowed."""
+    def pairings_generation_disabled_message(
+        self, tournament: 'Tournament', at_round: int
+    ) -> str | None:
+        """Determines if the pairings generation for round *at_round* is disabled.
+        Returns an explanation message if it is, None if it is not."""
+        if tournament.check_in_open:
+            return _('Pairings disabled while check-in is open.')
+        if not tournament.are_pairing_settings_valid:
+            return _('Settings must be configured before generating the pairings.')
+        return self.invalid_player_count_message(tournament)
 
     def pairings_diff(
         self, tournament: 'Tournament', round_: int
@@ -106,18 +118,30 @@ class BbpPairings(PairingEngine):
     def executable_path(self) -> Path:
         return self.executable_dir / 'bbpPairings.exe'
 
-    @classmethod
-    def is_pairings_generation_allowed(
-        cls, tournament: 'Tournament', at_round: int
-    ) -> bool:
-        return (
-            not tournament.check_in_open
-            and tournament.are_pairing_settings_valid
-            and at_round <= tournament.current_round + 1
-            and all(
-                tournament.is_round_finished(round_) for round_ in range(1, at_round)
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        """Returns an explanation message if the player count is invalid, or None if it is."""
+        if tournament.player_count <= tournament.rounds:
+            return _(
+                'Pairings generation not allowed if '
+                'there are fewer players than rounds.'
             )
-        )
+        return None
+
+    def pairings_generation_disabled_message(
+        self, tournament: 'Tournament', at_round: int
+    ) -> str | None:
+        if message := super().pairings_generation_disabled_message(
+            tournament, at_round
+        ):
+            return message
+        if any(
+            not tournament.is_round_finished(round_) for round_ in range(1, at_round)
+        ):
+            return _(
+                'Pairings generation not allowed if previous '
+                'rounds have missing results or unpaired players.'
+            )
+        return None
 
     def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
         pairings_dir = TMP_DIR / 'pairings'
@@ -156,12 +180,12 @@ class BbpPairings(PairingEngine):
         file.readline()  # table_count
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
-            white_player = tournament.players_by_trf_id[white_trf_id]
+            white_player = tournament.players_by_starting_rank[white_trf_id]
             if black_trf_id != cls.BYE_ID:
                 boards.append(
                     Board(
                         white_player=white_player,
-                        black_player=tournament.players_by_trf_id[black_trf_id],
+                        black_player=tournament.players_by_starting_rank[black_trf_id],
                     )
                 )
             elif not white_player.pairings[round_].next_round_bye:
@@ -174,17 +198,80 @@ class BbpPairings(PairingEngine):
         return boards
 
 
-class RoundRobinPairingEngine(PairingEngine):
-    @classmethod
-    def is_pairings_generation_allowed(
-        cls, tournament: 'Tournament', at_round: int
-    ) -> bool:
-        return (
-            not tournament.check_in_open
-            and tournament.are_pairing_settings_valid
-            and tournament.rounds == len(tournament.players_by_id) - 1
-        )
+class BergerPairingEngine(PairingEngine):
+    MIN_PLAYERS = 3
+
+    @staticmethod
+    @cache
+    def generate_berger_table(player_count: int) -> dict[int, list[tuple[int, int]]]:
+        if player_count <= 2:
+            raise ValueError(f'There must be at least 3 players, got {player_count}')
+        odd_players = player_count % 2 == 1
+        if odd_players:
+            player_count += 1
+        round_count = player_count - 1
+        previous_pairings = [
+            (i + 1, player_count - i) for i in range(player_count // 2)
+        ]
+        berger_table = {1: previous_pairings}
+        for round_ in range(2, round_count + 1):
+            pairings = previous_pairings[:]
+            if round_ % 2 == 1:
+                pairings[0] = previous_pairings[-1][1], previous_pairings[0][0]
+                pairings[-1] = previous_pairings[0][1], previous_pairings[1][0]
+            else:
+                pairings[0] = previous_pairings[0][1], previous_pairings[-1][1]
+                pairings[-1] = previous_pairings[0][0], previous_pairings[1][0]
+            for i in range(2, player_count // 2):
+                pairings[-i] = previous_pairings[i - 1][1], previous_pairings[i][0]
+            berger_table[round_] = pairings
+            previous_pairings = pairings
+        return berger_table
+
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        player_count = tournament.player_count
+        if player_count < self.MIN_PLAYERS:
+            return _(
+                'Too few players to generate the pairings (minimum: {min})'
+            ).format(min=self.MIN_PLAYERS)
+        expected_rounds = player_count if player_count % 2 == 1 else player_count - 1
+        if tournament.rounds != expected_rounds:
+            return _(
+                'The round count is incompatible with the '
+                'number of players (expected: {expected}).'
+            ).format(expected=expected_rounds)
+        return None
+
+    @staticmethod
+    def player_from_pairing_number(
+        pairing_number: int, tournament: 'Tournament'
+    ) -> Player | None:
+        player_id = BergerNumbersSetting.get_value(tournament).get(pairing_number, None)
+        if player_id:
+            return tournament.players_by_id[player_id]
+        return None
 
     def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
-        # TODO implement Round-Robin pairings
-        raise NotImplementedError()
+        boards: list[Board] = []
+        round_pairings = self.generate_berger_table(tournament.player_count)[round_]
+        player_by_pairing_number = {
+            pairing_number: tournament.players_by_id[player_id]
+            for player_id, pairing_number in BergerNumbersSetting.get_value(
+                tournament
+            ).items()
+        }
+        for pairing in round_pairings:
+            white_player = player_by_pairing_number.get(pairing[0], None)
+            black_player = player_by_pairing_number.get(pairing[1], None)
+            if not white_player or not black_player:
+                board = Board(
+                    white_player=white_player or black_player,
+                    result=Result.PAIRING_ALLOCATED_BYE,
+                )
+            else:
+                board = Board(
+                    white_player=white_player,
+                    black_player=black_player,
+                )
+            boards.append(board)
+        return boards

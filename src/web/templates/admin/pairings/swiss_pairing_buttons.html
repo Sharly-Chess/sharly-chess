@@ -7,26 +7,19 @@
 >
     {% with action='FULL_PAIRING' %}
         {% if action in existing_actions %}
-            {% if EXPERIMENTAL_FEATURES and admin_tournament.pairing_variation.is_pairing_generation_implemented %}
+            {% if EXPERIMENTAL_FEATURES %}
                 <div
                     {{ macros.tooltip_attributes(
                         'info',
-                        _('Pairings disabled while check-in is open.')
-                        if admin_tournament.check_in_open
-                        else _('Settings must be configured before generating the pairings.')
-                        if not admin_tournament.are_pairing_settings_valid
-                        else _(
-                            'Pairings generation not allowed if previous '
-                            'rounds have missing results or unpaired players.'
-                        ) if not pairings_generation_allowed
-                        else _('Generate pairings for this round.'),
+                        pairings_generation_disabled_message
+                        or _('Generate pairings for this round.'),
                         'top',
                     ) }}
                 >
                     <button
                         class="btn btn-outline-primary text-nowrap"
                         {% if action in allowed_actions %}
-                            hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                            hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                         {% else %}
                             hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
                             hx-trigger="click"
@@ -36,7 +29,7 @@
                         preload
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        {% if not pairings_generation_allowed %}
+                        {% if pairings_generation_disabled_message %}
                             disabled
                         {% endif %}
                     >

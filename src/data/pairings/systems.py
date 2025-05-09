@@ -188,13 +188,23 @@ class RoundRobinPairingSystem(PairingSystem):
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
-        always_safe_rules = {status: SafetyMode.SAFE for status in RoundStatus}
-        return PermissionHandler(
-            [
-                Permission(PairingAction.COLOR_PERMUTE, always_safe_rules),
-                Permission(PairingAction.RESULT_UPDATE, always_safe_rules),
-            ]
-        )
+        permissions = [
+            Permission(
+                PairingAction.RESULT_UPDATE,
+                {
+                    RoundStatus.PAST: SafetyMode.UNSAFE,
+                    RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
+                    RoundStatus.CURRENT: SafetyMode.SAFE,
+                    RoundStatus.NEXT: SafetyMode.SAFE,
+                    RoundStatus.FUTURE: SafetyMode.SAFE,
+                },
+            ),
+            Permission(
+                PairingAction.COLOR_PERMUTE,
+                {status: SafetyMode.FIDE_INCOMPATIBLE for status in RoundStatus},
+            ),
+        ]
+        return PermissionHandler(permissions)
 
     def default_current_round(self, tournament: 'Tournament') -> int:
         """Last round with played results."""

@@ -1,0 +1,51 @@
+<div class="d-flex justify-content-end">
+    <button
+        id="random-berger-numbers"
+        class="text-nowrap white btn btn-primary mb-2"
+    >
+        <i class="bi-shuffle"></i>
+        {{ _('Shuffle') }}
+    </button>
+</div>
+<table class="table prominent table-striped table-sm w-100 bg-light">
+    <thead>
+        <tr>
+            <th>{{ _('Players') }}</th>
+            <th></th>
+            <th>{{ _('Berger number') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in admin_tournament.players %}
+            <tr>
+                <td>{{ player.last_name }} {{ player.first_name }}</td>
+                <td class="text-start">{{ player.rating }}{{ player.rating_type }}</td>
+                <td class="berger-number-input col-12 col-md-4">
+                    {{ admin_macros.number_input(
+                        name=setting.player_field_base ~ player.id|string,
+                        label='',
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+    $('#random-berger-numbers').click(function(event) {
+        event.preventDefault();
+        const bergerInputContainers = document.getElementsByClassName('berger-number-input');
+        let bergerNumbers = Array.from(
+            { length: bergerInputContainers.length },
+            (_, index) => index + 1,
+        );
+        for (let i = bergerNumbers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [bergerNumbers[i], bergerNumbers[j]] = [bergerNumbers[j], bergerNumbers[i]];
+        }
+        for(const container of bergerInputContainers) {
+            container.querySelector('input').value = bergerNumbers.pop();
+        }
+    });
+</script>
