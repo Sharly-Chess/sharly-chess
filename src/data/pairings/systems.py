@@ -192,7 +192,7 @@ class RoundRobinPairingSystem(PairingSystem):
             Permission(
                 PairingAction.RESULT_UPDATE,
                 {
-                    RoundStatus.PAST: SafetyMode.FIDE_INCOMPATIBLE,
+                    RoundStatus.PAST: SafetyMode.UNSAFE,
                     RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
                     RoundStatus.CURRENT: SafetyMode.SAFE,
                     RoundStatus.NEXT: SafetyMode.SAFE,
