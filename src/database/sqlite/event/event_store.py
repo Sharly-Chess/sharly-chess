@@ -56,6 +56,8 @@ class StoredTournament:
     start: float | None = None
     stop: float | None = None
     pairing: str | None = None
+    pairing_settings: dict[str, Any] | None = None
+    current_round: int | None = None
     check_in_open: bool = field(default=False)
     rounds: int = field(default=1)
     rating: int = field(default=1)
@@ -161,7 +163,7 @@ class StoredRotator:
 
 
 @dataclass
-class StoredClientController:
+class StoredDisplayController:
     id: int | None
     uniq_id: str
     name: str | None
@@ -200,8 +202,8 @@ class StoredEvent:
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
-    stored_client_controllers: list[StoredClientController] = field(
-        default_factory=list[StoredClientController]
+    stored_display_controllers: list[StoredDisplayController] = field(
+        default_factory=list[StoredDisplayController]
     )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 

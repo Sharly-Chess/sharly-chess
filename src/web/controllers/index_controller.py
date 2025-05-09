@@ -1,7 +1,6 @@
 from litestar import get
 from litestar.config.response_cache import CACHE_FOREVER
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 
 from common.papi_web_config import PapiWebConfig
@@ -56,5 +55,5 @@ class IndexController(BaseController):
         request: HTMXRequest,
     ) -> Redirect:
         return Redirect(
-            request.app.route_reverse('static', file_path='/images/papi-web.ico')
+            request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
         )

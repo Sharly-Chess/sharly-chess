@@ -46,12 +46,36 @@ nav .btn-link:hover {
     color: var(--bs-nav-hover-color);
 }
 
+.section-title {
+    background-color: var(--bs-primary);
+    padding: .25rem 1.5rem 0.25rem 2rem;
+    margin: 1rem 0 1.5rem 0;
+    color: var(--pw-contrast-text);
+    position: relative;
+    left: -1.5rem;
+    border-radius: 0 1000px 1000px 0;
+    padding-left: 2rem;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.section-title:has(a > i) {
+    padding-right: 0rem;
+    margin-right: 3rem;
+}
+
+.section-title > a:has(i) {
+    position: relative;
+    left: 2.5rem;
+    top: 0.2rem;
+}
+
 .btn-group>span:not(:last-child)>.btn {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.please-wait {
+.htmx-indicator {
     opacity: 0;
     pointer-events: none;
     height: 80px;
@@ -63,8 +87,8 @@ nav .btn-link:hover {
     background-size: 100% auto;
     z-index: 2000;
 }
-.htmx-request .please-wait,
-.htmx-request.please-wait {
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
     opacity: 1;
     transition: opacity 200ms ease-in;
     transition-delay: 500ms;

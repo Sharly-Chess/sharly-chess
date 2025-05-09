@@ -90,8 +90,7 @@ class Tournament:
         self.stored_file_modified_timestamp: float | None = None
         if self.file_exists:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
-        self._players_by_id: dict[int, Player] | None = None
-        self._papi_tournament_info: PapiTournamentInfo | None = None
+        self._players: Iterable[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
@@ -342,7 +341,7 @@ class Tournament:
 
     @cached_property
     def papi_tournament_info(self) -> PapiTournamentInfo:
-        papi_tournament_info, _ = self.read_papi()
+        papi_tournament_info, _ = self.papi_values
         return papi_tournament_info
 
     @property
@@ -358,16 +357,29 @@ class Tournament:
         return self.pairing_variation.system()
 
     @property
+    def pairing_settings(self) -> dict[str, Any] | None:
+        return self.stored_tournament.pairing_settings
+
+    def set_default_pairing_settings(self):
+        stored_settings: dict[str, Any] = {
+            setting.id: setting.to_stored_value(setting.default_value(self))
+            for setting in self.pairing_variation.settings
+        }
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(self.id, stored_settings)
+            database.commit()
+        self.stored_tournament.pairing_settings = stored_settings
+
+    @cached_property
+    def are_pairing_settings_valid(self) -> bool:
+        return not self.pairing_variation.settings or (
+            self.pairing_settings is not None
+            and self.pairing_variation.validate_settings(self)
+        )
+
+    @property
     def rating(self) -> TournamentRating:
         return self.papi_tournament_info.rating
-
-    @property
-    def rating_limit1(self) -> int:
-        return self.papi_tournament_info.rating_limit1
-
-    @property
-    def rating_limit2(self) -> int:
-        return self.papi_tournament_info.rating_limit2
 
     @property
     def point_value_type(self) -> PointValueType:
@@ -383,27 +395,37 @@ class Tournament:
 
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
-        _, players_by_id = self.read_papi()
-        players = players_by_id.values()
-        current_round = self._get_current_round(players)
-        illegal_moves: Counter[int] = self.get_illegal_moves(current_round)
-        for player in players:
+        _, players_by_id = self.papi_values
+        # The computation of the property `current_round` needs to access a players' iterable.
+        # Calling `self.players` in the context of this function creates a circular dependency
+        # as it itself calls `self.players_by_id`.
+        # To avoid this dependency, `self._players` is temporarily allocated.
+        self._players = players_by_id.values()
+        illegal_moves: Counter[int] = self.get_illegal_moves(self.current_round)
+        for player in self.players:
             player.illegal_moves = illegal_moves[player.id]
             player.tournament = self
-            self.set_player_points(player, before_round=current_round)
-        self._estimate_players(players, after_round=current_round)
+            self.set_player_points(player, before_round=self.current_round)
+        self._estimate_players(self.players, after_round=self.current_round)
+        self._players = None
         return players_by_id
 
     @property
     def players(self) -> Iterable[Player]:
+        if self._players is not None:
+            return self._players
         return self.players_by_id.values()
+
+    @cached_property
+    def player_count(self) -> int:
+        return len(self.players_by_id)
 
     @cached_property
     def players_by_fide_id(self) -> dict[int, Player]:
         return {player.fide_id: player for player in self.players if player.fide_id}
 
     @cached_property
-    def players_by_trf_id(self) -> dict[int, Player]:
+    def players_by_starting_rank(self) -> dict[int, Player]:
         ordered_players = sorted(
             self.players,
             key=lambda player: player.starting_rank_sort_key,
@@ -510,16 +532,25 @@ class Tournament:
 
     @cached_property
     def current_round(self) -> int:
-        return self._get_current_round(self.players)
+        return (
+            self.stored_tournament.current_round
+            or self.pairing_system.default_current_round(self)
+        )
 
-    def _get_current_round(self, players: Iterable[Player]) -> int:
-        return next(
-            (
-                round_
-                for round_ in reversed(range(1, self.rounds + 1))
-                if self._round_has_pairings(players, round_)
-            ),
-            0,
+    @cached_property
+    def is_fully_paired(self) -> bool:
+        return all(self.is_round_paired(round_) for round_ in range(1, self.rounds + 1))
+
+    @cached_property
+    def has_results(self) -> bool:
+        return any(
+            self.round_has_result(round_) for round_ in range(1, self.rounds + 1)
+        )
+
+    @cached_property
+    def has_pairings(self) -> bool:
+        return any(
+            self.round_has_pairings(round_) for round_ in range(1, self.rounds + 1)
         )
 
     @cached_property
@@ -528,20 +559,15 @@ class Tournament:
             self.current_round
         ) and not self.is_round_finished(self.current_round)
 
-    def read_papi(self) -> tuple[PapiTournamentInfo, dict[int, Player]]:
-        if self._papi_tournament_info is None or self._players_by_id is None:
-            if self.file_exists:
-                with PapiDatabase(self.file) as database:
-                    if self._papi_tournament_info is None:
-                        self._papi_tournament_info = database.read_info()
-                    if self._players_by_id is None:
-                        self._players_by_id = database.read_players(
-                            self.id, self._papi_tournament_info.rounds
-                        )
-            else:
-                self._papi_tournament_info = PapiTournamentInfo()
-                self._players_by_id = {}
-        return self._papi_tournament_info, self._players_by_id
+    @cached_property
+    def papi_values(self) -> tuple[PapiTournamentInfo, dict[int, Player]]:
+        if self.file_exists:
+            with PapiDatabase(self.file) as database:
+                info = database.read_info()
+                players = database.read_players(self.id, info.rounds)
+                return info, players
+        else:
+            return PapiTournamentInfo(), {}
 
     def check_papi_update(self):
         if not self.file_exists:
@@ -554,18 +580,14 @@ class Tournament:
         self.stored_file_modified_timestamp = self.file_modified_timestamp
 
     def clear_cache(self, clear_papi_cache: bool = False):
-        """Clears the cache of the tournament.
-        If *clear_papi_tournament_info* or *clear_players_by_id*,
-        the values will need to be fetched again from the Papi Database."""
+        """Clears the cache of the tournament."""
         cached_property_names = [
             name
             for name in dir(self)
             if isinstance(getattr(type(self), name, None), cached_property)
         ]
-        if clear_papi_cache:
-            self._players_by_id = None
-            self._papi_tournament_info = None
-        else:
+        if not clear_papi_cache:
+            cached_property_names.remove('papi_values')
             cached_property_names.remove('players_by_id')
             cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:
@@ -574,10 +596,9 @@ class Tournament:
         self._players_by_rank = None
         self.event.clear_screen_cache(self.id)
 
-    def pairings_generation_allowed(self, at_round: int) -> bool:
-        """Check if pairing generation is allowed for round *at_round*."""
-        return not self.check_in_open and all(
-            self.is_round_finished(round_) for round_ in range(1, at_round)
+    def pairings_generation_disabled_message(self, at_round: int) -> str | None:
+        return self.pairing_variation.engine.pairings_generation_disabled_message(
+            self, at_round
         )
 
     def is_round_finished(self, round_: int) -> bool:
@@ -586,12 +607,27 @@ class Tournament:
             for player in self.players
         )
 
-    @staticmethod
-    def _round_has_pairings(players: Iterable[Player], round_: int) -> bool:
+    def is_round_paired(self, round_: int) -> bool:
+        return all(
+            player.pairings[round_].opponent_id is not None
+            or player.pairings[round_].result.is_bye
+            for player in self.players
+        )
+
+    def round_has_result(self, round_: int) -> bool:
+        return any(
+            player.pairings[round_].result != Result.NO_RESULT
+            for player in self.players
+        )
+
+    def round_has_played_result(self, round_: int) -> bool:
+        return any(player.pairings[round_].played for player in self.players)
+
+    def round_has_pairings(self, round_: int) -> bool:
         return any(
             player.pairings[round_].opponent_id is not None
             or player.pairings[round_].exempt
-            for player in players
+            for player in self.players
         )
 
     def round_has_pab(self, round_: int) -> bool:
@@ -601,10 +637,7 @@ class Tournament:
         return 1 <= round_ <= self.rounds
 
     def to_trf(
-        self,
-        trf_type: TrfType,
-        first_round_pairing: BoardColor = BoardColor.WHITE,
-        after_round: int | None = None,
+        self, trf_type: TrfType, after_round: int | None = None
     ) -> TrfTournament:
         if after_round is None:
             after_round = self.rounds
@@ -622,11 +655,11 @@ class Tournament:
                     after_round=after_round,
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
                 )
-                for player in self.players_by_trf_id.values()
+                for player in self.players_by_starting_rank.values()
             ],
             federation=self.event.federation,
             xx_fields=(
-                self._trf_xx_fields(first_round_pairing, after_round + 1)
+                self._trf_xx_fields(after_round + 1)
                 if trf_type == TrfType.TRF_BX
                 else {}
             ),
@@ -638,7 +671,7 @@ class Tournament:
         )
 
     def _player_id_to_trf_id(self, player_id: int) -> int:
-        for value, player in self.players_by_trf_id.items():
+        for value, player in self.players_by_starting_rank.items():
             if player.id == player_id:
                 return value
         raise KeyError(f'Id of unknown player: {player_id}')
@@ -646,20 +679,22 @@ class Tournament:
     def _player_id_to_rank(self, player_id: int) -> int:
         return self.players_by_id[player_id].rank
 
-    def _trf_xx_fields(self, first_round_pairing: BoardColor, next_round: int):
+    def _trf_xx_fields(self, next_round: int):
+        from data.pairings.settings import ColorSeedSetting
+
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
-            'XXC': first_round_pairing.to_trf_first_round_pairing,
+            'XXC': ColorSeedSetting.get_value(self).to_trf_first_round_pairing,
             'XXZ': ' '.join(
                 [
                     str(trf_id)
-                    for trf_id, player in self.players_by_trf_id.items()
+                    for trf_id, player in self.players_by_starting_rank.items()
                     if next_round in player.pairings
                     and player.pairings[next_round].next_round_bye
                 ]
             ),
         }
-        for trf_id, player in self.players_by_trf_id.items():
+        for trf_id, player in self.players_by_starting_rank.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, at_round=round_)
                 for round_ in range(1, next_round + 1)
@@ -846,7 +881,7 @@ class Tournament:
             # set 0.0 tie-break values for all the players
             for player in self.players:
                 player.compute_tie_break_values(after_round=0)
-            self._players_by_rank = self.players_by_trf_id
+            self._players_by_rank = self.players_by_starting_rank
         for rank, player in self._players_by_rank.items():
             player.rank = rank
         return self._players_by_rank
@@ -1175,14 +1210,13 @@ class Tournament:
         if not self.file_exists:
             return
         with self.papi_write_database as papi_database:
-            if self.stored_tie_breaks is not None:
-                papi_database.update_tie_breaks(
-                    [
-                        tie_break
-                        for tie_break in self.stored_tie_breaks
-                        if tie_break.papi_id is not None
-                    ]
-                )
+            papi_database.update_tie_breaks(
+                [
+                    tie_break
+                    for tie_break in self.stored_tie_breaks or []
+                    if tie_break.papi_id is not None
+                ]
+            )
             papi_info: dict[PapiVariable, str | int] = {
                 PapiVariable.ROUNDS: self.stored_rounds,
                 PapiVariable.RATING: self.stored_rating.to_papi_value,

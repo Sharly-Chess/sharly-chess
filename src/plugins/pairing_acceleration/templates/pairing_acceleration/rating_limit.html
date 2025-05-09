@@ -1,0 +1,31 @@
+<div class="row mb-3">
+    {% with recommended=setting.recommended_value(admin_tournament) %}
+        {{ admin_macros.number_input(
+            name=setting.id,
+            label=_('%(string)s:', string=setting.name),
+            help_text=_(
+                'Rating splitting groups A and B (recommended: %(recommended)d).',
+                recommended=recommended,
+            ) if recommended else _('Rating splitting groups A and B.'),
+            data=data, errors=errors
+        ) }}
+    {% endwith %}
+</div>
+{% with group_counts=setting.group_counts(admin_tournament, data[setting.id]|int) %}
+    <div class="row mb-3">
+        <span>
+            {{ _('%(string)s:', string=_('Groups')) }}
+            <span> A (<b id="group-a">{{ group_counts[0] }}</b>) - </span>
+            <span>B (<b id="group-b">{{ group_counts[1] }}</b>)</span>
+        </span>
+        <script>
+            $('#{{ setting.id|replace('_', '-') }}').change(function () {
+                const ratings = {{ setting.player_ratings(admin_tournament)|tojson }};
+                const ratingLimit = $(this).val() || 0;
+                const groupA = ratings.filter(value => ratingLimit <= value).length;
+                $('#group-a').html(groupA);
+                $('#group-b').html(ratings.length - groupA);
+            });
+        </script>
+    </div>
+{% endwith %}

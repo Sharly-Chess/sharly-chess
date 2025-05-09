@@ -19,8 +19,8 @@ from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
 
 from plugins.manager import plugin_manager
-from web.controllers.admin.client_controller_admin_controller import (
-    ClientControllerAdminController,
+from web.controllers.admin.display_controller_admin_controller import (
+    DisplayControllerAdminController,
 )
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
@@ -78,7 +78,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     FamilyAdminController,
     RotatorAdminController,
     PlayerAdminController,
-    ClientControllerAdminController,
+    DisplayControllerAdminController,
     FideSearchController,
     static_files_router,
     # Plugin controllers

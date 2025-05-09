@@ -1,113 +1,111 @@
-{% import '/common/macros.j2' as macros %}
+{% import '/common/macros.j2' as macros with context %}
 
-<div style="--bs-modal-width: min(90vw, 600px);">
-    <div class="modal-dialog modal-dialog-centered pairing-modal">
-        <div class="modal-content bg-secondary-subtle">
-            <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('Protected pairings editing') }}</div>
-            </div>
-            <div class="modal-body">
-                {% if required_mode == 'FIDE_INCOMPATIBLE' and not admin_tournament.finished %}
-                    <h5 class="text-danger">
-                        {{ _('Warning: you are trying to execute an operation forbidden by the FIDE rules.') }}
-                    </h5>
-                {% endif %}
-                {% if action == 'FULL_UNPAIRING' %}
+<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog modal-dialog-centered pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">{{ _('Protected pairings editing') }}</div>
+        </div>
+        <div class="modal-body">
+            {% if required_mode == 'FIDE_INCOMPATIBLE' and not admin_tournament.finished %}
+                <h5 class="text-danger">
+                    {{ _('Warning: you are trying to execute an operation forbidden by the FIDE rules.') }}
+                </h5>
+            {% endif %}
+            {% if action == 'FULL_UNPAIRING' %}
+                <p>
+                    {{ _(
+                        'Unpairing a published round can be very inconvenient for players. '
+                        'Additionally, you will lose all data associated with this round, '
+                        'including results and manual adjustments.'
+                    ) }}
+                </p>
+                <p>
+                    {{ _(
+                        'For these reasons, it is strongly discouraged to unpair a round. '
+                        'It is instead recommended to use manual pairings to handle unusual situations.'
+                    ) }}
+                </p>
+            {% elif round_status == 'NEXT' and action == 'MANUAL_PAIRING' %}
+                <p>
+                    {{ _(
+                        'Pairings should strictly abide by the rules of the tournament, '
+                        'and not be biased by the arbiter. For this reason, '
+                        'pairing manually is strongly discouraged.'
+                    ) }}
+                </p>
+                <h6>
+                    {{ _('Do you want to allow manual pairings for this round?') }}
+                </h6>
+            {% else %}
+                <h6>
+                    {{
+                        _('Displayed round: %(round)d', round=admin_round) ~ ' - ' ~
+                        _('Current round: %(round)d', round=admin_tournament.current_round)
+                    }}
+                </h6>
+                {% if required_mode == 'FIDE_INCOMPATIBLE' and round_status == 'PAST' %}
                     <p>
                         {{ _(
-                            'Unpairing a published round can be very inconvenient for players. '
-                            'Additionally, you will lose all data associated with this round, '
-                            'including results and manual adjustments.'
-                        ) }}
-                    </p>
-                    <p>
-                        {{ _(
-                            'For these reasons, it is strongly discouraged to unpair a round. '
-                            'It is instead recommended to use manual pairings to handle unusual situations.'
-                        ) }}
-                    </p>
-                {% elif round_status == 'NEXT' and action == 'MANUAL_PAIRING' %}
-                    <p>
-                        {{ _(
-                            'Pairings should strictly abide by the rules of the tournament, '
-                            'and not be biased by the arbiter. For this reason, '
-                            'pairing manually is strongly discouraged.'
+                            'The FIDE rules stipulate that only the pairings of the round '
+                            '<b>prior</b> to the current one may be modified. Changes to '
+                            'pairings previous to this should be made at the <b>end</b> of '
+                            'the tournament, <b>after</b> the rankings have been published, '
+                            'and solely for the computation of the FIDE ratings.'
                         ) }}
                     </p>
                     <h6>
-                        {{ _('Do you want to allow manual pairings for this round?') }}
+                        {{ _('Do you want to allow the pairings to be edited for this round?') }}
                     </h6>
-                {% else %}
-                    <h6>
-                        {{
-                            _('Displayed round: %(round)d', round=admin_round) ~ ' - ' ~
-                            _('Current round: %(round)d', round=admin_tournament.current_round)
-                        }}
-                    </h6>
-                    {% if required_mode == 'FIDE_INCOMPATIBLE' and round_status == 'PAST' %}
-                        <p>
+                {% elif required_mode == 'UNSAFE' %}
+                    <p>
+                        {% if round_status == 'PREVIOUS' %}
                             {{ _(
-                                'The FIDE rules stipulate that only the pairings of the round '
-                                '<b>prior</b> to the current one may be modified. Changes to '
-                                'pairings previous to this should be made at the <b>end</b> of '
-                                'the tournament, <b>after</b> the rankings have been published, '
-                                'and solely for the computation of the FIDE ratings.'
+                                'You are trying to modify the pairings of the previous round. '
+                                'This will have an impact on pairings and rankings of all future rounds.'
                             ) }}
-                        </p>
-                        <h6>
-                            {{ _('Do you want to allow the pairings to be edited for this round?') }}
-                        </h6>
-                    {% elif required_mode == 'UNSAFE' %}
-                        <p>
-                            {% if round_status == 'PREVIOUS' %}
-                                {{ _(
-                                    'You are trying to modify the pairings of the previous round. '
-                                    'This will have an impact on pairings and rankings of all future rounds.'
-                                ) }}
-                            {% elif round_status == 'CURRENT' %}
-                                {{ _(
-                                    'You are trying to manually edit the pairings of the current round. '
-                                    'Pairings should only be altered to handle unusual situations.'
-                                ) }}
-                            {% endif %}
-                        </p>
-                        <h6>
-                            {{ _('Are you sure you wish to proceed?') }}
-                        </h6>
-                    {% endif %}
+                        {% elif round_status == 'CURRENT' %}
+                            {{ _(
+                                'You are trying to manually edit the pairings of the current round. '
+                                'Pairings should only be altered to handle unusual situations.'
+                            ) }}
+                        {% endif %}
+                    </p>
+                    <h6>
+                        {{ _('Are you sure you wish to proceed?') }}
+                    </h6>
                 {% endif %}
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
-                    <i class="bi-x-circle-fill pe-1"></i>
-                    {{ _('Cancel') }}
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            {% if action == 'FULL_UNPAIRING' %}
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                >
+                    {{ _('Unpair round #%(round)d', round=admin_round) }}
                 </button>
-                {% if action == 'FULL_UNPAIRING' %}
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                    >
-                        {{ _('Unpair round #%(round)d', round=admin_round) }}
-                    </button>
-                {% else %}
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        hx-post="{{ url_for('admin-pairings-update-safety-mode', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, mode=required_mode) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                            <i class="bi-check-circle-fill pe-1"></i>
-                            {% if required_mode == 'FIDE_INCOMPATIBLE' %}
-                                {{ _('Allow') }}
-                            {% else %}
-                                {{ _('Proceed') }}
-                            {% endif %}
-                    </button>
-                {% endif %}
-            </div>
+            {% else %}
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-post="{{ url_for('admin-pairings-update-safety-mode', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, mode=required_mode) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                        <i class="bi-check-circle-fill pe-1"></i>
+                        {% if required_mode == 'FIDE_INCOMPATIBLE' %}
+                            {{ _('Allow') }}
+                        {% else %}
+                            {{ _('Proceed') }}
+                        {% endif %}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>

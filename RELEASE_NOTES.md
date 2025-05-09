@@ -7,6 +7,7 @@
 ## Interface web
 
 - Simplification du menu principal (2.6.0)
+- Ajout de liens d'aide de l'application vers le site web (2.6.0)
 
 ### Gestion des appariements
 
@@ -15,6 +16,6 @@
 - Ajout de l'appariement suisse classique et accéléré (2.6.0 expérimental)
 - Ajout des exports PGN et TRF16 (2.6.0 expérimental)
 
-### Gestion des clients
+### Gestion des afficheurs
 
-- Ajout des contrôleurs de clients (2.6.0)
+- Ajout des pilotes d'afficheurs (2.6.0)

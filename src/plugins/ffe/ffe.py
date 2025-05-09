@@ -8,7 +8,7 @@ from decimal import Decimal
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, override
 
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
@@ -63,8 +63,7 @@ class FfePlugin(Plugin):
     @property
     def description(self) -> str:
         return _(
-            'French Federation specific features '
-            '(player search, leagues, Papi compatibility)'
+            'French Federation specific features (player search, leagues, Papi compatibility)'
         )
 
     @property
@@ -723,7 +722,7 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_extra_tie_break_classes(self) -> list[type[TieBreak]]:
         return [
-            ffe_tie_breaks.PapiBuchholzTieBreak,
+            ffe_tie_breaks.PapiStandardBuchholzTieBreak,
             ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
             ffe_tie_breaks.PapiMedianBuchholzTieBreak,
             ffe_tie_breaks.PapiPerformanceTieBreak,

@@ -5,7 +5,7 @@
 /docs @Amaras
 
 # changes due to i18n scripts have no owner, might be changed later
-/docs/86-i18n.md
+/docs/technical-appendices/i18n.md
 /locale
 
 # In the future, plugins might have code owners

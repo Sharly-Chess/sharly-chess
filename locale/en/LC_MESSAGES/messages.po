@@ -132,6 +132,24 @@ msgstr ""
 msgid "65+"
 msgstr ""
 
+msgid "<first> and <second>"
+msgstr ""
+
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr ""
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr ""
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr ""
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr ""
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr ""
+
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
 msgstr ""
 
@@ -199,7 +217,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-msgid "Add a client controller to the event."
+msgid "Add a display controller to the event."
 msgstr ""
 
 msgid "Add a family of screens to display the pairings by alphabetical order."
@@ -289,7 +307,7 @@ msgstr ""
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
-msgid "Any number of devices can be controlled by the same client controller."
+msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
@@ -396,6 +414,12 @@ msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
 
 msgid "Berger"
+msgstr ""
+
+msgid "Berger number"
+msgstr ""
+
+msgid "Berger numbers"
 msgstr ""
 
 msgid "Black"
@@ -636,36 +660,6 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
-msgid "Client Controllers"
-msgstr ""
-
-msgid "Client Controllers ({num})"
-msgstr ""
-
-msgid "Client controller"
-msgstr ""
-
-msgid "Client controller [{client_controller_uniq_id}] has been created."
-msgstr ""
-
-msgid "Client controller [{client_controller_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Client controller [{client_controller_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Client controller [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Client controller creation"
-msgstr ""
-
-msgid "Client controllers ({num})"
-msgstr ""
-
-msgid "Client controllers allow you to control screens at your event from your main computer."
-msgstr ""
-
 msgid "Clone"
 msgstr ""
 
@@ -754,6 +748,9 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Configure the settings of the pairing system."
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -802,10 +799,10 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-msgid "Create a client controller"
+msgid "Create a display controller"
 msgstr ""
 
-msgid "Create a client controller now to get started."
+msgid "Create a display controller now to get started."
 msgstr ""
 
 msgid "Create a family now to get started."
@@ -841,7 +838,7 @@ msgstr ""
 msgid "Create and add default screens"
 msgstr ""
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a client controller rather than a specific screen, family or rotator."
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr ""
 
 msgid "Create file"
@@ -959,7 +956,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid "Delete the client controller."
+msgid "Delete the display controller."
 msgstr ""
 
 msgid "Delete the rotator."
@@ -978,7 +975,7 @@ msgid "Deletion date"
 msgstr ""
 
 #, python-format
-msgid "Deletion of client controller [%(client_controller_uniq_id)s]"
+msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1028,6 +1025,33 @@ msgid "Display"
 msgstr ""
 
 msgid "Display all the players, paired and unpaired"
+msgstr ""
+
+msgid "Display controller"
+msgstr ""
+
+msgid "Display controller [{display_controller_uniq_id}] has been created."
+msgstr ""
+
+msgid "Display controller [{display_controller_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Display controller [{display_controller_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Display controller [{uniq_id}] already exists."
+msgstr ""
+
+msgid "Display controller creation"
+msgstr ""
+
+msgid "Display controllers"
+msgstr ""
+
+msgid "Display controllers ({num})"
+msgstr ""
+
+msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr ""
 
 msgid "Display link not found, check that a Papi file has already been sent."
@@ -1189,7 +1213,7 @@ msgstr ""
 msgid "E.g.: Main tournament"
 msgstr ""
 
-msgid "E.g.: My client controller"
+msgid "E.g.: My display controller"
 msgstr ""
 
 msgid "E.g.: My favourite club!"
@@ -1228,7 +1252,7 @@ msgstr ""
 msgid "E.g.: World championship"
 msgstr ""
 
-msgid "E.g.: c:\\chess\tournaments"
+msgid "E.g.: c:\\chess\\tournaments"
 msgstr ""
 
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
@@ -1252,7 +1276,7 @@ msgstr ""
 msgid "E.g.: main"
 msgstr ""
 
-msgid "E.g.: my-client-controller"
+msgid "E.g.: my-display-controller"
 msgstr ""
 
 msgid "E.g.: my-rotator"
@@ -1285,7 +1309,7 @@ msgstr ""
 msgid "Edit the player's tournament record."
 msgstr ""
 
-msgid "Edit the properties of the client controller."
+msgid "Edit the properties of the display controller."
 msgstr ""
 
 msgid "Edit the properties of the rotator."
@@ -1310,11 +1334,11 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
 #, python-format
-msgid "Edition of client controller [%(client_controller_uniq_id)s]"
+msgid "Edition of default timers for event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgid "Edition of display controller [%(display_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1376,6 +1400,9 @@ msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
 msgid "End of upload (Ctrl-C)"
+msgstr ""
+
+msgid "End round"
 msgstr ""
 
 msgid "End time needs to be after start time."
@@ -1794,6 +1821,9 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
+msgid "Generate pairings for all the rounds of the tournament."
+msgstr ""
+
 msgid "Generate pairings for this round."
 msgstr ""
 
@@ -1816,6 +1846,17 @@ msgid "Go to the screen."
 msgstr ""
 
 msgid "Grand Master"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
 msgstr ""
 
 msgid "Haley system"
@@ -2145,6 +2186,9 @@ msgstr ""
 msgid "Loss"
 msgstr ""
 
+msgid "Lower rating limit"
+msgstr ""
+
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
@@ -2165,6 +2209,9 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
+msgstr ""
+
+msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
 #, python-format
@@ -2309,7 +2356,7 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
-msgid "New client controller"
+msgid "New display controller"
 msgstr ""
 
 msgid "New event"
@@ -2373,12 +2420,6 @@ msgstr ""
 msgid "No category"
 msgstr ""
 
-msgid "No client controllers"
-msgstr ""
-
-msgid "No client controllers."
-msgstr ""
-
 msgid "No current events."
 msgstr ""
 
@@ -2389,6 +2430,12 @@ msgid "No directory set for Papi files, by default [{path}]."
 msgstr ""
 
 msgid "No directory set for the Papi file, by default [{path}]."
+msgstr ""
+
+msgid "No display controllers"
+msgstr ""
+
+msgid "No display controllers."
 msgstr ""
 
 msgid "No errors"
@@ -2606,7 +2653,7 @@ msgstr ""
 msgid "Only arbiters can see private screens."
 msgstr ""
 
-msgid "Only arbiters can view private client controllers."
+msgid "Only arbiters can view private display controllers."
 msgstr ""
 
 msgid "Only arbiters can view private rotators."
@@ -2683,7 +2730,13 @@ msgstr ""
 msgid "Pair as WHITE"
 msgstr ""
 
+msgid "Pair tournament"
+msgstr ""
+
 msgid "Pairing Allocated Bye"
+msgstr ""
+
+msgid "Pairing settings"
 msgstr ""
 
 msgid "Pairing system"
@@ -2710,7 +2763,13 @@ msgstr ""
 msgid "Pairings for round #{round}"
 msgstr ""
 
+msgid "Pairings generated for all rounds of tournament [{tournament_uniq_id}]."
+msgstr ""
+
 msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
+msgstr ""
+
+msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr ""
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
@@ -2862,6 +2921,9 @@ msgstr ""
 msgid "Please choose the event:"
 msgstr ""
 
+msgid "Please choose the seed color."
+msgstr ""
+
 msgid "Please choose the tournament."
 msgstr ""
 
@@ -2883,16 +2945,16 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
-msgid "Please enter the client controller ID."
-msgstr ""
-
-msgid "Please enter the client controller name."
-msgstr ""
-
 msgid "Please enter the date of birth."
 msgstr ""
 
 msgid "Please enter the date of the first hour."
+msgstr ""
+
+msgid "Please enter the display controller ID."
+msgstr ""
+
+msgid "Please enter the display controller name."
 msgstr ""
 
 msgid "Please enter the end date of the event."
@@ -3054,7 +3116,7 @@ msgstr ""
 msgid "Pts *** POINTS FOR PRINT VIEW"
 msgstr "Pts"
 
-msgid "Public client controller"
+msgid "Public display controller"
 msgstr ""
 
 msgid "Public event"
@@ -3081,6 +3143,9 @@ msgstr "R %(round)d"
 
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
+
+msgid "Randomly select a seed color."
+msgstr ""
 
 msgid "Ranking"
 msgstr ""
@@ -3129,6 +3194,23 @@ msgstr ""
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
+msgid "Rating limit"
+msgstr ""
+
+#, python-format
+msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
+msgstr ""
+
+msgid "Rating splitting groups A and B."
+msgstr ""
+
+#, python-format
+msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
+msgstr ""
+
+msgid "Rating splitting groups B and C."
+msgstr ""
+
 msgid "Rating:"
 msgstr ""
 
@@ -3162,7 +3244,7 @@ msgstr ""
 msgid "Remove the player from the event."
 msgstr ""
 
-msgid "Remove the screen from the client controller."
+msgid "Remove the screen from the display controller."
 msgstr ""
 
 msgid "Renaming the database failed: {ex}."
@@ -3218,7 +3300,7 @@ msgstr ""
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
 msgid "Rotator [{rotator_uniq_id}] has been created."
@@ -3343,7 +3425,7 @@ msgstr ""
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
-msgid "Screen [{screen_uniq_id}] has been assigned to controller [{client_controller_uniq_id}]."
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been created."
@@ -3393,6 +3475,12 @@ msgstr ""
 msgid "Searching..."
 msgstr ""
 
+msgid "Seed color"
+msgstr ""
+
+msgid "Seed color can't be modified once the tournament has started."
+msgstr ""
+
 msgid "Select the players and the data to update:"
 msgstr ""
 
@@ -3410,6 +3498,12 @@ msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...
 msgstr ""
 
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings must be configured before generating the pairings."
 msgstr ""
 
 msgid "Sharly Chess project"
@@ -3437,6 +3531,12 @@ msgid "Show/hide the results screens."
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+msgid "Shuffle"
+msgstr ""
+
+msgid "Simple Screens"
 msgstr ""
 
 msgid "Soft Haley system"
@@ -3505,7 +3605,7 @@ msgstr ""
 msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr ""
 
-msgid "Swiss system"
+msgid "Swiss"
 msgstr ""
 
 msgid "T *** THE LETTER TO ANSWER TEST"
@@ -3577,7 +3677,7 @@ msgstr ""
 msgid "The Unique ID, used for data storage and export."
 msgstr ""
 
-msgid "The Unique ID, used to reference the client controller."
+msgid "The Unique ID, used to reference the display controller."
 msgstr ""
 
 msgid "The Unique ID, used to reference the rotator."
@@ -3605,6 +3705,9 @@ msgid "The background colour of the alert messages."
 msgstr ""
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr ""
+
+msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
@@ -3711,7 +3814,7 @@ msgstr ""
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr ""
 
-msgid "The name of the client controller, optional."
+msgid "The name of the display controller, optional."
 msgstr ""
 
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3778,6 +3881,12 @@ msgid "The number of the last board to select, optional (the last board by defau
 msgstr ""
 
 msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgstr ""
+
+msgid "The pairing number can't be greater than the player count."
+msgstr ""
+
+msgid "The pairing number is already attributed."
 msgstr ""
 
 msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
@@ -3886,13 +3995,16 @@ msgstr ""
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr ""
 
+msgid "The round count is incompatible with the number of players (expected: {expected})."
+msgstr ""
+
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
-msgid "The screens displayed by the client controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the administrator."
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -3950,10 +4062,10 @@ msgstr ""
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
-msgid "This client controller is private (not visible by the users)."
+msgid "This display controller is private (not visible by the users)."
 msgstr ""
 
-msgid "This client controller is public (visible by the users)."
+msgid "This display controller is public (visible by the users)."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the users)."
@@ -4006,6 +4118,9 @@ msgid "Tie-break #%(index)d:"
 msgstr ""
 
 msgid "Tie-break already in use."
+msgstr ""
+
+msgid "Tie-break incompatible with the \"{system}\" pairing system."
 msgstr ""
 
 msgid "Tie-breaks"
@@ -4077,6 +4192,9 @@ msgid "Timers: %(num)d"
 msgstr ""
 
 msgid "Today"
+msgstr ""
+
+msgid "Too few players to generate the pairings (minimum: {min})"
 msgstr ""
 
 msgid "Too many byes for player [{player_name}]."
@@ -4303,8 +4421,14 @@ msgstr ""
 msgid "Unpair all the boards of this round."
 msgstr ""
 
+msgid "Unpair all the rounds the tournament."
+msgstr ""
+
 #, python-format
 msgid "Unpair round #%(round)d"
+msgstr ""
+
+msgid "Unpair tournament"
 msgstr ""
 
 msgid "Unpaired"
@@ -4375,6 +4499,12 @@ msgstr ""
 msgid "Upload the rules of the tournaments"
 msgstr ""
 
+msgid "Upper limit expected to be greater than lower limit."
+msgstr ""
+
+msgid "Upper rating limit"
+msgstr ""
+
 msgid "Use no timer"
 msgstr ""
 
@@ -4424,7 +4554,7 @@ msgstr ""
 msgid "Warning: round #%(round)d is not finished."
 msgstr ""
 
-msgid "Warning: the deletion of a client controller is permanent!"
+msgid "Warning: the deletion of a display controller is permanent!"
 msgstr ""
 
 msgid "Warning: the deletion of a player is permanent!"
@@ -4614,7 +4744,7 @@ msgstr ""
 msgid "by default"
 msgstr ""
 
-msgid "client-controller"
+msgid "display-controller"
 msgstr ""
 
 msgid "event"
@@ -4623,10 +4753,22 @@ msgstr ""
 msgid "event ID does not match."
 msgstr ""
 
+msgid "events"
+msgstr ""
+
+msgid "events-create"
+msgstr ""
+
 msgid "no"
 msgstr ""
 
 msgid "no background image"
+msgstr ""
+
+msgid "pairings"
+msgstr ""
+
+msgid "players"
 msgstr ""
 
 msgid "players from #{first} to #{last}"
@@ -4648,6 +4790,9 @@ msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
 msgid "players on {parts} screens"
+msgstr ""
+
+msgid "players-databases"
 msgstr ""
 
 msgid "ranking from #{first} to #{last}"
@@ -4686,6 +4831,21 @@ msgstr ""
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
+msgid "screens-display-controllers"
+msgstr ""
+
+msgid "screens-families"
+msgstr ""
+
+msgid "screens-rotators"
+msgstr ""
+
+msgid "screens-simple"
+msgstr ""
+
+msgid "screens-timers"
+msgstr ""
+
 msgid "the whole ranking"
 msgstr ""
 
@@ -4702,6 +4862,9 @@ msgid "tournament"
 msgstr ""
 
 msgid "tournament ID does not match."
+msgstr ""
+
+msgid "tournaments"
 msgstr ""
 
 msgid "vs"
@@ -4749,10 +4912,3 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "The variation of the pairing system."
-#~ msgstr ""
-
-#~ msgid "Variation of the pairing system."
-#~ msgstr ""
-

@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Protocol, TypeVar
 
 from common.i18n import _
 from data.pairing import Pairing
+from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks.options import (
@@ -41,8 +42,56 @@ class SupportsRichComparison(Protocol):
     def __ge__(self: T, other: T) -> bool: ...
 
 
-class TieBreakUtils:
-    """Utilities for tie-breaks"""
+class TieBreak(OptionHandler[TieBreakOption], ABC):
+    """Abstract class representing a tie-break"""
+
+    @property
+    @abstractmethod
+    def acronym(self) -> str:
+        """Represents the tie-break in rankings documents and screens."""
+
+    @property
+    @abstractmethod
+    def short_name(self) -> str:
+        """Represents the tie-break on tournament cards."""
+
+    @abstractmethod
+    def compute_player_value(
+        self,
+        player: 'TournamentPlayer',
+        *,
+        after_round: int | None,
+    ) -> 'SupportsRichComparison':
+        """Compute the value of the tie-break for a player.
+        As tie-breaks are intended for ranking,
+        the return type need to support rich comparison with itself"""
+
+    @staticmethod
+    def static_papi_id() -> str | None:
+        """Represents the tie-break in a Papi database.
+        If None, the tie-break will not appear in the database"""
+
+    @property
+    def papi_id(self) -> str | None:
+        return self.static_papi_id()
+
+    @property
+    def is_displayable(self) -> bool:
+        """Defines if the tie-break can be displayed
+        in a print view or a ranking screen"""
+        return True
+
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        """List of pairing systems for which the tie-break is not usable.
+        By default, tie-breaks can be used for all pairing systems."""
+        return []
+
+    def to_dict(self) -> dict:
+        return {
+            'type': self.id,
+            'options': {option.id: option.value for option in self.options},
+        }
 
     @staticmethod
     def adjusted_score(
@@ -84,77 +133,6 @@ class TieBreakUtils:
             else:
                 score += pairing.result.points(tournament.point_values)
         return score
-
-    @staticmethod
-    def buchholz_dummy_score(
-        player: 'TournamentPlayer',
-        *,
-        after_round: int = 1,
-        fore_modifier: bool = False,
-    ) -> float:
-        """Computes the dummy score for the given pairing after *after_round*."""
-        if not fore_modifier:
-            return player.points_after(after_round)
-        dummy = player.points_before(after_round)
-        last_pairing = player.pairings[after_round]
-        if last_pairing.result in (
-            Result.FULL_POINT_BYE,
-            Result.PAIRING_ALLOCATED_BYE,
-            Result.HALF_POINT_BYE,
-            Result.ZERO_POINT_BYE,
-        ):
-            dummy += last_pairing.result.points(player.point_values)
-        else:
-            dummy += Result.DRAW.points(player.point_values)
-        return dummy
-
-
-class TieBreak(OptionHandler[TieBreakOption], ABC):
-    """Abstract class representing a tie-break"""
-
-    @property
-    @abstractmethod
-    def acronym(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def short_name(self) -> str:
-        pass
-
-    @abstractmethod
-    def compute_player_value(
-        self,
-        player: 'TournamentPlayer',
-        *,
-        after_round: int | None,
-    ) -> 'SupportsRichComparison':
-        """Compute the value of the tie-break for a player.
-        As tie-breaks are intended for ranking,
-        the return type need to support rich comparison with itself"""
-        pass
-
-    @staticmethod
-    def static_papi_id() -> str | None:
-        """Represents the tie-break in a Papi database.
-        If None, the tie-break will not appear in the database"""
-        pass
-
-    @property
-    def papi_id(self) -> str | None:
-        return self.static_papi_id()
-
-    @property
-    def is_displayable(self) -> bool:
-        """Defines if the tie-break can be displayed
-        in a print view or a ranking screen"""
-        return True
-
-    def to_dict(self) -> dict:
-        return {
-            'type': self.id,
-            'options': {option.id: option.value for option in self.options},
-        }
 
 
 class WinsTieBreak(TieBreak):
@@ -393,7 +371,36 @@ class RoundsElectedToPlayTieBreak(TieBreak):
         )
 
 
-class BuchholzTieBreak(TieBreak):
+class BuchholzTieBreak(TieBreak, ABC):
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        return [RoundRobinPairingSystem()]
+
+    @staticmethod
+    def dummy_score(
+        player: 'TournamentPlayer',
+        *,
+        after_round: int = 1,
+        fore_modifier: bool = False,
+    ) -> float:
+        """Computes the dummy score for the given pairing after *after_round*."""
+        if not fore_modifier:
+            return player.points_after(after_round)
+        dummy = player.points_before(after_round)
+        last_pairing = player.pairings[after_round]
+        if last_pairing.result in (
+            Result.FULL_POINT_BYE,
+            Result.PAIRING_ALLOCATED_BYE,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE,
+        ):
+            dummy += last_pairing.result.points(player.point_values)
+        else:
+            dummy += Result.DRAW.points(player.point_values)
+        return dummy
+
+
+class StandardBuchholzTieBreak(BuchholzTieBreak):
     """The sum of the scores of each of the opponents of a participant.
     Options:
       - CUT_TOP: removes the *cut_top* highest contributions.
@@ -460,7 +467,7 @@ class BuchholzTieBreak(TieBreak):
         pairing_system = tournament.pairing_system
         if pairing_system == RoundRobinPairingSystem():
             return sum(
-                TieBreakUtils.adjusted_score(
+                self.adjusted_score(
                     tournament.players_by_id[pairing.opponent_id],
                     after_round=after_round,
                 )
@@ -484,9 +491,7 @@ class BuchholzTieBreak(TieBreak):
                 )
             )
             if should_add_dummy:
-                dummy_points = TieBreakUtils.buchholz_dummy_score(
-                    player, after_round=after_round
-                )
+                dummy_points = self.dummy_score(player, after_round=after_round)
                 if pairing.voluntary_unplayed:
                     # We must take those into account to ensure
                     # correct computations for cut-1
@@ -497,7 +502,7 @@ class BuchholzTieBreak(TieBreak):
             assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
             if pairing_system == SwissPairingSystem():
-                opponent_adjusted_score = TieBreakUtils.adjusted_score(
+                opponent_adjusted_score = self.adjusted_score(
                     opponent, after_round=after_round
                 )
             else:
@@ -512,7 +517,7 @@ class BuchholzTieBreak(TieBreak):
         return sum(scores[cut_btm:])
 
 
-class ForeBuchholzTieBreak(TieBreak):
+class ForeBuchholzTieBreak(BuchholzTieBreak):
     """the Buchholz score as if all paired games for the final round had ended in draws.
     Options:
       - CUT_TOP: removes the *cut_top* highest contributions.
@@ -576,7 +581,7 @@ class ForeBuchholzTieBreak(TieBreak):
         }
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
-        dummy_points = TieBreakUtils.buchholz_dummy_score(
+        dummy_points = self.dummy_score(
             player, after_round=after_round, fore_modifier=True
         )
         assert player.tournament is not None
@@ -602,7 +607,7 @@ class ForeBuchholzTieBreak(TieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent: Player = tournament.players_by_id[pairing.opponent_id]
-            opponent_adjusted_score = TieBreakUtils.adjusted_score(
+            opponent_adjusted_score = self.adjusted_score(
                 opponent, after_round=after_round, adjust_fore=True
             )
             scores.append(opponent_adjusted_score)
@@ -615,7 +620,7 @@ class ForeBuchholzTieBreak(TieBreak):
         return sum(scores[cut_btm:])
 
 
-class SumOfBuchholzTieBreak(TieBreak):
+class SumOfBuchholzTieBreak(BuchholzTieBreak):
     """The sum of Buchholz scores of the opponents.
     Options:
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
@@ -659,7 +664,9 @@ class SumOfBuchholzTieBreak(TieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round and pairing.opponent_id is not None
         ]
-        tie_break = ForeBuchholzTieBreak() if fore_modifier else BuchholzTieBreak()
+        tie_break = (
+            ForeBuchholzTieBreak() if fore_modifier else StandardBuchholzTieBreak()
+        )
         return sum(
             tie_break.compute_player_value(opponent, after_round=after_round)
             for opponent in opponents
@@ -667,7 +674,7 @@ class SumOfBuchholzTieBreak(TieBreak):
         )
 
 
-class AverageOfBuchholzTieBreak(TieBreak):
+class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     """The average of opponents Buchholz scores.
     Options:
       - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
@@ -711,7 +718,9 @@ class AverageOfBuchholzTieBreak(TieBreak):
             and pairing.opponent_id is not None
             and pairing.played
         ]
-        tie_break = ForeBuchholzTieBreak() if fore_modifier else BuchholzTieBreak()
+        tie_break = (
+            ForeBuchholzTieBreak() if fore_modifier else StandardBuchholzTieBreak()
+        )
         return sum(
             tie_break.compute_player_value(opponent, after_round=after_round)
             for opponent in opponents
@@ -794,9 +803,7 @@ class SonnebornBergerTieBreak(TieBreak):
             ):
                 assert pairing.opponent_id is not None
                 opponent: Player = tournament.players_by_id[pairing.opponent_id]
-                opponent_score = TieBreakUtils.adjusted_score(
-                    opponent, after_round=after_round
-                )
+                opponent_score = self.adjusted_score(opponent, after_round=after_round)
                 contribution = (
                     pairing.result.points(tournament.point_values) * opponent_score
                 )
@@ -881,6 +888,10 @@ class KoyaTieBreak(TieBreak):
     @staticmethod
     def static_papi_id() -> str:
         return 'Koya'
+
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        return [SwissPairingSystem()]
 
     @property
     def acronym(self) -> str:
@@ -1008,6 +1019,10 @@ class AverageRatingOpponentsTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Average rating')
 
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        return [RoundRobinPairingSystem()]
+
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
@@ -1061,7 +1076,13 @@ class AverageRatingOpponentsTieBreak(TieBreak):
         return StaticUtils.round_ranking(average)
 
 
-class TournamentPerformanceRatingTieBreak(TieBreak):
+class PerformanceTieBreak(TieBreak, ABC):
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        return [RoundRobinPairingSystem()]
+
+
+class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
     """The Average Rating of the Opponents, added
     to a number resulting from the conversion of the fractional score
     into RD (see FIDE Rating Regulations for the Conversion Table).
@@ -1116,7 +1137,7 @@ class TournamentPerformanceRatingTieBreak(TieBreak):
         return StaticUtils.round_ranking(average + bonus)
 
 
-class AveragePerformanceRatingOpponentsTieBreak(TieBreak):
+class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
     """The average of the tournament performance rating of the
     opponents, only taking played games into account.
     See FIDE Handbook C.07.10.4."""
@@ -1168,7 +1189,7 @@ class AveragePerformanceRatingOpponentsTieBreak(TieBreak):
         return StaticUtils.round_ranking(average)
 
 
-class PerfectTournamentPerformanceTieBreak(TieBreak):
+class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
     """The lowest rating that a participant should have for their
     expected score to be greater than or equal to their tournament score.
     This assumes that all players are rated, or at least have an estimation.
@@ -1355,7 +1376,7 @@ class PerfectTournamentPerformanceTieBreak(TieBreak):
             return low, high
 
 
-class AveragePerfectPerformanceTieBreak(TieBreak):
+class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
     """The average of the Perfect Tournament Performances
     of the opponents (only those who played).
     See FIDE Hand book C.07.10.5."""

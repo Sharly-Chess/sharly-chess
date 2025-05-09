@@ -3,8 +3,7 @@
     style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1.5rem;"
 >
     {% call() macros.section_title() %}
-        {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
-        {{ admin_event.name }} - {{ _('Pairings') }}
+        {{ _('Pairings') }}{{ macros.doc_icon(_('pairings'), '') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
     {% if admin_tournament %}
@@ -49,74 +48,7 @@
                         {{ _('Close check in') }}
                     </button>
                 {% endif %}
-
-                {% with action='FULL_PAIRING' %}
-                    {% if action in existing_actions %}
-                        {% if EXPERIMENTAL_FEATURES and admin_tournament.pairing_variation.is_pairing_generation_implemented %}
-                            <div
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('Pairings disabled while check-in is open.')
-                                    if admin_tournament.check_in_open
-                                    else _(
-                                        'Pairings generation not allowed if previous '
-                                        'rounds have missing results or unpaired players.'
-                                    ) if not pairings_generation_allowed
-                                    else _('Generate pairings for this round.'),
-                                    'top',
-                                ) }}
-                            >
-                                <button
-                                    class="btn btn-outline-primary text-nowrap"
-                                    {% if action in allowed_actions %}
-                                        hx-post="{{ url_for('admin-tournament-generate-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                    {% else %}
-                                        hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
-                                        hx-trigger="click"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-wrapper"
-                                    {% endif %}
-                                    preload
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    {% if not pairings_generation_allowed %}
-                                        disabled
-                                    {% endif %}
-                                >
-                                    <i class="bi-shuffle pe-1"></i>
-                                    {{ _('Pair') }}
-                                </button>
-                            </div>
-                        {% else %}
-                            <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
-                                {{ _('Please use Papi to generate pairings.') }}
-                            </div>
-                        {% endif %}
-                    {% endif %}
-                {% endwith %}
-                {% with action='FULL_UNPAIRING' %}
-                    {% if action in existing_actions %}
-                        <div {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}>
-                            <button
-                                class="btn btn-outline-primary text-nowrap"
-                                {% if action in allowed_actions %}
-                                    hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                {% else %}
-                                    hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
-                                    hx-trigger="click"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                {% endif %}
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                preload
-                            >
-                                {{ _('Unpair') }}
-                            </button>
-                        </div>
-                    {% endif %}
-                {% endwith %}
-
+                {% include admin_tournament.pairing_system.pairing_buttons_template %}
                 {% if admin_boards %}
                     {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
                         <div class="btn-group">

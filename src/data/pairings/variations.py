@@ -3,7 +3,12 @@ from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairings import systems
-from data.pairings.engines import PairingEngine, BbpPairings, RoundRobinPairingEngine
+from data.pairings.engines import PairingEngine, BbpPairings, BergerPairingEngine
+from data.pairings.settings import (
+    PairingSetting,
+    ColorSeedSetting,
+    BergerNumbersSetting,
+)
 from data.pairings.systems import PairingSystem
 from data.player import Player
 from utils.entity import IdentifiableEntity
@@ -33,16 +38,14 @@ class PairingVariation(IdentifiableEntity, ABC):
     def engine(self) -> PairingEngine:
         """Pairing engine that generates the pairings of a tournament."""
 
-    @property
-    def is_pairing_generation_implemented(self) -> bool:
-        """Flag replacing the 'Pair' button by a
-        'Generate pairings in Papi' message."""
-        # TODO remove once all Papi pairing variations have been implemented
-        return True
-
     @staticmethod
     def print_real_points(current_round: int, rounds: int) -> bool:
         return False
+
+    @property
+    @abstractmethod
+    def settings(self) -> list[PairingSetting]:
+        """List of pairing settings required for the variation to work."""
 
     @staticmethod
     def compute_virtual_points(
@@ -52,6 +55,12 @@ class PairingVariation(IdentifiableEntity, ABC):
     ) -> float:
         """Compute the virtual points of a player for round *at_round*."""
         return 0.0
+
+    def validate_settings(self, tournament: 'Tournament') -> bool:
+        return all(
+            setting.is_set(tournament) and setting.is_valid(tournament)
+            for setting in self.settings
+        )
 
 
 class SwissVariation(PairingVariation, ABC):
@@ -67,6 +76,10 @@ class SwissVariation(PairingVariation, ABC):
     def engine(self) -> PairingEngine:
         return BbpPairings()
 
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return [ColorSeedSetting()]
+
 
 class RoundRobinVariation(PairingVariation, ABC):
     """Parent class of all the Round-Robin pairing variations."""
@@ -74,10 +87,6 @@ class RoundRobinVariation(PairingVariation, ABC):
     @staticmethod
     def system() -> PairingSystem:
         return systems.RoundRobinPairingSystem()
-
-    @property
-    def engine(self) -> PairingEngine:
-        return RoundRobinPairingEngine()
 
 
 class StandardSwissVariation(SwissVariation):
@@ -100,5 +109,9 @@ class BergerRoundRobinVariation(RoundRobinVariation):
         return _('Berger')
 
     @property
-    def is_pairing_generation_implemented(self) -> bool:
-        return False
+    def settings(self) -> list[PairingSetting]:
+        return [BergerNumbersSetting()]
+
+    @property
+    def engine(self) -> PairingEngine:
+        return BergerPairingEngine()

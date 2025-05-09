@@ -20,7 +20,7 @@ from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
-    StoredClientController,
+    StoredDisplayController,
     StoredTournament,
     StoredEvent,
     StoredTimer,
@@ -938,8 +938,8 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_families = list(self.load_stored_families())
         stored_event.stored_screens = list(self.load_stored_screens())
         stored_event.stored_rotators = list(self.load_stored_rotators())
-        stored_event.stored_client_controllers = list(
-            self.load_stored_client_controllers()
+        stored_event.stored_display_controllers = list(
+            self.load_stored_display_controllers()
         )
         return stored_event
 
@@ -1325,6 +1325,8 @@ class EventDatabase(MigrationDatabase):
             max_byes=row['max_byes'],
             last_rounds_no_byes=row['last_rounds_no_byes'],
             pairing=row['pairing'],
+            pairing_settings=cls.load_json_from_database_field(row['pairing_settings']),
+            current_round=row['current_round'],
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
@@ -1515,6 +1517,32 @@ class EventDatabase(MigrationDatabase):
             'UPDATE `tournament` SET `check_in_open` = ?, `last_check_in_update` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
+                time.time(),
+                tournament_id,
+            ),
+        )
+
+    def set_tournament_pairing_settings(
+        self, tournament_id: int, pairing_settings: dict[str, Any]
+    ):
+        self.execute(
+            'UPDATE `tournament` SET '
+            '`pairing_settings` = ?, `last_update` = ? '
+            'WHERE `id` = ?',
+            (
+                self.dump_to_json_database_field(pairing_settings),
+                time.time(),
+                tournament_id,
+            ),
+        )
+
+    def set_tournament_current_round(self, tournament_id: int, current_round: int):
+        self.execute(
+            'UPDATE `tournament` SET '
+            '`current_round` = ?, `last_update` = ? '
+            'WHERE `id` = ?',
+            (
+                current_round,
                 time.time(),
                 tournament_id,
             ),
@@ -2076,7 +2104,7 @@ class EventDatabase(MigrationDatabase):
         self._delete_screen_stored_screen_sets(screen_id)
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
         self.execute(
-            'UPDATE `client_controller` SET `screen_id` = NULL WHERE screen_id = ?;',
+            'UPDATE `display_controller` SET `screen_id` = NULL WHERE screen_id = ?;',
             (screen_id,),
         )
         self.set_last_update()
@@ -2359,20 +2387,20 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
         self.execute(
-            'UPDATE `client_controller` SET `rotator_id` = NULL WHERE rotator_id = ?;',
+            'UPDATE `display_controller` SET `rotator_id` = NULL WHERE rotator_id = ?;',
             (rotator_id,),
         )
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------
-    # StoredClientController
+    # StoredDisplayController
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def _row_to_stored_client_controller(
+    def _row_to_stored_display_controller(
         cls, row: dict[str, Any]
-    ) -> StoredClientController:
-        return StoredClientController(
+    ) -> StoredDisplayController:
+        return StoredDisplayController(
             id=row['id'],
             uniq_id=row['uniq_id'],
             name=row['name'],
@@ -2381,31 +2409,31 @@ class EventDatabase(MigrationDatabase):
             public=cls.load_bool_from_database_field(row['public']),
         )
 
-    def get_stored_client_controller(
-        self, client_controller_id: int
-    ) -> StoredClientController | None:
+    def get_stored_display_controller(
+        self, display_controller_id: int
+    ) -> StoredDisplayController | None:
         self.execute(
-            'SELECT * FROM `client_controller` WHERE `id` = ?',
-            (client_controller_id,),
+            'SELECT * FROM `display_controller` WHERE `id` = ?',
+            (display_controller_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
-            return self._row_to_stored_client_controller(row)
+            return self._row_to_stored_display_controller(row)
         return None
 
-    def load_stored_client_controllers(
+    def load_stored_display_controllers(
         self,
-    ) -> Iterator[StoredClientController]:
+    ) -> Iterator[StoredDisplayController]:
         self.execute(
-            'SELECT * FROM `client_controller` ORDER BY `uniq_id`',
+            'SELECT * FROM `display_controller` ORDER BY `uniq_id`',
             (),
         )
-        yield from map(self._row_to_stored_client_controller, self.fetchall())
+        yield from map(self._row_to_stored_display_controller, self.fetchall())
 
-    def _write_stored_client_controller(
+    def _write_stored_display_controller(
         self,
-        stored_client_controller: StoredClientController,
-    ) -> StoredClientController:
+        stored_display_controller: StoredDisplayController,
+    ) -> StoredDisplayController:
         fields: list[str] = [
             'uniq_id',
             'name',
@@ -2415,56 +2443,56 @@ class EventDatabase(MigrationDatabase):
             'last_update',
         ]
         params: list = [
-            stored_client_controller.uniq_id,
-            stored_client_controller.name,
-            stored_client_controller.public,
-            stored_client_controller.screen_id,
-            stored_client_controller.rotator_id,
+            stored_display_controller.uniq_id,
+            stored_display_controller.name,
+            stored_display_controller.public,
+            stored_display_controller.screen_id,
+            stored_display_controller.rotator_id,
             time.time(),
         ]
-        if stored_client_controller.id is None:
+        if stored_display_controller.id is None:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
-                f'INSERT INTO `client_controller`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
+                f'INSERT INTO `display_controller`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            client_controller_id: int | None = self._last_inserted_id()
-            if client_controller_id is None:
-                raise RuntimeError('Client controller insertion failed')
-            fetched_stored_client_controller = self.get_stored_client_controller(
-                client_controller_id
+            display_controller_id: int | None = self._last_inserted_id()
+            if display_controller_id is None:
+                raise RuntimeError('Display controller insertion failed')
+            fetched_stored_display_controller = self.get_stored_display_controller(
+                display_controller_id
             )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_client_controller.id]
+            params += [stored_display_controller.id]
             self.execute(
-                f'UPDATE `client_controller` SET {", ".join(field_sets)} WHERE `id` = ?',
+                f'UPDATE `display_controller` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_client_controller = self.get_stored_client_controller(
-                stored_client_controller.id
+            fetched_stored_display_controller = self.get_stored_display_controller(
+                stored_display_controller.id
             )
-        if fetched_stored_client_controller is None:
-            raise RuntimeError('Client controller write failed')
+        if fetched_stored_display_controller is None:
+            raise RuntimeError('Display controller write failed')
         self.set_last_update()
-        return fetched_stored_client_controller
+        return fetched_stored_display_controller
 
-    def add_stored_client_controller(
+    def add_stored_display_controller(
         self,
-        stored_client_controller: StoredClientController,
-    ) -> StoredClientController:
-        assert stored_client_controller.id is None
-        return self._write_stored_client_controller(stored_client_controller)
+        stored_display_controller: StoredDisplayController,
+    ) -> StoredDisplayController:
+        assert stored_display_controller.id is None
+        return self._write_stored_display_controller(stored_display_controller)
 
-    def update_stored_client_controller(
+    def update_stored_display_controller(
         self,
-        stored_client_controller: StoredClientController,
-    ) -> StoredClientController:
-        assert stored_client_controller.id is not None
-        return self._write_stored_client_controller(stored_client_controller)
+        stored_display_controller: StoredDisplayController,
+    ) -> StoredDisplayController:
+        assert stored_display_controller.id is not None
+        return self._write_stored_display_controller(stored_display_controller)
 
-    def delete_stored_client_controller(self, client_controller_id: int):
+    def delete_stored_display_controller(self, display_controller_id: int):
         self.execute(
-            'DELETE FROM `client_controller` WHERE `id` = ?;', (client_controller_id,)
+            'DELETE FROM `display_controller` WHERE `id` = ?;', (display_controller_id,)
         )
         self.set_last_update()

@@ -1,9 +1,6 @@
 
 {% macro section_title() %}
-    <div
-        class="fs-4 bg-primary pt-1 pb-1 mt-3 mb-4 text-contrast pe-4 position-relative"
-        style="border-radius: 0 1000px 1000px 0; padding-left: 2rem; left: -1.5rem;"
-    >
+    <div class="section-title">
         {{ caller() }}
     </div>
 {% endmacro %}
@@ -28,8 +25,8 @@
             {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the users).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the users).') %}
-        {% elif object_type == 'client_controller' %}
-            {% set _tooltip_text=tooltip_public_text or _('This client controller is public (visible by the users).') %}
+        {% elif object_type == 'display_controller' %}
+            {% set _tooltip_text=tooltip_public_text or _('This display controller is public (visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
@@ -43,8 +40,8 @@
             {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the users).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the users).') %}
-        {% elif object_type == 'client_controller' %}
-            {% set _tooltip_text=tooltip_private_text or _('This client controller is private (not visible by the users).') %}
+        {% elif object_type == 'display_controller' %}
+            {% set _tooltip_text=tooltip_private_text or _('This display controller is private (not visible by the users).') %}
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
@@ -57,6 +54,12 @@
         <i class="{{ _icon_class }}"></i>
     </span>
     <!-- end visibility_icon() -->
+{% endmacro %}
+
+{% macro doc_icon(url, class) %}
+    <a href="https://sharly-chess.com/{% if locale != 'en' %}{{ locale }}/{% endif %}h/{{ url }}" target="_blank" class="{{ class }}">
+        <i class="bi-info-circle"></i>
+    </a>
 {% endmacro %}
 
 {% macro event_visibility_icon(event, class) %}
@@ -121,21 +124,21 @@
     <!-- end rotator_visibility_icon() -->
 {% endmacro %}
 
-{% macro client_controller_icon() %}
-    <!-- client_controller_icon() -->
+{% macro display_controller_icon() %}
+    <!-- display_controller_icon() -->
     <span
         class="fw-bold"
-        {{ tooltip_attributes('info', _('The screens displayed by the client controller are controlled by the administrator.'), 'top') }}
+        {{ tooltip_attributes('info', _('The screens displayed by the display controller are controlled by the administrator.'), 'top') }}
     >
         <i class="bi bi-box-arrow-in-right"></i>
     </span>
-    <!-- end client_controller_icon() -->
+    <!-- end display_controller_icon() -->
 {% endmacro %}
 
-{% macro client_controller_visibility_icon(client_controller, class) %}
-    <!-- client_controller_visibility_icon() -->
-    {{ visibility_icon('client_controller', client_controller.public, '', '', class) }}
-    <!-- end client_controller_visibility_icon() -->
+{% macro display_controller_visibility_icon(display_controller, class) %}
+    <!-- display_controller_visibility_icon() -->
+    {{ visibility_icon('display_controller', display_controller.public, '', '', class) }}
+    <!-- end display_controller_visibility_icon() -->
 {% endmacro %}
 
 {% macro background_script(background_info) %}

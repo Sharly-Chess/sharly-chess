@@ -362,7 +362,7 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
                             id="{{ id }}_indicator"
                             class="htmx-indicator"
                             src="{{ hx_indicator_img }}"
-                            style="height: 1.5em; margin-left: -40px; z-index: 3;"
+                            style="height: 1.5em; width: auto; margin-left: -40px; z-index: 3;"
                         />
                     {% endif %}
                 {% endif %}
@@ -733,31 +733,31 @@ hx_on_after_request: the JS to run after the HTMX request (text inputs only)
     {% endwith %}
 {% endmacro %}
 
-{% macro client_controller_assign_dropdown(
-    client_controllers,
+{% macro display_controller_assign_dropdown(
+    display_controllers,
     object_type,
     object_uniq_id
 ) %}
-    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a client controller.', 'top') }}>
+    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a display controller.', 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-            {% if client_controllers|length == 0 %}
+            {% if display_controllers|length == 0 %}
                 disabled
             {% endif %}
         >
             <i class="bi bi-box-arrow-in-right"></i>
         </button>
         <ul class="dropdown-menu">
-            {% for client_controller in client_controllers %}
+            {% for display_controller in display_controllers %}
                 <li>
                     <button
                         class="dropdown-item text-start cursor-pointer"
-                        hx-patch="{{ url_for('admin-client-controller-assign', event_uniq_id=admin_event.uniq_id, client_controller_id=client_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
+                        hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
                             hx-indicator="#please-wait"
                     >
-                        <b>{{ client_controller.name }}</b> {% if client_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=client_controller.assigned_object.uniq_id) }}{% endif %}
+                        <b>{{ display_controller.name }}</b> {% if display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_object.uniq_id) }}{% endif %}
                     </button>
                 </li>
             {% endfor %}

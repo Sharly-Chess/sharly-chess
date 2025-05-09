@@ -1,6 +1,6 @@
 import validators
 from litestar import get
-from litestar.contrib.htmx.request import HTMXRequest
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import MediaType
 
 from common.background import inline_image_url

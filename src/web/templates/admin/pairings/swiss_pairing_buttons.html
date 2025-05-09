@@ -1,0 +1,88 @@
+<span
+    id="pairing-buttons"
+    class="d-flex gap-2"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    {% with action='FULL_PAIRING' %}
+        {% if action in existing_actions %}
+            {% if EXPERIMENTAL_FEATURES %}
+                <div
+                    {{ macros.tooltip_attributes(
+                        'info',
+                        pairings_generation_disabled_message
+                        or _('Generate pairings for this round.'),
+                        'top',
+                    ) }}
+                >
+                    <button
+                        class="btn btn-outline-primary text-nowrap"
+                        {% if action in allowed_actions %}
+                            hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        {% else %}
+                            hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                            hx-trigger="click"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        {% endif %}
+                        preload
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {% if pairings_generation_disabled_message %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-shuffle pe-1"></i>
+                        {{ _('Pair') }}
+                    </button>
+                </div>
+            {% else %}
+                <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
+                    {{ _('Please use Papi to generate pairings.') }}
+                </div>
+            {% endif %}
+            <span
+                {{ macros.tooltip_attributes(
+                    'info', _('Configure the settings of the pairing system.'), 'top'
+                ) }}
+            >
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-trigger="click"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-gear pe-1"></i>
+                    {{ _('Settings') }}
+                </button>
+            </span>
+        {% endif %}
+    {% endwith %}
+    {% with action='FULL_UNPAIRING' %}
+        {% if action in existing_actions and not admin_tournament.round_has_result(admin_round) %}
+            <div {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}>
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    {% if action in allowed_actions %}
+                        hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    {% else %}
+                        hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                        hx-trigger="click"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    {% endif %}
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                >
+                    {{ _('Unpair') }}
+                </button>
+            </div>
+        {% endif %}
+    {% endwith %}
+</span>

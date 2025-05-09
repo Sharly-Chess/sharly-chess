@@ -1,4 +1,4 @@
-{% import '/common/macros.j2' as macros %}
+{% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
 {% if modal == 'config' %}
@@ -25,6 +25,8 @@
     {% include 'pairings/pairing_modal.html' %}
 {% elif modal == 'unfinished-round' %}
     {% include 'pairings/unfinished_round_modal.html' %}
+{% elif modal == 'pairing-settings' %}
+    {% include 'pairings/settings/modal.html' %}
 {% elif modal == 'screen' %}
     {% include 'screens/screen_modal.html' %}
 {% elif modal == 'screen_sets' %}
@@ -39,8 +41,8 @@
     {% include 'timers/timer_modal.html' %}
 {% elif modal == 'timer_hours' %}
     {% include 'timers/timer_hours_modal.html' %}
-{% elif modal == 'client_controller' %}
-    {% include 'client_controllers/client_controller_modal.html' %}
+{% elif modal == 'display_controller' %}
+    {% include 'display_controllers/display_controller_modal.html' %}
 {% elif modal == 'database' %}
     {% include 'common/database/database_modal.html' %}
 {% elif modal %}

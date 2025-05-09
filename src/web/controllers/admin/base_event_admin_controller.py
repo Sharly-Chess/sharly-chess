@@ -1,8 +1,7 @@
 import logging
 from typing import Annotated, Any
 
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.contrib.htmx.response import HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -147,11 +146,11 @@ class BaseEventAdminController(BaseAdminController):
                         'template': 'timers/tab.html',
                         'separator': 'true',
                     },
-                    'admin-event-client-controllers-tab': {
-                        'title': _('Client Controllers ({num})').format(
-                            num=len(admin_event.client_controllers_by_id) or '-'
+                    'admin-event-display-controllers-tab': {
+                        'title': _('Display controllers ({num})').format(
+                            num=len(admin_event.display_controllers_by_id) or '-'
                         ),
-                        'template': 'client_controllers/tab.html',
+                        'template': 'display_controllers/tab.html',
                     },
                 },
             },

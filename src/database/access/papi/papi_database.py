@@ -55,7 +55,7 @@ class RoundFields:
 class PapiTournamentInfo:
     """Basic tournament information tuple."""
 
-    rounds: int = 0
+    rounds: int = 1
     pairing_variation: PairingVariation = field(default_factory=StandardSwissVariation)
     rating: TournamentRating = TournamentRating.STANDARD
     rating_limit1: int = 0

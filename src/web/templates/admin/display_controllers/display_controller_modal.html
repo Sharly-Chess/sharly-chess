@@ -1,0 +1,98 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-display_controller-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Display controller creation') }}
+                {% elif action == 'update' %}
+                    {{ _('Edition of display controller [%(display_controller_uniq_id)s]', display_controller_uniq_id=admin_display_controller.uniq_id) }}
+                {% elif action == 'delete' %}
+                    {{ _('Deletion of display controller [%(display_controller_uniq_id)s]', display_controller_uniq_id=admin_display_controller.uniq_id) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                {% if action in ['create', 'clone',] %}
+                    hx-post="{{ url_for('admin-display-controller-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% elif action == 'update' %}
+                    hx-patch="{{ url_for('admin-display-controller-' ~ action, event_uniq_id=admin_event.uniq_id, display_controller_id=admin_display_controller.id) }}"
+                {% elif action == 'delete' %}
+                    hx-delete="{{ url_for('admin-display-controller-' ~ action, event_uniq_id=admin_event.uniq_id, display_controller_id=admin_display_controller.id) }}"
+                {% else %}
+                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% if action == 'delete' %}
+                    <h4 class="text-danger">
+                        {{ _('Warning: the deletion of a display controller is permanent!') }}
+                    </h4>
+                {% else %}
+                    <h4>
+                        {{ _('Properties') }}
+                    </h4>
+                    <div class="row">
+                        <div class="col-12 col-md-4 mb-3">
+                            {{ admin_macros.switch_input(
+                                name='public',
+                                label=_('Visibility:'),
+                                placeholder=_('Public display controller'),
+                                help_text=_('Only arbiters can view private display controllers.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            {{ admin_macros.text_input(
+                                name='uniq_id',
+                                label=_('ID (unique):'),
+                                placeholder=_('E.g.: my-display-controller'),
+                                help_text=_('The Unique ID, used to reference the display controller.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            {{ admin_macros.text_input(
+                                name='name',
+                                label=_('Name:'),
+                                placeholder=_('E.g.: My display controller'),
+                                help_text=_('The name of the display controller, optional.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Create') }}
+                {% elif action == 'update' %}
+                    {{ _('Save') }}
+                {% elif action == 'delete' %}
+                    {{ _('Delete') }}
+                {% else %}
+                    ?
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>

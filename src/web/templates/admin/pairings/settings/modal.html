@@ -1,0 +1,44 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div style="--bs-modal-width: min(90vw, 500px);" class="modal-dialog modal-dialog-centered pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Pairing settings') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-pairings-settings-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <h4 class="mb-3">
+                    {{ admin_tournament.pairing_variation.name }}
+                </h4>
+                {% for setting in pairing_settings %}
+                    {% include setting.template_path %}
+                {% endfor %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') }}
+            </button>
+        </div>
+    </div>
+</div>
