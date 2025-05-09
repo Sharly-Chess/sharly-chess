@@ -4200,9 +4200,6 @@ msgstr "Trop peu de joueur·euses pour générer les appariements (minimum : {mi
 msgid "Too many byes for player [{player_name}]."
 msgstr "Trop de points joker pour le joueur [{player_name}]."
 
-msgid "Too many players to generate the pairings (maximum: {max})"
-msgstr "Trop de joueur·euses pour générer les appariements (maximum : {max})."
-
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 

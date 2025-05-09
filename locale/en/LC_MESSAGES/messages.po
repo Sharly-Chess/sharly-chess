@@ -4200,9 +4200,6 @@ msgstr ""
 msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
-msgid "Too many players to generate the pairings (maximum: {max})"
-msgstr ""
-
 msgid "Too much information to display on a single projector?"
 msgstr ""
 

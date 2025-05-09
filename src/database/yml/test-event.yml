@@ -24,3 +24,6 @@ tournaments:
   papi-nicois:
     filename: "papi-nicois"
     name: "Papi-generated 'Niçois' tournament"
+  papi-berger:
+    filename: "papi-papi-berger"
+    name: "Papi-generated Berger tournament"
