@@ -1951,7 +1951,7 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
-msgid "Individual Screens ({num})"
+msgid "Simple Screens ({num})"
 msgstr ""
 
 #, python-format
@@ -4412,7 +4412,7 @@ msgstr ""
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
-msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
+msgid "Unlike simple Screens, families can only be used to display information about a single tournament."
 msgstr ""
 
 msgid "Unpair"
@@ -4678,7 +4678,7 @@ msgstr ""
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
-msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
+msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the simple screens will be generated automatically."
 msgstr ""
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
