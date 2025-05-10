@@ -11,8 +11,8 @@ version = "2.6.0a1"
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
   { name = "Sammy Plat", email = "support@sharly-chess.com" },
-  { name = "Timothy Armes", email = "tim@timothyarmes.com" },
-  { name = "Youri Aubry" },
+  { name = "Timothy Armes", email = "support@sharly-chess.com" },
+  { name = "Youri Aubry", email = "support@sharly-chess.com" },
 ]
 license = { text = "AGPL v3.0" }
 readme = "README.md"
