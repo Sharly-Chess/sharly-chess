@@ -169,7 +169,7 @@ msgstr ""
 msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
 msgstr ""
 
-msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
+msgid "A window will open to send an email to the Sharly Chess project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr ""
 
 msgid "Absent"
@@ -193,7 +193,7 @@ msgstr ""
 msgid "Access driver (not found)"
 msgstr ""
 
-msgid "Access from the Papi-web server"
+msgid "Access from the Sharly Chess server"
 msgstr ""
 
 msgid "Access from the local network (LAN/WAN)"
@@ -289,7 +289,7 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
+msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr ""
 
 msgid "All the players intended to play the coming round did check-in."
@@ -595,7 +595,7 @@ msgstr ""
 msgid "Checked-in"
 msgstr ""
 
-msgid "Checking Papi-web version..."
+msgid "Checking Sharly Chess version..."
 msgstr ""
 
 msgid "Checking the version failed."
@@ -1088,7 +1088,7 @@ msgstr ""
 msgid "Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?"
 msgstr ""
 
-msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
+msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures versions [{y_uc}/{n_lc}]?"
 msgstr ""
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
@@ -1300,7 +1300,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-msgid "Edit the Papi-web settings."
+msgid "Edit the Sharly Chess settings."
 msgstr ""
 
 msgid "Edit the hours of the timer"
@@ -1348,7 +1348,7 @@ msgstr ""
 msgid "Edition of event [%(event_uniq_id)s]"
 msgstr ""
 
-msgid "Edition of papi-web settings"
+msgid "Edition of Sharly Chess settings"
 msgstr ""
 
 #, python-format
@@ -1785,7 +1785,7 @@ msgstr ""
 msgid "Frequency: {frequency}"
 msgstr ""
 
-msgid "From the Papi-web server"
+msgid "From the Sharly Chess server"
 msgstr ""
 
 msgid "From the local network (LAN/WAN)"
@@ -1892,7 +1892,7 @@ msgstr ""
 msgid "How to split the results."
 msgstr ""
 
-msgid "I would like the following custom files to be added to a future version of Papi-web:"
+msgid "I would like the following custom files to be added to a future version of Sharly Chess:"
 msgstr ""
 
 msgid "ID (unique):"
@@ -2588,7 +2588,7 @@ msgstr ""
 msgid "Not connected to internet."
 msgstr ""
 
-msgid "Not connected, can not check Papi-web version."
+msgid "Not connected, can not check Sharly Chess version."
 msgstr ""
 
 msgid "Not connected, impossible to update."
@@ -2793,13 +2793,13 @@ msgstr ""
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Papi-web can automatically launch a web browser when starting the web server."
+msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
-msgid "Papi-web settings"
+msgid "Sharly Chess settings"
 msgstr ""
 
-msgid "Papi-web settings has been updated."
+msgid "Sharly Chess settings have been updated."
 msgstr ""
 
 msgid "Parings by player"
@@ -3599,7 +3599,7 @@ msgstr ""
 msgid "Start:"
 msgstr ""
 
-msgid "Starting Papi-web server, please wait..."
+msgid "Starting Sharly Chess server, please wait..."
 msgstr ""
 
 msgid "Storing data..."
@@ -3647,10 +3647,10 @@ msgstr ""
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
-msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
+msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Sharly Chess event of the tournament)."
 msgstr ""
 
-msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
+msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Sharly Chess event of the tournament)."
 msgstr ""
 
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -3671,13 +3671,13 @@ msgstr ""
 msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
+msgid "The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem."
 msgstr ""
 
 msgid "The URL of the image to display."
 msgstr ""
 
-msgid "The URL or the path of the image to display (by default the Papi-web logo)."
+msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
 msgstr ""
 
 msgid "The Unique ID, used for data storage and export."
@@ -3904,7 +3904,7 @@ msgstr ""
 msgid "The password required on input screens to enter results (optional)."
 msgstr ""
 
-msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
+msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Sharly Chess event of the tournament)."
 msgstr ""
 
 msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
@@ -4597,7 +4597,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-msgid "Welcome to Papi-web!"
+msgid "Welcome to Sharly Chess!"
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
@@ -4696,7 +4696,7 @@ msgstr ""
 msgid "You must create a tournament before creating screens."
 msgstr ""
 
-msgid "Your Papi-web version is up to date."
+msgid "Your Sharly Chess version is up to date."
 msgstr ""
 
 msgid "Your choice (by default {default}): "
@@ -4708,7 +4708,7 @@ msgstr ""
 msgid "Zero-Point Bye"
 msgstr ""
 
-msgid "[Papi-web {version}] Request for the integration of custom files"
+msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
 msgid "[{path}] is not a directory."

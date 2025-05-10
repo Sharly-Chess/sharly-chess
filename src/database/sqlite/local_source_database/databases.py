@@ -11,9 +11,15 @@ from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from common.papi_web_config import PapiWebConfig
-from database.sqlite.local_source_database.actions import OutdatedAction, NotifOutdatedAction
-from database.sqlite.local_source_database.delays import OutdatedDelay, DisabledOutdatedDelay
+from common.sharly_chess_config import SharlyChessConfig
+from database.sqlite.local_source_database.actions import (
+    OutdatedAction,
+    NotifOutdatedAction,
+)
+from database.sqlite.local_source_database.delays import (
+    OutdatedDelay,
+    DisabledOutdatedDelay,
+)
 from utils.entity import IdentifiableEntity
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
@@ -33,7 +39,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     def __init__(self, write: bool = False):
         super().__init__(
-            TMP_DIR / f'{self.id}.{PapiWebConfig.federation_database_ext}',
+            TMP_DIR / f'{self.id}.{SharlyChessConfig.federation_database_ext}',
             write,
         )
         self.stop_event = threading.Event()
@@ -80,7 +86,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def outdate_delay(self) -> OutdatedDelay:
         from database.sqlite.local_source_database import OutdatedDelayManager
 
-        return OutdatedDelayManager.get_object(self.stored_source_database.outdate_delay)
+        return OutdatedDelayManager.get_object(
+            self.stored_source_database.outdate_delay
+        )
 
     @property
     def outdate_action(self) -> OutdatedAction:

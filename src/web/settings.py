@@ -141,7 +141,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
-class PapiWebEnvironment(Environment):
+class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
     - use a loader that accepts relative path with ..
@@ -174,7 +174,7 @@ template_dirs: list[Path] = [
 ]
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(
-    engine_instance=PapiWebEnvironment(template_dirs),
+    engine_instance=SharlyChessEnvironment(template_dirs),
 )
 
 # create the Jinja config that will be passed to the Litestar app

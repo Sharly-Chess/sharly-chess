@@ -6,7 +6,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from common import DEVEL_ENV, unicode_normalize
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import ngettext, _
 from common.network import NetworkMonitor
 from utils.enum import PlayerRatingType, TournamentRating
@@ -88,7 +88,7 @@ class FfeSearchController(BaseEventAdminController):
                             message,
                         )
                     )
-            except PapiWebException as e:
+            except SharlyChessException as e:
                 search_messages.append(('bi-cloud-slash', '', str(e)))
                 start = 0.0
                 if DEVEL_ENV:

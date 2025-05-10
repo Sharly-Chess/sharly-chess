@@ -9,13 +9,13 @@ Clone the _GitHub_ repository https://github.com/sharly-chess/sharly-chess and s
 ### Starting the Web Server
 
 ```
-python src/papi_web.py
+python src/sharly_chess.py
 ```
 
 Use the `--experimental` option to enable experimental features:
 
 ```
-python src/papi_web.py --experimental
+python src/sharly_chess.py --experimental
 ```
 
 > :warning: USE EXPERIMENTAL FEATURES AT YOUR OWN RISK!
@@ -25,13 +25,13 @@ python src/papi_web.py --experimental
 ### Launching the interface with the FFE server
 
 ```
-python src/papi_web.py --ffe
+python src/sharly_chess.py --ffe
 ```
 
 ### Launching the interface with the ChessEvent platform
 
 ```
-python src/papi_web.py --chessevent
+python src/sharly_chess.py --chessevent
 ```
 
 ## Configuring Authentication with the FFE Server
@@ -55,6 +55,7 @@ An unpublished (draft) version is automatically created by the action with the r
 ## Installing Tools and Libraries
 
 As of version 2.6, libraries are no longer stored in the _GitHub_ repository and are installed:
+
 - automatically in the developer's environment at the first server launch;
 - manually by running the `install_libs.py` script.
 

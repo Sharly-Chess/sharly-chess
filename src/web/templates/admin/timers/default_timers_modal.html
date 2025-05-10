@@ -23,7 +23,7 @@
                                 label=_('Colour #%(num)d:', num=num),
                                 help_text=timer_color_texts[num],
                                 default_checkbox=true,
-                                default_color=papi_web_config.default_timer_colors[num],
+                                default_color=sharly_chess_config.default_timer_colors[num],
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -33,7 +33,7 @@
                                 {{ admin_macros.number_input(
                                     name='delay_'~num,
                                     label=_('Delay #%(num)d:', num=num),
-                                    placeholder=_('By default: %(minutes)d minutes', minutes=papi_web_config.default_timer_delays[num]),
+                                    placeholder=_('By default: %(minutes)d minutes', minutes=sharly_chess_config.default_timer_delays[num]),
                                     help_text='',
                                     data=data, errors=errors
                                 ) }}

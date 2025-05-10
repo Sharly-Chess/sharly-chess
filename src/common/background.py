@@ -5,7 +5,7 @@ from pathlib import Path
 import validators
 
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 
 logger: Logger = get_logger()
 
@@ -21,12 +21,12 @@ def inline_image_url(image: str | None) -> str:
         return ''
     if image.startswith('/') or validators.url(image):
         return image
-    file: Path = PapiWebConfig.custom_path / image
+    file: Path = SharlyChessConfig.custom_path / image
     if not file.exists():
-        file: Path = Path('src') / PapiWebConfig.embedded_custom_path / image
+        file: Path = Path('src') / SharlyChessConfig.embedded_custom_path / image
         if not file.exists():
             logger.warning('Image [%s] not found.', file)
-            return PapiWebConfig.error_background_image
+            return SharlyChessConfig.error_background_image
     with open(file, 'rb') as f:
         data: bytes = f.read()
     encoded_data = base64.b64encode(data).decode('utf-8')

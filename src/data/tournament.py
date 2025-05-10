@@ -12,7 +12,7 @@ from trf import Tournament as TrfTournament
 
 from common import format_timestamp_date_time, format_timestamp
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
 from data.board import Board
@@ -141,7 +141,7 @@ class Tournament:
 
     @property
     def file(self) -> Path:
-        return self.path / f'{self.filename}.{PapiWebConfig.papi_ext}'
+        return self.path / f'{self.filename}.{SharlyChessConfig.papi_ext}'
 
     @property
     def file_exists(self) -> bool:
@@ -217,25 +217,25 @@ class Tournament:
     def first_board_number(self) -> int:
         return (
             self.stored_tournament.first_board_number
-            or PapiWebConfig.default_first_board_number
+            or SharlyChessConfig.default_first_board_number
         )
 
     @property
     def paired_bye_result(self) -> Result:
         if self.stored_tournament.paired_bye_result is None:
-            return PapiWebConfig.default_paired_bye_result
+            return SharlyChessConfig.default_paired_bye_result
         else:
             return Result(self.stored_tournament.paired_bye_result)
 
     @property
     def max_byes(self) -> int:
-        return self.stored_tournament.max_byes or PapiWebConfig.default_max_byes
+        return self.stored_tournament.max_byes or SharlyChessConfig.default_max_byes
 
     @property
     def last_rounds_no_byes(self) -> int:
         return (
             self.stored_tournament.last_rounds_no_byes
-            or PapiWebConfig.default_last_rounds_no_byes
+            or SharlyChessConfig.default_last_rounds_no_byes
         )
 
     @cached_property

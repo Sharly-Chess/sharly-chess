@@ -8,7 +8,7 @@ from utils.enum import Result as ResultEnum
 @dataclass
 @total_ordering
 class Result:
-    """A representation of a result entered in Papi-web."""
+    """A representation of a result entered in Sharly Chess."""
 
     timestamp: float
     tournament_id: int

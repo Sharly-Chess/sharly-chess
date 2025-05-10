@@ -17,7 +17,7 @@ from common.i18n import (
     locale_localized_name,
     locales,
 )
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
@@ -51,12 +51,12 @@ class IndexAdminController(BaseAdminController):
         cls,
         data: dict[str, str] | None = None,
     ) -> StoredConfig:
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         if data is None:
             data = {}
         errors: dict[str, str] = {}
         log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
-        if log_level and log_level not in papi_web_config.log_levels:
+        if log_level and log_level not in sharly_chess_config.log_levels:
             errors[field] = _('Invalid log level [{log_level}].').format(
                 log_level=log_level
             )
@@ -69,7 +69,7 @@ class IndexAdminController(BaseAdminController):
         )
         federation: Federation | None = None
         if federation_name:
-            if federation_name not in papi_web_config.federations:
+            if federation_name not in sharly_chess_config.federations:
                 errors[field] = _('Invalid federation [{federation}].').format(
                     federation=federation_name
                 )
@@ -131,7 +131,7 @@ class IndexAdminController(BaseAdminController):
                 request, admin_events_show_details
             )
 
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         event_loader: EventLoader = EventLoader.get(request=web_context.request)
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
         nav_tabs: dict[str, dict[str, Any]] = {
@@ -176,13 +176,13 @@ class IndexAdminController(BaseAdminController):
                 'icon_class': 'bi-archive',
             },
             'config': {
-                'title': _('Papi-web settings'),
+                'title': _('Sharly Chess settings'),
                 'template': 'index/config_tab.html',
                 'icon_class': 'bi-gear',
                 'disabled': False,
             },
         }
-        if papi_web_config.force_edit:
+        if sharly_chess_config.force_edit:
             web_context.admin_tab = 'config'
         if not modal and (
             not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
@@ -219,19 +219,19 @@ class IndexAdminController(BaseAdminController):
                 pass
             case 'config':
                 if data is None:
-                    papi_web_config = PapiWebConfig()
+                    sharly_chess_config = SharlyChessConfig()
                     data = {
                         'log_level': WebContext.value_to_form_data(
-                            papi_web_config.stored_config.log_level
+                            sharly_chess_config.stored_config.log_level
                         ),
                         'launch_browser': WebContext.value_to_form_data(
-                            papi_web_config.stored_config.launch_browser
+                            sharly_chess_config.stored_config.launch_browser
                         ),
                         'federation': WebContext.value_to_form_data(
-                            papi_web_config.stored_config.federation
+                            sharly_chess_config.stored_config.federation
                         ),
                         'locale': WebContext.value_to_form_data(
-                            papi_web_config.stored_config.locale
+                            sharly_chess_config.stored_config.locale
                         ),
                     }
                     for plugin in plugin_manager.all_plugins:
@@ -253,10 +253,10 @@ class IndexAdminController(BaseAdminController):
                     '': '-',
                 } | {
                     str(log_level): log_level_str
-                    for log_level, log_level_str in papi_web_config.log_levels.items()
+                    for log_level, log_level_str in sharly_chess_config.log_levels.items()
                 }
                 log_level_options[''] = _('By default - {option}').format(
-                    option=log_level_options[str(PapiWebConfig.default_log_level)]
+                    option=log_level_options[str(SharlyChessConfig.default_log_level)]
                 )
                 launch_browser_options: dict[str, str] = {
                     '': '-',
@@ -265,7 +265,7 @@ class IndexAdminController(BaseAdminController):
                 }
                 launch_browser_options[''] = _('By default - {option}').format(
                     option=launch_browser_options[
-                        'on' if PapiWebConfig.default_launch_browser else 'off'
+                        'on' if SharlyChessConfig.default_launch_browser else 'off'
                     ]
                 )
                 locale_options: dict[str, str] = {
@@ -283,7 +283,7 @@ class IndexAdminController(BaseAdminController):
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'federation_options': cls._get_federation_options(
-                        PapiWebConfig.default_federation
+                        SharlyChessConfig.default_federation
                     ),
                     'modal': modal,
                     'data': data,
@@ -307,18 +307,18 @@ class IndexAdminController(BaseAdminController):
                 )
                 context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        PapiWebConfig.default_record_illegal_moves_number
+                        SharlyChessConfig.default_record_illegal_moves_number
                     ),
                     'timer_color_texts': cls._get_timer_color_texts(
-                        PapiWebConfig.default_timer_delays
+                        SharlyChessConfig.default_timer_delays
                     ),
                     'background_images_jstree_data': cls.background_images_jstree_data(
                         data['background_image']
                     ),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'federation_options': cls._get_federation_options(
-                        papi_web_config.stored_config.federation
-                        or PapiWebConfig.default_federation
+                        sharly_chess_config.stored_config.federation
+                        or SharlyChessConfig.default_federation
                     ),
                     'modal': modal,
                     'action': action,
@@ -493,9 +493,9 @@ class IndexAdminController(BaseAdminController):
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
             config_database.commit()
-        PapiWebConfig().reload()
+        SharlyChessConfig().reload()
         plugin_manager.reload_register()
-        Message.success(request, _('Papi-web settings has been updated.'))
+        Message.success(request, _('Sharly Chess settings have been updated.'))
         return self._admin_render(request=request, data=None, admin_tab='config')
 
     @patch(
@@ -507,14 +507,14 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         locale: str,
     ) -> Template | ClientRedirect:
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         if locale in locales:
-            stored_config: StoredConfig = papi_web_config.stored_config
+            stored_config: StoredConfig = sharly_chess_config.stored_config
             stored_config.locale = locale
             with ConfigDatabase(write=True) as config_database:
-                config_database.update_stored_config(papi_web_config.stored_config)
+                config_database.update_stored_config(sharly_chess_config.stored_config)
                 config_database.commit()
-            papi_web_config.reload()
+            sharly_chess_config.reload()
         return self._admin_render(request=request, data=None, admin_tab='config')
 
     @get(
@@ -526,12 +526,12 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect:
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         return self._admin_render(
             request,
             admin_tab='config',
             modal='config',
-            keep_modal_open=papi_web_config.force_edit,
+            keep_modal_open=sharly_chess_config.force_edit,
         )
 
     @get(

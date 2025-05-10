@@ -15,7 +15,13 @@ from packaging.version import Version
 from requests import Response, get, request
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
 
-from common import PAPI_WEB_VERSION, TMP_DIR, REQUEST_TIMEOUT, EVENTS_FOLDER, DEVEL_ENV
+from common import (
+    SHARLY_CHESS_VERSION,
+    TMP_DIR,
+    REQUEST_TIMEOUT,
+    EVENTS_FOLDER,
+    DEVEL_ENV,
+)
 from common.i18n import _, set_locale
 from common.installation_checker import InstallationChecker
 from common.logger import (
@@ -30,7 +36,7 @@ from common.logger import (
     set_log_file_handler,
 )
 from common.network import NetworkMonitor
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
@@ -43,22 +49,22 @@ class Engine(ABC):
     """Base class for both ChessEvent, FFE and web server engines."""
 
     def __init__(self):
-        # before all the rest, initialize a PapiWebConfig instance to set the language.
-        papi_web_config: PapiWebConfig = PapiWebConfig()
-        set_locale(papi_web_config.locale)
-        set_console_log_level(papi_web_config.log_level)
+        # before all the rest, initialize a SharlyChessConfig instance to set the language.
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        set_locale(sharly_chess_config.locale)
+        set_console_log_level(sharly_chess_config.log_level)
         self.log_file_path.parent.mkdir(parents=True, exist_ok=True)
         set_log_file_handler(self.log_file_path)
         print_interactive_info(
-            f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
+            f'Sharly Chess {sharly_chess_config.version} - {sharly_chess_config.copyright} - {sharly_chess_config.url}'
         )
         new_stable_version: Version | None = None
         if NetworkMonitor.connected(use_cached=False):
-            print_interactive_info(_('Checking Papi-web version...'))
+            print_interactive_info(_('Checking Sharly Chess version...'))
             new_stable_version = self._check_version()
         else:
             print_interactive_warning(
-                _('Not connected, can not check Papi-web version.')
+                _('Not connected, can not check Sharly Chess version.')
             )
         # Engines inherited this class should stop if this flag is True.
         self.error: bool = False
@@ -73,7 +79,7 @@ class Engine(ABC):
                     _(
                         'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? '
                     ).format(
-                        old_version=papi_web_config.version,
+                        old_version=sharly_chess_config.version,
                         new_version=new_stable_version,
                         y_lc=yes_answer.lower(),
                         n_uc=no_answer.upper(),
@@ -96,7 +102,7 @@ class Engine(ABC):
                 raise ValueError(f'choice=[{choice}]')
         if not EventLoader.get(request=None).event_uniq_ids:
             print_interactive_info(
-                'No event database found, looking for previous versions of Papi-web...'
+                'No event database found, looking for previous versions of Sharly Chess...'
             )
             previous_versions: list[Version] = []
             for version_dir in Path('..').glob('*'):
@@ -110,9 +116,9 @@ class Engine(ABC):
                 version: Version = Version(matches.group(1))
                 if version < Version('2.4.0'):
                     logger.debug('Version %s : too old, ignored', version)
-                elif version > papi_web_config.version:
+                elif version > sharly_chess_config.version:
                     logger.debug('Version %s : more recent, ignored', version)
-                elif version == papi_web_config.version:
+                elif version == sharly_chess_config.version:
                     logger.debug('Version %s : current version, ignored', version)
                 else:
                     previous_versions.append(version)
@@ -221,10 +227,10 @@ class Engine(ABC):
                     ]:
                         for event_id in (
                             file.stem
-                            for file in PapiWebConfig.database_yml_path.glob(
-                                f'*.{PapiWebConfig.yml_ext}'
+                            for file in SharlyChessConfig.database_yml_path.glob(
+                                f'*.{SharlyChessConfig.yml_ext}'
                             )
-                            if file.stem != PapiWebConfig.test_event_uniq_id
+                            if file.stem != SharlyChessConfig.test_event_uniq_id
                         ):
                             EventDatabase(event_id).create(populate=True)
                         break
@@ -253,7 +259,7 @@ class Engine(ABC):
             )
             # copy the configuration database to its new destination
             shutil.copy(config_database_file, ConfigDatabase().file)
-            PapiWebConfig().reload()
+            SharlyChessConfig().reload()
         else:
             logger.debug(
                 'Can not recover configuration from version {%s} (file[%s] not found).',
@@ -266,7 +272,7 @@ class Engine(ABC):
         tournaments_number: int = 0
         version_dir = Path('..') / f'papi-web-{version}'
         events_dir: Path = version_dir / EVENTS_FOLDER
-        papi_dir: Path = version_dir / PapiWebConfig.default_papi_folder
+        papi_dir: Path = version_dir / SharlyChessConfig.default_papi_folder
         for file in files:
             event_uniq_id: str = file.stem
             print_interactive_info(
@@ -281,10 +287,10 @@ class Engine(ABC):
             event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
             for tournament in event.tournaments_by_id.values():
                 src_file: Path = (
-                    papi_dir / f'{tournament.filename}.{PapiWebConfig.papi_ext}'
+                    papi_dir / f'{tournament.filename}.{SharlyChessConfig.papi_ext}'
                 )
                 if (
-                    tournament.path == PapiWebConfig.default_papi_path
+                    tournament.path == SharlyChessConfig.default_papi_path
                     and src_file.exists()
                 ):
                     # recover the Papi file where stored in the default folder
@@ -301,13 +307,13 @@ class Engine(ABC):
                     tournaments_number += 1
         print_interactive_info(_('Recovering custom files...'))
         custom_files: list[Path] = []
-        custom_dir: Path = version_dir / PapiWebConfig.custom_folder
+        custom_dir: Path = version_dir / SharlyChessConfig.custom_folder
         if custom_dir.is_dir():
             for item in custom_dir.glob('**/*'):
                 if item.is_file():
                     embedded_item: Path = Path(
                         str(item).replace(
-                            str(custom_dir), str(PapiWebConfig.embedded_custom_path)
+                            str(custom_dir), str(SharlyChessConfig.embedded_custom_path)
                         )
                     )
                     if not embedded_item.exists() or not filecmp.cmp(
@@ -315,7 +321,7 @@ class Engine(ABC):
                     ):
                         target_item: Path = Path(
                             str(item).replace(
-                                str(custom_dir), str(PapiWebConfig.custom_path)
+                                str(custom_dir), str(SharlyChessConfig.custom_path)
                             )
                         )
                         target_item.parent.mkdir(parents=True, exist_ok=True)
@@ -344,7 +350,7 @@ class Engine(ABC):
             while True:
                 choice = input_interactive(
                     _(
-                        'Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?'
+                        'Do you want to send these custom files to the Sharly Chess developers to enhance futures versions [{y_uc}/{n_lc}]?'
                     ).format(y_uc=yes_answer, n_lc=no_answer.lower())
                 )
                 if choice in [
@@ -487,13 +493,13 @@ class Engine(ABC):
                 )
             )
             subject: str = _(
-                '[Papi-web {version}] Request for the integration of custom files'
-            ).format(version=PAPI_WEB_VERSION)
+                '[Sharly Chess {version}] Request for the integration of custom files'
+            ).format(version=SHARLY_CHESS_VERSION)
             body: str = '<p>' + _('Hello,') + '</p>'
             body += (
                 '<p>'
                 + _(
-                    'I would like the following custom files to be added to a future version of Papi-web:'
+                    'I would like the following custom files to be added to a future version of Sharly Chess:'
                 )
                 + '</p>'
             )
@@ -524,14 +530,14 @@ class Engine(ABC):
             )
             body += '<p>' + _('First name LAST NAME') + '</p>'
             mail_url: str = (
-                f'mailto:{PapiWebConfig.mail}?subject={subject}&html-body={body}'
+                f'mailto:{SharlyChessConfig.mail}?subject={subject}&html-body={body}'
             )
             print_interactive_info(
                 _(
-                    'A window will open to send an email to the Papi-web project; '
+                    'A window will open to send an email to the Sharly Chess project; '
                     'If the window does not open, please click on the link below '
                     'or manually send an email to {email}.'
-                ).format(email=PapiWebConfig.mail)
+                ).format(email=SharlyChessConfig.mail)
             )
             print_interactive_info(mail_url)
             webbrowser.open(mail_url, 0)
@@ -539,14 +545,14 @@ class Engine(ABC):
     @classmethod
     def _check_version(cls) -> Version | None:
         """Compares the current version with the last available stable version
-        on the Papi-web GitHub repository.
+        on the Sharly Chess GitHub repository.
         Returns the last stable version available if any, None otherwise."""
         last_stable_version: Version | None = cls._get_last_stable_version()
         if not last_stable_version:
             print_interactive_warning(_('Checking the version failed.'))
             return None
-        if last_stable_version == PAPI_WEB_VERSION:
-            print_interactive_success(_('Your Papi-web version is up to date.'))
+        if last_stable_version == SHARLY_CHESS_VERSION:
+            print_interactive_success(_('Your Sharly Chess version is up to date.'))
             return None
         last_stable_matches = re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
@@ -557,10 +563,10 @@ class Engine(ABC):
             return None
         if re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
-            str(PAPI_WEB_VERSION),
+            str(SHARLY_CHESS_VERSION),
         ):
             # 'normal' versions X.Y.Z
-            if last_stable_version > PAPI_WEB_VERSION:
+            if last_stable_version > SHARLY_CHESS_VERSION:
                 print_interactive_warning(
                     _('A more recent version is available ([{version}]).').format(
                         version=last_stable_version
@@ -576,10 +582,12 @@ class Engine(ABC):
         if not (
             matches := re.match(
                 r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(a|b|rc)(?P<rc>\d+)$',
-                str(PAPI_WEB_VERSION),
+                str(SHARLY_CHESS_VERSION),
             )
         ):
-            raise ValueError(f'Invalid Papi-web version [{str(PAPI_WEB_VERSION)}]')
+            raise ValueError(
+                f'Invalid Sharly Chess version [{str(SHARLY_CHESS_VERSION)}]'
+            )
         # alpha versions: X.Y.ZaN
         # beta versions: X.Y.ZbN
         # 'release candidates' X.Y.ZrcN
@@ -599,7 +607,9 @@ class Engine(ABC):
             print_interactive_warning(
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
-                ).format(new_version=last_stable_version, old_version=PAPI_WEB_VERSION)
+                ).format(
+                    new_version=last_stable_version, old_version=SHARLY_CHESS_VERSION
+                )
             )
             return None
         print_interactive_info(
@@ -684,7 +694,7 @@ class Engine(ABC):
     def _install_new_version(version: Version) -> bool:
         """Install the new stable version at the same directory level.
         Returns True on success, False otherwise."""
-        url: str = f'https://github.com/papi-web-org/papi-web/releases/download/{version}/papi-web-{version}.zip'
+        url: str = f'https://github.com/sharly-chess/sharly-chess/releases/download/{version}/papi-web-{version}.zip'
         new_version_dir: Path = Path('..') / f'papi-web-{version}'
         if new_version_dir.exists():
             print_interactive_error(

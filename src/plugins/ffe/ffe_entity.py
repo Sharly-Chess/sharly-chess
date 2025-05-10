@@ -1,7 +1,7 @@
 from functools import partial, cached_property
 from typing import override
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from data.input_output.player_updaters import (
     FidePlayerComparator,
@@ -96,7 +96,7 @@ class FfePlayerUpdater(PlayerUpdater):
                         ffe_licence_numbers
                     )
                 ]
-        except PapiWebException:
+        except SharlyChessException:
             database = FfeDatabase()
             if database.exists():
                 assert database.updated_at is not None

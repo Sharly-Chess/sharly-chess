@@ -4,16 +4,16 @@
 >
     {% call() macros.section_title() %}
         <i class="bi-gear pe-1"></i>
-        {{ _('Papi-web settings') }}
+        {{ _('Sharly Chess settings') }}
     {% endcall %}
     <div class="flex-grow-1"></div>
     <div class="d-flex gap-2 ms-auto align-items-center">
-        <span {{ macros.tooltip_attributes('info', _('Edit the Papi-web settings.'), 'top') }}>
+        <span {{ macros.tooltip_attributes('info', _('Edit the Sharly Chess settings.'), 'top') }}>
             <button
                 id="admin-config-edit-button"
                 class="btn btn-outline-primary text-nowrap ms-1"
                 hx-get="{{ url_for('admin-config-modal') }}"
-                hx-trigger="click{% if admin_auth and papi_web_config.force_edit %}, load{% endif %}"
+                hx-trigger="click{% if admin_auth and sharly_chess_config.force_edit %}, load{% endif %}"
                 hx-target="body"
                 hx-indicator="#please-wait"
                 preload
@@ -53,20 +53,20 @@
     <tbody>
         <tr class="{{ row_cycler(True) }}">
             <th scope="row" class="text-nowrap">{{ _('Port') }}</th>
-            <td>{{ papi_web_config.web_port }}</td>
+            <td>{{ sharly_chess_config.web_port }}</td>
         </tr>
         <tr class="{{ row_cycler() }}">
-            <th scope="row" class="text-nowrap">{{ _('Access from the Papi-web server') }}</th>
-            <td><a href="{{ papi_web_config.local_url }}" target="_blank">{{ papi_web_config.local_url }}</a></td>
+            <th scope="row" class="text-nowrap">{{ _('Access from the Sharly Chess server') }}</th>
+            <td><a href="{{ sharly_chess_config.local_url }}" target="_blank">{{ sharly_chess_config.local_url }}</a></td>
         </tr>
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
-            <td>{% if papi_web_config.lan_url %}<a href="{{ papi_web_config.lan_url }}" target="_blank">{{ papi_web_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
+            <td>{% if sharly_chess_config.lan_url %}<a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
         </tr>
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Default language') }}</th>
             <td>
-                {% set l_info = locale_infos[papi_web_config.locale] %}
+                {% set l_info = locale_infos[sharly_chess_config.locale] %}
                 <img
                     src="{{l_info.flag_url}}"
                     alt="{{l_info.name}}"
@@ -74,7 +74,7 @@
                 />
                 {{ l_info.name }}
                 {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
-                {% if not papi_web_config.stored_config.locale %}
+                {% if not sharly_chess_config.stored_config.locale %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>
@@ -86,10 +86,10 @@
             <td>
                 <img
                     class="player-federation-flag pe-1"
-                    src="{{ url_for('static', file_path='/images/federations/' ~ papi_web_config.federation ~ '.svg') }}"
+                    src="{{ url_for('static', file_path='/images/federations/' ~ sharly_chess_config.federation ~ '.svg') }}"
                 />
-                {{ papi_web_config.federation.name }} - {{ papi_web_config.federations[papi_web_config.federation.name] }}
-                {% if not papi_web_config.stored_config.federation %}
+                {{ sharly_chess_config.federation.name }} - {{ sharly_chess_config.federations[sharly_chess_config.federation.name] }}
+                {% if not sharly_chess_config.stored_config.federation %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>
@@ -99,8 +99,8 @@
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>
             <td>
-                {% if papi_web_config.launch_browser %}{{ _('Yes') }}{% else %}{{ _('No') }}{% endif %}
-                {% if papi_web_config.stored_config.launch_browser is none %}
+                {% if sharly_chess_config.launch_browser %}{{ _('Yes') }}{% else %}{{ _('No') }}{% endif %}
+                {% if sharly_chess_config.stored_config.launch_browser is none %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>
@@ -110,8 +110,8 @@
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Log level') }}</th>
             <td>
-                {{ papi_web_config.log_levels[papi_web_config.log_level] }}
-                {% if not papi_web_config.stored_config.log_level %}
+                {{ sharly_chess_config.log_levels[sharly_chess_config.log_level] }}
+                {% if not sharly_chess_config.stored_config.log_level %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>
@@ -120,7 +120,7 @@
         </tr>
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Papi-web') }}</th>
-            <td>{{ papi_web_config['version'] }}</td>
+            <td>{{ sharly_chess_config['version'] }}</td>
         </tr>
 
         <tr>
@@ -147,15 +147,15 @@
             </tr>
             <tr class="{{ row_cycler(True) }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Uvicorn') }}</th>
-                <td>{{ papi_web_config.uvicorn_version }}</td>
+                <td>{{ sharly_chess_config.uvicorn_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='LiteStar') }}</th>
-                <td>{{ papi_web_config.litestar_version }}</td>
+                <td>{{ sharly_chess_config.litestar_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Jinja2') }}</th>
-                <td>{{ papi_web_config.jinja2_version }}</td>
+                <td>{{ sharly_chess_config.jinja2_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='HTMX') }}</th>
@@ -171,15 +171,15 @@
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='SortableJS') }}</th>
-                <td>{{ papi_web_config.sortable_version }}</td>
+                <td>{{ sharly_chess_config.sortable_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jsTree') }}</th>
-                <td>{{ papi_web_config.jstree_version }}</td>
+                <td>{{ sharly_chess_config.jstree_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
-                <td>{{ papi_web_config.pyodbc_version }}</td>
+                <td>{{ sharly_chess_config.pyodbc_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{

@@ -1,7 +1,7 @@
 from logging import Logger
 
 from plugins.chessevent.engine.action_selector import ActionSelector
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -61,6 +61,6 @@ class EventSelector(metaclass=Singleton):
         try:
             while ActionSelector().run(event.uniq_id):
                 pass
-        except PapiWebException as pwe:
+        except SharlyChessException as pwe:
             logger.warning(pwe)
         return True

@@ -10,7 +10,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from common.i18n import _
 from data.loader import EventLoader
 from data.timer import Timer, TimerHour
@@ -315,7 +315,7 @@ class TimerAdminController(BaseEventAdminController):
 
                 template_context |= {
                     'timer_color_texts': cls._get_timer_color_texts(
-                        PapiWebConfig.default_timer_delays
+                        SharlyChessConfig.default_timer_delays
                     ),
                     'modal': 'default-timers',
                     'errors': errors or {},

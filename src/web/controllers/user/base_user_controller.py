@@ -4,7 +4,7 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from web.controllers.base_controller import BaseController, WebContext
 
 
@@ -41,7 +41,7 @@ class UserWebContext(WebContext):
 
     @property
     def background_color(self) -> str:
-        return PapiWebConfig.user_background_color
+        return SharlyChessConfig.user_background_color
 
     @property
     def template_context(self) -> dict[str, Any]:

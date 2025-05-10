@@ -6,8 +6,8 @@ from typing import Self, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import PAPI_WEB_VERSION
-from common.exception import PapiWebException
+from common import SHARLY_CHESS_VERSION
+from common.exception import SharlyChessException
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 if TYPE_CHECKING:
@@ -48,7 +48,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         )
         self.execute(
             'INSERT INTO `metadata` (`version`) VALUES (?)',
-            (str(PAPI_WEB_VERSION),),
+            (str(SHARLY_CHESS_VERSION),),
         )
 
     def is_metadata_table_installed(self) -> bool:
@@ -88,7 +88,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
             None,
         )
         if migration_version is None:
-            raise PapiWebException(
+            raise SharlyChessException(
                 f'Database [{self.file.name}] - Unsupported version '
                 f'[{database_version}], impossible to migrate '
                 f'(min supported version: {ordered_versions[0]})'
@@ -103,7 +103,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         """Checks if the database can be used
         in the current version the application.
         Returns True if it can, False if it needs an upgrade.
-        If it can't be upgraded, raises a *PapiWebException*."""
+        If it can't be upgraded, raises a *SharlyChessException*."""
         return all(manager.check_status() for manager in self.migration_managers)
 
     def upgrade(self):
@@ -117,7 +117,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         The file associated to this database must not already exist.
         """
         if self.exists():
-            raise PapiWebException(
+            raise SharlyChessException(
                 f'The database can not be created because the '
                 f'file [{self.file.resolve()}] already exists.'
             )
@@ -129,7 +129,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
 
     def __enter__(self) -> Self:
         if not self.exists():
-            raise PapiWebException(
+            raise SharlyChessException(
                 'Database could not be opened because file '
                 f'[{self.file.resolve()}] does not exist.'
             )

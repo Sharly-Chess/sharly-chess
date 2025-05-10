@@ -10,7 +10,7 @@ import pyodbc  # type: ignore
 import aioodbc
 
 from common import DEVEL_ENV
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 
@@ -22,7 +22,7 @@ class SqlServerCredentials:
         self,
         file: Path,
     ):
-        """Reads credentials from the given file, raises PapiWebException on error."""
+        """Reads credentials from the given file, raises SharlyChessException on error."""
         self.host: str
         self.user: str
         self.password: str
@@ -34,11 +34,11 @@ class SqlServerCredentials:
                 )
         except FileNotFoundError as e:
             if DEVEL_ENV:
-                raise PapiWebException(
+                raise SharlyChessException(
                     f'Could not read SQL server credentials ({e}), please run generate_xxx_sql_server_credentials.py.'
                 ) from e
             else:
-                raise PapiWebException(
+                raise SharlyChessException(
                     'Could not read SQL server credentials.'
                 ) from None
 
@@ -74,7 +74,7 @@ class SqlServer:
     DEFAULT_TIMEOUT: int = 3
 
     def __init__(self, credentials_file: Path, timeout: int | None = None):
-        """Initializes the database object, raises PapiWebException on error."""
+        """Initializes the database object, raises SharlyChessException on error."""
         self.credentials: SqlServerCredentials = SqlServerCredentials(credentials_file)
         self.timeout: int = timeout or self.DEFAULT_TIMEOUT
         self.database: aioodbc.Connection | None = None
@@ -82,7 +82,7 @@ class SqlServer:
         self.error: str | None = None
 
     async def __aenter__(self) -> Self:
-        """Opens the database connection, raises PapiWebException on error."""
+        """Opens the database connection, raises SharlyChessException on error."""
         needed_driver: str = 'SQL Server'
         if needed_driver not in pyodbc.drivers():
             logger.error('Installed ODBC drivers are:')
@@ -116,14 +116,14 @@ class SqlServer:
             else:
                 error: str = _('Connection to the server failed.')
             logger.error(error)
-            raise PapiWebException(error) from e
+            raise SharlyChessException(error) from e
         except TimeoutError as e:
             NetworkMonitor.set_connected(False)
             error: str = _('Connection to the server failed: {error}.').format(
                 error=_('timeout')
             )
             logger.error(error)
-            raise PapiWebException(error) from e
+            raise SharlyChessException(error) from e
 
         assert self.database is not None
         try:
@@ -137,7 +137,7 @@ class SqlServer:
             else:
                 error: str = _('Connection to the database failed.')
             logger.error(error)
-            raise PapiWebException(error) from e
+            raise SharlyChessException(error) from e
         return self
 
     async def __aexit__(self, exc_type, exc_value, tb):
@@ -170,7 +170,7 @@ class SqlServer:
             else:
                 error: str = _('Request to the database failed.')
             logger.error(error)
-            raise PapiWebException(error) from e
+            raise SharlyChessException(error) from e
 
     async def fetchall(self) -> AsyncIterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.

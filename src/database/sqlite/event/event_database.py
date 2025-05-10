@@ -15,7 +15,7 @@ from packaging.version import Version
 
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
@@ -44,7 +44,7 @@ logger: Logger = get_logger()
 
 
 class EventDatabase(MigrationDatabase):
-    """The SQLite database class for Papi-web events."""
+    """The SQLite database class for Sharly Chess events."""
 
     def __init__(self, uniq_id: str, write: bool = False):
         self.uniq_id = uniq_id
@@ -91,7 +91,7 @@ class EventDatabase(MigrationDatabase):
 
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
-        return EVENTS_DIR / f'{uniq_id}.{PapiWebConfig.event_database_ext}'
+        return EVENTS_DIR / f'{uniq_id}.{SharlyChessConfig.event_database_ext}'
 
     @staticmethod
     def _check_populate_dict(
@@ -182,7 +182,7 @@ class EventDatabase(MigrationDatabase):
     def _populate(self):
         try:
             with EventDatabase(self.uniq_id, write=True) as event_database:
-                yml_file = PapiWebConfig.database_yml_path / f'{self.uniq_id}.yml'
+                yml_file = SharlyChessConfig.database_yml_path / f'{self.uniq_id}.yml'
                 event_dict = yaml.safe_load(yml_file.read_text(encoding='utf-8'))
                 self._check_populate_dict(
                     yml_file,
@@ -272,7 +272,7 @@ class EventDatabase(MigrationDatabase):
                         path=event_dict.get('path', None),
                         hide_background_image=event_dict.get(
                             'hide_background_image',
-                            PapiWebConfig.default_hide_background_image,
+                            SharlyChessConfig.default_hide_background_image,
                         ),
                         background_image=event_dict.get('background_image', None),
                         background_color=event_dict.get('background_color', None),
@@ -786,7 +786,8 @@ class EventDatabase(MigrationDatabase):
         index: int = 0
         date_str: str = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
         arch: Path = (
-            file.parent / f'{file.stem}_{date_str}.{PapiWebConfig.event_archive_ext}'
+            file.parent
+            / f'{file.stem}_{date_str}.{SharlyChessConfig.event_archive_ext}'
         )
         while True:
             try:
@@ -890,7 +891,7 @@ class EventDatabase(MigrationDatabase):
         stored_event = StoredEvent(
             uniq_id=self.uniq_id,
             name=row['name'],
-            federation=row.get('federation', PapiWebConfig().default_federation),
+            federation=row.get('federation', SharlyChessConfig().default_federation),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
@@ -898,7 +899,8 @@ class EventDatabase(MigrationDatabase):
             location=row['location'],
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
-                    'hide_background_image', PapiWebConfig.default_hide_background_image
+                    'hide_background_image',
+                    SharlyChessConfig.default_hide_background_image,
                 )
             ),
             background_image=row['background_image'],

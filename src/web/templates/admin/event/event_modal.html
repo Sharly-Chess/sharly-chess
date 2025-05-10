@@ -114,7 +114,7 @@
                                 name='path',
                                 label=_('Default directory of the Papi files:'),
                                 placeholder=_('E.g.: c:\\chess\\tournaments'),
-                                help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=papi_web_config.default_papi_path),
+                                help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=sharly_chess_config.default_papi_path),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -142,7 +142,7 @@
                                 label=_('Illegal moves recording:'),
                                 help_text=_(
                                     'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
-                                    default=papi_web_config.default_record_illegal_moves_number
+                                    default=sharly_chess_config.default_record_illegal_moves_number
                                 ),
                                 select_options=record_illegal_moves_options,
                                 data=data, errors=errors
@@ -174,7 +174,7 @@
                             {{ admin_macros.text_input(
                                 name='background_image',
                                 label=_('Background image:'),
-                                help_text=_('The URL or the path of the image to display (by default the Papi-web logo).'),
+                                help_text=_('The URL or the path of the image to display (by default the Sharly Chess logo).'),
                                 default_checkbox=true,
                                 default_checkbox_text=_('no background image'),
                                 data=data, errors=errors
@@ -220,13 +220,13 @@
                                 label=_('Background colour:'),
                                 help_text=_('The background colour is used when the image does not fill the whole screen.'),
                                 default_checkbox=true,
-                                default_color=papi_web_config.default_background_color,
+                                default_color=sharly_chess_config.default_background_color,
                                 data=data, errors=errors
                             ) }}
                             <script>
                                 $('#background-color-checkbox').click(function() {
                                     if ($(this).is(':checked')) {
-                                        $('#background-image-test').css('background-color', '{{ papi_web_config.default_background_color }}');
+                                        $('#background-image-test').css('background-color', '{{ sharly_chess_config.default_background_color }}');
                                     } else {
                                     }
                                 });
@@ -244,8 +244,8 @@
                                     margin: 0 auto;
                                     width: 320px;
                                     height: 180px;
-                                    background-image: url('{{ admin_event.background_url if admin_event else papi_web_config.default_background_image }}');
-                                    background-color: {{ admin_event.background_color if admin_event else papi_web_config.default_background_color }};
+                                    background-image: url('{{ admin_event.background_url if admin_event else sharly_chess_config.default_background_image }}');
+                                    background-color: {{ admin_event.background_color if admin_event else sharly_chess_config.default_background_color }};
                                     background-repeat: no-repeat;
                                     background-size: contain;
                                     background-position: center center;"
@@ -264,7 +264,7 @@
                                 label=_('Background colour:'),
                                 help_text=_('The background colour of the alert messages.'),
                                 default_checkbox=true,
-                                default_color=papi_web_config.default_message_background_color,
+                                default_color=sharly_chess_config.default_message_background_color,
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -274,7 +274,7 @@
                                 label=_('Text colour:'),
                                 help_text=_('The text colour of the alert messages.'),
                                 default_checkbox=true,
-                                default_color=papi_web_config.default_message_color,
+                                default_color=sharly_chess_config.default_message_color,
                                 data=data, errors=errors
                             ) }}
                         </div>

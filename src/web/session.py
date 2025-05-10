@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from litestar.plugins.htmx import HTMXRequest
 
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.player import Federation, Club
 from data.safety_mode import SafetyMode
 from utils.enum import PlayerGender, PlayerCategory
@@ -198,7 +198,7 @@ class SessionHandler:
 
     @classmethod
     def get_session_locale(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.LOCALE_KEY, PapiWebConfig().locale)
+        return request.session.get(cls.LOCALE_KEY, SharlyChessConfig().locale)
 
     ADMIN_PLAYERS_SORT_KEY: str = 'admin_players_sort'
 
@@ -235,7 +235,7 @@ class SessionHandler:
     ) -> list[str]:
         return request.session.get(
             cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY,
-            PapiWebConfig.default_players_filter_columns,
+            SharlyChessConfig.default_players_filter_columns,
         )
 
     ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = 'admin_players_filter_federations'

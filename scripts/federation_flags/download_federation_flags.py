@@ -6,7 +6,7 @@ from requests import get, Response, HTTPError
 import plugins.manager  # noqa
 from common.i18n import _
 from common.logger import print_interactive_error
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.fide.fide_database import FideDatabase
 
 
@@ -60,20 +60,20 @@ def run():
     undeclared_federation_ids: set[str] = {
         federation_id
         for federation_id in federation_ids
-        if federation_id not in PapiWebConfig.federations
+        if federation_id not in SharlyChessConfig.federations
     }
     if undeclared_federation_ids:
         print(
-            f'The following federations should be declared in PapiWebConfig:\n{", ".join(undeclared_federation_ids)}.'
+            f'The following federations should be declared in SharlyChessConfig:\n{", ".join(undeclared_federation_ids)}.'
         )
     useless_federation_ids: set[str] = {
         federation_id
-        for federation_id in PapiWebConfig.federations
+        for federation_id in SharlyChessConfig.federations
         if federation_id not in federation_ids
     }
     if useless_federation_ids:
         print(
-            f'The following federations are declared in PapiWebConfig but have no players:\n{", ".join(useless_federation_ids)}.'
+            f'The following federations are declared in SharlyChessConfig but have no players:\n{", ".join(useless_federation_ids)}.'
         )
     download_federation_flags(federation_ids)
     print('Done.')

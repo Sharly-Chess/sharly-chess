@@ -14,7 +14,7 @@ from common import (
     format_timestamp_time,
 )
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
 
 if TYPE_CHECKING:
@@ -91,14 +91,14 @@ class TimerHour:
     def text_before(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_before,
-            PapiWebConfig.default_timer_round_text_before,
+            SharlyChessConfig.default_timer_round_text_before,
         )
 
     @cached_property
     def text_after(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_after,
-            PapiWebConfig.default_timer_round_text_after,
+            SharlyChessConfig.default_timer_round_text_after,
         )
 
     @property

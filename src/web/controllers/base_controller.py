@@ -25,7 +25,7 @@ from common.i18n import (
     get_locale,
 )
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
@@ -61,7 +61,7 @@ class WebContext:
         Override this method to make the background image different from the default.
         :return:
         """
-        return PapiWebConfig.default_background_image
+        return SharlyChessConfig.default_background_image
 
     @property
     def background_color(self) -> str:
@@ -69,7 +69,7 @@ class WebContext:
         Override this method to make the background colour different from the default.
         :return:
         """
-        return PapiWebConfig.default_background_color
+        return SharlyChessConfig.default_background_color
 
     @property
     def background_info(self) -> dict[str, str | None]:
@@ -336,7 +336,7 @@ class WebContext:
         Override this method to pass more parameters to the template engine.
         :return: a dict containing named parameters.
         """
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         now: float = time.time()
         locale_infos: dict[str, Any] = {}
         locale_options: dict[str, str] = {}
@@ -352,7 +352,7 @@ class WebContext:
             'EXPERIMENTAL_FEATURES': experimental_features_enabled(),
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
-            'papi_web_config': papi_web_config,
+            'sharly_chess_config': sharly_chess_config,
             'admin_auth': self.admin_auth,
             'background_info': self.background_info,
             'theme': self.theme,

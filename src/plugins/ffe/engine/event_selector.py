@@ -1,6 +1,6 @@
 from logging import Logger
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.singleton import Singleton
 from common.logger import (
@@ -59,6 +59,6 @@ class EventSelector(metaclass=Singleton):
         try:
             while ActionSelector().run(event.uniq_id):
                 pass
-        except PapiWebException as pwe:
+        except SharlyChessException as pwe:
             logger.warning(pwe)
         return True
