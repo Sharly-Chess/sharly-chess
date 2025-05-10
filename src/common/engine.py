@@ -645,18 +645,22 @@ class Engine(ABC):
                         version = matches.group(1)
                 if not version:
                     logger.info(
-                        '[%s] is not a stable release number, entry ignored.', tag_name
+                        '[%s] is not a valid release number, entry ignored.', tag_name
                     )
                     continue
-                logger.debug('tag_name=[%s] > release=[%s]', tag_name, version)
+                if Version(version) < SHARLY_CHESS_VERSION:
+                    logger.info(
+                        'Release [%s] is older than the current release ([%s]), ignored.',
+                        tag_name,
+                        str(SHARLY_CHESS_VERSION),
+                    )
+                    continue
                 if entry.get('draft', True):
                     logger.info('Release [%s] is draft, ignored.', version)
                     continue
                 assets: list[dict] = entry.get('assets', [])
                 if not assets:
-                    logger.info(
-                        'No asset found for release [%s], release ignored.', version
-                    )
+                    logger.info('No assets for release [%s], release ignored.', version)
                     continue
                 download_url: str | None = None
                 for asset in assets:
@@ -702,14 +706,14 @@ class Engine(ABC):
                     )
                     continue
             if not version_download_urls:
-                logger.warning('No stable release found.')
+                logger.warning('No more recent releases found.')
                 return None, None
             sorted_versions: list[Version] = sorted(version_download_urls.keys())
             logger.info(
-                'Stable releases found: %s.', ', '.join(map(str, sorted_versions))
+                'More recent releases found: %s.', ', '.join(map(str, sorted_versions))
             )
             last_version: Version = sorted_versions[-1]
-            logger.info('Last stable release found: [%s].', last_version)
+            logger.info('Most recent release found: [%s].', str(last_version))
             return last_version, version_download_urls[last_version]
         except ConnectionError as ex:
             logger.warning('Failed to read [%s] (connection error): [%s].', url, ex)
