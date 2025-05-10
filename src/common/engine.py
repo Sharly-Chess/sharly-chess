@@ -57,11 +57,11 @@ class Engine(ABC):
             sharly_chess_config.copyright,
             sharly_chess_config.url,
         )
-        new_stable_version: Version | None = None
+        more_recent_version: Version | None = None
         download_url: str | None = None
         if NetworkMonitor.connected(use_cached=False):
             logger.info('Checking Sharly Chess version...')
-            new_stable_version, download_url = self._check_version()
+            more_recent_version, download_url = self._check_version()
         else:
             logger.warning(
                 'Not connected, can not search for Sharly Chess newer releases.'
@@ -71,7 +71,7 @@ class Engine(ABC):
         if not InstallationChecker.check():
             self.error = True
             return
-        if new_stable_version and download_url:
+        if more_recent_version and download_url:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
             no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -80,17 +80,17 @@ class Engine(ABC):
                         'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? '
                     ).format(
                         old_version=sharly_chess_config.version,
-                        new_version=new_stable_version,
+                        new_version=more_recent_version,
                         y_lc=yes_answer.lower(),
                         n_uc=no_answer.upper(),
                     )
                 )
                 if choice == yes_answer:
                     self.error = True
-                    if not self._install_new_version(new_stable_version, download_url):
+                    if not self._install_new_version(more_recent_version, download_url):
                         logger.error(
                             'The installation of release [%s] failed.',
-                            new_stable_version,
+                            more_recent_version,
                         )
                     return
                 if choice in [
@@ -155,11 +155,11 @@ class Engine(ABC):
                         )
                         previous_databases[(version, prefix)] = files
                     else:
-                        logger.info('- Release [%s]: no events', version)
+                        logger.warning('- Release [%s]: no events', version)
                 if not previous_databases:
-                    logger.info('No events found in previously installed versions.')
+                    logger.warning('No events found in previously installed versions.')
             else:
-                logger.info('No previously installed releases found.')
+                logger.warning('No previously installed releases found.')
             recovered_version: Version | None = None
             if previous_databases:
                 # keep the versions with databases only
@@ -540,72 +540,20 @@ class Engine(ABC):
         if most_recent_version == SHARLY_CHESS_VERSION:
             logger.info('Your Sharly Chess release is up to date.')
             return None, None
-        last_stable_matches = re.match(
-            r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
-            str(most_recent_version),
-        )
-        if not last_stable_matches:
-            logger.warning('Checking the release failed.')
-            return None, None
-        if re.match(
-            r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
-            str(SHARLY_CHESS_VERSION),
-        ):
-            # 'normal' versions X.Y.Z
-            if most_recent_version > SHARLY_CHESS_VERSION:
-                logger.warning(
-                    'A more recent release is available ([%s]).', most_recent_version
-                )
-                return most_recent_version, download_url
+        if most_recent_version < SHARLY_CHESS_VERSION:
             logger.warning(
-                'You are using a release newer than the latest stable release available ([%s]), are you a developer? ;-)',
+                'You are using a release more recent than the most recent release available ([%s]), are you a developer? ;-)',
                 most_recent_version,
             )
             return None, None
-        if not (
-            matches := re.match(
-                r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(a|b|rc)(?P<rc>\d+)$',
-                str(SHARLY_CHESS_VERSION),
-            )
-        ):
-            raise ValueError(
-                f'Invalid Sharly Chess release [{str(SHARLY_CHESS_VERSION)}]'
-            )
-        # alpha versions: X.Y.ZaN
-        # beta versions: X.Y.ZbN
-        # 'release candidates' X.Y.ZrcN
-        available: bool = False
-        stable_major = last_stable_matches.group('major')
-        current_major = matches.group('major')
-        if stable_major > current_major:
-            available = True
-        else:  # stable_major == current_major
-            stable_minor = last_stable_matches.group('minor')
-            current_minor = matches.group('minor')
-            if stable_minor > current_minor:
-                available = True
-            else:  # stable_major == current_major
-                stable_patch = last_stable_matches.group('patch')
-                current_patch = matches.group('patch')
-                if stable_patch > current_patch:
-                    available = True
-        if available:
-            logger.warning(
-                'A stable and more recent version is available ([%s]) but upgrading unstable releases (like the one you are currently using: [%s]) must be done manually (upgrade from the last stable release installed on your server).',
-                most_recent_version,
-                SHARLY_CHESS_VERSION,
-            )
-            return None, None
-        logger.info(
-            'You are using un unstable release more recent than the last stable release available ([%s]).',
-            most_recent_version,
-        )
-        return None, None
+        logger.info('A more recent release is available ([%s]).', most_recent_version)
+        return most_recent_version, download_url
 
     @staticmethod
     def _get_most_recent_version() -> tuple[Version | None, str | None]:
         """Retrieves the available versions from the Sharly Chess GitHub repository.
-        If the current release is stable, more recent pre-releases are ignored; otherwise the most recent release is chosen.
+        If the current release is stable, more recent pre-releases are ignored,
+        otherwise the most recent unstable release can be returned.
         If an error occurred or no release matches on the repository, returns None.
         Otherwise, the most recent version and its download URL are returned."""
         current_stable: bool = bool(
@@ -627,32 +575,66 @@ class Engine(ABC):
             )
             try:
                 entries: list[dict[str, Any]] = json.loads(data)
+                fake_version: str = '2.7.3'
+                entries.append(
+                    {
+                        'tag_name': fake_version,
+                        'draft': False,
+                        'assets': [
+                            {
+                                'name': f'sharly-chess-{fake_version}.zip',
+                                'browser_download_url': f'https://github.com/Sharly-Chess/sharly-chess/releases/download/{fake_version}/sharly-chess-{fake_version}.zip',
+                            }
+                        ],
+                    },
+                )
+                fake_version: str = '2.7.3b6'
+                entries.append(
+                    {
+                        'tag_name': fake_version,
+                        'draft': False,
+                        'assets': [
+                            {
+                                'name': f'sharly-chess-{fake_version}.zip',
+                                'browser_download_url': f'https://github.com/Sharly-Chess/sharly-chess/releases/download/{fake_version}/sharly-chess-{fake_version}.zip',
+                            }
+                        ],
+                    },
+                )
             except JSONDecodeError as ex:
                 logger.warning('Invalid response from GitHub: [%s].', ex)
                 return None, None
             version_download_urls: dict[Version, str] = {}
             for entry in entries:
                 tag_name: str = entry['tag_name']
-                version: str | None = None
+                version: Version | None = None
                 if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
-                    version = matches.group(1)
+                    version = Version(matches.group(1))
                 elif not current_stable:
                     if matches := re.match(r'^(\d+\.\d+\.\d+a\d+)$', tag_name):
-                        version = matches.group(1)
+                        version = Version(matches.group(1))
                     elif matches := re.match(r'^(\d+\.\d+\.\d+b\d+)$', tag_name):
-                        version = matches.group(1)
+                        version = Version(matches.group(1))
                     elif matches := re.match(r'^(\d+\.\d+\.\d+rc\d+)$', tag_name):
-                        version = matches.group(1)
+                        version = Version(matches.group(1))
                 if not version:
-                    logger.info(
+                    logger.warning(
                         '[%s] is not a valid release number, entry ignored.', tag_name
                     )
                     continue
-                if Version(version) < SHARLY_CHESS_VERSION:
+                if version < SHARLY_CHESS_VERSION:
+                    logger.info('Release [%s] is too old, ignored.', tag_name)
+                    continue
+                version_stable: bool = bool(
+                    re.match(r'^(\d+\.\d+\.\d+)$', str(version))
+                )
+                if not version_stable and (
+                    version.base_version != SHARLY_CHESS_VERSION.base_version
+                ):
                     logger.info(
-                        'Release [%s] is older than the current release ([%s]), ignored.',
+                        'Unstable releases with base version other than [%s] are ignored, [%s] ignored.',
+                        SHARLY_CHESS_VERSION.base_version,
                         tag_name,
-                        str(SHARLY_CHESS_VERSION),
                     )
                     continue
                 if entry.get('draft', True):
@@ -660,7 +642,7 @@ class Engine(ABC):
                     continue
                 assets: list[dict] = entry.get('assets', [])
                 if not assets:
-                    logger.info('No assets for release [%s], release ignored.', version)
+                    logger.info('No assets for release [%s], ignored.', version)
                     continue
                 download_url: str | None = None
                 for asset in assets:
@@ -669,15 +651,13 @@ class Engine(ABC):
                         asset_name := asset.get('name', 'undefined')
                     ) == f'papi-web-{version}.zip':
                         logger.info(
-                            '[%s] is an old asset name in release [%s] (expected [%s]), asset ignored.',
+                            'Old asset name [%s] found in release [%s] (expected [%s]), asset ignored.',
                             asset_name,
                             version,
                             valid_asset_name,
                         )
                         continue
-                    if (
-                        asset_name := asset.get('name', 'undefined')
-                    ) != valid_asset_name:
+                    if asset_name != valid_asset_name:
                         logger.info(
                             '[%s] is not a valid asset name in release [%s] (expected [%s]), asset ignored.',
                             asset_name,
@@ -686,15 +666,15 @@ class Engine(ABC):
                         )
                         continue
                     if not (asset_url := asset.get('browser_download_url', '')):
-                        logger.info(
+                        logger.warning(
                             'No download URL set for [%s] of release [%s], asset ignored.',
                             asset_name,
                             version,
                         )
                         continue
                     logger.info(
-                        'No download URL set for [%s] of release [%s], asset ignored.',
-                        asset_name,
+                        'Download URL [%s] is valid for release [%s].',
+                        asset_url,
                         version,
                     )
                     download_url = asset_url
@@ -705,12 +685,15 @@ class Engine(ABC):
                         version,
                     )
                     continue
+                version_download_urls[version] = download_url
             if not version_download_urls:
                 logger.warning('No more recent releases found.')
                 return None, None
             sorted_versions: list[Version] = sorted(version_download_urls.keys())
             logger.info(
-                'More recent releases found: %s.', ', '.join(map(str, sorted_versions))
+                'More recent releases found (%d): %s.',
+                len(sorted_versions),
+                ', '.join(map(lambda v: f'[{v}]', sorted_versions)),
             )
             last_version: Version = sorted_versions[-1]
             logger.info('Most recent release found: [%s].', str(last_version))
@@ -746,7 +729,6 @@ class Engine(ABC):
             )
             return False
         try:
-            new_version_dir.mkdir()
             logger.info(
                 'Downloading release [%s] from GitHub ([%s])...', version, download_url
             )
@@ -760,7 +742,8 @@ class Engine(ABC):
                 return False
             zip_file = TMP_DIR / f'sharly-chess-{version}.zip'
             zip_file.write_bytes(response.content)
-            logger.info('File downloaded: [%s].', zip_file)
+            logger.debug('File downloaded: [%s].', zip_file)
+            new_version_dir.mkdir()
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:
                 zip_ref.extractall(new_version_dir)
             logger.info(
@@ -778,12 +761,7 @@ class Engine(ABC):
             logger.warning('Failed to read [%s] (timeout): [%s].', download_url, ex)
             return False
         except HTTPError as ex:
-            logger.warning(
-                'Failed to read [%s] (error code [%d]): [%s].',
-                download_url,
-                ex.errno,
-                ex.strerror,
-            )
+            logger.warning('Failed to read [%s]: [%s].', download_url, ex)
             return False
         except RequestException as ex:
             logger.warning('Failed to read [%s]: [%s].', download_url, ex)
