@@ -18,10 +18,10 @@
                 >
                     <button
                         class="btn btn-outline-primary text-nowrap"
-                        {% if action in allowed_actions %}
+                        {% if admin_tournament.are_pairing_settings_valid %}
                             hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                         {% else %}
-                            hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                            hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                             hx-trigger="click"
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
@@ -42,25 +42,6 @@
                     {{ _('Please use Papi to generate pairings.') }}
                 </div>
             {% endif %}
-            <span
-                {{ macros.tooltip_attributes(
-                    'info', _('Configure the settings of the pairing system.'), 'top'
-                ) }}
-            >
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="click"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-gear pe-1"></i>
-                    {{ _('Settings') }}
-                </button>
-            </span>
         {% endif %}
     {% endwith %}
     {% with action='FULL_UNPAIRING' %}

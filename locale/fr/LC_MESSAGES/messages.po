@@ -395,12 +395,6 @@ msgstr "Ech."
 msgid "Berger"
 msgstr "Berger"
 
-msgid "Berger number"
-msgstr "Numéro Berger"
-
-msgid "Berger numbers"
-msgstr "Numéros Berger"
-
 msgid "Black"
 msgstr "Noirs"
 
@@ -720,9 +714,6 @@ msgstr "Commentaire :"
 
 msgid "Configuration"
 msgstr "Configuration"
-
-msgid "Configure the settings of the pairing system."
-msgstr "Configurer les paramètres du système d'appariements."
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
@@ -2528,6 +2519,9 @@ msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], famille ignoré
 msgid "Notification"
 msgstr "Notification"
 
+msgid "Number"
+msgstr "Numéro"
+
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
@@ -2664,6 +2658,9 @@ msgstr "Apparier le tournoi"
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
+msgid "Pairing numbers selection"
+msgstr "Sélection des numéros d'appariements"
+
 msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
 
@@ -2695,16 +2692,20 @@ msgid "Pairings generated for all rounds of tournament [{tournament_uniq_id}]."
 msgstr "Les appariements ont été générés pour toutes les rondes du tournoi [{tournament_uniq_id}]."
 
 msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
-msgstr "La génération d'appriements n'est pas autorisée si une ronde passée a au moins un résultat manquant ou un·e joueur·euse non-apparié·e."
+msgstr "La génération d'appariements n'est pas autorisée si une ronde passée a au moins un résultat manquant ou un·e joueur·euse non-apparié·e."
 
 msgid "Pairings generation not allowed if there are fewer players than rounds."
-msgstr "La génération d'appriements n'est pas autorisée si il y a moins de joueurs que de rondes."
+msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de joueurs que de rondes."
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
+
+#, python-format
+msgid "Pairings: %(pairing_variation)s"
+msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Papi file"
 msgstr "Fichier Papi"
@@ -3069,6 +3070,9 @@ msgstr "R"
 msgid "Randomly select a seed color."
 msgstr "Sélectionner la couleur au hasard."
 
+msgid "Randomly select the pairing numbers."
+msgstr "Tirer les numéros d'appariement aléatoirement."
+
 msgid "Ranking"
 msgstr "Classement"
 
@@ -3118,6 +3122,9 @@ msgstr "Classement"
 
 msgid "Rating limit"
 msgstr "Limite Elo"
+
+msgid "Rating limits"
+msgstr "Limites Elo"
 
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
@@ -3407,12 +3414,6 @@ msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
-msgid "Settings"
-msgstr "Paramètres"
-
-msgid "Settings must be configured before generating the pairings."
-msgstr "Les paramètres doivent être configurés avant de générer les appariements."
-
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 
@@ -3448,9 +3449,6 @@ msgstr "Afficher/cacher les écrans d'affichage des résultats."
 
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
-
-msgid "Shuffle"
-msgstr "Mélanger"
 
 msgid "Single Screens"
 msgstr "Écrans simples"
@@ -3803,7 +3801,7 @@ msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
 
 msgid "The pairing number is already attributed."
-msgstr "Le numéro d'appariements est déjà attribué."
+msgstr "Le numéro d'appariement est déjà attribué."
 
 msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
 msgstr "La mot de passe est composé de 10 caractères majuscules, il est utilisé pour la connexion au site web de la FFE."
@@ -4107,7 +4105,7 @@ msgstr "Chronomètres : %(num)d"
 msgid "Today"
 msgstr "Aujourd'hui"
 
-msgid "Too few players to generate the pairings (minimum: {min})"
+msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr "Trop peu de joueur·euses pour générer les appariements (minimum : {min})."
 
 msgid "Too many byes for player [{player_name}]."
@@ -4777,4 +4775,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+msgid "{string}: {value}"
+msgstr "{string} : {value}"
 

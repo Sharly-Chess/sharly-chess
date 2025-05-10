@@ -62,16 +62,20 @@
                 {{ _('No rules file set') }}
             {% endif %}
         </div>
-        {% if tournament.pairing %}
-            <div class="text-start">
-                {{ tournament.pairing }}
-            </div>
-        {% endif %}
-        {% if tournament.rating %}
-            <div class="text-start">
-                {{ tournament.rating }}
-            </div>
-        {% endif %}
+        <div class="text-start">
+            {{ tournament.rating }}
+        </div>
+        <div class="text-start">
+            {{ _('Pairings: %(pairing_variation)s', pairing_variation=tournament.pairing_variation.name) }}
+            {% with pairing_tooltip_message=tournament.pairing_variation.settings_tooltip_message(tournament) %}
+                {% if pairing_tooltip_message %}
+                    <i
+                        class="bi-info-circle-fill ps-1"
+                        {{ macros.tooltip_attributes('', pairing_tooltip_message, 'top') }}
+                    ></i>
+                {% endif %}
+            {% endwith %}
+        </div>
         {% if admin_tournaments_show_details %}
             <div class="text-start {% if not tournament.tie_breaks %}text-secondary{%endif%}">
                 {% if tournament.tie_breaks %}

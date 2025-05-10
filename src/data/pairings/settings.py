@@ -17,6 +17,12 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         """Path of the template used to represent the field in the form."""
 
     @abstractmethod
+    def tooltip_representation(self, value: T) -> str | None:
+        """String representing the setting in the pairing tooltip
+        located on the tournament card.
+        Returns None if the setting should not be represented."""
+
+    @abstractmethod
     def from_form_data(self, data: dict[str, str]) -> T:
         """Extract the setting value from the form data."""
 
@@ -91,6 +97,9 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     def template_path(self) -> str:
         return '/admin/pairings/settings/color_seed.html'
 
+    def tooltip_representation(self, value: BoardColor) -> str | None:
+        return value.name
+
     def from_form_data(self, data: dict[str, str]) -> BoardColor:
         return BoardColor(data[self.id])
 
@@ -153,11 +162,14 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
 
     @staticmethod
     def static_name() -> str:
-        return _('Berger numbers')
+        return ''
 
     @property
     def template_path(self) -> str:
         return '/admin/pairings/settings/berger_numbers.html'
+
+    def tooltip_representation(self, value: dict[int, int]) -> str | None:
+        return None
 
     def from_form_data(self, data: dict[str, str]) -> dict[int, int]:
         return {

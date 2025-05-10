@@ -67,6 +67,23 @@ class PairingVariation(IdentifiableEntity, ABC):
             for setting in self.settings
         )
 
+    def settings_tooltip_message(self, tournament: 'Tournament') -> str | None:
+        setting_messages = []
+        for setting in self.settings:
+            message = setting.tooltip_representation(setting.get_value(tournament))
+            if message:
+                setting_messages.append(
+                    _('{string}: {value}').format(string=setting.name, value=message)
+                )
+        if not setting_messages:
+            return None
+        return ''.join(
+            [
+                f'<div class="text-center text-nowrap">{message}</div>'
+                for message in setting_messages
+            ]
+        )
+
 
 class SwissVariation(PairingVariation, ABC):
     """Variations of the swiss system are accelerations of the pairings.

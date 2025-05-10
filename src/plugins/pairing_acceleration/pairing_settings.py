@@ -23,6 +23,11 @@ class RatingLimitSetting(PairingSetting[int]):
     def template_path(self) -> str:
         return f'/{PLUGIN_NAME}/rating_limit.html'
 
+    def tooltip_representation(self, value: int) -> str | None:
+        if value != 0:
+            return str(value)
+        return None
+
     def from_form_data(self, data: dict[str, str]) -> int:
         return int(data[self.id])
 
@@ -101,11 +106,16 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
 
     @staticmethod
     def static_name() -> str:
-        return ''
+        return _('Rating limits')
 
     @property
     def template_path(self) -> str:
         return f'/{PLUGIN_NAME}/dual_rating_limits.html'
+
+    def tooltip_representation(self, value: tuple[int, int]) -> str | None:
+        if value != (0, 0):
+            return f'{value[0]} - {value[1]}'
+        return None
 
     def from_form_data(self, data: dict[str, str]) -> tuple[int, int]:
         return (

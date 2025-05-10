@@ -68,8 +68,6 @@ class PairingEngine(ABC):
         Returns an explanation message if it is, None if it is not."""
         if tournament.check_in_open:
             return _('Pairings disabled while check-in is open.')
-        if not tournament.are_pairing_settings_valid:
-            return _('Settings must be configured before generating the pairings.')
         return self.invalid_player_count_message(tournament)
 
     def pairings_diff(
@@ -119,7 +117,6 @@ class BbpPairings(PairingEngine):
         return self.executable_dir / 'bbpPairings.exe'
 
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
-        """Returns an explanation message if the player count is invalid, or None if it is."""
         if tournament.player_count <= tournament.rounds:
             return _(
                 'Pairings generation not allowed if '
@@ -245,7 +242,7 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
         player_count = tournament.player_count
         if player_count < self.MIN_PLAYERS:
             return _(
-                'Too few players to generate the pairings (minimum: {min})'
+                'Too few players to generate the pairings (minimum: {min}).'
             ).format(min=self.MIN_PLAYERS)
         round_count = self.get_round_count(player_count)
         if tournament.rounds != round_count:

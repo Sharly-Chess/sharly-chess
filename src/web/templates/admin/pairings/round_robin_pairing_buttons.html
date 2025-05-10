@@ -5,7 +5,7 @@
         hx-swap-oob="true"
     {% endif %}
 >
-    {% if not admin_tournament.is_fully_paired %}
+    {% if not admin_tournament.has_pairings %}
         {% if EXPERIMENTAL_FEATURES %}
             <div
                 {{ macros.tooltip_attributes(
@@ -17,7 +17,14 @@
             >
                 <button
                     class="btn btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    {% if admin_tournament.are_pairing_settings_valid %}
+                        hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    {% else %}
+                        hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        hx-trigger="click"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    {% endif %}
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"
@@ -29,25 +36,6 @@
                     {{ _('Pair tournament') }}
                 </button>
             </div>
-            <span
-                {{ macros.tooltip_attributes(
-                    'info', _('Configure the settings of the pairing system.'), 'top'
-                ) }}
-            >
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="click"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-gear pe-1"></i>
-                    {{ _('Settings') }}
-                </button>
-            </span>
         {% else %}
             <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
                 {{ _('Please use Papi to generate pairings.') }}
