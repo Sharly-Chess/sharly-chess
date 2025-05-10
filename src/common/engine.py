@@ -63,7 +63,9 @@ class Engine(ABC):
             logger.info('Checking Sharly Chess version...')
             new_stable_version, download_url = self._check_version()
         else:
-            logger.warning('Not connected, can not check Sharly Chess version.')
+            logger.warning(
+                'Not connected, can not search for Sharly Chess newer releases.'
+            )
         # Engines inherited this class should stop if this flag is True.
         self.error: bool = False
         if not InstallationChecker.check():
@@ -87,7 +89,7 @@ class Engine(ABC):
                     self.error = True
                     if not self._install_new_version(new_stable_version, download_url):
                         logger.error(
-                            'The installation of version [%s] failed.',
+                            'The installation of release [%s] failed.',
                             new_stable_version,
                         )
                     return
@@ -99,27 +101,44 @@ class Engine(ABC):
                 raise ValueError(f'choice=[{choice}]')
         if not EventLoader.get(request=None).event_uniq_ids:
             logger.info(
-                'No event database found, looking for previous versions of Sharly Chess...'
+                'No event database found, looking for previously installed releases of Sharly Chess...'
             )
             previous_versions: list[tuple[Version, str]] = []
             for version_dir in Path('..').glob('*'):
                 if not version_dir.is_dir():
                     logger.debug('Not a directory: [%s]', version_dir)
                     continue
-                matches = re.match(
+                prefix: str
+                version: Version
+                if matches := re.match(
                     r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+)$', version_dir.name
-                )
-                if not matches:
-                    logger.debug('Not a version: [%s].', version_dir)
+                ):
+                    prefix = matches.group(1)
+                    version = Version(matches.group(2))
+                elif matches := re.match(
+                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+a\d+)$', version_dir.name
+                ):
+                    prefix = matches.group(1)
+                    version = Version(matches.group(2))
+                elif matches := re.match(
+                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+b\d+)$', version_dir.name
+                ):
+                    prefix: str = matches.group(1)
+                    version: Version = Version(matches.group(2))
+                elif matches := re.match(
+                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+rc\d+)$', version_dir.name
+                ):
+                    prefix: str = matches.group(1)
+                    version: Version = Version(matches.group(2))
+                else:
+                    logger.debug('Not a release: [%s].', version_dir)
                     continue
-                prefix: str = matches.group(1)
-                version: Version = Version(matches.group(2))
                 if version < Version('2.4.0'):
                     logger.debug('Version [%s] : too old, ignored.', version)
                 elif version > sharly_chess_config.version:
                     logger.debug('Version [%s] : more recent, ignored.', version)
                 elif version == sharly_chess_config.version:
-                    logger.debug('Version [%s] : current version, ignored.', version)
+                    logger.debug('Version [%s] : current release, ignored.', version)
                 else:
                     previous_versions.append((version, prefix))
             previous_databases: dict[tuple[Version, str], list[Path]] = {}
@@ -130,17 +149,17 @@ class Engine(ABC):
                     files: list[Path] = list(version_dir.glob('events/*.db'))
                     if files:
                         logger.info(
-                            '- Version [{%s}] (%s)',
+                            '- Version [%s] (%s)',
                             version,
                             ', '.join([file.stem for file in files]),
                         )
                         previous_databases[(version, prefix)] = files
                     else:
-                        logger.info('- Version [%s]: no events', version)
+                        logger.info('- Release [%s]: no events', version)
                 if not previous_databases:
                     logger.info('No events found in previously installed versions.')
             else:
-                logger.info('No previously installed versions found.')
+                logger.info('No previously installed releases found.')
             recovered_version: Version | None = None
             if previous_databases:
                 # keep the versions with databases only
@@ -155,7 +174,7 @@ class Engine(ABC):
                     while True:
                         choice = input_interactive(
                             _(
-                                'Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?'
+                                'Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]?'
                             ).format(
                                 version=previous_versions[0],
                                 y_uc=yes_answer.upper(),
@@ -172,7 +191,7 @@ class Engine(ABC):
                             break
                         raise ValueError(f'choice=[{choice}]')
                 else:
-                    print_interactive_input(_('Please choose the version to recover:'))
+                    print_interactive_input(_('Please choose the release to recover:'))
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
                         version, prefix = previous_versions[num - 1]
@@ -186,10 +205,10 @@ class Engine(ABC):
                     while True:
                         choice = input_interactive(
                             _(
-                                'Please enter the number of the version to recover [{default_choice}: {default_version}]: '
+                                'Please enter the number of the release to recover [{default_choice}: {default_version}]: '
                             ).format(
                                 default_choice=len(previous_versions),
-                                default_version=previous_versions[-1],
+                                default_version=previous_versions[-1][0],
                             )
                         )
                         if choice == quit_answer:
@@ -251,7 +270,7 @@ class Engine(ABC):
             version_dir / EVENTS_FOLDER / ConfigDatabase.config_database_name
         )
         if config_database_file.is_file():
-            logger.info('Recovering configuration from version [%s]...', version)
+            logger.info('Recovering configuration from release [%s]...', version)
             # copy the configuration database to its new destination
             shutil.copy(config_database_file, ConfigDatabase().file)
             SharlyChessConfig().reload()
@@ -261,7 +280,7 @@ class Engine(ABC):
                 version,
                 config_database_file,
             )
-        logger.info('Recovering events from version [%s]...', version)
+        logger.info('Recovering events from release [%s]...', version)
         tournaments_number: int = 0
         events_dir: Path = version_dir / EVENTS_FOLDER
         papi_dir: Path = version_dir / SharlyChessConfig.default_papi_folder
@@ -333,7 +352,7 @@ class Engine(ABC):
             while True:
                 choice = input_interactive(
                     _(
-                        'Do you want to send these custom files to the Sharly Chess developers to enhance futures versions [{y_uc}/{n_lc}]?'
+                        'Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]?'
                     ).format(y_uc=yes_answer, n_lc=no_answer.lower())
                 )
                 if choice in [
@@ -467,7 +486,7 @@ class Engine(ABC):
             body += (
                 '<p>'
                 + _(
-                    'I would like the following custom files to be added to a future version of Sharly Chess:'
+                    'I would like the following custom files to be added to a future release of Sharly Chess:'
                 )
                 + '</p>'
             )
@@ -517,17 +536,17 @@ class Engine(ABC):
         and the corresponding down URL if any, None otherwise."""
         last_stable_version, download_url = cls._get_last_stable_version()
         if not last_stable_version:
-            logger.error('Checking the version failed.')
+            logger.error('Checking the release failed.')
             return None, None
         if last_stable_version == SHARLY_CHESS_VERSION:
-            logger.info('Your Sharly Chess version is up to date.')
+            logger.info('Your Sharly Chess release is up to date.')
             return None, None
         last_stable_matches = re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
             str(last_stable_version),
         )
         if not last_stable_matches:
-            logger.warning('Checking the version failed.')
+            logger.warning('Checking the release failed.')
             return None, None
         if re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
@@ -536,11 +555,11 @@ class Engine(ABC):
             # 'normal' versions X.Y.Z
             if last_stable_version > SHARLY_CHESS_VERSION:
                 logger.warning(
-                    'A more recent version is available ([%s]).', last_stable_version
+                    'A more recent release is available ([%s]).', last_stable_version
                 )
                 return last_stable_version, download_url
             logger.warning(
-                'You are using a version newer than the latest stable version available ([%s]), are you a developer? ;-)',
+                'You are using a release newer than the latest stable release available ([%s]), are you a developer? ;-)',
                 last_stable_version,
             )
             return None, None
@@ -551,7 +570,7 @@ class Engine(ABC):
             )
         ):
             raise ValueError(
-                f'Invalid Sharly Chess version [{str(SHARLY_CHESS_VERSION)}]'
+                f'Invalid Sharly Chess release [{str(SHARLY_CHESS_VERSION)}]'
             )
         # alpha versions: X.Y.ZaN
         # beta versions: X.Y.ZbN
@@ -573,13 +592,13 @@ class Engine(ABC):
                     available = True
         if available:
             logger.warning(
-                'A stable and more recent version is available ([%s]) but upgrading unstable versions (like the one you are currently using: [%s]) must be done manually (upgrade from the last stable version installed on your server).',
+                'A stable and more recent version is available ([%s]) but upgrading unstable releases (like the one you are currently using: [%s]) must be done manually (upgrade from the last stable release installed on your server).',
                 last_stable_version,
                 SHARLY_CHESS_VERSION,
             )
             return None, None
         logger.info(
-            'You are using un unstable version more recent than the last stable version available ([%s]).',
+            'You are using un unstable release more recent than the last stable release available ([%s]).',
             last_stable_version,
         )
         return None, None
@@ -592,7 +611,7 @@ class Engine(ABC):
         Otherwise, the last stable version and the download URL are returned."""
         url: str = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
         try:
-            logger.info('Looking for a more recent version on GitHub ([%s])...', url)
+            logger.info('Looking for a more recent release on GitHub ([%s])...', url)
             response: Response = get(url, allow_redirects=True, timeout=5)
             response.raise_for_status()
             if not response:
@@ -618,7 +637,7 @@ class Engine(ABC):
                     )
                     continue
                 version: str = matches.group(1)
-                logger.debug('tag_name=[%s] > version=[%s]', tag_name, version)
+                logger.debug('tag_name=[%s] > release=[%s]', tag_name, version)
                 if entry.get('draft', True):
                     logger.info('Release [%s] is draft, ignored.', version)
                     continue
@@ -672,7 +691,7 @@ class Engine(ABC):
                     )
                     continue
             if not version_download_urls:
-                logger.warning('No stable version found.')
+                logger.warning('No stable release found.')
                 return None, None
             sorted_versions: list[Version] = sorted(version_download_urls.keys())
             logger.info(
@@ -714,7 +733,7 @@ class Engine(ABC):
         try:
             new_version_dir.mkdir()
             logger.info(
-                'Downloading version [%s] from GitHub ([%s])...', version, download_url
+                'Downloading release [%s] from GitHub ([%s])...', version, download_url
             )
             response: Response = get(download_url, allow_redirects=True, timeout=5)
             response.raise_for_status()
@@ -730,7 +749,7 @@ class Engine(ABC):
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:
                 zip_ref.extractall(new_version_dir)
             logger.info(
-                'New version [%s] has been installed in [%s].',
+                'New release [%s] has been installed in [%s].',
                 version,
                 new_version_dir.absolute(),
             )
