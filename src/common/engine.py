@@ -597,19 +597,22 @@ class Engine(ABC):
         # alpha versions: X.Y.ZaN
         # beta versions: X.Y.ZbN
         # 'release candidates' X.Y.ZrcN
-        if (
-            (stable_major := last_stable_matches.group('major'))
-            > (current_major := matches.group('major'))
-            or (
-                stable_major == current_major
-                and (stable_minor := last_stable_matches.group('minor'))
-                > (current_minor := matches.group('minor'))
-            )
-            or (
-                (stable_major, stable_minor) == (current_major, current_minor)
-                and last_stable_matches.group('patch') > matches.group('patch')
-            )
-        ):
+        available: bool = False
+        stable_major = last_stable_matches.group('major')
+        current_major = matches.group('major')
+        if stable_major > current_major:
+            available = True
+        else:  # stable_major == current_major
+            stable_minor = last_stable_matches.group('minor')
+            current_minor = matches.group('minor')
+            if stable_minor > current_minor:
+                available = True
+            else:  # stable_major == current_major
+                stable_patch = last_stable_matches.group('patch')
+                current_patch = matches.group('patch')
+                if stable_patch > current_patch:
+                    available = True
+        if available:
             print_interactive_warning(
                 _(
                     'A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server).'
