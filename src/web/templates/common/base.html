@@ -176,13 +176,38 @@
                     })
                 });
 
-                window.addEventListener("modal_opened", function(event) {
+                function handleModalOpened(static) {
+                    var myModalEl = document.getElementById('modal-wrapper');
+                    var modal = bootstrap.Modal.getOrCreateInstance('#modal-wrapper', {});
+
+                    // This is a hack to force the modal to be static
+                    // https://github.com/twbs/bootstrap/issues/35664
+                    // https://github.com/twbs/bootstrap/issues/35664#issuecomment-1028179994
+                    modal._config.backdrop = static ? 'static' : true;
+                    modal._config.keyboard = static ? false : true;
+
+                    if (!myModalEl.classList.contains('show')) {
+                        {# The modal is usually opened at this point, following a user action,
+                           but this allows us to force open a modal from the server. #}
+                        modal.show();
+                    }
+
                     closeTooltips();
                     activateTooltips();
                     scrollToFirstError();
 
                     // TODO we shouldn't do this for every modal
                     updateRecordByes();
+                }
+
+                window.addEventListener("modal_opened", function(event) {
+                    console.log('modal_opened');
+                    handleModalOpened(false);
+                });
+
+                window.addEventListener("static_modal_opened", function(event) {
+                    console.log('static_modal_opened');
+                    handleModalOpened(true);
                 });
 
                 window.addEventListener("close_modal", function(event) {
