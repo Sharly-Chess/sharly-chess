@@ -1,13 +1,15 @@
 import logging
 from logging import Logger, getLogger
 from logging.config import dictConfig
+from pathlib import Path
+from typing import Any
 
 from colorama import Fore, Style
 
-from common import APP_NAME, LOG_FILE
+from common import APP_NAME
 
 
-LOGGING_CONFIG = {
+LOGGING_CONFIG: dict[str, Any] = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
@@ -39,38 +41,29 @@ LOGGING_CONFIG = {
             'formatter': 'colored',
             'stream': 'ext://sys.stdout',
         },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'level': logging.DEBUG,
-            'formatter': 'standard',
-            'filename': str(LOG_FILE),
-            'maxBytes': 500 * 1024,
-            'backupCount': 5,
-            'encoding': 'UTF-8',
-        },
     },
     'loggers': {
         APP_NAME: {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': logging.DEBUG,
             'propagate': False,
         },
         'litestar': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': logging.INFO,
         },
         'uvicorn': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': logging.INFO,
             'propagate': False,
         },
         'uvicorn.error': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': logging.INFO,
             'propagate': False,
         },
         'uvicorn.access': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': logging.INFO,
             'propagate': False,
         },
@@ -87,9 +80,26 @@ def get_logger() -> Logger:
 
 
 def set_console_log_level(level: int):
+    global LOGGING_CONFIG, logger
     LOGGING_CONFIG['handlers']['console']['level'] = level  # type: ignore
     dictConfig(LOGGING_CONFIG)
-    global logger
+    logger = getLogger(APP_NAME)
+
+
+def set_log_file_handler(log_file: Path):
+    global LOGGING_CONFIG, logger
+    LOGGING_CONFIG['handlers']['file'] = {  # type: ignore
+        'class': 'logging.handlers.RotatingFileHandler',
+        'level': logging.DEBUG,
+        'formatter': 'standard',
+        'filename': str(log_file),
+        'maxBytes': 500 * 1024,
+        'backupCount': 5,
+        'encoding': 'UTF-8',
+    }
+    for logger_name in LOGGING_CONFIG['loggers']:
+        LOGGING_CONFIG['loggers'][logger_name]['handlers'].append('file')  # type: ignore
+    dictConfig(LOGGING_CONFIG)
     logger = getLogger(APP_NAME)
 
 

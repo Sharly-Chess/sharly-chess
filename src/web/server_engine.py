@@ -1,5 +1,6 @@
 import platform
 import socket
+from pathlib import Path
 from threading import Thread
 from time import sleep
 from webbrowser import open
@@ -11,7 +12,7 @@ from litestar import Litestar
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
 
-from common import REQUEST_TIMEOUT
+from common import REQUEST_TIMEOUT, LOG_FILE
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
@@ -129,6 +130,10 @@ class ServerEngine(Engine):
             port=papi_web_config.web_port,
             log_config=logging_config,
         )
+
+    @property
+    def log_file_path(self) -> Path:
+        return LOG_FILE
 
     @staticmethod
     def __port_in_use(port: int) -> bool:
