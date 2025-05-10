@@ -2680,6 +2680,12 @@ msgstr ""
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
+msgid "Please wait until the application settings have been set on the server."
+msgstr ""
+
+msgid "Please wait..."
+msgstr ""
+
 msgid "Plugins"
 msgstr ""
 

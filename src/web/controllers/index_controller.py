@@ -30,6 +30,23 @@ class IndexController(BaseController):
         )
 
     @get(
+        path='/wait',
+        name='wait',
+    )
+    async def wait(
+        self,
+        request: HTMXRequest,
+    ) -> Template:
+        web_context: WebContext = WebContext(request)
+        return HTMXTemplate(
+            template_name='wait.html',
+            context=web_context.template_context
+            | {
+                'messages': Message.messages(request),
+            },
+        )
+
+    @get(
         path='/empty-modal',
         name='empty-modal',
         cache=1,

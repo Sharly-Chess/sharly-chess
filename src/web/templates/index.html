@@ -125,19 +125,6 @@
             </div>
         </div>
     </div>
-    {% if admin_auth and papi_web_config.force_edit %}
-        {#
-            When editing the configuration is needed (after an upgrade),
-            open the config modal by click on the config button
-            (redirecting the client on a request to / is not possible
-            since HTMX is not loaded yet).
-        #}
-        <script>
-            $(document).ready(function(){
-                $('#index-admin-button').click();
-            });
-        </script>
-    {% endif %}
 {% endblock content %}
 
 {% block footer %}

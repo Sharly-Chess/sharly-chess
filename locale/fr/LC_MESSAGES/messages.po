@@ -2680,6 +2680,12 @@ msgstr "Veuillez entrer une date et une heure valides."
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
 
+msgid "Please wait until the application settings have been set on the server."
+msgstr "La configuration est en cours sur le serveur, veuillez patienter..."
+
+msgid "Please wait..."
+msgstr "Veuillez patienter..."
+
 msgid "Plugins"
 msgstr "Plug-ins"
 

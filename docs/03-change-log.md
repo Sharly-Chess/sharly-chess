@@ -2,6 +2,10 @@
 
 # Papi-web - ChangeLog
 
+## Version 2.5.10 - 10 mai 2025
+- Correction d'un bug sur la création des écrans par défaut des tournois
+- Correction d'un bug sur l'édition de la configuration de l'application
+
 ## Version 2.5.9 - 9 mai 2025
 - Correction d'un bug sur les titres des joueur·euses importé·es depuis ChesssEvent
 
