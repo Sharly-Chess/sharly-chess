@@ -2799,9 +2799,6 @@ msgstr ""
 msgid "Papi-web settings"
 msgstr ""
 
-msgid "Papi-web settings (private access)"
-msgstr ""
-
 msgid "Papi-web settings has been updated."
 msgstr ""
 
@@ -3021,6 +3018,12 @@ msgid "Please use Papi to generate pairings."
 msgstr ""
 
 msgid "Please validate the global configuration of the application."
+msgstr ""
+
+msgid "Please wait until the application settings have been set on the server..."
+msgstr ""
+
+msgid "Please wait..."
 msgstr ""
 
 msgid "Plugins"
@@ -3970,9 +3973,6 @@ msgstr ""
 msgid "The price the player pays to register."
 msgstr ""
 
-msgid "The public screens are not available until the Papi-web settings have been validated."
-msgstr ""
-
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr ""
 
@@ -4882,5 +4882,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
 
