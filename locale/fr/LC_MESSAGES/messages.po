@@ -2468,9 +2468,6 @@ msgstr "Papi-web peut automatiquement lancer la navigateur au démarrage du serv
 msgid "Papi-web settings"
 msgstr "Configuration de Papi-web"
 
-msgid "Papi-web settings (private access)"
-msgstr "Configuration de Papi-web (accès privé)"
-
 msgid "Papi-web settings has been updated."
 msgstr "La configuration de Papi-web a été mise à jour."
 
@@ -3502,9 +3499,6 @@ msgstr "Le montant déjà payé."
 
 msgid "The price the player pays to register."
 msgstr "Le montant de l'inscription du·de la joueur·euse."
-
-msgid "The public screens are not available until the Papi-web settings have been validated."
-msgstr "Les écrans publics ne sont pas accessible tant que la configuration de Papi-web n'a pas été validée"
 
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."

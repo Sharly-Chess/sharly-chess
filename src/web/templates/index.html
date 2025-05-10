@@ -75,12 +75,7 @@
                     </tbody>
                 </table>
                 <div
-                    {% if papi_web_config.force_edit %}
-                        disabled
-                        {{ macros.tooltip_attributes('info', _('The public screens are not available until the Papi-web settings have been validated.'), 'right') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
-                    {% endif %}
+                    {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
                 >
                     <button
                         hx-get="{{ url_for('user') }}"
@@ -115,11 +110,7 @@
                             disabled
                         {% endif %}
                     >
-                        {% if papi_web_config.force_edit %}
-                            {{ _('Papi-web settings (private access)') }}
-                        {% else %}
-                            {{ _('Arbiter interface (private access)') }}
-                        {% endif %}
+                        {{ _('Arbiter interface (private access)') }}
                     </button>
                 </div>
             </div>
