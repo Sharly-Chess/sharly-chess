@@ -96,39 +96,6 @@ msgstr "(aucun écran)"
 msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
-msgid "*** DOC URL events"
-msgstr "evenements"
-
-msgid "*** DOC URL events-create"
-msgstr "evenement-creation"
-
-msgid "*** DOC URL pairings"
-msgstr "appariements"
-
-msgid "*** DOC URL players"
-msgstr "joueureuses"
-
-msgid "*** DOC URL players-databases"
-msgstr "bases-de-donnees-joueureuses"
-
-msgid "*** DOC URL screens-display-controllers"
-msgstr "ecrans-pilotes-afficheur"
-
-msgid "*** DOC URL screens-families"
-msgstr "ecrans-familles"
-
-msgid "*** DOC URL screens-rotators"
-msgstr "ecrans-rotatifs"
-
-msgid "*** DOC URL screens-single"
-msgstr "ecrans-simples"
-
-msgid "*** DOC URL screens-timers"
-msgstr "ecrans-chronometres"
-
-msgid "*** DOC URL tournaments"
-msgstr "tournois"
-
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -4912,4 +4879,3 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-

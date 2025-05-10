@@ -96,39 +96,6 @@ msgstr ""
 msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
 
-msgid "*** DOC URL events"
-msgstr "events"
-
-msgid "*** DOC URL events-create"
-msgstr "events-create"
-
-msgid "*** DOC URL pairings"
-msgstr "pairings"
-
-msgid "*** DOC URL players"
-msgstr "players"
-
-msgid "*** DOC URL players-databases"
-msgstr "players-database"
-
-msgid "*** DOC URL screens-display-controllers"
-msgstr "display-controllers"
-
-msgid "*** DOC URL screens-families"
-msgstr "screens-families"
-
-msgid "*** DOC URL screens-rotators"
-msgstr "screens-rotators"
-
-msgid "*** DOC URL screens-single"
-msgstr "screens-single"
-
-msgid "*** DOC URL screens-timers"
-msgstr "screens-timers"
-
-msgid "*** DOC URL tournaments"
-msgstr "tournaments"
-
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -4912,4 +4879,5 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
 
