@@ -106,7 +106,7 @@
                         </div>
 
                         <script>
-                            $('#uniq-id,#path,#filename').on('blur', (event) => {
+                            $('#uniq-id,#path,#filename').on('input', debounce((event) => {
                                 const copyElement = $('#'+event.target.id+'-copy')[0];
                                 if(copyElement.value !== event.target.value) {
                                     copyElement.value = event.target.value;
@@ -114,7 +114,7 @@
                                         $('#file-form-submit').click();
                                     }
                                 }
-                            });
+                            }, 500));
                         </script>
                     </div>
 
@@ -328,10 +328,8 @@
                 <button
                     type="submit"
                     form="modal-form"
-                    hx-indicator="#please-wait"name="add_screens"
-                    hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                    name="add_screens"
+                    class="text-nowrap white btn btn-primary"
                 >
                     <i class="bi-floppy-fill"></i>
                     <i class="bi-plus-square-fill pe-1"></i>

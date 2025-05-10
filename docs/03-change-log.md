@@ -4,10 +4,11 @@
 
 ## Version 2.5.10 - 10 mai 2025
 - Correction d'un bug sur la création des écrans par défaut des tournois
+- Correction d'un bug de rafraîchissement des écrans de saisie
 - Correction d'un bug sur l'édition de la configuration de l'application
 
 ## Version 2.5.9 - 9 mai 2025
-- Correction d'un bug sur les titres des joueur·euses importé·es depuis ChesssEvent
+- Correction d'un bug sur les titres des joueur·euses importé·es depuis ChessEvent
 
 ## Version 2.5.8 - 30 avril 2025
 - Correction d'un bug sur les droits d'inscription (#481)
