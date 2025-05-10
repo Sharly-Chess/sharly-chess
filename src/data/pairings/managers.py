@@ -5,6 +5,7 @@ from data.pairings.variations import (
     StandardSwissVariation,
     RoundRobinVariation,
     BergerRoundRobinVariation,
+    DoubleBergerRoundRobinVariation,
 )
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager
@@ -32,7 +33,10 @@ class SwissVariationManager(EntityManager[SwissVariation]):
 class RoundRobinVariationManager(EntityManager[RoundRobinVariation]):
     @staticmethod
     def entity_types() -> list[type[RoundRobinVariation]]:
-        return [BergerRoundRobinVariation]
+        return [
+            BergerRoundRobinVariation,
+            DoubleBergerRoundRobinVariation,
+        ]
 
 
 class PairingVariationManager(EntityManager[PairingVariation]):

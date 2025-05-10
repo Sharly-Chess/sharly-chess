@@ -350,7 +350,20 @@ class Tournament:
 
     @property
     def pairing_variation(self) -> 'PairingVariation':
-        return self.papi_tournament_info.pairing_variation
+        from data.pairings.variations import (
+            BergerRoundRobinVariation,
+            DoubleBergerRoundRobinVariation,
+        )
+
+        papi_variation = self.papi_tournament_info.pairing_variation
+        stored_variation = self.stored_pairing_variation
+        if (
+            papi_variation == BergerRoundRobinVariation()
+            and stored_variation
+            and stored_variation == DoubleBergerRoundRobinVariation()
+        ):
+            return stored_variation
+        return papi_variation
 
     @property
     def pairing_system(self) -> 'PairingSystem':

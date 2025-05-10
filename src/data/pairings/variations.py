@@ -3,7 +3,12 @@ from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairings import systems
-from data.pairings.engines import PairingEngine, BbpPairings, BergerPairingEngine
+from data.pairings.engines import (
+    PairingEngine,
+    BbpPairings,
+    BergerPairingEngine,
+    DoubleBergerPairingEngine,
+)
 from data.pairings.settings import (
     PairingSetting,
     ColorSeedSetting,
@@ -115,3 +120,21 @@ class BergerRoundRobinVariation(RoundRobinVariation):
     @property
     def engine(self) -> PairingEngine:
         return BergerPairingEngine()
+
+
+class DoubleBergerRoundRobinVariation(RoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'DOUBLE_BERGER'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Double-round Berger')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return [BergerNumbersSetting()]
+
+    @property
+    def engine(self) -> PairingEngine:
+        return DoubleBergerPairingEngine()
