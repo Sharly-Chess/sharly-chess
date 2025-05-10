@@ -106,7 +106,7 @@
                         </div>
 
                         <script>
-                            $('#uniq-id,#path,#filename').on('input', (event) => {
+                            $('#uniq-id,#path,#filename').on('input', debounce((event) => {
                                 const copyElement = $('#'+event.target.id+'-copy')[0];
                                 if(copyElement.value !== event.target.value) {
                                     copyElement.value = event.target.value;
@@ -114,7 +114,7 @@
                                         $('#file-form-submit').click();
                                     }
                                 }
-                            });
+                            }, 500));
                         </script>
                     </div>
 
