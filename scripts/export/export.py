@@ -57,6 +57,7 @@ basename: str = f'sharly-chess-{SHARLY_CHESS_VERSION}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
+OLD_ZIP_FILE: Path = EXPORT_DIR / f'papi-web-{SHARLY_CHESS_VERSION}.zip'
 EXE_FILENAME: str = basename + '.exe'
 INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
@@ -215,7 +216,7 @@ def create_project():
         )
 
 
-def create_zip():
+def create_zip_files():
     print_interactive_info(f'Creating archive {ZIP_FILE}...')
     ZIP_FILE.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
@@ -227,6 +228,7 @@ def create_zip():
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
         os.chdir(BASE_DIR)
+    shutil.copy(ZIP_FILE, OLD_ZIP_FILE)
 
 
 def build_test():
@@ -262,7 +264,7 @@ def main():
         print_interactive_warning('Translations are not perfect.')
     build_exe()
     create_project()
-    create_zip()
+    create_zip_files()
     build_test()
     clean(clean_zip=False)
 
