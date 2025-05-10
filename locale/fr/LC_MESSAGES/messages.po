@@ -839,7 +839,7 @@ msgid "Create and add default screens"
 msgstr "Créer et ajouter les écrans par défaut"
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
-msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran individuel ou un écran rotatif spécifique."
+msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
 
 msgid "Create file"
 msgstr "Créer le fichier"
@@ -1950,9 +1950,6 @@ msgstr "Chemin incorrect [{path}]."
 
 msgid "Increment (optional, seconds):"
 msgstr "Incrément (optionel, en secondes) :"
-
-msgid "Individual Screens ({num})"
-msgstr "Écrans simples ({num})"
 
 #, python-format
 msgid "Informations: %(num)d"
@@ -3536,8 +3533,11 @@ msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 msgid "Shuffle"
 msgstr "Mélanger"
 
-msgid "Simple Screens"
-msgstr ""
+msgid "Single Screens"
+msgstr "Écrans simples"
+
+msgid "Single Screens ({num})"
+msgstr "Écrans simples ({num})"
 
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
@@ -4412,8 +4412,8 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 
-msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
-msgstr "Contrairement aux écrans individuels, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
+msgid "Unlike single Screens, families can only be used to display information about a single tournament."
+msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
 
 msgid "Unpair"
 msgstr "Désapparier"
@@ -4678,8 +4678,8 @@ msgstr "Vous utilisez une version plus récente que la dernière version stable 
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr "Vous utilisez une version non stable plus récente que la dernière version stable disponible ({version})."
 
-msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
-msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans individuels seront générés automatiquement."
+msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
 msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
@@ -4753,23 +4753,11 @@ msgstr "évènement"
 msgid "event ID does not match."
 msgstr "L'identifiant de l'évènement ne correspond pas."
 
-msgid "events"
-msgstr ""
-
-msgid "events-create"
-msgstr ""
-
 msgid "no"
 msgstr "non"
 
 msgid "no background image"
 msgstr "pas d'image de fond"
-
-msgid "pairings"
-msgstr ""
-
-msgid "players"
-msgstr ""
 
 msgid "players from #{first} to #{last}"
 msgstr "joueur·euses du n°{first} au n°{last}"
@@ -4791,9 +4779,6 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 
 msgid "players on {parts} screens"
 msgstr "joueur·euses sur {parts} écrans"
-
-msgid "players-databases"
-msgstr ""
 
 msgid "ranking from #{first} to #{last}"
 msgstr "classement de {first} à {last}"
@@ -4831,21 +4816,6 @@ msgstr "écrans de {number} joueur·euses du n°{first} à la fin"
 msgid "screens of {number} players from start to #{last}"
 msgstr "écrans de {number} joueur·euses du début au n°{last}"
 
-msgid "screens-display-controllers"
-msgstr ""
-
-msgid "screens-families"
-msgstr ""
-
-msgid "screens-rotators"
-msgstr ""
-
-msgid "screens-simple"
-msgstr ""
-
-msgid "screens-timers"
-msgstr ""
-
 msgid "the whole ranking"
 msgstr "classement complet"
 
@@ -4863,9 +4833,6 @@ msgstr "tournoi"
 
 msgid "tournament ID does not match."
 msgstr "L'identifiant du tournoi ne correspond pas."
-
-msgid "tournaments"
-msgstr ""
 
 msgid "vs"
 msgstr "contre"
