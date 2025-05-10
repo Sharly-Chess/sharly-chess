@@ -117,27 +117,25 @@
             {% endif %}
         </div>
 
-        {% if papi_web_config.stored_config.locale %}
-            <div class="modal-footer">
-                {% if papi_web_config.stored_config.locale %}
-                    <button
-                        type="button"
-                        class="btn btn-secondary text-nowrap"
-                        data-bs-dismiss="modal"
-                    >
-                        <i class="bi-x-circle-fill"></i>
-                        {{ _('Cancel') }}
-                    </button>
-                    <button
-                        type="submit"
-                        form="modal-form"
-                        class="text-nowrap white btn btn-primary"
-                    >
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    </button>
-                {% endif %}
-            </div>
-        {% endif %}
+        <div class="modal-footer">
+            {% if not papi_web_config.force_edit %}
+                <button
+                    type="button"
+                    class="btn btn-secondary text-nowrap"
+                    data-bs-dismiss="modal"
+                >
+                    <i class="bi-x-circle-fill"></i>
+                    {{ _('Cancel') }}
+                </button>
+            {% endif %}
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') }}
+            </button>
+        </div>
     </div>
 </div>

@@ -189,79 +189,98 @@
         hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
     >
-        <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
-            {% include 'messages.html' %}
-        </div>
-        <div
-            id="scroll-wrapper"
-            {# Needed for the sticky copyright footer #}
-            class="d-inline-block"
-        >
+        {% set redirect_url = '' %}
+        {% if papi_web_config.force_edit %}
+            {% if admin_auth %}
+                {% if request.url.path != '/admin/config' %}
+                    {% set redirect_url = '/admin/config' %}
+                {% endif %}
+            {% else %}
+                {% if request.url.path != '/wait' %}
+                    {% set redirect_url = '/wait' %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        {% if redirect_url %}
+            <p>{{ _('Please wait...') }}</p>
+            <script>
+                $(location).attr('href', '{{ redirect_url }}');
+            </script>
+        {% else %}
+            <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
+                {% include 'messages.html' %}
+            </div>
             <div
-                id="main-wrapper"
+                id="scroll-wrapper"
+                {# Needed for the sticky copyright footer #}
                 class="d-inline-block"
-                style="min-height: calc(var(--vh, 100vh) - 60px); min-width: var(--vw, 100vw);"
             >
                 <div
-                    id="header-wrapper"
-                    class="header-wrapper top-0 start-0 position-sticky"
-                    style="width: var(--vw, 100vw); z-index: 4;"
+                    id="main-wrapper"
+                    class="d-inline-block"
+                    style="min-height: calc(var(--vh, 100vh) - 60px); min-width: var(--vw, 100vw);"
                 >
-                    {% block header %}
-                        HEADER
-                    {% endblock header %}
+                    <div
+                        id="header-wrapper"
+                        class="header-wrapper top-0 start-0 position-sticky"
+                        style="width: var(--vw, 100vw); z-index: 4;"
+                    >
+                        {% block header %}
+                            HEADER
+                        {% endblock header %}
+                    </div>
+                    <div id="content-wrapper" class="©">
+                        {% block content %}
+                            BODY CONTENT
+                        {% endblock content %}
+                    </div>
+                    <div id="footer-wrapper" class="footer-wrapper">
+                        {% block footer %}
+                            FOOTER
+                        {% endblock footer %}
+                    </div>
                 </div>
-                <div id="content-wrapper" class="©">
-                    {% block content %}
-                        BODY CONTENT
-                    {% endblock content %}
-                </div>
-                <div id="footer-wrapper" class="footer-wrapper">
-                    {% block footer %}
-                        FOOTER
-                    {% endblock footer %}
-                </div>
-            </div>
-            <div
-                id="copyright-wrapper"
-                class="flex-grow-1 d-flex align-items-end justify-content-center start-0 position-sticky"
-                style="width: var(--vw, 100vw);"
-            >
-                {# copyright may be hidden by the macros.copyright_script_macro #}
                 <div
-                    id="copyright"
-                    class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
-                    style="height: 60px;"
+                    id="copyright-wrapper"
+                    class="flex-grow-1 d-flex align-items-end justify-content-center start-0 position-sticky"
+                    style="width: var(--vw, 100vw);"
                 >
-                    Papi-web {{ papi_web_config.version }} - {{ papi_web_config.copyright }} - {{ papi_web_config.url }}
+                    {# copyright may be hidden by the macros.copyright_script_macro #}
+                    <div
+                        id="copyright"
+                        class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
+                        style="height: 60px;"
+                    >
+                        Papi-web {{ papi_web_config.version }} - {{ papi_web_config.copyright }} - {{ papi_web_config.url }}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="please-wait-wrapper">
-            <div
-                id="please-wait"
-                class="htmx-indicator position-fixed top-50 start-50 translate-middle"
-            ></div>
-        </div>
-        <div id="modal-wrapper"
-            class="modal modal-blur overflow-auto"
-            style="display: none"
-            aria-hidden="false"
-            tabindex="-1"
-            hx-trigger="hidden.bs.modal"
-            hx-get="{{ url_for('empty-modal') }}"
-        >
-            {% include 'empty_modal.html' %}
-        </div>
-        <script>
-            closeTooltips();
-            activateTooltips();
-        </script>
-        {{ macros.background_script(background_info) }}
-        {{ macros.theme_script(theme) }}
-        <script>
-            $('body').css('padding-right', '0');
-        </script>
+            <div id="please-wait-wrapper">
+                <div
+                    id="please-wait"
+                    class="htmx-indicator position-fixed top-50 start-50 translate-middle"
+                ></div>
+            </div>
+            <div id="modal-wrapper"
+                class="modal modal-blur overflow-auto"
+                style="display: none"
+                aria-hidden="false"
+                tabindex="-1"
+                hx-trigger="hidden.bs.modal"
+                hx-get="{{ url_for('empty-modal') }}"
+            >
+                {% include 'empty_modal.html' %}
+            </div>
+            <script>
+                closeTooltips();
+                activateTooltips();
+            </script>
+            {{ macros.background_script(background_info) }}
+            {{ macros.theme_script(theme) }}
+            <script>
+                $('body').css('padding-right', '0');
+            </script>
+        {% endif %}
     </body>
     {% if not request.htmx %}
         <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ papi_web_config.bootstrap_version ~ '-dist/js/bootstrap.bundle.min.js') }}"></script>
