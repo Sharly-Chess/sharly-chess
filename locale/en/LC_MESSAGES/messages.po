@@ -1052,13 +1052,13 @@ msgstr ""
 msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr ""
 
-msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
+msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
 msgstr ""
 
-msgid "Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]?"
+msgid "Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? "
 msgstr ""
 
-msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]?"
+msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]? "
 msgstr ""
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
@@ -2834,7 +2834,7 @@ msgstr ""
 msgid "Please choose the event:"
 msgstr ""
 
-msgid "Please choose the release to recover:"
+msgid "Please choose the release to recover: "
 msgstr ""
 
 msgid "Please choose the seed color."

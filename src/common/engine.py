@@ -174,7 +174,7 @@ class Engine(ABC):
                     while True:
                         choice = input_interactive(
                             _(
-                                'Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]?'
+                                'Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? '
                             ).format(
                                 version=previous_versions[0],
                                 y_uc=yes_answer.upper(),
@@ -191,7 +191,7 @@ class Engine(ABC):
                             break
                         raise ValueError(f'choice=[{choice}]')
                 else:
-                    print_interactive_input(_('Please choose the release to recover:'))
+                    print_interactive_input(_('Please choose the release to recover: '))
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
                         version, prefix = previous_versions[num - 1]
@@ -234,7 +234,7 @@ class Engine(ABC):
                 while True:
                     choice = input_interactive(
                         _(
-                            'Do you want to install example event databases [{y_uc}/{n_lc}]?'
+                            'Do you want to install example event databases [{y_uc}/{n_lc}]? '
                         ).format(y_uc=yes_answer.upper(), n_lc=no_answer.lower())
                     )
                     if choice in [
@@ -352,7 +352,7 @@ class Engine(ABC):
             while True:
                 choice = input_interactive(
                     _(
-                        'Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]?'
+                        'Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]? '
                     ).format(y_uc=yes_answer, n_lc=no_answer.lower())
                 )
                 if choice in [
@@ -530,20 +530,19 @@ class Engine(ABC):
 
     @classmethod
     def _check_version(cls) -> tuple[Version | None, str | None]:
-        """Compares the current version with the last available stable version
-        on the Sharly Chess GitHub repository.
-        Returns the last stable version available
-        and the corresponding down URL if any, None otherwise."""
-        last_stable_version, download_url = cls._get_last_stable_version()
-        if not last_stable_version:
+        """Compares the current version with the most recent version on the Sharly Chess GitHub repository
+        If the current release is stable, more recent pre-releases are ignored; otherwise the most recent release is chosen.
+        Returns the most recent version available and the corresponding down URL if any, None otherwise."""
+        most_recent_version, download_url = cls._get_most_recent_version()
+        if not most_recent_version:
             logger.error('Checking the release failed.')
             return None, None
-        if last_stable_version == SHARLY_CHESS_VERSION:
+        if most_recent_version == SHARLY_CHESS_VERSION:
             logger.info('Your Sharly Chess release is up to date.')
             return None, None
         last_stable_matches = re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
-            str(last_stable_version),
+            str(most_recent_version),
         )
         if not last_stable_matches:
             logger.warning('Checking the release failed.')
@@ -553,14 +552,14 @@ class Engine(ABC):
             str(SHARLY_CHESS_VERSION),
         ):
             # 'normal' versions X.Y.Z
-            if last_stable_version > SHARLY_CHESS_VERSION:
+            if most_recent_version > SHARLY_CHESS_VERSION:
                 logger.warning(
-                    'A more recent release is available ([%s]).', last_stable_version
+                    'A more recent release is available ([%s]).', most_recent_version
                 )
-                return last_stable_version, download_url
+                return most_recent_version, download_url
             logger.warning(
                 'You are using a release newer than the latest stable release available ([%s]), are you a developer? ;-)',
-                last_stable_version,
+                most_recent_version,
             )
             return None, None
         if not (
@@ -593,22 +592,25 @@ class Engine(ABC):
         if available:
             logger.warning(
                 'A stable and more recent version is available ([%s]) but upgrading unstable releases (like the one you are currently using: [%s]) must be done manually (upgrade from the last stable release installed on your server).',
-                last_stable_version,
+                most_recent_version,
                 SHARLY_CHESS_VERSION,
             )
             return None, None
         logger.info(
             'You are using un unstable release more recent than the last stable release available ([%s]).',
-            last_stable_version,
+            most_recent_version,
         )
         return None, None
 
     @staticmethod
-    def _get_last_stable_version() -> tuple[Version | None, str | None]:
-        """Retrieves the available versions from the Sharly Chess GitHub
-        repository.
-        If an error occurred, returns None.
-        Otherwise, the last stable version and the download URL are returned."""
+    def _get_most_recent_version() -> tuple[Version | None, str | None]:
+        """Retrieves the available versions from the Sharly Chess GitHub repository.
+        If the current release is stable, more recent pre-releases are ignored; otherwise the most recent release is chosen.
+        If an error occurred or no release matches on the repository, returns None.
+        Otherwise, the most recent version and its download URL are returned."""
+        current_stable: bool = bool(
+            re.match(r'^(\d+\.\d+\.\d+)$', str(SHARLY_CHESS_VERSION))
+        )
         url: str = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
         try:
             logger.info('Looking for a more recent release on GitHub ([%s])...', url)
@@ -631,12 +633,21 @@ class Engine(ABC):
             version_download_urls: dict[Version, str] = {}
             for entry in entries:
                 tag_name: str = entry['tag_name']
-                if not (matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name)):
+                version: str | None = None
+                if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
+                    version = matches.group(1)
+                elif not current_stable:
+                    if matches := re.match(r'^(\d+\.\d+\.\d+a\d+)$', tag_name):
+                        version = matches.group(1)
+                    elif matches := re.match(r'^(\d+\.\d+\.\d+b\d+)$', tag_name):
+                        version = matches.group(1)
+                    elif matches := re.match(r'^(\d+\.\d+\.\d+rc\d+)$', tag_name):
+                        version = matches.group(1)
+                if not version:
                     logger.info(
                         '[%s] is not a stable release number, entry ignored.', tag_name
                     )
                     continue
-                version: str = matches.group(1)
                 logger.debug('tag_name=[%s] > release=[%s]', tag_name, version)
                 if entry.get('draft', True):
                     logger.info('Release [%s] is draft, ignored.', version)
