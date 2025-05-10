@@ -1348,9 +1348,6 @@ msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 msgid "Edition of event [%(event_uniq_id)s]"
 msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
-msgid "Edition of Sharly Chess settings"
-msgstr "Édition de la configuration de Sharly Chess"
-
 #, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
@@ -2793,15 +2790,6 @@ msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Sharly Chess can automatically launch a web browser when starting the web server."
-msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
-
-msgid "Sharly Chess settings"
-msgstr "Configuration de Sharly Chess"
-
-msgid "Sharly Chess settings have been updated."
-msgstr "La configuration de Sharly Chess a été mise à jour."
-
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
@@ -3509,8 +3497,17 @@ msgstr "Paramètres"
 msgid "Settings must be configured before generating the pairings."
 msgstr "Les paramètres doivent être configurés avant de générer les appariements."
 
+msgid "Sharly Chess can automatically launch a web browser when starting the web server."
+msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
+
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
+
+msgid "Sharly Chess settings"
+msgstr "Configuration de Sharly Chess"
+
+msgid "Sharly Chess settings have been updated."
+msgstr "La configuration de Sharly Chess a été mise à jour."
 
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
@@ -4882,4 +4879,7 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+#~ msgid "Edition of Sharly Chess settings"
+#~ msgstr "Édition de la configuration de Sharly Chess"
 

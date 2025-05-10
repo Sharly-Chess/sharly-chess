@@ -1348,9 +1348,6 @@ msgstr ""
 msgid "Edition of event [%(event_uniq_id)s]"
 msgstr ""
 
-msgid "Edition of Sharly Chess settings"
-msgstr ""
-
 #, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
 msgstr ""
@@ -2793,15 +2790,6 @@ msgstr ""
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Sharly Chess can automatically launch a web browser when starting the web server."
-msgstr ""
-
-msgid "Sharly Chess settings"
-msgstr ""
-
-msgid "Sharly Chess settings have been updated."
-msgstr ""
-
 msgid "Parings by player"
 msgstr ""
 
@@ -3509,7 +3497,16 @@ msgstr ""
 msgid "Settings must be configured before generating the pairings."
 msgstr ""
 
+msgid "Sharly Chess can automatically launch a web browser when starting the web server."
+msgstr ""
+
 msgid "Sharly Chess project"
+msgstr ""
+
+msgid "Sharly Chess settings"
+msgstr ""
+
+msgid "Sharly Chess settings have been updated."
 msgstr ""
 
 msgid "Show all the players"
@@ -4882,4 +4879,7 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
+
+#~ msgid "Edition of Sharly Chess settings"
+#~ msgstr ""
 
