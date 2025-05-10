@@ -116,6 +116,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str | None,
         modal: str | None = None,
+        keep_modal_open: bool | None = None,
         admin_events_show_details: bool | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
@@ -352,7 +353,9 @@ class IndexAdminController(BaseAdminController):
                 template_name='admin/modals.html',
                 context=context,
                 re_target='#modal-wrapper',
-                trigger_event='modal_opened',
+                trigger_event='modal_opened'
+                if not keep_modal_open
+                else 'static_modal_opened',
                 after='settle',
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)
@@ -523,10 +526,12 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect:
+        papi_web_config: PapiWebConfig = PapiWebConfig()
         return self._admin_render(
             request,
             admin_tab='config',
             modal='config',
+            keep_modal_open=papi_web_config.force_edit,
         )
 
     @get(
