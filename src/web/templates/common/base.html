@@ -331,7 +331,7 @@
             {% if not DEVEL_ENV %}
             $(window).bind('beforeunload', function(){
                 if (confirm_when_leaving) {
-                    return 'Voulez-vous redémarrer l\'application Sharly Chess ?';
+                    return "{{ _('Do you want to restart Sharly Chess?') }}";
                 } else {
                     return '';
                 }
