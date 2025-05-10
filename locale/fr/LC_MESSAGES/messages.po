@@ -1097,6 +1097,9 @@ msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] 
 msgid "Document:"
 msgstr "Document :"
 
+msgid "Double-round Berger"
+msgstr "Berger aller-retour"
+
 msgid "Download fees invoices"
 msgstr "Télécharger les factures d'homologation"
 

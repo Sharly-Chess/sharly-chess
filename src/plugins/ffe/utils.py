@@ -94,3 +94,9 @@ class PapiPairingVariation(PluginCoreMapper[str, PairingVariation]):
             'Nicois': NicoisSwissVariation(),
             'Berger': variations.BergerRoundRobinVariation(),
         }
+
+    @classmethod
+    def get_plugin_value(cls, core_object: PairingVariation) -> str | None:
+        if core_object == variations.DoubleBergerRoundRobinVariation():
+            core_object = variations.BergerRoundRobinVariation()
+        return super().get_plugin_value(core_object)

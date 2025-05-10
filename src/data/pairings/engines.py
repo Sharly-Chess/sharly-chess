@@ -198,18 +198,31 @@ class BbpPairings(PairingEngine):
         return boards
 
 
-class BergerPairingEngine(PairingEngine):
+class AbstractBergerPairingEngine(PairingEngine, ABC):
     MIN_PLAYERS = 3
 
+    @classmethod
+    @abstractmethod
+    def get_round_count(cls, player_count: int) -> int:
+        """Number of rounds in the tournament according to the number of players."""
+
+    @abstractmethod
+    def get_round_pairings(
+        self, player_count: int, round_: int
+    ) -> list[tuple[int, int]]:
+        """Pairings for the round *round_* of a tournament of *player_count* players."""
+
     @staticmethod
+    def get_berger_table_round_count(player_count: int) -> int:
+        """Number of rounds in the Berger table for *player_count* players."""
+        return player_count if player_count % 2 == 1 else player_count - 1
+
+    @classmethod
     @cache
-    def generate_berger_table(player_count: int) -> dict[int, list[tuple[int, int]]]:
+    def get_berger_table(cls, player_count: int) -> dict[int, list[tuple[int, int]]]:
         if player_count <= 2:
             raise ValueError(f'There must be at least 3 players, got {player_count}')
-        odd_players = player_count % 2 == 1
-        if odd_players:
-            player_count += 1
-        round_count = player_count - 1
+        round_count = cls.get_berger_table_round_count(player_count)
         previous_pairings = [
             (i + 1, player_count - i) for i in range(player_count // 2)
         ]
@@ -234,12 +247,12 @@ class BergerPairingEngine(PairingEngine):
             return _(
                 'Too few players to generate the pairings (minimum: {min})'
             ).format(min=self.MIN_PLAYERS)
-        expected_rounds = player_count if player_count % 2 == 1 else player_count - 1
-        if tournament.rounds != expected_rounds:
+        round_count = self.get_round_count(player_count)
+        if tournament.rounds != round_count:
             return _(
                 'The round count is incompatible with the '
                 'number of players (expected: {expected}).'
-            ).format(expected=expected_rounds)
+            ).format(expected=round_count)
         return None
 
     @staticmethod
@@ -253,14 +266,13 @@ class BergerPairingEngine(PairingEngine):
 
     def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
         boards: list[Board] = []
-        round_pairings = self.generate_berger_table(tournament.player_count)[round_]
         player_by_pairing_number = {
             pairing_number: tournament.players_by_id[player_id]
             for player_id, pairing_number in BergerNumbersSetting.get_value(
                 tournament
             ).items()
         }
-        for pairing in round_pairings:
+        for pairing in self.get_round_pairings(tournament.player_count, round_):
             white_player = player_by_pairing_number.get(pairing[0], None)
             black_player = player_by_pairing_number.get(pairing[1], None)
             if not white_player or not black_player:
@@ -275,3 +287,45 @@ class BergerPairingEngine(PairingEngine):
                 )
             boards.append(board)
         return boards
+
+
+class BergerPairingEngine(AbstractBergerPairingEngine):
+    @classmethod
+    def get_round_count(cls, player_count: int) -> int:
+        return cls.get_berger_table_round_count(player_count)
+
+    def get_round_pairings(
+        self, player_count: int, round_: int
+    ) -> list[tuple[int, int]]:
+        return self.get_berger_table(player_count)[round_]
+
+
+class DoubleBergerPairingEngine(AbstractBergerPairingEngine):
+    @classmethod
+    def get_round_count(cls, player_count: int) -> int:
+        return 2 * cls.get_berger_table_round_count(player_count)
+
+    def get_round_pairings(
+        self, player_count: int, round_: int
+    ) -> list[tuple[int, int]]:
+        """For double-round Berger, in the first half of the tournament
+        the pairings follow the Berger table, and in the second half it
+        follows it from round 1 but with black and white colors permuted.
+
+        The only exception is for the 2 last rounds of the first half, which
+        are supposed to be permuted to avoid players from tripling a color
+        (see FIDE Handbook section C.05.Annex 1)."""
+        berger_table = self.get_berger_table(player_count)
+        berger_table_round_count = self.get_berger_table_round_count(player_count)
+        if round_ <= berger_table_round_count - 2:
+            return berger_table[round_]
+        if round_ == berger_table_round_count - 1:
+            return berger_table[round_ + 1]
+        if round_ == berger_table_round_count:
+            return berger_table[round_ - 1]
+        return [
+            (black_player, white_player)
+            for white_player, black_player in berger_table[
+                (round_ % (berger_table_round_count + 1)) + 1
+            ]
+        ]
