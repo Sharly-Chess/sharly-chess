@@ -1097,6 +1097,9 @@ msgstr ""
 msgid "Document:"
 msgstr ""
 
+msgid "Double-round Berger"
+msgstr ""
+
 msgid "Download fees invoices"
 msgstr ""
 
