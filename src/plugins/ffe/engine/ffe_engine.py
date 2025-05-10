@@ -19,4 +19,4 @@ class FFEEngine(Engine):
 
     @property
     def log_file_path(self) -> Path:
-        return LOG_DIR / PLUGIN_NAME / f'{APP_NAME}.log'
+        return LOG_DIR / PLUGIN_NAME / f'{APP_NAME}-{PLUGIN_NAME}.log'
