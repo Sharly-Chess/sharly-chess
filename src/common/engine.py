@@ -5,6 +5,7 @@ import shutil
 import time
 import webbrowser
 import zipfile
+from abc import ABC, abstractmethod
 from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
@@ -26,6 +27,7 @@ from common.logger import (
     print_interactive_warning,
     print_interactive_success,
     set_console_log_level,
+    set_log_file_handler,
 )
 from common.network import NetworkMonitor
 from common.papi_web_config import PapiWebConfig
@@ -37,7 +39,7 @@ from database.sqlite.event.event_database import EventDatabase
 logger = get_logger()
 
 
-class Engine:
+class Engine(ABC):
     """Base class for both ChessEvent, FFE and web server engines."""
 
     def __init__(self):
@@ -45,6 +47,8 @@ class Engine:
         papi_web_config: PapiWebConfig = PapiWebConfig()
         set_locale(papi_web_config.locale)
         set_console_log_level(papi_web_config.log_level)
+        self.log_file_path.parent.mkdir(parents=True, exist_ok=True)
+        set_log_file_handler(self.log_file_path)
         print_interactive_info(
             f'Papi-web {papi_web_config.version} - {papi_web_config.copyright} - {papi_web_config.url}'
         )
@@ -227,6 +231,12 @@ class Engine:
                     if choice == no_answer:
                         break
                     raise ValueError(f'choice=[{choice}]')
+
+    @property
+    @abstractmethod
+    def log_file_path(self) -> Path:
+        """Path of the file to write the logs to.
+        2 engines should not have the same one to avoid contention issues."""
 
     @classmethod
     def _recover_previous_version(cls, version: Version, files: list[Path]):

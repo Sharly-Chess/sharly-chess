@@ -51,7 +51,8 @@ EVENTS_FOLDER: str = 'events'
 """ The event directory. """
 EVENTS_DIR: Path = Path(EVENTS_FOLDER)
 
-LOG_FILE: Path = Path('logs') / f'{APP_NAME}.log'
+LOG_DIR: Path = Path('logs')
+LOG_FILE: Path = LOG_DIR / f'{APP_NAME}.log'
 
 
 try:

@@ -1,4 +1,8 @@
+from pathlib import Path
+
+from common import LOG_DIR, APP_NAME
 from common.engine import Engine
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.engine.event_selector import EventSelector
 
 
@@ -12,3 +16,7 @@ class FFEEngine(Engine):
                 pass
         except KeyboardInterrupt:
             pass
+
+    @property
+    def log_file_path(self) -> Path:
+        return LOG_DIR / PLUGIN_NAME / f'{APP_NAME}.log'
