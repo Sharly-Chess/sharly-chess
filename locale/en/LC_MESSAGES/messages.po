@@ -2108,6 +2108,9 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
+msgid "Last stable release found: {version}."
+msgstr ""
+
 msgid "Last update"
 msgstr ""
 
@@ -2408,6 +2411,9 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
+msgid "No asset found for release [{version}], release ignored."
+msgstr ""
+
 msgid "No background colour set, by default [{background_color}]"
 msgstr ""
 
@@ -2433,6 +2439,9 @@ msgid "No display controllers"
 msgstr ""
 
 msgid "No display controllers."
+msgstr ""
+
+msgid "No download URL set for [{asset_name}] of release [{version}], asset ignored."
 msgstr ""
 
 msgid "No errors"
@@ -2568,6 +2577,9 @@ msgid "No upcoming events."
 msgstr ""
 
 msgid "No updates found."
+msgstr ""
+
+msgid "No valid asset found for release [{version}], release ignored."
 msgstr ""
 
 msgid "No valid hour defined."
@@ -3232,6 +3244,9 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
+msgid "Release [{version}] is draft, ignored."
+msgstr ""
+
 msgid "Remove the player from the event."
 msgstr ""
 
@@ -3579,6 +3594,9 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr ""
 
 msgid "Split by:"
+msgstr ""
+
+msgid "Stable releases found: {versions}."
 msgstr ""
 
 msgid "Standard"
@@ -4708,7 +4726,16 @@ msgstr ""
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
+msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
+msgstr ""
+
+msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
+msgstr ""
+
 msgid "[{path}] is not a directory."
+msgstr ""
+
+msgid "[{tag_name}] is not a stable release number, entry ignored."
 msgstr ""
 
 msgid "all the boards"
@@ -4881,5 +4908,17 @@ msgid "{screen_type}-screen"
 msgstr ""
 
 #~ msgid "Edition of Sharly Chess settings"
+#~ msgstr ""
+
+#~ msgid "Versions found: {versions}."
+#~ msgstr ""
+
+#~ msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
+#~ msgstr ""
+
+#~ msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
+#~ msgstr ""
+
+#~ msgid "[{tag_name}] is not a correct release number, ignored."
 #~ msgstr ""
 

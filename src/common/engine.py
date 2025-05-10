@@ -59,9 +59,10 @@ class Engine(ABC):
             f'Sharly Chess {sharly_chess_config.version} - {sharly_chess_config.copyright} - {sharly_chess_config.url}'
         )
         new_stable_version: Version | None = None
+        download_url: str | None = None
         if NetworkMonitor.connected(use_cached=False):
             print_interactive_info(_('Checking Sharly Chess version...'))
-            new_stable_version = self._check_version()
+            new_stable_version, download_url = self._check_version()
         else:
             print_interactive_warning(
                 _('Not connected, can not check Sharly Chess version.')
@@ -71,7 +72,7 @@ class Engine(ABC):
         if not InstallationChecker.check():
             self.error = True
             return
-        if new_stable_version:
+        if new_stable_version and download_url:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
             no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -87,7 +88,7 @@ class Engine(ABC):
                 )
                 if choice == yes_answer:
                     self.error = True
-                    if not self._install_new_version(new_stable_version):
+                    if not self._install_new_version(new_stable_version, download_url):
                         logger.error(
                             _('The installation of version [{version}] failed.').format(
                                 version=new_stable_version
@@ -549,24 +550,25 @@ class Engine(ABC):
             webbrowser.open(mail_url, 0)
 
     @classmethod
-    def _check_version(cls) -> Version | None:
+    def _check_version(cls) -> tuple[Version | None, str | None]:
         """Compares the current version with the last available stable version
         on the Sharly Chess GitHub repository.
-        Returns the last stable version available if any, None otherwise."""
-        last_stable_version: Version | None = cls._get_last_stable_version()
+        Returns the last stable version available
+        and the corresponding down URL if any, None otherwise."""
+        last_stable_version, download_url = cls._get_last_stable_version()
         if not last_stable_version:
             print_interactive_warning(_('Checking the version failed.'))
-            return None
+            return None, None
         if last_stable_version == SHARLY_CHESS_VERSION:
             print_interactive_success(_('Your Sharly Chess version is up to date.'))
-            return None
+            return None, None
         last_stable_matches = re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
             str(last_stable_version),
         )
         if not last_stable_matches:
             print_interactive_warning(_('Checking the version failed.'))
-            return None
+            return None, None
         if re.match(
             r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
             str(SHARLY_CHESS_VERSION),
@@ -578,13 +580,13 @@ class Engine(ABC):
                         version=last_stable_version
                     )
                 )
-                return last_stable_version
+                return last_stable_version, download_url
             print_interactive_warning(
                 _(
                     'You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)'
                 ).format(version=last_stable_version)
             )
-            return None
+            return None, None
         if not (
             matches := re.match(
                 r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(a|b|rc)(?P<rc>\d+)$',
@@ -620,20 +622,20 @@ class Engine(ABC):
                     new_version=last_stable_version, old_version=SHARLY_CHESS_VERSION
                 )
             )
-            return None
+            return None, None
         print_interactive_info(
             _(
                 'You are using un unstable version more recent than the last stable version available ({version}).'
             ).format(version=last_stable_version)
         )
-        return None
+        return None, None
 
     @staticmethod
-    def _get_last_stable_version() -> Version | None:
+    def _get_last_stable_version() -> tuple[Version | None, str | None]:
         """Retrieves the available versions from the Sharly Chess GitHub
         repository.
         If an error occurred, returns None.
-        Otherwise, the last stable version is returned."""
+        Otherwise, the last stable version and the download URL are returned."""
         url: str = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
         try:
             print_interactive_info(
@@ -645,7 +647,7 @@ class Engine(ABC):
             response.raise_for_status()
             if not response:
                 print_interactive_warning(_('No response from GitHub.'))
-                return None
+                return None, None
             data: str = response.content.decode()
             logger.debug(
                 'Data received (%d bytes, code %d)',
@@ -658,52 +660,127 @@ class Engine(ABC):
                 print_interactive_warning(
                     _('Invalid response from GitHub: {ex}.').format(ex=ex)
                 )
-                return None
-            versions: list[str] = []
+                return None, None
+            version_download_urls: dict[Version, str] = {}
             for entry in entries:
                 tag_name: str = entry['tag_name']
-                if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
-                    version: str = matches.group(1)
-                    logger.debug('tag_name=[%s] > version=[%s]', tag_name, version)
-                    versions.append(version)
-                else:
-                    logger.debug('tag_name=[%s]: no stable version number', tag_name)
-            if not versions:
+                if not (matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name)):
+                    print_interactive_info(
+                        _(
+                            '[{tag_name}] is not a stable release number, entry ignored.'
+                        ).format(tag_name=tag_name)
+                    )
+                    continue
+                version: str = matches.group(1)
+                logger.debug('tag_name=[%s] > version=[%s]', tag_name, version)
+                if entry.get('draft', True):
+                    print_interactive_info(
+                        _('Release [{version}] is draft, ignored.').format(
+                            version=version
+                        )
+                    )
+                    continue
+                assets: list[dict] = entry.get('assets', [])
+                if not assets:
+                    print_interactive_info(
+                        _(
+                            'No asset found for release [{version}], release ignored.'
+                        ).format(version=version)
+                    )
+                    continue
+                download_url: str | None = None
+                for asset in assets:
+                    valid_asset_name: str = f'sharly-chess-{version}.zip'
+                    if (
+                        asset_name := asset.get('name', 'undefined')
+                    ) == f'papi-web-{version}.zip':
+                        print_interactive_info(
+                            _(
+                                '[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored.'
+                            ).format(
+                                asset_name=asset_name,
+                                version=version,
+                                valid_asset_name=valid_asset_name,
+                            )
+                        )
+                        continue
+                    if (
+                        asset_name := asset.get('name', 'undefined')
+                    ) != valid_asset_name:
+                        print_interactive_info(
+                            _(
+                                '[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored.'
+                            ).format(
+                                asset_name=asset_name,
+                                version=version,
+                                valid_asset_name=valid_asset_name,
+                            )
+                        )
+                        continue
+                    if not (asset_url := asset.get('browser_download_url', '')):
+                        print_interactive_info(
+                            _(
+                                'No download URL set for [{asset_name}] of release [{version}], asset ignored.'
+                            ).format(asset_name=asset_name, version=version)
+                        )
+                        continue
+                    print_interactive_info(
+                        _(
+                            'No download URL set for [{asset_name}] of release [{version}], asset ignored.'
+                        ).format(asset_name=asset_name, version=version)
+                    )
+                    download_url = asset_url
+                    break
+                if not download_url:
+                    print_interactive_warning(
+                        _(
+                            'No valid asset found for release [{version}], release ignored.'
+                        ).format(version=version)
+                    )
+                    continue
+            if not version_download_urls:
                 print_interactive_warning(_('No stable version found.'))
-                return None
-            versions.sort(key=Version)
-            logger.debug('releases=%s', versions)
-            return Version(versions[-1])
+                return None, None
+            sorted_versions: list[Version] = sorted(version_download_urls.keys())
+            print_interactive_info(
+                _('Stable releases found: {versions}.').format(
+                    versions=', '.join(map(str, sorted_versions))
+                )
+            )
+            last_version: Version = sorted_versions[-1]
+            print_interactive_info(
+                _('Last stable release found: {version}.').format(version=last_version)
+            )
+            return last_version, version_download_urls[last_version]
         except ConnectionError as ex:
             print_interactive_warning(
                 _('Failed to read [{url}] (connection error): [{ex}].').format(
                     url=url, ex=ex
                 )
             )
-            return None
+            return None, None
         except Timeout as ex:
             print_interactive_warning(
                 _('Failed to read [{url}] (timeout): [{ex}].').format(url=url, ex=ex)
             )
-            return None
+            return None, None
         except HTTPError as ex:
             print_interactive_warning(
                 _(
                     'Failed to read [{url}] (error code [{errno}]): [{strerror}].'
                 ).format(url=url, errno=ex.errno, strerror=ex.strerror)
             )
-            return None
+            return None, None
         except RequestException as ex:
             print_interactive_warning(
                 _('Failed to read [{url}]: [{ex}].').format(url=url, ex=ex)
             )
-            return None
+            return None, None
 
     @staticmethod
-    def _install_new_version(version: Version) -> bool:
+    def _install_new_version(version: Version, download_url: str) -> bool:
         """Install the new stable version at the same directory level.
         Returns True on success, False otherwise."""
-        url: str = f'https://github.com/sharly-chess/sharly-chess/releases/download/{version}/sharly-chess-{version}.zip'
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
         if new_version_dir.exists():
             print_interactive_error(
@@ -716,10 +793,10 @@ class Engine(ABC):
             new_version_dir.mkdir()
             logger.info(
                 _('Downloading version {version} from GitHub ([{url}])...').format(
-                    version=version, url=url
+                    version=version, url=download_url
                 )
             )
-            response: Response = get(url, allow_redirects=True, timeout=5)
+            response: Response = get(download_url, allow_redirects=True, timeout=5)
             response.raise_for_status()
             if not response:
                 print_interactive_warning(_('No response from GitHub.'))
@@ -747,24 +824,26 @@ class Engine(ABC):
         except ConnectionError as ex:
             print_interactive_warning(
                 _('Failed to read [{url}] (connection error): [{ex}].').format(
-                    url=url, ex=ex
+                    url=download_url, ex=ex
                 )
             )
             return False
         except Timeout as ex:
             print_interactive_warning(
-                _('Failed to read [{url}] (timeout): [{ex}].').format(url=url, ex=ex)
+                _('Failed to read [{url}] (timeout): [{ex}].').format(
+                    url=download_url, ex=ex
+                )
             )
             return False
         except HTTPError as ex:
             print_interactive_warning(
                 _(
                     'Failed to read [{url}] (error code [{errno}]): [{strerror}].'
-                ).format(url=url, errno=ex.errno, strerror=ex.strerror)
+                ).format(url=download_url, errno=ex.errno, strerror=ex.strerror)
             )
             return False
         except RequestException as ex:
             print_interactive_warning(
-                _('Failed to read [{url}]: [{ex}].').format(url=url, ex=ex)
+                _('Failed to read [{url}]: [{ex}].').format(url=download_url, ex=ex)
             )
             return False

@@ -599,7 +599,7 @@ msgid "Checking Sharly Chess version..."
 msgstr "Vérification de la version de Sharly Chess..."
 
 msgid "Checking the version failed."
-msgstr "la vérification de la version a échoué."
+msgstr "La vérification de la version a échoué."
 
 msgid "Chess"
 msgstr "Échecs"
@@ -2108,6 +2108,9 @@ msgstr "Derniers résultats"
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
 
+msgid "Last stable release found: {version}."
+msgstr ""
+
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
@@ -2408,6 +2411,9 @@ msgstr "Pas de message d'alerte"
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
+msgid "No asset found for release [{version}], release ignored."
+msgstr ""
+
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Couleur de fond non définie, par défaut [{background_color}]"
 
@@ -2434,6 +2440,9 @@ msgstr "Aucun pilote d'afficheurs"
 
 msgid "No display controllers."
 msgstr "Aucun pilote d'afficheurs."
+
+msgid "No download URL set for [{asset_name}] of release [{version}], asset ignored."
+msgstr ""
 
 msgid "No errors"
 msgstr "Aucune erreur"
@@ -2541,7 +2550,7 @@ msgid "No screens."
 msgstr "Aucun écran."
 
 msgid "No stable version found."
-msgstr "Aucun version stable trouvée."
+msgstr "Aucune version stable trouvée."
 
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
@@ -2569,6 +2578,9 @@ msgstr "Aucun évènement à venir."
 
 msgid "No updates found."
 msgstr "Aucun changement détecté."
+
+msgid "No valid asset found for release [{version}], release ignored."
+msgstr ""
 
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
@@ -3232,6 +3244,9 @@ msgstr "Récupération des évènements de la version {version}..."
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Release [{version}] is draft, ignored."
+msgstr ""
+
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
@@ -3580,6 +3595,9 @@ msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le
 
 msgid "Split by:"
 msgstr "Séparateur :"
+
+msgid "Stable releases found: {versions}."
+msgstr ""
 
 msgid "Standard"
 msgstr "Standard"
@@ -4708,8 +4726,17 @@ msgstr "Absent·e"
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
 
+msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
+msgstr ""
+
+msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
+msgstr ""
+
 msgid "[{path}] is not a directory."
 msgstr "[{path}] n'est pas un répertoire."
+
+msgid "[{tag_name}] is not a stable release number, entry ignored."
+msgstr ""
 
 msgid "all the boards"
 msgstr "tous les échiquiers"
@@ -4882,4 +4909,16 @@ msgstr "ecran-{screen_type}"
 
 #~ msgid "Edition of Sharly Chess settings"
 #~ msgstr "Édition de la configuration de Sharly Chess"
+
+#~ msgid "Versions found: {versions}."
+#~ msgstr ""
+
+#~ msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
+#~ msgstr ""
+
+#~ msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
+#~ msgstr ""
+
+#~ msgid "[{tag_name}] is not a correct release number, ignored."
+#~ msgstr ""
 
