@@ -122,7 +122,7 @@ class BaseEventAdminController(BaseAdminController):
                 'title': _('Screens'),
                 'submenu': {
                     'admin-event-screens-tab': {
-                        'title': _('Individual Screens ({num})').format(
+                        'title': _('Single Screens ({num})').format(
                             num=len(admin_event.basic_screens_by_id) or '-'
                         ),
                         'template': 'screens/tab.html',

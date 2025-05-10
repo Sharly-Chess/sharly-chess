@@ -1097,6 +1097,9 @@ msgstr ""
 msgid "Document:"
 msgstr ""
 
+msgid "Double-round Berger"
+msgstr ""
+
 msgid "Download fees invoices"
 msgstr ""
 
@@ -1949,9 +1952,6 @@ msgid "Incorrect path [{path}]."
 msgstr ""
 
 msgid "Increment (optional, seconds):"
-msgstr ""
-
-msgid "Individual Screens ({num})"
 msgstr ""
 
 #, python-format
@@ -3020,7 +3020,7 @@ msgstr ""
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
-msgid "Please wait until the application settings have been set on the server."
+msgid "Please wait until the application settings have been set on the server..."
 msgstr ""
 
 msgid "Please wait..."
@@ -3539,7 +3539,10 @@ msgstr ""
 msgid "Shuffle"
 msgstr ""
 
-msgid "Simple Screens"
+msgid "Single Screens"
+msgstr ""
+
+msgid "Single Screens ({num})"
 msgstr ""
 
 msgid "Soft Haley system"
@@ -4412,7 +4415,7 @@ msgstr ""
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
-msgid "Unlike individual Screens, families can only be used to display information about a single tournament."
+msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr ""
 
 msgid "Unpair"
@@ -4678,7 +4681,7 @@ msgstr ""
 msgid "You are using un unstable version more recent than the last stable version available ({version})."
 msgstr ""
 
-msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the individual screens will be generated automatically."
+msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
@@ -4753,22 +4756,10 @@ msgstr ""
 msgid "event ID does not match."
 msgstr ""
 
-msgid "events"
-msgstr ""
-
-msgid "events-create"
-msgstr ""
-
 msgid "no"
 msgstr ""
 
 msgid "no background image"
-msgstr ""
-
-msgid "pairings"
-msgstr ""
-
-msgid "players"
 msgstr ""
 
 msgid "players from #{first} to #{last}"
@@ -4790,9 +4781,6 @@ msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
 msgid "players on {parts} screens"
-msgstr ""
-
-msgid "players-databases"
 msgstr ""
 
 msgid "ranking from #{first} to #{last}"
@@ -4831,21 +4819,6 @@ msgstr ""
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
-msgid "screens-display-controllers"
-msgstr ""
-
-msgid "screens-families"
-msgstr ""
-
-msgid "screens-rotators"
-msgstr ""
-
-msgid "screens-simple"
-msgstr ""
-
-msgid "screens-timers"
-msgstr ""
-
 msgid "the whole ranking"
 msgstr ""
 
@@ -4862,9 +4835,6 @@ msgid "tournament"
 msgstr ""
 
 msgid "tournament ID does not match."
-msgstr ""
-
-msgid "tournaments"
 msgstr ""
 
 msgid "vs"
@@ -4912,10 +4882,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Papi-web settings (private access)"
-#~ msgstr ""
-
-#~ msgid "The public screens are not available until the Papi-web settings have been validated."
-#~ msgstr ""
 
