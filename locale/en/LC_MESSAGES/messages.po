@@ -102,18 +102,6 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-msgid "- Download the files (ZIP archive): {bin_zip_url}"
-msgstr ""
-
-msgid "- Version {version} ({events})"
-msgstr ""
-
-msgid "- Version {version}: no events"
-msgstr ""
-
-msgid "- View the files on filebin.net: {bin_url}"
-msgstr ""
-
 msgid "/move"
 msgstr ""
 
@@ -156,20 +144,11 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
-msgid "A more recent version is available ([{version}])."
-msgstr ""
-
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr ""
 
 msgid "A positive integer is expected."
-msgstr ""
-
-msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
-msgstr ""
-
-msgid "A window will open to send an email to the Sharly Chess project; If the window does not open, please click on the link below or manually send an email to {email}."
 msgstr ""
 
 msgid "Absent"
@@ -595,12 +574,6 @@ msgstr ""
 msgid "Checked-in"
 msgstr ""
 
-msgid "Checking Sharly Chess version..."
-msgstr ""
-
-msgid "Checking the version failed."
-msgstr ""
-
 msgid "Chess"
 msgstr ""
 
@@ -880,9 +853,6 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Custom files recovered: {num} (from directory [{dir}])."
-msgstr ""
-
 msgid "Customization"
 msgstr ""
 
@@ -1121,13 +1091,7 @@ msgstr ""
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr ""
 
-msgid "Downloading failed with code [{code}]."
-msgstr ""
-
 msgid "Downloading source file..."
-msgstr ""
-
-msgid "Downloading version {version} from GitHub ([{url}])..."
 msgstr ""
 
 msgid "Drag the hours to order them."
@@ -1448,9 +1412,6 @@ msgstr ""
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
-msgstr ""
-
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
@@ -1473,9 +1434,6 @@ msgid "Event: {event_name}"
 msgstr ""
 
 msgid "Events (public access)"
-msgstr ""
-
-msgid "Events recovered: {num} (from directory [{dir}])."
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -1680,9 +1638,6 @@ msgstr ""
 msgid "File already exists."
 msgstr ""
 
-msgid "File downloaded: [{zip_file}]."
-msgstr ""
-
 msgid "File found"
 msgstr ""
 
@@ -1690,9 +1645,6 @@ msgid "File name (without extension):"
 msgstr ""
 
 msgid "File not found"
-msgstr ""
-
-msgid "Files have been sent to bin {bin_name}."
 msgstr ""
 
 msgid "Filter the categories."
@@ -2057,9 +2009,6 @@ msgstr ""
 msgid "Invalid player number range."
 msgstr ""
 
-msgid "Invalid response from GitHub: {ex}."
-msgstr ""
-
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
@@ -2106,9 +2055,6 @@ msgid "Last results"
 msgstr ""
 
 msgid "Last results ({num})"
-msgstr ""
-
-msgid "Last stable release found: {version}."
 msgstr ""
 
 msgid "Last update"
@@ -2178,9 +2124,6 @@ msgid "Log level:"
 msgstr ""
 
 msgid "Logging level: {log_level}"
-msgstr ""
-
-msgid "Looking for a more recent version on GitHub ([{url}])..."
 msgstr ""
 
 msgid "Loss"
@@ -2365,9 +2308,6 @@ msgstr ""
 msgid "New tournament"
 msgstr ""
 
-msgid "New version [{version}] has been installed in [{dir}]."
-msgstr ""
-
 msgid "Next round"
 msgstr ""
 
@@ -2411,9 +2351,6 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
-msgid "No asset found for release [{version}], release ignored."
-msgstr ""
-
 msgid "No background colour set, by default [{background_color}]"
 msgstr ""
 
@@ -2441,13 +2378,7 @@ msgstr ""
 msgid "No display controllers."
 msgstr ""
 
-msgid "No download URL set for [{asset_name}] of release [{version}], asset ignored."
-msgstr ""
-
 msgid "No errors"
-msgstr ""
-
-msgid "No events found in previously installed versions."
 msgstr ""
 
 msgid "No events found."
@@ -2504,13 +2435,7 @@ msgstr ""
 msgid "No players."
 msgstr ""
 
-msgid "No previously installed versions found."
-msgstr ""
-
 msgid "No recording"
-msgstr ""
-
-msgid "No response from GitHub."
 msgstr ""
 
 msgid "No result"
@@ -2549,9 +2474,6 @@ msgstr ""
 msgid "No screens."
 msgstr ""
 
-msgid "No stable version found."
-msgstr ""
-
 msgid "No such screens."
 msgstr ""
 
@@ -2579,9 +2501,6 @@ msgstr ""
 msgid "No updates found."
 msgstr ""
 
-msgid "No valid asset found for release [{version}], release ignored."
-msgstr ""
-
 msgid "No valid hour defined."
 msgstr ""
 
@@ -2595,9 +2514,6 @@ msgid "Not checked-in yet"
 msgstr ""
 
 msgid "Not connected to internet."
-msgstr ""
-
-msgid "Not connected, can not check Sharly Chess version."
 msgstr ""
 
 msgid "Not connected, impossible to update."
@@ -3226,25 +3142,10 @@ msgstr ""
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
-msgid "Recovering configuration from version {version}..."
-msgstr ""
-
-msgid "Recovering custom files..."
-msgstr ""
-
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr ""
 
-msgid "Recovering event [{event_uniq_id}]..."
-msgstr ""
-
-msgid "Recovering events from version {version}..."
-msgstr ""
-
 msgid "Refresh this page."
-msgstr ""
-
-msgid "Release [{version}] is draft, ignored."
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -3497,9 +3398,6 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
-msgid "Sending the files to a server..."
-msgstr ""
-
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
@@ -3594,9 +3492,6 @@ msgid "Specifying the number of parts and the number of items per part is not po
 msgstr ""
 
 msgid "Split by:"
-msgstr ""
-
-msgid "Stable releases found: {versions}."
 msgstr ""
 
 msgid "Standard"
@@ -3777,9 +3672,6 @@ msgid "The following screens will also be deleted:"
 msgstr ""
 
 msgid "The initial time in seconds (may be empty if an increment is set)."
-msgstr ""
-
-msgid "The installation of version [{version}] failed."
 msgstr ""
 
 msgid "The last set of a screen can not be deleted."
@@ -4326,9 +4218,6 @@ msgstr ""
 msgid "Tournaments displayed:"
 msgstr ""
 
-msgid "Tournaments recovered: {num} (from directory [{dir}])."
-msgstr ""
-
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr ""
@@ -4532,9 +4421,6 @@ msgstr "V"
 msgid "Variation"
 msgstr ""
 
-msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
-msgstr ""
-
 msgid "View the files on filebin.net"
 msgstr ""
 
@@ -4690,12 +4576,6 @@ msgstr ""
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
-msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
-msgstr ""
-
-msgid "You are using un unstable version more recent than the last stable version available ({version})."
-msgstr ""
-
 msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
@@ -4711,9 +4591,6 @@ msgstr ""
 msgid "You must create a tournament before creating screens."
 msgstr ""
 
-msgid "Your Sharly Chess version is up to date."
-msgstr ""
-
 msgid "Your choice (by default {default}): "
 msgstr ""
 
@@ -4726,16 +4603,7 @@ msgstr ""
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
-msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
-msgstr ""
-
-msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
-msgstr ""
-
 msgid "[{path}] is not a directory."
-msgstr ""
-
-msgid "[{tag_name}] is not a stable release number, entry ignored."
 msgstr ""
 
 msgid "all the boards"
@@ -4906,19 +4774,4 @@ msgstr[1] ""
 
 msgid "{screen_type}-screen"
 msgstr ""
-
-#~ msgid "Edition of Sharly Chess settings"
-#~ msgstr ""
-
-#~ msgid "Versions found: {versions}."
-#~ msgstr ""
-
-#~ msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
-#~ msgstr ""
-
-#~ msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
-#~ msgstr ""
-
-#~ msgid "[{tag_name}] is not a correct release number, ignored."
-#~ msgstr ""
 

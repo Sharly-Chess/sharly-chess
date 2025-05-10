@@ -102,18 +102,6 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-msgid "- Download the files (ZIP archive): {bin_zip_url}"
-msgstr "- Télécharger les fichiers (archive ZIP) : {bin_zip_url}"
-
-msgid "- Version {version} ({events})"
-msgstr "- Version {version} ({events})"
-
-msgid "- Version {version}: no events"
-msgstr "- Version {version}: aucun évènement"
-
-msgid "- View the files on filebin.net: {bin_url}"
-msgstr "- Voir les fichiers sur filebin.net : {bin_url}"
-
 msgid "/move"
 msgstr "/cp"
 
@@ -156,21 +144,12 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
-msgid "A more recent version is available ([{version}])."
-msgstr "Une version plus récente est disponible ([{version}])."
-
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement %(event_uniq_id)s."
 
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
-
-msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
-msgstr "Une version stable plus récente est disponible ([{new_version}]) mais la mise à jour des versions non stables (comme celle que vous utilisez actuellement : [{old_version}]) doit être réalisée manuellement (faites la mise à jour depuis la dernière version stable installée sur votre serveur)."
-
-msgid "A window will open to send an email to the Sharly Chess project; If the window does not open, please click on the link below or manually send an email to {email}."
-msgstr "Une fenêtre va s'ouvrir pour envoyer un mél au projet Sharly Chess ; si la fenêtre ne s'ouvre pas, veuillez cliquer sur le lien ci-dessous ou envoyer manuellement un mél à {email}."
 
 msgid "Absent"
 msgstr "Absent·e"
@@ -595,12 +574,6 @@ msgstr "Le pointage est ouvert pour le tournoi [{tournament_uniq_id}]."
 msgid "Checked-in"
 msgstr "Pointé·e"
 
-msgid "Checking Sharly Chess version..."
-msgstr "Vérification de la version de Sharly Chess..."
-
-msgid "Checking the version failed."
-msgstr "La vérification de la version a échoué."
-
 msgid "Chess"
 msgstr "Échecs"
 
@@ -880,9 +853,6 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Custom files recovered: {num} (from directory [{dir}])."
-msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
-
 msgid "Customization"
 msgstr "Personnalisation"
 
@@ -1121,14 +1091,8 @@ msgstr "Télécharger les joueur·euses."
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les joueur·euses sans numéros de téléphone ou adresse email ne seront pas inclus·es."
 
-msgid "Downloading failed with code [{code}]."
-msgstr "Le téléchargement a échoué avec le code [{code}]."
-
 msgid "Downloading source file..."
 msgstr "Téléchargement du fichier source..."
-
-msgid "Downloading version {version} from GitHub ([{url}])..."
-msgstr "Téléchargement de la version {version} depuis GitHub ([{url}])..."
 
 msgid "Drag the hours to order them."
 msgstr "Faites glisser les horaires pour les ordonner."
@@ -1448,9 +1412,6 @@ msgstr "Évènement"
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr "Évènement [{event_id}] introuvable (code : [{code}]) : [{error}]."
 
-msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
-msgstr "Évènement [{event_uniq_id}] : récupération du tournoi [{tournament_uniq_id}]..."
-
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "L'évènement [{old_uniq_id}] a été renommé ([{new_uniq_id}]) et modifié."
 
@@ -1474,9 +1435,6 @@ msgstr "Évènement : {event_name}"
 
 msgid "Events (public access)"
 msgstr "Évènements (accès public)"
-
-msgid "Events recovered: {num} (from directory [{dir}])."
-msgstr "Évènements récupérés : {num} (depuis le répertoire [{dir}])."
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -1680,9 +1638,6 @@ msgstr "Fichier [{file}] non trouvé."
 msgid "File already exists."
 msgstr "Le fichier existe déjà."
 
-msgid "File downloaded: [{zip_file}]."
-msgstr "Fichier téléchargé : [{zip_file}]."
-
 msgid "File found"
 msgstr "Fichier trouvé"
 
@@ -1691,9 +1646,6 @@ msgstr "Nom du fichier (sans extension) :"
 
 msgid "File not found"
 msgstr "Fichier introuvable"
-
-msgid "Files have been sent to bin {bin_name}."
-msgstr "Les fichiers ont été envoyés dans la corbeille {bin_name}."
 
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."
@@ -2057,9 +2009,6 @@ msgstr "Numéro de téléphone [{phone}] non valide."
 msgid "Invalid player number range."
 msgstr "Intervalle de joueur·euses invalide."
 
-msgid "Invalid response from GitHub: {ex}."
-msgstr "Réponse non valide de GitHub : {ex}."
-
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
@@ -2107,9 +2056,6 @@ msgstr "Derniers résultats"
 
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
-
-msgid "Last stable release found: {version}."
-msgstr ""
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
@@ -2179,9 +2125,6 @@ msgstr "Niveau de log :"
 
 msgid "Logging level: {log_level}"
 msgstr "Niveau de log : {log_level}"
-
-msgid "Looking for a more recent version on GitHub ([{url}])..."
-msgstr "Recherche d'une version plus récente sur GitHub ([{url}])..."
 
 msgid "Loss"
 msgstr "Défaite"
@@ -2365,9 +2308,6 @@ msgstr "Nouvel évènement"
 msgid "New tournament"
 msgstr "Nouveau tournoi"
 
-msgid "New version [{version}] has been installed in [{dir}]."
-msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
-
 msgid "Next round"
 msgstr "Ronde suivante"
 
@@ -2411,9 +2351,6 @@ msgstr "Pas de message d'alerte"
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
-msgid "No asset found for release [{version}], release ignored."
-msgstr ""
-
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Couleur de fond non définie, par défaut [{background_color}]"
 
@@ -2441,14 +2378,8 @@ msgstr "Aucun pilote d'afficheurs"
 msgid "No display controllers."
 msgstr "Aucun pilote d'afficheurs."
 
-msgid "No download URL set for [{asset_name}] of release [{version}], asset ignored."
-msgstr ""
-
 msgid "No errors"
 msgstr "Aucune erreur"
-
-msgid "No events found in previously installed versions."
-msgstr "Aucun évènement trouvé dans les version précédemment installées."
 
 msgid "No events found."
 msgstr "Aucun évènement trouvé."
@@ -2504,14 +2435,8 @@ msgstr "Aucun·e joueur·euse mis·e à jour."
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
-msgid "No previously installed versions found."
-msgstr "Pas de version précédente trouvée."
-
 msgid "No recording"
 msgstr "Pas d'enregistrement"
-
-msgid "No response from GitHub."
-msgstr "Pas de réponse de GitHub."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -2549,9 +2474,6 @@ msgstr "Aucun écran"
 msgid "No screens."
 msgstr "Aucun écran."
 
-msgid "No stable version found."
-msgstr "Aucune version stable trouvée."
-
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
 
@@ -2579,9 +2501,6 @@ msgstr "Aucun évènement à venir."
 msgid "No updates found."
 msgstr "Aucun changement détecté."
 
-msgid "No valid asset found for release [{version}], release ignored."
-msgstr ""
-
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
 
@@ -2596,9 +2515,6 @@ msgstr "Pas encore point·ée"
 
 msgid "Not connected to internet."
 msgstr "Aucune connection à internet."
-
-msgid "Not connected, can not check Sharly Chess version."
-msgstr "Hors-ligne, impossible de vérifier la version de Sharly Chess."
 
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
@@ -3226,26 +3142,11 @@ msgstr "Historique"
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
 
-msgid "Recovering configuration from version {version}..."
-msgstr "Récupération de la configuration de la version {version}..."
-
-msgid "Recovering custom files..."
-msgstr "Récupération des fichiers de personnalisation..."
-
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr "La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers)."
 
-msgid "Recovering event [{event_uniq_id}]..."
-msgstr "Récupération de l'évènement [{event_uniq_id}]..."
-
-msgid "Recovering events from version {version}..."
-msgstr "Récupération des évènements de la version {version}..."
-
 msgid "Refresh this page."
 msgstr "Actualiser la page."
-
-msgid "Release [{version}] is draft, ignored."
-msgstr ""
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
@@ -3497,9 +3398,6 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection: %(selection)s"
 
-msgid "Sending the files to a server..."
-msgstr "Envoi des fichiers vers un serveur..."
-
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
@@ -3595,9 +3493,6 @@ msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le
 
 msgid "Split by:"
 msgstr "Séparateur :"
-
-msgid "Stable releases found: {versions}."
-msgstr ""
 
 msgid "Standard"
 msgstr "Standard"
@@ -3778,9 +3673,6 @@ msgstr "Les écrans suivants vont également être supprimés :"
 
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Le temps initial en secondes (peut être nul en cas d'incrément)."
-
-msgid "The installation of version [{version}] failed."
-msgstr "L'installation de la version [{version}] a échoué."
 
 msgid "The last set of a screen can not be deleted."
 msgstr "Le dernier écran ne peut être supprimé."
@@ -4326,9 +4218,6 @@ msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
 msgid "Tournaments displayed:"
 msgstr "Tournois affichés :"
 
-msgid "Tournaments recovered: {num} (from directory [{dir}])."
-msgstr "Tournois récupérés : {num} (depuis le répertoire [{dir}])."
-
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois: %(num)d"
@@ -4532,9 +4421,6 @@ msgstr "V"
 msgid "Variation"
 msgstr "Variante"
 
-msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
-msgstr "La version [{version}] est déjà installée dans le répertoire [{dir}], veuillez supprimer ce répertoire avant d'installer."
-
 msgid "View the files on filebin.net"
 msgstr "Voir les fichiers sur filebin.net"
 
@@ -4690,12 +4576,6 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
-msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
-msgstr "Vous utilisez une version plus récente que la dernière version stable disponible ([{version}]), vous ne seriez pas développeur·euse ? ;-)"
-
-msgid "You are using un unstable version more recent than the last stable version available ({version})."
-msgstr "Vous utilisez une version non stable plus récente que la dernière version stable disponible ({version})."
-
 msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
@@ -4711,9 +4591,6 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écr
 msgid "You must create a tournament before creating screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
 
-msgid "Your Sharly Chess version is up to date."
-msgstr "Votre version de Sharly Chess est à jour."
-
 msgid "Your choice (by default {default}): "
 msgstr "Votre choix, par défaut [{default}] :"
 
@@ -4726,17 +4603,8 @@ msgstr "Absent·e"
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
 
-msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
-msgstr ""
-
-msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored."
-msgstr ""
-
 msgid "[{path}] is not a directory."
 msgstr "[{path}] n'est pas un répertoire."
-
-msgid "[{tag_name}] is not a stable release number, entry ignored."
-msgstr ""
 
 msgid "all the boards"
 msgstr "tous les échiquiers"
@@ -4906,19 +4774,4 @@ msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
-
-#~ msgid "Edition of Sharly Chess settings"
-#~ msgstr "Édition de la configuration de Sharly Chess"
-
-#~ msgid "Versions found: {versions}."
-#~ msgstr ""
-
-#~ msgid "[{asset_name}] is an old asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
-#~ msgstr ""
-
-#~ msgid "[{asset_name}] is not a valid asset name in release [{version}] (expected [{valid_asset_name}]), asset ignored"
-#~ msgstr ""
-
-#~ msgid "[{tag_name}] is not a correct release number, ignored."
-#~ msgstr ""
 
