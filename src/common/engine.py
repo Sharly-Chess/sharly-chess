@@ -104,16 +104,19 @@ class Engine(ABC):
             print_interactive_info(
                 'No event database found, looking for previous versions of Sharly Chess...'
             )
-            previous_versions: list[Version] = []
+            previous_versions: list[tuple[Version, str]] = []
             for version_dir in Path('..').glob('*'):
                 if not version_dir.is_dir():
                     logger.debug('Not a directory: %s', version_dir)
                     continue
-                matches = re.match(r'^papi-web-(\d+\.\d+\.\d+)$', version_dir.name)
+                matches = re.match(
+                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+)$', version_dir.name
+                )
                 if not matches:
                     logger.debug('Not a version: %s', version_dir)
                     continue
-                version: Version = Version(matches.group(1))
+                prefix: str = matches.group(1)
+                version: Version = Version(matches.group(2))
                 if version < Version('2.4.0'):
                     logger.debug('Version %s : too old, ignored', version)
                 elif version > sharly_chess_config.version:
@@ -121,12 +124,12 @@ class Engine(ABC):
                 elif version == sharly_chess_config.version:
                     logger.debug('Version %s : current version, ignored', version)
                 else:
-                    previous_versions.append(version)
-            previous_databases: dict[Version, list[Path]] = {}
+                    previous_versions.append((version, prefix))
+            previous_databases: dict[tuple[Version, str], list[Path]] = {}
             if previous_versions:
                 previous_versions.sort()
-                for version in previous_versions:
-                    version_dir = Path('..') / f'papi-web-{version}'
+                for version, prefix in previous_versions:
+                    version_dir = Path('..') / f'{prefix}-{version}'
                     files: list[Path] = list(version_dir.glob('events/*.db'))
                     if files:
                         print_interactive_info(
@@ -135,7 +138,7 @@ class Engine(ABC):
                                 events=', '.join([file.stem for file in files]),
                             )
                         )
-                        previous_databases[version] = files
+                        previous_databases[(version, prefix)] = files
                     else:
                         print_interactive_info(
                             _('- Version {version}: no events').format(version=version)
@@ -149,7 +152,9 @@ class Engine(ABC):
             recovered_version: Version | None = None
             if previous_databases:
                 # keep the versions with databases only
-                previous_versions = list(previous_databases.keys())
+                previous_versions: list[tuple[Version, str]] = list(
+                    previous_databases.keys()
+                )
                 previous_versions.sort()
                 version_num: int | None = None
                 if len(previous_databases) == 1:
@@ -178,9 +183,9 @@ class Engine(ABC):
                     print_interactive_input(_('Please choose the version to recover:'))
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
-                        version: Version = previous_versions[num - 1]
+                        version, prefix = previous_versions[num - 1]
                         print_interactive_input(
-                            f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[version]])})'
+                            f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[(version, prefix)]])})'
                         )
                     quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
                     print_interactive_input(
@@ -208,9 +213,9 @@ class Engine(ABC):
                         except ValueError:
                             pass
                 if version_num is not None:
-                    recovered_version = previous_versions[version_num - 1]
+                    version, prefix = previous_versions[version_num - 1]
                     self._recover_previous_version(
-                        recovered_version, previous_databases[recovered_version]
+                        version, prefix, previous_databases[(version, prefix)]
                     )
             if not recovered_version:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
@@ -245,9 +250,11 @@ class Engine(ABC):
         2 engines should not have the same one to avoid contention issues."""
 
     @classmethod
-    def _recover_previous_version(cls, version: Version, files: list[Path]):
+    def _recover_previous_version(
+        cls, version: Version, prefix: str, files: list[Path]
+    ):
         """Recover all the data of a previous version (configuration, events, Papi files and customization files)."""
-        version_dir = Path('..') / f'papi-web-{version}'
+        version_dir = Path('..') / f'{prefix}-{version}'
         config_database_file = (
             version_dir / EVENTS_FOLDER / ConfigDatabase.config_database_name
         )
@@ -270,7 +277,6 @@ class Engine(ABC):
             _('Recovering events from version {version}...').format(version=version)
         )
         tournaments_number: int = 0
-        version_dir = Path('..') / f'papi-web-{version}'
         events_dir: Path = version_dir / EVENTS_FOLDER
         papi_dir: Path = version_dir / SharlyChessConfig.default_papi_folder
         for file in files:
@@ -477,7 +483,7 @@ class Engine(ABC):
         datetime_str: str = datetime.strftime(
             datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
         )
-        bin_name: str = f'papi-web-custom-files-{datetime_str}'
+        bin_name: str = f'sharly-chess-custom-files-{datetime_str}'
         if cls._upload_bin_files(bin_name, custom_files):
             bin_url: str = cls._bin_url(bin_name)
             bin_zip_url: str = cls._bin_zip_url(bin_name)
@@ -694,8 +700,8 @@ class Engine(ABC):
     def _install_new_version(version: Version) -> bool:
         """Install the new stable version at the same directory level.
         Returns True on success, False otherwise."""
-        url: str = f'https://github.com/sharly-chess/sharly-chess/releases/download/{version}/papi-web-{version}.zip'
-        new_version_dir: Path = Path('..') / f'papi-web-{version}'
+        url: str = f'https://github.com/sharly-chess/sharly-chess/releases/download/{version}/sharly-chess-{version}.zip'
+        new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
         if new_version_dir.exists():
             print_interactive_error(
                 _(
@@ -722,7 +728,7 @@ class Engine(ABC):
                     )
                 )
                 return False
-            zip_file = TMP_DIR / f'papi-web-{version}.zip'
+            zip_file = TMP_DIR / f'sharly-chess-{version}.zip'
             zip_file.write_bytes(response.content)
             print_interactive_info(
                 _('File downloaded: [{zip_file}].').format(zip_file=zip_file)
