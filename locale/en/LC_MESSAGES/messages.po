@@ -2841,9 +2841,6 @@ msgstr ""
 msgid "Please choose the release to recover: "
 msgstr ""
 
-msgid "Please choose the seed color."
-msgstr ""
-
 msgid "Please choose the tournament."
 msgstr ""
 
@@ -3067,7 +3064,7 @@ msgstr "R %(round)d"
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
-msgid "Randomly select a seed color."
+msgid "Random"
 msgstr ""
 
 msgid "Randomly select the pairing numbers."

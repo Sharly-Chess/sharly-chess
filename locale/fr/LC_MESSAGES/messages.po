@@ -2838,12 +2838,15 @@ msgstr "Veuillez choisir le document."
 msgid "Please choose the event:"
 msgstr "Veuillez choisir l'évènement :"
 
+<<<<<<< HEAD
 msgid "Please choose the release to recover: "
 msgstr "Veuillez choisir la version à restaurer : "
 
 msgid "Please choose the seed color."
 msgstr "Veuillez choisir la couleur initiale."
 
+=======
+>>>>>>> 232310fa (Move random color seed selection from client to server)
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
@@ -3067,8 +3070,8 @@ msgstr "R %(round)d"
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
-msgid "Randomly select a seed color."
-msgstr "Sélectionner la couleur au hasard."
+msgid "Random"
+msgstr "Aléatoire"
 
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
