@@ -139,6 +139,10 @@
                     })
                 });
 
+                function modalIsClosed() {
+                    return !document.getElementById('modal-wrapper').classList.contains('show');
+                }
+
                 function handleModalOpened(static) {
                     var myModalEl = document.getElementById('modal-wrapper');
                     var modal = bootstrap.Modal.getOrCreateInstance('#modal-wrapper', {});
@@ -149,7 +153,7 @@
                     modal._config.backdrop = static ? 'static' : true;
                     modal._config.keyboard = static ? false : true;
 
-                    if (!myModalEl.classList.contains('show')) {
+                    if (modalIsClosed()) {
                         {# The modal is usually opened at this point, following a user action,
                            but this allows us to force open a modal from the server. #}
                         modal.show();
