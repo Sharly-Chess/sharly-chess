@@ -76,7 +76,7 @@ nav .btn-link:hover {
 }
 
 .htmx-indicator {
-    opacity: 1;
+    opacity: 0;
     pointer-events: none;
     height: 80px;
     width: 80px;
