@@ -93,7 +93,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id', '')
+        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
         rounds: int | None = None
@@ -304,8 +304,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'clone',
             ]
             else None,
-            uniq_id=uniq_id
-            or '',  # uniq_id maybe empty on a form but never None in a StoredTournament
+            uniq_id=uniq_id,
             name=name,
             path=path,
             filename=filename,
