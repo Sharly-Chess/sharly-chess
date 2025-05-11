@@ -142,18 +142,18 @@ class Engine(ABC):
                         )
                     )
                     if files:
-                        logger.info(
+                        logger.debug(
                             '- Version [%s] (%s)',
                             version,
                             ', '.join([file.stem for file in files]),
                         )
                         previous_databases[(version, prefix)] = files
                     else:
-                        logger.warning('- Release [%s]: no events', version)
+                        logger.debug('- Release [%s]: no events', version)
                 if not previous_databases:
-                    logger.warning('No events found in previously installed versions.')
+                    logger.debug('No events found in previously installed versions.')
             else:
-                logger.warning('No previously installed releases found.')
+                logger.info('No previously installed releases found.')
             recovered_version: Version | None = None
             if previous_databases:
                 # keep the versions with databases only
@@ -297,7 +297,7 @@ class Engine(ABC):
                     and src_file.exists()
                 ):
                     # recover the Papi file where stored in the default folder
-                    logger.info(
+                    logger.debug(
                         'Event [%s]: recovering tournament [%s]...',
                         event_uniq_id,
                         tournament.uniq_id,
@@ -556,7 +556,8 @@ class Engine(ABC):
         )
         url: str = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
         try:
-            logger.info('Looking for a more recent release on GitHub ([%s])...', url)
+            logger.info('Looking for a more recent release on GitHub...')
+            logger.debug('GitHub download URL: [%s].', url)
             response: Response = get(url, allow_redirects=True, timeout=5)
             response.raise_for_status()
             if not response:
@@ -585,18 +586,18 @@ class Engine(ABC):
                     if not current_stable:
                         version = Version(matches.group(1))
                     else:
-                        logger.warning(
+                        logger.debug(
                             '[%s] is not a stable release number, entry ignored.',
                             tag_name,
                         )
                         continue
                 else:
-                    logger.warning(
+                    logger.debug(
                         '[%s] is not a valid release number, entry ignored.', tag_name
                     )
                     continue
                 if version < SHARLY_CHESS_VERSION:
-                    logger.info('Release [%s] is too old, ignored.', tag_name)
+                    logger.debug('Release [%s] is too old, ignored.', tag_name)
                     continue
                 version_stable: bool = bool(
                     re.match(r'^(\d+\.\d+\.\d+)$', str(version))
@@ -604,18 +605,18 @@ class Engine(ABC):
                 if not version_stable and (
                     version.base_version != SHARLY_CHESS_VERSION.base_version
                 ):
-                    logger.info(
+                    logger.debug(
                         'Unstable releases with base version other than [%s] are ignored, [%s] ignored.',
                         SHARLY_CHESS_VERSION.base_version,
                         tag_name,
                     )
                     continue
                 if entry.get('draft', True):
-                    logger.info('Release [%s] is draft, ignored.', version)
+                    logger.debug('Release [%s] is draft, ignored.', version)
                     continue
                 assets: list[dict] = entry.get('assets', [])
                 if not assets:
-                    logger.info('No assets for release [%s], ignored.', version)
+                    logger.debug('No assets for release [%s], ignored.', version)
                     continue
                 download_url: str | None = None
                 for asset in assets:
@@ -623,7 +624,7 @@ class Engine(ABC):
                     if (
                         asset_name := asset.get('name', 'undefined')
                     ) == f'papi-web-{version}.zip':
-                        logger.info(
+                        logger.debug(
                             'Old asset name [%s] found in release [%s] (expected [%s]), asset ignored.',
                             asset_name,
                             version,
@@ -631,7 +632,7 @@ class Engine(ABC):
                         )
                         continue
                     if asset_name != valid_asset_name:
-                        logger.info(
+                        logger.debug(
                             '[%s] is not a valid asset name in release [%s] (expected [%s]), asset ignored.',
                             asset_name,
                             version,
@@ -639,13 +640,13 @@ class Engine(ABC):
                         )
                         continue
                     if not (asset_url := asset.get('browser_download_url', '')):
-                        logger.warning(
+                        logger.debug(
                             'No download URL set for [%s] of release [%s], asset ignored.',
                             asset_name,
                             version,
                         )
                         continue
-                    logger.info(
+                    logger.debug(
                         'Download URL [%s] is valid for release [%s].',
                         asset_url,
                         version,
@@ -653,17 +654,17 @@ class Engine(ABC):
                     download_url = asset_url
                     break
                 if not download_url:
-                    logger.warning(
+                    logger.debug(
                         'No valid asset found for release [%s], release ignored.',
                         version,
                     )
                     continue
                 version_download_urls[version] = download_url
             if not version_download_urls:
-                logger.warning('No more recent releases found.')
+                logger.info('No more recent releases found.')
                 return None, None
             sorted_versions: list[Version] = sorted(version_download_urls.keys())
-            logger.info(
+            logger.debug(
                 'More recent releases found (%d): %s.',
                 len(sorted_versions),
                 ', '.join(map(lambda v: f'[{v}]', sorted_versions)),
@@ -671,22 +672,9 @@ class Engine(ABC):
             last_version: Version = sorted_versions[-1]
             logger.info('Most recent release found: [%s].', str(last_version))
             return last_version, version_download_urls[last_version]
-        except ConnectionError as ex:
-            logger.warning('Failed to read [%s] (connection error): [%s].', url, ex)
-            return None, None
-        except Timeout as ex:
-            logger.warning('Failed to read [%s] (timeout): [%s].', url, ex)
-            return None, None
-        except HTTPError as ex:
-            logger.warning(
-                'Failed to read [%s] (error code [%d]): [%s].',
-                url,
-                ex.errno,
-                ex.strerror,
-            )
-            return None, None
         except RequestException as ex:
-            logger.warning('Failed to read [%s]: [%s].', url, ex)
+            logger.warning('An error occurred while requesting GitHub.')
+            logger.debug('Failed to read [%s]: [%s].', url, ex)
             return None, None
 
     @staticmethod
@@ -708,7 +696,7 @@ class Engine(ABC):
             response: Response = get(download_url, allow_redirects=True, timeout=5)
             response.raise_for_status()
             if not response:
-                logger.warning('No response from GitHub.')
+                logger.error('No response from GitHub.')
                 return False
             if response.status_code != 200:
                 logger.error('Downloading failed with code [%d].', response.status_code)
@@ -725,17 +713,6 @@ class Engine(ABC):
                 new_version_dir.absolute(),
             )
             return True
-        except ConnectionError as ex:
-            logger.warning(
-                'Failed to read [%s] (connection error): [%s].', download_url, ex
-            )
-            return False
-        except Timeout as ex:
-            logger.warning('Failed to read [%s] (timeout): [%s].', download_url, ex)
-            return False
-        except HTTPError as ex:
-            logger.warning('Failed to read [%s]: [%s].', download_url, ex)
-            return False
         except RequestException as ex:
             logger.warning('Failed to read [%s]: [%s].', download_url, ex)
             return False
