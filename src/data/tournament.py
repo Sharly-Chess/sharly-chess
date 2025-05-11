@@ -630,6 +630,7 @@ class Tournament:
     def round_has_result(self, round_: int) -> bool:
         return any(
             player.pairings[round_].result != Result.NO_RESULT
+            and player.pairings[round_].opponent_id is not None
             for player in self.players
         )
 

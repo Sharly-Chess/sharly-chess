@@ -395,12 +395,6 @@ msgstr "Bd."
 msgid "Berger"
 msgstr ""
 
-msgid "Berger number"
-msgstr ""
-
-msgid "Berger numbers"
-msgstr ""
-
 msgid "Black"
 msgstr ""
 
@@ -719,9 +713,6 @@ msgid "Comment:"
 msgstr ""
 
 msgid "Configuration"
-msgstr ""
-
-msgid "Configure the settings of the pairing system."
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -2528,6 +2519,9 @@ msgstr ""
 msgid "Notification"
 msgstr ""
 
+msgid "Number"
+msgstr ""
+
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
 msgstr ""
@@ -2664,6 +2658,9 @@ msgstr ""
 msgid "Pairing Allocated Bye"
 msgstr ""
 
+msgid "Pairing numbers selection"
+msgstr ""
+
 msgid "Pairing settings"
 msgstr ""
 
@@ -2704,6 +2701,10 @@ msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgstr ""
+
+#, python-format
+msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
 msgid "Papi file"
@@ -2838,9 +2839,6 @@ msgid "Please choose the event:"
 msgstr ""
 
 msgid "Please choose the release to recover: "
-msgstr ""
-
-msgid "Please choose the seed color."
 msgstr ""
 
 msgid "Please choose the tournament."
@@ -3066,7 +3064,10 @@ msgstr "R %(round)d"
 msgid "R *** THE LETTER TO ANSWER RULES"
 msgstr "R"
 
-msgid "Randomly select a seed color."
+msgid "Random"
+msgstr ""
+
+msgid "Randomly select the pairing numbers."
 msgstr ""
 
 msgid "Ranking"
@@ -3117,6 +3118,9 @@ msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
 msgid "Rating limit"
+msgstr ""
+
+msgid "Rating limits"
 msgstr ""
 
 #, python-format
@@ -3407,12 +3411,6 @@ msgstr ""
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
-msgid "Settings"
-msgstr ""
-
-msgid "Settings must be configured before generating the pairings."
-msgstr ""
-
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
@@ -3447,9 +3445,6 @@ msgid "Show/hide the results screens."
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
-msgstr ""
-
-msgid "Shuffle"
 msgstr ""
 
 msgid "Single Screens"
@@ -4107,7 +4102,7 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
-msgid "Too few players to generate the pairings (minimum: {min})"
+msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr ""
 
 msgid "Too many byes for player [{player_name}]."
@@ -4776,5 +4771,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "{screen_type}-screen"
+msgstr ""
+
+msgid "{string}: {value}"
 msgstr ""
 

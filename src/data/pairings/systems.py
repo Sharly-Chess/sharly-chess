@@ -31,6 +31,15 @@ class PairingSystem(IdentifiableEntity, ABC):
     def pairing_buttons_template(self) -> str:
         """Template of the buttons handling the pairings."""
 
+    @cached_property
+    @abstractmethod
+    def permission_handler(self) -> PermissionHandler[PairingAction]:
+        """Handler of permissions for the pairing system."""
+
+    @abstractmethod
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        """Get the current round to use as default when it is not defined in the DB."""
+
     @property
     def show_unfinished_round_modal(self) -> bool:
         """Determines if the modal warning about the round not being finished
@@ -47,10 +56,11 @@ class PairingSystem(IdentifiableEntity, ABC):
         """Determines if the unpaired and bye players are separated in the unpaired table."""
         return True
 
-    @cached_property
-    @abstractmethod
-    def permission_handler(self) -> PermissionHandler[PairingAction]:
-        """Handler of permissions for the pairing system."""
+    @property
+    def pair_tournament_from_settings_modal(self) -> bool:
+        """Determines if the `Save` button on the `pairing settings modal`
+        should be replaced by a `pair tournament` button."""
+        return False
 
     @property
     def variation_field_id(self) -> str:
@@ -61,10 +71,6 @@ class PairingSystem(IdentifiableEntity, ABC):
     def variation_container_id(self) -> str:
         """ID of the container of the variation field in the form."""
         return f'{self.variation_field_id}_container'
-
-    @abstractmethod
-    def default_current_round(self, tournament: 'Tournament') -> int:
-        """Get the current round to use as default when it is not defined in the DB."""
 
 
 class SwissPairingSystem(PairingSystem):
@@ -163,6 +169,10 @@ class RoundRobinPairingSystem(PairingSystem):
     @staticmethod
     def static_name() -> str:
         return _('Round-Robin')
+
+    @property
+    def pair_tournament_from_settings_modal(self) -> bool:
+        return True
 
     @property
     def variation_manager(self) -> EntityManager['PairingVariation']:
