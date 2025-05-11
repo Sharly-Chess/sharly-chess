@@ -22,7 +22,7 @@ from common.logger import (
     LOGGING_CONFIG,
     get_logger,
 )
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.manager import plugin_manager
@@ -33,7 +33,7 @@ logger = get_logger()
 
 def launch_browser(url: str):
     # Set the locale as the function is called in a new thread.
-    set_locale(PapiWebConfig().locale)
+    set_locale(SharlyChessConfig().locale)
     print_interactive_info(
         _('Opening the welcome page [{url}] in a browser...').format(url=url)
     )
@@ -67,11 +67,11 @@ class ServerEngine(Engine):
         )
         logger.debug(' - Platform: %s', platform.platform())
         logger.debug(' - Architecture: %s', ' '.join(platform.architecture()))
-        print_interactive_info(_('Starting Papi-web server, please wait...'))
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        print_interactive_info(_('Starting Sharly Chess server, please wait...'))
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         print_interactive_info(
             _('Logging level: {log_level}').format(
-                log_level=papi_web_config.log_level_str
+                log_level=sharly_chess_config.log_level_str
             )
         )
 
@@ -80,40 +80,42 @@ class ServerEngine(Engine):
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
 
-        for port in papi_web_config.web_ports:
+        for port in sharly_chess_config.web_ports:
             if self.__port_in_use(port):
                 print_interactive_warning(
                     _('Port [{port}] already in use.').format(port=port)
                 )
                 continue
-            papi_web_config.web_port = port
+            sharly_chess_config.web_port = port
             break
-        if papi_web_config.web_port is None:
+        if sharly_chess_config.web_port is None:
             print_interactive_error(
                 _(
-                    'All the candidate ports [{ports}] are already in use, can not start Papi-web server.'
+                    'All the candidate ports [{ports}] are already in use, can not start Sharly Chess server.'
                 ).format(
-                    ports=', '.join(str(port) for port in papi_web_config.web_ports)
+                    ports=', '.join(str(port) for port in sharly_chess_config.web_ports)
                 )
             )
             return
 
-        print_interactive_info(_('Port: {port}').format(port=papi_web_config.web_port))
         print_interactive_info(
-            _('Local URL: {local_url}').format(local_url=papi_web_config.local_url)
+            _('Port: {port}').format(port=sharly_chess_config.web_port)
         )
-        if papi_web_config.lan_url:
+        print_interactive_info(
+            _('Local URL: {local_url}').format(local_url=sharly_chess_config.local_url)
+        )
+        if sharly_chess_config.lan_url:
             print_interactive_info(
-                _('LAN/WAN URL: {lan_url}').format(lan_url=papi_web_config.lan_url)
+                _('LAN/WAN URL: {lan_url}').format(lan_url=sharly_chess_config.lan_url)
             )
 
-        if papi_web_config.launch_browser:
-            Thread(target=launch_browser, args=(papi_web_config.local_url,)).start()
+        if sharly_chess_config.launch_browser:
+            Thread(target=launch_browser, args=(sharly_chess_config.local_url,)).start()
 
         NetworkMonitor.start_monitoring()
 
         logging_config = LOGGING_CONFIG
-        logging_config['handlers']['console']['level'] = PapiWebConfig().log_level  # type: ignore
+        logging_config['handlers']['console']['level'] = SharlyChessConfig().log_level  # type: ignore
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,
@@ -126,8 +128,8 @@ class ServerEngine(Engine):
         )
         uvicorn.run(
             app,
-            host=papi_web_config.web_host,
-            port=papi_web_config.web_port,
+            host=sharly_chess_config.web_host,
+            port=sharly_chess_config.web_port,
             log_config=logging_config,
         )
 

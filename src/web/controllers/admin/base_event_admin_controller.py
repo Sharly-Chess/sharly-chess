@@ -6,7 +6,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
@@ -36,7 +36,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                 self.admin_event = EventLoader.get(request=self.request).load_event(
                     event_uniq_id
                 )
-            except PapiWebException as pwe:
+            except SharlyChessException as pwe:
                 self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
 

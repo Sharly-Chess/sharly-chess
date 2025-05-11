@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from functools import cache
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 
 
 class SafetyMode(StrEnum):
@@ -115,7 +115,7 @@ class PermissionHandler[Action: StrEnum]:
             permission for permission in self.permissions if permission.action == action
         )
         if round_status not in permission.rules:
-            raise PapiWebException(f'{action=}, {round_status=}')
+            raise SharlyChessException(f'{action=}, {round_status=}')
         return permission.rules[round_status]
 
     def validate_action(
@@ -125,5 +125,5 @@ class PermissionHandler[Action: StrEnum]:
         Returns True if it can be executed, False if it needs another safety mode.
         Raises if the action is impossible."""
         if action not in self.existing_actions(round_status):
-            raise PapiWebException(f'{action=}, {round_status=}, {safety_mode=}')
+            raise SharlyChessException(f'{action=}, {round_status=}, {safety_mode=}')
         return action in self.allowed_actions(round_status, safety_mode)

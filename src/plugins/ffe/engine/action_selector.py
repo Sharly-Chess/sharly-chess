@@ -13,7 +13,7 @@ from common.logger import (
     print_interactive_info,
     print_interactive_error,
 )
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
@@ -56,7 +56,7 @@ class ActionSelector(metaclass=Singleton):
             if ffe_last_upload > tournament.file_modified_timestamp:
                 # last version already uploaded
                 return NeedsUpload.NO_CHANGE
-            if time() < ffe_last_upload + PapiWebConfig().ffe_upload_delay:
+            if time() < ffe_last_upload + SharlyChessConfig().ffe_upload_delay:
                 # last upload too recent
                 return NeedsUpload.RECENT_CHANGE
             return NeedsUpload.YES
@@ -259,7 +259,7 @@ class ActionSelector(metaclass=Singleton):
                 FFESession(tournament, debug=False).upload_rules()
             return True
         if choice == upload_answer:
-            ffe_upload_delay: int = PapiWebConfig().ffe_upload_delay
+            ffe_upload_delay: int = SharlyChessConfig().ffe_upload_delay
             try:
                 while True:
                     tournaments = self.__get_qualified_tournaments_with_existing_file(

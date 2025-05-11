@@ -16,7 +16,7 @@ sys.path.extend(
 
 import plugins.manager  # noqa
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.logger import (
     print_interactive_error,
     print_interactive_info,
@@ -78,7 +78,7 @@ async def main():
                     'pascal aubry', limit=8
                 ):
                     print_interactive_info(f'{player=}')
-        except PapiWebException as exception:
+        except SharlyChessException as exception:
             print_interactive_error(f'{exception=}')
         print_interactive_info('Done.')
 

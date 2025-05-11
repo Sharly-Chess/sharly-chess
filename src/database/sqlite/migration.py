@@ -9,8 +9,8 @@ from types import ModuleType
 
 from packaging.version import Version
 
-from common import DEVEL_ENV, PAPI_WEB_VERSION, APP_NAME
-from common.exception import PapiWebException
+from common import DEVEL_ENV, SHARLY_CHESS_VERSION, APP_NAME
+from common.exception import SharlyChessException
 from common.logger import get_logger
 from database.sqlite.migration_database import MigrationDatabase
 
@@ -115,7 +115,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
 
     def check_status(self) -> bool:
         """Check if the database is migrated to the latest migration.
-        Raise a PapiWebException if the stored migration is unknown.
+        Raise a SharlyChessException if the stored migration is unknown.
         Assert that the timeline is valid."""
         if DEVEL_ENV:
             self._check_timeline()
@@ -125,7 +125,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
 
         version = self.get_version()
         if version > self.latest_version:
-            raise PapiWebException(
+            raise SharlyChessException(
                 self.log_prefix
                 + (
                     f'Database version [{version}] is after '
@@ -147,7 +147,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 )
             else:
                 message = 'A migration was most likely renamed.'
-            raise PapiWebException(
+            raise SharlyChessException(
                 self.log_prefix + 'unknown migration '
                 f'[{migration}] in the database. {message}'
             )
@@ -217,7 +217,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
     def migrate(self, target_migration: str | None = None):
         """Migrate *database* to the migration *target_migration*.
         *target_migration* defaults to the latest migration.
-        Raises a PapiWebException if it fails."""
+        Raises a SharlyChessException if it fails."""
         if target_migration is None:
             target_migration = self.migrations[-1]
         elif target_migration not in self.migrations + [self.MIGRATION_ZERO]:
@@ -255,7 +255,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 logger.debug(self.log_prefix + 'Migration complete.')
             self.database.commit()
         except OperationalError as error:
-            raise PapiWebException(self.log_prefix + f'Migration failed: {error}')
+            raise SharlyChessException(self.log_prefix + f'Migration failed: {error}')
 
     def _upgrade(self, target_migration: str):
         while migration := self._next_migration(self.get_migration(), target_migration):
@@ -289,7 +289,7 @@ class DatabaseMigrationManager[MigrationDatabase](MigrationManager):
 
     @property
     def latest_version(self) -> Version:
-        return PAPI_WEB_VERSION
+        return SHARLY_CHESS_VERSION
 
     @property
     def is_metadata_installed(self) -> bool:

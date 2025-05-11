@@ -3,7 +3,7 @@ import weakref
 from _weakref import ReferenceType
 
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.rotator import Rotator
 from data.screen import Screen
 from database.sqlite.event.event_store import StoredDisplayController
@@ -141,4 +141,4 @@ class DisplayController:
             rotator: Rotator | None = self.event.rotators_by_id[self.rotator_id]
             if rotator:
                 return rotator.delay
-        return PapiWebConfig.user_screen_update_delay
+        return SharlyChessConfig.user_screen_update_delay

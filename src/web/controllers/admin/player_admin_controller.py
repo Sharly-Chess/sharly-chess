@@ -14,7 +14,7 @@ from litestar_htmx import HTMXTemplate
 from common import unicode_normalize
 from common.i18n import _, ngettext
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.input_output import PlayerUpdater, PlayerUpdaterManager
 from data.input_output.player_updaters import PlayerComparator
@@ -184,10 +184,10 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
         federation_name: str | None = WebContext.form_data_to_str(
-            data, field := 'federation', PapiWebConfig().default_federation
+            data, field := 'federation', SharlyChessConfig().default_federation
         )
         federation: Federation | None = None
-        if federation_name not in PapiWebConfig.federations:
+        if federation_name not in SharlyChessConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
@@ -319,7 +319,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         admin_event: Event = web_context.admin_event
         admin_player: Player | None = web_context.admin_player
-        papi_web_config: PapiWebConfig = PapiWebConfig()
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
@@ -599,8 +599,8 @@ class PlayerAdminController(BaseEventAdminController):
                 pass
             case 'player':
                 federation_options = cls._get_federation_options(
-                    papi_web_config.stored_config.federation
-                    or PapiWebConfig.default_federation
+                    sharly_chess_config.stored_config.federation
+                    or SharlyChessConfig.default_federation
                 )
 
                 if data is None:
@@ -661,8 +661,8 @@ class PlayerAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
 
                     federation_options = cls._get_federation_options(
-                        papi_web_config.stored_config.federation
-                        or PapiWebConfig.default_federation
+                        sharly_chess_config.stored_config.federation
+                        or SharlyChessConfig.default_federation
                         if federation is None
                         else None
                     )

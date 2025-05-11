@@ -7,7 +7,7 @@ from utils.scripts import init_script
 
 arguments = init_script()
 
-from common import PAPI_WEB_VERSION  # Noqa: E402
+from common import SHARLY_CHESS_VERSION  # Noqa: E402
 from common.logger import print_interactive_error, print_interactive_info  # Noqa: E402
 from data.loader import EventBackup, EventBackupLoader  # Noqa: E402
 
@@ -44,10 +44,10 @@ if __name__ == '__main__':
     event_id = args.event
     if args.version:
         version = Version(args.version)
-        if version > PAPI_WEB_VERSION:
+        if version > SHARLY_CHESS_VERSION:
             print_interactive_error(
                 f'Impossible to restore: Version selected ({version}) is newer'
-                f' than the latest Papi Web version {PAPI_WEB_VERSION}'
+                f' than the latest Sharly Chess version {SHARLY_CHESS_VERSION}'
             )
             sys.exit(1)
     else:

@@ -288,7 +288,7 @@ class PapiDatabase(AccessDatabase):
 
     def update_player_pairing(self, player: Player, round_nb: int, pairing: Pairing):
         opponent_id = (
-            Player.player_papi_id_from_papi_web_id(pairing.opponent_id)
+            Player.player_papi_id_from_sharly_chess_id(pairing.opponent_id)
             if pairing.opponent_id
             else EXEMPT_PLAYER_ID
             if pairing.exempt
@@ -382,7 +382,7 @@ class PapiDatabase(AccessDatabase):
                 opponent_papi_id: int | None = row[rf.opponent]
                 pairings[round_] = Pairing(
                     color,
-                    Player.player_papi_web_id_from_papi_id(
+                    Player.player_sharly_chess_id_from_papi_id(
                         tournament_id, opponent_papi_id
                     )
                     if opponent_papi_id and opponent_papi_id != EXEMPT_PLAYER_ID
@@ -394,14 +394,14 @@ class PapiDatabase(AccessDatabase):
                         color_str == BYE_COLOR,
                     ),
                 )
-            player_papi_web_id: int = Player.player_papi_web_id_from_papi_id(
+            player_sharly_chess_id: int = Player.player_sharly_chess_id_from_papi_id(
                 tournament_id, row['Ref']
             )
             fide_id: int | None = None
             if row['FideCode']:
                 fide_id = int(str(row['FideCode']).strip())
             player = Player(
-                id=player_papi_web_id,
+                id=player_sharly_chess_id,
                 last_name=row['Nom'] or '',
                 first_name=row['Prenom'] or '',
                 date_of_birth=row['NeLe'].date() if row['NeLe'] else None,
@@ -428,7 +428,7 @@ class PapiDatabase(AccessDatabase):
             )
 
             plugin_manager.hook.augment_player_after_db_fetch(player=player, row=row)
-            players[player_papi_web_id] = player
+            players[player_sharly_chess_id] = player
         return players
 
     def set_player_result(
@@ -517,7 +517,7 @@ class PapiDatabase(AccessDatabase):
         """Toggles the check in status of the player, depending on `check_in`."""
         self._execute(
             'UPDATE `joueur` SET Pointe = ? WHERE Ref = ?',
-            (check_in, Player.player_papi_id_from_papi_web_id(player_id)),
+            (check_in, Player.player_papi_id_from_sharly_chess_id(player_id)),
         )
 
     def open_check_in(self, round_: int):

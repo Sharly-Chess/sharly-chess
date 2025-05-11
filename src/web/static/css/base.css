@@ -81,7 +81,7 @@ nav .btn-link:hover {
     height: 80px;
     width: 80px;
     background-color: transparent;
-    background-image: url("/static/images/papi-web.gif");
+    background-image: url("/static/images/sharly-chess.gif");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 100% auto;
@@ -102,15 +102,15 @@ nav .btn-link:hover {
 .cursor-pointer {
     cursor: pointer;
 }
-.papi-web-tooltip-info, .papi-web-tooltip-warning, .papi-web-tooltip-error {
+.sharly-chess-tooltip-info, .sharly-chess-tooltip-warning, .sharly-chess-tooltip-error {
     --bs-tooltip-bg: #9d9e9e;
     --bs-tooltip-color: black;
     --bs-tooltip-opacity: 1;
 }
-.papi-web-tooltip-warning {
+.sharly-chess-tooltip-warning {
   --bs-tooltip-color: #900000;
 }
-.papi-web-tooltip-error {
+.sharly-chess-tooltip-error {
   --bs-tooltip-color: #900000;
 }
 .card-title {

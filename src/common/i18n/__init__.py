@@ -8,7 +8,7 @@ from string import capwords
 from babel import Locale
 
 from common import BASE_DIR, DEVEL_ENV
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.logger import get_logger
 from common.i18n.babel import BabelWrapper
 
@@ -35,7 +35,7 @@ for l_entry in _locale_dir.iterdir():
             if po_file.is_file():
                 locales.append(l_entry.name)
         else:
-            raise PapiWebException(
+            raise SharlyChessException(
                 f'Invalid locale [{l_entry.name}] (MO file [{mo_file}] not found), exiting.'
             )
 
@@ -55,7 +55,7 @@ for loc in locales:
             ],
         )
     except Exception as ex:
-        raise PapiWebException(f'Could not load locale [{loc}]: {ex}.')
+        raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
 
 logger.debug('Locales found: %s', ', '.join(locales))
 

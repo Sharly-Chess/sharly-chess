@@ -8,7 +8,7 @@ from litestar.response import Template
 
 from common.i18n import _
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.family import Family
 from data.rotator import Rotator
@@ -132,7 +132,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         return (
             self.screen.background_color
             if self.screen
-            else PapiWebConfig.default_background_color
+            else SharlyChessConfig.default_background_color
         )
 
     @property

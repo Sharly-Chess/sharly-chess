@@ -54,5 +54,6 @@ jobs:
           draft: true
           prerelease: contains("a", ${{ github.ref_name }}) || contains("b", ${{ github.ref_name }}) || contains("rc", ${{ github.ref_name }})
           files: |
+            export/sharly-chess-${{ github.ref_name }}.zip
             export/papi-web-${{ github.ref_name }}.zip
           body_path: RELEASE_NOTES.md

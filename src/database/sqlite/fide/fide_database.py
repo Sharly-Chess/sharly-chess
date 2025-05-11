@@ -13,7 +13,7 @@ from requests.exceptions import ConnectionError
 from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.player import Player, Federation, Club, PlayerRating
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
@@ -52,7 +52,7 @@ class FideDatabase(LocalSourceDatabase):
 
     @property
     def _schema_file_path(self) -> Path:
-        return PapiWebConfig.database_sql_path / 'create_fide.sql'
+        return SharlyChessConfig.database_sql_path / 'create_fide.sql'
 
     @property
     def _source_file_path(self) -> Path:
@@ -216,19 +216,19 @@ class FideDatabase(LocalSourceDatabase):
                     row['standard_rating'],
                     PlayerRatingType.FIDE
                     if row['standard_rating']
-                    else PlayerRatingType.ESTIMATED
+                    else PlayerRatingType.ESTIMATED,
                 ),
                 TournamentRating.RAPID: PlayerRating(
                     row['rapid_rating'],
                     PlayerRatingType.FIDE
                     if row['rapid_rating']
-                    else PlayerRatingType.ESTIMATED
+                    else PlayerRatingType.ESTIMATED,
                 ),
                 TournamentRating.BLITZ: PlayerRating(
                     row['blitz_rating'],
                     PlayerRatingType.FIDE
                     if row['blitz_rating']
-                    else PlayerRatingType.ESTIMATED
+                    else PlayerRatingType.ESTIMATED,
                 ),
             },
             fide_id=row['fide_id'],

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from collections.abc import Iterator
 import pyodbc  # type: ignore
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -38,7 +38,7 @@ class AccessDatabase:
             logger.error(
                 'Note: 32/64bits compatibility: accessdatabaseengine_X64.exe /passive'
             )
-            raise PapiWebException('Microsoft Access driver not found.')
+            raise SharlyChessException('Microsoft Access driver not found.')
         db_url: str = f'DRIVER={{{needed_driver}}};DBQ={self.file.resolve()};'
         # Get rid of unresolved pyodbc.Error: ('HY000', 'The driver did not supply an error!')
         while self.database is None:

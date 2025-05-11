@@ -8,9 +8,9 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
@@ -51,7 +51,7 @@ class EventUserWebContext(UserWebContext):
                 self.user_event_tab = user_event_tab
                 return
             self._redirect_error(f'Access denied for event [{event_uniq_id}].')
-        except PapiWebException as pwe:
+        except SharlyChessException as pwe:
             self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}.')
 
     def check_user_tab(self):
@@ -63,7 +63,7 @@ class EventUserWebContext(UserWebContext):
 
     @property
     def background_color(self) -> str:
-        return PapiWebConfig.user_background_color
+        return SharlyChessConfig.user_background_color
 
     @property
     def template_context(self) -> dict[str, Any]:

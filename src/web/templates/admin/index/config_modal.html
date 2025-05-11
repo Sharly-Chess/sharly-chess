@@ -2,22 +2,22 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {% if papi_web_config.stored_config.locale %}
-                    {{ _('Edition of papi-web settings') }}
+                {% if sharly_chess_config.stored_config.locale %}
+                    {{ _('Sharly Chess settings') }}
                 {% else %}
                     {{ _('Choose your language') }}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
-            {% if papi_web_config.stored_config.locale %}
+            {% if sharly_chess_config.stored_config.locale %}
                 <form
                     id="modal-form"
                     hx-patch="{{ url_for('admin-config-update') }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 >
-                    {% if papi_web_config.force_edit %}
+                    {% if sharly_chess_config.force_edit %}
                         <h4>
                             {{ _('Please validate the global configuration of the application.') }}
                         </h4>
@@ -30,7 +30,7 @@
                             {{ admin_macros.select_input(
                                 name='launch_browser',
                                 label=_('Launch browser:'),
-                                help_text=_('Papi-web can automatically launch a web browser when starting the web server.'),
+                                help_text=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
                                 select_options=launch_browser_options,
                                 data=data, errors=errors
                             ) }}
@@ -118,7 +118,7 @@
         </div>
 
         <div class="modal-footer">
-            {% if not papi_web_config.force_edit %}
+            {% if not sharly_chess_config.force_edit %}
                 <button
                     type="button"
                     class="btn btn-secondary text-nowrap"

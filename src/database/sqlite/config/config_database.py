@@ -6,7 +6,7 @@ from typing import Any, Self, override, TYPE_CHECKING, ClassVar
 from packaging.version import Version
 
 from common import EVENTS_DIR
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.logger import get_logger
 from database.sqlite.config import migrations
 from database.sqlite.config.config_store import (
@@ -23,7 +23,7 @@ logger: Logger = get_logger()
 
 
 class ConfigDatabase(MigrationDatabase):
-    """The SQLite database class for Papi-web config."""
+    """The SQLite database class for Sharly Chess config."""
 
     # The name of the file holding the configuration of the application.
     config_database_name: ClassVar[str] = '.scc'
@@ -70,7 +70,7 @@ class ConfigDatabase(MigrationDatabase):
                 if not status:
                     with cls(True) as write_database:
                         write_database.upgrade()
-            except PapiWebException as e:
+            except SharlyChessException as e:
                 logger.error(e)
                 database.file.unlink(missing_ok=True)
                 database.create()

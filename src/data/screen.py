@@ -8,7 +8,7 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.background import inline_image_url
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.result import Result
 from data.screen_set import ScreenSet
 from data.timer import Timer
@@ -492,7 +492,7 @@ class Screen:
                     if self.stored_screen.input_exit_button is not None:
                         return self.stored_screen.input_exit_button
                     else:
-                        return PapiWebConfig.default_input_exit_button
+                        return SharlyChessConfig.default_input_exit_button
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')
@@ -511,7 +511,7 @@ class Screen:
                     if self.stored_screen.players_show_unpaired is not None:
                         return self.stored_screen.players_show_unpaired
                     else:
-                        return PapiWebConfig.default_players_show_unpaired
+                        return SharlyChessConfig.default_players_show_unpaired
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')
@@ -549,7 +549,7 @@ class Screen:
             case ScreenType.RESULTS:
                 assert self.stored_screen is not None
                 if not self.stored_screen.results_limit:
-                    return PapiWebConfig.default_results_screen_limit
+                    return SharlyChessConfig.default_results_screen_limit
                 elif (
                     self.stored_screen.results_limit
                     and self.stored_screen.results_limit % self.columns > 0
@@ -576,7 +576,7 @@ class Screen:
                 assert self.stored_screen is not None
                 return (
                     self.stored_screen.results_max_age
-                    or PapiWebConfig.default_results_screen_max_age
+                    or SharlyChessConfig.default_results_screen_max_age
                 )
             case _:
                 raise ValueError(f'type=[{self.type}]')

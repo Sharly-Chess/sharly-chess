@@ -7,7 +7,7 @@ from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.screen import Screen
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -146,13 +146,13 @@ class Family:
     @property
     def input_exit_button(self) -> bool:
         if self.stored_family.input_exit_button is None:
-            return PapiWebConfig.default_input_exit_button
+            return SharlyChessConfig.default_input_exit_button
         return self.stored_family.input_exit_button
 
     @property
     def players_show_unpaired(self) -> bool:
         if self.stored_family.players_show_unpaired is None:
-            return PapiWebConfig.default_players_show_unpaired
+            return SharlyChessConfig.default_players_show_unpaired
         return self.stored_family.players_show_unpaired
 
     @property
