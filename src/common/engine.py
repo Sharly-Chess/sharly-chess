@@ -111,25 +111,11 @@ class Engine(ABC):
                 prefix: str
                 version: Version
                 if matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+)$', version_dir.name
+                    r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(?:a\d+|b\d+|rc\d+)?)$',
+                    version_dir.name,
                 ):
                     prefix = matches.group(1)
                     version = Version(matches.group(2))
-                elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+a\d+)$', version_dir.name
-                ):
-                    prefix = matches.group(1)
-                    version = Version(matches.group(2))
-                elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+b\d+)$', version_dir.name
-                ):
-                    prefix: str = matches.group(1)
-                    version: Version = Version(matches.group(2))
-                elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+rc\d+)$', version_dir.name
-                ):
-                    prefix: str = matches.group(1)
-                    version: Version = Version(matches.group(2))
                 else:
                     logger.debug('Not a release: [%s].', version_dir)
                     continue
@@ -585,11 +571,10 @@ class Engine(ABC):
                 if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
                     version = Version(matches.group(1))
                 elif not current_stable:
-                    if matches := re.match(r'^(\d+\.\d+\.\d+a\d+)$', tag_name):
-                        version = Version(matches.group(1))
-                    elif matches := re.match(r'^(\d+\.\d+\.\d+b\d+)$', tag_name):
-                        version = Version(matches.group(1))
-                    elif matches := re.match(r'^(\d+\.\d+\.\d+rc\d+)$', tag_name):
+                    if matches := re.match(
+                        r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(a\d+|b\d+|rc\d+))$',
+                        tag_name,
+                    ):
                         version = Version(matches.group(1))
                 if not version:
                     logger.warning(
