@@ -137,6 +137,7 @@ def build_exe():
     files += [
         lib_dir / 'htmx' / 'sortable.js',
         lib_dir / 'htmx' / 'morphdom-swap.js',
+        lib_dir / 'polyglot' / 'polyglot.js',
     ]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [
