@@ -576,16 +576,21 @@ class Engine(ABC):
             version_download_urls: dict[Version, str] = {}
             for entry in entries:
                 tag_name: str = entry['tag_name']
-                version: Version | None = None
                 if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
                     version = Version(matches.group(1))
-                elif not current_stable:
-                    if matches := re.match(
-                        r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(a\d+|b\d+|rc\d+))$',
-                        tag_name,
-                    ):
+                elif matches := re.match(
+                    r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(a\d+|b\d+|rc\d+))$',
+                    tag_name,
+                ):
+                    if not current_stable:
                         version = Version(matches.group(1))
-                if not version:
+                    else:
+                        logger.warning(
+                            '[%s] is not a stable release number, entry ignored.',
+                            tag_name,
+                        )
+                        continue
+                else:
                     logger.warning(
                         '[%s] is not a valid release number, entry ignored.', tag_name
                     )
