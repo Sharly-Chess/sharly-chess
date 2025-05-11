@@ -6,37 +6,31 @@
     {% endif %}
 >
     {% if not admin_tournament.has_pairings %}
-        {% if EXPERIMENTAL_FEATURES %}
-            <div
-                {{ macros.tooltip_attributes(
-                    'info',
-                    pairings_generation_disabled_message or
-                    _('Generate pairings for all the rounds of the tournament.'),
-                    'top',
-                ) }}
+        <div
+            {{ macros.tooltip_attributes(
+                'info',
+                pairings_generation_disabled_message or
+                _('Generate pairings for all the rounds of the tournament.'),
+                'top',
+            ) }}
+        >
+            <button
+                class="btn btn-outline-primary text-nowrap"
+                hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                hx-trigger="click"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                preload
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if pairings_generation_disabled_message %}
+                    disabled
+                {% endif %}
             >
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-trigger="click"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    preload
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {% if pairings_generation_disabled_message %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi-shuffle pe-1"></i>
-                    {{ _('Pair tournament') }}
-                </button>
-            </div>
-        {% else %}
-            <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
-                {{ _('Please use Papi to generate pairings.') }}
-            </div>
-        {% endif %}
+                <i class="bi-shuffle pe-1"></i>
+                {{ _('Pair tournament') }}
+            </button>
+        </div>
     {% endif %}
 
     {% if admin_tournament.has_pairings and not admin_tournament.has_results %}
