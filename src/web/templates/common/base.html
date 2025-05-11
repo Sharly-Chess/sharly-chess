@@ -28,10 +28,7 @@
             <script src="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ sharly_chess_config.jstree_version ~ '/dist/jstree.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ sharly_chess_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}"></script>
-            <script>
-                <!-- polyglot.js -->
-                {% include '/common/polyglot.js' %}
-            </script>
+            <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}"></script>
             <script>
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
