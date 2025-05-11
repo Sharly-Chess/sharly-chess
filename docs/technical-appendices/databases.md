@@ -4,7 +4,7 @@
 
 ### `info` (general application configuration)
 
-{: .note }
+> [!NOTE]
 > :information_source: Table `info` contains only one line.
 
 | Field            | Type      | Constraint | Description                                                                                                               |
@@ -44,7 +44,8 @@
 
 ### `info` table (general information about the event)
 
-{: .note }
+> [!NOTE]
+> :information_source:
 > - The `info` table contains only one row.
 > - The tournament's unique identifier is not stored in the database; it is retrieved from the event database filename.
 
