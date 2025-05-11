@@ -85,7 +85,7 @@ nav .btn-link:hover {
     padding: 10px;
     color: #d7c9aa;
     z-index: 2000;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.8);
     border-radius: 1000px;
 }
 .input-htmx-indicator {
@@ -95,8 +95,8 @@ nav .btn-link:hover {
     z-index: 3;
     padding: 3px;
 }
-body:has(.user-screen-content) .htmx-indicator {
-    background-color: rgba(0, 0, 0, 0.8);
+body[data-bs-theme="dark"] .htmx-indicator {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 .htmx-indicator svg {
     width: 100%;
