@@ -521,7 +521,6 @@ class Engine(ABC):
         Returns the most recent version available and the corresponding down URL if any, None otherwise."""
         most_recent_version, download_url = cls._get_most_recent_version()
         if not most_recent_version:
-            logger.error('Checking the release failed.')
             return None, None
         if most_recent_version == SHARLY_CHESS_VERSION:
             logger.info('Your Sharly Chess release is up to date.')
