@@ -115,7 +115,7 @@ class WebLibFileInstaller(WebLibInstaller):
 class InstallationChecker:
     """A class to check the installation of all the needed tools and libs."""
 
-    web_lib_installers: list[WebLibInstaller] = [
+    web_lib_installers: list[ToolInstaller] = [
         WebLibArchiveInstaller(
             'Bootstrap',
             SharlyChessConfig.bootstrap_version,

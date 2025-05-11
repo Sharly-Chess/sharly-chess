@@ -111,22 +111,8 @@ class Engine(ABC):
                 prefix: str
                 version: Version
                 if matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+)$', version_dir.name
-                ):
-                    prefix = matches.group(1)
-                    version = Version(matches.group(2))
-                elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+a\d+)$', version_dir.name
-                ):
-                    prefix = matches.group(1)
-                    version = Version(matches.group(2))
-                elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+b\d+)$', version_dir.name
-                ):
-                    prefix: str = matches.group(1)
-                    version: Version = Version(matches.group(2))
-                elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+\.\d+\.\d+rc\d+)$', version_dir.name
+                    r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(?:a\d+|b\d+|rc\d+)?)$',
+                    version_dir.name,
                 ):
                     prefix: str = matches.group(1)
                     version: Version = Version(matches.group(2))
@@ -232,9 +218,11 @@ class Engine(ABC):
                         except ValueError:
                             pass
                 if version_num is not None:
-                    version, prefix = previous_versions[version_num - 1]
+                    recovered_version, prefix = previous_versions[version_num - 1]
                     self._recover_previous_version(
-                        version, prefix, previous_databases[(version, prefix)]
+                        recovered_version,
+                        prefix,
+                        previous_databases[(recovered_version, prefix)],
                     )
             if not recovered_version:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
@@ -543,7 +531,6 @@ class Engine(ABC):
         Returns the most recent version available and the corresponding down URL if any, None otherwise."""
         most_recent_version, download_url = cls._get_most_recent_version()
         if not most_recent_version:
-            logger.error('Checking the release failed.')
             return None, None
         if most_recent_version == SHARLY_CHESS_VERSION:
             logger.info('Your Sharly Chess release is up to date.')
@@ -583,32 +570,6 @@ class Engine(ABC):
             )
             try:
                 entries: list[dict[str, Any]] = json.loads(data)
-                fake_version: str = '2.7.3'
-                entries.append(
-                    {
-                        'tag_name': fake_version,
-                        'draft': False,
-                        'assets': [
-                            {
-                                'name': f'sharly-chess-{fake_version}.zip',
-                                'browser_download_url': f'https://github.com/Sharly-Chess/sharly-chess/releases/download/{fake_version}/sharly-chess-{fake_version}.zip',
-                            }
-                        ],
-                    },
-                )
-                fake_version: str = '2.7.3b6'
-                entries.append(
-                    {
-                        'tag_name': fake_version,
-                        'draft': False,
-                        'assets': [
-                            {
-                                'name': f'sharly-chess-{fake_version}.zip',
-                                'browser_download_url': f'https://github.com/Sharly-Chess/sharly-chess/releases/download/{fake_version}/sharly-chess-{fake_version}.zip',
-                            }
-                        ],
-                    },
-                )
             except JSONDecodeError as ex:
                 logger.warning('Invalid response from GitHub: [%s].', ex)
                 return None, None
@@ -619,11 +580,10 @@ class Engine(ABC):
                 if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
                     version = Version(matches.group(1))
                 elif not current_stable:
-                    if matches := re.match(r'^(\d+\.\d+\.\d+a\d+)$', tag_name):
-                        version = Version(matches.group(1))
-                    elif matches := re.match(r'^(\d+\.\d+\.\d+b\d+)$', tag_name):
-                        version = Version(matches.group(1))
-                    elif matches := re.match(r'^(\d+\.\d+\.\d+rc\d+)$', tag_name):
+                    if matches := re.match(
+                        r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(a\d+|b\d+|rc\d+))$',
+                        tag_name,
+                    ):
                         version = Version(matches.group(1))
                 if not version:
                     logger.warning(
