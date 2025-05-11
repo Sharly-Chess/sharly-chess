@@ -334,7 +334,7 @@ class I18nChecker:
                         f'[{translator["name"]}](https://github.com/{translator["github_user"]})'
                     )
                 else:
-                    translator_strings.append(translator['name'])
+                    translator_strings.append(translator['name'] or '')
             line += f'| {"<br/>".join(translator_strings)} |\n'
             lines.append(line)
         lines.append(

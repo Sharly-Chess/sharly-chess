@@ -304,7 +304,8 @@ class TournamentAdminController(BaseEventAdminController):
                 'clone',
             ]
             else None,
-            uniq_id=uniq_id,
+            uniq_id=uniq_id
+            or '',  # uniq_id maybe empty on a form but never None in a StoredTournament
             name=name,
             path=path,
             filename=filename,
