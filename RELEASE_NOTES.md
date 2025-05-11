@@ -20,9 +20,8 @@ English version below
 
 - Ajout de l'onglet Appariements (2.6.0)
 - Ajout de la gestion des appariements manuels (2.6.0)
-- Ajout de l'appariement Berger (2.6.0 expérimental)
-- Ajout de l'appariement suisse classique et accéléré (2.6.0 expérimental)
 - Ajout de l'appariement toutes rondes par grilles de Berger, simple et aller-retour (2.6.0)
+- Ajout de l'appariement suisse classique et accéléré (2.6.0 expérimental)
 - Ajout des exports PGN et TRF16 (2.6.0 expérimental)
 
 ### Gestion des afficheurs
@@ -49,8 +48,8 @@ English version below
 
 - Added the Pairings tab (2.6.0)
 - Added the possibility to manual pair players (2.6.0)
+- Added Round-Robin and Double Round-Robin (2.6.0)
 - Added Swiss Dutch pairings (2.6.0 experimental)
-- Added Round-Robin and Double Round-Robin (2.6.0 experimental)
 - Added PGN and TRF16 export (2.6.0 experimental)
 
 ### Display management
