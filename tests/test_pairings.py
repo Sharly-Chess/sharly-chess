@@ -92,6 +92,16 @@ class PairingTestCase(BaseTestCase):
             },
         )
 
+    def test_berger_odd_players_table(self):
+        self.assert_generated_berger_table_equals_fide_table(
+            3,
+            {
+                1: [(1, 4), (2, 3)],
+                2: [(4, 3), (1, 2)],
+                3: [(2, 4), (3, 1)],
+            },
+        )
+
     def test_berger_6_players_table(self):
         self.assert_generated_berger_table_equals_fide_table(
             6,

@@ -76,7 +76,7 @@ class PairingEngine(ABC):
         """For round *round_* of tournament *tournament*, get the diff between
         the real pairings and the expected ones.
         Returns a list of real board / expected board when the boards differ."""
-        if round_ > tournament.current_round:
+        if not tournament.round_has_pairings(round_):
             raise ValueError(f'No pairings for round {round_}')
         pairings_diff: list[tuple[Board | None, Board | None]] = []
         for player in tournament.players:
@@ -219,6 +219,8 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
     def get_berger_table(cls, player_count: int) -> dict[int, list[tuple[int, int]]]:
         if player_count <= 2:
             raise ValueError(f'There must be at least 3 players, got {player_count}')
+        if player_count % 2 == 1:
+            player_count += 1
         round_count = cls.get_berger_table_round_count(player_count)
         previous_pairings = [
             (i + 1, player_count - i) for i in range(player_count // 2)

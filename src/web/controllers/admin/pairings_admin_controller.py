@@ -914,6 +914,10 @@ class PairingsAdminController(BaseEventAdminController):
     async def admin_generate_tournament_pairings(
         self,
         request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template | ClientRedirect:
@@ -924,12 +928,21 @@ class PairingsAdminController(BaseEventAdminController):
             round_=None,
             board_id=None,
             player_id=None,
-            data=None,
+            data=data,
         )
-        if web_context.error:
-            return web_context.error
         tournament = web_context.admin_tournament
         assert tournament is not None
+        if errors := self._validate_pairing_settings(tournament, data):
+            return self._admin_event_pairings_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                tournament_id=tournament_id,
+                round_=None,
+                data=data,
+                errors=errors,
+                modal='pairing-settings',
+            )
+        self._save_pairing_settings_data(tournament, data)
         for round_ in range(1, tournament.rounds + 1):
             tournament.pairing_variation.engine.generate_pairings(tournament, round_)
         tournament.clear_cache()
@@ -1220,17 +1233,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.admin_tournament
         assert tournament is not None
-        errors: dict[str, str] = {}
-        stored_settings: dict[str, Any] = {}
-        for setting in tournament.pairing_variation.settings:
-            setting_errors = setting.get_data_errors(tournament, data)
-            if setting_errors:
-                errors |= setting_errors
-            else:
-                stored_settings[setting.id] = setting.to_stored_value(
-                    setting.from_form_data(data)
-                )
-        if errors:
+        if errors := self._validate_pairing_settings(tournament, data):
             return self._admin_event_pairings_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -1240,20 +1243,39 @@ class PairingsAdminController(BaseEventAdminController):
                 errors=errors,
                 modal='pairing-settings',
             )
-        with EventDatabase(event_uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(tournament.id, stored_settings)
-            database.commit()
-        for setting in tournament.pairing_variation.settings:
-            setting.save_to_papi_database(
-                tournament.papi_write_database, stored_settings[setting.id]
-            )
-        tournament.clear_cache(clear_papi_cache=True)
+        self._save_pairing_settings_data(tournament, data)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             round_=round,
         )
+
+    @staticmethod
+    def _validate_pairing_settings(
+        tournament: Tournament, data: dict[str, str]
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        for setting in tournament.pairing_variation.settings:
+            errors |= setting.get_data_errors(tournament, data)
+        return errors
+
+    @staticmethod
+    def _save_pairing_settings_data(tournament: Tournament, data: dict[str, str]):
+        stored_settings: dict[str, Any] = {}
+        for setting in tournament.pairing_variation.settings:
+            stored_settings[setting.id] = setting.to_stored_value(
+                setting.from_form_data(data)
+            )
+        with EventDatabase(tournament.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(tournament.id, stored_settings)
+            database.commit()
+        for setting in tournament.pairing_variation.settings:
+            setting.save_to_papi_database(
+                tournament.papi_write_database, stored_settings[setting.id]
+            )
+        tournament.stored_tournament.pairing_settings = stored_settings
+        tournament.clear_cache(clear_papi_cache=True)
 
     @put(
         path='/admin/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',

@@ -17,14 +17,10 @@
             >
                 <button
                     class="btn btn-outline-primary text-nowrap"
-                    {% if admin_tournament.are_pairing_settings_valid %}
-                        hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                    {% else %}
-                        hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        hx-trigger="click"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% endif %}
+                    hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-trigger="click"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
                     preload
                     hx-target="body"
                     hx-indicator="#please-wait"
