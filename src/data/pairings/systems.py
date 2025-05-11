@@ -224,5 +224,5 @@ class RoundRobinPairingSystem(PairingSystem):
                 for round_ in reversed(range(1, tournament.rounds + 1))
                 if tournament.round_has_played_result(round_)
             ),
-            0,
+            1 if tournament.has_pairings else 0,
         )
