@@ -37,6 +37,9 @@ __pycache__/
 .scc
 .scc-wal
 .scc-shm
+.sce
+.sce-wal
+.sce-shm
 
 # MacOS files
 .DS_Store

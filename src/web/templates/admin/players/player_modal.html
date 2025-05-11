@@ -58,7 +58,7 @@
                                     hx_get=url_for('search-fide', event_uniq_id=admin_event.uniq_id) if fide_search_available else '',
                                     hx_trigger='keyup changed delay:0.2s',
                                     hx_target='#fide-search-results',
-                                    hx_indicator_img=url_for('static', file_path='images/sharly-chess.gif')
+                                    with_indicator=true
                                 ) }}
                                 {% if fide_search_available %}
                                     <ul id="fide-search-results" class="dropdown-menu fide-search-results p-0">

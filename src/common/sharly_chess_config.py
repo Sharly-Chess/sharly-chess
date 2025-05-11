@@ -149,11 +149,14 @@ class SharlyChessConfig(metaclass=Singleton):
         """The project of the application."""
         return _('Sharly Chess project')
 
-    # The extension of event databases.
-    event_database_ext: str = 'db'
+    # The extension of event databases (Sharly Chess Event).
+    event_database_ext: str = 'sce'
 
-    # The extension of archives event databases.
-    event_archive_ext: str = 'arch'
+    # The old extension of event databases (used to recover data from previous releases).
+    event_database_old_ext: str = 'db'
+
+    # The extension of archives event databases (Sharly Chess Archive).
+    event_archive_ext: str = 'sca'
 
     # The base path where event database backups are stored.
     event_backup_base_path: Path = EVENTS_DIR / 'backups'
