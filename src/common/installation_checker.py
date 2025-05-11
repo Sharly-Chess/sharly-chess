@@ -12,7 +12,7 @@ from common.logger import (
     print_interactive_success,
     print_interactive_error,
 )
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import ToolInstaller
 from data.pairings.bbp_pairings_installer import BbpPairingsInstaller
 
@@ -115,10 +115,10 @@ class WebLibFileInstaller(WebLibInstaller):
 class InstallationChecker:
     """A class to check the installation of all the needed tools and libs."""
 
-    web_lib_installers: list[WebLibInstaller] = [
+    web_lib_installers: list[ToolInstaller] = [
         WebLibArchiveInstaller(
             'Bootstrap',
-            PapiWebConfig.bootstrap_version,
+            SharlyChessConfig.bootstrap_version,
             'bootstrap',
             'bootstrap-{version}-dist',
             [
@@ -132,7 +132,7 @@ class InstallationChecker:
         ),
         WebLibArchiveInstaller(
             'Bootstrap icons',
-            PapiWebConfig.bootstrap_icons_version,
+            SharlyChessConfig.bootstrap_icons_version,
             'bootstrap-icons',
             'bootstrap-icons-{version}',
             [
@@ -145,7 +145,7 @@ class InstallationChecker:
         ),
         WebLibArchiveInstaller(
             'Sortable',
-            PapiWebConfig.sortable_version,
+            SharlyChessConfig.sortable_version,
             'Sortable',
             'Sortable-{version}',
             [
@@ -156,7 +156,7 @@ class InstallationChecker:
         ),
         WebLibArchiveInstaller(
             'jsTree',
-            PapiWebConfig.jstree_version,
+            SharlyChessConfig.jstree_version,
             'jstree',
             'jstree-{version}',
             [
@@ -171,7 +171,7 @@ class InstallationChecker:
         ),
         WebLibArchiveInstaller(
             'MorphDom',
-            PapiWebConfig.morphdom_version,
+            SharlyChessConfig.morphdom_version,
             'morphdom',
             'morphdom-{version}',
             [
@@ -182,37 +182,37 @@ class InstallationChecker:
         ),
         WebLibFileInstaller(
             'jQuery',
-            PapiWebConfig.jquery_version,
+            SharlyChessConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',
             'jquery/jquery-{version}.min.js',
         ),
         WebLibFileInstaller(
             'HTMX',
-            PapiWebConfig.htmx_version,
+            SharlyChessConfig.htmx_version,
             'https://unpkg.com/htmx.org@{version}/dist/htmx.min.js',
             'htmx/htmx-{version}/htmx.min.js',
         ),
         WebLibFileInstaller(
             'HTMX Preload extension',
-            PapiWebConfig.htmx_preload_version,
+            SharlyChessConfig.htmx_preload_version,
             'https://unpkg.com/htmx-ext-preload@{version}',
             'htmx/preload-{version}/preload.js',
         ),
         WebLibFileInstaller(
             'HTMX Remove me extension',
-            PapiWebConfig.htmx_remove_me_version,
+            SharlyChessConfig.htmx_remove_me_version,
             'https://unpkg.com/htmx-ext-remove-me@{version}',
             'htmx/remove-me-{version}/remove-me.js',
         ),
         WebLibFileInstaller(
             'HTMX Multi swap extension',
-            PapiWebConfig.htmx_multi_swap_version,
+            SharlyChessConfig.htmx_multi_swap_version,
             'https://unpkg.com/htmx-ext-multi-swap@{version}',
             'htmx/multi-swap-{version}/multi-swap.js',
         ),
         WebLibFileInstaller(
             'jQuery',
-            PapiWebConfig.jquery_version,
+            SharlyChessConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',
             'jquery/jquery-{version}.min.js',
         ),

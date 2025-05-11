@@ -165,7 +165,7 @@ class TournamentPlayer:
 
 @total_ordering
 class Player(TournamentPlayer):
-    """A class representing a player in papi-web."""
+    """A class representing a player in Sharly Chess."""
 
     def __init__(
         self,
@@ -230,27 +230,27 @@ class Player(TournamentPlayer):
         self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
 
     @staticmethod
-    def player_papi_web_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
+    def player_sharly_chess_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
         return tournament_id * 10000 + ref_id
 
     @staticmethod
-    def player_papi_id_from_papi_web_id(player_id: int) -> int:
+    def player_papi_id_from_sharly_chess_id(player_id: int) -> int:
         return player_id % 10000
 
     @staticmethod
-    def player_tournament_id_from_papi_web_id(player_id: int) -> int:
+    def player_tournament_id_from_sharly_chess_id(player_id: int) -> int:
         return player_id // 10000
 
     @property
     def ref_id(self) -> int:
         """Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
         assert self.id is not None
-        return self.player_papi_id_from_papi_web_id(self.id)
+        return self.player_papi_id_from_sharly_chess_id(self.id)
 
     @property
     def tournament_id(self) -> int:
         assert self.id is not None
-        return self.player_tournament_id_from_papi_web_id(self.id)
+        return self.player_tournament_id_from_sharly_chess_id(self.id)
 
     @property
     def estimation(self) -> int:
@@ -399,7 +399,7 @@ class Player(TournamentPlayer):
         for pairing in self.pairings.values():
             if (
                 pairing.opponent_id is not None
-                and self.player_papi_id_from_papi_web_id(pairing.opponent_id) > 1
+                and self.player_papi_id_from_sharly_chess_id(pairing.opponent_id) > 1
             ):
                 return True
         return False

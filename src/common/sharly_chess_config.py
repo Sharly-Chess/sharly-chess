@@ -9,7 +9,7 @@ import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
-from common import BASE_DIR, EVENTS_DIR, PAPI_WEB_VERSION
+from common import BASE_DIR, EVENTS_DIR, SHARLY_CHESS_VERSION
 from common.i18n import (
     DEFAULT_LOCALE,
     _,
@@ -26,7 +26,7 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 
 
-class PapiWebConfig(metaclass=Singleton):
+class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database.
     Only 5 properties can be configured:
         1. The logging level
@@ -137,7 +137,7 @@ class PapiWebConfig(metaclass=Singleton):
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
 
-    version = PAPI_WEB_VERSION
+    version = SHARLY_CHESS_VERSION
 
     @property
     def copyright(self) -> str:
@@ -318,7 +318,7 @@ class PapiWebConfig(metaclass=Singleton):
     default_background_image: str = ''
 
     # The error background image.
-    error_background_image: str = '/static/images/papi-web-error.png'
+    error_background_image: str = '/static/images/sharly-chess-error.png'
 
     # The default event background colour.
     default_background_color: str = '#ffffff'

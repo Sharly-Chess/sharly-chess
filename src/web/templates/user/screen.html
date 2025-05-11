@@ -68,7 +68,7 @@
                 hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
                 hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                 hx-target="body"
-                hx-trigger="every {{ papi_web_config.user_screen_update_delay }}s[modalIsClosed()] queue:none"
+                hx-trigger="every {{ sharly_chess_config.user_screen_update_delay }}s[modalIsClosed()] queue:none"
                 hx-indicator="#please-wait"
             ></div>
         {% endif %}

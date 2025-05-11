@@ -3,16 +3,16 @@ requires = ["setuptools >= 75.5.0", "requests ~= 2.32.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "Papi-web"
+name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.12.0"
 version = "2.6.0b1"
 
 authors = [
-  { name = "Pascal Aubry", email = "papi-web@echecs-bretagne.fr" },
-  { name = "Sammy Plat", email = "papi-web@echecs-bretagne.fr" },
-  { name = "Timothy Armes", email = "tim@timothyarmes.com" },
-  { name = "Youri Aubry" },
+  { name = "Pascal Aubry", email = "support@sharly-chess.com" },
+  { name = "Sammy Plat", email = "support@sharly-chess.com" },
+  { name = "Timothy Armes", email = "support@sharly-chess.com" },
+  { name = "Youri Aubry", email = "support@sharly-chess.com" },
 ]
 license = { text = "AGPL v3.0" }
 readme = "README.md"

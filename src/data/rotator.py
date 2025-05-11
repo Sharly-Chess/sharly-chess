@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import weakref
 from _weakref import ReferenceType
 
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.family import Family
 from data.screen import Screen
 from database.sqlite.event.event_store import StoredRotator
@@ -52,7 +52,7 @@ class Rotator:
         return (
             self.stored_rotator.delay
             if self.stored_rotator.delay is not None
-            else PapiWebConfig.default_rotator_delay
+            else SharlyChessConfig.default_rotator_delay
         )
 
     @property

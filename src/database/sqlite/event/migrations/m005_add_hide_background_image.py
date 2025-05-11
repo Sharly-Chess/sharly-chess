@@ -1,4 +1,4 @@
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.migration import BaseMigration
 
 
@@ -7,5 +7,5 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` ADD `hide_background_image` INTEGER')
         self.database.execute(
             'UPDATE `info` SET `hide_background_image` = ?',
-            (1 if PapiWebConfig.default_hide_background_image else 0,),
+            (1 if SharlyChessConfig.default_hide_background_image else 0,),
         )

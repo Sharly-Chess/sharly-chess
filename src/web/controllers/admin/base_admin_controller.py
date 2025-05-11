@@ -11,7 +11,7 @@ from litestar.params import Body
 
 from common import REQUEST_TIMEOUT, format_timestamp_date
 from common.i18n import _, ngettext
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from utils.enum import Result, TournamentRating
@@ -59,7 +59,7 @@ class AdminWebContext(WebContext):
 
     @property
     def background_color(self) -> str:
-        return PapiWebConfig.admin_background_color
+        return SharlyChessConfig.admin_background_color
 
     @property
     def theme(self) -> str:
@@ -92,17 +92,17 @@ class BaseAdminController(BaseController):
         if default_federation:
             federation_options = {
                 default_federation: _('By default - {option}').format(
-                    option=f'{default_federation} - {PapiWebConfig.federations[default_federation]}'
+                    option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
                 ),
             } | {
                 federation_id: f'{federation_id} - {federation_name}'
-                for federation_id, federation_name in PapiWebConfig.federations.items()
+                for federation_id, federation_name in SharlyChessConfig.federations.items()
                 if federation_id != default_federation
             }
         else:
             federation_options = {
                 federation_id: f'{federation_id} - {federation_name}'
-                for federation_id, federation_name in PapiWebConfig.federations.items()
+                for federation_id, federation_name in SharlyChessConfig.federations.items()
             }
         return federation_options
 
@@ -137,7 +137,7 @@ class BaseAdminController(BaseController):
             ),
         }
         default_option: str = WebContext.value_to_form_data(
-            PapiWebConfig.default_paired_bye_result.value
+            SharlyChessConfig.default_paired_bye_result.value
         )
         options[''] = _('By default - {option}').format(option=options[default_option])
         return options
@@ -195,7 +195,9 @@ class BaseAdminController(BaseController):
             'off': _('Hide the exit button'),
         }
         options[''] = _('By default - {option}').format(
-            option=options['on' if PapiWebConfig.default_input_exit_button else 'off']
+            option=options[
+                'on' if SharlyChessConfig.default_input_exit_button else 'off'
+            ]
         )
         return options
 
@@ -208,7 +210,7 @@ class BaseAdminController(BaseController):
         }
         options[''] = _('By default - {option}').format(
             option=options[
-                'on' if PapiWebConfig.default_players_show_unpaired else 'off'
+                'on' if SharlyChessConfig.default_players_show_unpaired else 'off'
             ]
         )
         return options
@@ -355,9 +357,9 @@ class BaseAdminController(BaseController):
                 if not name:
                     errors[field] = _('Please enter the name of the event.')
                 federation = WebContext.form_data_to_str(
-                    data, field := 'federation', PapiWebConfig().default_federation
+                    data, field := 'federation', SharlyChessConfig().default_federation
                 )
-                if federation not in PapiWebConfig.federations:
+                if federation not in SharlyChessConfig.federations:
                     # should never happen, not translated.
                     errors[field] = f'Invalid federation value [{data[field]}].'
                     data[field] = ''
@@ -425,10 +427,10 @@ class BaseAdminController(BaseController):
                                 data[field] = ''
                             elif (
                                 not (
-                                    PapiWebConfig.custom_path / background_image
+                                    SharlyChessConfig.custom_path / background_image
                                 ).exists()
                                 and not (
-                                    PapiWebConfig.embedded_custom_path
+                                    SharlyChessConfig.embedded_custom_path
                                     / background_image
                                 ).exists()
                             ):
@@ -533,8 +535,8 @@ class BaseAdminController(BaseController):
         dirs: list[str] = []
         files: list[str] = []
         for custom_path in [
-            PapiWebConfig.embedded_custom_path,
-            PapiWebConfig.custom_path,
+            SharlyChessConfig.embedded_custom_path,
+            SharlyChessConfig.custom_path,
         ]:
             for item in custom_path.rglob('*'):
                 item_str = (
@@ -677,8 +679,8 @@ class BaseAdminController(BaseController):
                 message_background_color = admin_event.message_background_color
             case 'create':
                 public = False
-                federation = PapiWebConfig().federation.name
-                hide_background_image = PapiWebConfig.default_hide_background_image
+                federation = SharlyChessConfig().federation.name
+                hide_background_image = SharlyChessConfig.default_hide_background_image
             case 'delete':
                 pass
             case _:

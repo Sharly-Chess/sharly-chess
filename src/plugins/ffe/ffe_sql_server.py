@@ -4,7 +4,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -28,7 +28,7 @@ class FFESqlServer(SqlServer):
         if not NetworkMonitor.connected():
             error: str = _('Not connected to internet.')
             logger.error(error)
-            raise PapiWebException(error)
+            raise SharlyChessException(error)
 
     @classmethod
     def dump_credentials(
@@ -152,7 +152,7 @@ class FFESqlServer(SqlServer):
         string: str,
         limit: int = 0,  # no limit set if no param or null param passed
     ) -> AsyncIterator[Player]:
-        """Searches the SQL server for the given tokens, raises PapiWebException on error."""
+        """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
         # licence number, so that it skips a more complex request
         string = string.upper().strip()

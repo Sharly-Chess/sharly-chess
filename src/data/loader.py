@@ -15,11 +15,11 @@ from packaging.version import Version
 from common import (
     format_timestamp_date_time,
     unicode_normalize,
-    PAPI_WEB_VERSION,
+    SHARLY_CHESS_VERSION,
     EVENTS_DIR,
 )
-from common.exception import PapiWebException
-from common.papi_web_config import PapiWebConfig
+from common.exception import SharlyChessException
+from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
@@ -118,7 +118,7 @@ class EventLoader:
                     with EventDatabase(event_id, True) as database:
                         database.upgrade()
                 cls._valid_event_ids.append(event_id)
-            except PapiWebException as e:
+            except SharlyChessException as e:
                 logger.error(e)
                 cls._invalid_uniq_ids.append(event_id)
 
@@ -131,7 +131,7 @@ class EventLoader:
     def all_event_ids(cls) -> list[str]:
         return [
             file.stem
-            for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_database_ext}')
+            for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}')
         ]
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -206,7 +206,7 @@ class EventLoader:
         for uniq_id in self.event_uniq_ids:
             try:
                 events_by_id[uniq_id] = self.load_event(uniq_id)
-            except PapiWebException as pwe:
+            except SharlyChessException as pwe:
                 logger.error(pwe)
         return events_by_id
 
@@ -325,7 +325,7 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, file.lstat().st_ctime)
-                for file in EVENTS_DIR.glob(f'*.{PapiWebConfig.event_archive_ext}')
+                for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_archive_ext}')
             ],
             key=lambda archive: archive.date,
         )
@@ -341,9 +341,9 @@ class EventBackup:
     @property
     def file(self) -> Path:
         return (
-            PapiWebConfig.event_backup_base_path
+            SharlyChessConfig.event_backup_base_path
             / self.version.public
-            / f'{self.name}.{PapiWebConfig.event_backup_ext}'
+            / f'{self.name}.{SharlyChessConfig.event_backup_ext}'
         )
 
     @property
@@ -361,12 +361,12 @@ class EventBackupLoader:
     """This class helps loading backups (copied events)."""
 
     def __init__(self):
-        PapiWebConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
+        SharlyChessConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
 
     @staticmethod
     def event_backups(event_id: str) -> list[EventBackup]:
         backups: list[EventBackup] = []
-        for version_dir in PapiWebConfig.event_backup_base_path.iterdir():
+        for version_dir in SharlyChessConfig.event_backup_base_path.iterdir():
             if not version_dir.is_dir():
                 continue
             backup = EventBackup(event_id, Version(version_dir.name))
@@ -376,20 +376,20 @@ class EventBackupLoader:
 
     @staticmethod
     def version_backups(version: Version) -> list[EventBackup]:
-        version_dir: Path = PapiWebConfig.event_backup_base_path / version.public
+        version_dir: Path = SharlyChessConfig.event_backup_base_path / version.public
         return [
             EventBackup(file.stem, version)
-            for file in version_dir.glob(f'*.{PapiWebConfig.event_backup_ext}')
+            for file in version_dir.glob(f'*.{SharlyChessConfig.event_backup_ext}')
         ]
 
     def versions(self, event_id: str | None = None) -> list[Version]:
-        if not PapiWebConfig.event_backup_base_path.exists():
+        if not SharlyChessConfig.event_backup_base_path.exists():
             return []
         if event_id:
             return [backup.version for backup in self.event_backups(event_id)]
         return [
             Version(version_dir.name)
-            for version_dir in PapiWebConfig.event_backup_base_path.iterdir()
+            for version_dir in SharlyChessConfig.event_backup_base_path.iterdir()
             if version_dir.is_dir()
         ]
 
@@ -397,7 +397,7 @@ class EventBackupLoader:
         compatible_versions = [
             version
             for version in self.versions(event_id)
-            if version <= PAPI_WEB_VERSION
+            if version <= SHARLY_CHESS_VERSION
         ]
         if not compatible_versions:
             return None

@@ -14,7 +14,7 @@ from litestar_htmx import ClientRedirect
 from pyexcel_ods3 import save_data
 
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
 from data.player import Player
 from data.print_documents import (
@@ -100,10 +100,10 @@ class EventAdminController(BaseEventAdminController):
                 template_context |= {
                     'federation_options': cls._get_federation_options(None),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        PapiWebConfig.default_record_illegal_moves_number
+                        SharlyChessConfig.default_record_illegal_moves_number
                     ),
                     'timer_color_texts': cls._get_timer_color_texts(
-                        PapiWebConfig.default_timer_delays
+                        SharlyChessConfig.default_timer_delays
                     ),
                     'background_images_jstree_data': cls.background_images_jstree_data(
                         data['background_image']

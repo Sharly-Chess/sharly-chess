@@ -102,18 +102,6 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-msgid "- Download the files (ZIP archive): {bin_zip_url}"
-msgstr "- Télécharger les fichiers (archive ZIP) : {bin_zip_url}"
-
-msgid "- Version {version} ({events})"
-msgstr "- Version {version} ({events})"
-
-msgid "- Version {version}: no events"
-msgstr "- Version {version}: aucun évènement"
-
-msgid "- View the files on filebin.net: {bin_url}"
-msgstr "- Voir les fichiers sur filebin.net : {bin_url}"
-
 msgid "/move"
 msgstr "/cp"
 
@@ -156,21 +144,12 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
-msgid "A more recent version is available ([{version}])."
-msgstr "Une version plus récente est disponible ([{version}])."
-
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement %(event_uniq_id)s."
 
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
-
-msgid "A stable and more recent version is available ([{new_version}]) but upgrading unstable versions (like the one you are currently using: [{old_version}]) must be done manually (upgrade from the last stable version installed on your server)."
-msgstr "Une version stable plus récente est disponible ([{new_version}]) mais la mise à jour des versions non stables (comme celle que vous utilisez actuellement : [{old_version}]) doit être réalisée manuellement (faites la mise à jour depuis la dernière version stable installée sur votre serveur)."
-
-msgid "A window will open to send an email to the Papi-web project; If the window does not open, please click on the link below or manually send an email to {email}."
-msgstr "Une fenêtre va s'ouvrir pour envoyer un mél au projet Papi-web ; si la fenêtre ne s'ouvre pas, veuillez cliquer sur le lien ci-dessous ou envoyer manuellement un mél à {email}."
 
 msgid "Absent"
 msgstr "Absent·e"
@@ -193,8 +172,8 @@ msgstr "Pilote Access (présent)"
 msgid "Access driver (not found)"
 msgstr "Pilote Access (absent)"
 
-msgid "Access from the Papi-web server"
-msgstr "Accès depuis le serveur Papi-web"
+msgid "Access from the Sharly Chess server"
+msgstr "Accès depuis le serveur Sharly Chess"
 
 msgid "Access from the local network (LAN/WAN)"
 msgstr "Accès depuis le réseau local (LAN/WAN)"
@@ -289,7 +268,7 @@ msgstr "Message d'alerte :"
 msgid "All"
 msgstr "Tous"
 
-msgid "All the candidate ports [{ports}] are already in use, can not start Papi-web server."
+msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
 msgid "All the players intended to play the coming round did check-in."
@@ -595,12 +574,6 @@ msgstr "Le pointage est ouvert pour le tournoi [{tournament_uniq_id}]."
 msgid "Checked-in"
 msgstr "Pointé·e"
 
-msgid "Checking Papi-web version..."
-msgstr "Vérification de la version de Papi-web..."
-
-msgid "Checking the version failed."
-msgstr "la vérification de la version a échoué."
-
 msgid "Chess"
 msgstr "Échecs"
 
@@ -880,9 +853,6 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Custom files recovered: {num} (from directory [{dir}])."
-msgstr "Fichiers de personnalisation récupérés : {num} (depuis le répertoire [{dir}])."
-
 msgid "Customization"
 msgstr "Personnalisation"
 
@@ -1082,14 +1052,17 @@ msgstr "Voulez vous autoriser les appariements manuels pour cette ronde ?"
 msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr "Voulez vous autoriser l'édition des appariements pour cette ronde ?"
 
-msgid "Do you want to install example event databases [{y_uc}/{n_lc}]?"
-msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ?"
+msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
+msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ? "
 
-msgid "Do you want to recover the data of version [{version}] [{y_uc}/{n_lc}]?"
-msgstr "Voulez-vous récupérer les données de la version [{version}] [{y_uc}/{n_lc}] ?"
+msgid "Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? "
+msgstr "Voulez-vous récupérer les données de la version [{version}] [{y_uc}/{n_lc}] ? "
 
-msgid "Do you want to send these custom files to the Papi-web developers to enhance futures versions [{y_uc}/{n_lc}]?"
-msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Papi-web pour améliorer les futures versions [{y_uc}/{n_lc}] ?"
+msgid "Do you want to restart Sharly Chess?"
+msgstr "Voulez-vous redémarrer Sharly Chess ?"
+
+msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]? "
+msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Sharly Chess pour améliorer les futures versions [{y_uc}/{n_lc}] ? "
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
 msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] [{y_lc}/{n_uc}] ? "
@@ -1121,14 +1094,8 @@ msgstr "Télécharger les joueur·euses."
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les joueur·euses sans numéros de téléphone ou adresse email ne seront pas inclus·es."
 
-msgid "Downloading failed with code [{code}]."
-msgstr "Le téléchargement a échoué avec le code [{code}]."
-
 msgid "Downloading source file..."
 msgstr "Téléchargement du fichier source..."
-
-msgid "Downloading version {version} from GitHub ([{url}])..."
-msgstr "Téléchargement de la version {version} depuis GitHub ([{url}])..."
 
 msgid "Drag the hours to order them."
 msgstr "Faites glisser les horaires pour les ordonner."
@@ -1300,8 +1267,8 @@ msgstr "EXEMPT"
 msgid "Edit"
 msgstr "Éditer"
 
-msgid "Edit the Papi-web settings."
-msgstr "Éditer la configuration de Papi-web."
+msgid "Edit the Sharly Chess settings."
+msgstr "Éditer la configuration de Sharly Chess."
 
 msgid "Edit the hours of the timer"
 msgstr "Éditer les horaires du chronomètre."
@@ -1347,9 +1314,6 @@ msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 #, python-format
 msgid "Edition of event [%(event_uniq_id)s]"
 msgstr "Édition de l'évènement [%(event_uniq_id)s]"
-
-msgid "Edition of papi-web settings"
-msgstr "Édition de la configuration de Papi-web"
 
 #, python-format
 msgid "Edition of player [%(last_name)s %(first_name)s]"
@@ -1451,9 +1415,6 @@ msgstr "Évènement"
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr "Évènement [{event_id}] introuvable (code : [{code}]) : [{error}]."
 
-msgid "Event [{event_uniq_id}]: recovering tournament [{tournament_uniq_id}]..."
-msgstr "Évènement [{event_uniq_id}] : récupération du tournoi [{tournament_uniq_id}]..."
-
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr "L'évènement [{old_uniq_id}] a été renommé ([{new_uniq_id}]) et modifié."
 
@@ -1477,9 +1438,6 @@ msgstr "Évènement : {event_name}"
 
 msgid "Events (public access)"
 msgstr "Évènements (accès public)"
-
-msgid "Events recovered: {num} (from directory [{dir}])."
-msgstr "Évènements récupérés : {num} (depuis le répertoire [{dir}])."
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -1683,9 +1641,6 @@ msgstr "Fichier [{file}] non trouvé."
 msgid "File already exists."
 msgstr "Le fichier existe déjà."
 
-msgid "File downloaded: [{zip_file}]."
-msgstr "Fichier téléchargé : [{zip_file}]."
-
 msgid "File found"
 msgstr "Fichier trouvé"
 
@@ -1694,9 +1649,6 @@ msgstr "Nom du fichier (sans extension) :"
 
 msgid "File not found"
 msgstr "Fichier introuvable"
-
-msgid "Files have been sent to bin {bin_name}."
-msgstr "Les fichiers ont été envoyés dans la corbeille {bin_name}."
 
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."
@@ -1785,8 +1737,8 @@ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche d
 msgid "Frequency: {frequency}"
 msgstr "Fréquence : {frequency}"
 
-msgid "From the Papi-web server"
-msgstr "Depuis le serveur Papi-web"
+msgid "From the Sharly Chess server"
+msgstr "Depuis le serveur Sharly Chess"
 
 msgid "From the local network (LAN/WAN)"
 msgstr "Depuis le réseau local (LAN/WAN)"
@@ -1892,8 +1844,8 @@ msgstr "Horaires"
 msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
 
-msgid "I would like the following custom files to be added to a future version of Papi-web:"
-msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Papi-web :"
+msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
+msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
 
 msgid "ID (unique):"
 msgstr "Identifiant (unique) :"
@@ -2060,9 +2012,6 @@ msgstr "Numéro de téléphone [{phone}] non valide."
 msgid "Invalid player number range."
 msgstr "Intervalle de joueur·euses invalide."
 
-msgid "Invalid response from GitHub: {ex}."
-msgstr "Réponse non valide de GitHub : {ex}."
-
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
@@ -2179,9 +2128,6 @@ msgstr "Niveau de log :"
 
 msgid "Logging level: {log_level}"
 msgstr "Niveau de log : {log_level}"
-
-msgid "Looking for a more recent version on GitHub ([{url}])..."
-msgstr "Recherche d'une version plus récente sur GitHub ([{url}])..."
 
 msgid "Loss"
 msgstr "Défaite"
@@ -2365,9 +2311,6 @@ msgstr "Nouvel évènement"
 msgid "New tournament"
 msgstr "Nouveau tournoi"
 
-msgid "New version [{version}] has been installed in [{dir}]."
-msgstr "La nouvelle version [{version}] a été installée dans [{dir}]."
-
 msgid "Next round"
 msgstr "Ronde suivante"
 
@@ -2441,9 +2384,6 @@ msgstr "Aucun pilote d'afficheurs."
 msgid "No errors"
 msgstr "Aucune erreur"
 
-msgid "No events found in previously installed versions."
-msgstr "Aucun évènement trouvé dans les version précédemment installées."
-
 msgid "No events found."
 msgstr "Aucun évènement trouvé."
 
@@ -2498,14 +2438,8 @@ msgstr "Aucun·e joueur·euse mis·e à jour."
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
-msgid "No previously installed versions found."
-msgstr "Pas de version précédente trouvée."
-
 msgid "No recording"
 msgstr "Pas d'enregistrement"
-
-msgid "No response from GitHub."
-msgstr "Pas de réponse de GitHub."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -2542,9 +2476,6 @@ msgstr "Aucun écran"
 
 msgid "No screens."
 msgstr "Aucun écran."
-
-msgid "No stable version found."
-msgstr "Aucun version stable trouvée."
 
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
@@ -2587,9 +2518,6 @@ msgstr "Pas encore point·ée"
 
 msgid "Not connected to internet."
 msgstr "Aucune connection à internet."
-
-msgid "Not connected, can not check Papi-web version."
-msgstr "Hors-ligne, impossible de vérifier la version de Papi-web."
 
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
@@ -2793,15 +2721,6 @@ msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Papi-web can automatically launch a web browser when starting the web server."
-msgstr "Papi-web peut automatiquement lancer la navigateur au démarrage du serveur web."
-
-msgid "Papi-web settings"
-msgstr "Configuration de Papi-web"
-
-msgid "Papi-web settings has been updated."
-msgstr "La configuration de Papi-web a été mise à jour."
-
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
@@ -2918,14 +2837,14 @@ msgstr "Veuillez choisir le document."
 msgid "Please choose the event:"
 msgstr "Veuillez choisir l'évènement :"
 
+msgid "Please choose the release to recover: "
+msgstr "Veuillez choisir la version à restaurer : "
+
 msgid "Please choose the seed color."
 msgstr "Veuillez choisir la couleur initiale."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
-
-msgid "Please choose the version to recover:"
-msgstr "Veuillez choisir la version à récupérer :"
 
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Veuillez entrer une URL ou choisir une image à droite."
@@ -2972,8 +2891,8 @@ msgstr "Veuillez entrer le nom de famille."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
-msgid "Please enter the number of the version to recover [{default_choice}: {default_version}]: "
-msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}]: "
+msgid "Please enter the number of the release to recover [{default_choice}: {default_version}]: "
+msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}] : "
 
 msgid "Please enter the password to enter results:"
 msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
@@ -3226,20 +3145,8 @@ msgstr "Historique"
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
 
-msgid "Recovering configuration from version {version}..."
-msgstr "Récupération de la configuration de la version {version}..."
-
-msgid "Recovering custom files..."
-msgstr "Récupération des fichiers de personnalisation..."
-
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr "La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers)."
-
-msgid "Recovering event [{event_uniq_id}]..."
-msgstr "Récupération de l'évènement [{event_uniq_id}]..."
-
-msgid "Recovering events from version {version}..."
-msgstr "Récupération des évènements de la version {version}..."
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
@@ -3494,9 +3401,6 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection: %(selection)s"
 
-msgid "Sending the files to a server..."
-msgstr "Envoi des fichiers vers un serveur..."
-
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
@@ -3509,8 +3413,17 @@ msgstr "Paramètres"
 msgid "Settings must be configured before generating the pairings."
 msgstr "Les paramètres doivent être configurés avant de générer les appariements."
 
+msgid "Sharly Chess can automatically launch a web browser when starting the web server."
+msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
+
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
+
+msgid "Sharly Chess settings"
+msgstr "Configuration de Sharly Chess"
+
+msgid "Sharly Chess settings have been updated."
+msgstr "La configuration de Sharly Chess a été mise à jour."
 
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
@@ -3599,8 +3512,8 @@ msgstr "Standard :"
 msgid "Start:"
 msgstr "Début :"
 
-msgid "Starting Papi-web server, please wait..."
-msgstr "Démarrage du serveur Papi-web, veuillez patienter..."
+msgid "Starting Sharly Chess server, please wait..."
+msgstr "Démarrage du serveur Sharly Chess, veuillez patienter..."
 
 msgid "Storing data..."
 msgstr "Stockage des données..."
@@ -3647,11 +3560,11 @@ msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône «
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
 
-msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Papi-web event of the tournament)."
-msgstr "L'identifiant l'évènement sur la plateforme ChessEvent (par défaut l'identifiant de l'évènement ChessEvent défini pour l'évènement Papi-web du tournoi)."
+msgid "The ID of the event on the ChessEvent platform (default the ChessEvent event ID defined for the Sharly Chess event of the tournament)."
+msgstr "L'identifiant l'évènement sur la plateforme ChessEvent (par défaut l'identifiant de l'évènement ChessEvent défini pour l'évènement Sharly Chess du tournoi)."
 
-msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Papi-web event of the tournament)."
-msgstr "L'identifiant utilisé pour se connecter sur la plateforme ChessEvent (par défaut l'identifiant ChessEvent défini pour l'évènement Papi-web du tournoi)."
+msgid "The ID used to connect to the ChessEvent platform (by default the ChessEvent ID defined for the Sharly Chess event of the tournament)."
+msgstr "L'identifiant utilisé pour se connecter sur la plateforme ChessEvent (par défaut l'identifiant ChessEvent défini pour l'évènement Sharly Chess du tournoi)."
 
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "L'identifiant utilisé pour se connecter à la plateforme ChessEvent (by défaut, peut-être modifié pour chaque tournoi)."
@@ -3671,14 +3584,14 @@ msgstr "Le fichier Papi du tournoi a été lu avec succès (%(papi_file)s)."
 msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 
-msgid "The Papi-web tournament are deleted but the Papi file is still available on the filesystem."
-msgstr "Le tournoi Papi-web ets supprimé mais le fichier Papi est conservé sur la système de fichiers."
+msgid "The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem."
+msgstr "Le tournoi Sharly Chess ets supprimé mais le fichier Papi est conservé sur la système de fichiers."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
-msgid "The URL or the path of the image to display (by default the Papi-web logo)."
-msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Papi-web)."
+msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
+msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Sharly Chess)."
 
 msgid "The Unique ID, used for data storage and export."
 msgstr "L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export."
@@ -3763,9 +3676,6 @@ msgstr "Les écrans suivants vont également être supprimés :"
 
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Le temps initial en secondes (peut être nul en cas d'incrément)."
-
-msgid "The installation of version [{version}] failed."
-msgstr "L'installation de la version [{version}] a échoué."
 
 msgid "The last set of a screen can not be deleted."
 msgstr "Le dernier écran ne peut être supprimé."
@@ -3904,8 +3814,8 @@ msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 let
 msgid "The password required on input screens to enter results (optional)."
 msgstr "Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif)."
 
-msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Papi-web event of the tournament)."
-msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChessEvent (par défaut le mot de passe ChessEvent défini pour l'évènement Papi-web du tournoi)."
+msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Sharly Chess event of the tournament)."
+msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChessEvent (par défaut le mot de passe ChessEvent défini pour l'évènement Sharly Chess du tournoi)."
 
 msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChesssEvent (par défaut, peut être modifié pour chaque tournoi)."
@@ -4311,9 +4221,6 @@ msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
 msgid "Tournaments displayed:"
 msgstr "Tournois affichés :"
 
-msgid "Tournaments recovered: {num} (from directory [{dir}])."
-msgstr "Tournois récupérés : {num} (depuis le répertoire [{dir}])."
-
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois: %(num)d"
@@ -4517,9 +4424,6 @@ msgstr "V"
 msgid "Variation"
 msgstr "Variante"
 
-msgid "Version [{version}] is already installed in directory [{dir}], please manually delete this folder before installing."
-msgstr "La version [{version}] est déjà installée dans le répertoire [{dir}], veuillez supprimer ce répertoire avant d'installer."
-
 msgid "View the files on filebin.net"
 msgstr "Voir les fichiers sur filebin.net"
 
@@ -4597,8 +4501,8 @@ msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter..."
 msgid "Weekly"
 msgstr "Une semaine"
 
-msgid "Welcome to Papi-web!"
-msgstr "Bienvenue dans Papi-web !"
+msgid "Welcome to Sharly Chess!"
+msgstr "Bienvenue dans Sharly Chess !"
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans. Ce message peut être surchargé par les écrans rotatifs, les écrans et les familles d'écrans."
@@ -4675,12 +4579,6 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
-msgid "You are using a version newer than the latest stable version available ([{version}]), are you a developer? ;-)"
-msgstr "Vous utilisez une version plus récente que la dernière version stable disponible ([{version}]), vous ne seriez pas développeur·euse ? ;-)"
-
-msgid "You are using un unstable version more recent than the last stable version available ({version})."
-msgstr "Vous utilisez une version non stable plus récente que la dernière version stable disponible ({version})."
-
 msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
@@ -4696,9 +4594,6 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écr
 msgid "You must create a tournament before creating screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
 
-msgid "Your Papi-web version is up to date."
-msgstr "Votre version de Papi-web est à jour."
-
 msgid "Your choice (by default {default}): "
 msgstr "Votre choix, par défaut [{default}] :"
 
@@ -4708,8 +4603,8 @@ msgstr "Votre choix : "
 msgid "Zero-Point Bye"
 msgstr "Absent·e"
 
-msgid "[Papi-web {version}] Request for the integration of custom files"
-msgstr "[Papi-web {version}] Demande d'intégration de fichiers de personnalisation"
+msgid "[Sharly Chess {version}] Request for the integration of custom files"
+msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
 
 msgid "[{path}] is not a directory."
 msgstr "[{path}] n'est pas un répertoire."

@@ -20,7 +20,7 @@ from common import (
 from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -266,7 +266,7 @@ class Event:
 
     @cached_property
     def path(self) -> Path:
-        path: Path = PapiWebConfig.default_papi_path
+        path: Path = SharlyChessConfig.default_papi_path
         if not self.stored_event.path:
             self.add_debug(
                 _('No directory set for Papi files, by default [{path}].').format(
@@ -289,7 +289,7 @@ class Event:
     def background_image(self) -> str:
         if self.stored_event.hide_background_image:
             return ''
-        background_image: str = PapiWebConfig.default_background_image
+        background_image: str = SharlyChessConfig.default_background_image
         if not self.stored_event.background_image:
             self.add_debug(
                 _('No background image set, by default [{background_image}]').format(
@@ -306,7 +306,7 @@ class Event:
 
     @cached_property
     def background_color(self) -> str:
-        background_color: str = PapiWebConfig.default_background_color
+        background_color: str = SharlyChessConfig.default_background_color
         if not self.stored_event.background_color:
             self.add_debug(
                 _('No background colour set, by default [{background_color}]').format(
@@ -326,7 +326,9 @@ class Event:
 
     @cached_property
     def record_illegal_moves(self) -> int:
-        record_illegal_moves: int = PapiWebConfig.default_record_illegal_moves_number
+        record_illegal_moves: int = (
+            SharlyChessConfig.default_record_illegal_moves_number
+        )
         if self.stored_event.record_illegal_moves is None:
             self.add_debug(
                 _(
@@ -343,7 +345,7 @@ class Event:
 
     @cached_property
     def timer_colors(self) -> dict[int, str]:
-        colors = PapiWebConfig.default_timer_colors
+        colors = SharlyChessConfig.default_timer_colors
         stored_colors = self.stored_event.timer_colors
         if stored_colors is not None:
             for i in range(1, 4):
@@ -353,7 +355,7 @@ class Event:
 
     @cached_property
     def timer_delays(self) -> dict[int, int]:
-        delays = PapiWebConfig.default_timer_delays
+        delays = SharlyChessConfig.default_timer_delays
         stored_delays = self.stored_event.timer_delays
         if stored_delays is not None:
             for i in range(1, 4):
@@ -371,13 +373,15 @@ class Event:
 
     @property
     def message_color(self) -> str:
-        return self.stored_event.message_color or PapiWebConfig.default_message_color
+        return (
+            self.stored_event.message_color or SharlyChessConfig.default_message_color
+        )
 
     @property
     def message_background_color(self) -> str:
         return (
             self.stored_event.message_background_color
-            or PapiWebConfig.default_message_background_color
+            or SharlyChessConfig.default_message_background_color
         )
 
     @cached_property

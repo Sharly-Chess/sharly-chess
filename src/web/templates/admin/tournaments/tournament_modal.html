@@ -52,7 +52,7 @@
                         name='uniq_id',
                         label=_('Enter the tournament ID to confirm its deletion:'),
                         placeholder=_('Enter here the tournament ID'),
-                        help_text=_('The Papi-web tournament are deleted but the Papi file is still available on the filesystem.'),
+                        help_text=_('The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem.'),
                         data=data, errors=errors
                     ) }}
                 {% else %}
@@ -343,7 +343,7 @@
                                 placeholder=_('E.g.: %(num)d', num=20),
                                 help_text=_(
                                     'The number of the first board of the tournament (if not set, defaults to %(default)d).',
-                                    default=papi_web_config.default_first_board_number
+                                    default=sharly_chess_config.default_first_board_number
                                 ),
                                 data=data, errors=errors
                             ) }}
@@ -366,7 +366,7 @@
                                 placeholder=_('E.g.: %(num)d', num=2),
                                 help_text=_(
                                     'The maximum number of byes a player can pretend to (if not set, defaults to %(default)d).',
-                                    default=papi_web_config.default_max_byes
+                                    default=sharly_chess_config.default_max_byes
                                 ),
                                 data=data, errors=errors
                             ) }}
@@ -378,7 +378,7 @@
                                 placeholder=_('E.g.: %(num)d', num=3),
                                 help_text=_(
                                     'The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d).',
-                                    default=papi_web_config.default_last_rounds_no_byes
+                                    default=sharly_chess_config.default_last_rounds_no_byes
                                 ),
                                 data=data, errors=errors
                             ) }}

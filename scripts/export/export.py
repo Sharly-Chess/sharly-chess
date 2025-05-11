@@ -26,10 +26,10 @@ from PyInstaller.__main__ import run
 # Needs to be imported first to avoid circular import
 from plugins.manager import plugin_manager  # Noqa
 
-from common import BASE_DIR, enable_experimental_features
+from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER
 from data.pairings.engines import BbpPairings
-from common import PAPI_WEB_VERSION
-from common.papi_web_config import PapiWebConfig
+from common import SHARLY_CHESS_VERSION
+from common.sharly_chess_config import SharlyChessConfig
 from common.logger import (
     get_logger,
     print_interactive_info,
@@ -53,10 +53,11 @@ BUILD_DIR: Path = BASE_DIR / 'build'
 DIST_DIR: Path = BASE_DIR / 'dist'
 DATA_DIR: Path = BASE_DIR / 'export-data'
 LOCALE_DIR: Path = BASE_DIR / 'locale'
-basename: str = f'papi-web-{PAPI_WEB_VERSION}'
+basename: str = f'sharly-chess-{SHARLY_CHESS_VERSION}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
+OLD_ZIP_FILE: Path = EXPORT_DIR / f'papi-web-{SHARLY_CHESS_VERSION}.zip'
 EXE_FILENAME: str = basename + '.exe'
 INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
@@ -89,7 +90,7 @@ def build_exe():
         '--noconfirm',
         '--name=' + basename,
         '--copy-metadata',
-        'papi_web',
+        'sharly_chess',
         '--hiddenimport=common',
         '--hiddenimport=data',
         '--hiddenimport=database',
@@ -103,7 +104,7 @@ def build_exe():
         '--icon=src/web/static/images/sharly-chess.ico',
         '--optimize',
         '1',
-        'src/papi_web.py',
+        'src/sharly_chess.py',
     ]
     migration_base_modules: list[ModuleType] = [config_migrations, event_migrations] + [
         plugin.base_migration_module
@@ -186,7 +187,7 @@ def create_project():
     )
     shutil.copytree(bbp_pairings.executable_dir, bbp_pairings_dir, dirs_exist_ok=True)
     # create an empty events dir
-    events_dir: Path = PROJECT_DIR / 'events'
+    events_dir: Path = PROJECT_DIR / EVENTS_FOLDER
     events_dir.mkdir(exist_ok=True)
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
@@ -196,8 +197,8 @@ def create_project():
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
-            f'echo Starting Papi-web FFE client, please wait...\n'
-            f'@rem Papi-web {PAPI_WEB_VERSION} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
+            f'echo Starting Sharly Chess FFE client, please wait...\n'
+            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.copyright} - {SharlyChessConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --ffe\n'
             f'pause\n'
@@ -207,15 +208,15 @@ def create_project():
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
-            f'echo Starting Papi-web ChessEvent client, please wait...\n'
-            f'@rem Papi-web {PAPI_WEB_VERSION} - {PapiWebConfig.copyright} - {PapiWebConfig.url}\n'
+            f'echo Starting Sharly Chess ChessEvent client, please wait...\n'
+            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.copyright} - {SharlyChessConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --chessevent\n'
             f'pause\n'
         )
 
 
-def create_zip():
+def create_zip_files():
     print_interactive_info(f'Creating archive {ZIP_FILE}...')
     ZIP_FILE.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
@@ -227,6 +228,7 @@ def create_zip():
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
         os.chdir(BASE_DIR)
+    shutil.copy(ZIP_FILE, OLD_ZIP_FILE)
 
 
 def build_test():
@@ -242,14 +244,14 @@ def build_test():
 
 def main():
     # option --github is used when generating the EXE file from a GITHUB action
-    # to verify that the name of the tag matches the Papi-web version.
+    # to verify that the name of the tag matches the Sharly Chess version.
     parser = argparse.ArgumentParser()
     parser.add_argument('--github', type=str)
     args = parser.parse_args()
     if args.github:
-        if PAPI_WEB_VERSION != Version(args.github):
+        if SHARLY_CHESS_VERSION != Version(args.github):
             raise InvalidVersion(
-                f'Version [{args.github}] does not match (expected [{PAPI_WEB_VERSION}]).'
+                f'Version [{args.github}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
             )
         else:
             print_interactive_success(f'Version [{args.github}] is valid.')
@@ -262,7 +264,7 @@ def main():
         print_interactive_warning('Translations are not perfect.')
     build_exe()
     create_project()
-    create_zip()
+    create_zip_files()
     build_test()
     clean(clean_zip=False)
 

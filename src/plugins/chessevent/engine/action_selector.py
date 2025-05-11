@@ -24,6 +24,7 @@ from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
+from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
 from utils.enum import Result
 from database.access.papi.papi_database import (
     PapiDatabase,
@@ -125,9 +126,15 @@ class ActionSelector(metaclass=Singleton):
         database.write_info(
             {
                 PapiVariable.NAME: chessevent_tournament.name,
-                PapiVariable.TYPE: chessevent_tournament.type.value,
+                PapiVariable.TYPE: PapiPairingSystem.get_plugin_value(
+                    chessevent_tournament.type
+                )
+                or '',
                 PapiVariable.ROUNDS: chessevent_tournament.rounds,
-                PapiVariable.PAIRING_VARIATION: chessevent_tournament.pairing.value,
+                PapiVariable.PAIRING_VARIATION: PapiPairingVariation.get_plugin_value(
+                    chessevent_tournament.pairing
+                )
+                or '',
                 PapiVariable.TIME_CONTROL: chessevent_tournament.time_control,
                 PapiVariable.LOCATION: chessevent_tournament.location,
                 PapiVariable.ARBITER: chessevent_tournament.arbiter,

@@ -6,7 +6,7 @@
     <div id="home-content" class="content home-content mt-5">
         <div style="max-width: 500px; margin: auto;">
             <div class="d-grid gap-2 col-auto mx-auto">
-                <h1 class="text-center">{{ _('Welcome to Papi-web!') }}</h1>
+                <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
                 <div
                     class="row justify-content-md-center"
                 >
@@ -53,10 +53,10 @@
                     <tbody>
                         <tr>
                             <th scope="row">
-                                {{ _('From the Papi-web server') }}
+                                {{ _('From the Sharly Chess server') }}
                             </th>
                             <td>
-                                <a href="{{ papi_web_config.local_url }}" target="_blank">{{ papi_web_config.local_url }}</a>
+                                <a href="{{ sharly_chess_config.local_url }}" target="_blank">{{ sharly_chess_config.local_url }}</a>
                             </td>
                         </tr>
                         <tr>
@@ -64,8 +64,8 @@
                                 {{ _('From the local network (LAN/WAN)') }}
                             </th>
                             <td>
-                                {% if papi_web_config.lan_url %}
-                                    <a href="{{ papi_web_config.lan_url }}" target="_blank">{{ papi_web_config.lan_url }}</a>
+                                {% if sharly_chess_config.lan_url %}
+                                    <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
                                 {% else %}
                                     <span class="fst-italic">-</span>
                                 {% endif %}

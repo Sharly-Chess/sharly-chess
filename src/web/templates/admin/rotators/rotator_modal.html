@@ -59,8 +59,8 @@
                             {{ admin_macros.number_input(
                                 name='delay',
                                 label=_('Delay:'),
-                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=papi_web_config.default_rotator_delay),
-                                help_text=_('The rotating delay between two screens (by default %(default)d seconds).', default=papi_web_config.default_rotator_delay),
+                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=sharly_chess_config.default_rotator_delay),
+                                help_text=_('The rotating delay between two screens (by default %(default)d seconds).', default=sharly_chess_config.default_rotator_delay),
                                 data=data, errors=errors,
                                 min=1
                             ) }}

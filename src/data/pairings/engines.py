@@ -8,7 +8,7 @@ import trf
 from packaging.version import Version
 
 from common import TMP_DIR, BASE_DIR
-from common.exception import PapiWebException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
@@ -29,7 +29,7 @@ class PairingEngine(ABC):
         """Generate a list of boards matching all the pairings of tournament
         *tournament* at round *at_round*.
         Bye players should not be taken into account.
-        If the pairing generation fails, raise a PapiWebException."""
+        If the pairing generation fails, raise a SharlyChessException."""
 
     @abstractmethod
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
@@ -164,7 +164,7 @@ class BbpPairings(PairingEngine):
             encoding='utf-8',
         )
         if not pairings_file_path.exists():
-            raise PapiWebException(
+            raise SharlyChessException(
                 f'{tournament.log_prefix}round {round_} - Pairing generation '
                 f'with BbpPairings failed with status {result.returncode}.\n'
                 f'stdout: {result.stdout}\nstderr: {result.stderr}'

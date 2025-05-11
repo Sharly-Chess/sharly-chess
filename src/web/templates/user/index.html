@@ -22,7 +22,7 @@
             hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
             hx-get="{{ url_for('user-tab', user_tab=user_tab) }}"
             hx-target="body"
-            hx-trigger="every {{ papi_web_config.user_index_update_delay }}s queue:none"
+            hx-trigger="every {{ sharly_chess_config.user_index_update_delay }}s queue:none"
             hx-indicator="#please-wait"
         ></div>
     {% endif %}

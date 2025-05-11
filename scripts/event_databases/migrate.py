@@ -6,7 +6,7 @@ from utils.scripts import init_script
 
 arguments = init_script()
 
-from common.exception import PapiWebException  # Noqa E402
+from common.exception import SharlyChessException  # Noqa E402
 from common.logger import (  # Noqa E402
     print_interactive_info,
     print_interactive_error,
@@ -99,7 +99,7 @@ if __name__ == '__main__':
                         print_interactive_success('OK')
                     else:
                         print_interactive_info('TO UPDATE')
-            except PapiWebException as e:
+            except SharlyChessException as e:
                 print_interactive_error(f'NOK\n\t{e}')
         sys.exit(0)
 
@@ -125,5 +125,5 @@ if __name__ == '__main__':
         with database:
             try:
                 database.migration_managers[0].migrate(migration)
-            except PapiWebException as e:
+            except SharlyChessException as e:
                 print_interactive_error(str(e))

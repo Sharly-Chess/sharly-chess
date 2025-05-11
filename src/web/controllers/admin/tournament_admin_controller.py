@@ -14,7 +14,7 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.input_output import (
     PlayerUpdaterManager,
@@ -93,7 +93,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id', '')
+        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
         rounds: int | None = None
@@ -734,7 +734,7 @@ class TournamentAdminController(BaseEventAdminController):
         file_name = WebContext.form_data_to_str(
             data, 'filename'
         ) or WebContext.form_data_to_str(data, 'uniq_id', '')
-        return dir_path / f'{file_name}.{PapiWebConfig.papi_ext}'
+        return dir_path / f'{file_name}.{SharlyChessConfig.papi_ext}'
 
     def _admin_tournament_update(
         self,

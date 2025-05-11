@@ -5,7 +5,7 @@ All the classes of this module are basic data classes stored in the event databa
 from dataclasses import dataclass, field
 from typing import Any
 
-from common.papi_web_config import PapiWebConfig
+from common.sharly_chess_config import SharlyChessConfig
 
 
 @dataclass
@@ -183,7 +183,7 @@ class StoredEvent:
     public: bool = False
     path: str | None = None
     location: str | None = None
-    hide_background_image: bool = PapiWebConfig.default_hide_background_image
+    hide_background_image: bool = SharlyChessConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None
     update_password: str | None = None

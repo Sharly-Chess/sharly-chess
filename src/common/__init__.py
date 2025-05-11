@@ -11,8 +11,8 @@ import unicodedata
 from packaging.version import Version
 
 
-APP_NAME: str = 'papi-web'
-PAPI_WEB_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
+APP_NAME: str = 'sharly-chess'
+SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
@@ -91,18 +91,18 @@ if DEVEL_ENV:
     with suppress(KeyError):
         with open(BASE_DIR / 'pyproject.toml', 'rb') as f:
             version = tomllib.load(f)['project']['version']
-        if Version(version) != PAPI_WEB_VERSION:
+        if Version(version) != SHARLY_CHESS_VERSION:
             from common.logger import logger
 
             logger.critical(
                 'Installed %s version %s does not match defined '
                 'version %s. Run `pip install -e .` then run %s again.',
                 APP_NAME,
-                PAPI_WEB_VERSION,
+                SHARLY_CHESS_VERSION,
                 version,
                 APP_NAME,
             )
-            raise ValueError(f'{PAPI_WEB_VERSION=}, {version=}')
+            raise ValueError(f'{SHARLY_CHESS_VERSION=}, {version=}')
 
 
 def check_rgb_str(color: str) -> str:

@@ -27,7 +27,7 @@ class TieBreakTestCase(BaseTestCase, ABC):
         """The 2 tournaments used in these tests are from the TEC
         'Exercises in Tie-Breaking' document. The id of the players in
         the papi databases are similar but start from 2 instead of 1."""
-        return Player.player_papi_id_from_papi_web_id(player_id) - 1
+        return Player.player_papi_id_from_sharly_chess_id(player_id) - 1
 
     def get_player_values[T](
         self,
