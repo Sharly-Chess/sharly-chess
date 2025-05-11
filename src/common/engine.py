@@ -575,32 +575,6 @@ class Engine(ABC):
             )
             try:
                 entries: list[dict[str, Any]] = json.loads(data)
-                fake_version: str = '2.7.3'
-                entries.append(
-                    {
-                        'tag_name': fake_version,
-                        'draft': False,
-                        'assets': [
-                            {
-                                'name': f'sharly-chess-{fake_version}.zip',
-                                'browser_download_url': f'https://github.com/Sharly-Chess/sharly-chess/releases/download/{fake_version}/sharly-chess-{fake_version}.zip',
-                            }
-                        ],
-                    },
-                )
-                fake_version: str = '2.7.3b6'
-                entries.append(
-                    {
-                        'tag_name': fake_version,
-                        'draft': False,
-                        'assets': [
-                            {
-                                'name': f'sharly-chess-{fake_version}.zip',
-                                'browser_download_url': f'https://github.com/Sharly-Chess/sharly-chess/releases/download/{fake_version}/sharly-chess-{fake_version}.zip',
-                            }
-                        ],
-                    },
-                )
             except JSONDecodeError as ex:
                 logger.warning('Invalid response from GitHub: [%s].', ex)
                 return None, None
