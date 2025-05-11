@@ -11,6 +11,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 ### Technical appendices
 
 - [Detailed roadmap](docs/technical-appendices/detailed-roadmap.md)
+- [Files and folders](docs/technical-appendices/files.md)
 - [Interfaçing _Sharly Chess_ with _ChessEvent_](docs/technical-appendices/chessevent-interfacing.md)
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
 - [Description of the databases](docs/technical-appendices/databases.md)

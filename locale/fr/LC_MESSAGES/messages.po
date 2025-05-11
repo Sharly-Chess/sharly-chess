@@ -1845,7 +1845,7 @@ msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
-msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess:"
+msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
 
 msgid "ID (unique):"
 msgstr "Identifiant (unique) :"

@@ -5,6 +5,7 @@
 - Mise en ligne du site web https://sharly-chess.com (2.6.0)
 - Déplacement des utilitaires de ``bin/`` vers ``tools/`` (2.6.0)
 - Amélioration des logs
+- Amélioration de la mise à jour de l'application
 
 ## Interface web
 

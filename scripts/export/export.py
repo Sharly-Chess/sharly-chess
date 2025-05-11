@@ -26,7 +26,7 @@ from PyInstaller.__main__ import run
 # Needs to be imported first to avoid circular import
 from plugins.manager import plugin_manager  # Noqa
 
-from common import BASE_DIR, enable_experimental_features
+from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER
 from data.pairings.engines import BbpPairings
 from common import SHARLY_CHESS_VERSION
 from common.sharly_chess_config import SharlyChessConfig
@@ -187,7 +187,7 @@ def create_project():
     )
     shutil.copytree(bbp_pairings.executable_dir, bbp_pairings_dir, dirs_exist_ok=True)
     # create an empty events dir
-    events_dir: Path = PROJECT_DIR / 'events'
+    events_dir: Path = PROJECT_DIR / EVENTS_FOLDER
     events_dir.mkdir(exist_ok=True)
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
