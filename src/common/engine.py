@@ -596,7 +596,7 @@ class Engine(ABC):
                 if matches := re.match(r'^(\d+\.\d+\.\d+)$', tag_name):
                     version = Version(matches.group(1))
                 elif matches := re.match(
-                    r'^(papi-web|sharly-chess)-(\d+.\d+.\d+(a\d+|b\d+|rc\d+))$',
+                    r'^(\d+.\d+.\d+(a\d+|b\d+|rc\d+))$',
                     tag_name,
                 ):
                     if not current_stable:
