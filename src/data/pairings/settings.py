@@ -1,3 +1,4 @@
+import random
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -15,6 +16,12 @@ class PairingSetting[T](IdentifiableEntity, ABC):
     @abstractmethod
     def template_path(self) -> str:
         """Path of the template used to represent the field in the form."""
+
+    @abstractmethod
+    def tooltip_representation(self, value: T) -> str | None:
+        """String representing the setting in the pairing tooltip
+        located on the tournament card.
+        Returns None if the setting should not be represented."""
 
     @abstractmethod
     def from_form_data(self, data: dict[str, str]) -> T:
@@ -79,6 +86,8 @@ class PairingSetting[T](IdentifiableEntity, ABC):
 
 
 class ColorSeedSetting(PairingSetting[BoardColor]):
+    RANDOM_ID: str = 'R'
+
     @staticmethod
     def static_id() -> str:
         return 'COLOR_SEED'
@@ -91,7 +100,13 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     def template_path(self) -> str:
         return '/admin/pairings/settings/color_seed.html'
 
+    def tooltip_representation(self, value: BoardColor) -> str | None:
+        return value.name
+
     def from_form_data(self, data: dict[str, str]) -> BoardColor:
+        value = data[self.id]
+        if value == self.RANDOM_ID:
+            return random.choice([BoardColor.WHITE, BoardColor.BLACK])
         return BoardColor(data[self.id])
 
     def to_form_data(self, object_: BoardColor) -> dict[str, str]:
@@ -100,11 +115,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     def get_data_errors(
         self, tournament: 'Tournament', data: dict[str, str]
     ) -> dict[str, str]:
-        try:
-            BoardColor(data.get(self.id, ''))
-            return {}
-        except ValueError:
-            return {self.id: _('Please choose the seed color.')}
+        return {}
 
     @classmethod
     def default_value(cls, tournament: 'Tournament') -> BoardColor:
@@ -143,7 +154,11 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
 
     @property
     def options(self) -> dict[str, str]:
-        return {'': '-'} | {color.value: color.name for color in BoardColor}
+        return {
+            self.RANDOM_ID: _('Random'),
+            BoardColor.WHITE.value: BoardColor.WHITE.name,
+            BoardColor.BLACK.value: BoardColor.BLACK.name,
+        }
 
 
 class BergerNumbersSetting(PairingSetting[dict[int, int]]):
@@ -153,11 +168,14 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
 
     @staticmethod
     def static_name() -> str:
-        return _('Berger numbers')
+        return ''
 
     @property
     def template_path(self) -> str:
         return '/admin/pairings/settings/berger_numbers.html'
+
+    def tooltip_representation(self, value: dict[int, int]) -> str | None:
+        return None
 
     def from_form_data(self, data: dict[str, str]) -> dict[int, int]:
         return {

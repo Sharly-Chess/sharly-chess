@@ -68,8 +68,6 @@ class PairingEngine(ABC):
         Returns an explanation message if it is, None if it is not."""
         if tournament.check_in_open:
             return _('Pairings disabled while check-in is open.')
-        if not tournament.are_pairing_settings_valid:
-            return _('Settings must be configured before generating the pairings.')
         return self.invalid_player_count_message(tournament)
 
     def pairings_diff(
@@ -78,7 +76,7 @@ class PairingEngine(ABC):
         """For round *round_* of tournament *tournament*, get the diff between
         the real pairings and the expected ones.
         Returns a list of real board / expected board when the boards differ."""
-        if round_ > tournament.current_round:
+        if not tournament.round_has_pairings(round_):
             raise ValueError(f'No pairings for round {round_}')
         pairings_diff: list[tuple[Board | None, Board | None]] = []
         for player in tournament.players:
@@ -119,7 +117,6 @@ class BbpPairings(PairingEngine):
         return self.executable_dir / 'bbpPairings.exe'
 
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
-        """Returns an explanation message if the player count is invalid, or None if it is."""
         if tournament.player_count <= tournament.rounds:
             return _(
                 'Pairings generation not allowed if '
@@ -222,6 +219,8 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
     def get_berger_table(cls, player_count: int) -> dict[int, list[tuple[int, int]]]:
         if player_count <= 2:
             raise ValueError(f'There must be at least 3 players, got {player_count}')
+        if player_count % 2 == 1:
+            player_count += 1
         round_count = cls.get_berger_table_round_count(player_count)
         previous_pairings = [
             (i + 1, player_count - i) for i in range(player_count // 2)
@@ -245,7 +244,7 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
         player_count = tournament.player_count
         if player_count < self.MIN_PLAYERS:
             return _(
-                'Too few players to generate the pairings (minimum: {min})'
+                'Too few players to generate the pairings (minimum: {min}).'
             ).format(min=self.MIN_PLAYERS)
         round_count = self.get_round_count(player_count)
         if tournament.rounds != round_count:

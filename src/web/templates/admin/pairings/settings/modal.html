@@ -10,7 +10,11 @@
         <div class="modal-body">
             <form
                 id="modal-form"
-                hx-patch="{{ url_for('admin-pairings-settings-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                {% if admin_tournament.pairing_system.pair_tournament_from_settings_modal %}
+                    hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                {% else %}
+                    hx-patch="{{ url_for('admin-pairings-settings-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
@@ -36,8 +40,13 @@
                 form="modal-form"
                 class="text-nowrap white btn btn-primary"
             >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') }}
+                {% if admin_tournament.pairing_system.pair_tournament_from_settings_modal %}
+                    <i class="bi-shuffle pe-1"></i>
+                    {{ _('Pair tournament') }}
+                {% else %}
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                {% endif %}
             </button>
         </div>
     </div>
