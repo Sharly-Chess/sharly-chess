@@ -80,9 +80,7 @@ class PairingTestCase(BaseTestCase):
         """Assert that the generated Berger table for *player_count* players
         is the same as the one defined in the FIDE handbook (section C.05.Annex 1)
         """
-        self.assertEqual(
-            BergerPairingEngine.generate_berger_table(player_count), fide_table
-        )
+        self.assertEqual(BergerPairingEngine.get_berger_table(player_count), fide_table)
 
     def test_berger_4_players_table(self):
         self.assert_generated_berger_table_equals_fide_table(
