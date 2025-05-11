@@ -146,7 +146,15 @@ class Engine(ABC):
                 previous_versions.sort()
                 for version, prefix in previous_versions:
                     version_dir = Path('..') / f'{prefix}-{version}'
-                    files: list[Path] = list(version_dir.glob('events/*.db'))
+                    files: list[Path] = list(
+                        version_dir.glob(
+                            f'{EVENTS_FOLDER}/*.{sharly_chess_config.event_database_ext}'
+                        )
+                    ) + list(
+                        version_dir.glob(
+                            f'{EVENTS_FOLDER}/*.{sharly_chess_config.event_database_old_ext}'
+                        )
+                    )
                     if files:
                         logger.info(
                             '- Version [%s] (%s)',

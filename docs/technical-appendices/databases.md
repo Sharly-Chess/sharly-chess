@@ -38,7 +38,9 @@
 | `name`    | `TEXT`    | NOT NULL   | The name of the extension                                                             |
 | `enabled` | `INTEGER` | NOT NULL   | Boolean:<br/>- `1`: The extension is enabled;<br/>- `0`: The extension is not enabled |
 
-## Event Database (`events/*.db`)
+## Event Database (`events/*.sce`)
+
+``sce`` stands for **S**harly **C**hess **E**vent.
 
 ### `info` table (general information about the event)
 
@@ -134,6 +136,11 @@
 | `max_byes`                            | `INTEGER` |                                            |            | The maximum number of byes a player can claim                                                                                                              |
 | `last_rounds_no_byes`                 | `INTEGER` |                                            |            | The number of final rounds for which players cannot take byes                                                                                              |
 | `tie_breaks`                          | `TEXT`    |                                            |            | The tie-breaks used in JSON format (list of dictionaries in the format {'type': str, 'options': dict[str,any]})                                            |
+| `rounds`                              | `INTEGER` | NOT NULL<br/>DEFAULT 1                     |            | The tournament's round count                                                                                                                               |
+| `rating`                              | `INTEGER` | NOT NULL<br/>DEFAULT 1                     |            | The tournament's rating:<br/>- `1`: Estimated<br/>- `2`: National<br/>- `3`: Fide                                                                          |
+| `pairing`                             | `TEXT`    |                                            |            | The tournament's pairing as a string                                                                                                                       |
+| `pairing_settings`                    | `TEXT`    |                                            |            | The tournament's pairing settings, in JSON format                                                                                                          |
+| `current_round`                       | `INTEGER` |                                            |            | The tournament's current round                                                                                                                             |
 | `chessevent_user_id`                  | `TEXT`    |                                            | chessevent | The username used to log in to the _ChessEvent_ platform                                                                                                   |
 | `chessevent_password`                 | `TEXT`    |                                            | chessevent | The password used to log in to the _ChessEvent_ platform                                                                                                   |
 | `chessevent_event_id`                 | `TEXT`    |                                            | chessevent | The _ChessEvent_ event ID on the platform                                                                                                                  |
