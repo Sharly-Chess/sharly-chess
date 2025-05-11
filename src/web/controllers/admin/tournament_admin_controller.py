@@ -93,7 +93,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id', '')
+        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
         tie_breaks: list[dict] | None = None
         rounds: int | None = None

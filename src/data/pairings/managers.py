@@ -1,3 +1,5 @@
+from typing import cast
+
 from data.pairings import systems, PairingVariation
 from data.pairings.systems import PairingSystem
 from data.pairings.variations import (
@@ -42,8 +44,8 @@ class RoundRobinVariationManager(EntityManager[RoundRobinVariation]):
 class PairingVariationManager(EntityManager[PairingVariation]):
     @staticmethod
     def entity_types() -> list[type[PairingVariation]]:
-        variations: list[type[PairingVariation]] = (
-            SwissVariationManager.entity_types()
-            + RoundRobinVariationManager.entity_types()
+        return cast(
+            list[type[PairingVariation]], SwissVariationManager.entity_types()
+        ) + cast(
+            list[type[PairingVariation]], RoundRobinVariationManager.entity_types()
         )
-        return variations
