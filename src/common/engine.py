@@ -21,6 +21,7 @@ from common import (
     REQUEST_TIMEOUT,
     EVENTS_FOLDER,
     DEVEL_ENV,
+    EVENTS_DIR,
 )
 from common.i18n import _, set_locale
 from common.installation_checker import InstallationChecker
@@ -101,7 +102,22 @@ class Engine(ABC):
                 raise ValueError(f'choice=[{choice}]')
         if not EventLoader.get(request=None).event_uniq_ids:
             logger.info(
-                'No event database found, looking for previously installed releases of Sharly Chess...'
+                'No event database found, looking for old event databases in the current release...'
+            )
+            files: list[Path] = list(
+                EVENTS_DIR.glob(f'*.{sharly_chess_config.event_database_old_ext}')
+            )
+            for file in files:
+                event_uniq_id: str = file.stem
+                logger.info('Recovering event [%s]...', event_uniq_id)
+                event_database: EventDatabase = EventDatabase(event_uniq_id)
+                # rename the old event database with the new extension
+                file.rename(event_database.file)
+                # now load the new database
+                EventLoader.get(request=None).load_event(event_uniq_id)
+        if not EventLoader.get(request=None).event_uniq_ids:
+            logger.info(
+                'Still no event database found, looking for previously installed releases of Sharly Chess...'
             )
             previous_versions: list[tuple[Version, str]] = []
             for version_dir in Path('..').glob('*'):
