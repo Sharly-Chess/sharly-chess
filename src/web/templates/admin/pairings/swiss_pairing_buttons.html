@@ -23,10 +23,10 @@
                         {% else %}
                             hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                             hx-trigger="click"
+                            preload
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         {% endif %}
-                        preload
                         hx-target="body"
                         hx-indicator="#please-wait"
                         {% if pairings_generation_disabled_message %}
@@ -54,12 +54,12 @@
                     {% else %}
                         hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
                         hx-trigger="click"
+                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     {% endif %}
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    preload
                 >
                     {{ _('Unpair') }}
                 </button>

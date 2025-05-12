@@ -40,7 +40,6 @@
                 hx-post="{{ url_for('admin-pairings-unpair-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
             >
                 {{ _('Unpair tournament') }}
             </button>
@@ -54,7 +53,6 @@
                 hx-put="{{ url_for('admin-tournament-set-current-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, current_round=admin_round + 1) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
             >
                 {{ _('End round') }}
             </button>

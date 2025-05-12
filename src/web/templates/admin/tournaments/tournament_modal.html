@@ -418,7 +418,6 @@
                 hx-post="{{ url_for('admin-tournament-file-status', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="#file-status"
                 hx-indicator="#please-wait"
-                preload
             >
                 {% for field in ['uniq_id', 'path', 'filename'] %}
                     <input

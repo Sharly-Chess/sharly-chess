@@ -87,7 +87,6 @@
                     hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    preload
                 >
                     {{ _('Unpair round #%(round)d', round=admin_round) }}
                 </button>
