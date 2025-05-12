@@ -13,7 +13,6 @@ htmx.defineExtension('morphdom-swap', {
             },
             onBeforeElUpdated: function (fromEl, toEl) {
                 if (fromEl.nodeName === "SCRIPT" && toEl.nodeName === "SCRIPT") {
-                    console.log('onBeforeElUpdated')
                     var script = document.createElement('script');
                     [...toEl.attributes].forEach( attr => { script.setAttribute(attr.nodeName, attr.nodeValue) })
                     script.innerHTML = toEl.innerHTML;
