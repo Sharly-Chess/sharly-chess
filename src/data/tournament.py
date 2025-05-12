@@ -1297,6 +1297,7 @@ class Tournament:
                 event_database.set_tournament_last_check_in_update(
                     self.stored_tournament.id
                 )
+                self.stored_tournament.check_in_open = True
                 event_database.set_tournament_check_in(self.id, True)
                 papi_database.open_check_in(self.current_round + 1)
                 papi_database.commit()
@@ -1316,6 +1317,7 @@ class Tournament:
             )
             event_database.set_tournament_check_in(self.id, False)
             event_database.commit()
+            self.stored_tournament.check_in_open = False
         with self.papi_write_database as papi_database:
             papi_database.close_check_in(
                 self.current_round + 1,
