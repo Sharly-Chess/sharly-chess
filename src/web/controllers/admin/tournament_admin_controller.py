@@ -230,8 +230,8 @@ class TournamentAdminController(BaseEventAdminController):
             ):
                 not_updatable_values: dict[str, str] = {
                     'rating': str(tournament.rating.value),
-                    'pairing': str(tournament.pairing_variation.id),
-                    'pairing_system': str(tournament.pairing_system.id),
+                    tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
+                    'pairing_system': tournament.pairing_system.id,
                 }
                 if not tournament.pairing_system.allow_rounds_update_once_started:
                     not_updatable_values |= {'rounds': str(tournament.rounds)}
