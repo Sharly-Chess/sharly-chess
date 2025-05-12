@@ -13,7 +13,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from data.board import Board
-from data.loader import EventLoader
 from data.player import Player
 from data.tournament import Tournament
 from utils.enum import Result
@@ -244,9 +243,6 @@ class CheckInUserController(BaseInputUserController):
         SessionHandler.set_session_user_last_check_in_updated(
             request, player_web_context.tournament.id, player_web_context.player.id
         )
-        EventLoader.get(request=request).clear_cache(
-            player_web_context.user_event.uniq_id
-        )
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -305,9 +301,6 @@ class IllegalMoveUserController(BaseInputUserController):
                     player_web_context.tournament.id,
                     player_web_context.player.id,
                 )
-        EventLoader.get(request=request).clear_cache(
-            player_web_context.user_event.uniq_id
-        )
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
                 request,
@@ -445,9 +438,6 @@ class ResultUserController(BaseInputUserController):
             )
         SessionHandler.set_session_last_result_updated(
             request, board_web_context.tournament.id, round_, board_web_context.board.id
-        )
-        EventLoader.get(request=request).clear_cache(
-            board_web_context.user_event.uniq_id
         )
         web_context: BasicScreenOrFamilyUserWebContext = (
             BasicScreenOrFamilyUserWebContext(
