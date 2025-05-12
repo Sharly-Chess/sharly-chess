@@ -4378,6 +4378,9 @@ msgstr ""
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr ""
 
+msgid "Unpairing all the boards of this round is not allowed because the round has results."
+msgstr ""
+
 msgid "Unrated Draw"
 msgstr ""
 
@@ -4793,4 +4796,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Unpairing all the boards of this round because the round has results."
+#~ msgstr ""
 
