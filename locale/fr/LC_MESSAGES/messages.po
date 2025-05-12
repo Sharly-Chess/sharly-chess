@@ -1888,9 +1888,6 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 msgid "In play"
 msgstr "En jeu"
 
-msgid "Pending"
-msgstr "À venir"
-
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -2752,6 +2749,9 @@ msgstr "Le motif [{pattern}] ne correspond à aucun écran."
 msgid "Penalty (handicap, seconds):"
 msgstr "Pénalité (handicap, en secondes) :"
 
+msgid "Pending"
+msgstr "À venir"
+
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf"
 
@@ -3391,6 +3391,12 @@ msgstr "Écrans : %(num)d"
 
 msgid "Search"
 msgstr "Recherche"
+
+msgid "Search the FFE database for names, FFE ID, ..."
+msgstr "Rechercher dans la base de données FFE par nom, identifiant FFE..."
+
+msgid "Search the FIDE database for names, FIDE ID, federation..."
+msgstr "Rechercher dans la base de données FIDE par nom, identifiant FIDE, fédération…"
 
 msgid "Searching..."
 msgstr "Recherche en cours..."

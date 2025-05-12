@@ -1888,9 +1888,6 @@ msgstr ""
 msgid "In play"
 msgstr ""
 
-msgid "Pending"
-msgstr ""
-
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -2752,6 +2749,9 @@ msgstr ""
 msgid "Penalty (handicap, seconds):"
 msgstr ""
 
+msgid "Pending"
+msgstr ""
+
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf."
 
@@ -3390,6 +3390,12 @@ msgid "Screens: %(num)d"
 msgstr ""
 
 msgid "Search"
+msgstr ""
+
+msgid "Search the FFE database for names, FFE ID, ..."
+msgstr ""
+
+msgid "Search the FIDE database for names, FIDE ID, federation..."
 msgstr ""
 
 msgid "Searching..."

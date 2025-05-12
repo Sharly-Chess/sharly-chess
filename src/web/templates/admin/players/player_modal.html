@@ -40,30 +40,21 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {#
-                                TODO Can not use a help text because the dropdown ul is placed under the help div
-                                help_text=
-                                    _('Search the FIDE database for names, FIDE ID, federation...')
-                                    if fide_search_available else
-                                    '',
-                            #}
                             <span class="dropdown">
                                 {{ admin_macros.text_input(
                                     name='search_fide',
                                     label=_('FIDE database:'),
-                                    help_text='',
+                                    help_text=_('Search the FIDE database for names, FIDE ID, federation...')
+                                        if fide_search_available else
+                                        _('The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases.'),
                                     placeholder=_('E.g.: john doe'),
-                                    errors={} if fide_search_available else {'search_fide': _('The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases.'), },
                                     disabled=not fide_search_available,
                                     hx_get=url_for('search-fide', event_uniq_id=admin_event.uniq_id) if fide_search_available else '',
                                     hx_trigger='keyup changed delay:0.2s',
                                     hx_target='#fide-search-results',
-                                    with_indicator=true
+                                    with_indicator=true,
+                                    dropdown_id='fide-search-results' if fide_search_available else ''
                                 ) }}
-                                {% if fide_search_available %}
-                                    <ul id="fide-search-results" class="dropdown-menu fide-search-results p-0">
-                                    </ul>
-                                {% endif %}
                             </span>
                         </div>
                         {% for search_template in plugin_search_templates %}
