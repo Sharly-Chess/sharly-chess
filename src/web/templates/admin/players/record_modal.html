@@ -81,7 +81,7 @@
                                 {% if admin_player.tournament.current_round == round %}
                                     {% set text=_('Playing') %}
                                 {% else %}
-                                    {% set text=_('Incoming') %}
+                                    {% set text=_('Pending') %}
                                 {% endif %}
                             {% elif pairing.exempt %}
                                 {% set text=_('Pairing Allocated Bye') %}

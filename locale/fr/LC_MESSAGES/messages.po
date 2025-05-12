@@ -1888,7 +1888,7 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 msgid "In play"
 msgstr "En jeu"
 
-msgid "Incoming"
+msgid "Pending"
 msgstr "À venir"
 
 msgid "Incorrect installation, exiting."
@@ -3824,7 +3824,7 @@ msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChesssEvent
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
 
-msgid "The player has already been paired, it can't be removed from its tournament."
+msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
 
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."

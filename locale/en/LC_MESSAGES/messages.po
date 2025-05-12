@@ -1888,7 +1888,7 @@ msgstr ""
 msgid "In play"
 msgstr ""
 
-msgid "Incoming"
+msgid "Pending"
 msgstr ""
 
 msgid "Incorrect installation, exiting."
@@ -3824,7 +3824,7 @@ msgstr ""
 msgid "The phone numbers."
 msgstr ""
 
-msgid "The player has already been paired, it can't be removed from its tournament."
+msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr ""
 
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
