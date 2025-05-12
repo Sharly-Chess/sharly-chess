@@ -1875,7 +1875,7 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
-msgid "Impossible to add players to tournament [{tournament_uniq_id}]"
+msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #, python-format

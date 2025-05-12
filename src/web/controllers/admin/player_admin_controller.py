@@ -1194,7 +1194,7 @@ class PlayerAdminController(BaseEventAdminController):
         if not dst_tournament.can_add_players:
             raise ValueError(
                 _(
-                    'Impossible to add players to tournament [{tournament_uniq_id}]'
+                    'Impossible to add players to tournament [{tournament_uniq_id}].'
                 ).format(tournament_uniq_id=src_tournament.uniq_id)
             )
         if player.fide_id in dst_tournament.players_by_fide_id:

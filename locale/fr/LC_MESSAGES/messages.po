@@ -1875,8 +1875,8 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
-msgid "Impossible to add players to tournament [{tournament_uniq_id}]"
-msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]"
+msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
 
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
@@ -3825,7 +3825,7 @@ msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
 
 msgid "The player has already been paired, it can't be removed from its tournament."
-msgstr "le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
+msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
 
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament_uniq_id}]."
