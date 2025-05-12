@@ -868,6 +868,7 @@ class Tournament:
             )
             event_database.commit()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
+        self.clear_cache()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current
@@ -881,6 +882,7 @@ class Tournament:
             logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
             logger.info('No illegal move found for player [%s].', player.id)
+        self.clear_cache()
         return deleted
 
     def get_illegal_moves(self, at_round: int) -> Counter[int]:
