@@ -29,8 +29,8 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
 #, python-format
-msgid "%(first_name)s %(last_name)s - Round %(num)s"
-msgstr "%(first_name)s %(last_name)s - Ronde %(num)s"
+msgid "%(last_name)s %(first_name)s - Round %(num)s"
+msgstr "%(last_name)s %(first_name)s - Ronde %(num)s"
 
 #, python-format
 msgid "%(lib)s version"
