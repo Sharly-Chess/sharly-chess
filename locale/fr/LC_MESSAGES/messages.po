@@ -4378,6 +4378,9 @@ msgstr "Non apparié·es : caché·es"
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
 
+msgid "Unpairing all the boards of this round is not allowed because the round has results."
+msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
+
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
 
