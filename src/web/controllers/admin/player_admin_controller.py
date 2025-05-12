@@ -1047,10 +1047,8 @@ class PlayerAdminController(BaseEventAdminController):
                 if tournament.id != previous_tournament.id:
                     tournament.add_player(player)
                     previous_tournament.delete_player(player)
-                    previous_tournament.clear_cache(True)
                 else:
                     tournament.update_player(player)
-                tournament.clear_cache(True)
             case 'create':
                 assert player.tournament is not None
                 plugin_manager.hook.set_player_default_ratings(
@@ -1085,7 +1083,6 @@ class PlayerAdminController(BaseEventAdminController):
                         data=data,
                     )
                 tournament.add_player(player)
-                tournament.clear_cache(True)
             case 'delete':
                 assert player.tournament is not None
                 tournament = player.tournament
@@ -1102,7 +1099,6 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 else:
                     tournament.delete_player(player)
-                    tournament.clear_cache(True)
             case _:
                 raise ValueError(f'action=[{action}]')
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
@@ -1145,8 +1141,6 @@ class PlayerAdminController(BaseEventAdminController):
             self._validate_player_tournament_move(admin_player, dst_tournament)
             dst_tournament.add_player(admin_player)
             src_tournament.delete_player(admin_player)
-            dst_tournament.clear_cache(True)
-            src_tournament.clear_cache(True)
             Message.success(
                 request,
                 _(
@@ -1353,7 +1347,6 @@ class PlayerAdminController(BaseEventAdminController):
             web_context.admin_player.tournament.set_player_byes(
                 web_context.admin_player, new_byes
             )
-            web_context.admin_player.tournament.clear_cache()
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @delete(
@@ -1414,7 +1407,6 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament_uniq_id=admin_tournament.uniq_id
             ),
         )
-        admin_tournament.clear_cache(True)
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @get(
@@ -1471,7 +1463,6 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament_uniq_id=admin_tournament.uniq_id
             ),
         )
-        admin_tournament.clear_cache(True)
         return HTMXTemplate(
             template_name='common/empty.html',
             re_swap='none',
@@ -1551,7 +1542,6 @@ class PlayerAdminController(BaseEventAdminController):
         if admin_player.tournament is None:
             raise RuntimeError('admin_player.tournament not defined')
         admin_player.tournament.check_in_player(admin_player, check_in)
-        admin_player.tournament.clear_cache(True)
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @patch(

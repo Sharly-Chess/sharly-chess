@@ -494,7 +494,6 @@ class PairingsAdminController(BaseEventAdminController):
                 Result.from_papi_value(result),
                 web_context.admin_round,
             )
-            tournament.clear_cache()
             web_context = PairingsAdminWebContext(
                 request,
                 data=None,
@@ -597,7 +596,6 @@ class PairingsAdminController(BaseEventAdminController):
                 protected_action=PairingAction.MANUAL_UNPAIRING,
             )
         tournament.unpair_boards([board], round)
-        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -840,7 +838,6 @@ class PairingsAdminController(BaseEventAdminController):
                     )
 
         tournament.set_player_byes(player, new_byes)
-        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -889,7 +886,6 @@ class PairingsAdminController(BaseEventAdminController):
         tournament.pairing_variation.engine.generate_pairings(
             tournament, web_context.admin_round
         )
-        tournament.clear_cache()
         Message.success(
             request,
             _(
@@ -945,10 +941,7 @@ class PairingsAdminController(BaseEventAdminController):
         self._save_pairing_settings_data(tournament, data)
         for round_ in range(1, tournament.rounds + 1):
             tournament.pairing_variation.engine.generate_pairings(tournament, round_)
-        with EventDatabase(event_uniq_id, True) as database:
-            database.set_tournament_current_round(tournament_id, 1)
-            database.commit()
-        tournament.clear_cache()
+        tournament.set_current_round(1)
         Message.success(
             request,
             _(
@@ -998,7 +991,6 @@ class PairingsAdminController(BaseEventAdminController):
             web_context.safety_mode,
         )
         tournament.unpair_boards(boards, round)
-        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1032,10 +1024,7 @@ class PairingsAdminController(BaseEventAdminController):
         for round_ in reversed(range(1, tournament.rounds + 1)):
             boards = tournament.build_boards(round_)
             tournament.unpair_boards(boards, round_)
-        with EventDatabase(event_uniq_id, True) as database:
-            database.set_tournament_current_round(tournament_id, 0)
-            database.commit()
-        tournament.clear_cache()
+        tournament.set_current_round(0)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1168,7 +1157,6 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = admin_player.tournament
         assert tournament is not None
         tournament.check_in_player(admin_player, bool(check_in))
-        tournament.clear_cache()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1270,15 +1258,7 @@ class PairingsAdminController(BaseEventAdminController):
             stored_settings[setting.id] = setting.to_stored_value(
                 setting.from_form_data(data)
             )
-        with EventDatabase(tournament.event.uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(tournament.id, stored_settings)
-            database.commit()
-        for setting in tournament.pairing_variation.settings:
-            setting.save_to_papi_database(
-                tournament.papi_write_database, stored_settings[setting.id]
-            )
-        tournament.stored_tournament.pairing_settings = stored_settings
-        tournament.clear_cache(clear_papi_cache=True)
+        tournament.update_pairing_settings(stored_settings)
 
     @put(
         path='/admin/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',

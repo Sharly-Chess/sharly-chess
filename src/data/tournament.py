@@ -1041,6 +1041,7 @@ class Tournament:
             event_database.commit()
         self.players_by_id[board.white_player.id].pairings[round_].result = white_result
         self.players_by_id[board.black_player.id].pairings[round_].result = black_result
+        self.clear_cache()
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
@@ -1088,6 +1089,7 @@ class Tournament:
                 event_database.commit()
                 papi_database.commit()
         player.check_in = check_in
+        self.clear_cache(True)
 
     def add_player(self, player: Player):
         """Adds a new player to the tournament, returns the player's ID."""
@@ -1143,6 +1145,7 @@ class Tournament:
                 )
             papi_database.write_player_dict(data)
             papi_database.commit()
+        self.clear_cache(True)
 
     def delete_player(
         self,
@@ -1153,6 +1156,7 @@ class Tournament:
         with self.papi_write_database as papi_database:
             papi_database.delete_player(player.ref_id)
             papi_database.commit()
+        self.clear_cache(True)
 
     def update_player(
         self,
@@ -1162,6 +1166,7 @@ class Tournament:
         with self.papi_write_database as papi_database:
             papi_database.update_player(player)
             papi_database.commit()
+        self.clear_cache(True)
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
@@ -1216,6 +1221,7 @@ class Tournament:
                 if board.result == Result.PAIRING_ALLOCATED_BYE:
                     database.remove_exempt_pairing(round_)
             database.commit()
+        self.clear_cache()
 
     def permute_board_colors(self, board: Board, round_: int):
         assert board.white_player is not None
@@ -1293,6 +1299,7 @@ class Tournament:
                 papi_database.open_check_in(self.current_round + 1)
                 papi_database.commit()
             event_database.commit()
+        self.clear_cache(True)
 
     def close_check_in(self, zpbs_last_rounds: bool):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
@@ -1313,6 +1320,7 @@ class Tournament:
                 (self.rounds + 1) if zpbs_last_rounds else None,
             )
             papi_database.commit()
+        self.clear_cache(True)
 
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
@@ -1329,3 +1337,21 @@ class Tournament:
                 )
                 player.pairings[round_].result = result
             papi_database.commit()
+        self.clear_cache()
+
+    def set_current_round(self, round_: int):
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_current_round(self.id, round_)
+            database.commit()
+        self.clear_cache()
+
+    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(self.id, pairing_settings)
+            database.commit()
+        for setting in self.pairing_variation.settings:
+            setting.save_to_papi_database(
+                self.papi_write_database, pairing_settings[setting.id]
+            )
+        self.stored_tournament.pairing_settings = pairing_settings
+        self.clear_cache(clear_papi_cache=True)
