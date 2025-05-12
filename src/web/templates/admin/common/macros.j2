@@ -197,6 +197,8 @@ with_indicator: display a loading indicator, optional
     default_checkbox_text='',
     default_value='',
     with_indicator=false,
+    dropdown_id='',
+    dropdown_item='',
     select_options={},
     number_min='',
     number_max='',
@@ -377,6 +379,15 @@ with_indicator: display a loading indicator, optional
                     {% endif %}
                 {% endif %}
             </div>
+            {% if dropdown_id %}
+                <ul id="{{ dropdown_id }}" class="dropdown-menu p-0">
+                    {% if dropdown_item %}
+                        <li class="dropdown-item no-hover text-nowrap">
+                            <span class="fst-italic">{{ dropdown_item }}</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
             {% if help_text %}
                 <div id="{{ id }}-help" class="form-text">
                     {{ help_text }}
@@ -428,6 +439,8 @@ with_indicator: display a loading indicator, optional
     default_value='',
     disabled=false,
     with_indicator=false,
+    dropdown_id='',
+    dropdown_item='',
     hx_get='',
     hx_post='',
     hx_trigger='',
@@ -455,6 +468,8 @@ with_indicator: display a loading indicator, optional
         default_value=default_value,
         disabled=disabled,
         with_indicator=with_indicator,
+        dropdown_id=dropdown_id,
+        dropdown_item=dropdown_item,
         hx_get=hx_get,
         hx_post=hx_post,
         hx_trigger=hx_trigger,
