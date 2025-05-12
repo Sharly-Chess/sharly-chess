@@ -220,16 +220,14 @@
 {% block card_buttons_right %}
     {% if not screen.family %}
         <span {{ macros.tooltip_attributes('info', _('Go to the screen.'), 'top') }}>
-            <button
+
+            <a
                 class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
-                hx-target="body"
-                hx-push-url="true"
-                hx-indicator="#please-wait"
-                preload
+                href="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
+                target="_blank"
             >
                 <i class="bi bi-eye"></i>
-            </button>
+            </a>
         </span>
     {% endif %}
     {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_uniq_id, 'screen', screen.uniq_id) }}
