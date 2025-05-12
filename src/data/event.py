@@ -209,10 +209,7 @@ class Event:
 
     @cached_property
     def player_count(self) -> int:
-        return sum(
-            len(tournament.players_by_name_with_unpaired)
-            for tournament in self.tournaments_by_id.values()
-        )
+        return len(self.players_by_id)
 
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
@@ -593,6 +590,20 @@ class Event:
             self.stored_event.stored_tournaments = stored_tournaments
         for tournament in self.tournaments:
             tournament.check_papi_update()
+
+    def clear_player_cache(self):
+        player_cached_property_names = [
+            'player_count',
+            'players_by_id',
+            'players_sorted_by_name',
+            'gender_counts',
+            'federation_counts',
+            'club_counts',
+            'check_in_counts',
+        ]
+        for property_name in player_cached_property_names:
+            if property_name in self.__dict__:
+                del self.__dict__[property_name]
 
     def get_unused_tournament_uniq_id(
         self,
