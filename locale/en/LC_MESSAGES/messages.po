@@ -4797,6 +4797,3 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "Unpairing all the boards of this round because the round has results."
-#~ msgstr ""
-
