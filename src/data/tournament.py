@@ -567,6 +567,29 @@ class Tournament:
         )
 
     @cached_property
+    def last_paired_round(self) -> int:
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, self.rounds + 1))
+                if self.round_has_pairings(round_)
+            ),
+            0,
+        )
+
+    @cached_property
+    def can_add_players(self) -> bool:
+        """Determines if players can be added to the tournament."""
+        return (
+            self.file_exists
+            and not self.finished
+            and (
+                not self.has_pairings
+                or self.pairing_system.allow_player_addition_once_paired
+            )
+        )
+
+    @cached_property
     def playing(self) -> bool:
         return self.is_round_in_tournament(
             self.current_round

@@ -121,24 +121,23 @@ class PlayerAdminController(BaseEventAdminController):
             assert web_context.admin_player is not None
             return web_context.admin_player
         tournament: Tournament | None = None
-        match action:
-            case 'create':
+        try:
+            tournament_id = WebContext.form_data_to_int(data, field := 'tournament_id')
+            if not tournament_id:
+                raise ValueError('Tournament ID not supplied')
+            tournament = web_context.admin_event.tournaments_by_id[tournament_id]
+        except (ValueError, KeyError):
+            errors[field] = _('Please choose the tournament.')
+        if action == 'update' and tournament is not None:
+            player = web_context.admin_player
+            assert player is not None
+            assert player.tournament is not None
+            if tournament.id != player.tournament.id:
                 try:
-                    tournament_id = WebContext.form_data_to_int(
-                        data, field := 'tournament_id'
-                    )
-                    if not tournament_id:
-                        raise ValueError('Tournament ID not supplied')
-                    tournament = web_context.admin_event.tournaments_by_id[
-                        tournament_id
-                    ]
-                except (ValueError, KeyError):
-                    errors[field] = _('Please choose the tournament.')
-            case 'update':
-                assert web_context.admin_player is not None
-                tournament = web_context.admin_player.tournament
-            case _:
-                raise ValueError(f'action={action}')
+                    cls._validate_player_tournament_move(player, tournament)
+                except ValueError as e:
+                    errors[field] = str(e)
+
         last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('Please enter the last name.')
@@ -592,6 +591,7 @@ class PlayerAdminController(BaseEventAdminController):
             ),
             'admin_players_extra_columns': extra_columns,
             'player_updater_options': PlayerUpdaterManager.options(),
+            'player_addable_tournaments': admin_event.player_addable_tournaments,
         }
 
         match modal:
@@ -714,25 +714,20 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 if errors is None:
                     errors = {}
-                tournament_options: dict[str, str] = (
-                    (
-                        {  # force the choice of the tournament on player creation if several tournaments
-                            '': '-',
-                        }
-                        if (
-                            action == 'create'
-                            and len(
-                                admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
-                            )
-                            > 1
-                        )
-                        else {}
-                    )
-                    | {
-                        str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
-                        for tournament in admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
-                    }
-                )
+                tournaments = admin_event.player_addable_tournaments
+                tournament_options: dict[str, str] = {}
+                if action == 'create' and len(tournaments) > 1:
+                    # force the choice of the tournament on player creation if several tournaments
+                    tournament_options |= {'': '-'}
+                elif action == 'update':
+                    assert admin_player is not None
+                    assert admin_player.tournament is not None
+                    if admin_player.tournament not in tournaments:
+                        tournaments.insert(0, admin_player.tournament)
+                tournament_options |= {
+                    str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
+                    for tournament in tournaments
+                }
 
                 plugin_search_templates = (
                     plugin_manager.hook.get_player_search_template() or []
@@ -1042,11 +1037,19 @@ class PlayerAdminController(BaseEventAdminController):
         match action:
             case 'update':
                 assert player.tournament is not None
+                assert web_context.admin_player is not None
+                assert web_context.admin_player.tournament is not None
+
                 plugin_manager.hook.set_player_default_ratings(
                     federation=web_context.admin_event.federation, player=player
                 )
+                previous_tournament = web_context.admin_player.tournament
                 tournament = player.tournament
-                tournament.update_player(player)
+                if tournament.id != previous_tournament.id:
+                    tournament.add_player(player)
+                    previous_tournament.delete_player(player)
+                else:
+                    tournament.update_player(player)
                 event_loader = EventLoader.get(request=request)
                 event_loader.clear_cache(event_uniq_id)
             case 'create':
@@ -1133,69 +1136,83 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if web_context.admin_player is None:
+        admin_player = web_context.admin_player
+        dst_tournament = web_context.admin_tournament
+        if admin_player is None:
             raise RuntimeError('admin_player not defined')
-        if web_context.admin_tournament is None:
+        if dst_tournament is None:
             raise RuntimeError('admin_tournament not defined')
-        admin_player: Player = web_context.admin_player
-        assert admin_player.tournament is not None
-        src_tournament: Tournament = admin_player.tournament
-
-        if admin_player.has_real_pairings:
-            Message.error(
+        src_tournament = admin_player.tournament
+        assert src_tournament is not None
+        try:
+            self._validate_player_tournament_move(admin_player, dst_tournament)
+            dst_tournament.add_player(admin_player)
+            src_tournament.delete_player(admin_player)
+            event_loader: EventLoader = EventLoader.get(request=request)
+            event_loader.clear_cache(event_uniq_id)
+            Message.success(
                 request,
                 _(
-                    'Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{last_name} {first_name}] has been moved '
+                    'from tournament [{src_tournament_uniq_id}] '
+                    'to tournament [{dst_tournament_uniq_id}].'
                 ).format(
                     last_name=admin_player.last_name,
                     first_name=admin_player.first_name,
+                    src_tournament_uniq_id=src_tournament.uniq_id,
+                    dst_tournament_uniq_id=dst_tournament.uniq_id,
+                ),
+            )
+        except ValueError as e:
+            Message.error(request, str(e))
+        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+
+    @staticmethod
+    def _validate_player_tournament_move(player: Player, dst_tournament: Tournament):
+        """Validate that a player can be moved from its current tournament to *dst_tournament*.
+        Raises a ValueError if it is not possible."""
+
+        src_tournament = player.tournament
+        assert src_tournament is not None
+
+        if player.has_real_pairings:
+            raise ValueError(
+                _(
+                    'Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].'
+                ).format(
+                    last_name=player.last_name,
+                    first_name=player.first_name,
                     tournament_uniq_id=src_tournament.uniq_id,
                 ),
             )
-        else:
-            dst_tournament: Tournament = web_context.admin_tournament
-
-            if not dst_tournament.file_exists:
-                Message.error(
-                    request,
-                    _('Papi file [{tournament_file}] not found.').format(
-                        tournament_file=dst_tournament.file
-                    ),
-                )
-            elif admin_player.fide_id in dst_tournament.players_by_fide_id:
-                Message.error(
-                    request,
-                    _(
-                        'Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].'
-                    ).format(
-                        fide_id=admin_player.fide_id,
-                        tournament_uniq_id=dst_tournament.uniq_id,
-                    ),
-                )
-            elif plugin_error := (
-                plugin_manager.hook.is_tournament_participation_possible(
-                    tournament=dst_tournament, player=admin_player
-                )
-                or None
-            ):
-                Message.error(request, plugin_error)
-            else:
-                dst_tournament.add_player(admin_player)
-                src_tournament.delete_player(admin_player)
-                Message.success(
-                    request,
-                    _(
-                        'Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}].'
-                    ).format(
-                        last_name=admin_player.last_name,
-                        first_name=admin_player.first_name,
-                        src_tournament_uniq_id=src_tournament.uniq_id,
-                        dst_tournament_uniq_id=dst_tournament.uniq_id,
-                    ),
-                )
-                event_loader: EventLoader = EventLoader.get(request=request)
-                event_loader.clear_cache(event_uniq_id)
-        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+        if not dst_tournament.file_exists:
+            raise ValueError(
+                _('Papi file [{tournament_file}] not found.').format(
+                    tournament_file=dst_tournament.file
+                ),
+            )
+        if not dst_tournament.can_add_players:
+            raise ValueError(
+                _(
+                    'Impossible to add players to tournament [{tournament_uniq_id}]'
+                ).format(tournament_uniq_id=src_tournament.uniq_id)
+            )
+        if player.fide_id in dst_tournament.players_by_fide_id:
+            raise ValueError(
+                _(
+                    'Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].'
+                ).format(
+                    fide_id=player.fide_id,
+                    tournament_uniq_id=dst_tournament.uniq_id,
+                ),
+            )
+        if plugin_error := (
+            plugin_manager.hook.is_tournament_participation_possible(
+                tournament=dst_tournament, player=player
+            )
+            or None
+        ):
+            raise ValueError(plugin_error)
 
     @post(path='/admin/player-create/{event_uniq_id:str}', name='admin-player-create')
     async def htmx_admin_player_create(

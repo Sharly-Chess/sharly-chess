@@ -50,7 +50,7 @@
             {% elif pairing.not_paired %}
                 {% set _text='' %}
                 {% set _class='text-secondary' %}
-            {% elif pairing.playing %}
+            {% elif pairing.paired_no_result %}
                 {% set _text='&nbsp;' %}
                 {% set _class=_box_class %}
             {% elif pairing.exempt %}

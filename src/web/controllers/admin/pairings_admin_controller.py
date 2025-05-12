@@ -945,6 +945,9 @@ class PairingsAdminController(BaseEventAdminController):
         self._save_pairing_settings_data(tournament, data)
         for round_ in range(1, tournament.rounds + 1):
             tournament.pairing_variation.engine.generate_pairings(tournament, round_)
+        with EventDatabase(event_uniq_id, True) as database:
+            database.set_tournament_current_round(tournament_id, 1)
+            database.commit()
         tournament.clear_cache()
         Message.success(
             request,

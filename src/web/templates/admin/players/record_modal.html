@@ -1,3 +1,4 @@
+{% set bye_definition_allowed=admin_player.tournament.pairing_system.allow_bye_definition %}
 <div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-record-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -76,8 +77,12 @@
                                 {% set zero_point_bye = true %}
                             {% elif pairing.not_paired %}
                                 {% set text = '' %}
-                            {% elif pairing.playing %}
-                                {% set text=_('Playing') %}
+                            {% elif pairing.paired_no_result %}
+                                {% if admin_player.tournament.current_round == round %}
+                                    {% set text=_('Playing') %}
+                                {% else %}
+                                    {% set text=_('Incoming') %}
+                                {% endif %}
                             {% elif pairing.exempt %}
                                 {% set text=_('Pairing Allocated Bye') %}
                             {% elif pairing.loss %}
@@ -108,49 +113,53 @@
                                 <td class="text-nowrap text-center">
                                     {{ score }}
                                 </td>
-                                {% if zero_point_bye_allowed and not opponent %}
+                                {% if zero_point_bye_allowed and not (opponent or pairing.exempt) %}
                                     <td colspan="5" class="text-nowrap text-start">
-                                        <select
-                                            name="{{ name }}"
-                                            class="bye show form-select py-1"
-                                            onchange="updateRecordByes()"
-                                        >
-                                            <option
-                                                    value="0"
-                                                    {% if data[name] == '0' %}
-                                                        selected
-                                                    {% endif %}
+                                        {% if bye_definition_allowed %}
+                                            <select
+                                                name="{{ name }}"
+                                                class="bye show form-select py-1"
+                                                onchange="updateRecordByes()"
                                             >
-                                                {{ _('Present') }}
-                                            </option>
-                                            <option
-                                                    value="7"
-                                                    {% if data[name] == '7' %}
-                                                        selected
-                                                    {% endif %}
-                                            >
-                                                {{ _('Absent') }}
-                                            </option>
-                                            {% if round <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes %}
                                                 <option
-                                                        value="8"
-                                                        {% if data[name] == '8' %}
+                                                        value="0"
+                                                        {% if data[name] == '0' %}
                                                             selected
                                                         {% endif %}
                                                 >
-                                                    {{ _('Half-Point Bye') }}
+                                                    {{ _('Present') }}
                                                 </option>
                                                 <option
-                                                        value="10"
-                                                        class="text-danger"
-                                                        {% if data[name] == '10' %}
+                                                        value="7"
+                                                        {% if data[name] == '7' %}
                                                             selected
                                                         {% endif %}
                                                 >
-                                                    {{ _('Full-Point Bye (deprecated)') }}
+                                                    {{ _('Absent') }}
                                                 </option>
-                                            {% endif %}
-                                        </select>
+                                                {% if round <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes %}
+                                                    <option
+                                                            value="8"
+                                                            {% if data[name] == '8' %}
+                                                                selected
+                                                            {% endif %}
+                                                    >
+                                                        {{ _('Half-Point Bye') }}
+                                                    </option>
+                                                    <option
+                                                            value="10"
+                                                            class="text-danger"
+                                                            {% if data[name] == '10' %}
+                                                                selected
+                                                            {% endif %}
+                                                    >
+                                                        {{ _('Full-Point Bye (deprecated)') }}
+                                                    </option>
+                                                {% endif %}
+                                            </select>
+                                        {% else %}
+                                            {{ admin_player.not_paired_str }}
+                                        {% endif %}
                                     </td>
                                 {% else %}
                                     <td class="text-nowrap text-start">
@@ -197,14 +206,16 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') }}
-            </button>
+            {% if bye_definition_allowed %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>

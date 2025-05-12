@@ -10,7 +10,6 @@
         {% call() macros.section_title() %}
             {{ _('Players') }}{{ macros.doc_icon('players', '') }}
         {% endcall %}
-
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-1 ms-auto">
             {% with compact=false, tournament=none %}
@@ -493,7 +492,7 @@
                         {{ admin_macros.extra_admin_column_cell("tournament", player, admin_players_extra_columns)}}
                         {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
                             <td class="text-nowrap text-start">
-                                {% if player.has_real_pairings or admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id|length == 1 %}
+                                {% if player.has_real_pairings or player_addable_tournaments|length <= 1 %}
                                     {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                 {% else %}
                                     <span class="dropdown">
@@ -505,24 +504,25 @@
                                         >
                                             {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
                                         </button>
-                                        <ul class="dropdown-menu players-set-player-tournament p-0" {{ macros.tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }} >
-                                            {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
-                                                {% if tournament.file_exists %}
-                                                    {% set enable=player.tournament_id != tournament.id %}
-                                                    <li
-                                                        class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
-                                                        {% if enable %}
-                                                            hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
-                                                            hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                                            hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
-                                                            hx-indicator="#please-wait"
-                                                        {% else %}
-                                                            disabled
-                                                        {% endif %}
-                                                    >
-                                                        {{ tournament.uniq_id }}
-                                                    </li>
-                                                {% endif %}
+                                        <ul
+                                            class="dropdown-menu players-set-player-tournament p-0"
+                                            {{ macros.tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }}
+                                        >
+                                            {% for tournament in player_addable_tournaments %}
+                                                {% set enable=player.tournament_id != tournament.id %}
+                                                <li
+                                                    class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
+                                                    {% if enable %}
+                                                        hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=tournament.id) }}"
+                                                        hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                                        hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
+                                                        hx-indicator="#please-wait"
+                                                    {% else %}
+                                                        disabled
+                                                    {% endif %}
+                                                >
+                                                    {{ tournament.uniq_id }}
+                                                </li>
                                             {% endfor %}
                                         </ul>
                                     </span>

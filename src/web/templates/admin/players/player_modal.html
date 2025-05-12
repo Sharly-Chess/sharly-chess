@@ -139,15 +139,30 @@
                 </h4>
                 <div class="row">
                     <div class="col-12 col-sm-8 mb-3">
-                        {{ admin_macros.select_input(
-                            name='tournament_id',
-                            label=_('Tournament:'),
-                            help_text=_('The player\'s tournament.') if action != 'delete' else '',
-                            select_options=tournament_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
-                            data=data, errors=errors
-                        ) }}
+                        <span
+                            {% if admin_player.has_real_pairings %}
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _(
+                                        'The player has already been paired, '
+                                        'it can\'t be removed from its tournament.'
+                                    ), 'top')
+                                }}
+                            {% endif %}
+                        >
+                            {{ admin_macros.select_input(
+                                name='tournament_id',
+                                label=_('Tournament:'),
+                                help_text=_('The player\'s tournament.') if action != 'delete' else '',
+                                select_options=tournament_options,
+                                disabled=action == 'delete' or admin_player.has_real_pairings,
+                                error=action == 'delete',
+                                data=data, errors=errors
+                            ) }}
+                            {% if admin_player.has_real_pairings %}
+                                <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
+                            {% endif %}
+                        </span>
                     </div>
 
                     <div class="col-12 col-sm-4 mb-3">
