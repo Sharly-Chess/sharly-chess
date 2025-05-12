@@ -397,10 +397,7 @@ class Player(TournamentPlayer):
         """Returns True if the player has already been paired with an opponent
         (i.e. can not be deleted from the tournament anymore)."""
         for pairing in self.pairings.values():
-            if (
-                pairing.opponent_id is not None
-                and self.player_papi_id_from_sharly_chess_id(pairing.opponent_id) > 1
-            ):
+            if pairing.opponent_id is not None or pairing.exempt:
                 return True
         return False
 

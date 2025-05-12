@@ -41,6 +41,21 @@ class PairingSystem(IdentifiableEntity, ABC):
         """Get the current round to use as default when it is not defined in the DB."""
 
     @property
+    def allow_rounds_update_once_started(self) -> bool:
+        """Determines if the number of rounds can be updated once a tournament is started."""
+        return True
+
+    @property
+    def allow_player_addition_once_paired(self) -> bool:
+        """Determines if players can be added on a tournament with pairings."""
+        return True
+
+    @property
+    def allow_bye_definition(self) -> bool:
+        """Determines if byes can be defined from the player history modal."""
+        return True
+
+    @property
     def show_unfinished_round_modal(self) -> bool:
         """Determines if the modal warning about the round not being finished
         when moving from the current to the next round is displayed."""
@@ -150,15 +165,7 @@ class SwissPairingSystem(PairingSystem):
         return PermissionHandler(permissions)
 
     def default_current_round(self, tournament: 'Tournament') -> int:
-        """Last round with pairings."""
-        return next(
-            (
-                round_
-                for round_ in reversed(range(1, tournament.rounds + 1))
-                if tournament.round_has_pairings(round_)
-            ),
-            0,
-        )
+        return tournament.last_paired_round
 
 
 class RoundRobinPairingSystem(PairingSystem):
@@ -179,6 +186,18 @@ class RoundRobinPairingSystem(PairingSystem):
         from data.pairings.managers import RoundRobinVariationManager
 
         return RoundRobinVariationManager()  # type: ignore
+
+    @property
+    def allow_rounds_update_once_started(self) -> bool:
+        return False
+
+    @property
+    def allow_player_addition_once_paired(self) -> bool:
+        return False
+
+    @property
+    def allow_bye_definition(self) -> bool:
+        return False
 
     @property
     def show_unfinished_round_modal(self) -> bool:

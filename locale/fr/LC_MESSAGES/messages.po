@@ -1875,15 +1875,21 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
+
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
 msgstr "Impossible de définir un point joker dans les %(rounds)d dernières rondes du tournoi"
 
-msgid "Impossible to set a round number lower than current round #{round}."
-msgstr "Impossible d'attribuer un nombre de rondes inférieur à la ronde actuelle (ronde n°{round})."
+msgid "Impossible to set a round number lower than the last round with pairings #{round}."
+msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ronde appariée (ronde n°{round})."
 
 msgid "In play"
 msgstr "En jeu"
+
+msgid "Pending"
+msgstr "À venir"
 
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
@@ -3818,6 +3824,9 @@ msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChesssEvent
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
 
+msgid "The player has already been paired, removing them from the tournament is impossible."
+msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
+
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament_uniq_id}]."
 
@@ -3987,6 +3996,9 @@ msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront aff
 
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
+
+msgid "This field can't be updated once the tournament has started."
+msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."

@@ -23,7 +23,7 @@ class Pairing:
         return (self.result == Result.NO_RESULT) and (self.opponent_id is None)
 
     @property
-    def playing(self) -> bool:
+    def paired_no_result(self) -> bool:
         return (self.result == Result.NO_RESULT) and (self.opponent_id is not None)
 
     @property

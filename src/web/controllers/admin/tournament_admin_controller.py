@@ -143,9 +143,10 @@ class TournamentAdminController(BaseEventAdminController):
             elif action == 'update':
                 tournament = web_context.admin_tournament
                 assert tournament is not None
-                if rounds and rounds < tournament.current_round:
+                if rounds < tournament.last_paired_round:
                     errors['rounds'] = _(
-                        'Impossible to set a round number lower than current round #{round}.'
+                        'Impossible to set a round number lower '
+                        'than the last round with pairings #{round}.'
                     ).format(round=tournament.current_round)
             rating = (
                 WebContext.form_data_to_int(data, field := 'rating')
@@ -218,7 +219,27 @@ class TournamentAdminController(BaseEventAdminController):
                 file_path = cls._extract_papi_file_path(data, web_context.admin_event)
                 if create_file and file_path.exists():
                     errors['create_file'] = _('File already exists.')
-
+        if action == 'update':
+            tournament = web_context.admin_tournament
+            assert tournament is not None
+            file_path = cls._extract_papi_file_path(data, web_context.admin_event)
+            if (
+                tournament.file_exists
+                and file_path == tournament.file
+                and tournament.started
+            ):
+                not_updatable_values: dict[str, str] = {
+                    'rating': str(tournament.rating.value),
+                    tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
+                    'pairing_system': tournament.pairing_system.id,
+                }
+                if not tournament.pairing_system.allow_rounds_update_once_started:
+                    not_updatable_values |= {'rounds': str(tournament.rounds)}
+                for field, expected_value in not_updatable_values.items():
+                    if data.get(field, '') != expected_value:
+                        errors[field] = _(
+                            "This field can't be updated once the tournament has started."
+                        )
         path: str | None = None
         filename: str | None = None
         time_control_initial_time: int | None = None

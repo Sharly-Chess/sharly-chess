@@ -560,6 +560,15 @@ class Event:
             if not tournament.finished and tournament.file_exists
         ]
 
+    @property
+    def player_addable_tournaments(self) -> list[Tournament]:
+        """List of tournaments in which players can be added."""
+        return [
+            tournament
+            for tournament in self.tournaments_sorted_by_uniq_id
+            if tournament.can_add_players
+        ]
+
     def check_update(self):
         """Verify that all the tournaments of the event are up to date.
         If they are not, update them."""
