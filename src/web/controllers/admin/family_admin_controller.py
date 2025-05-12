@@ -670,7 +670,7 @@ class FamilyAdminController(BaseEventAdminController):
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been deleted.').format(
-                            family_uniq_id=web_context.admin_family.id
+                            family_uniq_id=web_context.admin_family.uniq_id
                         ),
                     )
                 case _:

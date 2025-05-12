@@ -863,12 +863,12 @@ class Tournament:
         """Store an illegal move for the given `player`, for the current
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.add_stored_illegal_move(
+            if event_database.add_stored_illegal_move(
                 self.id, self.current_round, player.id
-            )
+            ):
+                player.illegal_moves += 1
             event_database.commit()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
-        self.clear_cache()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current
@@ -879,10 +879,11 @@ class Tournament:
             )
             event_database.commit()
         if deleted:
+            player.illegal_moves -= 1
+            player.illegal_moves = max(player.illegal_moves, 0)
             logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
             logger.info('No illegal move found for player [%s].', player.id)
-        self.clear_cache()
         return deleted
 
     def get_illegal_moves(self, at_round: int) -> Counter[int]:
@@ -1044,6 +1045,8 @@ class Tournament:
         self.players_by_id[board.white_player.id].pairings[round_].result = white_result
         self.players_by_id[board.black_player.id].pairings[round_].result = black_result
         self.clear_cache()
+        board.white_player.clear_cache()
+        board.black_player.clear_cache()
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
@@ -1091,7 +1094,8 @@ class Tournament:
                 event_database.commit()
                 papi_database.commit()
         player.check_in = check_in
-        self.clear_cache(True)
+        player.clear_cache()
+        self.clear_cache()
 
     def add_player(self, player: Player):
         """Adds a new player to the tournament, returns the player's ID."""
@@ -1246,7 +1250,7 @@ class Tournament:
                         player, round_nb, player.pairings[round_nb]
                     )
             papi_database.commit()
-        self.clear_cache()
+        self.clear_cache(True)
 
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
@@ -1281,7 +1285,7 @@ class Tournament:
                     }
             papi_database.write_info(papi_info)
             papi_database.commit()
-        self.clear_cache(clear_papi_cache=True)
+        self.clear_cache(True)
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
@@ -1342,6 +1346,7 @@ class Tournament:
                 player.pairings[round_].result = result
             papi_database.commit()
         self.clear_cache()
+        player.clear_cache()
 
     def set_current_round(self, round_: int):
         with EventDatabase(self.event.uniq_id, True) as database:
