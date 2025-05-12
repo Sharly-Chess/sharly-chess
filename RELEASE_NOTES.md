@@ -1,4 +1,4 @@
-# French version
+# French
 English version below
 
 ## Fonctionnement
@@ -31,7 +31,9 @@ English version below
 
 - Ajout des pilotes d'afficheurs (2.6.0)
 
-# English Version
+---
+
+# English
 
 ## Usage
 
