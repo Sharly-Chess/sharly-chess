@@ -284,7 +284,7 @@
                 </tr>
             </thead>
             <tbody id="players-table-body">
-                {% for player in admin_players.values() %}
+                {% for index, player in admin_players.items() %}
                     <tr id="player-{{ player.id }}">
                         <td class="text-nowrap text-start w-1">
                             <span class="dropdown">
@@ -343,7 +343,7 @@
                             </span>
                         </td>
                         <th scope="row" class="text-nowrap text-end w-1">
-                            {{ loop.index }}
+                            {{ index }}
                         </th>
                         {{ admin_macros.extra_admin_column_cell("title", player, admin_players_extra_columns)}}
                         <td class="text-end">

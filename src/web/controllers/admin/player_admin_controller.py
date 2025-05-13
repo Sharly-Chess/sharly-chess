@@ -533,12 +533,11 @@ class PlayerAdminController(BaseEventAdminController):
         if search_results is None:
             search_results = cls.set_players_search_results(request, event_uniq_id)
         players: dict[int, Player] = {}
-        page_index = (page or 1) - 1
-        for player_id in search_results[
-            page_index * cls.PAGE_SIZE : (page_index + 1) * cls.PAGE_SIZE
-        ]:
+        start_index = ((page or 1) - 1) * cls.PAGE_SIZE
+        end_index = (page or 1) * cls.PAGE_SIZE
+        for index, player_id in enumerate(search_results[start_index:end_index]):
             if player := admin_event.players_by_id.get(player_id, None):
-                players[player_id] = player
+                players[start_index + index + 1] = player
         if page:
             # TODO Tim define HTMX template as required
             return HTMXTemplate(
