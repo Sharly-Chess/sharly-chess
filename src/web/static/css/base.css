@@ -95,11 +95,6 @@ nav .btn-link:hover {
     z-index: 3;
     padding: 3px;
 }
-.table-indicator {
-    opacity: 1;
-    height: 2.5em;
-    width: 2.5em;
-}
 body[data-bs-theme="dark"] .htmx-indicator {
     background-color: rgba(0, 0, 0, 0.3);
 }
