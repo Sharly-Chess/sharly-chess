@@ -484,6 +484,7 @@ class PlayerAdminController(BaseEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         player_id: int | None = None,
+        old_player_id: int | None = None,
         deleted_player_id: int | None = None,
         player_fide_id: int | None = None,
         player_from_plugin: Player | None = None,
@@ -860,6 +861,7 @@ class PlayerAdminController(BaseEventAdminController):
                 player_index = None
             template_context |= {
                 'index': player_index,
+                'old_player_id': old_player_id,
             }
 
             return HTMXTemplate(
@@ -1139,6 +1141,8 @@ class PlayerAdminController(BaseEventAdminController):
                 data=data,
                 errors=player.errors,
             )
+
+        new_player_id: int | None = None
         match action:
             case 'update':
                 assert player.tournament is not None
@@ -1151,8 +1155,26 @@ class PlayerAdminController(BaseEventAdminController):
                 previous_tournament = web_context.admin_player.tournament
                 tournament = player.tournament
                 if tournament.id != previous_tournament.id:
-                    tournament.add_player(player)
+                    papi_ref_id = tournament.add_player(player)
                     previous_tournament.delete_player(player)
+                    if not self.filtered_players(request, event_uniq_id, [player]):
+                        self.delete_from_search_results(request, player.id)
+                    new_player_id = Player.player_sharly_chess_id_from_papi_id(
+                        tournament.id, ref_id=papi_ref_id
+                    )
+                    search_results = (
+                        SessionHandler.get_session_admin_players_search_results(request)
+                    )
+                    if search_results is not None:
+                        try:
+                            assert player.id is not None
+                            i = search_results.index(player.id)
+                            search_results[i] = new_player_id
+                            SessionHandler.set_session_admin_players_search_results(
+                                request, search_results
+                            )
+                        except ValueError:
+                            pass
                 else:
                     tournament.update_player(player)
                     if not self.filtered_players(request, event_uniq_id, [player]):
@@ -1191,6 +1213,10 @@ class PlayerAdminController(BaseEventAdminController):
                         data=data,
                     )
                 tournament.add_player(player)
+                self.set_players_search_results(request, event_uniq_id)
+                return self._admin_event_players_render(
+                    request, event_uniq_id=event_uniq_id
+                )
             case 'delete':
                 assert player.tournament is not None
                 tournament = player.tournament
@@ -1216,7 +1242,10 @@ class PlayerAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
         return self._admin_event_players_render(
-            request, event_uniq_id=event_uniq_id, player_id=player_id
+            request,
+            event_uniq_id=event_uniq_id,
+            player_id=(new_player_id or player_id),
+            old_player_id=player_id if new_player_id is not None else None,
         )
 
     @patch(
@@ -1255,8 +1284,25 @@ class PlayerAdminController(BaseEventAdminController):
         assert src_tournament is not None
         try:
             self._validate_player_tournament_move(admin_player, dst_tournament)
-            dst_tournament.add_player(admin_player)
+            papi_ref_id = dst_tournament.add_player(admin_player)
             src_tournament.delete_player(admin_player)
+            if not self.filtered_players(request, event_uniq_id, [admin_player]):
+                self.delete_from_search_results(request, admin_player.id)
+            new_player_id = Player.player_sharly_chess_id_from_papi_id(
+                dst_tournament.id, ref_id=papi_ref_id
+            )
+            search_results = SessionHandler.get_session_admin_players_search_results(
+                request
+            )
+            if search_results is not None:
+                try:
+                    i = search_results.index(player_id)
+                    search_results[i] = new_player_id
+                    SessionHandler.set_session_admin_players_search_results(
+                        request, search_results
+                    )
+                except ValueError:
+                    pass
             Message.success(
                 request,
                 _(
@@ -1272,7 +1318,12 @@ class PlayerAdminController(BaseEventAdminController):
             )
         except ValueError as e:
             Message.error(request, str(e))
-        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            old_player_id=player_id,
+            player_id=new_player_id,
+        )
 
     @staticmethod
     def _validate_player_tournament_move(player: Player, dst_tournament: Tournament):

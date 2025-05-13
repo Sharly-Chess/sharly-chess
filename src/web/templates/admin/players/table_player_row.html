@@ -1,7 +1,7 @@
 <tr
     id="player-{{ player.id }}"
     {% if swap_oob %}
-        hx-swap-oob="true"
+        hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
     {% endif %}
 >
     <td class="text-nowrap text-start w-1">
