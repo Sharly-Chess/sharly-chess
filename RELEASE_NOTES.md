@@ -4,7 +4,6 @@ English version below
 ## Fonctionnement
 
 - Amélioration significative des performances (2.6.0)
-- Pagination de l'onglet Joueur·euses (2.6.0)
 - Mise à jour de toute la documentation (2.6.0)
 - Mise en ligne du site web https://sharly-chess.com (2.6.0)
 - Déplacement des utilitaires de ``bin/`` vers ``tools/`` (2.6.0)
@@ -39,7 +38,6 @@ English version below
 ## Usage
 
 - Significantly improved performance (2.6.0)
-- Pagination of the Players tab (2.6.0)
 - Updated all documentation (2.6.0)
 - Our website https://sharly-chess.com is now online (2.6.0)
 - Utilities which were in ``bin/`` are now in ``tools/`` (2.6.0)
