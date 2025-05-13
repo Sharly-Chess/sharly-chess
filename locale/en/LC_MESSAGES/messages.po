@@ -2952,9 +2952,6 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-msgid "Points"
-msgstr ""
-
 msgid "Points for draw (Half-Point Bye)"
 msgstr ""
 
@@ -3039,7 +3036,7 @@ msgstr ""
 msgid "Protected pairings editing"
 msgstr ""
 
-msgid "Pts *** POINTS FOR PRINT VIEW"
+msgid "Pts *** POINTS FOR TABULAR DISPLAY"
 msgstr "Pts"
 
 msgid "Public display controller"

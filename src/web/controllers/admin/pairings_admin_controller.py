@@ -1198,11 +1198,11 @@ class PairingsAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @patch(
-        path='/admin/pairings/settings-update/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
-        name='admin-pairings-settings-update',
+    @post(
+        path='/admin/pairings/generate-with-settings/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-generate-round-pairings-with-settings',
     )
-    async def htmx_admin_pairings_settings_update(
+    async def htmx_admin_generate_round_pairings_with_settings(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -1217,7 +1217,7 @@ class PairingsAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            round_=None,
+            round_=round,
             board_id=None,
             player_id=None,
             data=data,
@@ -1235,6 +1235,17 @@ class PairingsAdminController(BaseEventAdminController):
                 modal='pairing-settings',
             )
         self._save_pairing_settings_data(tournament, data)
+        tournament.pairing_variation.engine.generate_pairings(
+            tournament, web_context.admin_round
+        )
+        Message.success(
+            request,
+            _(
+                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
+            ).format(
+                round=web_context.admin_round, tournament_uniq_id=tournament.uniq_id
+            ),
+        )
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

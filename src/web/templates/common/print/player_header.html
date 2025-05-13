@@ -36,7 +36,7 @@
     {% endif %}
     {% if ranking or crosstable %}
         <th class="points text-center">
-            <strong>{{ _('Pts *** POINTS FOR PRINT VIEW') }}</strong>
+            <strong>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</strong>
         </th>
         {% for tie_break in tournament.tie_breaks %}
             {% if tie_break.is_displayable %}
