@@ -50,7 +50,6 @@
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                         hx-trigger="click, keyup[key=='Enter']"
-
                         tabindex="0"
                         {{ macros.tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
                     >
@@ -60,7 +59,7 @@
             </ul>
         </span>
     </td>
-    <th scope="row" class="text-nowrap text-end w-1">
+    <th scope="row" class="text-nowrap text-end w-1 index">
         {{ index }}
     </th>
     {{ admin_macros.extra_admin_column_cell("title", player, admin_players_extra_columns)}}
