@@ -105,6 +105,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
 class PlayerAdminController(BaseEventAdminController):
     PAGE_SIZE = 25
+    search_results_by_session: dict[int, list[int]] = {}
 
     @classmethod
     def _admin_validate_player_update_data(
@@ -459,22 +460,31 @@ class PlayerAdminController(BaseEventAdminController):
         )
         sort_type = SessionHandler.get_session_admin_players_sort(request)
         search_results = cls.sorted_player_ids(filtered_players, sort_type)
-        SessionHandler.set_session_admin_players_search_results(request, search_results)
+        results_session_id = SessionHandler.get_session_admin_players_search_results_id(
+            request
+        )
+        if not results_session_id:
+            results_session_id = (
+                max([0] + [id_ for id_ in cls.search_results_by_session]) + 1
+            )
+            SessionHandler.set_session_admin_players_search_results_id(
+                request, results_session_id
+            )
+        cls.search_results_by_session[results_session_id] = search_results
         SessionHandler.set_session_admin_players_event(request, event_uniq_id)
         return search_results
 
     @classmethod
     def delete_from_search_results(cls, request: HTMXRequest, player_id: int):
-        search_results = SessionHandler.get_session_admin_players_search_results(
+        results_session_id = SessionHandler.get_session_admin_players_search_results_id(
             request
         )
-        if not search_results:
+        if not results_session_id:
             return
         try:
-            search_results.remove(player_id)
+            cls.search_results_by_session[results_session_id].remove(player_id)
         except ValueError:
             pass
-        SessionHandler.set_session_admin_players_search_results(request, search_results)
 
     @classmethod
     def _admin_event_players_render(
@@ -511,11 +521,13 @@ class PlayerAdminController(BaseEventAdminController):
         )
         admin_event: Event = web_context.admin_event
         session_event_uniq_id = SessionHandler.get_session_admin_player_event(request)
-        search_results = SessionHandler.get_session_admin_players_search_results(
+        search_results_id = SessionHandler.get_session_admin_players_search_results_id(
             request
         )
-        if search_results is None or session_event_uniq_id != admin_event.uniq_id:
+        if search_results_id is None or session_event_uniq_id != admin_event.uniq_id:
             search_results = cls.set_players_search_results(request, event_uniq_id)
+        else:
+            search_results = cls.search_results_by_session[search_results_id]
         players: dict[int, Player] = {}
         start_index = ((page or 1) - 1) * cls.PAGE_SIZE
         end_index = (page or 1) * cls.PAGE_SIZE
@@ -1165,17 +1177,19 @@ class PlayerAdminController(BaseEventAdminController):
                     new_player_id = Player.player_sharly_chess_id_from_papi_id(
                         tournament.id, ref_id=papi_ref_id
                     )
-                    search_results = (
-                        SessionHandler.get_session_admin_players_search_results(request)
+                    results_session_id = (
+                        SessionHandler.get_session_admin_players_search_results_id(
+                            request
+                        )
                     )
-                    if search_results is not None:
+                    if results_session_id is not None:
+                        search_results = type(self).search_results_by_session[
+                            results_session_id
+                        ]
                         try:
                             assert player.id is not None
                             i = search_results.index(player.id)
                             search_results[i] = new_player_id
-                            SessionHandler.set_session_admin_players_search_results(
-                                request, search_results
-                            )
                         except ValueError:
                             pass
                 else:
@@ -1285,6 +1299,7 @@ class PlayerAdminController(BaseEventAdminController):
             raise RuntimeError('admin_tournament not defined')
         src_tournament = admin_player.tournament
         assert src_tournament is not None
+        new_player_id: int | None = None
         try:
             self._validate_player_tournament_move(admin_player, dst_tournament)
             papi_ref_id = dst_tournament.add_player(admin_player)
@@ -1294,16 +1309,16 @@ class PlayerAdminController(BaseEventAdminController):
             new_player_id = Player.player_sharly_chess_id_from_papi_id(
                 dst_tournament.id, ref_id=papi_ref_id
             )
-            search_results = SessionHandler.get_session_admin_players_search_results(
-                request
+            results_session_id = (
+                SessionHandler.get_session_admin_players_search_results_id(request)
             )
-            if search_results is not None:
+            if results_session_id is not None:
+                search_results = type(self).search_results_by_session[
+                    results_session_id
+                ]
                 try:
                     i = search_results.index(player_id)
                     search_results[i] = new_player_id
-                    SessionHandler.set_session_admin_players_search_results(
-                        request, search_results
-                    )
                 except ValueError:
                     pass
             Message.success(
