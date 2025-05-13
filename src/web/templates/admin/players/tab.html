@@ -5,13 +5,13 @@
 
     <div
         class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
-        style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1.5rem;"
+        style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1rem;"
     >
         {% call() macros.section_title() %}
             {{ _('Players') }}{{ macros.doc_icon('players', '') }}
         {% endcall %}
         <div class="flex-grow-1"></div>
-        <div class="d-flex gap-1 ms-auto">
+        <div class="d-flex gap-2 ms-auto flex-wrap justify-content-end">
             {% with compact=false, tournament=none %}
                 {% include 'players_diff.html' %}
             {% endwith %}
@@ -34,7 +34,7 @@
                 {% endif %}
             >
                 <button
-                    class="btn btn-primary text-nowrap ms-1"
+                    class="btn btn-primary text-nowrap"
                     hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
