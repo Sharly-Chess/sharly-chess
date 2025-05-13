@@ -378,22 +378,19 @@ class SessionHandler:
     def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
 
-    ADMIN_PLAYERS_SEARCH_RESULTS_KEY = 'admin_players_search_results'
+    ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY = 'admin_players_search_results_id'
 
     @classmethod
-    def set_session_admin_players_search_results(
-        cls, request: HTMXRequest, search_results: list[int]
+    def set_session_admin_players_search_results_id(
+        cls, request: HTMXRequest, search_results_id: int
     ):
-        request.session[cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY] = search_results
+        request.session[cls.ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY] = search_results_id
 
     @classmethod
-    def get_session_admin_players_search_results(
+    def get_session_admin_players_search_results_id(
         cls, request: HTMXRequest
-    ) -> list[int] | None:
-        search_results: list[int] | None = request.session.get(
-            cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY, None
-        )
-        return search_results
+    ) -> int | None:
+        return request.session.get(cls.ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY, None)
 
     ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'
 
