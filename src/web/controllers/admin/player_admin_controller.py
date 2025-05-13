@@ -432,6 +432,7 @@ class PlayerAdminController(BaseEventAdminController):
                         player.first_name,
                     )
                 case 'tournament':
+                    assert player.tournament is not None
                     return (
                         player.tournament.uniq_id,
                         -player.rating,
@@ -459,6 +460,7 @@ class PlayerAdminController(BaseEventAdminController):
         sort_type = SessionHandler.get_session_admin_players_sort(request)
         search_results = cls.sorted_player_ids(filtered_players, sort_type)
         SessionHandler.set_session_admin_players_search_results(request, search_results)
+        SessionHandler.set_session_admin_players_event(request, event_uniq_id)
         return search_results
 
     @classmethod
@@ -507,10 +509,11 @@ class PlayerAdminController(BaseEventAdminController):
             web_context
         )
         admin_event: Event = web_context.admin_event
+        session_event_uniq_id = SessionHandler.get_session_admin_player_event(request)
         search_results = SessionHandler.get_session_admin_players_search_results(
             request
         )
-        if search_results is None:
+        if search_results is None or session_event_uniq_id != admin_event.uniq_id:
             search_results = cls.set_players_search_results(request, event_uniq_id)
         players: dict[int, Player] = {}
         start_index = ((page or 1) - 1) * cls.PAGE_SIZE

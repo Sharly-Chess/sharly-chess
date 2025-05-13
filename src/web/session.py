@@ -201,6 +201,16 @@ class SessionHandler:
     def get_session_locale(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.LOCALE_KEY, SharlyChessConfig().locale)
 
+    ADMIN_PLAYERS_EVENT_KEY: str = 'admin_players_event'
+
+    @classmethod
+    def set_session_admin_players_event(cls, request: HTMXRequest, event_uniq_id: str):
+        request.session[cls.ADMIN_PLAYERS_EVENT_KEY] = event_uniq_id
+
+    @classmethod
+    def get_session_admin_player_event(cls, request: HTMXRequest) -> str | None:
+        return request.session.get(cls.ADMIN_PLAYERS_EVENT_KEY, None)
+
     ADMIN_PLAYERS_SORT_KEY: str = 'admin_players_sort'
 
     @classmethod
