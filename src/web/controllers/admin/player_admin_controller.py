@@ -1164,6 +1164,7 @@ class PlayerAdminController(BaseEventAdminController):
                     previous_tournament.delete_player(player)
                 else:
                     tournament.update_player(player)
+                    self.set_players_search_results(request, event_uniq_id)
             case 'create':
                 assert player.tournament is not None
                 plugin_manager.hook.set_player_default_ratings(
@@ -1198,6 +1199,7 @@ class PlayerAdminController(BaseEventAdminController):
                         data=data,
                     )
                 tournament.add_player(player)
+                self.set_players_search_results(request, event_uniq_id)
             case 'delete':
                 assert player.tournament is not None
                 tournament = player.tournament
@@ -1214,6 +1216,7 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 else:
                     tournament.delete_player(player)
+                    self.set_players_search_results(request, event_uniq_id)
                     return self._admin_event_players_render(
                         request,
                         event_uniq_id=event_uniq_id,
@@ -1664,6 +1667,7 @@ class PlayerAdminController(BaseEventAdminController):
         if admin_player.tournament is None:
             raise RuntimeError('admin_player.tournament not defined')
         admin_player.tournament.check_in_player(admin_player, check_in)
+        self.set_players_search_results(request, event_uniq_id)
         return self._admin_event_players_render(
             request, event_uniq_id=event_uniq_id, player_id=player_id
         )

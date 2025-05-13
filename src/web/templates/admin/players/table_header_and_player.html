@@ -7,12 +7,20 @@
         {% include '/admin/players/table_head.html' %}
     </template>
 {% endwith %}
-{% if admin_player is not none %}
+{% if admin_player is not none and index is not none %}
     {% with swap_oob=True, player=admin_player, index=index %}
         <template>
             {% include '/admin/players/table_player_row.html' %}
         </template>
     {% endwith %}
+{% elif admin_player is not none and index is none %}
+    <template>
+        <tr
+            id="player-{{ admin_player.id }}"
+            hx-swap-oob="delete"
+        >
+        </td>
+    </template>
 {% elif deleted_player_id is not none %}
     <template>
         <tr
