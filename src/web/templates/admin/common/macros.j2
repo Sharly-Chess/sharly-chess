@@ -272,7 +272,7 @@ with_indicator: display a loading indicator, optional
                             </option>
                         {% endfor %}
                     </select>
-                    {% if select_options|length == 1 %}
+                    {% if select_options|length == 1 and not disabled %}
                         <input type="hidden" name="{{ name }}" value="{{ data[name] }}" />
                     {% endif %}
                 {% elif input_type == 'switch' %}
