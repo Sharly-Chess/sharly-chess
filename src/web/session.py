@@ -1,4 +1,3 @@
-import json
 import time
 from typing import TYPE_CHECKING
 
@@ -385,20 +384,16 @@ class SessionHandler:
     def set_session_admin_players_search_results(
         cls, request: HTMXRequest, search_results: list[int]
     ):
-        request.session[cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY] = json.dumps(
-            search_results
-        )
+        request.session[cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY] = search_results
 
     @classmethod
     def get_session_admin_players_search_results(
         cls, request: HTMXRequest
     ) -> list[int] | None:
-        search_results: str | None = request.session.get(
+        search_results: list[int] | None = request.session.get(
             cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY, None
         )
-        if search_results:
-            return json.loads(search_results)
-        return None
+        return search_results
 
     ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'
 
