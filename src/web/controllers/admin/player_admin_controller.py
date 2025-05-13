@@ -863,8 +863,10 @@ class PlayerAdminController(BaseEventAdminController):
                 template_name='/admin/players/table_header_and_player.html',
                 context=template_context,
                 re_target='#modal-wrapper',
-                trigger_event='close_modal',
-                after='receive',
+                trigger_event='renumber_players_and_close_modal'
+                if modal is None
+                else 'close_modal',
+                after='settle',
             )
 
         if deleted_player_id is not None:

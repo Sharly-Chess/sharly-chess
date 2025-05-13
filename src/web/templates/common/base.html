@@ -202,7 +202,7 @@
                 window.addEventListener("renumber_players_and_close_modal", function(event) {
                     var cells = document.querySelectorAll("#players-table th.index");
                     cells.forEach((cell, i) => {
-                        cell.textContent = '' + i;
+                        cell.textContent = '' + (i + 1);
                     });
                     closeModal();
                 });
