@@ -402,6 +402,7 @@ body[data-bs-theme=light] .btn-primary {
 [data-bs-theme=dark] table.prominent {
     border-collapse: separate;
     border-spacing: 0;
+    border-color: transparent;
 }
 
 [data-bs-theme=dark] table.prominent thead th {
@@ -428,12 +429,9 @@ body[data-bs-theme=light] .btn-primary {
     outline: 0.15rem solid rgba(var(--bs-body-bg-rgb), 0.70);
 }
 
-[data-bs-theme=dark] table.prominent th {
+[data-bs-theme=dark] table.prominent th, [data-bs-theme=dark] table.prominent td {
     vertical-align: middle;
-}
-
-[data-bs-theme=dark] table.prominent td {
-    vertical-align: middle;
+    height: 2.5rem;
 }
 
 [data-bs-theme=dark] table.prominent tr.highlight td {
