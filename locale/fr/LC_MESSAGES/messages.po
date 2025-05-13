@@ -3481,7 +3481,7 @@ msgid "Sort the players by club."
 msgstr "Trier les joueur·euses par club (ordre alphabétique)."
 
 msgid "Sort the players by name."
-msgstr "Trier les joueur·euses par tournoi."
+msgstr "Trier les joueur·euses par nom."
 
 msgid "Sort the players by rating (less rated first)."
 msgstr "Trier les joueur·euses par classement (moins bien classé·es en premier)."

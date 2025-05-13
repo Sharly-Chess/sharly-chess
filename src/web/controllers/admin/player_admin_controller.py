@@ -102,6 +102,8 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
 
 class PlayerAdminController(BaseEventAdminController):
+    PAGE_SIZE = 50
+
     @classmethod
     def _admin_validate_player_update_data(
         cls,
@@ -286,38 +288,19 @@ class PlayerAdminController(BaseEventAdminController):
         }
 
     @classmethod
-    def _admin_event_players_render(
-        cls,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        modal: str | None = None,
-        action: str | None = None,
-        player_id: int | None = None,
-        player_fide_id: int | None = None,
-        player_from_plugin: Player | None = None,
-        tournament_id: int | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    def set_players_search_results(
+        cls, request: HTMXRequest, event_uniq_id: str
+    ) -> list[int]:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            player_id=player_id,
-            player_fide_id=player_fide_id,
-            player_from_plugin=player_from_plugin,
-            tournament_id=tournament_id,
-            data=data,
         )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         )
-        admin_event: Event = web_context.admin_event
-        admin_player: Player | None = web_context.admin_player
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
 
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
@@ -331,10 +314,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         # The federations that will be shown on the federation select list
         players_federations: list[Federation] = sorted(
-            {
-                player.federation
-                for player in web_context.admin_event.players_by_id.values()
-            }
+            {player.federation for player in admin_event.players_by_id.values()}
         )
         # The federations that will be selected on the federation select list and used to filter the players
         filter_federations: list[Federation] = [
@@ -348,7 +328,7 @@ class PlayerAdminController(BaseEventAdminController):
         players_clubs: list[Club] = sorted(
             {
                 player.club
-                for player in web_context.admin_event.players_by_id.values()
+                for player in admin_event.players_by_id.values()
                 if player.club is not None
             }
         )
@@ -360,24 +340,10 @@ class PlayerAdminController(BaseEventAdminController):
             )
             if c in players_clubs
         ]
-        # The genders that will be shown on the gender select list
-        players_genders: list[PlayerGender] = sorted(
-            {player.gender for player in web_context.admin_event.players_by_id.values()}
-        )
         # The genders that will be selected on the gender select list and used to filter the players
         filter_genders: list[PlayerGender] = (
             SessionHandler.get_session_admin_players_filter_genders(web_context.request)
         )
-        # The years or birth that will be shown on the year of birth select list
-        players_yobs: list[int] = sorted(
-            {
-                player.year_of_birth
-                for player in web_context.admin_event.players_by_id.values()
-            }
-        )
-        # The check-in statuses that will be selected on the
-        # check-in status select list and used to filter the players
-        players_check_ins: list[bool | None] = [None, True, False]
         # The check-in statuses that will be selected on the
         # check-in status select list and used to filter the players
         filter_check_ins: list[bool | None] = (
@@ -430,19 +396,19 @@ class PlayerAdminController(BaseEventAdminController):
         def get_sort_key(player: Player) -> tuple:
             match sort_type:
                 case 'alpha':
-                    return (player.last_name, player.first_name)
+                    return player.last_name, player.first_name
                 case 'rating_desc':
-                    return (-player.rating, player.last_name, player.first_name)
+                    return -player.rating, player.last_name, player.first_name
                 case 'rating_asc':
-                    return (player.rating, player.last_name, player.first_name)
+                    return player.rating, player.last_name, player.first_name
                 case 'yob_desc':
-                    return (-player.year_of_birth, player.last_name, player.first_name)
+                    return -player.year_of_birth, player.last_name, player.first_name
                 case 'yob_asc':
-                    return (player.year_of_birth, player.last_name, player.first_name)
+                    return player.year_of_birth, player.last_name, player.first_name
                 case 'category_desc':
-                    return (-player.category, player.last_name, player.first_name)
+                    return -player.category, player.last_name, player.first_name
                 case 'category_asc':
-                    return (player.category, player.last_name, player.first_name)
+                    return player.category, player.last_name, player.first_name
                 case 'club':
                     return plugin_manager.hook.player_club_sort_key(player=player) or (
                         player.club,
@@ -472,10 +438,9 @@ class PlayerAdminController(BaseEventAdminController):
 
         filtered_players = [
             player
-            for player in web_context.admin_event.players_by_id.values()
+            for player in admin_event.players_by_id.values()
             if (
                 player.id is not None
-                and player.ref_id > 1
                 and len(filter_genders) in [0, 3]
                 or player.gender.value in filter_genders
             )
@@ -489,8 +454,7 @@ class PlayerAdminController(BaseEventAdminController):
                 or (not player.can_check_in_out and None in filter_check_ins)
             )
             and (
-                len(filter_tournaments)
-                in [0, len(web_context.admin_event.tournaments_by_id)]
+                len(filter_tournaments) in [0, len(admin_event.tournaments_by_id)]
                 or player.tournament_id in filter_tournaments
             )
             and (
@@ -525,11 +489,111 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             )
         ]
+        search_results = [
+            player.id for player in sorted(filtered_players, key=get_sort_key)
+        ]
+        SessionHandler.set_session_admin_players_search_results(request, search_results)
+        return search_results
 
+    @classmethod
+    def _admin_event_players_render(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        modal: str | None = None,
+        action: str | None = None,
+        player_id: int | None = None,
+        player_fide_id: int | None = None,
+        player_from_plugin: Player | None = None,
+        tournament_id: int | None = None,
+        page: int | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> Template | ClientRedirect:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            player_id=player_id,
+            player_fide_id=player_fide_id,
+            player_from_plugin=player_from_plugin,
+            tournament_id=tournament_id,
+            data=data,
+        )
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        template_context: dict[str, Any] = cls._get_admin_event_render_context(
+            web_context
+        )
+        admin_event: Event = web_context.admin_event
+        search_results = SessionHandler.get_session_admin_players_search_results(
+            request
+        )
+        if search_results is None:
+            search_results = cls.set_players_search_results(request, event_uniq_id)
         players: dict[int, Player] = {}
-        for player in sorted(filtered_players, key=get_sort_key):
-            if player.id is not None:
-                players[player.id] = player
+        page_index = (page or 1) - 1
+        for player_id in search_results[
+            page_index * cls.PAGE_SIZE : (page_index + 1) * cls.PAGE_SIZE
+        ]:
+            if player := admin_event.players_by_id.get(player_id, None):
+                players[player_id] = player
+        if page:
+            # TODO Tim define HTMX template as required
+            return HTMXTemplate(
+                context={'admin_players': players},
+            )
+        admin_player: Player | None = web_context.admin_player
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+
+        # Allow plugin to provide extra columns
+        per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
+            plugin_manager.hook.get_extra_player_columns()
+        )
+        extra_columns: dict[str, list[ExtraAdminColumn]] = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                c = extra_columns.setdefault(extra_column.at, [])
+                c.append(extra_column)
+
+        # The federations that will be shown on the federation select list
+        players_federations: list[Federation] = sorted(
+            {
+                player.federation
+                for player in web_context.admin_event.players_by_id.values()
+            }
+        )
+        # The clubs that will be shown on the club select list
+        players_clubs: list[Club] = sorted(
+            {
+                player.club
+                for player in web_context.admin_event.players_by_id.values()
+                if player.club is not None
+            }
+        )
+        # The genders that will be shown on the gender select list
+        players_genders: list[PlayerGender] = sorted(
+            {player.gender for player in web_context.admin_event.players_by_id.values()}
+        )
+        # The years or birth that will be shown on the year of birth select list
+        players_yobs: list[int] = sorted(
+            {
+                player.year_of_birth
+                for player in web_context.admin_event.players_by_id.values()
+            }
+        )
+        # The check-in statuses that will be selected on the
+        # check-in status select list and used to filter the players
+        players_check_ins: list[bool | None] = [None, True, False]
+        # The categories that will be shown on the category select list
+        players_categories: list[PlayerCategory] = sorted(
+            {player.category for player in admin_event.players_by_id.values()}
+        )
+
+        per_plugin_context = plugin_manager.hook.get_player_admin_template_context(
+            web_context=web_context
+        )
 
         template_context |= {
             'admin_event_tab': 'admin-event-players-tab',
@@ -591,6 +655,10 @@ class PlayerAdminController(BaseEventAdminController):
             'admin_players_extra_columns': extra_columns,
             'player_updater_options': PlayerUpdaterManager.options(),
             'player_addable_tournaments': admin_event.player_addable_tournaments,
+        } | {
+            key: value
+            for context in per_plugin_context
+            for key, value in context.items()
         }
 
         match modal:
@@ -911,9 +979,26 @@ class PlayerAdminController(BaseEventAdminController):
             SessionHandler.set_session_admin_players_filter_name(request, '')
             SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
             plugin_manager.hook.clear_player_filters(request=request)
+        self.set_players_search_results(request, event_uniq_id)
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
+        )
+
+    @get(
+        path='/admin/event/{event_uniq_id:str}/players/{page:int}',
+        name='admin-event-players-page',
+    )
+    async def htmx_admin_event_players_page(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        page: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            page=page,
         )
 
     @get(

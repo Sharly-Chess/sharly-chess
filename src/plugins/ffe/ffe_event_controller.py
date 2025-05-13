@@ -56,7 +56,7 @@ class FfeAdminEventController(BaseEventAdminController):
                     if query_param >= 0  # -1 must be ignored
                 ],
             )
-
+        PlayerAdminController.set_players_search_results(request, event_uniq_id)
         return PlayerAdminController._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
