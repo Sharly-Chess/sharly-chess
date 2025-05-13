@@ -581,6 +581,9 @@ class PlayerAdminController(BaseEventAdminController):
             'admin_filtered_player_count': len(search_results),
             'page': page or 1,
             'pages': pages,
+            'nav_tab_title': _('Players ({num})').format(
+                num=len(admin_event.players_by_id)
+            ),
             'admin_players_columns': [
                 'name',
                 'check_in',

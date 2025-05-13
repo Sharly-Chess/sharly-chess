@@ -7,6 +7,11 @@
         {% include '/admin/players/table_head.html' %}
     </template>
 {% endwith %}
+    <template>
+        <button id="nav-admin-event-players-tab-tab" hx-swap-oob="innerHTML">
+            {{ nav_tab_title }}
+        </button>
+    </template>
 {% if admin_player is not none and index is not none %}
     {% with swap_oob=True, player=admin_player, index=index %}
         <template>
