@@ -180,11 +180,17 @@
                 >
                     <tr>
                         <th>{{ _('Board') }}</th>
-                        <th>{{ _('Points') }}</th>
+                        <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                        {% if admin_tournament.print_real_points %}
+                            <th>&nbsp;</th>
+                        {% endif %}
                         <th>{{ _('White') }}</th>
                         <th class="text-center">{{ _('Result') }}</th>
                         <th>{{ _('Black') }}</th>
-                        <th>{{ _('Points') }}</th>
+                        {% if admin_tournament.print_real_points %}
+                            <th>&nbsp;</th>
+                        {% endif %}
+                        <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
                     </tr>
                 </thead>
                 <tbody>

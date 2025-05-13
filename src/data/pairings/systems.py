@@ -72,10 +72,10 @@ class PairingSystem(IdentifiableEntity, ABC):
         return True
 
     @property
-    def pair_tournament_from_settings_modal(self) -> bool:
-        """Determines if the `Save` button on the `pairing settings modal`
-        should be replaced by a `pair tournament` button."""
-        return False
+    def round_per_round_pairing_generation(self) -> bool:
+        """Determines if the pairings are generated round per round
+        or all the rounds at the same time."""
+        return True
 
     @property
     def variation_field_id(self) -> str:
@@ -178,8 +178,8 @@ class RoundRobinPairingSystem(PairingSystem):
         return _('Round-Robin')
 
     @property
-    def pair_tournament_from_settings_modal(self) -> bool:
-        return True
+    def round_per_round_pairing_generation(self) -> bool:
+        return False
 
     @property
     def variation_manager(self) -> EntityManager['PairingVariation']:

@@ -54,8 +54,9 @@ class RatingLimitSetting(PairingSetting[int]):
 
     @classmethod
     def default_value(cls, tournament: 'Tournament') -> int:
-        # TODO replace by recommended value once papi dependency has been removed
-        return tournament.papi_tournament_info.rating_limit1
+        if papi_limit := tournament.papi_tournament_info.rating_limit1:
+            return papi_limit
+        return cls.recommended_value(tournament)
 
     @classmethod
     def recommended_value(cls, tournament: 'Tournament') -> int:
@@ -172,16 +173,30 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
 
     @classmethod
     def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
-        # TODO replace by recommended value once papi dependency has been removed
-        return cls.papi_limits(tournament)
+        if (papi_limits := cls.papi_limits(tournament)) != (0, 0):
+            return papi_limits
+        return cls.recommended_value(tournament)
 
     @classmethod
     def recommended_value(cls, tournament: 'Tournament') -> tuple[int, int]:
+        """Recommend the values for an ideal repartition of players.
+        Ideal repartition:
+            - Group A: closest multiple of 4 to a third of the players
+            - Group B: closest multiple of 2 of half of the remaining players
+            - Group C: remaining players"""
         ratings = cls.player_ratings(tournament)
-        if len(ratings) < 3:
+        player_count = len(ratings)
+        if player_count < 3:
             return 0, 0
-        first_c = len(ratings) // 3 - 1
-        first_b = 2 * len(ratings) // 3 - 1
+        if player_count < 7:
+            # Min ideal repartition: A(4), B(2), C(1)
+            first_c = player_count // 3 - 1
+            first_b = 2 * player_count // 3 - 1
+        else:
+            a_count = 4 * round((player_count / 3) / 4)
+            b_count = 2 * round((player_count - a_count) / 4)
+            first_b = (player_count - 1) - a_count
+            first_c = (player_count - 1) - (a_count + b_count)
         return (
             math.ceil((ratings[first_c] + ratings[first_c + 1]) / 2),
             math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2),

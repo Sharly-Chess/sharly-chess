@@ -531,7 +531,7 @@ class Tournament:
                     dependent_screens.append(screen)
         return dependent_screens
 
-    @property
+    @cached_property
     def print_real_points(self) -> bool:
         return self.pairing_variation.print_real_points(self.current_round, self.rounds)
 
