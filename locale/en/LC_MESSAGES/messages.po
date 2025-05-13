@@ -4514,7 +4514,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-msgid "Welcome to Sharly Chess!"
+msgid "Welcome to Sharly Chess!"
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
