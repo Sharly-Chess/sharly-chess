@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import date
 from logging import Logger
+import math
 from typing import Annotated, Any, Iterable
 
 from litestar import get, patch, delete, post
@@ -503,6 +504,7 @@ class PlayerAdminController(BaseEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         player_id: int | None = None,
+        deleted_player_id: int | None = None,
         player_fide_id: int | None = None,
         player_from_plugin: Player | None = None,
         tournament_id: int | None = None,
@@ -535,14 +537,11 @@ class PlayerAdminController(BaseEventAdminController):
         players: dict[int, Player] = {}
         start_index = ((page or 1) - 1) * cls.PAGE_SIZE
         end_index = (page or 1) * cls.PAGE_SIZE
+        pages = math.ceil(len(search_results) / cls.PAGE_SIZE)
         for index, player_id in enumerate(search_results[start_index:end_index]):
             if player := admin_event.players_by_id.get(player_id, None):
                 players[start_index + index + 1] = player
-        if page:
-            # TODO Tim define HTMX template as required
-            return HTMXTemplate(
-                context={'admin_players': players},
-            )
+
         admin_player: Player | None = web_context.admin_player
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
@@ -597,6 +596,8 @@ class PlayerAdminController(BaseEventAdminController):
         template_context |= {
             'admin_event_tab': 'admin-event-players-tab',
             'admin_players': players,
+            'page': page or 1,
+            'pages': pages,
             'admin_players_columns': [
                 'name',
                 'check_in',
@@ -868,6 +869,44 @@ class PlayerAdminController(BaseEventAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
+
+        if admin_player is not None and modal is None:
+            player_index: int | None
+            try:
+                player_index = search_results.index(admin_player.id) + 1
+            except ValueError:
+                player_index = None
+            template_context |= {
+                'index': player_index,
+            }
+
+            return HTMXTemplate(
+                template_name='/admin/players/table_header_and_player.html',
+                context=template_context,
+                re_target='#modal-wrapper',
+                trigger_event='close_modal',
+                after='receive',
+            )
+
+        if deleted_player_id is not None:
+            print(f'deleted_player_id=[{deleted_player_id}]')
+            template_context |= {
+                'deleted_player_id': deleted_player_id,
+            }
+            return HTMXTemplate(
+                template_name='/admin/players/table_header_and_player.html',
+                context=template_context,
+                re_target='#modal-wrapper',
+                trigger_event='close_modal',
+                after='receive',
+            )
+
+        if page:
+            return HTMXTemplate(
+                template_name='/admin/players/table_player_rows.html',
+                context=template_context,
+            )
+
         return cls._admin_event_render(template_context)
 
     @get(
@@ -1183,9 +1222,16 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 else:
                     tournament.delete_player(player)
+                    return self._admin_event_players_render(
+                        request,
+                        event_uniq_id=event_uniq_id,
+                        deleted_player_id=player.id,
+                    )
             case _:
                 raise ValueError(f'action=[{action}]')
-        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_event_players_render(
+            request, event_uniq_id=event_uniq_id, player_id=player_id
+        )
 
     @patch(
         path='/admin/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',
@@ -1626,7 +1672,9 @@ class PlayerAdminController(BaseEventAdminController):
         if admin_player.tournament is None:
             raise RuntimeError('admin_player.tournament not defined')
         admin_player.tournament.check_in_player(admin_player, check_in)
-        return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_event_players_render(
+            request, event_uniq_id=event_uniq_id, player_id=player_id
+        )
 
     @patch(
         path='/admin/player-check-in/{event_uniq_id:str}/{player_id:int}',

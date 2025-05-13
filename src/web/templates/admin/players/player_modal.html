@@ -19,9 +19,9 @@
                 {% if action == 'create' %}
                     hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                    hx-patch="{{ url_for('admin-player-update', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
                 {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-player-' ~ action, event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}
