@@ -58,8 +58,8 @@
             class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
         >
             {% include '/admin/players/table_head.html' %}
-            <tbody id="players-table-body">
-                {% include '/admin/players/table_player_rows.html' %}
+            {% include '/admin/players/table_players_page.html' %}
+            <tbody>
                 <tr id="players-table-empty-row">
                     {% if not admin_players %}
                         <td colspan="100%">
