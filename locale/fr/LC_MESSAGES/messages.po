@@ -2820,8 +2820,8 @@ msgid "Players from #%(first)d to #%(last)d"
 msgstr "Joueur·euses de %(first)d à %(last)d"
 
 #, python-format
-msgid "Players from #%(first)s to #%(last)s"
-msgstr "joueur·euses du n°%(first)s au n°%(last)s"
+msgid "Players from %(first)s to %(last)s"
+msgstr "joueur·euses de %(first)s à n°%(last)s"
 
 msgid "Players screen creation"
 msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique"
