@@ -1,4 +1,4 @@
-# French version
+# French
 English version below
 
 ## Fonctionnement
@@ -31,7 +31,9 @@ English version below
 
 - Ajout des pilotes d'afficheurs (2.6.0)
 
-# English Version
+---
+
+# English
 
 ## Usage
 
@@ -46,17 +48,17 @@ English version below
 
 - Simplified the main menu (2.6.0)
 - Added help links from the app to our documentation website (2.6.0)
-- Fixed a bug on the creation of tournaments defaults screens
-- Fixed a bug on results input screens refresh
-- Fixed a bug on the application settings
+- Fixed a bug on the creation of tournaments defaults screens (2.6.0)
+- Fixed a bug on results input screens refresh (2.6.0)
+- Fixed a bug on the application settings (2.6.0)
 
 ### Pairings management
 
 - Added the Pairings tab (2.6.0)
 - Added the possibility to manual pair players (2.6.0)
 - Added Round-Robin and Double Round-Robin (2.6.0)
-- Added Swiss Dutch pairings (2.6.0 experimental)
-- Added PGN and TRF16 export (2.6.0 experimental)
+- _Added Swiss Dutch pairings (2.6.0 experimental)_
+- _Added PGN and TRF16 export (2.6.0 experimental)_
 
 ### Display management
 
