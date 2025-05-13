@@ -1,0 +1,37 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% include '/common/empty_modal.html' %}
+{% with swap_oob=True %}
+    <template>
+        {% include '/admin/players/table_head.html' %}
+    </template>
+{% endwith %}
+    <template>
+        <button id="nav-admin-event-players-tab-tab" hx-swap-oob="innerHTML">
+            {{ nav_tab_title }}
+        </button>
+    </template>
+{% if admin_player is not none and index is not none %}
+    {% with swap_oob=True, player=admin_player, index=index %}
+        <template>
+            {% include '/admin/players/table_player_row.html' %}
+        </template>
+    {% endwith %}
+{% elif admin_player is not none and index is none %}
+    <template>
+        <tr
+            id="player-{{ admin_player.id }}"
+            hx-swap-oob="delete"
+        >
+        </tr>
+    </template>
+{% elif deleted_player_id is not none %}
+    <template>
+        <tr
+            id="player-{{ deleted_player_id }}"
+            hx-swap-oob="delete"
+        >
+        </tr>
+    </template>
+{% endif %}

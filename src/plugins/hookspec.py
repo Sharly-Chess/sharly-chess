@@ -143,13 +143,12 @@ class AppHookSpecs:
         """Provide additional columns for the player table view"""
 
     @hookspec
-    def filter_player(
+    def player_filters(
         self,
         web_context: 'PlayerAdminWebContext',
         template_context: dict[str, Any],
-        player: 'Player',
-    ) -> bool:
-        """Returns True if the player should be in the admin player list, False otherwise"""
+    ) -> list[Callable[['Player'], bool]]:
+        """List of condition to filter players based on plugin values."""
 
     @hookspec
     def clear_player_filters(self, request: HTMXRequest):

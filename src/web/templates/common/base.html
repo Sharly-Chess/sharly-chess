@@ -199,6 +199,14 @@
                     document.body.removeChild(form);
                 })
 
+                window.addEventListener("renumber_players_and_close_modal", function(event) {
+                    var cells = document.querySelectorAll("#players-table th.index");
+                    cells.forEach((cell, i) => {
+                        cell.textContent = '' + (i + 1);
+                    });
+                    closeModal();
+                });
+
                 function debounce(callback, delay){
                     var timer;
                     return function(){
@@ -301,6 +309,8 @@
                     </svg>
                 </div>
             </div>
+            {# This is a div that is used as the target of html events that don't really have a target #}
+            <div id="empty-div"></div>
             <div id="modal-wrapper"
                 class="modal modal-blur overflow-auto"
                 style="display: none"

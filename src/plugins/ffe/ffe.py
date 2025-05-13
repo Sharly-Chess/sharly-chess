@@ -471,12 +471,11 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
-    def filter_player(
+    def player_filters(
         self,
         web_context: PlayerAdminWebContext,
         template_context: dict[str, Any],
-        player: Player,
-    ) -> bool:
+    ) -> list[Callable[[Player], bool]]:
         filter_leagues: list[str] = (
             FFESessionHandler.get_session_admin_players_filter_leagues(
                 web_context.request
@@ -490,14 +489,18 @@ class FfePlugin(Plugin):
 
         admin_players_leagues = template_context['admin_players_leagues']
         admin_players_licences = template_context['admin_players_licences']
-
-        return (
-            len(filter_leagues) in [0, len(admin_players_leagues)]
-            or self.get_data(player.plugin_data, 'league') in filter_leagues
-        ) and (
-            len(filter_licences) in [0, len(admin_players_licences)]
-            or self.get_data(player.plugin_data, 'ffe_licence') in filter_licences
-        )
+        filters: list[Callable[[Player], bool]] = []
+        if len(filter_leagues) not in (0, len(admin_players_leagues)):
+            filters.append(
+                lambda player: self.get_data(player.plugin_data, 'league')
+                in filter_leagues
+            )
+        if len(filter_licences) not in (0, len(admin_players_licences)):
+            filters.append(
+                lambda player: self.get_data(player.plugin_data, 'ffe_licence')
+                in filter_licences
+            )
+        return filters
 
     @hookimpl
     def clear_player_filters(self, request: HTMXRequest):
