@@ -4514,8 +4514,8 @@ msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter..."
 msgid "Weekly"
 msgstr "Une semaine"
 
-msgid "Welcome to Sharly Chess!"
-msgstr "Bienvenue dans Sharly Chess !"
+msgid "Welcome to Sharly Chess!"
+msgstr "Bienvenue dans Sharly Chess !"
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans. Ce message peut être surchargé par les écrans rotatifs, les écrans et les familles d'écrans."
