@@ -29,7 +29,7 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr ""
 
 #, python-format
-msgid "%(first_name)s %(last_name)s - Round %(num)s"
+msgid "%(last_name)s %(first_name)s - Round %(num)s"
 msgstr ""
 
 #, python-format

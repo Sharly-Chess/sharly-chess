@@ -1099,6 +1099,7 @@ class Tournament:
 
     def add_player(self, player: Player):
         """Adds a new player to the tournament, returns the player's ID."""
+        ref = (max(p.ref_id for p in self.players) if self.players_by_id else 1) + 1
         with self.papi_write_database as papi_database:
             per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
                 player=player
@@ -1109,10 +1110,7 @@ class Tournament:
                 for key, value in data.items()
             }
             data: dict[str, Any] = {
-                'Ref': (
-                    max(p.ref_id for p in self.players) if self.players_by_id else 1
-                )
-                + 1,
+                'Ref': ref,
                 'Nom': player.last_name,
                 'Prenom': player.first_name,
                 'Sexe': player.gender.to_papi_value,
@@ -1152,6 +1150,7 @@ class Tournament:
             papi_database.write_player_dict(data)
             papi_database.commit()
         self.clear_cache(True)
+        return ref
 
     def delete_player(
         self,

@@ -29,8 +29,8 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
 #, python-format
-msgid "%(first_name)s %(last_name)s - Round %(num)s"
-msgstr "%(first_name)s %(last_name)s - Ronde %(num)s"
+msgid "%(last_name)s %(first_name)s - Round %(num)s"
+msgstr "%(last_name)s %(first_name)s - Ronde %(num)s"
 
 #, python-format
 msgid "%(lib)s version"
@@ -490,7 +490,7 @@ msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
 msgid "Byes *** Players with byes"
-msgstr "Forfaits et points joker"
+msgstr "Absences et points joker"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -3481,7 +3481,7 @@ msgid "Sort the players by club."
 msgstr "Trier les joueur·euses par club (ordre alphabétique)."
 
 msgid "Sort the players by name."
-msgstr "Trier les joueur·euses par tournoi."
+msgstr "Trier les joueur·euses par nom."
 
 msgid "Sort the players by rating (less rated first)."
 msgstr "Trier les joueur·euses par classement (moins bien classé·es en premier)."

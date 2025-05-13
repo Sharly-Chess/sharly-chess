@@ -200,6 +200,16 @@ class SessionHandler:
     def get_session_locale(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.LOCALE_KEY, SharlyChessConfig().locale)
 
+    ADMIN_PLAYERS_EVENT_KEY: str = 'admin_players_event'
+
+    @classmethod
+    def set_session_admin_players_event(cls, request: HTMXRequest, event_uniq_id: str):
+        request.session[cls.ADMIN_PLAYERS_EVENT_KEY] = event_uniq_id
+
+    @classmethod
+    def get_session_admin_player_event(cls, request: HTMXRequest) -> str | None:
+        return request.session.get(cls.ADMIN_PLAYERS_EVENT_KEY, None)
+
     ADMIN_PLAYERS_SORT_KEY: str = 'admin_players_sort'
 
     @classmethod
@@ -367,6 +377,23 @@ class SessionHandler:
     @classmethod
     def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
         return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
+
+    ADMIN_PLAYERS_SEARCH_RESULTS_KEY = 'admin_players_search_results'
+
+    @classmethod
+    def set_session_admin_players_search_results(
+        cls, request: HTMXRequest, search_results: list[int]
+    ):
+        request.session[cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY] = search_results
+
+    @classmethod
+    def get_session_admin_players_search_results(
+        cls, request: HTMXRequest
+    ) -> list[int] | None:
+        search_results: list[int] | None = request.session.get(
+            cls.ADMIN_PLAYERS_SEARCH_RESULTS_KEY, None
+        )
+        return search_results
 
     ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'
 

@@ -1,0 +1,229 @@
+<thead
+    id="players-table-header"
+    class="position-sticky z-2"
+    style="top: var(--header-height);"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    <tr>
+        <th scope="col" colspan="2" class="text-nowrap text-start w-1">
+            <div class="d-flex align-items-center">
+                <i
+                    class="bi-arrow-clockwise btn text-dark py-0 ps-0 pe-1 m-0"
+                    hx-get="{{ url }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}
+                ></i>
+                <span id="players-table-counters" class="px-0">
+                    {{ admin_filtered_player_count }}/{{admin_event.player_count}}
+                </span>
+                <i
+                    class="bi-x-circle btn text-dark py-0 ps-1 pe-0 m-0"
+                    hx-get="{{ url }}"
+                    hx-vals='{"admin_players_clear_filters": "1"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
+                ></i>
+            </div>
+        </th>
+        {{ admin_macros.extra_admin_column_header("title", admin_players_extra_columns)}}
+        <th scope="col" class="text-nowrap">
+            {# Players' title #}
+        </th>
+        {{ admin_macros.extra_admin_column_header("name", admin_players_extra_columns)}}
+        <th
+            scope="col"
+            class="text-nowrap position-sticky start-0 z-2 px-3"
+            style="border-right: 2px solid var(--bs-body-bg);"
+        >
+            <div class="d-flex align-items-center gap-1">
+                {{ _('Name *** NAME COLUMN HEADER FOR PLAYERS') }}
+                {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
+                <input
+                    type="text"
+                    name="admin_players_filter_name"
+                    class="admin-players-filter-name py-0 px-1"
+                    hx-get="{{ url }}"
+                    hx-target="body"
+                    hx-trigger="keyup changed delay:0.2s"
+                    hx-indicator="#please-wait"
+                    value="{{ admin_players_filter_name }}"
+                />
+                <i
+                    class="bi-x-circle btn text-dark p-0 m-0"
+                    hx-get="{{ url }}"
+                    hx-vals='{"admin_players_filter_name": ""}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                ></i>
+            </div>
+        </th>
+        {{ admin_macros.extra_admin_column_header("check-in", admin_players_extra_columns)}}
+        {% if 'check_in' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi-circle"></i>
+                    <i class="bi-check-circle pe-1"></i>
+                    {% include 'filter_check_ins.html' %}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("elo", admin_players_extra_columns)}}
+        <th scope="col" class="text-nowrap text-center">
+            <div class="d-flex align-items-center gap-1">
+                {{ _('Elo *** ELO COLUMN HEADER FOR PLAYERS') }}
+                {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'rating_desc', admin_players_sort) }}
+                {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'rating_asc', admin_players_sort) }}
+            </div>
+        </th>
+        {{ admin_macros.extra_admin_column_header("federation", admin_players_extra_columns)}}
+        {% if 'federation' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center gap-1">
+                    {{ _('Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS') }}
+                    {% if admin_players_federations|length > 1 %}
+                        {% include 'filter_federations.html' %}
+                    {% endif %}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("club", admin_players_extra_columns)}}
+        {% if 'club' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-start">
+                <div class="d-flex align-items-center gap-1">
+                    {{ _('Club *** CLUB COLUMN HEADER FOR PLAYERS') }}
+                    {% if admin_players_clubs|length > 1 %}
+                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'club', admin_players_sort) }}
+                    {% endif %}
+                    {% if admin_players_clubs|length > 1 %}
+                        {% include 'filter_clubs.html' %}
+                    {% endif %}
+                    <input
+                        type="text"
+                        name="admin_players_filter_clubs_search"
+                        class="admin-players-filter-origin py-0 px-1"
+                        hx-get="{{ url }}"
+                        hx-target="body"
+                        hx-trigger="keyup changed delay:0.2s"
+                        preload
+                        hx-indicator="#please-wait"
+                        value="{{ admin_players_filter_clubs_search }}"
+                    />
+                    <i
+                        class="bi-x-circle btn text-dark p-0 m-0"
+                        hx-get="{{ url }}"
+                        hx-vals='{"admin_players_filter_clubs_search": ""}'
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    ></i>
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("yob", admin_players_extra_columns)}}
+        {% if 'yob' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center">
+                    {{ _('YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS') }}
+                    {% if admin_players_yobs|length > 1 %}
+                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'yob_desc', admin_players_sort) }}
+                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'yob_asc', admin_players_sort) }}
+                    {% endif %}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("category", admin_players_extra_columns)}}
+        {% if 'category' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center">
+                    {{ _('Cat *** CATEGORY COLUMN HEADER FOR PLAYERS') }}
+                    {% if admin_players_categories|length > 1 %}
+                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'category_desc', admin_players_sort) }}
+                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'category_asc', admin_players_sort) }}
+                    {% endif %}
+                    {% include 'filter_categories.html' %}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("mail", admin_players_extra_columns)}}
+        {% if 'mail' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-start w-1">
+                <div class="d-flex align-items-center">
+                    <i class="bi-envelope-check" {{ macros.tooltip_attributes('info', _('The mail addresses.'), 'top') }} ></i>
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("phone", admin_players_extra_columns)}}
+        {% if 'phone' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-start w-1">
+                <div class="d-flex align-items-center">
+                    <i class="bi-telephone" {{ macros.tooltip_attributes('info', _('The phone numbers.'), 'top') }} ></i>
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("gender", admin_players_extra_columns)}}
+        {% if 'gender' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi-person-standing-dress"></i>
+                    <i class="bi-person-standing pe-1"></i>
+                    {%- include 'filter_genders.html' %}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("fixed", admin_players_extra_columns)}}
+        {% if 'fixed' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center">
+                    {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}
+                    <img
+                        src="{{ url_for('static', file_path='/images/disabled-black.svg') }}"
+                        style="height: 1rem"
+                        class="p-0"
+                    />
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("fide", admin_players_extra_columns)}}
+        {% if 'fide' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-center w-1">
+                <div class="d-flex align-items-center">
+                    {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("owed", admin_players_extra_columns)}}
+        {% if 'owed_paid' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</div></th>
+            <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</div></th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("tournament", admin_players_extra_columns)}}
+        {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
+            <th scope="col" class="text-nowrap text-center">
+                <div class="d-flex align-items-center">
+                    {% include 'filter_tournaments.html' %}
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("comment", admin_players_extra_columns)}}
+        {% if 'comment' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap">
+                <div class="d-flex align-items-center">
+                    <i class="bi-chat"></i>
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("record", admin_players_extra_columns)}}
+        {% if 'record' in admin_players_filter_columns %}
+            <th scope="col" class="text-nowrap">
+                <div class="d-flex align-items-center">
+                    <i class="bi-0-square"></i>
+                    <i class="bi-1-square-fill"></i>
+                </div>
+            </th>
+        {% endif %}
+        {{ admin_macros.extra_admin_column_header("end", admin_players_extra_columns)}}
+    </tr>
+</thead>
