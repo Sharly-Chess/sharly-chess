@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import date
 from logging import Logger
 from typing import Annotated, Any, Iterable
@@ -371,15 +372,12 @@ class PlayerAdminController(BaseEventAdminController):
         filter_name: str = SessionHandler.get_session_admin_players_filter_name(
             web_context.request
         )
-        filter_name_parts: list[str] = filter_name.split(' ')
         # The origin (federation+league+club) the players must match
         filter_origin: str = (
             SessionHandler.get_session_admin_players_filter_clubs_search(
                 web_context.request
             )
         )
-        filter_origin_parts: list[str] = filter_origin.split(' ')
-
         per_plugin_context = plugin_manager.hook.get_player_admin_template_context(
             web_context=web_context
         )
@@ -436,64 +434,57 @@ class PlayerAdminController(BaseEventAdminController):
         # 5 less than two federations, all or no federations selected, or player matches
         # 6 less than two clubs, all or no clubs selected, or player matches
 
+        filters: list[Callable[[Player], bool]] = []
+        if len(filter_genders) not in (0, 3):
+            filters.append(lambda player: player.gender in filter_genders)
+        if len(filter_categories) not in (0, len(players_categories)):
+            filters.append(lambda player: player.category in filter_categories)
+        if len(filter_check_ins) not in (0, 3):
+            filters.append(
+                lambda player: (
+                    (player.can_check_in_out and player.check_in in filter_check_ins)
+                    or (not player.can_check_in_out and None in filter_check_ins)
+                )
+            )
+        if len(filter_tournaments) not in (0, len(admin_event.tournaments_by_id)):
+            filters.append(lambda player: player.tournament_id in filter_tournaments)
+        if len(filter_federations) not in (0, len(players_federations)):
+            filters.append(lambda player: player.federation in filter_federations)
+        if len(filter_clubs) not in (0, len(players_clubs)):
+            filters.append(lambda player: player.club in filter_clubs)
+        if filter_name:
+            filters.append(
+                lambda player: cls._matches_string_search(
+                    filter_name, f'{player.last_name} {player.first_name}'
+                )
+            )
+        if filter_origin:
+            filters.append(
+                lambda player: cls._matches_string_search(
+                    filter_origin, f'{player.federation} {player.club}'
+                )
+            )
+        for plugin_filters in plugin_manager.hook.player_filters(
+            web_context=web_context,
+            template_context=template_context,
+        ):
+            filters += plugin_filters
         filtered_players = [
             player
             for player in admin_event.players_by_id.values()
-            if (
-                player.id is not None
-                and len(filter_genders) in [0, 3]
-                or player.gender.value in filter_genders
-            )
-            and (
-                len(filter_categories) in [0, len(players_categories)]
-                or player.category in filter_categories
-            )
-            and (
-                len(filter_check_ins) in [0, 3]
-                or (player.can_check_in_out and player.check_in in filter_check_ins)
-                or (not player.can_check_in_out and None in filter_check_ins)
-            )
-            and (
-                len(filter_tournaments) in [0, len(admin_event.tournaments_by_id)]
-                or player.tournament_id in filter_tournaments
-            )
-            and (
-                len(filter_federations) in [0, len(players_federations)]
-                or player.federation in filter_federations
-            )
-            and (
-                len(filter_clubs) in [0, len(players_clubs)]
-                or player.club in filter_clubs
-            )
-            and all(
-                {
-                    filter_name_part
-                    in unicode_normalize(
-                        f'{player.last_name} {player.first_name}'.lower()
-                    )
-                    for filter_name_part in filter_name_parts
-                }
-            )
-            and all(
-                {
-                    filter_origin_part
-                    in unicode_normalize(f'{player.federation} {player.club}'.lower())
-                    for filter_origin_part in filter_origin_parts
-                }
-            )
-            and all(
-                plugin_manager.hook.filter_player(
-                    web_context=web_context,
-                    template_context=template_context,
-                    player=player,
-                )
-            )
+            if all(filter_(player) for filter_ in filters)
         ]
         search_results = [
             player.id for player in sorted(filtered_players, key=get_sort_key)
         ]
         SessionHandler.set_session_admin_players_search_results(request, search_results)
         return search_results
+
+    @staticmethod
+    def _matches_string_search(search: str, match: str):
+        search_parts = search.split(' ')
+        match_str = unicode_normalize(match.lower())
+        return all(search_part in match_str for search_part in search_parts)
 
     @classmethod
     def _admin_event_players_render(
