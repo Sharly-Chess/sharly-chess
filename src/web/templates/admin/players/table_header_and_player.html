@@ -24,7 +24,7 @@
             id="player-{{ admin_player.id }}"
             hx-swap-oob="delete"
         >
-        </td>
+        </tr>
     </template>
 {% elif deleted_player_id is not none %}
     <template>
@@ -32,6 +32,6 @@
             id="player-{{ deleted_player_id }}"
             hx-swap-oob="delete"
         >
-        </td>
+        </tr>
     </template>
 {% endif %}
