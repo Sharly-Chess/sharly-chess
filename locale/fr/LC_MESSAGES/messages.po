@@ -2952,9 +2952,6 @@ msgstr "Veuillez patienter..."
 msgid "Plugins"
 msgstr "Plug-ins"
 
-msgid "Points"
-msgstr "Points"
-
 msgid "Points for draw (Half-Point Bye)"
 msgstr "Points de match nul (demi-point joker)"
 
@@ -3039,7 +3036,7 @@ msgstr "Propriétés (saisie des résultats)"
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
 
-msgid "Pts *** POINTS FOR PRINT VIEW"
+msgid "Pts *** POINTS FOR TABULAR DISPLAY"
 msgstr "Pts"
 
 msgid "Public display controller"
@@ -4517,8 +4514,8 @@ msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter..."
 msgid "Weekly"
 msgstr "Une semaine"
 
-msgid "Welcome to Sharly Chess!"
-msgstr "Bienvenue dans Sharly Chess !"
+msgid "Welcome to Sharly Chess!"
+msgstr "Bienvenue dans Sharly Chess !"
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans. Ce message peut être surchargé par les écrans rotatifs, les écrans et les familles d'écrans."

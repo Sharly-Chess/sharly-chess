@@ -9,6 +9,9 @@
 >
     <td class="text-center">{{ board.number }}</td>
     <td class="text-center">{{ wp.vpoints_str }}</td>
+    {% if admin_tournament.print_real_points %}
+        <td class="text-start">[{{ wp.points_str }}]</td>
+    {% endif %}
     <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
     <td class="text-center" style="width: 3rem;">
         <button
@@ -27,9 +30,14 @@
     </td>
     {% if bp %}
         <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>
+        {% if admin_tournament.print_real_points %}
+            <td class="text-end">[{{ bp.points_str }}]</td>
+        {% endif %}
         <td class="text-center">{{ bp.vpoints_str }}</td>
+
     {% else %}
         <td>{{ _('EXEMPT') }}</td>
-        <td class="text-center"></td>
+        <td></td>
+        {% if admin_tournament.print_real_points %}<td></td>{% endif %}
     {% endif %}
 </tr>

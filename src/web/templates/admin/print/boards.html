@@ -9,7 +9,10 @@
         <thead>
             <tr class="board-header">
                 <th class="board-number">{{ _('Bd. *** BOARD NUMBER FOR PRINT VIEW') }}</th>
-                <th class="points">{{ _('Pts *** POINTS FOR PRINT VIEW') }}</th>
+                <th class="points">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                {% if document.tournament.print_real_points %}
+                    <th class="points">&nbsp;</th>
+                {% endif %}
                 <th class="player">{{ _('White') }}</th>
                 <th class="rating"></th>
                 <th class="result">
@@ -19,7 +22,10 @@
                 </th>
                 <th class="player">{{ _('Black') }}</th>
                 <th class="rating"></th>
-                <th class="points">{{ _('Pts *** POINTS FOR PRINT VIEW') }}</th>
+                {% if document.tournament.print_real_points %}
+                    <th class="points">&nbsp;</th>
+                {% endif %}
+                <th class="points">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -29,7 +35,10 @@
                     class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}"
                 >
                     <td class="board-number">{{ board.number }}</td>
-                    <td class="points">{{ board.white_player.points_str }}</td>
+                    <td class="points">{{ board.white_player.vpoints_str }}</td>
+                    {% if document.tournament.print_real_points %}
+                        <td class="points">[{{ board.white_player.points_str }}]</td>
+                    {% endif %}
                     <td class="player">
                         {{ board.white_player.last_name }}&nbsp;{{ board.white_player.first_name }}
                     </td>
@@ -48,10 +57,15 @@
                         <td class="rating">
                             {{ board.black_player.rating }}&nbsp;{{ board.black_player.rating_type }}
                         </td>
-                        <td class="points">{{ board.black_player.points_str }}</td>
+                        {% if document.tournament.print_real_points %}
+                            <td class="points">[{{ board.black_player.points_str }}]</td>
+                        {% endif %}
+                        <td class="points">{{ board.black_player.vpoints_str }}</td>
                     {% else %}
                         <td class="player">{{ board.white_player.exempt_str }}</td>
-                        <td></td><td></td>
+                        <td></td>
+                        <td></td>
+                        {% if document.tournament.print_real_points %}<td></td>{% endif %}
                     {% endif %}
 
                 </tr>

@@ -10,10 +10,10 @@
         <div class="modal-body">
             <form
                 id="modal-form"
-                {% if admin_tournament.pairing_system.pair_tournament_from_settings_modal %}
-                    hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                {% if admin_tournament.pairing_system.round_per_round_pairing_generation %}
+                    hx-post="{{ url_for('admin-generate-round-pairings-with-settings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                 {% else %}
-                    hx-patch="{{ url_for('admin-pairings-settings-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -40,13 +40,8 @@
                 form="modal-form"
                 class="text-nowrap white btn btn-primary"
             >
-                {% if admin_tournament.pairing_system.pair_tournament_from_settings_modal %}
-                    <i class="bi-shuffle pe-1"></i>
-                    {{ _('Pair tournament') }}
-                {% else %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% endif %}
+                <i class="bi-shuffle pe-1"></i>
+                {{ _('Pair') }}
             </button>
         </div>
     </div>

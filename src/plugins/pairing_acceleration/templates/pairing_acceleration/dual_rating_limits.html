@@ -1,4 +1,15 @@
 {% with recommended=setting.recommended_value(admin_tournament) %}
+    <div class="row mt-3 mb-3">
+        {{ admin_macros.number_input(
+            name=setting.upper_limit_field,
+            label=_('%(string)s:', string=_('Upper rating limit')),
+            help_text=_(
+                'Rating splitting groups A and B (recommended: %(recommended)d).',
+                recommended=recommended[1],
+            ) if recommended else _('Rating splitting groups A and B.'),
+            data=data, errors=errors
+        ) }}
+    </div>
     <div class="row mb-3">
         {{ admin_macros.number_input(
             name=setting.lower_limit_field,
@@ -7,17 +18,6 @@
                 'Rating splitting groups B and C (recommended: %(recommended)d).',
                 recommended=recommended[0],
             ) if recommended else _('Rating splitting groups B and C.'),
-            data=data, errors=errors
-        ) }}
-    </div>
-    <div class="row mb-3">
-        {{ admin_macros.number_input(
-            name=setting.upper_limit_field,
-            label=_('%(string)s:', string=_('Upper rating limit')),
-            help_text=_(
-                'Rating splitting groups A and B (recommended: %(recommended)d).',
-                recommended=recommended[1],
-            ) if recommended else _('Rating splitting groups A and B.'),
             data=data, errors=errors
         ) }}
     </div>
