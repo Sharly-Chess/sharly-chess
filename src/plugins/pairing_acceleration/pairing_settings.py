@@ -188,8 +188,8 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
         player_count = len(ratings)
         if player_count < 3:
             return 0, 0
-        if player_count < 7:
-            # Min ideal repartition: A(4), B(2), C(1)
+        if player_count < 11:
+            # Min ideal repartition: A(4), B(4), C(3)
             first_c = player_count // 3 - 1
             first_b = 2 * player_count // 3 - 1
         else:
