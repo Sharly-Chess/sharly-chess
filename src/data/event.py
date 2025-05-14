@@ -756,11 +756,6 @@ class Event:
     def rotators_by_uniq_id(self) -> dict[str, Rotator]:
         return {rotator.uniq_id: rotator for rotator in self.rotators_by_id.values()}
 
-    def clear_screen_cache(self, tournament_id: int | None = None):
-        """Clears the screen cache for the given tournament, or all tournaments if no tournament is provided"""
-        for screen in self.screens_by_uniq_id.values():
-            screen.clear_cache_for_tournament(tournament_id)
-
     def get_unused_rotator_uniq_id(self, base_uniq_id: str | None = None) -> str:
         """Returns the first unused rotator uniq_id looking like base_uniq_id:
         base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
