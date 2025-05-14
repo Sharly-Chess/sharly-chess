@@ -381,13 +381,13 @@ class Event:
             or SharlyChessConfig.default_message_background_color
         )
 
-    @cached_property
+    @property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
         return sorted(
             self.screens_by_uniq_id.values(), key=lambda screen: screen.uniq_id
         )
 
-    @cached_property
+    @property
     def screens_of_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
@@ -422,11 +422,11 @@ class Event:
     def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
 
-    @cached_property
+    @property
     def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return [screen for screen in self.screens_by_uniq_id.values() if screen.public]
 
-    @cached_property
+    @property
     def public_screens_of_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
@@ -727,14 +727,14 @@ class Event:
             [screen.name for screen in self.families_by_id.values()],
         )
 
-    @cached_property
+    @property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = copy.copy(self.basic_screens_by_uniq_id)
         for family in self.families_by_id.values():
             screens_by_uniq_id |= family.screens_by_uniq_id
         return screens_by_uniq_id
 
-    @cached_property
+    @property
     def family_screens_by_uniq_id(self) -> dict[str, Screen]:
         family_screens_by_uniq_id: dict[str, Screen] = {}
         for family in self.families_by_id.values():
