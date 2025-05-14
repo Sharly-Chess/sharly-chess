@@ -1,6 +1,6 @@
 <tr>
     <th scope="row" class="text-nowrap">{{ _('ChessEvent') }}</th>
-    <td class="{% if not admin_event.plugin_data.chessevent.chessevent_user_id or not admin_event.chessevent_event_id %}fst-italic{% endif %}">
+    <td class="{% if not admin_event.plugin_data.chessevent.chessevent_user_id or not admin_event.plugin_data.chessevent.chessevent_event_id %}fst-italic{% endif %}">
         {% if admin_event.plugin_data.chessevent.chessevent_user_id and admin_event.plugin_data.chessevent.chessevent_event_id %}
             {{ admin_event.plugin_data.chessevent.chessevent_user_id }}
             /
