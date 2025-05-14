@@ -155,16 +155,13 @@
 {% block card_buttons_right %}
     {% if family.calculated_first_screen_id %}
         <span {{ macros.tooltip_attributes('info', _('Go to the first screen.'), 'top') }}>
-            <button
+            <a
                 class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=family.calculated_first_screen_id) }}"
-                hx-target="body"
-                hx-push-url="true"
-                hx-indicator="#please-wait"
-                preload
+                href="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=family.calculated_first_screen_id) }}"
+                target="_blank"
             >
-                <i class="bi bi-box-arrow-up-right"></i>
-            </button>
+                <i class="bi bi-eye"></i>
+            </a>
         </span>
     {% endif %}
     <span {{ macros.tooltip_attributes('info', _('Clone the screen family.'), 'top') }}>

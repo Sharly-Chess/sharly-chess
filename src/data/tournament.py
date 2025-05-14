@@ -630,8 +630,11 @@ class Tournament:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
         self._players_by_rank = None
-        self.event.clear_screen_cache(self.id)
         self.event.clear_player_cache()
+        for family in self.dependent_families:
+            family.clear_cache()
+        for screen in self.dependent_screens:
+            screen.clear_cache_for_tournament(self.id)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
