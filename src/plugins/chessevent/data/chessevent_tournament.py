@@ -2,14 +2,45 @@ from logging import Logger
 from typing import Any
 
 from common.logger import get_logger
+from data.pairings import PairingSystem, PairingVariation
+from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
+from data.pairings.variations import StandardSwissVariation, BergerRoundRobinVariation
 from data.tie_breaks import tie_breaks, TieBreak
-from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
+from plugins.ffe.ffe_entity import NicoisSwissVariation
+from plugins.pairing_acceleration.pairing_variations import (
+    HaleySwissVariation,
+    ProgressiveSwissVariation,
+    HaleySoftSwissVariation,
+)
+from plugins.utils import PluginCoreMapper
 from utils.enum import TournamentRating
 from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.ffe import ffe_tie_breaks
 
 logger: Logger = get_logger()
+
+
+class ChessEventPairingSystem(PluginCoreMapper[int, PairingSystem]):
+    @staticmethod
+    def _core_object_by_plugin_value() -> dict[int, PairingSystem]:
+        return {
+            1: SwissPairingSystem(),
+            2: RoundRobinPairingSystem(),
+        }
+
+
+class ChessEventPairingVariation(PluginCoreMapper[int, PairingVariation]):
+    @staticmethod
+    def _core_object_by_plugin_value() -> dict[int, PairingVariation]:
+        return {
+            1: StandardSwissVariation(),
+            2: HaleySwissVariation(),
+            3: HaleySoftSwissVariation(),
+            4: ProgressiveSwissVariation(),
+            5: NicoisSwissVariation(),
+            6: BergerRoundRobinVariation(),
+        }
 
 
 class ChessEventTournament:
@@ -27,12 +58,12 @@ class ChessEventTournament:
 
         try:
             self.name = reader.get('name', str)
-            self.type = PapiPairingSystem.get_core_object(reader.get('type', str))
+            self.type = ChessEventPairingSystem.get_core_object(reader.get('type', int))
             self.rounds = reader.get('rounds', int)
             if self.rounds not in range(25):  # the 0-value is set by default later
                 raise ValueError()
-            self.pairing = PapiPairingVariation.get_core_object(
-                reader.get('pairing', str)
+            self.pairing = ChessEventPairingVariation.get_core_object(
+                reader.get('pairing', int)
             )
             self.time_control = reader.get('time_control', str)
             self.location = reader.get('location', str)
@@ -59,7 +90,14 @@ class ChessEventTournament:
                 'Field [%s] missing in the ChessEvent response', reader.last_key
             )
             return
-        except (TypeError, ValueError):
+        except TypeError:
+            logger.error(
+                'Invalid type [%s] for field [%s] in the ChessEvent response',
+                type(chessevent_tournament_info[reader.last_key or '']).__name__,
+                reader.last_key,
+            )
+            return
+        except ValueError:
             logger.error(
                 'Invalid value [%s] for field [%s] in the ChessEvent response',
                 chessevent_tournament_info[reader.last_key or ''],
