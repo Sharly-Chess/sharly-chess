@@ -532,6 +532,7 @@ class Family:
         for property_name in cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
+        self._calculate_and_cache_screens.cache_clear()
 
     def __str__(self):
         return f'Tournament {self.tournament.uniq_id} ({self.numbers_str})'

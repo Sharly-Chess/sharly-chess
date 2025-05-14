@@ -476,7 +476,7 @@ class Screen:
     def clear_cache_for_tournament(self, tournament_id: int | None = None):
         """Clears the screen cache for the given tournament, or all tournaments if no tournament is provided"""
         for screen_set in self.screen_sets_by_id.values():
-            screen_set.clear_boards_cache(tournament_id)
+            screen_set.clear_cache(tournament_id)
         if self.type == ScreenType.RESULTS and (
             tournament_id is None
             or not self.results_tournament_ids
