@@ -100,16 +100,13 @@
 
 {% block card_buttons_right %}
     <span {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}>
-        <button
+        <a
             class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-            hx-target="body"
-            hx-push-url="true"
-            hx-indicator="#please-wait"
-            preload
+            href="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+            target="_blank"
         >
-            <i class="bi bi-box-arrow-up-right"></i>
-        </button>
+            <i class="bi bi-eye"></i>
+        </a>
     </span>
     {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_uniq_id, 'rotator', rotator.uniq_id) }}
     <span {{ macros.tooltip_attributes('info', _('Clone the rotator.'), 'top') }}>
