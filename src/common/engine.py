@@ -240,7 +240,7 @@ class Engine(ABC):
                         prefix,
                         previous_databases[(recovered_version, prefix)],
                     )
-            if not recovered_version:
+            if DEVEL_ENV and not recovered_version:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
                 no_answer = _('N *** THE LETTER TO ANSWER NO')
                 while True:
