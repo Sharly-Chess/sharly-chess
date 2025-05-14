@@ -534,7 +534,7 @@ class Screen:
             else:
                 return _('Ranking')
         else:
-            return str(type)
+            return str(type_)
 
     @property
     def type_str(self) -> str:
