@@ -19,7 +19,7 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@4.2.2
+        uses: actions/checkout@v4.2.2
       - name: Setup Python
         uses: actions/setup-python@v5.5.0
         with:
@@ -52,7 +52,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: "Version ${{ github.ref_name }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
           draft: true
-          prerelease: contains("a", ${{ github.ref_name }}) || contains("b", ${{ github.ref_name }}) || contains("rc", ${{ github.ref_name }})
+          prerelease: contains(${{ github.ref_name }}, "a") || contains(${{ github.ref_name }}, "b") || contains(${{ github.ref_name }}, "rc")
           files: |
             export/sharly-chess-${{ github.ref_name }}.zip
             export/papi-web-${{ github.ref_name }}.zip
