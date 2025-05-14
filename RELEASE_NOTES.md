@@ -18,6 +18,7 @@ English version below
 - Correction d'un bug de configuration de l'application (2.6.0)
 - Correction d'un bug sur la création des écrans par défaut des tournois (2.6.0)
 - Correction d'un bug de rafraîchissement des écrans de saisie (2.6.0)
+- Correction d'un bug d'affichage des familles d'écrans (2.6.1)
 
 ### Gestion des appariements
 
@@ -30,6 +31,10 @@ English version below
 ### Gestion des afficheurs
 
 - Ajout des pilotes d'afficheurs (2.6.0)
+
+### ChessEvent
+
+- Correction d'un bug d'import des tournois depuis ChessEvent (2.6.1)
 
 ---
 
@@ -51,6 +56,7 @@ English version below
 - Fixed a bug on the creation of tournaments defaults screens (2.6.0)
 - Fixed a bug on results input screens refresh (2.6.0)
 - Fixed a bug on the application settings (2.6.0)
+- Fixed a bug on the display of screen families (2.6.1)
 
 ### Pairings management
 
@@ -63,3 +69,7 @@ English version below
 ### Display management
 
 - Added display controllers (2.6.0)
+
+### ChessEvent
+
+- Fixed a bug on tournament import from ChessEvent (2.6.1)
