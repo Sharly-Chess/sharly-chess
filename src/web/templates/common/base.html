@@ -342,22 +342,6 @@
                 // Allow the tooltip content to have a style attribute
                 bootstrap.Tooltip.Default.allowList['*'].push('style')
             }
-
-            var confirm_when_leaving = true;
-            document.addEventListener('htmx:beforeOnLoad', function(evt) {
-                if (evt.detail.xhr.getResponseHeader('hx-redirect')) {
-                    confirm_when_leaving = false;
-                }
-            });
-            {% if not DEVEL_ENV %}
-            $(window).bind('beforeunload', function(){
-                if (confirm_when_leaving) {
-                    return "{{ _('Do you want to restart Sharly Chess?') }}";
-                } else {
-                    return '';
-                }
-            });
-            {% endif %}
         </script>
     {% endif %}
 </html>
