@@ -632,6 +632,8 @@ class Tournament:
         self._players_by_rank = None
         self.event.clear_screen_cache(self.id)
         self.event.clear_player_cache()
+        for family in self.dependent_families:
+            family.clear_cache()
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
