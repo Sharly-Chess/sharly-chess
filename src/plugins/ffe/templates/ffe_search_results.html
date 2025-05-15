@@ -24,8 +24,7 @@
             -
         {% endif %}
         <span class="fw-bold">
-            {{ player.last_name }}
-            {{ player.first_name }}
+            {{ player.full_name }}
         </span>
         {{ player.ratings[1] }}/{{ player.ratings[2] }}/{{ player.ratings[3] }}
         {% if player.league %}

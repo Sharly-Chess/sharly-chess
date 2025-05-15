@@ -195,24 +195,50 @@ class BbpPairings(PairingEngine):
         return boards
 
 
-class AbstractBergerPairingEngine(PairingEngine, ABC):
+class RoundRobinPairingEngine(PairingEngine, ABC):
     MIN_PLAYERS = 3
 
-    @classmethod
+    @property
     @abstractmethod
-    def get_round_count(cls, player_count: int) -> int:
-        """Number of rounds in the tournament according to the number of players."""
+    def player_encounters(self) -> int:
+        """Number of times 2 players play against each other in the tournament."""
 
-    @abstractmethod
+    @staticmethod
+    def get_single_encounter_round_count(player_count: int) -> int:
+        """Number of rounds necessary for each player to play against every other player."""
+        return player_count if player_count % 2 == 1 else player_count - 1
+
+    def get_round_count(self, player_count: int) -> int:
+        """Number of rounds in the tournament."""
+        return self.player_encounters * self.get_single_encounter_round_count(
+            player_count
+        )
+
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        player_count = tournament.player_count
+        if player_count < self.MIN_PLAYERS:
+            return _(
+                'Too few players to generate the pairings (minimum: {min}).'
+            ).format(min=self.MIN_PLAYERS)
+        round_count = self.get_round_count(player_count)
+        if tournament.rounds != round_count:
+            return _(
+                'The round count is incompatible with the '
+                'number of players (expected: {expected}).'
+            ).format(expected=round_count)
+        return None
+
+
+class BergerPairingEngine(RoundRobinPairingEngine):
+    @property
+    def player_encounters(self) -> int:
+        return 1
+
     def get_round_pairings(
         self, player_count: int, round_: int
     ) -> list[tuple[int, int]]:
         """Pairings for the round *round_* of a tournament of *player_count* players."""
-
-    @staticmethod
-    def get_berger_table_round_count(player_count: int) -> int:
-        """Number of rounds in the Berger table for *player_count* players."""
-        return player_count if player_count % 2 == 1 else player_count - 1
+        return self.get_berger_table(player_count)[round_]
 
     @classmethod
     @cache
@@ -221,7 +247,7 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
             raise ValueError(f'There must be at least 3 players, got {player_count}')
         if player_count % 2 == 1:
             player_count += 1
-        round_count = cls.get_berger_table_round_count(player_count)
+        round_count = cls.get_single_encounter_round_count(player_count)
         previous_pairings = [
             (i + 1, player_count - i) for i in range(player_count // 2)
         ]
@@ -239,20 +265,6 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
             berger_table[round_] = pairings
             previous_pairings = pairings
         return berger_table
-
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
-        player_count = tournament.player_count
-        if player_count < self.MIN_PLAYERS:
-            return _(
-                'Too few players to generate the pairings (minimum: {min}).'
-            ).format(min=self.MIN_PLAYERS)
-        round_count = self.get_round_count(player_count)
-        if tournament.rounds != round_count:
-            return _(
-                'The round count is incompatible with the '
-                'number of players (expected: {expected}).'
-            ).format(expected=round_count)
-        return None
 
     @staticmethod
     def player_from_pairing_number(
@@ -288,21 +300,10 @@ class AbstractBergerPairingEngine(PairingEngine, ABC):
         return boards
 
 
-class BergerPairingEngine(AbstractBergerPairingEngine):
-    @classmethod
-    def get_round_count(cls, player_count: int) -> int:
-        return cls.get_berger_table_round_count(player_count)
-
-    def get_round_pairings(
-        self, player_count: int, round_: int
-    ) -> list[tuple[int, int]]:
-        return self.get_berger_table(player_count)[round_]
-
-
-class DoubleBergerPairingEngine(AbstractBergerPairingEngine):
-    @classmethod
-    def get_round_count(cls, player_count: int) -> int:
-        return 2 * cls.get_berger_table_round_count(player_count)
+class DoubleBergerPairingEngine(BergerPairingEngine):
+    @property
+    def player_encounters(self) -> int:
+        return 2
 
     def get_round_pairings(
         self, player_count: int, round_: int
@@ -315,7 +316,7 @@ class DoubleBergerPairingEngine(AbstractBergerPairingEngine):
         are supposed to be permuted to avoid players from tripling a color
         (see FIDE Handbook section C.05.Annex 1)."""
         berger_table = self.get_berger_table(player_count)
-        berger_table_round_count = self.get_berger_table_round_count(player_count)
+        berger_table_round_count = self.get_single_encounter_round_count(player_count)
         if round_ <= berger_table_round_count - 2:
             return berger_table[round_]
         if round_ == berger_table_round_count - 1:

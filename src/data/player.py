@@ -8,6 +8,7 @@ from trf import Player as TrfPlayer
 
 from common.i18n import _
 from data.pairing import Pairing
+from utils import StaticUtils
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -78,7 +79,7 @@ class PlayerRating:
     type: PlayerRatingType
 
     def __str__(self) -> str:
-        return f'{self.value}{self.type.short_name}'
+        return f'{self.value} {self.type.short_name}'
 
 
 class TournamentPlayer:
@@ -120,6 +121,12 @@ class TournamentPlayer:
     @tournament.setter
     def tournament(self, tournament: Optional['Tournament']):  # type: ignore
         self._tournament_ref = weakref.ref(tournament) if tournament else None
+
+    @property
+    def full_name(self) -> str:
+        if self.first_name:
+            return f'{self.last_name} {self.first_name}'
+        return self.last_name
 
     @property
     def point_values(self) -> dict[Result, float] | None:
@@ -286,6 +293,10 @@ class Player(TournamentPlayer):
         return self._tournament_rating.type
 
     @property
+    def rating_str(self) -> str:
+        return str(self._tournament_rating)
+
+    @property
     def _tournament_rating(self) -> PlayerRating:
         assert self.tournament is not None
         return self.get_rating(self.tournament.rating)
@@ -308,14 +319,6 @@ class Player(TournamentPlayer):
             pairing.result.points(self.point_values)
             for pairing in self.pairings.values()
         )
-
-    @staticmethod
-    def _points_str(points: float | None) -> str:
-        if points is None:
-            return ''
-        if points == 0.5:
-            return '½'
-        return f'{points:.1f}'.replace('.0', '').replace('.5', '½')
 
     def add_points(self, points: float):
         """If `self.points` is set, add `points` to it.
@@ -359,7 +362,7 @@ class Player(TournamentPlayer):
 
     @property
     def points_str(self) -> str:
-        return self._points_str(self.points)
+        return StaticUtils.points_str(self.points)
 
     def add_vpoints(self, vpoints: float):
         """If `self.vpoints` is set, add `vpoints` to it.
@@ -369,7 +372,7 @@ class Player(TournamentPlayer):
 
     @property
     def vpoints_str(self) -> str:
-        return self._points_str(self.vpoints)
+        return StaticUtils.points_str(self.vpoints)
 
     @property
     def not_paired_str(self) -> str:
@@ -459,7 +462,7 @@ class Player(TournamentPlayer):
             'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         )
         return [
-            self._points_str(float(tie_break_value))
+            StaticUtils.points_str(float(tie_break_value))
             for tie_break_value in self._tie_break_values
             if isinstance(tie_break_value, SupportsFloat)
         ]

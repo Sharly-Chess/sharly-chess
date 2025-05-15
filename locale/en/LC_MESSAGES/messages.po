@@ -395,6 +395,9 @@ msgstr "Bd."
 msgid "Berger"
 msgstr ""
 
+msgid "Berger grid"
+msgstr ""
+
 msgid "Black"
 msgstr ""
 
@@ -1670,6 +1673,9 @@ msgid "First board number: %(board_number)d"
 msgstr ""
 
 msgid "First board:"
+msgstr ""
+
+msgid "First encounter"
 msgstr ""
 
 msgid "First name LAST NAME"
@@ -3395,6 +3401,9 @@ msgstr ""
 msgid "Searching..."
 msgstr ""
 
+msgid "Second encounter"
+msgstr ""
+
 msgid "Seed color"
 msgstr ""
 
@@ -3983,6 +3992,12 @@ msgid "This display controller is private (not visible by the users)."
 msgstr ""
 
 msgid "This display controller is public (visible by the users)."
+msgstr ""
+
+msgid "This document is not available for unpaired tournaments."
+msgstr ""
+
+msgid "This document is only available for Round-Robin tournaments."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the users)."

@@ -1,0 +1,18 @@
+{% extends '/admin/print/base.html' %}
+
+{% block content %}
+    {% if result_grids|length == 1 %}
+        {% with result_grid=result_grids[0] %}
+            {% include 'berger_results_grid.html' %}
+        {% endwith %}
+    {% elif result_grids|length == 2 %}
+        <h4>{{ _('First encounter') }}</h4>
+        {% with result_grid=result_grids[0] %}
+            {% include 'berger_results_grid.html' %}
+        {% endwith %}
+        <h4>{{ _('Second encounter') }}</h4>
+        {% with result_grid=result_grids[1] %}
+            {% include 'berger_results_grid.html' %}
+        {% endwith %}
+    {% endif %}
+{% endblock %}

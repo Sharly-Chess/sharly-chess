@@ -26,8 +26,8 @@
     <tbody>
         {% for player in admin_tournament.players %}
             <tr>
-                <td>{{ player.last_name }} {{ player.first_name }}</td>
-                <td class="text-start">{{ player.rating }}{{ player.rating_type }}</td>
+                <td>{{ player.full_name }}</td>
+                <td class="text-start">{{ player.rating_str }}</td>
                 <td class="berger-number-input col-12 col-md-4">
                     {{ admin_macros.number_input(
                         name=setting.player_field_base ~ player.id|string,

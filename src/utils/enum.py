@@ -336,6 +336,12 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @property
+    def to_berger_table(self) -> str:
+        if self == Result.PAIRING_ALLOCATED_BYE:
+            return '<'
+        return self.to_crosstable
+
+    @property
     def to_pgn(self) -> str:
         match self:
             case Result.GAIN | Result.UNRATED_GAIN:
@@ -453,6 +459,18 @@ class TournamentRating(IntEnum):
                 return 'RapideFide'
             case TournamentRating.BLITZ:
                 return 'BlitzFide'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def print_view_header(self) -> str:
+        match self:
+            case TournamentRating.STANDARD:
+                return _('Elo *** STD ELO FOR PRINT VIEW')
+            case TournamentRating.RAPID:
+                return _('Rapid *** RAPID ELO FOR PRINT VIEW')
+            case TournamentRating.BLITZ:
+                return _('Blitz *** BLITZ ELO FOR PRINT VIEW')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

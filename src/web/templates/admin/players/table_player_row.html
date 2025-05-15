@@ -71,7 +71,7 @@
         class="text-nowrap position-sticky start-0 px-3"
         style="border-right: 2px solid #454748;"
     >
-        {{ player.last_name }} {{ player.first_name }}
+        {{ player.full_name }}
     </td>
     {{ admin_macros.extra_admin_column_cell("check-in", player, admin_players_extra_columns)}}
     {% if 'check_in' in admin_players_filter_columns %}
@@ -108,7 +108,7 @@
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}
     <td class="text-nowrap text-center">
-        {{ player.rating }}{{ player.rating_type }}
+        {{ player.rating_str }}
     </td>
     {{ admin_macros.extra_admin_column_cell("federation", player, admin_players_extra_columns)}}
     {% if 'federation' in admin_players_filter_columns %}

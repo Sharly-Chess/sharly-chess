@@ -19,5 +19,5 @@
     <i
         class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
     ></i>
-    {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.last_name }} {{ player.first_name }} {{ player.rating }}{{ player.rating_type }}
+    {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
 </td>

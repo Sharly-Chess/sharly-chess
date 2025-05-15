@@ -63,8 +63,7 @@
                                 src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
                                 {{ macros.tooltip_attributes('info', player.federation, 'left') }}
                             />
-                            {{ player.last_name }}
-                            {{ player.first_name }}
+                            {{ player.full_name }}
                             {% if player.mail %}/ {{ player.mail }}{% endif %}
                             {% if player.phone %}/ {{ player.phone }}{% endif %}
                             {% if player.club %}/ {{ player.club }}{% endif %}

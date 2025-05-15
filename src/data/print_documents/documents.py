@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
+from functools import cached_property
 from typing import Any, override
 
+from common.exception import SharlyChessException
 from common.i18n import _
 from data.board import Board
+from data.pairings.engines import RoundRobinPairingEngine
+from data.pairings.settings import BergerNumbersSetting
+from data.pairings.systems import RoundRobinPairingSystem
 from data.player import Player
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.options import (
@@ -11,6 +16,8 @@ from data.print_documents.options import (
     RoundPrintOption,
 )
 from data.tournament import Tournament
+from utils import StaticUtils
+from utils.enum import Result
 from utils.option import OptionHandler, OptionError
 
 
@@ -26,7 +33,7 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
     @property
     @abstractmethod
     def title(self) -> str:
-        pass
+        """Header of the print document."""
 
     @property
     @abstractmethod
@@ -35,7 +42,6 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         Template is intended to be used with a context where
         "document" refers to the PrintDocument object
         """
-        pass
 
     @property
     @abstractmethod
@@ -44,7 +50,13 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         If multiple classes use the same template, an abstract class per
         template should be defined with the required context, with each
         context variable being a property of this class."""
-        pass
+
+    @staticmethod
+    def validate_for_tournament(tournament: Tournament) -> str | None:
+        """Determines if the document is available for *tournament*.
+        If it's not, return an explanation message, if it is return None.
+        By default, documents are available for all tournaments."""
+        return None
 
 
 class PlayerPrintDocument(PrintDocument, ABC):
@@ -296,3 +308,122 @@ class ResultPrintDocument(BoardPrintDocument):
     @property
     def show_results(self) -> bool:
         return True
+
+
+class BergerGridPrintDocument(PrintDocument):
+    PAB_PLAYER_ID = -1
+
+    @staticmethod
+    def static_id() -> str:
+        return 'berger-grid'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Berger grid')
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/berger_grid.html'
+
+    @staticmethod
+    def validate_for_tournament(tournament: Tournament) -> str | None:
+        if tournament.pairing_system != RoundRobinPairingSystem():
+            return _('This document is only available for Round-Robin tournaments.')
+        if not tournament.is_fully_paired:
+            return _('This document is not available for unpaired tournaments.')
+        return None
+
+    @cached_property
+    def grid_length(self) -> int:
+        assert self.tournament is not None
+        return (
+            RoundRobinPairingEngine.get_single_encounter_round_count(
+                self.tournament.player_count
+            )
+            + 1
+        )
+
+    @cached_property
+    def berger_nb_by_player_id(self) -> dict[int, int]:
+        assert self.tournament is not None
+        return BergerNumbersSetting.get_value(self.tournament)
+
+    @cached_property
+    def has_pab(self) -> bool:
+        assert self.tournament is not None
+        return self.tournament.player_count % 2 == 1
+
+    def grid_results_points(self, results: list[Result | None]) -> str:
+        assert self.tournament is not None
+        return StaticUtils.points_str(
+            sum(
+                result.points(self.tournament.point_values)
+                for result in results
+                if result is not None
+            )
+        )
+
+    def build_result_grids(self) -> list[dict[int, list[Result | None]]]:
+        """Build the player results in a grid format ordered by berger numbers.
+        Such a grid is returned per player encounter."""
+
+        assert self.tournament is not None
+        pairing_engine = self.tournament.pairing_variation.engine
+        assert isinstance(pairing_engine, RoundRobinPairingEngine)
+        result_grids: list[dict[int, list[Result | None]]] = [
+            {
+                player.id: [None] * self.grid_length
+                for player in sorted(
+                    self.tournament.players,
+                    key=lambda p: self.berger_nb_by_player_id[p.id],
+                )
+            }
+            for __ in range(pairing_engine.player_encounters)
+        ]
+        for player in self.tournament.players:
+            for pairing in player.pairings.values():
+                if not pairing.opponent_id:
+                    continue
+                if not self._set_encounter_result(
+                    player.id,
+                    self.berger_nb_by_player_id[pairing.opponent_id],
+                    pairing.result,
+                    result_grids,
+                ):
+                    opponent = self.tournament.players_by_id[pairing.opponent_id]
+                    raise SharlyChessException(
+                        f'More than {len(result_grids)} encounters between '
+                        f'players {player.full_name} and {opponent.full_name}.'
+                    )
+        if self.has_pab:
+            for grid in result_grids:
+                for player_id in grid:
+                    grid[player_id][-1] = Result.PAIRING_ALLOCATED_BYE
+        return result_grids
+
+    @staticmethod
+    def _set_encounter_result(
+        player_id: int,
+        opponent_berger_nb: int,
+        result: Result,
+        result_grids: list[dict[int, list[Result | None]]],
+    ) -> bool:
+        for grid in result_grids:
+            if grid[player_id][opponent_berger_nb - 1] is None:
+                grid[player_id][opponent_berger_nb - 1] = result
+                return True
+        return False
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        assert self.tournament is not None
+        return {
+            'result_grids': self.build_result_grids(),
+            'has_pab': self.has_pab,
+            'berger_nb_by_player_id': self.berger_nb_by_player_id,
+            'grid_length': self.grid_length,
+        }

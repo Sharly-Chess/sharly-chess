@@ -13,13 +13,7 @@
     <th class="name text-start">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
     {{ macros.extra_column_header("elo", extra_columns)}}
     <th class="rating text-end">
-        {% if tournament.rating == 1 %}
-            {{ _('Elo *** STD ELO FOR PRINT VIEW') }}
-        {% elif tournament.rating == 2 %}
-            {{ _('Rapid *** RAPID ELO FOR PRINT VIEW') }}
-        {% elif tournament.rating == 3 %}
-            {{ _('Blitz *** BLITZ ELO FOR PRINT VIEW') }}
-        {% endif %}
+        {{ tournament.rating.print_view_header }}
     </th>
     {{ macros.extra_column_header("category", extra_columns)}}
     <th class="category text-center">{{ _('Cat *** CATEGORY FOR PRINT VIEW') }}</th>

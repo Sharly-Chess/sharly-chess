@@ -40,10 +40,10 @@
                         <td class="points">[{{ board.white_player.points_str }}]</td>
                     {% endif %}
                     <td class="player">
-                        {{ board.white_player.last_name }}&nbsp;{{ board.white_player.first_name }}
+                        {{ board.white_player.full_name }}
                     </td>
                     <td class="rating">
-                        {{ board.white_player.rating }}&nbsp;{{ board.white_player.rating_type }}
+                        {{ board.white_player.rating_str }}
                     </td>
                     <td class="result">
                         {% if show_result or board.exempt %}
@@ -52,10 +52,10 @@
                     </td>
                     {% if board.black_player %}
                         <td class="player">
-                            {{ board.black_player.last_name }}&nbsp;{{ board.black_player.first_name }}
+                            {{ board.black_player.full_name }}
                         </td>
                         <td class="rating">
-                            {{ board.black_player.rating }}&nbsp;{{ board.black_player.rating_type }}
+                            {{ board.black_player.rating_str }}
                         </td>
                         {% if document.tournament.print_real_points %}
                             <td class="points">[{{ board.black_player.points_str }}]</td>

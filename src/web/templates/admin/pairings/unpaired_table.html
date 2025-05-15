@@ -37,7 +37,7 @@
                                 hx-indicator="#please-wait"
                             ></i>
                         {% endif %}
-                            <span>{{ player.last_name }} {{ player.first_name }}</span>
+                            <span>{{ player.full_name }}</span>
                         </div>
                     </td>
                     <td class="{{ class }} text-end">{{ player.get_rating(admin_tournament.rating) }}</td>

@@ -12,7 +12,7 @@
     {% if admin_tournament.print_real_points %}
         <td class="text-start">[{{ wp.points_str }}]</td>
     {% endif %}
-    <td>{{ wp.last_name }} {{ wp.first_name }} ({{ wp.get_rating(admin_tournament.rating) }})</td>
+    <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
     <td class="text-center" style="width: 3rem;">
         <button
             class="btn btn-sm btn-outline-primary"
@@ -29,7 +29,7 @@
         </button>
     </td>
     {% if bp %}
-        <td>{{ bp.last_name }} {{ bp.first_name }} ({{ bp.get_rating(admin_tournament.rating) }})</td>
+        <td>{{ bp.full_name }} ({{ bp.rating_str }})</td>
         {% if admin_tournament.print_real_points %}
             <td class="text-end">[{{ bp.points_str }}]</td>
         {% endif %}
