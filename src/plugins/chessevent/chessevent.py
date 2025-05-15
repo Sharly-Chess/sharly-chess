@@ -198,7 +198,7 @@ class ChessEventPlugin(Plugin):
                 _('ChessEvent connection not defined.'), tournament=tournament
             )
         elif not self.get_data(pd, 'chessevent_event_id'):
-            tournament.event.add_warning(
+            tournament.event.add_debug(
                 _('ChessEvent event not set.'), tournament=tournament
             )
         elif not self.get_data(pd, 'chessevent_tournament_name'):

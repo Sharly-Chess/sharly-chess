@@ -1166,7 +1166,7 @@ msgid "E.g.: John"
 msgstr "Exemple : Pierre"
 
 msgid "E.g.: Link to my screen"
-msgstr "Exemple : Link vers mon écran"
+msgstr "Exemple : Lien vers mon écran"
 
 msgid "E.g.: Main tournament"
 msgstr "Exemple : Tournoi principal"
