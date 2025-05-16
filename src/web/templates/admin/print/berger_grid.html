@@ -23,7 +23,7 @@
                 <tr
                     class="row {% if loop.index is even %}even{% else %}odd{% endif %}"
                 >
-                    <td class=number">{{ berger_nb_by_player_id[player_id] }}</td>
+                    <td class=number">{{ grid_id_by_player_id[player_id] }}</td>
                     {% with player=document.tournament.players_by_id[player_id] %}
                         <td class="player">{{ player.full_name }}</td>
                         <td class="federation">{{ player.federation }}</td>

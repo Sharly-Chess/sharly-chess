@@ -1,0 +1,9 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Sort by:'),
+        help_text=_('How to sort the players.'),
+        select_options=option.player_sorter_options,
+        data=data, errors=errors
+    ) }}
+</div>

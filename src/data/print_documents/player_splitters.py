@@ -13,8 +13,7 @@ class PlayerSplitter(IdentifiableEntity, ABC):
     @abstractmethod
     def get_split_key(player: Player) -> str:
         """Extract the split key from a player.
-        Players will be grouped by sort key."""
-        pass
+        Players will be grouped by split key."""
 
     @staticmethod
     def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
@@ -90,4 +89,3 @@ class FederationPlayerSplitter(PlayerSplitter):
     @staticmethod
     def get_split_key(player: Player) -> str:
         return player.federation.name
-

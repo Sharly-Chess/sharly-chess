@@ -4,7 +4,8 @@ from types import UnionType
 from typing import override, Any
 
 from common.i18n import _
-from data.print_documents.player_splitters import PlayerSplitter
+from data.print_documents.player_sorters import PlayerSorter, NamePlayerSorter
+from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from utils.option import Option, OptionError
 
 
@@ -47,7 +48,7 @@ class PlayerSplitPrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return 'no-split'
+        return NoSplitPlayerSplitter.static_id()
 
     @property
     def template_name(self) -> str:
@@ -60,7 +61,7 @@ class PlayerSplitPrintOption(PrintOption):
         return PrintPlayerSplitterManager.options()
 
     @cached_property
-    def player_splitter(self) -> PlayerSplitter | None:
+    def player_splitter(self) -> PlayerSplitter:
         from data.print_documents import PrintPlayerSplitterManager
 
         return PrintPlayerSplitterManager.get_object(self.value)
@@ -72,3 +73,41 @@ class PlayerSplitPrintOption(PrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown player splitter: {self.value}', self)
+
+
+class PlayerSortPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'player-sort'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return NamePlayerSorter.static_id()
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/player_sort.html'
+
+    @property
+    def player_sorter_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPlayerSorterManager
+
+        return PrintPlayerSorterManager.options()
+
+    @cached_property
+    def player_sorter(self) -> PlayerSorter:
+        from data.print_documents import PrintPlayerSorterManager
+
+        return PrintPlayerSorterManager.get_object(self.value)
+
+    @override
+    def validate(self):
+        try:
+            _sorter = self.player_sorter
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown player sorter: {self.value}', self)

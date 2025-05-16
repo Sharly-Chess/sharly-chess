@@ -89,7 +89,7 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
 
     def _get_option[V: Option](self, option_type: type[V]) -> V:
         """Retrieve an option from its type. If no option with this type
-        exists in the options, returns on with the default value"""
+        exists in the options, returns one with the default value."""
         return next(
             (option for option in self.options if isinstance(option, option_type)),
             option_type(),

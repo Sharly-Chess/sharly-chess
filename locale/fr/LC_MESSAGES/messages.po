@@ -1832,6 +1832,9 @@ msgstr "Horaire :"
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "How to sort the players."
+msgstr "Comment trier les joueur·euses."
+
 msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
 
@@ -2661,6 +2664,9 @@ msgstr "Apparier le tournoi"
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
+msgid "Pairing number"
+msgstr "Numéro d'appariement"
+
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
 
@@ -3073,6 +3079,9 @@ msgstr "Aléatoire"
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
 
+msgid "Rank"
+msgstr "Classement"
+
 msgid "Ranking"
 msgstr "Classement"
 
@@ -3468,6 +3477,9 @@ msgstr "Système de Haley dégressif"
 msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
+msgid "Sort by:"
+msgstr "Trier par :"
+
 msgid "Sort the players by category (oldest first)."
 msgstr "Trier les joueur·euses par catégorie (plus âgé·es en premier)."
 
@@ -3518,6 +3530,9 @@ msgstr "Début :"
 
 msgid "Starting Sharly Chess server, please wait..."
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter..."
+
+msgid "Starting rank"
+msgstr "Classement initial"
 
 msgid "Storing data..."
 msgstr "Stockage des données..."

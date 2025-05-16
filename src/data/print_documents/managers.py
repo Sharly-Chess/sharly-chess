@@ -1,6 +1,7 @@
-from data.print_documents import documents, options, player_splitters
+from data.print_documents import documents, options, player_splitters, player_sorters
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
+from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager
@@ -25,6 +26,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
         return [
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,
+            options.PlayerSortPrintOption,
         ]
 
 
@@ -41,3 +43,14 @@ class PrintPlayerSplitterManager(EntityManager[PlayerSplitter]):
             player_splitter_types=splitters
         )
         return splitters
+
+
+class PrintPlayerSorterManager(EntityManager[PlayerSorter]):
+    @staticmethod
+    def entity_types() -> list[type[PlayerSorter]]:
+        return [
+            player_sorters.NamePlayerSorter,
+            player_sorters.RankPlayerSorter,
+            player_sorters.StartingRankPlayerSorter,
+            player_sorters.PairingNumberPlayerSorter,
+        ]
