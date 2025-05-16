@@ -5,7 +5,7 @@
             <th>{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
             <th>{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</th>
             <th>{{ document.tournament.rating.print_view_header }}</th>
-            {% for berger_number in range(1, grid_length + 1) %}
+            {% for berger_number in range(1, document.tournament.player_count + 1) %}
                 <th>{{ berger_number }}</th>
             {% endfor %}
             <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
@@ -30,18 +30,5 @@
                 <td>{{ document.grid_results_points(results) }}</td>
             </tr>
         {% endfor %}
-        {% if has_pab %}
-            <tr>
-                <td>{{ grid_length }}</td>
-                <td>{{ _('Pairing Allocated Bye') }}</td>
-                <td></td>
-                <td></td>
-                {% for __ in range(1, grid_length) %}
-                    <td>{{ '>' }}</td>
-                {% endfor %}
-                <td class="self-game">X</td>
-                <td></td>
-            </tr>
-        {% endif %}
     </tbody>
 </table>

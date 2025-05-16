@@ -3995,10 +3995,10 @@ msgid "This display controller is public (visible by the users)."
 msgstr "Ce pilote d'afficheurs est public (visible des utilisateur·ices)."
 
 msgid "This document is not available for unpaired tournaments."
-msgstr "Ce document n'est pas disponible pour les tournois non appariés."
+msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
 
 msgid "This document is only available for Round-Robin tournaments."
-msgstr "Ce document est seulement disponible pour les tournois Toutes-rondes."
+msgstr "Ce document est seulement disponible pour les tournois toutes rondes."
 
 msgid "This event is private (by default, screens are not visible by the users)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des utilisateur·ices)."

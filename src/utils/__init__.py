@@ -82,9 +82,17 @@ class StaticUtils:
     def points_str(points: float | None) -> str:
         if points is None:
             return ''
-        if points == 0.5:
-            return '½'
-        return f'{points:.1f}'.replace('.0', '').replace('.5', '½')
+        points_str = f'{points:.2f}'
+        if 0 < points < 1:
+            points_str = points_str.replace('0.', '.')
+        for old, new in {
+            '.00': '',
+            '.25': '¼',
+            '.50': '½',
+            '.75': '¾',
+        }.items():
+            points_str = points_str.replace(old, new)
+        return points_str
 
 
 class SharedUtils:

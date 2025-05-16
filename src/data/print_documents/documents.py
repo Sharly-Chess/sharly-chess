@@ -311,8 +311,6 @@ class ResultPrintDocument(BoardPrintDocument):
 
 
 class BergerGridPrintDocument(PrintDocument):
-    PAB_PLAYER_ID = -1
-
     @staticmethod
     def static_id() -> str:
         return 'berger-grid'
@@ -338,24 +336,9 @@ class BergerGridPrintDocument(PrintDocument):
         return None
 
     @cached_property
-    def grid_length(self) -> int:
-        assert self.tournament is not None
-        return (
-            RoundRobinPairingEngine.get_single_encounter_round_count(
-                self.tournament.player_count
-            )
-            + 1
-        )
-
-    @cached_property
     def berger_nb_by_player_id(self) -> dict[int, int]:
         assert self.tournament is not None
         return BergerNumbersSetting.get_value(self.tournament)
-
-    @cached_property
-    def has_pab(self) -> bool:
-        assert self.tournament is not None
-        return self.tournament.player_count % 2 == 1
 
     def grid_results_points(self, results: list[Result | None]) -> str:
         assert self.tournament is not None
@@ -376,7 +359,7 @@ class BergerGridPrintDocument(PrintDocument):
         assert isinstance(pairing_engine, RoundRobinPairingEngine)
         result_grids: list[dict[int, list[Result | None]]] = [
             {
-                player.id: [None] * self.grid_length
+                player.id: [None] * self.tournament.player_count
                 for player in sorted(
                     self.tournament.players,
                     key=lambda p: self.berger_nb_by_player_id[p.id],
@@ -399,10 +382,6 @@ class BergerGridPrintDocument(PrintDocument):
                         f'More than {len(result_grids)} encounters between '
                         f'players {player.full_name} and {opponent.full_name}.'
                     )
-        if self.has_pab:
-            for grid in result_grids:
-                for player_id in grid:
-                    grid[player_id][-1] = Result.PAIRING_ALLOCATED_BYE
         return result_grids
 
     @staticmethod
@@ -423,7 +402,5 @@ class BergerGridPrintDocument(PrintDocument):
         assert self.tournament is not None
         return {
             'result_grids': self.build_result_grids(),
-            'has_pab': self.has_pab,
             'berger_nb_by_player_id': self.berger_nb_by_player_id,
-            'grid_length': self.grid_length,
         }
