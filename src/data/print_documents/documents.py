@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
+import itertools
 from typing import Any, override
 
 from common.exception import SharlyChessException
@@ -340,60 +341,64 @@ class BergerGridPrintDocument(PrintDocument):
         assert self.tournament is not None
         return BergerNumbersSetting.get_value(self.tournament)
 
-    def grid_results_points(self, results: list[Result | None]) -> str:
+    def grid_results_points(self, results: list[list[Result | None]]) -> str:
         assert self.tournament is not None
         return StaticUtils.points_str(
             sum(
                 result.points(self.tournament.point_values)
-                for result in results
+                for result in itertools.chain.from_iterable(results)
                 if result is not None
             )
         )
 
-    def build_result_grids(self) -> list[dict[int, list[Result | None]]]:
+    def build_result_grid(self) -> dict[int, list[list[Result | None]]]:
         """Build the player results in a grid format ordered by berger numbers.
         Such a grid is returned per player encounter."""
 
         assert self.tournament is not None
         pairing_engine = self.tournament.pairing_variation.engine
         assert isinstance(pairing_engine, RoundRobinPairingEngine)
-        result_grids: list[dict[int, list[Result | None]]] = [
-            {
-                player.id: [None] * self.tournament.player_count
-                for player in sorted(
-                    self.tournament.players,
-                    key=lambda p: self.berger_nb_by_player_id[p.id],
-                )
-            }
-            for __ in range(pairing_engine.player_encounters)
-        ]
+        result_grid: dict[int, list[list[Result | None]]] = {
+            player.id: [
+                [None] * pairing_engine.player_encounters
+                for __ in range(self.tournament.player_count)
+            ]
+            for player in sorted(
+                self.tournament.players,
+                key=lambda p: self.berger_nb_by_player_id[p.id],
+            )
+        }
+
         for player in self.tournament.players:
             for pairing in player.pairings.values():
                 if not pairing.opponent_id:
                     continue
+                opponent_berger_nb = self.berger_nb_by_player_id[pairing.opponent_id]
                 if not self._set_encounter_result(
                     player.id,
-                    self.berger_nb_by_player_id[pairing.opponent_id],
+                    opponent_berger_nb,
                     pairing.result,
-                    result_grids,
+                    result_grid,
                 ):
                     opponent = self.tournament.players_by_id[pairing.opponent_id]
                     raise SharlyChessException(
-                        f'More than {len(result_grids)} encounters between '
+                        f'More than {len(result_grid[player.id][opponent_berger_nb - 1])} encounters between '
                         f'players {player.full_name} and {opponent.full_name}.'
                     )
-        return result_grids
+        return result_grid
 
     @staticmethod
     def _set_encounter_result(
         player_id: int,
         opponent_berger_nb: int,
         result: Result,
-        result_grids: list[dict[int, list[Result | None]]],
+        result_grid: dict[int, list[list[Result | None]]],
     ) -> bool:
-        for grid in result_grids:
-            if grid[player_id][opponent_berger_nb - 1] is None:
-                grid[player_id][opponent_berger_nb - 1] = result
+        for round, round_result in enumerate(
+            result_grid[player_id][opponent_berger_nb - 1]
+        ):
+            if round_result is None:
+                result_grid[player_id][opponent_berger_nb - 1][round] = result
                 return True
         return False
 
@@ -401,6 +406,6 @@ class BergerGridPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         assert self.tournament is not None
         return {
-            'result_grids': self.build_result_grids(),
+            'result_grid': self.build_result_grid(),
             'berger_nb_by_player_id': self.berger_nb_by_player_id,
         }

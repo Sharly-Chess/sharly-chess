@@ -337,9 +337,7 @@ class Result(IntEnum):
 
     @property
     def to_berger_table(self) -> str:
-        if self == Result.PAIRING_ALLOCATED_BYE:
-            return '<'
-        return self.to_crosstable
+        return self.to_trf
 
     @property
     def to_pgn(self) -> str:

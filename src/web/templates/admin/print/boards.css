@@ -1,5 +1,5 @@
 {# ========== BORDERS ========== #}
-.board-table { border-collapse:collapse; }
+.board-table { border-collapse: collapse; }
 {# ========== WIDTH, MARGINS, PADDING ==========#}
 .board-table { width: 750px; }
 .board-table { padding: 2px; border-spacing: 0; }

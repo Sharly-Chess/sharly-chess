@@ -1675,9 +1675,6 @@ msgstr "Numéro du premier échiquier : %(board_number)d"
 msgid "First board:"
 msgstr "Premier échiquier :"
 
-msgid "First encounter"
-msgstr "Première rencontre"
-
 msgid "First name LAST NAME"
 msgstr "Prénom NOM"
 
@@ -3401,9 +3398,6 @@ msgstr "Rechercher dans la base de données FIDE par nom, identifiant FIDE, féd
 msgid "Searching..."
 msgstr "Recherche en cours..."
 
-msgid "Second encounter"
-msgstr "Deuxième rencontre"
-
 msgid "Seed color"
 msgstr "Couleur initiale"
 
@@ -4805,4 +4799,10 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "First encounter"
+#~ msgstr "Première rencontre"
+
+#~ msgid "Second encounter"
+#~ msgstr "Deuxième rencontre"
 

@@ -1675,9 +1675,6 @@ msgstr ""
 msgid "First board:"
 msgstr ""
 
-msgid "First encounter"
-msgstr ""
-
 msgid "First name LAST NAME"
 msgstr ""
 
@@ -3401,9 +3398,6 @@ msgstr ""
 msgid "Searching..."
 msgstr ""
 
-msgid "Second encounter"
-msgstr ""
-
 msgid "Seed color"
 msgstr ""
 
@@ -4805,4 +4799,10 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "First encounter"
+#~ msgstr ""
+
+#~ msgid "Second encounter"
+#~ msgstr ""
 

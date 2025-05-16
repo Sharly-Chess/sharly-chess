@@ -1,0 +1,23 @@
+{# ========== BORDERS ========== #}
+.rr-table { border-collapse: collapse; }
+.rr-table td.result { border-left: 1px solid #000000; }
+{# ========== WIDTH, MARGINS, PADDING ==========#}
+.rr-table { padding: 2px; border-spacing: 0; margin-top: 3rem; }
+.rr-table td { padding: 4px; }
+.rr-table td.result { min-width: 1.5rem; }
+{# ========== FONT WEIGHT ========== #}
+.rr-header * { font-weight: bold; }
+{# ========== TEXT ALIGN ========== #}
+.rr-table .player { text-align: left; }
+.rr-table .rating,
+.rr-table .rr-number { text-align: right; }
+.rr-table .points,
+.rr-table .result { text-align: center; }
+
+.rr-table td.self-game {
+    background-color: #555;
+}
+
+.rr-table tr:first-of-type td.self-game {
+    position: relative;
+}
