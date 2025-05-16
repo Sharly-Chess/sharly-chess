@@ -6,19 +6,21 @@
         <tr>
             <th>{{ _('Players') }}</th>
             <th></th>
-            <th class="d-flex justify-content-between">
-                <span class="mt-1">
+            <th>
+                <div class="d-flex justify-content-between align-items-center">
+                <span>
                     {{ _('Number') }}
                 </span>
-                <button
-                    id="random-berger-numbers"
-                    class="text-nowrap white btn btn-sm btn-secondary"
-                    {{ macros.tooltip_attributes(
-                        'info', _('Randomly select the pairing numbers.'), 'top'
-                    ) }}
-                >
-                    <i class="bi-shuffle"></i>
-                </button>
+                    <button
+                        id="random-berger-numbers"
+                        class="text-nowrap white btn btn-sm btn-secondary"
+                        {{ macros.tooltip_attributes(
+                            'info', _('Randomly select the pairing numbers.'), 'top'
+                        ) }}
+                    >
+                        <i class="bi-shuffle"></i>
+                    </button>
+                </div>
             </th>
 
         </tr>
