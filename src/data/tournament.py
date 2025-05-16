@@ -1,5 +1,6 @@
 import weakref
 from collections import Counter
+from collections.abc import Collection
 from functools import cached_property
 from itertools import groupby
 from logging import Logger
@@ -90,7 +91,7 @@ class Tournament:
         self.stored_file_modified_timestamp: float | None = None
         if self.file_exists:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
-        self._players: Iterable[Player] | None = None
+        self._players: Collection[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
@@ -420,11 +421,12 @@ class Tournament:
             player.tournament = self
             self.set_player_points(player, before_round=self.current_round)
         self._estimate_players(self.players, after_round=self.current_round)
+        self.pairing_system.update_player_results(self)
         self._players = None
         return players_by_id
 
     @property
-    def players(self) -> Iterable[Player]:
+    def players(self) -> Collection[Player]:
         if self._players is not None:
             return self._players
         return self.players_by_id.values()

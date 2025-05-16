@@ -289,7 +289,7 @@ class BergerPairingEngine(RoundRobinPairingEngine):
             if not white_player or not black_player:
                 board = Board(
                     white_player=white_player or black_player,
-                    result=Result.PAIRING_ALLOCATED_BYE,
+                    result=Result.EXEMPT_NO_BYE,
                 )
             else:
                 board = Board(

@@ -11,6 +11,7 @@ from data.safety_mode import (
     SafetyMode,
 )
 from utils.entity import IdentifiableEntity, EntityManager
+from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.pairings.variations import PairingVariation
@@ -39,6 +40,10 @@ class PairingSystem(IdentifiableEntity, ABC):
     @abstractmethod
     def default_current_round(self, tournament: 'Tournament') -> int:
         """Get the current round to use as default when it is not defined in the DB."""
+
+    def update_player_results(self, tournament: 'Tournament'):
+        """Update the results of the players right
+        after being fetched from the Papi database."""
 
     @property
     def allow_rounds_update_once_started(self) -> bool:
@@ -245,3 +250,13 @@ class RoundRobinPairingSystem(PairingSystem):
             ),
             1 if tournament.has_pairings else 0,
         )
+
+    def update_player_results(self, tournament: 'Tournament'):
+        if len(tournament.players) % 2 == 0:
+            return
+        for player in tournament.players:
+            if not player.has_real_pairings:
+                break
+            for pairing in player.pairings.values():
+                if pairing.opponent_id is None:
+                    pairing.result = Result.EXEMPT_NO_BYE

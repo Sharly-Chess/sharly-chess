@@ -33,7 +33,7 @@ class Board:
 
     @property
     def exempt(self) -> bool:
-        return self.result == Result.PAIRING_ALLOCATED_BYE
+        return self.result in (Result.PAIRING_ALLOCATED_BYE, Result.EXEMPT_NO_BYE)
 
     @property
     def no_result(self) -> bool:

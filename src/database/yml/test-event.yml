@@ -26,4 +26,10 @@ tournaments:
     name: "Papi-generated 'Niçois' tournament"
   papi-berger:
     filename: "papi-berger"
-    name: "Papi-generated Berger tournament"
+    name: "Papi-generated Berger tournament (6 players)"
+  papi-berger-odd:
+    filename: "papi-berger-odd"
+    name: "Papi-generated Berger tournament (5 players)"
+  papi-berger-large:
+    filename: "papi-berger-large"
+    name: "Papi-generated Berger tournament (16 players)"
