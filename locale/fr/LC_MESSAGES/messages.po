@@ -4815,9 +4815,3 @@ msgstr "ecran-{screen_type}"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "First encounter"
-#~ msgstr "Première rencontre"
-
-#~ msgid "Second encounter"
-#~ msgstr "Deuxième rencontre"
-

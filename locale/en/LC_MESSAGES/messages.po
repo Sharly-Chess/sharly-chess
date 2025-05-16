@@ -4815,9 +4815,3 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "First encounter"
-#~ msgstr ""
-
-#~ msgid "Second encounter"
-#~ msgstr ""
-
