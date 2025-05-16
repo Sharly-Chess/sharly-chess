@@ -100,6 +100,7 @@ class FfeAdminEventController(BaseEventAdminController):
                 },
                 'ffe_auth_valid': ffe_auth_valid is True,
                 'ffe_password_visible': data['ffe_password_visible'] == 'true',
+                'ffe_password_visible_prevent_duplication': True,
                 'errors': errors,
             },
         )

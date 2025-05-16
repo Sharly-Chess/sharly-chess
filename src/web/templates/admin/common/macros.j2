@@ -193,6 +193,7 @@ with_indicator: display a loading indicator, optional
     error=false,
     valid=false,
     password_visible=false,
+    password_visible_prevent_duplication=false,
     default_checkbox=false,
     default_checkbox_text='',
     default_value='',
@@ -399,11 +400,11 @@ with_indicator: display a loading indicator, optional
                 </div>
             {% endif %}
         </div>
-        {% if input_type == 'password' %}
+        {% if input_type == 'password' and not password_visible_prevent_duplication %}
             <script>
                 $('#{{ id }}-toggle-password').on('click', function(event) {
                     event.preventDefault();
-                    hide = $('#{{ id }}').attr("type") == 'text'
+                    hide = $('#{{ id }}').attr("type") == 'text';
                     $('#{{ id }}').attr('type', hide ? 'password' : 'text');
                     $('#{{ id }}-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
                     $('#{{ id }}-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
@@ -552,6 +553,7 @@ with_indicator: display a loading indicator, optional
     error=false,
     valid=false,
     password_visible=false,
+    password_visible_prevent_duplication=false,
     disabled=false,
     with_indicator=false,
     hx_get='',
@@ -577,6 +579,7 @@ with_indicator: display a loading indicator, optional
         error=error,
         valid=valid,
         password_visible=password_visible,
+        password_visible_prevent_duplication=password_visible_prevent_duplication,
         disabled=disabled,
         with_indicator=with_indicator,
         hx_get=hx_get,

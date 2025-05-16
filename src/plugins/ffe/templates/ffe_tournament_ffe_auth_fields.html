@@ -25,6 +25,7 @@
             help_text=_('The password is made of 10 uppercase letters, it is used to connect to the FFE website.'),
             valid=ffe_auth_valid,
             password_visible=ffe_password_visible,
+            password_visible_prevent_duplication=ffe_password_visible_prevent_duplication,
             hx_post=url_for('ffe-test-auth'),
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
