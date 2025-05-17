@@ -1313,7 +1313,7 @@ class Tournament:
             event_database.commit()
         self.clear_cache(True)
 
-    def close_check_in(self, zpbs_last_rounds: bool):
+    def close_check_in(self, zpbs_next_round: bool, zpbs_last_rounds: bool):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
         for the next round (if zpbs_last_rounds, for the rest of the tournament)."""
         assert self.check_in_open, (
@@ -1327,12 +1327,13 @@ class Tournament:
             event_database.set_tournament_check_in(self.id, False)
             event_database.commit()
             self.stored_tournament.check_in_open = False
-        with self.papi_write_database as papi_database:
-            papi_database.close_check_in(
-                self.current_round + 1,
-                (self.rounds + 1) if zpbs_last_rounds else None,
-            )
-            papi_database.commit()
+        if zpbs_next_round or zpbs_last_rounds:
+            with self.papi_write_database as papi_database:
+                papi_database.close_check_in(
+                    self.current_round + 1,
+                    (self.rounds + 1) if zpbs_last_rounds else None,
+                )
+                papi_database.commit()
         self.clear_cache(True)
 
     def set_player_byes(self, player: Player, byes: dict[int, Result]):

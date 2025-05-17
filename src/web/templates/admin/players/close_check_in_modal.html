@@ -58,17 +58,16 @@
                 >
                     {{ _('Assign a zero-point bye for the next round') }}
                 </button>
-            {% else %}
-                <button
-                    class="text-nowrap white btn btn-primary"
-                    aria-describedby="{{ id }}-help"
-                    hx-patch="{{ url_for('admin-tournament-close-check-in-zpb-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    {{ _('Close the check-in') }}
-                </button>
             {% endif %}
+            <button
+                class="text-nowrap white btn btn-primary"
+                aria-describedby="{{ id }}-help"
+                hx-patch="{{ url_for('admin-tournament-close-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {{ _('Close the check-in') }}
+            </button>
         </div>
     </div>
 </div>
