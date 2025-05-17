@@ -10,9 +10,9 @@
     {{ macros.extra_column_data("title", player, extra_columns)}}
     <td class="title text-end">{{ player.title.short_name }}</td>
     {{ macros.extra_column_data("name", player, extra_columns)}}
-    <td class="name text-start fw-bold">{{ player.last_name }} {{ player.first_name }}</td>
+    <td class="name text-start fw-bold">{{ player.full_name }}</td>
     {{ macros.extra_column_data("elo", player, extra_columns)}}
-    <td class="rating text-end">{{ player.rating }}&nbsp;{{ player.rating_type }}</td>
+    <td class="rating text-end">{{ player.rating_str }}</td>
     {{ macros.extra_column_data("category", player, extra_columns)}}
     <td class="category text-center">{{ player.category.short_name }}</td>
     {{ macros.extra_column_data("federation", player, extra_columns)}}

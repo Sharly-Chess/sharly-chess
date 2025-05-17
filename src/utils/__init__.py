@@ -78,6 +78,22 @@ class StaticUtils:
             return lowest_int + 1
         return lowest_int
 
+    @staticmethod
+    def points_str(points: float | None) -> str:
+        if points is None:
+            return ''
+        points_str = f'{points:.2f}'
+        if 0 < points < 1:
+            points_str = points_str.replace('0.', '.')
+        for old, new in {
+            '.00': '',
+            '.25': '¼',
+            '.50': '½',
+            '.75': '¾',
+        }.items():
+            points_str = points_str.replace(old, new)
+        return points_str
+
 
 class SharedUtils:
     """Class containing the shared utils functions,

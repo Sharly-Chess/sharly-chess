@@ -74,7 +74,7 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
         return [option_type() for option_type in cls.available_options()]
 
     def validate_options(self):
-        """Checks the validity of options, Raises a ValueError if invalid."""
+        """Checks the validity of options, Raises a OptionError if invalid."""
         used_option_types: list[type[T]] = []
         for option in self.options:
             option.validate()
@@ -87,11 +87,9 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
                 )
             used_option_types.append(option_type)
 
-    def _get_option[V: Option](
-        self, option_type: type[V]
-    ) -> V:
+    def _get_option[V: Option](self, option_type: type[V]) -> V:
         """Retrieve an option from its type. If no option with this type
-        exists in the options, returns on with the default value"""
+        exists in the options, returns one with the default value."""
         return next(
             (option for option in self.options if isinstance(option, option_type)),
             option_type(),

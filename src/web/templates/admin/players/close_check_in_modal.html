@@ -12,7 +12,7 @@
                         <p>{{ _('The following players did not check-in:') }}</p>
                         <ul>
                             {% for player in admin_tournament.players_by_check_in_status[false] %}
-                                <li>{{ player.last_name }} {{ player.first_name }}</li>
+                                <li>{{ player.full_name }}</li>
                             {% endfor %}
                         </ul>
                         <p>{{ _('Choose what to do after closing the check-in:') }}</p>

@@ -395,6 +395,9 @@ msgstr "Ech."
 msgid "Berger"
 msgstr "Berger"
 
+msgid "Berger grid"
+msgstr "Grille Berger"
+
 msgid "Black"
 msgstr "Noirs"
 
@@ -1829,6 +1832,9 @@ msgstr "Horaire :"
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "How to sort the players."
+msgstr "Comment trier les joueur·euses."
+
 msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
 
@@ -2285,7 +2291,7 @@ msgid "Navigation"
 msgstr "Navigation"
 
 msgid "Nb. *** NB FOR PRINT VIEW"
-msgstr "Nr"
+msgstr "N°"
 
 msgid "Nb. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
@@ -2657,6 +2663,9 @@ msgstr "Apparier le tournoi"
 
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
+
+msgid "Pairing number"
+msgstr "Numéro d'appariement"
 
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
@@ -3070,6 +3079,9 @@ msgstr "Aléatoire"
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
 
+msgid "Rank"
+msgstr "Classement"
+
 msgid "Ranking"
 msgstr "Classement"
 
@@ -3465,6 +3477,9 @@ msgstr "Système de Haley dégressif"
 msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
+msgid "Sort by:"
+msgstr "Trier par :"
+
 msgid "Sort the players by category (oldest first)."
 msgstr "Trier les joueur·euses par catégorie (plus âgé·es en premier)."
 
@@ -3515,6 +3530,9 @@ msgstr "Début :"
 
 msgid "Starting Sharly Chess server, please wait..."
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter..."
+
+msgid "Starting rank"
+msgstr "Classement initial"
 
 msgid "Storing data..."
 msgstr "Stockage des données..."
@@ -3984,6 +4002,12 @@ msgstr "Ce pilote d'afficheurs est privé (non visible des utilisateur·ices)."
 
 msgid "This display controller is public (visible by the users)."
 msgstr "Ce pilote d'afficheurs est public (visible des utilisateur·ices)."
+
+msgid "This document is not available for unpaired tournaments."
+msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
+
+msgid "This document is only available for Round-Robin tournaments."
+msgstr "Ce document est seulement disponible pour les tournois toutes rondes."
 
 msgid "This event is private (by default, screens are not visible by the users)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des utilisateur·ices)."

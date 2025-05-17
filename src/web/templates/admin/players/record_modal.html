@@ -3,7 +3,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ admin_player.last_name }}{% if admin_player.first_name %} {{ admin_player.first_name }}{% endif %}
+                {{ admin_player.full_name }}
             </h2>
         </div>
         <div class="modal-body">
@@ -54,7 +54,7 @@
                             {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round %}
                             {% if pairing.opponent_id %}
                                 {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
-                                {% set opponent=opponent_player.last_name ~ ' ' ~ opponent_player.first_name %}
+                                {% set opponent=opponent_player.full_name %}
                                 {% set federation=opponent_player.federation %}
                                 {% set rating=opponent_player.rating %}
                                 {% set color=pairing.color %}

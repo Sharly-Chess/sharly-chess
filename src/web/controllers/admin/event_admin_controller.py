@@ -457,6 +457,8 @@ class EventAdminController(BaseEventAdminController):
         except KeyError:
             errors[field] = _('Please choose the document.')
         if tournament and document_type:
+            if error_message := document_type.validate_for_tournament(tournament):
+                errors[field] = error_message
             options = []
             for option in document_type.default_options():
                 value = WebContext.form_data_to_value(

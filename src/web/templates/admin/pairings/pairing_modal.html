@@ -17,7 +17,7 @@
                         hx-target="body"
                         hx-indicator="#please-wait"
                     >
-                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating }}{{ wp.rating_type }}</div>
+                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</div>
                     </button>
                     <button
                         class="result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
@@ -39,7 +39,7 @@
                         hx-target="body"
                         hx-indicator="#please-wait"
                     >
-                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating }}{{ bp.rating_type }}</div>
+                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</div>
                     </button>
                 </div>
                 <div class="row d-flex align-items-center justify-content-center mt-3">

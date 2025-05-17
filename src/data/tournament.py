@@ -902,9 +902,12 @@ class Tournament:
         else:
             return max(0, min(ranking_round, self.max_ranking_round))
 
-    def compute_player_ranks(self, *, after_round: int | None) -> dict[int, Player]:
+    def compute_player_ranks(
+        self, correct_round: bool = True, *, after_round: int | None
+    ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *after_round*."""
-        after_round = self.correct_ranking_round(after_round)
+        if correct_round:
+            after_round = self.correct_ranking_round(after_round)
         if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
             self._estimate_players(self.players, after_round=after_round)
