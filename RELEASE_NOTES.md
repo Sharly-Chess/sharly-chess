@@ -20,6 +20,10 @@ English version below
 - Correction d'un bug de rafraîchissement des écrans de saisie (2.6.0)
 - Correction d'un bug d'affichage des familles d'écrans (2.6.1)
 
+### Gestion des tournois
+
+- Correction d'un bug de saisie sur le mot de passe FFE (2.6.0)
+
 ### Gestion des appariements
 
 - Ajout de l'onglet Appariements (2.6.0)
@@ -27,6 +31,7 @@ English version below
 - Ajout de l'appariement toutes rondes par grilles de Berger, simple et aller-retour (2.6.0)
 - _Ajout de l'appariement suisse classique et accéléré (2.6.0 expérimental)_
 - _Ajout des exports PGN et TRF16 (2.6.0 expérimental)_
+- Ajout de l'impression des tables de Berger (2.6.2)
 
 ### Gestion des afficheurs
 
@@ -34,7 +39,7 @@ English version below
 
 ### ChessEvent
 
-- Correction d'un bug d'import des tournois depuis ChessEvent (2.6.1)
+- Correction de bugs d'import des tournois depuis ChessEvent (2.6.1, 2.6.2)
 
 ---
 
@@ -58,6 +63,10 @@ English version below
 - Fixed a bug on the application settings (2.6.0)
 - Fixed a bug on the display of screen families (2.6.1)
 
+### Tournament management
+
+- Fixed a bug on FFE password input (2.6.2)
+
 ### Pairings management
 
 - Added the Pairings tab (2.6.0)
@@ -65,6 +74,7 @@ English version below
 - Added Round-Robin and Double Round-Robin (2.6.0)
 - _Added Swiss Dutch pairings (2.6.0 experimental)_
 - _Added PGN and TRF16 export (2.6.0 experimental)_
+- Added the Berger grid print view (2.6.2)
 
 ### Display management
 
@@ -72,4 +82,4 @@ English version below
 
 ### ChessEvent
 
-- Fixed a bug on tournament import from ChessEvent (2.6.1)
+- Fixed bugs on tournament import from ChessEvent (2.6.1, 2.6.2)
