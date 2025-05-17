@@ -195,11 +195,12 @@ def create_project():
     custom_dir.mkdir(exist_ok=True)
     target_file = tools_dir / 'ffe.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
+    sharly_chess_copyright: str = SharlyChessConfig().copyright
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Sharly Chess FFE client, please wait...\n'
-            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.copyright} - {SharlyChessConfig.url}\n'
+            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {sharly_chess_copyright} - {SharlyChessConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --ffe\n'
             f'pause\n'
@@ -210,7 +211,7 @@ def create_project():
         f.write(
             f'@echo off\n'
             f'echo Starting Sharly Chess ChessEvent client, please wait...\n'
-            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.copyright} - {SharlyChessConfig.url}\n'
+            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {sharly_chess_copyright} - {SharlyChessConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --chessevent\n'
             f'pause\n'
