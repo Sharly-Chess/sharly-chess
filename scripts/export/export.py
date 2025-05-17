@@ -173,7 +173,7 @@ def build_exe():
     run(pyinstaller_params)
 
 
-def create_project():
+def create_project(silent: bool = False):
     print_interactive_info(f'Adding data from folder {PROJECT_DIR} to {DATA_DIR}...')
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     tools_dir: Path = PROJECT_DIR / 'tools'
@@ -194,7 +194,7 @@ def create_project():
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
     target_file = tools_dir / 'ffe.bat'
-    sharly_chess_copyright: str = SharlyChessConfig().copyright
+    sharly_chess_copyright: str = SharlyChessConfig(silent).copyright
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
@@ -265,7 +265,7 @@ def main():
     if not I18nChecker().ok:
         print_interactive_warning('Translations are not perfect.')
     build_exe()
-    create_project()
+    create_project(silent=args.github)
     create_zip_files()
     build_test()
     clean(clean_zip=False)
