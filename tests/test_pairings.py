@@ -1,4 +1,5 @@
 # Needs to be imported first to avoid circular import
+
 from data.pairings.engines import BergerPairingEngine
 from plugins import manager  # Noqa E402
 
@@ -11,7 +12,7 @@ class PairingTestCase(BaseTestCase):
     def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
         tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
         tournament.set_default_pairing_settings()
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.rounds + 1):
             diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
             self.assertEqual(diff, [], f'round {round_}')
 
@@ -206,6 +207,10 @@ class PairingTestCase(BaseTestCase):
         self.assert_no_pairings_diff_in_tournament('tec-round-robin')
 
     def test_berger_papi(self):
-        # Papi-generated Berger tournament for 15 players.
-        # Pairing numbers are attributed as the starting rank
         self.assert_no_pairings_diff_in_tournament('papi-berger')
+
+    def test_berger_papi_odd(self):
+        self.assert_no_pairings_diff_in_tournament('papi-berger-odd')
+
+    def test_berger_papi_large(self):
+        self.assert_no_pairings_diff_in_tournament('papi-berger-large')

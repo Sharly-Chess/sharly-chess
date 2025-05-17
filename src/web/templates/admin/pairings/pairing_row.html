@@ -24,6 +24,9 @@
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if 'MANUAL_UNPAIRING' not in existing_actions and board.exempt %}
+                disabled
+            {% endif %}
         >
             {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
         </button>

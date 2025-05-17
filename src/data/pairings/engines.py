@@ -49,7 +49,11 @@ class PairingEngine(ABC):
             black_player = board.black_player
             if white_player:
                 white_player.pairings[round_] = Pairing(
-                    BoardColor.WHITE,
+                    (
+                        BoardColor.WHITE
+                        if black_player or board.result == Result.PAIRING_ALLOCATED_BYE
+                        else None
+                    ),
                     black_player.id if black_player else None,
                     board.result,
                 )
@@ -289,7 +293,6 @@ class BergerPairingEngine(RoundRobinPairingEngine):
             if not white_player or not black_player:
                 board = Board(
                     white_player=white_player or black_player,
-                    result=Result.PAIRING_ALLOCATED_BYE,
                 )
             else:
                 board = Board(
