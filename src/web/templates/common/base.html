@@ -218,6 +218,14 @@
                         }, delay)
                     }
                 }
+
+                function toggle_password(event, id) {
+                    event.preventDefault();
+                    hide = $(id).attr("type") == 'text'
+                    $(id).attr('type', hide ? 'password' : 'text');
+                    $(id + '-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
+                    $(id + '-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
+                }
             </script>
         {% endif %}
     </head>
