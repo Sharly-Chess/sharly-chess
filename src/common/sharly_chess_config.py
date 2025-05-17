@@ -60,13 +60,13 @@ class SharlyChessConfig(metaclass=Singleton):
         logging.ERROR: 'ERROR',
     }
 
-    def __init__(self):
+    def __init__(self, silent: bool = False):
         self.web_port: int | None = None
         self.stored_config: StoredConfig = self.load()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
         # offline databases download, ...
-        if not self.stored_config.locale:
+        if not silent and not self.stored_config.locale:
             set_locale(get_locale())
             print_interactive_input(_('The following languages are available:'))
             locale_range = range(1, len(locales) + 1)
