@@ -28,7 +28,7 @@ class Pairing:
 
     @property
     def exempt(self) -> bool:
-        return self.result in (Result.PAIRING_ALLOCATED_BYE, Result.EXEMPT_NO_BYE)
+        return self.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
 
     @property
     def loss(self) -> bool:
@@ -85,7 +85,7 @@ class Pairing:
             Result.ZERO_POINT_BYE,
             Result.FULL_POINT_BYE,
             Result.PAIRING_ALLOCATED_BYE,
-            Result.EXEMPT_NO_BYE,
+            Result.REST_GAME,
         )
 
     @property

@@ -259,4 +259,4 @@ class RoundRobinPairingSystem(PairingSystem):
                 break
             for pairing in player.pairings.values():
                 if pairing.opponent_id is None:
-                    pairing.result = Result.EXEMPT_NO_BYE
+                    pairing.result = Result.REST_GAME

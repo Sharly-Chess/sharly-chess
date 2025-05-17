@@ -39,7 +39,7 @@ class Result(IntEnum):
     UNRATED_LOSS = 11
     UNRATED_DRAW = 12
     UNRATED_GAIN = 13
-    EXEMPT_NO_BYE = 14
+    REST_GAME = 14
 
     def __str__(self) -> str:
         match self:
@@ -61,7 +61,7 @@ class Result(IntEnum):
                 return '1-F'
             case Result.DOUBLE_FORFEIT:
                 return 'F-F'
-            case Result.EXEMPT_NO_BYE:
+            case Result.REST_GAME:
                 return '0-F'
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -120,7 +120,7 @@ class Result(IntEnum):
                 return PapiResult.LOSS
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.EXEMPT_NO_BYE:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
                 return PapiResult.NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
@@ -154,7 +154,7 @@ class Result(IntEnum):
                 | Result.UNRATED_LOSS
                 | Result.FORFEIT_LOSS
                 | Result.DOUBLE_FORFEIT
-                | Result.EXEMPT_NO_BYE
+                | Result.REST_GAME
             ):
                 return 0.0
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
@@ -284,7 +284,7 @@ class Result(IntEnum):
                 return 'U'
             case Result.ZERO_POINT_BYE:
                 return 'Z'
-            case Result.NO_RESULT | Result.EXEMPT_NO_BYE:
+            case Result.NO_RESULT | Result.REST_GAME:
                 return ' '
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -334,7 +334,7 @@ class Result(IntEnum):
                 return '>'
             case Result.PAIRING_ALLOCATED_BYE:
                 return 'EXE'
-            case Result.ZERO_POINT_BYE | Result.NO_RESULT | Result.EXEMPT_NO_BYE:
+            case Result.ZERO_POINT_BYE | Result.NO_RESULT | Result.REST_GAME:
                 return ' '
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -360,7 +360,7 @@ class Result(IntEnum):
                 | Result.HALF_POINT_BYE
                 | Result.ZERO_POINT_BYE
                 | Result.PAIRING_ALLOCATED_BYE
-                | Result.EXEMPT_NO_BYE
+                | Result.REST_GAME
             ):
                 return '*'
             case _:
