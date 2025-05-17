@@ -174,8 +174,6 @@ class ActionSelector(metaclass=Singleton):
                         chessevent_tournament.check_in_started,
                     )
                     players_added += 1
-                event_database.set_tournament_check_in(tournament.id, True)
-                papi_database.open_check_in(1)
                 event_database.execute(
                     'UPDATE `tournament` SET `chessevent_last_download_md5` = ?, '
                     '`last_update` = ? WHERE `id` = ?',
