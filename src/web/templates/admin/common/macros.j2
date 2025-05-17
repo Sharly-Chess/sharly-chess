@@ -357,6 +357,7 @@ with_indicator: display a loading indicator, optional
                         <i
                             id="{{ id }}-toggle-password"
                             class="input-group-text {{ 'bi-eye-slash-fill' if not password_visible else 'bi-eye-fill' }} ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
+                            hx-on:click="toggle_password(event, '#{{ id }}')"
                         ></i>
                     {% endif %}
                     {% if with_indicator %}
@@ -399,17 +400,6 @@ with_indicator: display a loading indicator, optional
                 </div>
             {% endif %}
         </div>
-        {% if input_type == 'password' %}
-            <script>
-                $('#{{ id }}-toggle-password').on('click', function(event) {
-                    event.preventDefault();
-                    hide = $('#{{ id }}').attr("type") == 'text'
-                    $('#{{ id }}').attr('type', hide ? 'password' : 'text');
-                    $('#{{ id }}-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
-                    $('#{{ id }}-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
-                });
-            </script>
-        {% endif %}
         {% if default_checkbox %}
             <script>
                 $('#{{ default_checkbox_id }}').click(function() {
