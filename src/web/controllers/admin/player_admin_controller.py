@@ -1625,7 +1625,8 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-        zpbs_all_rounds: bool,
+        zpbs_next_round: bool = False,
+        zpbs_all_rounds: bool = False,
     ) -> Template | ClientRedirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
@@ -1641,7 +1642,7 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_tournament is None:
             raise RuntimeError('admin_tournament not defined')
         admin_tournament: Tournament = web_context.admin_tournament
-        admin_tournament.close_check_in(zpbs_all_rounds)
+        admin_tournament.close_check_in(zpbs_next_round, zpbs_all_rounds)
         Message.success(
             request,
             _('Check-in is closed for tournament [{tournament_uniq_id}].').format(
@@ -1653,6 +1654,27 @@ class PlayerAdminController(BaseEventAdminController):
             re_swap='none',
             trigger_event='request_refresh',
             after='receive',
+        )
+
+    @patch(
+        path='/admin/tournament-close-check-in/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-close-check-in',
+    )
+    async def htmx_admin_tournament_close_check_in(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_tournament_close_check_in(
+            request=request,
+            data=data,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
         )
 
     @patch(

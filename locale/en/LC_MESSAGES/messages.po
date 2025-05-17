@@ -1037,6 +1037,9 @@ msgstr ""
 msgid "Displayed round: %(round)d"
 msgstr ""
 
+msgid "Do not assign zero-point byes"
+msgstr ""
+
 msgid "Do nothing"
 msgstr ""
 

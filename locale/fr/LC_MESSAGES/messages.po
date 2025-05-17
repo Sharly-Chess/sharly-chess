@@ -1037,6 +1037,9 @@ msgstr "Afficher un bouton de sortie d'écran"
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
 
+msgid "Do not assign zero-point byes"
+msgstr "Ne pas marquer forfait"
+
 msgid "Do nothing"
 msgstr "Ne rien faire"
 
