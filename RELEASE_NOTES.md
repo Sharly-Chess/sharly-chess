@@ -22,7 +22,7 @@ English version below
 
 ### Gestion des tournois
 
-- Correction d'un bug de saisie sur le mot de passe FFE (2.6.0)
+- Correction d'un bug de saisie sur le mot de passe FFE (2.6.2)
 
 ### Gestion des appariements
 
