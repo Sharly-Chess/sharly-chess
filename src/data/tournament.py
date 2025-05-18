@@ -93,6 +93,7 @@ class Tournament:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
         self._players: Collection[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
+        self._boards: list[Board] | None = None
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
 
@@ -422,6 +423,7 @@ class Tournament:
             self.set_player_points(player, before_round=self.current_round)
         self._estimate_players(self.players, after_round=self.current_round)
         self.pairing_system.update_player_results(self)
+        self._boards = self.build_boards()
         self._players = None
         return players_by_id
 
@@ -508,9 +510,11 @@ class Tournament:
     def finished(self) -> bool:
         return self.current_round == self.rounds and not self.playing
 
-    @cached_property
+    @property
     def boards(self) -> list[Board]:
-        return self.build_boards()
+        if self._boards is None:
+            self._boards = self.build_boards()
+        return self._boards
 
     @cached_property
     def unpaired_players(self) -> list[Player]:
@@ -952,7 +956,7 @@ class Tournament:
         boards: list[Board] = []
         for player in self.players:
             opponent_id = player.pairings[at_round].opponent_id
-            if opponent_id in self.players_by_id:
+            if opponent_id:
                 player_board: Board | None = None
                 for board in boards:
                     if (
