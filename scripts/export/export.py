@@ -53,6 +53,7 @@ BUILD_DIR: Path = BASE_DIR / 'build'
 DIST_DIR: Path = BASE_DIR / 'dist'
 DATA_DIR: Path = BASE_DIR / 'export-data'
 LOCALE_DIR: Path = BASE_DIR / 'locale'
+VENV_DIR: Path = BASE_DIR / '.venv-export'
 basename: str = f'sharly-chess-{SHARLY_CHESS_VERSION}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = DIST_DIR / basename
@@ -162,13 +163,13 @@ def build_exe():
     files += [
         file
         for file in Path(
-            BASE_DIR / 'venv/lib/site-packages/litestar/exceptions/responses/templates'
+            VENV_DIR / 'lib/site-packages/litestar/exceptions/responses/templates'
         ).glob('**/*')
         if file.is_file()
     ]
     for file in files:
         pyinstaller_params.append(
-            f'--add-data={file};{file.parent.relative_to(BASE_DIR / "venv/lib/site-packages")}'
+            f'--add-data={file};{file.parent.relative_to(VENV_DIR / "lib/site-packages")}'
         )
     run(pyinstaller_params)
 
