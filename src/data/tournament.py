@@ -636,6 +636,7 @@ class Tournament:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
         self._players_by_rank = None
+        self._boards = None
         for screen in self.dependent_screens:
             screen.clear_cache_for_tournament(self.id)
         for family in self.dependent_families:
