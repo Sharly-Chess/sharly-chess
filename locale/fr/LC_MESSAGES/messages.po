@@ -115,7 +115,7 @@ msgid "20+"
 msgstr "20+"
 
 msgid "404 - Page Not Found"
-msgstr "Page non trouvée"
+msgstr "404 - Page non trouvée"
 
 msgid "50+"
 msgstr "50+"

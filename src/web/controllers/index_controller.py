@@ -82,7 +82,7 @@ class IndexController(BaseController):
         web_context: WebContext = WebContext(request)
 
         return HTMXTemplate(
-            template_name='exceptions/404.html',
+            template_name='errors/404.html',
             context=web_context.template_context,
         )
 
@@ -99,7 +99,7 @@ class IndexController(BaseController):
         web_context: WebContext = WebContext(request)
 
         return HTMXTemplate(
-            template_name='exceptions/500.html',
+            template_name='errors/500.html',
             context=web_context.template_context,
         )
 
