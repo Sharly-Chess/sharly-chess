@@ -132,7 +132,7 @@ class SharlyChessConfig(metaclass=Singleton):
     ffe_upload_delay: int = 180
 
     """ The URL of the project. """
-    url: str = 'https://github.com/sharly-chess/sharly-chess'
+    url: str = 'https://sharly-chess.com'
 
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'

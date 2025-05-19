@@ -1,5 +1,6 @@
 from litestar import get
 from litestar.config.response_cache import CACHE_FOREVER
+from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 
@@ -71,3 +72,37 @@ class IndexController(BaseController):
         return Redirect(
             request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
         )
+
+    @get(
+        path='/404',
+        name='404',
+        cache=1,
+    )
+    async def handle_404(self, request: HTMXRequest) -> HTMXTemplate:
+        web_context: WebContext = WebContext(request)
+
+        return HTMXTemplate(
+            template_name='errors/404.html',
+            context=web_context.template_context,
+        )
+
+    @staticmethod
+    def handle_404_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
+        return Redirect(path=request.app.route_reverse('404'))
+
+    @get(
+        path='/500',
+        name='500',
+        cache=1,
+    )
+    async def handle_500(self, request: HTMXRequest) -> HTMXTemplate:
+        web_context: WebContext = WebContext(request)
+
+        return HTMXTemplate(
+            template_name='errors/500.html',
+            context=web_context.template_context,
+        )
+
+    @staticmethod
+    def handle_500_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
+        return Redirect(path=request.app.route_reverse('500'))

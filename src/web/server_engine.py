@@ -26,7 +26,13 @@ from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.manager import plugin_manager
-from web.settings import route_handlers, template_config, middlewares, stores
+from web.settings import (
+    route_handlers,
+    template_config,
+    middlewares,
+    stores,
+    exception_handlers,
+)
 
 logger = get_logger()
 
@@ -120,6 +126,7 @@ class ServerEngine(Engine):
             debug=True,
             request_class=HTMXRequest,
             route_handlers=route_handlers,
+            exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
             logging_config=LoggingConfig(**logging_config),  # type: ignore
             middleware=middlewares,

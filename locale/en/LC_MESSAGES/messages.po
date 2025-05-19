@@ -114,7 +114,13 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "404 - Page Not Found"
+msgstr ""
+
 msgid "50+"
+msgstr ""
+
+msgid "500 - Internal Server Error"
 msgstr ""
 
 msgid "65+"
@@ -3478,6 +3484,12 @@ msgid "Soft Haley system"
 msgstr ""
 
 msgid "Sonnenborn-Berger"
+msgstr ""
+
+msgid "Sorry, an unexpected error has occurred."
+msgstr ""
+
+msgid "Sorry, the page you are looking for does not exist."
 msgstr ""
 
 msgid "Sort by:"

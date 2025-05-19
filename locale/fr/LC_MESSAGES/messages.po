@@ -114,8 +114,14 @@ msgstr "1er jour du mois"
 msgid "20+"
 msgstr "20+"
 
+msgid "404 - Page Not Found"
+msgstr "404 - Page non trouvée"
+
 msgid "50+"
 msgstr "50+"
+
+msgid "500 - Internal Server Error"
+msgstr "500 - Erreur interne du serveur"
 
 msgid "65+"
 msgstr "65+"
@@ -3479,6 +3485,12 @@ msgstr "Système de Haley dégressif"
 
 msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
+
+msgid "Sorry, an unexpected error has occurred."
+msgstr "Désolé, une erreur inattendue s'est produite."
+
+msgid "Sorry, the page you are looking for does not exist."
+msgstr "Désolé, la page que vous recherchez n’existe pas."
 
 msgid "Sort by:"
 msgstr "Trier par :"
