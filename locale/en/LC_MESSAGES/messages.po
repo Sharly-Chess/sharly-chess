@@ -1,3 +1,4 @@
+#, python-brace-format
 msgid "  - [{q_uc}] Do not recover"
 msgstr ""
 
@@ -114,7 +115,13 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "404 - Page Not Found"
+msgstr ""
+
 msgid "50+"
+msgstr ""
+
+msgid "500 - Internal Server Error"
 msgstr ""
 
 msgid "65+"
@@ -160,6 +167,7 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
+#, python-brace-format
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
@@ -187,6 +195,7 @@ msgstr ""
 msgid "Action delay"
 msgstr ""
 
+#, python-brace-format
 msgid "Action: {action}"
 msgstr ""
 
@@ -268,6 +277,7 @@ msgstr ""
 msgid "All"
 msgstr ""
 
+#, python-brace-format
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr ""
 
@@ -298,6 +308,7 @@ msgstr ""
 msgid "Archived event"
 msgstr ""
 
+#, python-brace-format
 msgid "Archived events ({num})"
 msgstr ""
 
@@ -328,6 +339,7 @@ msgstr[1] ""
 msgid "Authenticating..."
 msgstr ""
 
+#, python-brace-format
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr ""
 
@@ -478,6 +490,7 @@ msgstr ""
 msgid "By board"
 msgstr ""
 
+#, python-brace-format
 msgid "By default - {option}"
 msgstr ""
 
@@ -543,6 +556,7 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Character [{char}] is not allowed."
 msgstr ""
 
@@ -562,9 +576,11 @@ msgstr "Check-in"
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
+#, python-brace-format
 msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -691,12 +707,15 @@ msgstr ""
 msgid "Colour #%(num)d:"
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr ""
 
@@ -727,12 +746,14 @@ msgstr ""
 msgid "Connection to the database failed."
 msgstr ""
 
+#, python-brace-format
 msgid "Connection to the database failed: {error}."
 msgstr ""
 
 msgid "Connection to the server failed."
 msgstr ""
 
+#, python-brace-format
 msgid "Connection to the server failed: {error}."
 msgstr ""
 
@@ -751,12 +772,15 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
+#, python-brace-format
 msgid "Could not connect to data source [{player_updater_name}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Could not download [{url}], error code [{code}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Could not download [{url}]: {error}."
 msgstr ""
 
@@ -828,9 +852,11 @@ msgstr ""
 msgid "Crosstable %f-%l"
 msgstr ""
 
+#, python-brace-format
 msgid "Crosstable after round #{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "Current events ({num})"
 msgstr ""
 
@@ -841,9 +867,11 @@ msgstr ""
 msgid "Current round: %(round)d"
 msgstr ""
 
+#, python-brace-format
 msgid "Currently displaying rotator [{uniq_id}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
@@ -859,9 +887,11 @@ msgstr ""
 msgid "Daily"
 msgstr ""
 
+#, python-brace-format
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr ""
 
+#, python-brace-format
 msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
 msgstr ""
 
@@ -871,12 +901,15 @@ msgstr ""
 msgid "Database"
 msgstr ""
 
+#, python-brace-format
 msgid "Database [{database}] - "
 msgstr ""
 
+#, python-brace-format
 msgid "Database [{database}] successfully updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Database [{database}] unexpectedly not found at path [{path}]."
 msgstr ""
 
@@ -976,6 +1009,7 @@ msgstr ""
 msgid "Direct encounter"
 msgstr ""
 
+#, python-brace-format
 msgid "Directory [{path}] not found."
 msgstr ""
 
@@ -994,15 +1028,19 @@ msgstr ""
 msgid "Display controller"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller_uniq_id}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{uniq_id}] already exists."
 msgstr ""
 
@@ -1012,6 +1050,7 @@ msgstr ""
 msgid "Display controllers"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controllers ({num})"
 msgstr ""
 
@@ -1049,15 +1088,19 @@ msgstr ""
 msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr ""
 
+#, python-brace-format
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
 msgstr ""
 
+#, python-brace-format
 msgid "Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? "
 msgstr ""
 
+#, python-brace-format
 msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]? "
 msgstr ""
 
+#, python-brace-format
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
 msgstr ""
 
@@ -1387,12 +1430,15 @@ msgstr ""
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
+#, python-brace-format
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Error when updating database [{database}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Error while creating the database: {error}."
 msgstr ""
 
@@ -1406,27 +1452,34 @@ msgstr "Estimated"
 msgid "Event"
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] already exists."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
 msgid "Event creation"
 msgstr ""
 
+#, python-brace-format
 msgid "Event: {event_name}"
 msgstr ""
 
@@ -1475,9 +1528,11 @@ msgstr "FFE"
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
+#, python-brace-format
 msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr ""
 
+#, python-brace-format
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1502,6 +1557,7 @@ msgstr ""
 msgid "FFE licence B (leisure)"
 msgstr ""
 
+#, python-brace-format
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1560,39 +1616,49 @@ msgstr "FM"
 msgid "FORFEIT"
 msgstr ""
 
+#, python-brace-format
 msgid "Failed to read [{url}] (connection error): [{ex}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Failed to read [{url}] (error code [{errno}]): [{strerror}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Failed to read [{url}] (timeout): [{ex}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Failed to read [{url}]: [{ex}]."
 msgstr ""
 
 msgid "Families"
 msgstr ""
 
+#, python-brace-format
 msgid "Families ({num})"
 msgstr ""
 
 msgid "Families are used to split a large amount of information across multiple screens."
 msgstr ""
 
+#, python-brace-format
 msgid "Family [{family_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Family [{family_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Family [{family_uniq_id}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Family [{uniq_id}] already exists."
 msgstr ""
 
@@ -1620,6 +1686,7 @@ msgstr ""
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
+#, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1629,6 +1696,7 @@ msgstr ""
 msgid "Fields relying on the Papi database can't be updated if the file does not exist."
 msgstr ""
 
+#, python-brace-format
 msgid "File [{file}] not found."
 msgstr ""
 
@@ -1728,6 +1796,7 @@ msgstr ""
 msgid "French Federation specific features (player search, leagues, Papi compatibility)"
 msgstr ""
 
+#, python-brace-format
 msgid "Frequency: {frequency}"
 msgstr ""
 
@@ -1776,6 +1845,7 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
+#, python-brace-format
 msgid "Getting fees for tournament [{ffe_id}]..."
 msgstr ""
 
@@ -1826,6 +1896,7 @@ msgstr ""
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
+#, python-brace-format
 msgid "Hour [{uniq_id}] already exists."
 msgstr ""
 
@@ -1847,6 +1918,7 @@ msgstr ""
 msgid "ID (unique):"
 msgstr ""
 
+#, python-brace-format
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
@@ -1865,6 +1937,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
+#, python-brace-format
 msgid "Image ({num})"
 msgstr ""
 
@@ -1881,6 +1954,7 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+#, python-brace-format
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -1888,6 +1962,7 @@ msgstr ""
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
 msgstr ""
 
+#, python-brace-format
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
 msgstr ""
 
@@ -1900,6 +1975,7 @@ msgstr ""
 msgid "Incorrect password."
 msgstr ""
 
+#, python-brace-format
 msgid "Incorrect path [{path}]."
 msgstr ""
 
@@ -1913,6 +1989,7 @@ msgstr ""
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
+#, python-brace-format
 msgid "Initializing a session to [{url}]..."
 msgstr ""
 
@@ -1928,9 +2005,11 @@ msgstr ""
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr ""
 
+#, python-brace-format
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
+#, python-brace-format
 msgid "Installed [{lib}]."
 msgstr ""
 
@@ -1946,78 +2025,100 @@ msgstr ""
 msgid "Internet connection lost"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
 msgid "Invalid FFE ID or password."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid URL [{background_image}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid amount [{amount}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
 msgid "Invalid board number range."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date and time [{datetime_str}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid display link text [{text}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid federation [{federation}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid fees link text [{text}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid locale [{locale}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid log level [{log_level}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid phone number [{phone}]."
 msgstr ""
 
 msgid "Invalid player number range."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid value [{value}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invoice saved to [{file}]."
 msgstr ""
 
@@ -2039,6 +2140,7 @@ msgstr ""
 msgid "Koya system"
 msgstr ""
 
+#, python-brace-format
 msgid "LAN/WAN URL: {lan_url}"
 msgstr ""
 
@@ -2057,6 +2159,7 @@ msgstr ""
 msgid "Last results"
 msgstr ""
 
+#, python-brace-format
 msgid "Last results ({num})"
 msgstr ""
 
@@ -2087,6 +2190,7 @@ msgstr ""
 msgid "Libraries"
 msgstr ""
 
+#, python-brace-format
 msgid "Library [{lib}] is missing."
 msgstr ""
 
@@ -2111,6 +2215,7 @@ msgstr ""
 msgid "Local Source Databases"
 msgstr ""
 
+#, python-brace-format
 msgid "Local URL: {local_url}"
 msgstr ""
 
@@ -2126,6 +2231,7 @@ msgstr ""
 msgid "Log level:"
 msgstr ""
 
+#, python-brace-format
 msgid "Logging level: {log_level}"
 msgstr ""
 
@@ -2189,6 +2295,7 @@ msgstr ""
 msgid "Maximum number of illegal moves"
 msgstr ""
 
+#, python-brace-format
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr ""
 
@@ -2198,6 +2305,7 @@ msgstr ""
 msgid "Maximum number of results displayed:"
 msgstr ""
 
+#, python-brace-format
 msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
@@ -2249,6 +2357,7 @@ msgstr ""
 msgid "Minimum number of points (included):"
 msgstr ""
 
+#, python-brace-format
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
@@ -2345,6 +2454,7 @@ msgstr ""
 msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
+#, python-brace-format
 msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
 msgstr ""
 
@@ -2354,9 +2464,11 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
+#, python-brace-format
 msgid "No background colour set, by default [{background_color}]"
 msgstr ""
 
+#, python-brace-format
 msgid "No background image set, by default [{background_image}]"
 msgstr ""
 
@@ -2366,12 +2478,15 @@ msgstr ""
 msgid "No current events."
 msgstr ""
 
+#, python-brace-format
 msgid "No data received from [{url}]."
 msgstr ""
 
+#, python-brace-format
 msgid "No directory set for Papi files, by default [{path}]."
 msgstr ""
 
+#, python-brace-format
 msgid "No directory set for the Papi file, by default [{path}]."
 msgstr ""
 
@@ -2402,6 +2517,7 @@ msgstr ""
 msgid "No mail defined."
 msgstr ""
 
+#, python-brace-format
 msgid "No name set, by default [{name}]"
 msgstr ""
 
@@ -2426,6 +2542,7 @@ msgstr ""
 msgid "No phone defined."
 msgstr ""
 
+#, python-brace-format
 msgid "No players found in {seconds:.2f} seconds."
 msgstr ""
 
@@ -2468,6 +2585,7 @@ msgstr ""
 msgid "No screen nor family to rotate."
 msgstr ""
 
+#, python-brace-format
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
@@ -2522,6 +2640,7 @@ msgstr ""
 msgid "Not connected, impossible to update."
 msgstr ""
 
+#, python-brace-format
 msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
 msgstr ""
 
@@ -2545,6 +2664,7 @@ msgstr ""
 msgid "Number of wins"
 msgstr ""
 
+#, python-brace-format
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
@@ -2600,6 +2720,7 @@ msgstr ""
 msgid "Open/close check-in."
 msgstr ""
 
+#, python-brace-format
 msgid "Opening the welcome page [{url}] in a browser..."
 msgstr ""
 
@@ -2685,21 +2806,25 @@ msgstr ""
 msgid "Pairings by board"
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings by board ({num})"
 msgstr ""
 
 msgid "Pairings by player"
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings by player ({num})"
 msgstr ""
 
 msgid "Pairings disabled while check-in is open."
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings for round #{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings generated for all rounds of tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2709,6 +2834,7 @@ msgstr ""
 msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2722,21 +2848,26 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
+#, python-brace-format
 msgid "Papi file [{file}] has been created (players: {num})."
 msgstr ""
 
+#, python-brace-format
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Parings by player"
 msgstr ""
 
+#, python-brace-format
 msgid "Passed events ({num})"
 msgstr ""
 
@@ -2749,9 +2880,11 @@ msgstr ""
 msgid "Password to enter results:"
 msgstr ""
 
+#, python-brace-format
 msgid "Pattern [{pattern}] can be used by screen families only."
 msgstr ""
 
+#, python-brace-format
 msgid "Pattern [{pattern}] matches no screen."
 msgstr ""
 
@@ -2799,9 +2932,11 @@ msgstr ""
 msgid "Player [%(last_name)s %(first_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2821,6 +2956,7 @@ msgstr ""
 msgid "Players"
 msgstr ""
 
+#, python-brace-format
 msgid "Players ({num})"
 msgstr ""
 
@@ -2904,6 +3040,7 @@ msgstr ""
 msgid "Please enter the name of the event."
 msgstr ""
 
+#, python-brace-format
 msgid "Please enter the number of the release to recover [{default_choice}: {default_version}]: "
 msgstr ""
 
@@ -2985,9 +3122,11 @@ msgstr ""
 msgid "Port"
 msgstr ""
 
+#, python-brace-format
 msgid "Port [{port}] already in use."
 msgstr ""
 
+#, python-brace-format
 msgid "Port: {port}"
 msgstr ""
 
@@ -3096,9 +3235,11 @@ msgstr ""
 msgid "Ranking %f-%l"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking after round #{round}"
 msgstr ""
 
@@ -3176,6 +3317,7 @@ msgstr ""
 msgid "Remove the screen from the display controller."
 msgstr ""
 
+#, python-brace-format
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
@@ -3186,6 +3328,7 @@ msgstr ""
 msgid "Request to the database failed."
 msgstr ""
 
+#, python-brace-format
 msgid "Request to the database failed: {error}."
 msgstr ""
 
@@ -3201,9 +3344,11 @@ msgstr ""
 msgid "Results entry"
 msgstr ""
 
+#, python-brace-format
 msgid "Results entry ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Results for round #{round}"
 msgstr ""
 
@@ -3229,21 +3374,27 @@ msgstr ""
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator_uniq_id}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{uniq_id}] already exists."
 msgstr ""
 
@@ -3256,6 +3407,7 @@ msgstr ""
 msgid "Rotators"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotators ({num})"
 msgstr ""
 
@@ -3281,6 +3433,7 @@ msgstr ""
 msgid "Round #%(round)d is running."
 msgstr ""
 
+#, python-brace-format
 msgid "Round #{round}"
 msgstr ""
 
@@ -3315,15 +3468,18 @@ msgstr ""
 msgid "Rules"
 msgstr ""
 
+#, python-brace-format
 msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Rules file location:"
 msgstr ""
 
+#, python-brace-format
 msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -3351,27 +3507,35 @@ msgstr ""
 msgid "Score"
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{uniq_id}] already exists."
 msgstr ""
 
@@ -3426,9 +3590,11 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
+#, python-brace-format
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
+#, python-brace-format
 msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
@@ -3471,6 +3637,7 @@ msgstr ""
 msgid "Single Screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Single Screens ({num})"
 msgstr ""
 
@@ -3478,6 +3645,12 @@ msgid "Soft Haley system"
 msgstr ""
 
 msgid "Sonnenborn-Berger"
+msgstr ""
+
+msgid "Sorry, an unexpected error has occurred."
+msgstr ""
+
+msgid "Sorry, the page you are looking for does not exist."
 msgstr ""
 
 msgid "Sort by:"
@@ -3570,6 +3743,7 @@ msgstr ""
 msgid "Thanks :-)"
 msgstr ""
 
+#, python-brace-format
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -3603,6 +3777,7 @@ msgstr ""
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr ""
 
+#, python-brace-format
 msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -3746,6 +3921,7 @@ msgstr ""
 msgid "The minimum time, whatever the ranking difference between the two players."
 msgstr ""
 
+#, python-brace-format
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
@@ -3848,12 +4024,15 @@ msgstr ""
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr ""
 
+#, python-brace-format
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -3933,6 +4112,7 @@ msgstr ""
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr ""
 
+#, python-brace-format
 msgid "The round count is incompatible with the number of players (expected: {expected})."
 msgstr ""
 
@@ -3994,6 +4174,7 @@ msgstr ""
 msgid "The variation of the pairing system."
 msgstr ""
 
+#, python-brace-format
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
@@ -4039,9 +4220,11 @@ msgstr ""
 msgid "This rotator is public (visible by the users)."
 msgstr ""
 
+#, python-brace-format
 msgid "This round is not finished (last finished: #{round})."
 msgstr ""
 
+#, python-brace-format
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
@@ -4067,6 +4250,7 @@ msgstr ""
 msgid "Tie-break already in use."
 msgstr ""
 
+#, python-brace-format
 msgid "Tie-break incompatible with the \"{system}\" pairing system."
 msgstr ""
 
@@ -4082,27 +4266,35 @@ msgstr ""
 msgid "Time is not defined."
 msgstr ""
 
+#, python-brace-format
 msgid "Time outside of event time range ({start} - {stop})."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_id}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_uniq_id}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
@@ -4112,6 +4304,7 @@ msgstr ""
 msgid "Timer hours"
 msgstr ""
 
+#, python-brace-format
 msgid "Timer {timer_uniq_id}"
 msgstr ""
 
@@ -4128,6 +4321,7 @@ msgstr ""
 msgid "Timers"
 msgstr ""
 
+#, python-brace-format
 msgid "Timers ({num})"
 msgstr ""
 
@@ -4141,9 +4335,11 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
+#, python-brace-format
 msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr ""
 
+#, python-brace-format
 msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
@@ -4170,48 +4366,63 @@ msgstr ""
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{ffe_id}]:"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] is not started yet."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}] is started."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{uniq_id}] already exists."
 msgstr ""
 
@@ -4230,6 +4441,7 @@ msgstr ""
 msgid "Tournament record"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr ""
 
@@ -4246,6 +4458,7 @@ msgstr ""
 msgid "Tournaments"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournaments ({num})"
 msgstr ""
 
@@ -4259,9 +4472,11 @@ msgstr ""
 msgid "Tournaments: %(num)d"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournaments: {tournament_ffe_ids}"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournaments: {tournament_names}"
 msgstr ""
 
@@ -4309,9 +4524,11 @@ msgstr ""
 msgid "UNPAIR"
 msgstr ""
 
+#, python-brace-format
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
+#, python-brace-format
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
@@ -4353,6 +4570,7 @@ msgstr ""
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr ""
 
@@ -4411,6 +4629,7 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
+#, python-brace-format
 msgid "Upcoming events ({num})"
 msgstr ""
 
@@ -4488,6 +4707,7 @@ msgstr ""
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
+#, python-brace-format
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""
 
@@ -4532,6 +4752,7 @@ msgstr ""
 msgid "Web access"
 msgstr ""
 
+#, python-brace-format
 msgid "Web server not started yet ({ex}), waiting..."
 msgstr ""
 
@@ -4589,6 +4810,7 @@ msgstr ""
 msgid "Woman International Master"
 msgstr ""
 
+#, python-brace-format
 msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr ""
 
@@ -4631,6 +4853,7 @@ msgstr ""
 msgid "You must create a tournament before creating screens."
 msgstr ""
 
+#, python-brace-format
 msgid "Your choice (by default {default}): "
 msgstr ""
 
@@ -4640,9 +4863,11 @@ msgstr ""
 msgid "Zero-Point Bye"
 msgstr ""
 
+#, python-brace-format
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
+#, python-brace-format
 msgid "[{path}] is not a directory."
 msgstr ""
 
@@ -4652,27 +4877,35 @@ msgstr ""
 msgid "all the players"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards {board_numbers}"
 msgstr ""
 
@@ -4694,60 +4927,78 @@ msgstr ""
 msgid "no background image"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from start to #{last}"
 msgstr ""
 
 msgid "rotator"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
@@ -4775,46 +5026,57 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{days} days"
 msgstr ""
 
+#, python-brace-format
 msgid "{days} days ago"
 msgstr ""
 
+#, python-brace-format
 msgid "{family_type}-screen"
 msgstr ""
 
+#, python-brace-format
 msgid "{number} players written to the database."
 msgstr ""
 
+#, python-brace-format
 msgid "{num} illegal move max"
 msgid_plural "{num} illegal moves max"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{num} player found in {seconds:.2f} seconds."
 msgid_plural "{num} players found in {seconds:.2f} seconds."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{num} player found."
 msgid_plural "{num} players found."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
 msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{screen_type}-screen"
 msgstr ""
 
+#, python-brace-format
 msgid "{string}: {value}"
 msgstr ""
 
