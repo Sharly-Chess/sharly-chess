@@ -39,7 +39,6 @@ class I18nTranslator:
                     f'--input-file={pot_file}',
                     f'--output-file={po_file}',
                 ],
-                verbose=False,
             )
             print_interactive_success(f'[{po_file}] created.')
         print_interactive_info(f'Updating {po_file} from the sources...')
@@ -54,7 +53,6 @@ class I18nTranslator:
                 '--no-wrap',
                 '--omit-header',
             ],
-            verbose=False,
         )
         print_interactive_success(f'[{po_file}] updated.')
         print_interactive_info('Loading the catalog ...')

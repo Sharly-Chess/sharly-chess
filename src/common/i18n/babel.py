@@ -1,5 +1,5 @@
 import hashlib
-import logging
+import re
 import shutil
 import sys
 from logging import Logger
@@ -16,6 +16,7 @@ logger: Logger = get_logger()
 class BabelWrapper:
     locale_dir: Path = BASE_DIR / 'locale'
     pot_file: Path = locale_dir / 'messages.pot'
+    config_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / 'babel.cfg'
 
     @staticmethod
     def run_babel_command(
@@ -48,20 +49,13 @@ class BabelWrapper:
         return hash_md5.digest()
 
     @classmethod
-    def extract_i18n_strings(cls, verbose: bool = False) -> bool:
+    def extract_i18n_strings(cls) -> bool:
         """Updates the POT file from the source files, returns True if the POT file has changed, False otherwise."""
-        extract_config_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / 'babel.cfg'
-        logger.log(
-            logging.INFO if verbose else logging.DEBUG,
-            'Babel configuration (%s):',
-            extract_config_file,
-        )
-        with open(extract_config_file, 'r') as f:
+        logger.debug('Babel configuration (%s):', cls.config_file)
+        with open(cls.config_file, 'r') as f:
             for line in f:
                 if stripped_line := line.replace('\n', '').strip():
-                    logger.log(
-                        logging.INFO if verbose else logging.DEBUG, stripped_line
-                    )
+                    logger.debug(stripped_line)
         pot_fingerprint: bytes
         if cls.pot_file.is_file():
             pot_fingerprint = cls.file_fingerprint(cls.pot_file)
@@ -71,16 +65,15 @@ class BabelWrapper:
         cls.run_babel_command(
             'extract',
             [
-                f'--mapping-file={extract_config_file}',
+                f'--mapping-file={cls.config_file}',
                 f'--output-file={tmp_file}',
                 '--sort-output',
                 '--add-location=never',
                 '--no-wrap',
                 '--omit-header',
-                '--ignore-dirs="src\\web\\static\\lib\\*"',
+                '--ignore-dirs="src\\web\\static"',
                 f'{BASE_DIR}',
             ],
-            verbose=verbose,
         )
         if changed := (cls.file_fingerprint(tmp_file) != pot_fingerprint):
             shutil.move(tmp_file, cls.pot_file)
@@ -96,7 +89,7 @@ class BabelWrapper:
         return cls.locale_dir / locale / 'LC_MESSAGES' / 'messages.po'
 
     @classmethod
-    def update_po_file(cls, locale: str, verbose: bool = False):
+    def update_po_file(cls, locale: str):
         """Updates the PO file of the locale from the POT file, returns True if the PO file has changed."""
         po_file: Path = cls.locale_po_file(locale)
         po_fingerprint: bytes
@@ -111,13 +104,10 @@ class BabelWrapper:
                     f'--input-file={cls.pot_file}',
                     f'--output-file={po_file}',
                 ],
-                verbose=verbose,
             )
         else:
             po_fingerprint = cls.file_fingerprint(po_file)
-        logger.log(
-            logging.INFO if verbose else logging.DEBUG, 'Updating %s...', po_file
-        )
+        logger.debug('Updating %s...', po_file)
         tmp_file: Path = po_file.with_suffix('.tmp')
         shutil.copy(po_file, tmp_file)
         cls.run_babel_command(
@@ -131,7 +121,6 @@ class BabelWrapper:
                 '--no-wrap',
                 '--omit-header',
             ],
-            verbose=verbose,
         )
         if changed := (cls.file_fingerprint(tmp_file) != po_fingerprint):
             shutil.move(tmp_file, po_file)
@@ -140,11 +129,9 @@ class BabelWrapper:
         return changed
 
     @classmethod
-    def update_mo_file(cls, locale: str, verbose: bool = False):
+    def update_mo_file(cls, locale: str):
         """Compiles the PO file of the locale to the MO file."""
-        logger.log(
-            logging.INFO if verbose else logging.DEBUG, 'Compiling locale %s...', locale
-        )
+        logger.debug('Compiling locale %s...', locale)
         cls.run_babel_command(
             'compile',
             [
@@ -152,7 +139,6 @@ class BabelWrapper:
                 f'--directory={cls.locale_dir}',
                 f'--locale={locale}',
             ],
-            verbose=verbose,
         )
 
     @classmethod
@@ -163,23 +149,44 @@ class BabelWrapper:
         return cls.locale_po_file(locale).with_suffix('.mo')
 
     @classmethod
+    def i18n_files_changed(
+        cls,
+    ):
+        """Returns True if at least one i18n source file has changed, False otherwise."""
+        logger.debug('Checking i18n source files...')
+        pattern_found: bool = False
+        pot_mtime: float = cls.pot_file.lstat().st_mtime
+        with open(cls.config_file, 'r') as f:
+            # looking for patterns in the Babel configuration file
+            for line in f:
+                if matches := re.match(r'\[\w+: *(.*)]', line):
+                    pattern_found = True
+                    for file in Path('.').glob(matches.group(1)):
+                        if file.lstat().st_mtime > pot_mtime:
+                            logger.debug(
+                                'File [%s] is more recent than [%s]', file, cls.pot_file
+                            )
+                            return True
+        if not pattern_found:
+            logger.error('No file pattern found in [%s].', cls.config_file)
+            return False
+        logger.debug('No source file updated.')
+        return False
+
+    @classmethod
     def refresh_i18n_files(
         cls,
         locales: list[str],
-        verbose: bool = False,
     ):
         """Refresh the i18n files (if needed only)."""
-        logger.log(
-            logging.INFO if verbose else logging.DEBUG, 'Extracting i18n strings...'
-        )
-        new_i18n_strings: bool = BabelWrapper.extract_i18n_strings(verbose=False)
-        if new_i18n_strings:
-            logger.warning('I18n strings have changed.')
-        else:
-            logger.log(
-                logging.INFO if verbose else logging.DEBUG,
-                'I18n strings are unchanged.',
-            )
+        new_i18n_strings: bool = False
+        if cls.i18n_files_changed():
+            logger.debug('Extracting i18n strings...')
+            new_i18n_strings = BabelWrapper.extract_i18n_strings()
+            if new_i18n_strings:
+                logger.debug('I18n strings have changed.')
+            else:
+                logger.debug('I18n strings are unchanged.')
         for locale in locales:
             po_file: Path = cls.locale_po_file(locale)
             mo_file: Path = cls.locale_mo_file(locale)
@@ -189,7 +196,7 @@ class BabelWrapper:
                 or po_file.lstat().st_mtime < cls.pot_file.lstat().st_mtime
             )
             if update_po_file:
-                new_po_strings = BabelWrapper.update_po_file(locale, verbose=verbose)
+                new_po_strings = BabelWrapper.update_po_file(locale)
             else:
                 new_po_strings = False
             update_mo_file: bool = (
@@ -198,7 +205,11 @@ class BabelWrapper:
                 or mo_file.lstat().st_mtime < po_file.lstat().st_mtime
             )
             if update_mo_file:
-                BabelWrapper.update_mo_file(locale, verbose=False)
+                BabelWrapper.update_mo_file(locale)
                 logger.info('Translation has been updated for locale [%s].', locale)
+        cls.pot_file.touch()
+        for locale in locales:
+            po_file: Path = cls.locale_po_file(locale)
+            mo_file: Path = cls.locale_mo_file(locale)
             po_file.touch()
             mo_file.touch()

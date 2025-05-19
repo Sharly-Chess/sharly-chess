@@ -41,7 +41,7 @@ for l_entry in _locale_dir.iterdir():
 
 # For developers only, look if the i18n strings have changed to refresh the MO files if needed
 if DEVEL_ENV:
-    BabelWrapper.refresh_i18n_files(locales, verbose=False)
+    BabelWrapper.refresh_i18n_files(locales)
 
 # Now load the translations.
 _all_translations: dict[str, GNUTranslations] = {}
