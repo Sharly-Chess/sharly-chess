@@ -520,7 +520,7 @@ class Tournament:
     def unpaired_players(self) -> list[Player]:
         return self.get_unpaired_players(self.boards)
 
-    @cached_property
+    @property
     def dependent_families(self) -> list[Family]:
         return [
             family
@@ -528,7 +528,7 @@ class Tournament:
             if family.tournament.id == self.id
         ]
 
-    @cached_property
+    @property
     def dependent_screens(self) -> list[Screen]:
         dependent_screens = []
         for screen in self.event.basic_screens_by_id.values():
