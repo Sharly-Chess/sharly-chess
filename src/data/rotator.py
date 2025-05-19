@@ -1,5 +1,4 @@
 from contextlib import suppress
-from functools import cached_property
 from typing import TYPE_CHECKING
 import weakref
 from _weakref import ReferenceType
@@ -67,7 +66,7 @@ class Rotator:
             else self.stored_rotator.message_text
         )
 
-    @cached_property
+    @property
     def screens(self) -> list[Screen]:
         screens: list[Screen] = []
         if self.stored_rotator.screen_ids:
@@ -76,7 +75,7 @@ class Rotator:
                     screens.append(self.event.basic_screens_by_id[screen_id])
         return screens
 
-    @cached_property
+    @property
     def families(self) -> list[Family]:
         families: list[Family] = []
         if self.stored_rotator.family_ids:
@@ -85,7 +84,7 @@ class Rotator:
                     families.append(self.event.families_by_id[family_id])
         return families
 
-    @cached_property
+    @property
     def rotating_screens(self) -> list[Screen]:
         rotating_screens: list[Screen] = [screen for screen in self.screens]
         for family in self.families:
