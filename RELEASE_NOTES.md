@@ -19,6 +19,7 @@ English version below
 - Correction d'un bug sur la création des écrans par défaut des tournois (2.6.0)
 - Correction d'un bug de rafraîchissement des écrans de saisie (2.6.0)
 - Correction d'un bug d'affichage des familles d'écrans (2.6.1)
+- Amélioration de la gestion des exceptions (2.6.3)
 
 ### Gestion des tournois
 
@@ -33,9 +34,10 @@ English version below
 - _Ajout des exports PGN et TRF16 (2.6.0 expérimental)_
 - Ajout de l'impression des tables de Berger (2.6.2)
 
-### Gestion des afficheurs
+### Affichage
 
 - Ajout des pilotes d'afficheurs (2.6.0)
+- Correction d'un bug de mise à jour des écrans rotatifs et des écrans de familles (2.6.3)
 
 ### ChessEvent
 
@@ -62,6 +64,7 @@ English version below
 - Fixed a bug on results input screens refresh (2.6.0)
 - Fixed a bug on the application settings (2.6.0)
 - Fixed a bug on the display of screen families (2.6.1)
+- Improved exception handling (2.6.3)
 
 ### Tournament management
 
@@ -76,9 +79,10 @@ English version below
 - _Added PGN and TRF16 export (2.6.0 experimental)_
 - Added the Berger grid print view (2.6.2)
 
-### Display management
+### Displays
 
 - Added display controllers (2.6.0)
+- Fixed a bug on the refresh of rotators and family screens (2.6.3)
 
 ### ChessEvent
 
