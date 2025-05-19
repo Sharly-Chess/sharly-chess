@@ -278,7 +278,9 @@ class ScreenUserController(BaseScreenUserController):
         if web_context.error:
             return web_context.error
 
-        date: float | None = self.get_if_modified_since(request)
+        date: float | None = (
+            self.get_if_modified_since(request) if not web_context.is_rotator else None
+        )
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
         else:
