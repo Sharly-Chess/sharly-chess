@@ -46,6 +46,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = rotator_screen_index or 0
         self.display_controller: DisplayController | None = None
+        self.is_rotator: bool = False
         if self.error:
             return
         assert self.user_event is not None
@@ -65,6 +66,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             assert rotator_id is not None
             try:
                 self.rotator = self.user_event.rotators_by_id[rotator_id]
+                self.is_rotator = True
             except KeyError:
                 self._redirect_error(f'Rotator [{rotator_id}] not found.')
                 return
@@ -95,6 +97,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
                     rotator.rotating_screens
                 )
                 self.screen = rotator.rotating_screens[self.rotator_screen_index]
+                self.is_rotator = True
             else:
                 self.screen = self.display_controller.screen
 
