@@ -158,18 +158,6 @@ def build_exe():
         pyinstaller_params.append(
             f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
         )
-    files: list[Path] = []
-    files += [
-        file
-        for file in Path(
-            BASE_DIR / 'venv/lib/site-packages/litestar/exceptions/responses/templates'
-        ).glob('**/*')
-        if file.is_file()
-    ]
-    for file in files:
-        pyinstaller_params.append(
-            f'--add-data={file};{file.parent.relative_to(BASE_DIR / "venv/lib/site-packages")}'
-        )
     run(pyinstaller_params)
 
 
