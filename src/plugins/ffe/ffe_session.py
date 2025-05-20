@@ -55,7 +55,14 @@ class FFESession(Session):
     """A requests session specialized for communication with the FFE website.
     Currently, it relies on hacks, because no API is available."""
 
-    def __init__(self, tournament: Tournament | None, debug: bool):
+    def __init__(
+        self,
+        tournament: Tournament | None,
+        debug: bool,
+        print_info=print_interactive_info,
+        print_success=print_interactive_success,
+        print_error=print_interactive_error,
+    ):
         super().__init__()
         self.tournament: Tournament | None = tournament
         self.debug = debug
@@ -63,6 +70,9 @@ class FFESession(Session):
         self.auth_state: dict[str, str | None] = {}
         self.tournament_ffe_url: str | None = None
         self.last_url_read: str | None = None
+        self.print_info = print_info
+        self.print_success = print_success
+        self.print_error = print_error
 
     def _read_url(
         self, url: str, data: dict[str, str] | None, files: dict[str, Path] | None
@@ -270,7 +280,7 @@ class FFESession(Session):
                 )
         tag = parser.getElementById(VIEW_LINK_ID)
         if not tag:
-            print_interactive_error(_('Authentication failed.'))
+            self.print_error(_('Authentication failed.'))
             return False
         value = getattr(tag, 'attributesDict', {}).get('href', '')
         self.tournament_ffe_url = value
@@ -404,9 +414,9 @@ class FFESession(Session):
                 '> auth_state[%s]=[%s]', UPLOAD_LINK_ID, self.auth_state[UPLOAD_LINK_ID]
             )
         if self.auth_state[UPLOAD_LINK_ID] is None:
-            print_interactive_warning(
+            self.print_error(
                 _(
-                    'Upload link not found, check that the tournament is not marked as finished on the FFE website.'
+                    'Upload link not found, check that the tournament is not marked as finished on the FFE website'
                 )
             )
             return
@@ -447,6 +457,7 @@ class FFESession(Session):
             return
         __, error = self._parse_html_content(html)
         if error:
+            self.print_error(_('Upload failed'))
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
             now = time.time()
@@ -460,7 +471,7 @@ class FFESession(Session):
                 ),
             )
             event_database.commit()
-        print_interactive_success(_('Results upload OK'))
+        self.print_success(_('Results upload OK'))
         if not set_visible:
             return
         print_interactive_info(_('Making the tournament visible on the FFE website...'))

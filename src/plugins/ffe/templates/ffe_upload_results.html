@@ -1,0 +1,41 @@
+<tbody
+    id="upload-results"
+    hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
+    hx-trigger="every 2s queue:none"
+    hx-swap="outerHTML"
+>
+    {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
+        {% with ffe_auto_upload=ffe_utils.resolve_auto_upload(tournament) %}
+            <tr>
+                <td>
+                    {{ tournament.name }}
+                </td>
+                <td>
+                    {% if ffe_auto_upload %}
+                        {{ _("Automatic") }}
+                    {% else %}
+                        {{ _('Manual') }}
+                    {% endif %}
+                <td>
+                    {% with result=upload_status_messages[tournament.id] if tournament.id in upload_status_messages %}
+                        {% if result %}
+                            <span class="status {% if result.status == 0 %}text-success{% elif result.status >= 2 %}text-danger{% endif %}">
+                                {{ result.message }}
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td class="text-center">
+                    {{ format_timestamp_date_time(tournament.plugin_data.ffe.ffe_last_upload) }}
+                </td>
+                <td class="text-center">
+                    {% if tournament.plugin_data.ffe.ffe_id %}
+                        <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament.plugin_data.ffe.ffe_id }}" target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endwith %}
+    {% endfor %}
+</tbody>

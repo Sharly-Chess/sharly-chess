@@ -10,6 +10,8 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
+from plugins.manager import plugin_manager
+from plugins.utils import PluginNavBarItem
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -178,6 +180,18 @@ class BaseEventAdminController(BaseAdminController):
                 trigger_event='modal_opened',
                 after='settle',
             )
+
+        per_plugin_nav_bar_items = plugin_manager.hook.get_nav_bar_items()
+        extra_admin_nav_items: dict[str, list[PluginNavBarItem]] = {}
+        for plugin_nav_bar_items in per_plugin_nav_bar_items:
+            for nav_bar_item in plugin_nav_bar_items:
+                c = extra_admin_nav_items.setdefault(nav_bar_item.at, [])
+                c.append(nav_bar_item)
+
         return HTMXTemplate(
-            template_name='admin/event_layout.html', context=template_context
+            template_name='admin/event_layout.html',
+            context=template_context
+            | {
+                'extra_admin_nav_items': extra_admin_nav_items,
+            },
         )

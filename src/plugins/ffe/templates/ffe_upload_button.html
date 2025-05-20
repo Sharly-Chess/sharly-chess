@@ -1,0 +1,14 @@
+<button
+    class="btn fw-bold fe-3 px-0 py-0 me-1 position-relative fs-5 d-flex flex-column align-items-center gap-0"
+    hx-get="{{ url_for('ffe-upload-modal', event_uniq_id=admin_event.uniq_id) }}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+    preload
+    data-bs-toggle="modal"
+    data-bs-target="#modal-wrapper"
+>
+    <i class="bi bi-cloud-arrow-up-fill" style="height: 20px"></i>
+    <span style="font-size: 0.6rem;">
+       FFE
+    </span>
+</button>

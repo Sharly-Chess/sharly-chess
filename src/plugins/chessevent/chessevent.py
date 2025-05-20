@@ -212,7 +212,7 @@ class ChessEventPlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_data(
-        self, tournament: 'Tournament | None'
+        self, event: 'Event', tournament: 'Tournament | None'
     ) -> dict[str, Any]:
         if not tournament:
             return {

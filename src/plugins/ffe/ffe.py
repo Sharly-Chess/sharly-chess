@@ -40,7 +40,7 @@ from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginEngineArgument, PluginUtils
+from plugins.utils import Plugin, PluginEngineArgument, PluginNavBarItem, PluginUtils
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -701,11 +701,8 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_data(
-        self, tournament: 'Tournament | None'
+        self, event: 'Event', tournament: 'Tournament | None'
     ) -> dict[str, Any]:
-        if not tournament:
-            return {'ffe_id': '', 'ffe_password': '', 'ffe_auto_upload': ''}
-
         ffe_auto_upload_options: dict[str, str] = {
             '': '',
             WebContext.value_to_form_data(False): _('No auto-upload'),
@@ -713,13 +710,21 @@ class FfePlugin(Plugin):
             WebContext.value_to_form_data(True): _('Enable auto-upload'),
         }
         event_auto_upload = bool(
-            self.get_data(tournament.event.plugin_data, 'ffe_auto_upload', False)
+            self.get_data(event.plugin_data, 'ffe_auto_upload', False)
         )
         ffe_auto_upload_options[''] = _('By default - {option}').format(
             option=ffe_auto_upload_options[
                 WebContext.value_to_form_data(event_auto_upload)
             ]
         )
+
+        if not tournament:
+            return {
+                'ffe_id': '',
+                'ffe_password': '',
+                'ffe_auto_upload': '',
+                'ffe_auto_upload_options': ffe_auto_upload_options,
+            }
 
         return {
             'ffe_id': WebContext.value_to_form_data(
@@ -806,6 +811,15 @@ class FfePlugin(Plugin):
         if isinstance(document, PlayerPrintDocument):
             return '.player-table .league { text-align: center; }'
         return ''
+
+    # ---------------------------------------------------------------------------------
+    # Nav bar
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_nav_bar_items(self) -> Iterable[PluginNavBarItem]:
+        """Provide extra nav bar items"""
+        return [PluginNavBarItem(at='database', template='/ffe_upload_button.html')]
 
     # ---------------------------------------------------------------------------------
     # User screens

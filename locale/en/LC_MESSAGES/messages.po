@@ -362,6 +362,9 @@ msgstr ""
 msgid "Auto-upload to FFE site disabled"
 msgstr ""
 
+msgid "Automatic"
+msgstr ""
+
 msgid "Automatically launch a browser when starting the server"
 msgstr ""
 
@@ -1503,6 +1506,9 @@ msgstr "FFE"
 msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr ""
 
+msgid "FFE ID and password not defined for tournament"
+msgstr ""
+
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
@@ -2091,6 +2097,9 @@ msgstr ""
 msgid "Last update"
 msgstr ""
 
+msgid "Last upload"
+msgstr ""
+
 msgid "Launch browser:"
 msgstr ""
 
@@ -2183,6 +2192,9 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
+msgstr ""
+
+msgid "Manual"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -2281,6 +2293,9 @@ msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr ""
+
+msgid "Mode"
 msgstr ""
 
 #, python-format
@@ -2765,10 +2780,19 @@ msgstr ""
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
+msgid "Papi file not defined for tournament"
+msgstr ""
+
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "Papi file not found [{file}]"
+msgstr ""
+
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi file not modified since last upload"
 msgstr ""
 
 msgid "Parings by player"
@@ -3463,6 +3487,9 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
+msgid "Send tournaments now"
+msgstr ""
+
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
@@ -3578,6 +3605,9 @@ msgid "Starting Sharly Chess server, please wait..."
 msgstr ""
 
 msgid "Starting rank"
+msgstr ""
+
+msgid "Status"
 msgstr ""
 
 msgid "Storing data..."
@@ -4483,7 +4513,10 @@ msgstr ""
 msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 msgstr ""
 
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgid "Upload failed"
+msgstr ""
+
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
 msgstr ""
 
 msgid "Upload the results of the tournaments"
@@ -4492,7 +4525,13 @@ msgstr ""
 msgid "Upload the rules of the tournaments"
 msgstr ""
 
+msgid "Upload tournaments to the FFE"
+msgstr ""
+
 msgid "Upload:"
+msgstr ""
+
+msgid "Uploading tournament..."
 msgstr ""
 
 msgid "Upper limit expected to be greater than lower limit."
@@ -4877,5 +4916,23 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "FFE: Auto-upload to FFE site disabled"
+#~ msgstr ""
+
+#~ msgid "No tournament to upload."
+#~ msgstr ""
+
+#~ msgid "Papi file not defined for tournament."
+#~ msgstr ""
+
+#~ msgid "Papi file not modified since last upload [{last_upload}]."
+#~ msgstr ""
+
+#~ msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+#~ msgstr ""
+
+#~ msgid "Papi file not modified since last upload"
+#~ msgstr ""
+
+#~ msgid "Upload tournaments to FFE"
 #~ msgstr ""
 

@@ -39,7 +39,7 @@ from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
 from plugins.chessevent.utils import ChessEventUtils
-from plugins.ffe.engine.ffe_session import FFESession
+from plugins.ffe.ffe_session import FFESession
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()

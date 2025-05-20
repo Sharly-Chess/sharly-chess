@@ -19,7 +19,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from utils.enum import NeedsUpload
-from plugins.ffe.engine.ffe_session import FFESession
+from plugins.ffe.ffe_session import FFESession
 from plugins.utils import PluginUtils
 
 
