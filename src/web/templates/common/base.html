@@ -232,6 +232,7 @@
     <body
         hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
+        hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}" }'
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}

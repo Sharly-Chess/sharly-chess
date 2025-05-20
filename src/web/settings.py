@@ -3,9 +3,11 @@ import posixpath
 import typing as t
 from pathlib import Path
 from typing import Sequence
+from secrets import token_hex
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
+from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.middleware.session.client_side import CookieBackendConfig
@@ -187,3 +189,10 @@ stores: dict[str, Store] = {'sessions': FileStore(path=sessions_dir)}
 middlewares: Sequence[Middleware] = [
     CookieBackendConfig(secret=os.urandom(16)).middleware,
 ]
+
+if 'SC_CSRF_SECRET' not in os.environ:
+    csrf_secret = token_hex(64)
+else:
+    csrf_secret = os.environ['SC_CSRF_SECRET']
+
+csrf_config: CSRFConfig = CSRFConfig(secret=csrf_secret, header_name='X-CSRF-TOKEN')

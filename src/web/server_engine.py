@@ -32,6 +32,7 @@ from web.settings import (
     middlewares,
     stores,
     exception_handlers,
+    csrf_config,
 )
 
 logger = get_logger()
@@ -130,6 +131,7 @@ class ServerEngine(Engine):
             template_config=template_config,
             logging_config=LoggingConfig(**logging_config),  # type: ignore
             middleware=middlewares,
+            csrf_config=csrf_config,
             stores=stores,
             pdb_on_exception=self.debug,
         )
