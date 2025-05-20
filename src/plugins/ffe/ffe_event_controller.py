@@ -130,27 +130,38 @@ class FfeAdminEventController(BaseEventAdminController):
             },
         )
 
-    upload_status_messages: dict[int, FfeUploadStatus] = {}
+    upload_status_messages: dict[str, FfeUploadStatus] = {}
 
     @classmethod
-    def print_success(cls, tournament_id: int, message: str) -> None:
-        cls.upload_status_messages[tournament_id] = FfeUploadStatus(SUCCESS, message)
+    def result_id(cls, tournament: Tournament) -> str:
+        return f'{tournament.event.uniq_id}:{tournament.id}'
 
     @classmethod
-    def print_error(cls, tournament_id: int, message: str) -> None:
-        cls.upload_status_messages[tournament_id] = FfeUploadStatus(ERROR, message)
+    def print_success(cls, tournament: Tournament, message: str) -> None:
+        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadStatus(
+            SUCCESS, message
+        )
 
     @classmethod
-    def print_info(cls, tournament_id: int, message: str) -> None:
-        cls.upload_status_messages[tournament_id] = FfeUploadStatus(INFO, message)
+    def print_error(cls, tournament: Tournament, message: str) -> None:
+        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadStatus(
+            ERROR, message
+        )
+
+    @classmethod
+    def print_info(cls, tournament: Tournament, message: str) -> None:
+        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadStatus(
+            INFO, message
+        )
 
     @classmethod
     def get_updated_upload_results(cls, admin_event: Event) -> list[Tournament]:
         tournaments: list[Tournament] = []
         for tournament in admin_event.tournaments_by_id.values():
+            result_id = cls.result_id(tournament)
             result = (
-                cls.upload_status_messages[tournament.id]
-                if tournament.id in cls.upload_status_messages
+                cls.upload_status_messages[result_id]
+                if result_id in cls.upload_status_messages
                 else None
             )
 
@@ -158,7 +169,7 @@ class FfeAdminEventController(BaseEventAdminController):
             if result and result.status == SETTINGS_ERROR:
                 result.message = ''
             if not cls.check_id_and_password(tournament):
-                cls.upload_status_messages[tournament.id] = FfeUploadStatus(
+                cls.upload_status_messages[result_id] = FfeUploadStatus(
                     SETTINGS_ERROR,
                     _('FFE ID and password not defined for tournament').format(
                         tournament_uniq_id=tournament.uniq_id
@@ -166,14 +177,14 @@ class FfeAdminEventController(BaseEventAdminController):
                 )
                 pass
             elif not tournament.file:
-                cls.upload_status_messages[tournament.id] = FfeUploadStatus(
+                cls.upload_status_messages[result_id] = FfeUploadStatus(
                     SETTINGS_ERROR,
                     _('Papi file not defined for tournament').format(
                         tournament_uniq_id=tournament.uniq_id
                     ),
                 )
             elif not tournament.file_exists:
-                cls.upload_status_messages[tournament.id] = FfeUploadStatus(
+                cls.upload_status_messages[result_id] = FfeUploadStatus(
                     SETTINGS_ERROR,
                     _('Papi file not found [{file}]').format(
                         file=tournament.file, tournament_uniq_id=tournament.uniq_id
@@ -210,6 +221,7 @@ class FfeAdminEventController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'format_timestamp_date_time': format_timestamp_date_time,
+                'result_id': self.result_id,
                 'upload_status_messages': self.upload_status_messages,
                 'ffe_utils': FFEUtils,
             },
@@ -258,13 +270,15 @@ class FfeAdminEventController(BaseEventAdminController):
                 case NeedsUpload.YES:
                     updated_tournaments.append(tournament)
                 case NeedsUpload.NO_CHANGE:
-                    cls.upload_status_messages[tournament.id] = FfeUploadStatus(
-                        INFO,
-                        _('Papi file not modified since last upload').format(
-                            last_upload=format_timestamp_date_time(
-                                cls.ffe_last_upload(tournament)
-                            )
-                        ),
+                    cls.upload_status_messages[cls.result_id(tournament)] = (
+                        FfeUploadStatus(
+                            INFO,
+                            _('Papi file not modified since last upload').format(
+                                last_upload=format_timestamp_date_time(
+                                    cls.ffe_last_upload(tournament)
+                                )
+                            ),
+                        )
                     )
                     pass
 
@@ -273,7 +287,7 @@ class FfeAdminEventController(BaseEventAdminController):
             return
 
         for tournament in updated_tournaments:
-            cls.upload_status_messages[tournament.id] = FfeUploadStatus(
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadStatus(
                 INFO,
                 _('Uploading tournament...').format(
                     tournament_uniq_id=tournament.uniq_id
@@ -287,13 +301,13 @@ class FfeAdminEventController(BaseEventAdminController):
                         tournament,
                         debug=False,
                         print_error=partial(
-                            FfeAdminEventController.print_error, tournament.id
+                            FfeAdminEventController.print_error, tournament
                         ),
                         print_info=partial(
-                            FfeAdminEventController.print_info, tournament.id
+                            FfeAdminEventController.print_info, tournament
                         ),
                         print_success=partial(
-                            FfeAdminEventController.print_success, tournament.id
+                            FfeAdminEventController.print_success, tournament
                         ),
                     ).upload(set_visible=False)
             finally:
@@ -324,6 +338,7 @@ class FfeAdminEventController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'format_timestamp_date_time': format_timestamp_date_time,
+                'result_id': self.result_id,
                 'upload_status_messages': self.upload_status_messages,
                 'ffe_utils': FFEUtils,
             },
@@ -355,6 +370,7 @@ class FfeAdminEventController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'format_timestamp_date_time': format_timestamp_date_time,
+                'result_id': self.result_id,
                 'upload_status_messages': self.upload_status_messages,
                 'ffe_utils': FFEUtils,
             },

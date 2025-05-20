@@ -28,13 +28,13 @@
                 {% include 'ffe_upload_results.html' %}
             </table>
 
-            <div class="text-center my-2">
+            <div class="text-center my-4">
                 <button
                     type="button"
                     hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
-                    class="text-nowrap white btn btn-primary"
+                    class="text-nowrap white btn btn-secondary"
                     hx-on::before-request="$('#upload-results .status').addClass('invisible')"
                 >
                     <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
@@ -46,7 +46,7 @@
         <div class="modal-footer">
             <button
                 type="button"
-                class="btn btn-secondary text-nowrap"
+                class="btn btn-primary text-nowrap"
                 data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill pe-1"></i>

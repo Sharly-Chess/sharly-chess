@@ -17,7 +17,7 @@
                         {{ _('Manual') }}
                     {% endif %}
                 <td>
-                    {% with result=upload_status_messages[tournament.id] if tournament.id in upload_status_messages %}
+                    {% with result=upload_status_messages[result_id(tournament)] if result_id(tournament) in upload_status_messages %}
                         {% if result %}
                             <span class="status {% if result.status == 0 %}text-success{% elif result.status >= 2 %}text-danger{% endif %}">
                                 {{ result.message }}
