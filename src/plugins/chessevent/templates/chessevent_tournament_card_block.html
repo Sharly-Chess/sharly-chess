@@ -1,6 +1,6 @@
 {% if admin_tournaments_show_details %}
     {% with user_id=chessevent_utils.resolve_user_id(tournament), event_id=chessevent_utils.resolve_event_id(tournament), tournament_name=chessevent_utils.resolve_tournament_name(tournament) %}
-        <div class="d-flex gap-2 pb-3 mb-3 border-bottom border-secondary {% if not user_id or not event_id or not tournament_name %}text-secondary{% endif %}">
+        <div class="d-flex gap-2 card-plugin-block {% if not user_id or not event_id or not tournament_name %}text-secondary{% endif %}">
             <i class="bi-download"></i>
             {% if user_id and event_id and tournament_name %}
                 {{ _(

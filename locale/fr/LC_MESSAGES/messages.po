@@ -343,8 +343,24 @@ msgstr "L'authentification a échoué."
 msgid "Authentication successful!"
 msgstr "Authentification réussie !"
 
+msgid "Auto upload to FFE"
+msgstr ""
+
 msgid "Auto-update"
 msgstr "Mise à jour"
+
+msgid "Auto-upload results to FFE site"
+msgstr ""
+
+msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
+msgstr ""
+
+#, python-format
+msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
+msgstr ""
+
+msgid "Auto-upload to FFE site disabled"
+msgstr ""
 
 msgid "Automatically launch a browser when starting the server"
 msgstr "Lancement automatique du navigateur au démarrage du serveur"
@@ -1351,6 +1367,9 @@ msgstr "Tranche Elo (handicap) :"
 msgid "Email:"
 msgstr "Mél :"
 
+msgid "Enable auto-upload"
+msgstr ""
+
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
@@ -1487,6 +1506,10 @@ msgstr "L'identifiant et le mot de passe FFE ne sont pas correctement définis p
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr "L'identifiant FFE non défini pour le tournoi [{tournament_uniq_id}]."
 
+#, python-format
+msgid "FFE ID: %(ffe_id)s"
+msgstr "Homologation FFE : %(ffe_id)s"
+
 msgid "FFE Licence"
 msgstr "Licence FFE"
 
@@ -1525,9 +1548,8 @@ msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
 msgid "FFE password:"
 msgstr "Mot de passe FFE :"
 
-#, python-format
-msgid "FFE qualification: %(ffe_id)s"
-msgstr "Homologation FFE : %(ffe_id)s"
+msgid "FFE settings"
+msgstr ""
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2252,6 +2274,9 @@ msgstr "Menus"
 msgid "Minimal time (handicap, seconds):"
 msgstr "Temps minimal (handicap, en secondes) :"
 
+msgid "Minimum delay between uploads (minutes):"
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
@@ -2332,14 +2357,14 @@ msgstr "Connexion à ChessEvent non définie"
 msgid "No ChessEvent tournament defined"
 msgstr "Nom du tournoi ChessEvent non défini"
 
+msgid "No FFE ID"
+msgstr "Pas d'homologation FFE"
+
 msgid "No FFE Licence"
 msgstr "Aucune licence FFE"
 
 msgid "No FFE operations can be done on the tournaments of this event."
 msgstr "Aucune opération FFE ne peut être réalisée sur les tournois de cet évènement."
-
-msgid "No FFE qualification"
-msgstr "Pas d'homologation FFE"
 
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
@@ -2359,6 +2384,12 @@ msgstr "Pas de message d'alerte"
 
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
+
+msgid "No auto upload to FFE"
+msgstr ""
+
+msgid "No auto-upload"
+msgstr ""
 
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Couleur de fond non définie, par défaut [{background_color}]"
@@ -3679,6 +3710,9 @@ msgstr "La fédération par défaut de vos évènements."
 msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
+msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
+msgstr ""
+
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
@@ -4458,6 +4492,9 @@ msgstr "Mettre en ligne les résultats des tournois."
 msgid "Upload the rules of the tournaments"
 msgstr "Mettre en ligne le règlement des tournois"
 
+msgid "Upload:"
+msgstr ""
+
 msgid "Upper limit expected to be greater than lower limit."
 msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
 
@@ -4642,6 +4679,9 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écr
 
 msgid "You must create a tournament before creating screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
+
+msgid "You must enter the tournament ID and password in each tournaments settings."
+msgstr ""
 
 msgid "Your choice (by default {default}): "
 msgstr "Votre choix, par défaut [{default}] :"
@@ -4829,4 +4869,13 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Auto-upload results to FFE site:"
+#~ msgstr ""
+
+#~ msgid "FFE: Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
+#~ msgstr ""
+
+#~ msgid "FFE: Auto-upload to FFE site disabled"
+#~ msgstr ""
 

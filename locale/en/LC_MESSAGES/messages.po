@@ -343,7 +343,23 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
+msgid "Auto upload to FFE"
+msgstr ""
+
 msgid "Auto-update"
+msgstr ""
+
+msgid "Auto-upload results to FFE site"
+msgstr ""
+
+msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
+msgstr ""
+
+#, python-format
+msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
+msgstr ""
+
+msgid "Auto-upload to FFE site disabled"
 msgstr ""
 
 msgid "Automatically launch a browser when starting the server"
@@ -1351,6 +1367,9 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
+msgid "Enable auto-upload"
+msgstr ""
+
 msgid "Enable/disable the details of events on the cards below."
 msgstr ""
 
@@ -1487,6 +1506,10 @@ msgstr ""
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+#, python-format
+msgid "FFE ID: %(ffe_id)s"
+msgstr ""
+
 msgid "FFE Licence"
 msgstr ""
 
@@ -1525,8 +1548,7 @@ msgstr ""
 msgid "FFE password:"
 msgstr ""
 
-#, python-format
-msgid "FFE qualification: %(ffe_id)s"
+msgid "FFE settings"
 msgstr ""
 
 msgid "FIDE"
@@ -2252,6 +2274,9 @@ msgstr ""
 msgid "Minimal time (handicap, seconds):"
 msgstr ""
 
+msgid "Minimum delay between uploads (minutes):"
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
@@ -2332,13 +2357,13 @@ msgstr ""
 msgid "No ChessEvent tournament defined"
 msgstr ""
 
+msgid "No FFE ID"
+msgstr ""
+
 msgid "No FFE Licence"
 msgstr ""
 
 msgid "No FFE operations can be done on the tournaments of this event."
-msgstr ""
-
-msgid "No FFE qualification"
 msgstr ""
 
 msgid "No FIDE ID."
@@ -2358,6 +2383,12 @@ msgid "No alert message"
 msgstr ""
 
 msgid "No archived events."
+msgstr ""
+
+msgid "No auto upload to FFE"
+msgstr ""
+
+msgid "No auto-upload"
 msgstr ""
 
 msgid "No background colour set, by default [{background_color}]"
@@ -3679,6 +3710,9 @@ msgstr ""
 msgid "The default language used."
 msgstr ""
 
+msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
+msgstr ""
+
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr ""
@@ -4458,6 +4492,9 @@ msgstr ""
 msgid "Upload the rules of the tournaments"
 msgstr ""
 
+msgid "Upload:"
+msgstr ""
+
 msgid "Upper limit expected to be greater than lower limit."
 msgstr ""
 
@@ -4641,6 +4678,9 @@ msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
 msgid "You must create a tournament before creating screens."
+msgstr ""
+
+msgid "You must enter the tournament ID and password in each tournaments settings."
 msgstr ""
 
 msgid "Your choice (by default {default}): "
@@ -4829,4 +4869,13 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Auto-upload results to FFE site:"
+#~ msgstr ""
+
+#~ msgid "FFE: Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
+#~ msgstr ""
+
+#~ msgid "FFE: Auto-upload to FFE site disabled"
+#~ msgstr ""
 

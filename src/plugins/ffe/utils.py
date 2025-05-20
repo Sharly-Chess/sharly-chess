@@ -1,10 +1,25 @@
 from enum import IntEnum
+from functools import partial
 from typing import Self
 
 from common.i18n import _
+from data.tournament import Tournament
 from data.pairings import PairingVariation, PairingSystem, systems, variations
+from plugins.ffe import PLUGIN_NAME
 from plugins.pairing_acceleration import pairing_variations as accelerations
-from plugins.utils import PluginCoreMapper
+from plugins.utils import PluginCoreMapper, PluginUtils
+
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+
+class FFEUtils:
+    @staticmethod
+    def resolve_auto_upload(tournament: Tournament) -> str | None:
+        if (
+            ffe_auto_upload := get_data(tournament.plugin_data, 'ffe_auto_upload')
+        ) is not None:
+            return ffe_auto_upload
+        return get_data(tournament.event.plugin_data, 'ffe_auto_upload')
 
 
 class PlayerFFELicence(IntEnum):

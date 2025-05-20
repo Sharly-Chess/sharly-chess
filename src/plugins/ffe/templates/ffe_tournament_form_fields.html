@@ -2,3 +2,17 @@
     {{ _('Connection French Chess Federation') }}
 </h4>
 {% include 'ffe_tournament_ffe_auth_fields.html' %}
+<div class="row">
+    <div class="col-12 col-md-6 mb-3">
+        {{ admin_macros.select_input(
+            name='ffe_auto_upload',
+            label=_('Upload:'),
+            help_text=_(
+                'Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect.',
+                default=admin_event.plugin_data.ffe.ffe_auto_upload
+            ),
+            select_options=data.ffe_auto_upload_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+</div

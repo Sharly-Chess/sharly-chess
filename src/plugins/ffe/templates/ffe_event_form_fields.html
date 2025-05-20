@@ -1,0 +1,24 @@
+<h4>
+    {{ _('FFE settings') }}
+</h4>
+<div class="row">
+    <div class="col-12 col-md-6 mb-3">
+        {{ admin_macros.switch_input(
+            name='ffe_auto_upload',
+            label=_('Upload:'),
+            placeholder=_('Auto-upload results to FFE site'),
+            help_text=_('You must enter the tournament ID and password in each tournaments settings.'),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+        {{ admin_macros.number_input(
+            name='ffe_auto_upload_delay',
+            label=_('Minimum delay between uploads (minutes):'),
+            placeholder=_('E.g.: %(num)d', num=15),
+            help_text=help_text,
+            data=data, errors=errors,
+            min=1
+        ) }}
+    </div>
+</div>
