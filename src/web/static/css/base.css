@@ -161,9 +161,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .locale-flag {
     height: 1em;
 }
-.dropdown-menu {
-    overflow: hidden;
-}
 .dropdown-menu.locale,
 .dropdown-menu.columns-number {
     min-width: 0;
@@ -171,6 +168,21 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .dropdown-item.no-hover:hover {
     color: var(--bs-dropdown-link-color);
     background-color: transparent;
+}
+.dropdown:hover > .dropdown-menu{
+    display: block !important;
+}
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block !important;
+    left: 100%;
+    margin-top: -37px;
+}
+.dropdown-toggle::after {
+    font-size: var(--font-md);
+    margin-bottom: -2px;
+}
+.dropdown-item.danger:hover {
+    color: var(--bs-danger);
 }
 .player-ffe-lic {
     color: #ffffff;
