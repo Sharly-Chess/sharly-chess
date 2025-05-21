@@ -107,3 +107,90 @@ class FfeAdminTournamentController(BaseEventAdminController):
             )
 
         return self.render_messages(request)
+
+    @post(
+        path='/ffe/upload-rules/{event_uniq_id:str}/tournament/{tournament_id:int}',
+        name='ffe-upload-rules',
+    )
+    async def htmx_ffe_upload_rules(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+
+        result: FfeUploadResult | None = (
+            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
+        )
+
+        if not NetworkMonitor.connected():
+            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
+
+        if not tournament.rules:
+            result = FfeUploadResult(
+                FfeUploadStatus.ERROR, _('Tournament rules are not set')
+            )
+
+        def report(
+            tournament: Tournament, status: FfeUploadStatus, message: str
+        ) -> None:
+            nonlocal result
+            result = FfeUploadResult(status, message)
+
+        if not result or (
+            result.status != FfeUploadStatus.SETTINGS_ERROR
+            and result.status != FfeUploadStatus.ERROR
+        ):
+            try:
+                FFESession(
+                    tournament,
+                    debug=False,
+                    report_error=partial(report, tournament, FfeUploadStatus.ERROR),
+                    report_info=partial(report, tournament, FfeUploadStatus.INFO),
+                    report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
+                ).upload_rules()
+            except Exception:
+                logger.exception(
+                    'Error while uploading tournament rules: %s', tournament_id
+                )
+                result = FfeUploadResult(
+                    FfeUploadStatus.ERROR, _('Unable to upload tournament rules')
+                )
+
+        if result:
+            match result.status:
+                case FfeUploadStatus.ERROR:
+                    Message.error(
+                        request,
+                        result.message,
+                    )
+                case FfeUploadStatus.INFO:
+                    Message.info(
+                        request,
+                        result.message,
+                    )
+                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
+                    Message.success(
+                        request,
+                        result.message,
+                    )
+        else:
+            Message.error(
+                request,
+                _('Unable to upload tournament rules'),
+            )
+
+        return self.render_messages(request)

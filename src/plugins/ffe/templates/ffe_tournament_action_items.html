@@ -1,45 +1,38 @@
-<li>
-    <button
-        class="dropdown-item text-nowrap"
-        hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <i class="bi bi-eye-fill pe-2"></i>
-        {{ _('Make visible on FFE site') }}
-    </button>
-</li>
-<li>
-    <button
-        class="dropdown-item text-nowrap"
-        hx-get="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <i class="bi bi-file-earmark-arrow-up-fill pe-2"></i>
-        {{ _('Upload rules') }}
-    </button>
-</li>
 
-<li>
-    <button
-        class="dropdown-item text-nowrap"
-        hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <i class="bi bi-eye-fill pe-1"></i>
-        {{ _('Make visible on FFE site') }}
-    </button>
-</li>
-<li>
-    <button
-        class="dropdown-item text-nowrap"
-        hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
-        {{ _('Upload rules') }}
-    </button>
+<li class="dropdown-submenu">
+    <a class="dropdown-item d-flex justify-content-between" href="#">
+        <span>
+            <img
+                src="{{ url_for('static', file_path='/images/ffe.png') }}"
+                style="height: 1.2em"
+                class="pe-1"
+            />
+            {{ _('FFE site') }}
+        </span>
+        <i class="ps-3 bi bi-caret-right-fill"></i>
+    </a>
+    <ul class="dropdown-menu">
+        <li>
+            <button
+                class="dropdown-item text-nowrap"
+                hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi bi-eye-fill pe-1"></i>
+                {{ _('Make visible on FFE site') }}
+            </button>
+        </li>
+        <li>
+            <button
+                class="dropdown-item text-nowrap"
+                hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
+                {{ _('Upload rules') }}
+            </button>
+        </li>
+    </ul>
 </li>

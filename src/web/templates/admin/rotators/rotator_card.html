@@ -82,7 +82,7 @@
 {% endblock %}
 
 {% block card_buttons_left %}
-<span {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}>
         <a
             class="btn btn-sm btn-outline-primary"
             href="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"

@@ -542,7 +542,7 @@ class FFESession(Session):
                 self.auth_state[UPLOAD_RULES_LINK_ID],
             )
         if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
-            logger.warning(
+            self.report_error(
                 _(
                     'Rules upload link not found, check that the tournament is not marked as finished on the FFE website.'
                 )
@@ -584,4 +584,4 @@ class FFESession(Session):
                 ),
             )
             event_database.commit()
-        logger.info('Rules upload OK')
+        self.report_success(_('Rules uploaded'))

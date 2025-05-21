@@ -951,6 +951,9 @@ msgstr "Supprimer la famille d'écrans."
 msgid "Delete the timer."
 msgstr "Supprimer le chronomètre."
 
+msgid "Delete the tournament."
+msgstr "Supprimer le tournoi"
+
 msgid "Deletion date"
 msgstr "Date de suppression"
 
@@ -1558,6 +1561,9 @@ msgstr "Mot de passe FFE :"
 
 msgid "FFE settings"
 msgstr "Paramètres FFE"
+
+msgid "FFE site"
+msgstr "Site de la FFE"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2445,6 +2451,9 @@ msgstr "Aucun évènement trouvé."
 
 msgid "No hours."
 msgstr "Aucun horaire."
+
+msgid "No internet connection"
+msgstr "Aucune connexion à internet"
 
 msgid "No internet connection and no local database."
 msgstr "Aucune base de données locale et aucune connexion à internet."
@@ -3395,6 +3404,9 @@ msgstr "Règlement défini"
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
 
+msgid "Rules uploaded"
+msgstr "Règlement téléversé"
+
 msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
 msgstr "S-Berger"
 
@@ -4314,6 +4326,9 @@ msgstr "Tournoi mis en ligne précédemment"
 msgid "Tournament record"
 msgstr "Historique"
 
+msgid "Tournament rules are not set"
+msgstr "Le règlement du tournoi n’est pas défini"
+
 msgid "Tournament visibility successfully set"
 msgstr "Visibilité du tournoi définie avec succès"
 
@@ -4407,6 +4422,9 @@ msgstr "Impossible de créer les fichiers Papi."
 
 msgid "Unable to set tournament visibility"
 msgstr "Impossible de définir la visibilité du tournoi"
+
+msgid "Unable to upload tournament rules"
+msgstr "Impossible de téléverser le règlement du tournoi"
 
 msgid "Undefined"
 msgstr "Non défini"
@@ -4523,9 +4541,6 @@ msgstr "Mettre à jour les informations des joueur·euses à partir d'une source
 
 msgid "Updating"
 msgstr "Mise à jour"
-
-msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
-msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 
 msgid "Upload"
 msgstr "Mettre en ligne"
@@ -4927,13 +4942,4 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Clone the tournament."
-#~ msgstr "Dupliquer le tournoi"
-
-#~ msgid "Delete the tournament."
-#~ msgstr "Supprimer le tournoi"
-
-#~ msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
-#~ msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 
