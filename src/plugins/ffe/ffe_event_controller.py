@@ -97,8 +97,8 @@ class FfeAdminEventController(BaseEventAdminController):
         errors = {}
         # Compare to False, None means 'unable to check'
         if ffe_auth_valid is False:
-            errors['ffe_id'] = _('Invalid FFE ID or password.')
-            errors['ffe_password'] = _('Invalid FFE ID or password.')
+            errors['ffe_id'] = _('Invalid FFE certification number or password.')
+            errors['ffe_password'] = _('Invalid FFE certification number or password.')
 
         return HTMXTemplate(
             template_name='ffe_tournament_ffe_auth_fields.html',

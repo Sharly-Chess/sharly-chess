@@ -1509,19 +1509,6 @@ msgstr "FFE"
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
-msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-msgstr ""
-
-msgid "FFE ID and password not defined for tournament"
-msgstr ""
-
-msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-#, python-format
-msgid "FFE ID: %(ffe_id)s"
-msgstr ""
-
 msgid "FFE Licence"
 msgstr ""
 
@@ -1529,6 +1516,19 @@ msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number (optional):"
+msgstr ""
+
+msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+msgstr ""
+
+msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#, python-format
+msgid "FFE certification number: %(ffe_id)s"
+msgstr ""
+
+msgid "FFE certificaton number and password not defined for tournament"
 msgstr ""
 
 msgid "FFE database"
@@ -1989,7 +1989,7 @@ msgstr ""
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
-msgid "Invalid FFE ID or password."
+msgid "Invalid FFE certification number or password."
 msgstr ""
 
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
@@ -2378,10 +2378,10 @@ msgstr ""
 msgid "No ChessEvent tournament defined"
 msgstr ""
 
-msgid "No FFE ID"
+msgid "No FFE Licence"
 msgstr ""
 
-msgid "No FFE Licence"
+msgid "No FFE certification number"
 msgstr ""
 
 msgid "No FFE operations can be done on the tournaments of this event."
@@ -4943,5 +4943,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "No auto-upload"
+#~ msgstr ""
+
+#~ msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 #~ msgstr ""
 

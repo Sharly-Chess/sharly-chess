@@ -79,9 +79,9 @@ class FfeBackgroundUploader:
         if not cls.check_id_and_password(tournament):
             cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('FFE ID and password not defined for tournament').format(
-                    tournament_uniq_id=tournament.uniq_id
-                ),
+                _(
+                    'FFE certificaton number and password not defined for tournament'
+                ).format(tournament_uniq_id=tournament.uniq_id),
             )
             pass
         elif not tournament.file:

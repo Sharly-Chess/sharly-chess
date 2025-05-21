@@ -29,9 +29,12 @@
             class="p-0"
         />
         {% if tournament.plugin_data.ffe.ffe_id %}
-            {{ _('FFE ID: %(ffe_id)s', ffe_id=tournament.plugin_data.ffe.ffe_id) }}
+            {{ _('FFE certification number: %(ffe_id)s', ffe_id=tournament.plugin_data.ffe.ffe_id) }}
+            <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament.plugin_data.ffe.ffe_id }}" target="_blank">
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
         {% else %}
-            {{ _('No FFE ID') }}
+            {{ _('No FFE certification number') }}
         {% endif %}
     </div>
     {% with ffe_auto_upload=ffe_utils.resolve_auto_upload(tournament) %}

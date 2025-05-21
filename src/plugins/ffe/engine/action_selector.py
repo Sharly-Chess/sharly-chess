@@ -34,9 +34,9 @@ class ActionSelector(metaclass=Singleton):
         ffe_password = get_data(pd, 'ffe_password')
         if not ffe_id or not ffe_password:
             print_interactive_warning(
-                _('FFE ID not defined for tournament [{tournament_uniq_id}].').format(
-                    tournament_uniq_id=tournament.uniq_id
-                )
+                _(
+                    'FFE certification number not defined for tournament [{tournament_uniq_id}].'
+                ).format(tournament_uniq_id=tournament.uniq_id)
             )
             return False
         return True

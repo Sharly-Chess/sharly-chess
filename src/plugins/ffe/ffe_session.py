@@ -373,7 +373,7 @@ class FFESession(Session):
     def get_id_and_password(
         self, do_log: bool = False
     ) -> tuple[str | None, str | None]:
-        """Fetches the FFE ID and password for the tournament from the plugin data."""
+        """Fetches the certification number and password for the tournament from the plugin data."""
 
         assert self.tournament is not None
         pd = self.tournament.plugin_data
@@ -383,7 +383,7 @@ class FFESession(Session):
             if do_log:
                 logger.warning(
                     _(
-                        'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
+                        'FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
                     ).format(tournament_name=self.tournament.name)
                 )
                 return None, None
