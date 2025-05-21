@@ -2354,6 +2354,9 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "Network is offline, unable to upload tournament"
+msgstr ""
+
 msgid "New display controller"
 msgstr ""
 

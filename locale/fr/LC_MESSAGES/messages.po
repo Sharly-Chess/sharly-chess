@@ -2354,6 +2354,9 @@ msgstr "Dernières rondes sans bye :"
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
+msgid "Network is offline, unable to upload tournament"
+msgstr "Réseau hors ligne, impossible de téléverser le tournoi"
+
 msgid "New display controller"
 msgstr "Nouveau pilote d'afficheurs"
 

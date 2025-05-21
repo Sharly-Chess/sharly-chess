@@ -9,6 +9,7 @@ from common.i18n import _
 from common.logger import (
     get_logger,
 )
+from common.network import NetworkMonitor
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
@@ -143,6 +144,10 @@ class FfeBackgroundUploader:
     ) -> None:
         """Upload a tournament to FFE."""
 
+        if not NetworkMonitor.connected():
+            # The network is offline, we can't upload
+            return
+
         # We refetch the latest event and tournament
         event = EventLoader().events_by_id.get(event_uniq_id, None)
         if not event:
@@ -222,12 +227,19 @@ class FfeBackgroundUploader:
             return
 
         for tournament in updated_tournaments:
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                FfeUploadStatus.INFO,
-                _('Uploading tournament...').format(
-                    tournament_uniq_id=tournament.uniq_id
-                ),
-            )
+            if not NetworkMonitor.connected():
+                # The network is offline, we can't upload
+                cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                    FfeUploadStatus.INFO,
+                    _('Network is offline, unable to upload tournament'),
+                )
+            else:
+                cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                    FfeUploadStatus.INFO,
+                    _('Uploading tournament...').format(
+                        tournament_uniq_id=tournament.uniq_id
+                    ),
+                )
 
         def _upload_tournaments(cls: FfeBackgroundUploader) -> None:
             try:
