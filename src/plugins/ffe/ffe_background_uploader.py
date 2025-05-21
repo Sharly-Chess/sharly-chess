@@ -46,24 +46,6 @@ class FfeBackgroundUploader:
         return f'{tournament.event.uniq_id}:{tournament.id}'
 
     @classmethod
-    def report_success(cls, tournament: Tournament, message: str) -> None:
-        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-            FfeUploadStatus.SUCCESS, message
-        )
-
-    @classmethod
-    def report_error(cls, tournament: Tournament, message: str) -> None:
-        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-            FfeUploadStatus.ERROR, message
-        )
-
-    @classmethod
-    def report_info(cls, tournament: Tournament, message: str) -> None:
-        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-            FfeUploadStatus.INFO, message
-        )
-
-    @classmethod
     def get_updated_tournament_upload_result(
         cls, tournament: Tournament
     ) -> FfeUploadResult | None:
@@ -76,30 +58,32 @@ class FfeBackgroundUploader:
 
         # Clear the message if it is a SETTINGS_ERROR, and refresh it here...
         if result and result.status == FfeUploadStatus.SETTINGS_ERROR:
+            result.status = FfeUploadStatus.SUCCESS
             result.message = ''
         if not cls.check_id_and_password(tournament):
-            cls.upload_status_messages[result_id] = FfeUploadResult(
+            result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
                 _(
                     'FFE certification number and password not defined for tournament'
                 ).format(tournament_uniq_id=tournament.uniq_id),
             )
-            pass
+            cls.upload_status_messages[result_id] = result
         elif not tournament.file:
-            cls.upload_status_messages[result_id] = FfeUploadResult(
+            result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
                 _('Papi file not defined for tournament').format(
                     tournament_uniq_id=tournament.uniq_id
                 ),
             )
+            cls.upload_status_messages[result_id] = result
         elif not tournament.file_exists:
-            cls.upload_status_messages[result_id] = FfeUploadResult(
+            result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
                 _('Papi file not found [{file}]').format(
                     file=tournament.file, tournament_uniq_id=tournament.uniq_id
                 ),
             )
-
+            cls.upload_status_messages[result_id] = result
         return result
 
     @classmethod
@@ -173,15 +157,21 @@ class FfeBackgroundUploader:
                 tournament_uniq_id=tournament.uniq_id
             )
         )
+
+        def report(
+            tournament: Tournament, status: FfeUploadStatus, message: str
+        ) -> None:
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                status, message
+            )
+
         try:
             FFESession(
                 tournament,
                 debug=False,
-                report_error=partial(FfeBackgroundUploader.report_error, tournament),
-                report_info=partial(FfeBackgroundUploader.report_info, tournament),
-                report_success=partial(
-                    FfeBackgroundUploader.report_success, tournament
-                ),
+                report_error=partial(report, tournament, FfeUploadStatus.ERROR),
+                report_info=partial(report, tournament, FfeUploadStatus.INFO),
+                report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
             ).upload(set_visible=False)
         except Exception as e:
             if not tournament.event:
