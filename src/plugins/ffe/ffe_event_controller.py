@@ -25,8 +25,6 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeAdminEventController(BaseEventAdminController):
-    uploading: bool = False
-
     @get(
         path='/ffe/event/{event_uniq_id:str}/players',
         name='ffe-admin-event-players-tab',
@@ -130,7 +128,7 @@ class FfeAdminEventController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
 
-        FfeBackgroundUploader.get_eligible_tournaments(web_context.admin_event)
+        FfeBackgroundUploader.update_eligible_tournaments(web_context.admin_event)
 
         return HTMXTemplate(
             template_name='/ffe_upload_modal.html',

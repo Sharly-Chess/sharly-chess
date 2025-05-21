@@ -1528,7 +1528,7 @@ msgstr ""
 msgid "FFE certification number: %(ffe_id)s"
 msgstr ""
 
-msgid "FFE certificaton number and password not defined for tournament"
+msgid "FFE certification number and password not defined for tournament"
 msgstr ""
 
 msgid "FFE database"

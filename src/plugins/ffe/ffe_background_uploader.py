@@ -80,7 +80,7 @@ class FfeBackgroundUploader:
             cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
                 _(
-                    'FFE certificaton number and password not defined for tournament'
+                    'FFE certification number and password not defined for tournament'
                 ).format(tournament_uniq_id=tournament.uniq_id),
             )
             pass
@@ -102,7 +102,7 @@ class FfeBackgroundUploader:
         return result
 
     @classmethod
-    def get_eligible_tournaments(cls, admin_event: Event) -> list[Tournament]:
+    def update_eligible_tournaments(cls, admin_event: Event) -> list[Tournament]:
         tournaments: list[Tournament] = []
         for tournament in admin_event.tournaments_by_id.values():
             result = cls.get_updated_tournament_upload_result(tournament)
@@ -197,7 +197,7 @@ class FfeBackgroundUploader:
             return
         cls.uploading_event = True
 
-        tournaments = cls.get_eligible_tournaments(admin_event)
+        tournaments = cls.update_eligible_tournaments(admin_event)
         updated_tournaments: list[Tournament] = []
         for tournament in tournaments:
             needs_upload: NeedsUpload = cls.ffe_upload_needed(tournament)

@@ -1528,7 +1528,7 @@ msgstr "Numéro d’homologation FFE non défini pour le tournoi [{tournament_un
 msgid "FFE certification number: %(ffe_id)s"
 msgstr "Homologation FFE : %(ffe_id)s"
 
-msgid "FFE certificaton number and password not defined for tournament"
+msgid "FFE certification number and password not defined for tournament"
 msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
 
 msgid "FFE database"
