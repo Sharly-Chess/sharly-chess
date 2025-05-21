@@ -343,27 +343,27 @@ msgstr "L'authentification a échoué."
 msgid "Authentication successful!"
 msgstr "Authentification réussie !"
 
-msgid "Auto upload to FFE"
-msgstr ""
+msgid "Auto upload to FFE enabled"
+msgstr "Téléversement automatique vers la FFE"
 
 msgid "Auto-update"
 msgstr "Mise à jour"
 
 msgid "Auto-upload results to FFE site"
-msgstr ""
+msgstr "Téléversement automatique des résultats vers le site de la FFE"
 
 msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
-msgstr ""
+msgstr "Téléversement automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela prenne effet."
 
 #, python-format
 msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
-msgstr ""
+msgstr "Téléversement automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)s minutes)"
 
 msgid "Auto-upload to FFE site disabled"
-msgstr ""
+msgstr "Téléversement automatique vers le site de la FFE désactivé"
 
 msgid "Automatic"
-msgstr ""
+msgstr "Automatique"
 
 msgid "Automatically launch a browser when starting the server"
 msgstr "Lancement automatique du navigateur au démarrage du serveur"
@@ -1007,6 +1007,9 @@ msgstr "Répertoire [{path}] non trouvé."
 msgid "Directory:"
 msgstr "Répertoire :"
 
+msgid "Disable auto-upload"
+msgstr "Désactiver le téléversement automatique"
+
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -1371,7 +1374,7 @@ msgid "Email:"
 msgstr "Mél :"
 
 msgid "Enable auto-upload"
-msgstr ""
+msgstr "Activer le téléversement automatique"
 
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
@@ -1417,6 +1420,9 @@ msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
+
+msgid "Error uploading tournament"
+msgstr "Erreur lors du téléversement du tournoi"
 
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
@@ -1507,10 +1513,10 @@ msgid "FFE ID and password are not correctly set for tournament [{tournament_nam
 msgstr "L'identifiant et le mot de passe FFE ne sont pas correctement définis pour le tournoi [{tournament_name}], les données ne peuvent être envoyées sur le site web FFE."
 
 msgid "FFE ID and password not defined for tournament"
-msgstr ""
+msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
 
 msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-msgstr "L'identifiant FFE non défini pour le tournoi [{tournament_uniq_id}]."
+msgstr "Numéro d’homologation FFE non défini pour le tournoi [{tournament_uniq_id}]."
 
 #, python-format
 msgid "FFE ID: %(ffe_id)s"
@@ -1555,7 +1561,7 @@ msgid "FFE password:"
 msgstr "Mot de passe FFE :"
 
 msgid "FFE settings"
-msgstr ""
+msgstr "Paramètres FFE"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2098,7 +2104,7 @@ msgid "Last update"
 msgstr "Dernière mise à jour"
 
 msgid "Last upload"
-msgstr ""
+msgstr "Dernier téléversement"
 
 msgid "Launch browser:"
 msgstr "Lancement du navigateur :"
@@ -2195,7 +2201,7 @@ msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
 
 msgid "Manual"
-msgstr ""
+msgstr "Manuel"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
@@ -2287,7 +2293,7 @@ msgid "Minimal time (handicap, seconds):"
 msgstr "Temps minimal (handicap, en secondes) :"
 
 msgid "Minimum delay between uploads (minutes):"
-msgstr ""
+msgstr "Délai minimum entre les téléversements (en minutes) :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -2296,7 +2302,7 @@ msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr "Paramètre manquant (code : [{code}]) : [{error}]."
 
 msgid "Mode"
-msgstr ""
+msgstr "Mode"
 
 #, python-format
 msgid "Moving on to round #%(round)d"
@@ -2399,12 +2405,6 @@ msgstr "Pas de message d'alerte"
 
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
-
-msgid "No auto upload to FFE"
-msgstr ""
-
-msgid "No auto-upload"
-msgstr ""
 
 msgid "No background colour set, by default [{background_color}]"
 msgstr "Couleur de fond non définie, par défaut [{background_color}]"
@@ -2781,19 +2781,19 @@ msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
 msgid "Papi file not defined for tournament"
-msgstr ""
+msgstr "Fichier Papi non défini pour le tournoi"
 
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Papi file not found [{file}]"
-msgstr ""
+msgstr "Fichier Papi introuvable [{file}]"
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Papi file not modified since last upload"
-msgstr ""
+msgstr "Le fichier Papi n’a pas été modifié depuis le dernier téléversement"
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
@@ -3487,9 +3487,6 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection: %(selection)s"
 
-msgid "Send tournaments now"
-msgstr ""
-
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
 
@@ -3608,7 +3605,7 @@ msgid "Starting rank"
 msgstr "Classement initial"
 
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 msgid "Storing data..."
 msgstr "Stockage des données..."
@@ -3741,7 +3738,7 @@ msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
 msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
-msgstr ""
+msgstr "Le délai doit être d’au moins 3 minutes pour éviter de surcharger le serveur de la FFE."
 
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
@@ -4514,10 +4511,10 @@ msgid "Updating the players' information from an external data source is not pos
 msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 
 msgid "Upload failed"
-msgstr ""
+msgstr "Échec du téléversement"
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
-msgstr ""
+msgstr "Lien de téléversement introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
 msgid "Upload the results of the tournaments"
 msgstr "Mettre en ligne les résultats des tournois."
@@ -4525,14 +4522,17 @@ msgstr "Mettre en ligne les résultats des tournois."
 msgid "Upload the rules of the tournaments"
 msgstr "Mettre en ligne le règlement des tournois"
 
+msgid "Upload tournaments now"
+msgstr "Téléverser les tournois maintenant"
+
 msgid "Upload tournaments to the FFE"
-msgstr ""
+msgstr "Téléverser les tournois vers la FFE"
 
 msgid "Upload:"
-msgstr ""
+msgstr "Téléversement :"
 
 msgid "Uploading tournament..."
-msgstr ""
+msgstr "Téléversement en cours…"
 
 msgid "Upper limit expected to be greater than lower limit."
 msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
@@ -4720,7 +4720,7 @@ msgid "You must create a tournament before creating screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
 
 msgid "You must enter the tournament ID and password in each tournaments settings."
-msgstr ""
+msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
 
 msgid "Your choice (by default {default}): "
 msgstr "Votre choix, par défaut [{default}] :"
@@ -4909,30 +4909,4 @@ msgstr "ecran-{screen_type}"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "Auto-upload results to FFE site:"
-#~ msgstr ""
-
-#~ msgid "FFE: Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
-#~ msgstr ""
-
-#~ msgid "FFE: Auto-upload to FFE site disabled"
-#~ msgstr ""
-
-#~ msgid "No tournament to upload."
-#~ msgstr ""
-
-#~ msgid "Papi file not defined for tournament."
-#~ msgstr ""
-
-#~ msgid "Papi file not modified since last upload [{last_upload}]."
-#~ msgstr ""
-
-#~ msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-#~ msgstr "Lien de mise en ligne non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
-
-#~ msgid "Papi file not modified since last upload"
-#~ msgstr ""
-
-#~ msgid "Upload tournaments to FFE"
-#~ msgstr ""
 

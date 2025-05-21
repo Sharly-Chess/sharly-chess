@@ -343,7 +343,7 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
-msgid "Auto upload to FFE"
+msgid "Auto upload to FFE enabled"
 msgstr ""
 
 msgid "Auto-update"
@@ -1007,6 +1007,9 @@ msgstr ""
 msgid "Directory:"
 msgstr ""
 
+msgid "Disable auto-upload"
+msgstr ""
+
 msgid "Disabled"
 msgstr ""
 
@@ -1416,6 +1419,9 @@ msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
 msgid "Error reading the following row (player ignored): [{row}]."
+msgstr ""
+
+msgid "Error uploading tournament"
 msgstr ""
 
 msgid "Error when updating database [{database}]."
@@ -2398,12 +2404,6 @@ msgid "No alert message"
 msgstr ""
 
 msgid "No archived events."
-msgstr ""
-
-msgid "No auto upload to FFE"
-msgstr ""
-
-msgid "No auto-upload"
 msgstr ""
 
 msgid "No background colour set, by default [{background_color}]"
@@ -3487,9 +3487,6 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
-msgid "Send tournaments now"
-msgstr ""
-
 msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
 msgstr ""
 
@@ -4525,6 +4522,9 @@ msgstr ""
 msgid "Upload the rules of the tournaments"
 msgstr ""
 
+msgid "Upload tournaments now"
+msgstr ""
+
 msgid "Upload tournaments to the FFE"
 msgstr ""
 
@@ -4934,5 +4934,14 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Upload tournaments to FFE"
+#~ msgstr ""
+
+#~ msgid "Uploading tournament [{tournament_uniq_id}]..."
+#~ msgstr ""
+
+#~ msgid "No auto upload to FFE"
+#~ msgstr ""
+
+#~ msgid "No auto-upload"
 #~ msgstr ""
 

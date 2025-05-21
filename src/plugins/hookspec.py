@@ -216,6 +216,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def on_tournament_updated(self, tournament: 'Tournament'):
+        """Called when the (publishable) data of a tournament is updated"""
+
+    @hookspec
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):

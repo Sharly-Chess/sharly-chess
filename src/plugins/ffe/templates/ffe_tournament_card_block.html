@@ -38,9 +38,9 @@
         <div class="d-flex gap-2 {% if not ffe_auto_upload %}text-secondary{% endif %}">
             <i class="bi-cloud-arrow-up-fill"></i>
             {% if ffe_auto_upload %}
-                {{ _('Auto upload to FFE') }}
+                {{ _('Auto upload to FFE enabled') }}
             {% else %}
-                {{ _('No auto upload to FFE') }}
+                {{ _('Auto-upload to FFE site disabled') }}
             {% endif %}
         </div>
     {% endwith %}

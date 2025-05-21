@@ -21,6 +21,7 @@ from data.print_documents.documents import PlayerPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
@@ -657,6 +658,11 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
+    def on_tournament_updated(self, tournament: 'Tournament'):
+        if FFEUtils.resolve_auto_upload(tournament):
+            FfeBackgroundUploader.schedule_upload(tournament)
+
+    @hookimpl
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
@@ -705,7 +711,7 @@ class FfePlugin(Plugin):
     ) -> dict[str, Any]:
         ffe_auto_upload_options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(False): _('No auto-upload'),
+            WebContext.value_to_form_data(False): _('Disable auto-upload'),
         } | {
             WebContext.value_to_form_data(True): _('Enable auto-upload'),
         }

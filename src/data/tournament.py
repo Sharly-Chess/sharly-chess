@@ -164,7 +164,7 @@ class Tournament:
         return PapiDatabase(
             self.file,
             write=True,
-            on_exit=self.update_stored_file_modified_timestamp,
+            on_exit=self.on_papi_update,
         )
 
     @property
@@ -620,6 +620,10 @@ class Tournament:
 
     def update_stored_file_modified_timestamp(self):
         self.stored_file_modified_timestamp = self.file_modified_timestamp
+
+    def on_papi_update(self):
+        self.update_stored_file_modified_timestamp()
+        plugin_manager.hook.on_tournament_updated(tournament=self)
 
     def clear_cache(self, clear_papi_cache: bool = False):
         """Clears the cache of the tournament."""

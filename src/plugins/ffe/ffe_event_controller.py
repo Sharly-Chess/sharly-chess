@@ -130,7 +130,7 @@ class FfeAdminEventController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
 
-        FfeBackgroundUploader.get_updated_upload_results(web_context.admin_event)
+        FfeBackgroundUploader.get_eligible_tournaments(web_context.admin_event)
 
         return HTMXTemplate(
             template_name='/ffe_upload_modal.html',
