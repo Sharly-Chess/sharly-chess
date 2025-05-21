@@ -1521,14 +1521,14 @@ msgstr ""
 msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr ""
 
+msgid "FFE certification number and password not defined for tournament"
+msgstr ""
+
 msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #, python-format
 msgid "FFE certification number: %(ffe_id)s"
-msgstr ""
-
-msgid "FFE certification number and password not defined for tournament"
 msgstr ""
 
 msgid "FFE database"

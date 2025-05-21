@@ -11,4 +11,16 @@
     <span style="font-size: 0.6rem;">
        FFE
     </span>
+    <span
+        class="nav-icon-badge position-absolute p-0 rounded-circle bg-danger {% if has_upload_error %}visible{% else %}invisible{% endif %}"
+        style="font-size: 15px; bottom: 3px;"
+        hx-get="{{ url_for('ffe-nav-upload-button', event_uniq_id=admin_event.uniq_id) }}"
+        hx-trigger="every 180s queue:none"
+        hx-target="closest button"
+        hx-swap="outerHTML"
+    >
+        {% if has_upload_error %}
+            <i class="bi bi-exclamation"></i>
+        {% endif %}
+    </span>
 </button>

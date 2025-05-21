@@ -1521,15 +1521,15 @@ msgstr "Numéro d'homologation FFE (facultatif) :"
 msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr "Le numéro d’homologation et le mot de passe FFE ne sont pas correctement définis pour le tournoi [{tournament_name}], les données ne peuvent être envoyées sur le site web FFE."
 
+msgid "FFE certification number and password not defined for tournament"
+msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
+
 msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
 msgstr "Numéro d’homologation FFE non défini pour le tournoi [{tournament_uniq_id}]."
 
 #, python-format
 msgid "FFE certification number: %(ffe_id)s"
 msgstr "Homologation FFE : %(ffe_id)s"
-
-msgid "FFE certification number and password not defined for tournament"
-msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
 
 msgid "FFE database"
 msgstr "Base de données FFE"
@@ -4908,3 +4908,4 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
