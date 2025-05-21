@@ -344,23 +344,23 @@ msgid "Authentication successful!"
 msgstr "Authentification réussie !"
 
 msgid "Auto upload to FFE enabled"
-msgstr "Téléversement automatique vers la FFE"
+msgstr "Mise en ligne automatique vers la FFE"
 
 msgid "Auto-update"
 msgstr "Mise à jour"
 
 msgid "Auto-upload results to FFE site"
-msgstr "Téléversement automatique des résultats vers le site de la FFE"
+msgstr "Mise en ligne automatique des résultats vers le site de la FFE"
 
 msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
-msgstr "Téléversement automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela prenne effet."
+msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela prenne effet."
 
 #, python-format
 msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
-msgstr "Téléversement automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)s minutes)"
+msgstr "Mise en ligne automatique vers la FFE activée (au minimum toutes les %(ffe_auto_upload_delay)s minutes)"
 
 msgid "Auto-upload to FFE site disabled"
-msgstr "Téléversement automatique vers le site de la FFE désactivé"
+msgstr "Mise en ligne automatique vers le site de la FFE désactivée"
 
 msgid "Automatic"
 msgstr "Automatique"
@@ -1008,7 +1008,7 @@ msgid "Directory:"
 msgstr "Répertoire :"
 
 msgid "Disable auto-upload"
-msgstr "Désactiver le téléversement automatique"
+msgstr "Désactiver la mise en ligne automatique"
 
 msgid "Disabled"
 msgstr "Désactivé"
@@ -1374,7 +1374,7 @@ msgid "Email:"
 msgstr "Mél :"
 
 msgid "Enable auto-upload"
-msgstr "Activer le téléversement automatique"
+msgstr "Activer la mise en ligne automatique"
 
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
@@ -1422,7 +1422,7 @@ msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
 
 msgid "Error uploading tournament"
-msgstr "Erreur lors du téléversement du tournoi"
+msgstr "Erreur lors de la mise en ligne du tournoi"
 
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
@@ -2104,7 +2104,7 @@ msgid "Last update"
 msgstr "Dernière mise à jour"
 
 msgid "Last upload"
-msgstr "Dernier téléversement"
+msgstr "Dernière mise en ligne"
 
 msgid "Launch browser:"
 msgstr "Lancement du navigateur :"
@@ -2293,7 +2293,7 @@ msgid "Minimal time (handicap, seconds):"
 msgstr "Temps minimal (handicap, en secondes) :"
 
 msgid "Minimum delay between uploads (minutes):"
-msgstr "Délai minimum entre les téléversements (en minutes) :"
+msgstr "Délai minimum entre les mises en lignes (en minutes) :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -2355,7 +2355,7 @@ msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
 msgid "Network is offline, unable to upload tournament"
-msgstr "Réseau hors ligne, impossible de téléverser le tournoi"
+msgstr "Réseau hors ligne, impossible de mettre en ligne le tournoi"
 
 msgid "New display controller"
 msgstr "Nouveau pilote d'afficheurs"
@@ -2796,7 +2796,7 @@ msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Papi file not modified since last upload"
-msgstr "Le fichier Papi n’a pas été modifié depuis le dernier téléversement"
+msgstr "Le fichier Papi n’a pas été modifié depuis la dernière mise en ligne"
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
@@ -4514,10 +4514,10 @@ msgid "Updating the players' information from an external data source is not pos
 msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 
 msgid "Upload failed"
-msgstr "Échec du téléversement"
+msgstr "Échec de la mise en ligne"
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
-msgstr "Lien de téléversement introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
+msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
 msgid "Upload the results of the tournaments"
 msgstr "Mettre en ligne les résultats des tournois."
@@ -4526,16 +4526,16 @@ msgid "Upload the rules of the tournaments"
 msgstr "Mettre en ligne le règlement des tournois"
 
 msgid "Upload tournaments now"
-msgstr "Téléverser les tournois maintenant"
+msgstr "Mettre en ligne les tournois maintenant"
 
 msgid "Upload tournaments to the FFE"
-msgstr "Téléverser les tournois vers la FFE"
+msgstr "Mettre en ligne les tournois vers la FFE"
 
 msgid "Upload:"
-msgstr "Téléversement :"
+msgstr "Mise en ligne :"
 
 msgid "Uploading tournament..."
-msgstr "Téléversement en cours…"
+msgstr "Mise en ligne en cours…"
 
 msgid "Upper limit expected to be greater than lower limit."
 msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
