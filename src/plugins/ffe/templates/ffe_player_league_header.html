@@ -26,7 +26,7 @@
                                     {% if admin_players_filter_leagues|length == admin_players_leagues|length %}checked{% endif %}
                                     onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
                                 />
-                                <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                                <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal">
                                     <i class="bi-check-lg pe-1"></i>
                                     {{ _('OK') }}
                                 </button>

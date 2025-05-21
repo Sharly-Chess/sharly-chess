@@ -1,0 +1,22 @@
+<li>
+    <button
+        class="dropdown-item text-nowrap"
+        hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <i class="bi bi-eye-fill pe-1"></i>
+        {{ _('Make visible on FFE site') }}
+    </button>
+</li>
+<li>
+    <button
+        class="dropdown-item text-nowrap"
+        hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
+        {{ _('Upload rules') }}
+    </button>
+</li>

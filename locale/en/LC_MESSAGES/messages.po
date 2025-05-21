@@ -196,6 +196,9 @@ msgstr ""
 msgid "Action: {action}"
 msgstr ""
 
+msgid "Actions"
+msgstr ""
+
 msgid "Actions:"
 msgstr ""
 
@@ -661,21 +664,6 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
-msgid "Clone"
-msgstr ""
-
-msgid "Clone the rotator."
-msgstr ""
-
-msgid "Clone the screen family."
-msgstr ""
-
-msgid "Clone the timer."
-msgstr ""
-
-msgid "Clone the tournament."
-msgstr ""
-
 #, python-format
 msgid "Cloning of screen family [%(family_uniq_id)s]"
 msgstr ""
@@ -1129,6 +1117,21 @@ msgid "Drag the sets to order them."
 msgstr ""
 
 msgid "Draw"
+msgstr ""
+
+msgid "Duplicate"
+msgstr ""
+
+msgid "Duplicate the rotator."
+msgstr ""
+
+msgid "Duplicate the screen family."
+msgstr ""
+
+msgid "Duplicate the timer."
+msgstr ""
+
+msgid "Duplicate the tournament."
 msgstr ""
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
@@ -2181,6 +2184,9 @@ msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Make the tournaments visible on the FFE website"
+msgstr ""
+
+msgid "Make visible on FFE site"
 msgstr ""
 
 msgid "Making the tournament visible on the FFE website..."
@@ -4525,6 +4531,9 @@ msgid "Upload failed"
 msgstr ""
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
+msgstr ""
+
+msgid "Upload rules"
 msgstr ""
 
 msgid "Upload the results of the tournaments"

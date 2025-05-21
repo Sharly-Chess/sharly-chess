@@ -196,6 +196,9 @@ msgstr "Délai d'action"
 msgid "Action: {action}"
 msgstr "Action : {action}"
 
+msgid "Actions"
+msgstr ""
+
 msgid "Actions:"
 msgstr "Actions :"
 
@@ -661,21 +664,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
 
-msgid "Clone"
-msgstr "Dupliquer"
-
-msgid "Clone the rotator."
-msgstr "Dupliquer l'écran rotatif."
-
-msgid "Clone the screen family."
-msgstr "Dupliquer la famille d'écrans."
-
-msgid "Clone the timer."
-msgstr "Dupliquer le chronomètre."
-
-msgid "Clone the tournament."
-msgstr "Dupliquer le tournoi"
-
 #, python-format
 msgid "Cloning of screen family [%(family_uniq_id)s]"
 msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
@@ -1130,6 +1118,21 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 
 msgid "Draw"
 msgstr "Nulle"
+
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+msgid "Duplicate the rotator."
+msgstr "Dupliquer l'écran rotatif."
+
+msgid "Duplicate the screen family."
+msgstr "Dupliquer la famille d'écrans."
+
+msgid "Duplicate the timer."
+msgstr "Dupliquer le chronomètre."
+
+msgid "Duplicate the tournament."
+msgstr "Dupliquer le tournoi"
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
@@ -2182,6 +2185,9 @@ msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Make the tournaments visible on the FFE website"
 msgstr "Rendre les tournois visibles sur le site web FFE..."
+
+msgid "Make visible on FFE site"
+msgstr ""
 
 msgid "Making the tournament visible on the FFE website..."
 msgstr "Affichage des tournois sur le site web FFE..."
@@ -4527,6 +4533,9 @@ msgstr "Échec de la mise en ligne"
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
+msgid "Upload rules"
+msgstr ""
+
 msgid "Upload the results of the tournaments"
 msgstr "Mettre en ligne les résultats des tournois."
 
@@ -4915,4 +4924,7 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
+#~ msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 

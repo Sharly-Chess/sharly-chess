@@ -169,9 +169,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
     color: var(--bs-dropdown-link-color);
     background-color: transparent;
 }
-.dropdown:hover > .dropdown-menu{
-    display: block !important;
-}
 .dropdown-submenu:hover > .dropdown-menu {
     display: block !important;
     left: 100%;
