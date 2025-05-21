@@ -4300,8 +4300,14 @@ msgstr "Création d'un tournoi"
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
 
+msgid "Tournament not yet uploaded"
+msgstr "Tournoi pas encore mis en ligne"
+
 msgid "Tournament performance rating"
 msgstr "Performance sur le tournoi"
+
+msgid "Tournament previously uploaded"
+msgstr "Tournoi mis en ligne précédemment"
 
 msgid "Tournament record"
 msgstr "Historique"

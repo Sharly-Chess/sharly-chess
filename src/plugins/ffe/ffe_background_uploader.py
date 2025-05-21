@@ -24,10 +24,12 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeUploadStatus(IntEnum):
-    SUCCESS = 0
-    INFO = 1
-    ERROR = 2
-    SETTINGS_ERROR = 3
+    NEVER = 0
+    UPLOADED = 1
+    SUCCESS = 2
+    INFO = 3
+    ERROR = 4
+    SETTINGS_ERROR = 5
 
 
 @dataclass
@@ -48,18 +50,28 @@ class FfeBackgroundUploader:
     @classmethod
     def get_updated_tournament_upload_result(
         cls, tournament: Tournament
-    ) -> FfeUploadResult | None:
+    ) -> FfeUploadResult:
         result_id = cls.result_id(tournament)
-        result = (
-            cls.upload_status_messages[result_id]
-            if result_id in cls.upload_status_messages
-            else None
-        )
+        result = cls.upload_status_messages.get(result_id, None)
 
-        # Clear the message if it is a SETTINGS_ERROR, and refresh it here...
+        # Clear the message if it is a SETTINGS_ERROR, and refresh it later...
         if result and result.status == FfeUploadStatus.SETTINGS_ERROR:
-            result.status = FfeUploadStatus.SUCCESS
-            result.message = ''
+            result = None
+
+        # Default status when we don't have a result
+        if result is None:
+            if cls.ffe_last_upload(tournament):
+                result = FfeUploadResult(
+                    FfeUploadStatus.UPLOADED,
+                    _('Tournament previously uploaded'),
+                )
+            else:
+                result = FfeUploadResult(
+                    FfeUploadStatus.NEVER,
+                    _('Tournament not yet uploaded'),
+                )
+            cls.upload_status_messages[result_id] = result
+
         if not cls.check_id_and_password(tournament):
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
