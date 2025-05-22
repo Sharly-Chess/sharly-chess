@@ -181,8 +181,22 @@ class BaseEventAdminController(BaseAdminController):
                 after='settle',
             )
 
-        per_plugin_nav_bar_items = plugin_manager.hook.get_nav_bar_items()
+        assert 'admin_event' in template_context
+
+        nav_bar_items_and_data = plugin_manager.hook.get_event_nav_bar_items_and_data(
+            event=template_context['admin_event']
+        )
+        per_plugin_nav_bar_items = [
+            nav_bar_items for (nav_bar_items, data) in nav_bar_items_and_data
+        ]
+        plugin_nav_bar_data = {
+            key: value
+            for (nav_bar_items, data) in nav_bar_items_and_data
+            for key, value in data.items()
+        }
+
         extra_admin_nav_items: dict[str, list[PluginNavBarItem]] = {}
+
         for plugin_nav_bar_items in per_plugin_nav_bar_items:
             for nav_bar_item in plugin_nav_bar_items:
                 c = extra_admin_nav_items.setdefault(nav_bar_item.at, [])
@@ -193,5 +207,6 @@ class BaseEventAdminController(BaseAdminController):
             context=template_context
             | {
                 'extra_admin_nav_items': extra_admin_nav_items,
-            },
+            }
+            | plugin_nav_bar_data,
         )

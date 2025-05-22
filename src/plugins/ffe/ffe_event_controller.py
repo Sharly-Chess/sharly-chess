@@ -113,7 +113,8 @@ class FfeAdminEventController(BaseEventAdminController):
             },
         )
 
-    def _poll_frequency(
+    @classmethod
+    def poll_frequency(
         self,
         admin_event: Event,
     ) -> int:
@@ -136,7 +137,7 @@ class FfeAdminEventController(BaseEventAdminController):
         if any(result.status == FfeUploadStatus.IN_PROGRESS for result in results):
             return 2
 
-        # If auto upload is enabled, we poll at half the delay
+        # If auto upload is enabled, we poll at the delay
         if has_auto_upload:
             return int(
                 get_data(
@@ -144,7 +145,6 @@ class FfeAdminEventController(BaseEventAdminController):
                     'ffe_upload_delay',
                     180,
                 )
-                / 2
             )
 
         # Otherwise, no need to poll
@@ -169,7 +169,7 @@ class FfeAdminEventController(BaseEventAdminController):
         assert web_context.admin_event is not None
 
         FfeBackgroundUploader.update_eligible_tournaments(web_context.admin_event)
-        poll_frequency = self._poll_frequency(web_context.admin_event)
+        poll_frequency = self.poll_frequency(web_context.admin_event)
 
         return HTMXTemplate(
             template_name='/ffe_upload_modal.html',
@@ -192,7 +192,7 @@ class FfeAdminEventController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext,
     ) -> Template | ClientRedirect:
         assert web_context.admin_event is not None
-        poll_frequency = self._poll_frequency(web_context.admin_event)
+        poll_frequency = self.poll_frequency(web_context.admin_event)
 
         return HTMXTemplate(
             template_name='/ffe_upload_results.html',
@@ -203,6 +203,7 @@ class FfeAdminEventController(BaseEventAdminController):
                 'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
                 'poll_frequency': poll_frequency,
                 'ffe_utils': FFEUtils,
+                'oob_button': True,
             },
         )
 
@@ -308,5 +309,6 @@ class FfeAdminEventController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'has_upload_error': has_upload_error,
+                'poll_frequency': self.poll_frequency(admin_event),
             },
         )

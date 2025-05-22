@@ -216,7 +216,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_tournament_updated(self, tournament: 'Tournament'):
+    def on_tournament_data_updated(self, tournament: 'Tournament'):
         """Called when the (publishable) data of a tournament is updated"""
 
     @hookspec
@@ -286,7 +286,9 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_nav_bar_items(self) -> Iterable[PluginNavBarItem]:
+    def get_event_nav_bar_items_and_data(
+        self, event: 'Event'
+    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
         """Provide extra nav bar items"""
 
     # ---------------------------------------------------------------------------------

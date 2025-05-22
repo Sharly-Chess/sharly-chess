@@ -658,7 +658,7 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_tournament_updated(self, tournament: 'Tournament'):
+    def on_tournament_data_updated(self, tournament: 'Tournament'):
         if FFEUtils.resolve_auto_upload(tournament):
             FfeBackgroundUploader.schedule_upload(tournament)
 
@@ -823,9 +823,15 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_nav_bar_items(self) -> Iterable[PluginNavBarItem]:
-        """Provide extra nav bar items"""
-        return [PluginNavBarItem(at='database', template='/ffe_upload_button.html')]
+    def get_event_nav_bar_items_and_data(
+        self, event: 'Event'
+    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
+        return (
+            [PluginNavBarItem(at='database', template='/ffe_upload_button.html')],
+            {
+                'poll_frequency': FfeAdminEventController.poll_frequency(event),
+            },
+        )
 
     # ---------------------------------------------------------------------------------
     # User screens

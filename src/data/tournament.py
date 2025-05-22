@@ -623,7 +623,7 @@ class Tournament:
 
     def on_papi_update(self):
         self.update_stored_file_modified_timestamp()
-        plugin_manager.hook.on_tournament_updated(tournament=self)
+        plugin_manager.hook.on_tournament_data_updated(tournament=self)
 
     def clear_cache(self, clear_papi_cache: bool = False):
         """Clears the cache of the tournament."""
