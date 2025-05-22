@@ -18,6 +18,7 @@
                     {% else %}
                         {{ _('Manual') }}
                     {% endif %}
+                </td>
                 <td>
                     {% with result=upload_status_messages[result_id(tournament)] if result_id(tournament) in upload_status_messages %}
                         {% if result %}

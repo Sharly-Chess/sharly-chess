@@ -3,7 +3,7 @@
         <i class="bi bi-cloud-arrow-up-fill pe-1" ></i>
         {% if event.plugin_data.ffe.ffe_auto_upload %}
             {{ _(
-                'Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)',
+                'Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)',
                 ffe_auto_upload_delay=event.plugin_data.ffe.ffe_auto_upload_delay or '3') }}
         {% else %}
             {{ _('Auto-upload to FFE site disabled') }}

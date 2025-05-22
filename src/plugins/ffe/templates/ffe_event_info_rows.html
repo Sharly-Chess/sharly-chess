@@ -3,7 +3,7 @@
     <td class="{% if not admin_event.plugin_data.chessevent.chessevent_user_id or not admin_event.plugin_data.chessevent.chessevent_event_id %}fst-italic{% endif %}">
         {% if admin_event.plugin_data.ffe.ffe_auto_upload %}
             {{ _(
-                'Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)',
+                'Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)',
                 ffe_auto_upload_delay=admin_event.plugin_data.ffe.ffe_auto_upload_delay or '3') }}
         {% else %}
             {{ _('Auto-upload to FFE site disabled') }}

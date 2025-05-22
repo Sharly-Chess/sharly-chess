@@ -29,7 +29,7 @@
             class="p-0"
         />
         {% if tournament.plugin_data.ffe.ffe_id %}
-            {{ _('FFE certification number: %(ffe_id)s', ffe_id=tournament.plugin_data.ffe.ffe_id) }}
+            {{ _('FFE certification number: %(ffe_id)d', ffe_id=tournament.plugin_data.ffe.ffe_id) }}
             <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament.plugin_data.ffe.ffe_id }}" target="_blank">
                 <i class="bi bi-box-arrow-up-right"></i>
             </a>

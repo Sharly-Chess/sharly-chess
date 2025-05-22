@@ -343,7 +343,7 @@ msgstr "L'authentification a échoué."
 msgid "Authentication successful!"
 msgstr "Authentification réussie !"
 
-msgid "Auto upload to FFE enabled"
+msgid "Auto-upload to FFE enabled"
 msgstr "Mise en ligne automatique vers la FFE"
 
 msgid "Auto-update"
@@ -353,10 +353,10 @@ msgid "Auto-upload results to FFE site"
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE"
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
-msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela prenne effet."
+msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela fonctionne."
 
 #, python-format
-msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
+msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
 msgstr "Mise en ligne automatique vers la FFE activée (au minimum toutes les %(ffe_auto_upload_delay)s minutes)"
 
 msgid "Auto-upload to FFE site disabled"
@@ -1528,8 +1528,8 @@ msgid "FFE certification number not defined for tournament [{tournament_uniq_id}
 msgstr "Numéro d’homologation FFE non défini pour le tournoi [{tournament_uniq_id}]."
 
 #, python-format
-msgid "FFE certification number: %(ffe_id)s"
-msgstr "Homologation FFE : %(ffe_id)s"
+msgid "FFE certification number: %(ffe_id)d"
+msgstr "Homologation FFE : %(ffe_id)d"
 
 msgid "FFE database"
 msgstr "Base de données FFE"
@@ -4553,7 +4553,7 @@ msgid "Uploading tournament..."
 msgstr "Mise en ligne en cours…"
 
 msgid "Upper limit expected to be greater than lower limit."
-msgstr "La limite Elo haute doit être supérieure à la limite ELO basse."
+msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
@@ -4737,7 +4737,7 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écr
 msgid "You must create a tournament before creating screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
 
-msgid "You must enter the tournament ID and password in each tournaments settings."
+msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
 
 msgid "Your choice (by default {default}): "

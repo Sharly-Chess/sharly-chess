@@ -80,22 +80,20 @@ class FfeBackgroundUploader:
                 FfeUploadStatus.SETTINGS_ERROR,
                 _(
                     'FFE certification number and password not defined for tournament'
-                ).format(tournament_uniq_id=tournament.uniq_id),
+                ),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file:
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not defined for tournament').format(
-                    tournament_uniq_id=tournament.uniq_id
-                ),
+                _('Papi file not defined for tournament'),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file_exists:
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
                 _('Papi file not found [{file}]').format(
-                    file=tournament.file, tournament_uniq_id=tournament.uniq_id
+                    file=tournament.file,
                 ),
             )
             cls.upload_status_messages[result_id] = result
@@ -106,7 +104,7 @@ class FfeBackgroundUploader:
         tournaments: list[Tournament] = []
         for tournament in admin_event.tournaments_by_id.values():
             result = cls.get_updated_tournament_upload_result(tournament)
-            if result and result.status == FfeUploadStatus.SETTINGS_ERROR:
+            if result.status == FfeUploadStatus.SETTINGS_ERROR:
                 # Skip this tournament if we have a SETTINGS_ERROR
                 continue
 
@@ -171,7 +169,7 @@ class FfeBackgroundUploader:
             return
 
         current_result = cls.get_updated_tournament_upload_result(tournament)
-        if current_result and current_result.status == FfeUploadStatus.SETTINGS_ERROR:
+        if current_result.status == FfeUploadStatus.SETTINGS_ERROR:
             # Skip this tournament if we have a SETTINGS_ERROR
             return
 
@@ -229,11 +227,7 @@ class FfeBackgroundUploader:
                     cls.upload_status_messages[cls.result_id(tournament)] = (
                         FfeUploadResult(
                             FfeUploadStatus.INFO,
-                            _('Papi file not modified since last upload').format(
-                                last_upload=format_timestamp_date_time(
-                                    cls.ffe_last_upload(tournament)
-                                )
-                            ),
+                            _('Papi file not modified since last upload'),
                         )
                     )
                     pass
@@ -278,7 +272,7 @@ class FfeBackgroundUploader:
 
         if not force:
             result = cls.get_updated_tournament_upload_result(tournament)
-            if result and result.status == FfeUploadStatus.SETTINGS_ERROR:
+            if result.status == FfeUploadStatus.SETTINGS_ERROR:
                 # Skip this tournament if we have a SETTINGS_ERROR
                 return
 

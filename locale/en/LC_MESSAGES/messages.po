@@ -343,7 +343,7 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
-msgid "Auto upload to FFE enabled"
+msgid "Auto-upload to FFE enabled"
 msgstr ""
 
 msgid "Auto-update"
@@ -356,7 +356,7 @@ msgid "Auto-upload results to FFE site when a tournament is updated. You must en
 msgstr ""
 
 #, python-format
-msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
+msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
 msgstr ""
 
 msgid "Auto-upload to FFE site disabled"
@@ -1528,7 +1528,7 @@ msgid "FFE certification number not defined for tournament [{tournament_uniq_id}
 msgstr ""
 
 #, python-format
-msgid "FFE certification number: %(ffe_id)s"
+msgid "FFE certification number: %(ffe_id)d"
 msgstr ""
 
 msgid "FFE database"
@@ -4737,7 +4737,7 @@ msgstr ""
 msgid "You must create a tournament before creating screens."
 msgstr ""
 
-msgid "You must enter the tournament ID and password in each tournaments settings."
+msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr ""
 
 msgid "Your choice (by default {default}): "
@@ -4926,64 +4926,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Auto-upload results to FFE site:"
-#~ msgstr ""
-
-#~ msgid "FFE: Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minutes)"
-#~ msgstr ""
-
-#~ msgid "FFE: Auto-upload to FFE site disabled"
-#~ msgstr ""
-
-#~ msgid "No tournament to upload."
-#~ msgstr ""
-
-#~ msgid "Papi file not defined for tournament."
-#~ msgstr ""
-
-#~ msgid "Papi file not modified since last upload [{last_upload}]."
-#~ msgstr ""
-
-#~ msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-#~ msgstr ""
-
-#~ msgid "Papi file not modified since last upload"
-#~ msgstr ""
-
-#~ msgid "Upload tournaments to FFE"
-#~ msgstr ""
-
-#~ msgid "Uploading tournament [{tournament_uniq_id}]..."
-#~ msgstr ""
-
-#~ msgid "No auto upload to FFE"
-#~ msgstr ""
-
-#~ msgid "No auto-upload"
-#~ msgstr ""
-
-#~ msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-#~ msgstr ""
-
-#~ msgid "FFE certification number and password not defined"
-#~ msgstr ""
-
-#~ msgid "Modified, but auto update failed"
-#~ msgstr ""
-
-#~ msgid "Network is offline, unable to upload tournament"
-#~ msgstr ""
-
-#~ msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
-#~ msgstr ""
-
-#~ msgid "Disable auto-upload"
-#~ msgstr ""
-
-#~ msgid "Enable auto-upload"
-#~ msgstr ""
-
-#~ msgid "Not connected to internet."
-#~ msgstr ""
 
