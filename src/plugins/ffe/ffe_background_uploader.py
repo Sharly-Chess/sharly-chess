@@ -284,10 +284,13 @@ class FfeBackgroundUploader:
                 # There's already a thread running for this tournament
                 return
 
-        delay = get_data(
-            tournament.event.plugin_data,
-            'ffe_auto_upload_delay',
-            FFE_DEFAULT_UPLOAD_DELAY,
+        delay = (
+            get_data(
+                tournament.event.plugin_data,
+                'ffe_auto_upload_delay',
+                None,
+            )
+            or FFE_DEFAULT_UPLOAD_DELAY
         )
         wait_time = 0.1
         if not force and time() < ffe_last_upload + delay * 60:
