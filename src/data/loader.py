@@ -1,13 +1,14 @@
 import re
 import shutil
 import time
+from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cached_property
 from logging import Logger
-from operator import attrgetter
 from pathlib import Path
+from typing import Literal
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
@@ -22,9 +23,8 @@ from common.exception import SharlyChessException
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
-from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredEvent
+from database.sqlite.event.event_store import EventMetadata
 
 logger: Logger = get_logger()
 
@@ -32,7 +32,7 @@ logger: Logger = get_logger()
 class EventLoader:
     _valid_event_ids: list[str] = []
     _invalid_uniq_ids: list[str] = []
-    _loaded_stored_events_by_id: dict[str, StoredEvent] = {}
+    _loaded_event_metadatas_by_id: dict[str, EventMetadata] = {}
     _loaded_events_by_id: dict[str, Event] = {}
     _loaded_events_expire_at: dict[str, datetime] = {}
 
@@ -57,7 +57,7 @@ class EventLoader:
     @classmethod
     def unload_event(cls, event_uniq_id: str):
         with suppress(KeyError):
-            del cls._loaded_stored_events_by_id[event_uniq_id]
+            del cls._loaded_event_metadatas_by_id[event_uniq_id]
         with suppress(KeyError):
             del cls._loaded_events_by_id[event_uniq_id]
         with suppress(KeyError):
@@ -71,38 +71,13 @@ class EventLoader:
         if event_uniq_id:
             self.unload_event(event_uniq_id)
         cached_property_names = [
-            'event_uniq_ids',
-            'stored_events_by_id',
-            'stored_events_sorted_by_name',
-            'events_by_id',
-            'events_sorted_by_name',
+            name
+            for name in dir(self)
+            if isinstance(getattr(type(self), name, None), cached_property)
         ]
         for property_name in cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
-
-    def reload_tournament(self, event_uniq_id: str, tournament_id: int):
-        event = self._loaded_events_by_id[event_uniq_id]
-        with EventDatabase(event_uniq_id) as database:
-            stored_tournament = database.get_stored_tournament(tournament_id)
-        if not stored_tournament:
-            if tournament_id in event.tournaments_by_id:
-                del event.tournaments_by_id[tournament_id]
-        else:
-            event.tournaments_by_id[tournament_id] = Tournament(
-                event, stored_tournament
-            )
-        self.clear_cache()
-
-    def load_stored_event(self, uniq_id: str) -> StoredEvent:
-        try:
-            return self._loaded_stored_events_by_id[uniq_id]
-        except KeyError:
-            with EventDatabase(uniq_id) as event_database:
-                self.__class__._loaded_stored_events_by_id[uniq_id] = (
-                    event_database.load_stored_event()
-                )
-            return self._loaded_stored_events_by_id[uniq_id]
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None):
@@ -170,16 +145,6 @@ class EventLoader:
             name = f'{base_name} ({index})'
         return name
 
-    @cached_property
-    def stored_events_by_id(self) -> dict[str, StoredEvent]:
-        return {
-            uniq_id: self.load_stored_event(uniq_id) for uniq_id in self.event_uniq_ids
-        }
-
-    @cached_property
-    def stored_events_sorted_by_name(self) -> list[StoredEvent]:
-        return sorted(self.stored_events_by_id.values(), key=lambda event: event.name)
-
     def _load_event(self, uniq_id: str, reload: bool) -> Event:
         cls = self.__class__
         cls._loaded_events_expire_at[uniq_id] = datetime.now() + timedelta(minutes=30)
@@ -190,9 +155,10 @@ class EventLoader:
             event.check_update()
             return event
         self.load_event_ids(uniq_id)
-        stored_event: StoredEvent = self.load_stored_event(uniq_id)
-        cls._loaded_events_by_id[uniq_id] = Event(stored_event)
-        return self._loaded_events_by_id[uniq_id]
+        with EventDatabase(uniq_id) as event_database:
+            event = Event(event_database.load_stored_event())
+        cls._loaded_events_by_id[uniq_id] = event
+        return event
 
     def load_event(self, uniq_id: str) -> Event:
         return self._load_event(uniq_id, reload=False)
@@ -220,74 +186,51 @@ class EventLoader:
             event for event in self.events_sorted_by_name if event.tournaments_by_id
         ]
 
-    @cached_property
-    def passed_events(self) -> list[Event]:
+    @classmethod
+    def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
+        try:
+            return cls._loaded_event_metadatas_by_id[uniq_id]
+        except KeyError:
+            with EventDatabase(uniq_id) as database:
+                event_metadata = database.load_stored_event_metadata()
+            cls._loaded_event_metadatas_by_id[uniq_id] = event_metadata
+            return event_metadata
+
+    @classmethod
+    def get_event_metadatas(
+        cls,
+        status: Literal['passed', 'current', 'coming'] | None = None,
+        public_only: bool = False,
+    ) -> list[EventMetadata]:
+        conditions: list[Callable[[EventMetadata], bool]] = []
+        if public_only:
+            conditions.append(lambda event: event.public)
+        now = time.time()
+        match status:
+            case 'passed':
+                conditions.append(lambda event: event.stop < now)
+            case 'current':
+                conditions.append(lambda event: event.start < now < event.stop)
+            case 'coming':
+                conditions.append(lambda event: now < event.start)
         return sorted(
-            [event for event in self.events_by_id.values() if event.stop < time.time()],
+            cls._filter_event_metadatas(conditions),
             key=lambda event: (-event.stop, -event.start, event.name),
         )
 
-    @cached_property
-    def current_events(self) -> list[Event]:
-        return sorted(
-            [
-                event
-                for event in self.events_by_id.values()
-                if event.start < time.time() < event.stop
-            ],
-            key=lambda event: (event.stop, event.start, event.name),
-        )
-
-    @cached_property
-    def coming_events(self) -> list[Event]:
-        return sorted(
-            [
-                event
-                for event in self.events_by_id.values()
-                if time.time() < event.start
-            ],
-            key=lambda event: (event.stop, event.start, event.name),
-        )
-
-    @cached_property
-    def public_events(self) -> list[Event]:
-        return sorted(
-            filter(attrgetter('public'), self.events_by_id.values()),
-            key=attrgetter('name'),
-        )
-
-    @cached_property
-    def passed_public_events(self) -> list[Event]:
-        return sorted(
-            [
-                event
-                for event in self.events_by_id.values()
-                if event.public and event.stop < time.time()
-            ],
-            key=lambda event: (-event.stop, -event.start, event.name),
-        )
-
-    @cached_property
-    def current_public_events(self) -> list[Event]:
-        return sorted(
-            [
-                event
-                for event in self.events_by_id.values()
-                if event.public and event.start < time.time() < event.stop
-            ],
-            key=lambda event: (-event.stop, -event.start, event.name),
-        )
-
-    @cached_property
-    def coming_public_events(self) -> list[Event]:
-        return sorted(
-            [
-                event
-                for event in self.events_by_id.values()
-                if event.public and time.time() < event.start
-            ],
-            key=lambda event: (-event.stop, -event.start, event.name),
-        )
+    @classmethod
+    def _filter_event_metadatas(
+        cls, conditions: list[Callable[[EventMetadata], bool]]
+    ) -> list[EventMetadata]:
+        cls.load_event_ids()
+        event_metadatas = [
+            cls.load_event_metadata(uniq_id) for uniq_id in cls._valid_event_ids
+        ]
+        return [
+            event_metadata
+            for event_metadata in event_metadatas
+            if all(condition(event_metadata) for condition in conditions)
+        ]
 
 
 @dataclass

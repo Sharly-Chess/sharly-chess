@@ -1402,10 +1402,6 @@ msgstr ""
 msgid "Error while creating the database: {error}."
 msgstr ""
 
-#, python-format
-msgid "Errors: %(num)d"
-msgstr ""
-
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
@@ -1912,10 +1908,6 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
-#, python-format
-msgid "Informations: %(num)d"
-msgstr ""
-
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
@@ -2387,16 +2379,10 @@ msgstr ""
 msgid "No display controllers."
 msgstr ""
 
-msgid "No errors"
-msgstr ""
-
 msgid "No events found."
 msgstr ""
 
 msgid "No hours."
-msgstr ""
-
-msgid "No informations"
 msgstr ""
 
 msgid "No internet connection and no local database."
@@ -2511,9 +2497,6 @@ msgid "No updates found."
 msgstr ""
 
 msgid "No valid hour defined."
-msgstr ""
-
-msgid "No warnings"
 msgstr ""
 
 msgid "None"
@@ -4535,10 +4518,6 @@ msgid "Warning: the deletion of an event is permanent!"
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
-msgstr ""
-
-#, python-format
-msgid "Warnings: %(num)d"
 msgstr ""
 
 msgid "Web access"

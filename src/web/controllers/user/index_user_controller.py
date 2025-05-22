@@ -3,8 +3,8 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, Reswap, ClientRedir
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
+from common import format_timestamp_time, format_timestamp_date
 from common.i18n import _
-from data.event import Event
 from data.loader import EventLoader
 from web.controllers.user.base_user_controller import BaseUserController, UserWebContext
 from web.messages import Message
@@ -15,18 +15,10 @@ class IndexUserController(BaseUserController):
     def _user_render(
         web_context: UserWebContext,
     ) -> Template | ClientRedirect:
-        event_loader: EventLoader = EventLoader.get(request=web_context.request)
-        current_events: list[Event]
-        coming_events: list[Event]
-        passed_events: list[Event]
-        if web_context.admin_auth:
-            current_events = event_loader.current_events
-            coming_events = event_loader.coming_events
-            passed_events = event_loader.passed_events
-        else:
-            current_events = event_loader.current_public_events
-            coming_events = event_loader.coming_public_events
-            passed_events = event_loader.passed_public_events
+        public_only = not web_context.admin_auth
+        passed_events = EventLoader.get_event_metadatas('passed', public_only)
+        current_events = EventLoader.get_event_metadatas('current', public_only)
+        coming_events = EventLoader.get_event_metadatas('coming', public_only)
         nav_tabs: dict[str, dict] = {
             'current_events': {
                 'title': _('Current events ({num})').format(
@@ -75,6 +67,8 @@ class IndexUserController(BaseUserController):
             | {
                 'messages': Message.messages(web_context.request),
                 'nav_tabs': nav_tabs,
+                'format_timestamp_date': format_timestamp_date,
+                'format_timestamp_time': format_timestamp_time,
             },
         )
 
@@ -83,19 +77,13 @@ class IndexUserController(BaseUserController):
         web_context: UserWebContext,
         date: float,
     ) -> bool:
-        event_loader: EventLoader = EventLoader.get(request=web_context.request)
-        events: list[Event]
-        if web_context.admin_auth:
-            events = list(event_loader.events_by_id.values())
-        else:
-            events = event_loader.public_events
-        for event in events:
-            if event.last_update and event.last_update > date:
-                return True
-            for tournament in event.tournaments_by_id.values():
-                if tournament.last_update > date:
-                    return True
-        return False
+        event_metadatas = EventLoader.get_event_metadatas(
+            public_only=not web_context.admin_auth
+        )
+        return any(
+            max(event.last_update, event.last_tournament_update or 0) > date
+            for event in event_metadatas
+        )
 
     def _user(
         self,

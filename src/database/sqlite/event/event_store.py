@@ -174,7 +174,7 @@ class StoredDisplayController:
 
 
 @dataclass
-class StoredEvent:
+class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
@@ -195,6 +195,13 @@ class StoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     last_update: float = 0.0
+
+    # Plugins can add their own tournament data
+    plugin_data: dict[str, dict[str, Any]] | None = None
+
+
+@dataclass
+class StoredEvent(BaseStoredEvent):
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
     stored_tournaments: list[StoredTournament] = field(
         default_factory=list[StoredTournament]
@@ -207,8 +214,15 @@ class StoredEvent:
     )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
-    # Plugins can add their own tournament data
-    plugin_data: dict[str, dict[str, Any]] | None = None
+
+@dataclass
+class EventMetadata(BaseStoredEvent):
+    tournament_count: int = 0
+    timer_count: int = 0
+    screen_count: int = 0
+    family_count: int = 0
+    rotator_count: int = 0
+    last_tournament_update: float | None = None
 
 
 @dataclass

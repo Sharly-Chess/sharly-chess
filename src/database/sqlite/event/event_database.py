@@ -23,6 +23,7 @@ from database.sqlite.event.event_store import (
     StoredDisplayController,
     StoredTournament,
     StoredEvent,
+    EventMetadata,
     StoredTimer,
     StoredTimerHour,
     StoredFamily,
@@ -886,9 +887,11 @@ class EventDatabase(MigrationDatabase):
     # StoredEvent
     # ---------------------------------------------------------------------------------
 
-    def _row_to_stored_event(self, row: dict[str, Any]) -> StoredEvent:
+    def _row_to_base_stored_event[T: StoredEvent | EventMetadata](
+        self, row: dict[str, Any], stored_event_type: type[T]
+    ) -> T:
         """Convert a row to a StoredEvent record."""
-        stored_event = StoredEvent(
+        stored_event = stored_event_type(
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', SharlyChessConfig().default_federation),
@@ -924,17 +927,11 @@ class EventDatabase(MigrationDatabase):
         )
         return stored_event
 
-    def _get_stored_event(self) -> StoredEvent:
-        """Gets all the information about the event in the database
-        and returns a corresponding StoredEvent record."""
-        self.execute(
-            'SELECT * FROM `info`',
-            (),
-        )
-        return self._row_to_stored_event(self.fetchone())
-
     def load_stored_event(self) -> StoredEvent:
-        stored_event: StoredEvent = self._get_stored_event()
+        self.execute('SELECT * FROM `info`')
+        stored_event: StoredEvent = self._row_to_base_stored_event(
+            self.fetchone(), StoredEvent
+        )
         stored_event.stored_tournaments = list(self.load_stored_tournaments())
         stored_event.stored_timers = list(self.load_stored_timers())
         stored_event.stored_families = list(self.load_stored_families())
@@ -945,7 +942,20 @@ class EventDatabase(MigrationDatabase):
         )
         return stored_event
 
-    def update_stored_event(self, stored_event: StoredEvent) -> StoredEvent:
+    def load_stored_event_metadata(self) -> EventMetadata:
+        self.execute('SELECT * FROM `info`')
+        metadata: EventMetadata = self._row_to_base_stored_event(
+            self.fetchone(), EventMetadata
+        )
+        metadata.tournament_count = self._get_table_count('tournament')
+        metadata.timer_count = self._get_table_count('timer')
+        metadata.screen_count = self._get_table_count('screen')
+        metadata.family_count = self._get_table_count('family')
+        metadata.rotator_count = self._get_table_count('rotator')
+        metadata.last_tournament_update = self.get_all_tournaments_last_update()
+        return metadata
+
+    def update_stored_event(self, stored_event: StoredEvent):
         """Updates the event database with the information in the provided
         `stored_event`."""
 
@@ -1002,7 +1012,6 @@ class EventDatabase(MigrationDatabase):
 
         field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
-        return self._get_stored_event()
 
     # ---------------------------------------------------------------------------------
     # StoredTimerHour
@@ -1549,6 +1558,10 @@ class EventDatabase(MigrationDatabase):
                 tournament_id,
             ),
         )
+
+    def get_all_tournaments_last_update(self) -> float | None:
+        self.execute('SELECT MAX(`last_update`) AS `last_update` FROM `tournament`')
+        return self.fetchone()['last_update']
 
     # ---------------------------------------------------------------------------------
     # Illegal moves

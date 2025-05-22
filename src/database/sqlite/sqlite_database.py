@@ -106,6 +106,10 @@ class SQLiteDatabase:
         assert self.cursor is not None
         return self.cursor.lastrowid
 
+    def _get_table_count(self, table_name: str) -> int:
+        self.execute(f'SELECT COUNT(*) as `count` FROM `{table_name}`')
+        return self.fetchone()['count']
+
     @staticmethod
     def load_bool_or_none_from_database_field(
         data: int | None, if_none: bool | None = None
