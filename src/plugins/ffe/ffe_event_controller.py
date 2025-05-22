@@ -142,9 +142,10 @@ class FfeAdminEventController(BaseEventAdminController):
             return int(
                 get_data(
                     admin_event.plugin_data,
-                    'ffe_upload_delay',
-                    180,
+                    'ffe_auto_upload_delay',
+                    3,
                 )
+                * 60
             )
 
         # Otherwise, no need to poll

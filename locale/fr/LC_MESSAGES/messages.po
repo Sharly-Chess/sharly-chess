@@ -343,21 +343,24 @@ msgstr "L'authentification a échoué."
 msgid "Authentication successful!"
 msgstr "Authentification réussie !"
 
-msgid "Auto-upload to FFE enabled"
-msgstr "Mise en ligne automatique vers la FFE"
+msgid "Auto upload to FFE enabled"
+msgstr ""
 
 msgid "Auto-update"
 msgstr "Mise à jour"
 
 msgid "Auto-upload results to FFE site"
-msgstr "Mise en ligne automatique des résultats vers le site de la FFE"
+msgstr "Envoi automatique des résultats sur le site de la FFE"
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela fonctionne."
 
+msgid "Auto-upload to FFE enabled"
+msgstr "Mise en ligne automatique vers le site de la FFE activée"
+
 #, python-format
 msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-msgstr "Mise en ligne automatique vers la FFE activée (au minimum toutes les %(ffe_auto_upload_delay)s minutes)"
+msgstr "Mise en ligne automatique vers la FFE activée (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
 
 msgid "Auto-upload to FFE site disabled"
 msgstr "Mise en ligne automatique vers le site de la FFE désactivée"
@@ -1518,9 +1521,6 @@ msgstr "Identifiant unique FFE :"
 msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
 
-msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-msgstr "Le numéro d’homologation et le mot de passe FFE ne sont pas correctement définis pour le tournoi [{tournament_name}], les données ne peuvent être envoyées sur le site web FFE."
-
 msgid "FFE certification number and password not defined for tournament"
 msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
 
@@ -2293,7 +2293,7 @@ msgid "Minimal time (handicap, seconds):"
 msgstr "Temps minimal (handicap, en secondes) :"
 
 msgid "Minimum delay between uploads (minutes):"
-msgstr "Délai minimum entre les mises en lignes (en minutes) :"
+msgstr "Délai minimum entre deux envois (en minutes) :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -3743,9 +3743,6 @@ msgstr "La fédération par défaut de vos évènements."
 msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
-msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
-msgstr "Le délai doit être d’au moins 3 minutes pour éviter de surcharger le serveur de la FFE."
-
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
@@ -3818,6 +3815,10 @@ msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si ce champ est laissé vide, tous les résultats sont affichés)."
+
+#, python-format
+msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
+msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE (par défaut : %(num)d minutes)"
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
@@ -4547,7 +4548,7 @@ msgid "Upload tournaments to the FFE"
 msgstr "Mettre en ligne les tournois vers la FFE"
 
 msgid "Upload:"
-msgstr "Mise en ligne :"
+msgstr "Mise en ligne :"
 
 msgid "Uploading tournament..."
 msgstr "Mise en ligne en cours…"

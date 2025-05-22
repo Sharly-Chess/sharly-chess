@@ -343,7 +343,7 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
-msgid "Auto-upload to FFE enabled"
+msgid "Auto upload to FFE enabled"
 msgstr ""
 
 msgid "Auto-update"
@@ -353,6 +353,9 @@ msgid "Auto-upload results to FFE site"
 msgstr ""
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
+msgstr ""
+
+msgid "Auto-upload to FFE enabled"
 msgstr ""
 
 #, python-format
@@ -1516,9 +1519,6 @@ msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number (optional):"
-msgstr ""
-
-msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
 msgstr ""
 
 msgid "FFE certification number and password not defined for tournament"
@@ -3743,9 +3743,6 @@ msgstr ""
 msgid "The default language used."
 msgstr ""
 
-msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
-msgstr ""
-
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr ""
@@ -3817,6 +3814,10 @@ msgid "The maximum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr ""
+
+#, python-format
+msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4926,4 +4927,31 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Auto-upload to FFE enabled"
+#~ msgstr ""
+
+#~ msgid "Auto-upload results to FFE site"
+#~ msgstr ""
+
+#~ msgid "FFE settings"
+#~ msgstr ""
+
+#~ msgid "Minimum delay between uploads (minutes):"
+#~ msgstr ""
+
+#~ msgid "Upload:"
+#~ msgstr ""
+
+#~ msgid "You must enter the tournament certification number and password in each tournament's settings."
+#~ msgstr ""
+
+#~ msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+#~ msgstr ""
+
+#~ msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
+#~ msgstr ""
+
+#~ msgid "The minimum delay between auto-uploads to the FFE server ({{ ffe_default_delay }} by default)"
+#~ msgstr ""
 

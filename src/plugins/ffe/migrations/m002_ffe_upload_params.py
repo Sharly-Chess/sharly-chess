@@ -6,9 +6,7 @@ class Migration(BasePluginMigration):
         self.database.execute(
             'ALTER TABLE `info` ADD `ffe_auto_upload` INTEGER NOT NULL DEFAULT 0'
         )
-        self.database.execute(
-            'ALTER TABLE `info` ADD `ffe_auto_upload_delay` INTEGER DEFAULT 3'
-        )
+        self.database.execute('ALTER TABLE `info` ADD `ffe_auto_upload_delay` INTEGER')
         self.database.execute('ALTER TABLE `tournament` ADD `ffe_auto_upload` INTEGER')
 
     def backward(self):

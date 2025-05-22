@@ -382,9 +382,9 @@ class FFESession(Session):
         if not ffe_id or not ffe_password:
             if do_log:
                 logger.warning(
-                    _(
-                        'FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
-                    ).format(tournament_name=self.tournament.name)
+                    'FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'.format(
+                        tournament_name=self.tournament.name
+                    )
                 )
                 return None, None
             else:

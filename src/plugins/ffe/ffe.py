@@ -22,6 +22,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.ffe_defaults import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
@@ -585,7 +586,7 @@ class FfePlugin(Plugin):
             stored_event.plugin_data = {}
         stored_event.plugin_data[self.id] = {
             'ffe_auto_upload': row.get('ffe_auto_upload', False),
-            'ffe_auto_upload_delay': row.get('ffe_auto_upload_delay', 3),
+            'ffe_auto_upload_delay': row.get('ffe_auto_upload_delay', None),
         }
 
     @hookimpl
@@ -623,6 +624,7 @@ class FfePlugin(Plugin):
             'ffe_auto_upload_delay': WebContext.value_to_form_data(
                 self.get_data(event.plugin_data, 'ffe_auto_upload_delay', '')
             ),
+            'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
         }
 
     @hookimpl
@@ -637,9 +639,9 @@ class FfePlugin(Plugin):
         ffe_auto_upload_delay = WebContext.form_data_to_int(
             data, field := 'ffe_auto_upload_delay'
         )
-        if not ffe_auto_upload_delay or ffe_auto_upload_delay < 3:
+        if ffe_auto_upload_delay and ffe_auto_upload_delay < FFE_MIN_UPLOAD_DELAY:
             errors[field] = _(
-                'The delay must be at least 3 minutes to avoid overloading the FFE server.'
+                f'The delay must be at least {FFE_MIN_UPLOAD_DELAY} minutes to avoid overloading the FFE server.'
             )
 
         # Keep data other than these two fields

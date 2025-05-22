@@ -7,7 +7,7 @@
             name='ffe_auto_upload',
             label=_('Upload:'),
             placeholder=_('Auto-upload results to FFE site'),
-            help_text=_('You must enter the tournament certification number and password in each tournament's settings.'),
+            help_text=_("You must enter the tournament certification number and password in each tournament's settings."),
             data=data, errors=errors
         ) }}
     </div>
@@ -16,7 +16,7 @@
             name='ffe_auto_upload_delay',
             label=_('Minimum delay between uploads (minutes):'),
             placeholder=_('E.g.: %(num)d', num=15),
-            help_text=help_text,
+            help_text=_("The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)", num=data.ffe_default_delay),
             data=data, errors=errors,
             min=1
         ) }}

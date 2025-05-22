@@ -4,7 +4,6 @@ from functools import partial
 from threading import Thread, Timer
 from time import time
 
-from common import format_timestamp_date_time
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -14,6 +13,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.ffe_defaults import FFE_DEFAULT_UPLOAD_DELAY
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
@@ -78,9 +78,7 @@ class FfeBackgroundUploader:
         if not cls.check_id_and_password(tournament):
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _(
-                    'FFE certification number and password not defined for tournament'
-                ),
+                _('FFE certification number and password not defined for tournament'),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file:
@@ -286,7 +284,11 @@ class FfeBackgroundUploader:
                 # There's already a thread running for this tournament
                 return
 
-        delay = get_data(tournament.event.plugin_data, 'ffe_upload_delay', 3)
+        delay = get_data(
+            tournament.event.plugin_data,
+            'ffe_auto_upload_delay',
+            FFE_DEFAULT_UPLOAD_DELAY,
+        )
         wait_time = 0.1
         if not force and time() < ffe_last_upload + delay * 60:
             wait_time = max(delay * 60 - (time() - ffe_last_upload), 0.1)

@@ -2,9 +2,7 @@
     <div class="d-flex gap-2 card-plugin-block {% if not event.plugin_data.ffe.ffe_auto_upload %}text-secondary{% endif %}">
         <i class="bi bi-cloud-arrow-up-fill pe-1" ></i>
         {% if event.plugin_data.ffe.ffe_auto_upload %}
-            {{ _(
-                'Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)',
-                ffe_auto_upload_delay=event.plugin_data.ffe.ffe_auto_upload_delay or '3') }}
+            {{ _('Auto-upload to FFE enabled') }}
         {% else %}
             {{ _('Auto-upload to FFE site disabled') }}
         {% endif %}
