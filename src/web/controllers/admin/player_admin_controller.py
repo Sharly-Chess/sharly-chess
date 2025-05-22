@@ -12,6 +12,7 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
+from litestar.channels import ChannelsPlugin
 
 from common import unicode_normalize
 from common.i18n import _, ngettext
@@ -1952,3 +1953,17 @@ class PlayerAdminController(BaseEventAdminController):
             'admin_players_update_extra_columns': extra_columns,
         }
         return self._admin_event_render(template_context)
+
+    @classmethod
+    def publish_new_checkin(cls, channels: ChannelsPlugin, event_uniq_id: str):
+        from web.settings import template_engine
+
+        channels.publish(
+            {
+                'event': f'new-checkins/{event_uniq_id}',
+                'data': template_engine.engine.get_template(
+                    '/admin/players/new_checkins.html'
+                ).render(),
+            },
+            ['sse'],
+        )

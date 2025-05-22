@@ -19,6 +19,9 @@
         hx_include="[name='round']"
     ) }}
 
+    <div hx-ext="sse" sse-connect="/sse" sse-swap="new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_round }}">
+    </div>
+
     <div class="pt-1 pb-1 row">
         {% if has_unpaired %}
             <div class="col-12 col-md-3"></div>

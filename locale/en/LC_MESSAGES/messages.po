@@ -2352,10 +2352,16 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "New checkins are in, refresh your browser"
+msgstr ""
+
 msgid "New display controller"
 msgstr ""
 
 msgid "New event"
+msgstr ""
+
+msgid "New results are in, refresh your browser"
 msgstr ""
 
 msgid "New tournament"

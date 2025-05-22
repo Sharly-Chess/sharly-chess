@@ -2352,11 +2352,17 @@ msgstr "Dernières rondes sans bye :"
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
+msgid "New checkins are in, refresh your browser"
+msgstr "De nouveaux enregistrements sont disponibles, actualisez votre navigateur"
+
 msgid "New display controller"
 msgstr "Nouveau pilote d'afficheurs"
 
 msgid "New event"
 msgstr "Nouvel évènement"
+
+msgid "New results are in, refresh your browser"
+msgstr "De nouveaux résultats sont disponibles, actualisez votre navigateur"
 
 msgid "New tournament"
 msgstr "Nouveau tournoi"

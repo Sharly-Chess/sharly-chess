@@ -11,6 +11,8 @@ import uvicorn
 from litestar import Litestar
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
+from litestar.channels import ChannelsPlugin
+from litestar.channels.backends.memory import MemoryChannelsBackend
 
 from common import REQUEST_TIMEOUT, LOG_FILE
 from common.engine import Engine
@@ -122,6 +124,12 @@ class ServerEngine(Engine):
 
         logging_config = LOGGING_CONFIG
         logging_config['handlers']['console']['level'] = SharlyChessConfig().log_level  # type: ignore
+
+        channels_plugin = ChannelsPlugin(
+            backend=MemoryChannelsBackend(),
+            arbitrary_channels_allowed=True,
+        )
+
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,
@@ -132,12 +140,14 @@ class ServerEngine(Engine):
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
+            plugins=[channels_plugin],
         )
         uvicorn.run(
             app,
             host=sharly_chess_config.web_host,
             port=sharly_chess_config.web_port,
             log_config=logging_config,
+            timeout_graceful_shutdown=0,
         )
 
     @property

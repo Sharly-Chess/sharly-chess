@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
+from litestar.channels import ChannelsPlugin
 
 from common.i18n import _
 from common.logger import get_logger
@@ -1290,4 +1291,33 @@ class PairingsAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             round_=current_round,
+        )
+
+    @classmethod
+    def publish_new_user_results(
+        cls,
+        channels: ChannelsPlugin,
+        event_uniq_id: str,
+        tournament_id: int,
+        round_: int,
+    ):
+        from web.settings import template_engine
+
+        channels.publish(
+            {
+                'event': f'new-user-results/{event_uniq_id}/{tournament_id}/{round_}',
+                'data': template_engine.engine.get_template(
+                    '/admin/pairings/new_results_in.html'
+                ).render(),
+            },
+            ['sse'],
+        )
+        channels.publish(
+            {
+                'event': f'new-user-results/{event_uniq_id}',
+                'data': template_engine.engine.get_template(
+                    '/admin/pairings/new_results_in.html'
+                ).render(),
+            },
+            ['sse'],
         )

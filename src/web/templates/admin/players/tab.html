@@ -52,6 +52,11 @@
         </div>
     </div>
 
+    <div
+        style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1rem;"
+        hx-ext="sse" sse-connect="/sse" sse-swap="new-checkins/{{ admin_event.uniq_id }},new-user-results/{{ admin_event.uniq_id }}"
+    ></div>
+
     <section class="pt-1 pb-1">
         <table
             id="players-table"
