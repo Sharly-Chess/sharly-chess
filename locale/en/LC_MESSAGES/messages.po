@@ -4525,6 +4525,9 @@ msgstr ""
 msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 msgstr ""
 
+msgid "Upload"
+msgstr ""
+
 msgid "Upload failed"
 msgstr ""
 

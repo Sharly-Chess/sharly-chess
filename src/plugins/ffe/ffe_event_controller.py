@@ -21,6 +21,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminController
+from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -243,6 +244,34 @@ class FfeAdminEventController(BaseEventAdminController):
         admin_event = web_context.admin_event
         assert admin_event is not None
         FfeBackgroundUploader.upload_event(admin_event)
+
+        return self._render_upload_results(request, web_context)
+
+    @post(
+        path='/ffe/ffe-upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-upload-tournament',
+    )
+    async def htmx_admin_ffe_upload_tournament(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+
+        FfeBackgroundUploader.schedule_upload(tournament, True)
 
         return self._render_upload_results(request, web_context)
 

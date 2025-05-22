@@ -273,34 +273,37 @@ class FfeBackgroundUploader:
         uploader.start()
 
     @classmethod
-    def schedule_upload(cls, tournament: Tournament) -> None:
+    def schedule_upload(cls, tournament: Tournament, force=False) -> None:
         """Schedule the upload of a tournament that has been modified."""
 
-        result = cls.get_updated_tournament_upload_result(tournament)
-        if result and result.status == FfeUploadStatus.SETTINGS_ERROR:
-            # Skip this tournament if we have a SETTINGS_ERROR
-            return
+        if not force:
+            result = cls.get_updated_tournament_upload_result(tournament)
+            if result and result.status == FfeUploadStatus.SETTINGS_ERROR:
+                # Skip this tournament if we have a SETTINGS_ERROR
+                return
 
-        ffe_last_upload = cls.ffe_last_upload(tournament)
-        if ffe_last_upload > tournament.file_modified_timestamp:
-            # Latest version already uploaded
-            return
+            ffe_last_upload = cls.ffe_last_upload(tournament)
+            if ffe_last_upload > tournament.file_modified_timestamp:
+                # Latest version already uploaded
+                return
 
-        thread = cls.timeout_threads.get(cls.result_id(tournament))
-        if thread and thread.is_alive():
-            # There's already a thread running for this tournament
-            return
+            thread = cls.timeout_threads.get(cls.result_id(tournament))
+            if thread and thread.is_alive():
+                # There's already a thread running for this tournament
+                return
 
         delay = get_data(tournament.event.plugin_data, 'ffe_upload_delay', 3)
-        wait_time = (
-            max(delay * 60 - (time() - ffe_last_upload), 0)
-            if time() < ffe_last_upload + delay * 60
-            else 0.1
-        )
-
-        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-            FfeUploadStatus.PENDING, _('Tournament modified, awaiting auto-upload')
-        )
+        wait_time = 0.1
+        if not force and time() < ffe_last_upload + delay * 60:
+            wait_time = max(delay * 60 - (time() - ffe_last_upload), 0.1)
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                FfeUploadStatus.PENDING, _('Tournament modified, awaiting auto-upload')
+            )
+        else:
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                FfeUploadStatus.IN_PROGRESS,
+                _('Uploading tournament...'),
+            )
 
         timer = Timer(
             wait_time,
@@ -308,7 +311,7 @@ class FfeBackgroundUploader:
             args=(
                 tournament.event.uniq_id,
                 tournament.id,
-                False,
+                force,
             ),
         )
         cls.timeout_threads[cls.result_id(tournament)] = timer

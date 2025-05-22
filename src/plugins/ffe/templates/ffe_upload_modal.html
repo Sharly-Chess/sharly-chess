@@ -18,9 +18,10 @@
                     <th>
                         {{ _('Status') }}
                     </th>
-                    <th class="text-center">
+                    <th class="text-center text-nowrap">
                         {{ _('Last upload') }}
                     </th>
+                    <th></th>
                     <th class="text-center">
                         {{ _('FFE') }}
                     </th>
@@ -34,7 +35,7 @@
                     hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
-                    class="text-nowrap white btn btn-secondary"
+                    class="text-nowrap white btn btn-outline-primary"
                     hx-on::before-request="$('#upload-results .status').addClass('invisible')"
                 >
                     <i class="bi bi-cloud-arrow-up-fill pe-1"></i>

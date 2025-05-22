@@ -4525,6 +4525,9 @@ msgstr "Mise à jour"
 msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
 
+msgid "Upload"
+msgstr "Mettre en ligne"
+
 msgid "Upload failed"
 msgstr "Échec de la mise en ligne"
 
