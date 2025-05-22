@@ -2,13 +2,14 @@ from functools import partial
 from typing import Annotated, Any
 from litestar import get, post
 from litestar.response import Template
-from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate, Reswap
+from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.network import NetworkMonitor
+from data.event import Event
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader, FfeUploadStatus
 from plugins.ffe.ffe_session import FFESession
@@ -111,6 +112,43 @@ class FfeAdminEventController(BaseEventAdminController):
             },
         )
 
+    def _poll_frequency(
+        self,
+        admin_event: Event,
+    ) -> int:
+        eligible_tournaments = FfeBackgroundUploader.update_eligible_tournaments(
+            admin_event
+        )
+        if not eligible_tournaments:
+            return 0
+
+        has_auto_upload = any(
+            FFEUtils.resolve_auto_upload(tournament)
+            for tournament in eligible_tournaments
+        )
+        results = [
+            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
+            for tournament in eligible_tournaments
+        ]
+
+        # If any tournament is in progress, we need to poll quickly
+        if any(result.status == FfeUploadStatus.IN_PROGRESS for result in results):
+            return 2
+
+        # If auto upload is enabled, we poll at half the delay
+        if has_auto_upload:
+            return int(
+                get_data(
+                    admin_event.plugin_data,
+                    'ffe_upload_delay',
+                    180,
+                )
+                / 2
+            )
+
+        # Otherwise, no need to poll
+        return 0
+
     @get(
         path='/ffe/ffe-upload-modal/{event_uniq_id:str}',
         name='ffe-upload-modal',
@@ -127,8 +165,10 @@ class FfeAdminEventController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        assert web_context.admin_event is not None
 
         FfeBackgroundUploader.update_eligible_tournaments(web_context.admin_event)
+        poll_frequency = self._poll_frequency(web_context.admin_event)
 
         return HTMXTemplate(
             template_name='/ffe_upload_modal.html',
@@ -140,6 +180,27 @@ class FfeAdminEventController(BaseEventAdminController):
                 'format_timestamp_date_time': format_timestamp_date_time,
                 'result_id': FfeBackgroundUploader.result_id,
                 'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
+                'poll_frequency': poll_frequency,
+                'ffe_utils': FFEUtils,
+            },
+        )
+
+    def _render_upload_results(
+        self,
+        request: HTMXRequest,
+        web_context: BaseEventAdminWebContext,
+    ) -> Template | ClientRedirect:
+        assert web_context.admin_event is not None
+        poll_frequency = self._poll_frequency(web_context.admin_event)
+
+        return HTMXTemplate(
+            template_name='/ffe_upload_results.html',
+            context=web_context.template_context
+            | {
+                'format_timestamp_date_time': format_timestamp_date_time,
+                'result_id': FfeBackgroundUploader.result_id,
+                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
+                'poll_frequency': poll_frequency,
                 'ffe_utils': FFEUtils,
             },
         )
@@ -152,7 +213,7 @@ class FfeAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | Reswap:
+    ) -> Template | ClientRedirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -160,17 +221,7 @@ class FfeAdminEventController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-
-        return HTMXTemplate(
-            template_name='/ffe_upload_results.html',
-            context=web_context.template_context
-            | {
-                'format_timestamp_date_time': format_timestamp_date_time,
-                'result_id': FfeBackgroundUploader.result_id,
-                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
-                'ffe_utils': FFEUtils,
-            },
-        )
+        return self._render_upload_results(request, web_context)
 
     @post(
         path='/ffe/ffe-upload/{event_uniq_id:str}',
@@ -180,7 +231,7 @@ class FfeAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | Reswap:
+    ) -> Template | ClientRedirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -193,16 +244,7 @@ class FfeAdminEventController(BaseEventAdminController):
         assert admin_event is not None
         FfeBackgroundUploader.upload_event(admin_event)
 
-        return HTMXTemplate(
-            template_name='/ffe_upload_results.html',
-            context=web_context.template_context
-            | {
-                'format_timestamp_date_time': format_timestamp_date_time,
-                'result_id': FfeBackgroundUploader.result_id,
-                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
-                'ffe_utils': FFEUtils,
-            },
-        )
+        return self._render_upload_results(request, web_context)
 
     @get(
         path='/ffe/nav-upload-button/{event_uniq_id:str}',
@@ -220,10 +262,12 @@ class FfeAdminEventController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        admin_event = web_context.admin_event
+        assert admin_event is not None
 
         has_upload_error = False
         statuses = FfeBackgroundUploader.upload_status_messages
-        tournaments = web_context.admin_event.tournaments
+        tournaments = admin_event.tournaments
         for tournament in tournaments:
             result = statuses.get(FfeBackgroundUploader.result_id(tournament), None)
             if result and result.status == FfeUploadStatus.ERROR:

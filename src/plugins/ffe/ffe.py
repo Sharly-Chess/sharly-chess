@@ -711,9 +711,9 @@ class FfePlugin(Plugin):
     ) -> dict[str, Any]:
         ffe_auto_upload_options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(False): _('Disable auto-upload'),
+            WebContext.value_to_form_data(False): _('Disabled'),
         } | {
-            WebContext.value_to_form_data(True): _('Enable auto-upload'),
+            WebContext.value_to_form_data(True): _('Enabled'),
         }
         event_auto_upload = bool(
             self.get_data(event.plugin_data, 'ffe_auto_upload', False)

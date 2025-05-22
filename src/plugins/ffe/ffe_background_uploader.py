@@ -26,10 +26,13 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 class FfeUploadStatus(IntEnum):
     NEVER = 0
     UPLOADED = 1
-    SUCCESS = 2
-    INFO = 3
-    ERROR = 4
-    SETTINGS_ERROR = 5
+    CHANGED = 2
+    PENDING = 3
+    IN_PROGRESS = 4
+    SUCCESS = 5
+    INFO = 6
+    ERROR = 7
+    SETTINGS_ERROR = 8
 
 
 @dataclass
@@ -140,10 +143,6 @@ class FfeBackgroundUploader:
     ) -> None:
         """Upload a tournament to FFE."""
 
-        if not NetworkMonitor.connected():
-            # The network is offline, we can't upload
-            return
-
         # We refetch the latest event and tournament
         event = EventLoader().events_by_id.get(event_uniq_id, None)
         if not event:
@@ -155,14 +154,31 @@ class FfeBackgroundUploader:
             # The tournament has been deleted
             return
 
+        if not NetworkMonitor.connected():
+            # The network is offline, we can't upload
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                FfeUploadStatus.ERROR,
+                _('Modified, but update failed'),
+            )
+            return
+
         if not force and not FFEUtils.resolve_auto_upload(tournament):
             # Auto upload has been disabled since it was scheduled
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                FfeUploadStatus.CHANGED,
+                _('Modified since last upload'),
+            )
             return
 
         current_result = cls.get_updated_tournament_upload_result(tournament)
         if current_result and current_result.status == FfeUploadStatus.SETTINGS_ERROR:
             # Skip this tournament if we have a SETTINGS_ERROR
             return
+
+        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            FfeUploadStatus.IN_PROGRESS,
+            _('Uploading tournament...'),
+        )
 
         logger.info(
             'Uploading tournament [{tournament_uniq_id}]...'.format(
@@ -186,13 +202,11 @@ class FfeBackgroundUploader:
                 report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
             ).upload(set_visible=False)
         except Exception as e:
-            if not tournament.event:
-                # The event has been deleted
-                return
-
             logger.error(
-                'Error uploading tournament [{tournament_uniq_id}]: {error}'
-            ).format(tournament_uniq_id=tournament.uniq_id, error=str(e))
+                'Error uploading tournament [{tournament_uniq_id}]: {error}'.format(
+                    tournament_uniq_id=tournament.uniq_id, error=str(e)
+                )
+            )
             cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                 FfeUploadStatus.ERROR,
                 _('Error uploading tournament'),
@@ -233,14 +247,11 @@ class FfeBackgroundUploader:
                 # The network is offline, we can't upload
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                     FfeUploadStatus.INFO,
-                    _('Network is offline, unable to upload tournament'),
+                    _('Not connected to internet'),
                 )
             else:
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                    FfeUploadStatus.INFO,
-                    _('Uploading tournament...').format(
-                        tournament_uniq_id=tournament.uniq_id
-                    ),
+                    FfeUploadStatus.IN_PROGRESS, _('Uploading tournament...')
                 )
 
         def _upload_tournaments(cls: FfeBackgroundUploader) -> None:
@@ -285,6 +296,10 @@ class FfeBackgroundUploader:
             max(delay * 60 - (time() - ffe_last_upload), 0)
             if time() < ffe_last_upload + delay * 60
             else 0.1
+        )
+
+        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            FfeUploadStatus.PENDING, _('Tournament modified, awaiting auto-upload')
         )
 
         timer = Timer(

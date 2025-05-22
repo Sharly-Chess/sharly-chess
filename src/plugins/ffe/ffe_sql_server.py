@@ -26,7 +26,7 @@ class FFESqlServer(SqlServer):
     ):
         super().__init__(self.CREDENTIALS_FILE, timeout=3)
         if not NetworkMonitor.connected():
-            error: str = _('Not connected to internet.')
+            error: str = _('Not connected to internet')
             logger.error(error)
             raise SharlyChessException(error)
 

@@ -352,7 +352,7 @@ msgstr "Mise à jour"
 msgid "Auto-upload results to FFE site"
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE"
 
-msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
+msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela prenne effet."
 
 #, python-format
@@ -361,6 +361,9 @@ msgstr "Mise en ligne automatique vers la FFE activée (au minimum toutes les %(
 
 msgid "Auto-upload to FFE site disabled"
 msgstr "Mise en ligne automatique vers le site de la FFE désactivée"
+
+msgid "Auto-upload:"
+msgstr "Mise en ligne automatique :"
 
 msgid "Automatic"
 msgstr "Automatique"
@@ -1007,9 +1010,6 @@ msgstr "Répertoire [{path}] non trouvé."
 msgid "Directory:"
 msgstr "Répertoire :"
 
-msgid "Disable auto-upload"
-msgstr "Désactiver la mise en ligne automatique"
-
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -1373,9 +1373,6 @@ msgstr "Tranche Elo (handicap) :"
 msgid "Email:"
 msgstr "Mél :"
 
-msgid "Enable auto-upload"
-msgstr "Activer la mise en ligne automatique"
-
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
@@ -1390,6 +1387,9 @@ msgstr "Activer/désactiver l'affichage des détails des écrans sur les cartes 
 
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
+
+msgid "Enabled"
+msgstr "Activé"
 
 msgid "End of upload (Ctrl-C)"
 msgstr "Fin de mise en ligne (Ctrl-C)"
@@ -2304,6 +2304,12 @@ msgstr "Paramètre manquant (code : [{code}]) : [{error}]."
 msgid "Mode"
 msgstr "Mode"
 
+msgid "Modified since last upload"
+msgstr "Modifié depuis le dernier envoi"
+
+msgid "Modified, but update failed"
+msgstr "Modifié, mais l’envoi a échoué"
+
 #, python-format
 msgid "Moving on to round #%(round)d"
 msgstr "Passage à la ronde n°%(round)d"
@@ -2353,9 +2359,6 @@ msgstr "Dernières rondes sans bye :"
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
-
-msgid "Network is offline, unable to upload tournament"
-msgstr "Réseau hors ligne, impossible de mettre en ligne le tournoi"
 
 msgid "New display controller"
 msgstr "Nouveau pilote d'afficheurs"
@@ -2571,8 +2574,8 @@ msgstr "Aucun"
 msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
 
-msgid "Not connected to internet."
-msgstr "Aucune connection à internet."
+msgid "Not connected to internet"
+msgstr "Aucune connection à internet"
 
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
@@ -4299,6 +4302,9 @@ msgstr "Création d'un tournoi"
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
+
+msgid "Tournament modified, awaiting auto-upload"
+msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
 
 msgid "Tournament not yet uploaded"
 msgstr "Tournoi pas encore mis en ligne"

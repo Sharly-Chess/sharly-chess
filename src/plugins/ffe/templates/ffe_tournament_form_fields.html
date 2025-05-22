@@ -6,9 +6,9 @@
     <div class="col-12 col-md-6 mb-3">
         {{ admin_macros.select_input(
             name='ffe_auto_upload',
-            label=_('Upload:'),
+            label=_('Auto-upload:'),
             help_text=_(
-                'Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect.',
+                'Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect.',
                 default=admin_event.plugin_data.ffe.ffe_auto_upload
             ),
             select_options=data.ffe_auto_upload_options,

@@ -352,7 +352,7 @@ msgstr ""
 msgid "Auto-upload results to FFE site"
 msgstr ""
 
-msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
+msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
 msgstr ""
 
 #, python-format
@@ -360,6 +360,9 @@ msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)s minut
 msgstr ""
 
 msgid "Auto-upload to FFE site disabled"
+msgstr ""
+
+msgid "Auto-upload:"
 msgstr ""
 
 msgid "Automatic"
@@ -1007,9 +1010,6 @@ msgstr ""
 msgid "Directory:"
 msgstr ""
 
-msgid "Disable auto-upload"
-msgstr ""
-
 msgid "Disabled"
 msgstr ""
 
@@ -1373,9 +1373,6 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
-msgid "Enable auto-upload"
-msgstr ""
-
 msgid "Enable/disable the details of events on the cards below."
 msgstr ""
 
@@ -1389,6 +1386,9 @@ msgid "Enable/disable the details of the screens on the cards below."
 msgstr ""
 
 msgid "Enable/disable the details of tournaments on the cards below."
+msgstr ""
+
+msgid "Enabled"
 msgstr ""
 
 msgid "End of upload (Ctrl-C)"
@@ -2304,6 +2304,12 @@ msgstr ""
 msgid "Mode"
 msgstr ""
 
+msgid "Modified since last upload"
+msgstr ""
+
+msgid "Modified, but update failed"
+msgstr ""
+
 #, python-format
 msgid "Moving on to round #%(round)d"
 msgstr ""
@@ -2352,9 +2358,6 @@ msgid "Nb. final rounds without byes:"
 msgstr ""
 
 msgid "Neither screen nor rotator currently assigned"
-msgstr ""
-
-msgid "Network is offline, unable to upload tournament"
 msgstr ""
 
 msgid "New display controller"
@@ -2571,7 +2574,7 @@ msgstr ""
 msgid "Not checked-in yet"
 msgstr ""
 
-msgid "Not connected to internet."
+msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
@@ -4300,6 +4303,9 @@ msgstr ""
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
+msgid "Tournament modified, awaiting auto-upload"
+msgstr ""
+
 msgid "Tournament not yet uploaded"
 msgstr ""
 
@@ -4958,5 +4964,23 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "FFE certification number and password not defined"
+#~ msgstr ""
+
+#~ msgid "Modified, but auto update failed"
+#~ msgstr ""
+
+#~ msgid "Network is offline, unable to upload tournament"
+#~ msgstr ""
+
+#~ msgid "Auto-upload results to FFE site. You must enter the tournament ID and password for this to take effect."
+#~ msgstr ""
+
+#~ msgid "Disable auto-upload"
+#~ msgstr ""
+
+#~ msgid "Enable auto-upload"
+#~ msgstr ""
+
+#~ msgid "Not connected to internet."
 #~ msgstr ""
 
