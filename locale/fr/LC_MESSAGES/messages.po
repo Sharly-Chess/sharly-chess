@@ -197,7 +197,7 @@ msgid "Action: {action}"
 msgstr "Action : {action}"
 
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 msgid "Actions:"
 msgstr "Actions :"
@@ -950,9 +950,6 @@ msgstr "Supprimer la famille d'écrans."
 
 msgid "Delete the timer."
 msgstr "Supprimer le chronomètre."
-
-msgid "Delete the tournament."
-msgstr "Supprimer le tournoi"
 
 msgid "Deletion date"
 msgstr "Date de suppression"
@@ -2187,7 +2184,7 @@ msgid "Make the tournaments visible on the FFE website"
 msgstr "Rendre les tournois visibles sur le site web FFE..."
 
 msgid "Make visible on FFE site"
-msgstr ""
+msgstr "Rendre visible sur le site de la FFE"
 
 msgid "Making the tournament visible on the FFE website..."
 msgstr "Affichage des tournois sur le site web FFE..."
@@ -4317,6 +4314,9 @@ msgstr "Tournoi mis en ligne précédemment"
 msgid "Tournament record"
 msgstr "Historique"
 
+msgid "Tournament visibility successfully set"
+msgstr "Visibilité du tournoi définie avec succès"
+
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
@@ -4404,6 +4404,9 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
+
+msgid "Unable to set tournament visibility"
+msgstr "Impossible de définir la visibilité du tournoi"
 
 msgid "Undefined"
 msgstr "Non défini"
@@ -4534,7 +4537,7 @@ msgid "Upload link not found, check that the tournament is not marked as finishe
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
 msgid "Upload rules"
-msgstr ""
+msgstr "Téléverser le règlement"
 
 msgid "Upload the results of the tournaments"
 msgstr "Mettre en ligne les résultats des tournois."
@@ -4924,6 +4927,12 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Clone the tournament."
+#~ msgstr "Dupliquer le tournoi"
+
+#~ msgid "Delete the tournament."
+#~ msgstr "Supprimer le tournoi"
 
 #~ msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 #~ msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."

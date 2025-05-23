@@ -169,6 +169,10 @@
                     </ul>
                 </li>
             {% endif %}
+            {% for items_template in tournament_action_menu_items %}
+                <li><hr class="dropdown-divider"></li>
+                {% include items_template %}
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}

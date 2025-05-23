@@ -390,6 +390,9 @@ class TournamentAdminController(BaseEventAdminController):
             for (block_template, data) in tournament_card_blocks_and_data
             for key, value in data.items()
         }
+        tournament_action_menu_items = (
+            plugin_manager.hook.get_tournament_card_menu_items_template()
+        )
         tournament_exporters: list[TournamentExporter] = (
             TournamentExporterManager.objects()
         )
@@ -398,6 +401,7 @@ class TournamentAdminController(BaseEventAdminController):
             'paired_bye_result_options': cls._get_paired_bye_result_options(),
             'tournament_card_blocks': tournament_card_blocks,
             'tournament_exporters': tournament_exporters,
+            'tournament_action_menu_items': tournament_action_menu_items,
             'admin_tournaments_show_details': (
                 SessionHandler.get_session_admin_tournaments_show_details(
                     web_context.request
@@ -405,6 +409,7 @@ class TournamentAdminController(BaseEventAdminController):
             ),
             'player_updater_options': PlayerUpdaterManager.options(),
         } | tournament_card_block_data
+
         match modal:
             case None:
                 pass

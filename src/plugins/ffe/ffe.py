@@ -23,6 +23,7 @@ from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
+from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
@@ -132,6 +133,7 @@ class FfePlugin(Plugin):
         return [
             FfeSearchController,
             FfeAdminEventController,
+            FfeAdminTournamentController,
         ]
 
     @hookimpl
@@ -787,6 +789,10 @@ class FfePlugin(Plugin):
                 'ffe_utils': FFEUtils,
             },
         )
+
+    @hookimpl
+    def get_tournament_card_menu_items_template(self) -> str:
+        return '/ffe_tournament_action_items.html'
 
     # ---------------------------------------------------------------------------------
     # Printing

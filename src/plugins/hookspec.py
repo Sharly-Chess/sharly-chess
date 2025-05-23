@@ -265,6 +265,10 @@ class AppHookSpecs:
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template to be added to tournament cards"""
 
+    @hookspec
+    def get_tournament_card_menu_items_template(self) -> str:
+        """Provide a path to the template to be added to the action menu"""
+
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------

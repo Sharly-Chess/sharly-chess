@@ -951,9 +951,6 @@ msgstr ""
 msgid "Delete the timer."
 msgstr ""
 
-msgid "Delete the tournament."
-msgstr ""
-
 msgid "Deletion date"
 msgstr ""
 
@@ -4317,6 +4314,9 @@ msgstr ""
 msgid "Tournament record"
 msgstr ""
 
+msgid "Tournament visibility successfully set"
+msgstr ""
+
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr ""
 
@@ -4403,6 +4403,9 @@ msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
 msgid "Unable to create Papi files."
+msgstr ""
+
+msgid "Unable to set tournament visibility"
 msgstr ""
 
 msgid "Undefined"
@@ -4950,5 +4953,12 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The minimum delay between auto-uploads to the FFE server ({{ ffe_default_delay }} by default)"
+#~ msgstr ""
+
+
+#~ msgid "Delete the tournament."
+#~ msgstr ""
+
+#~ msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 #~ msgstr ""
 
