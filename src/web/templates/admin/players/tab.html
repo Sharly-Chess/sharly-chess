@@ -3,21 +3,19 @@
         hx_get=url,
     ) }}
 
-    <div hx-ext="sse" sse-connect="/sse">
+    <div
+        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
+        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
         <div
-            hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
-            hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
-            hx-target="#refresh-message"
-            hx-swap="innerHTML"
-        >
-        </div>
-            <div
-            hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
-            hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
-            hx-target="#refresh-message"
-            hx-swap="innerHTML"
-        >
-        </div>
+        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
+        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
     </div>
 
     <div

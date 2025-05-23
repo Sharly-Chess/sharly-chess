@@ -615,6 +615,7 @@ class FfePlugin(Plugin):
             return {
                 'ffe_auto_upload': 'off',
                 'ffe_auto_upload_delay': '',
+                'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
             }
 
         return {

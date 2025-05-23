@@ -115,8 +115,10 @@
 
                 function closeModal() {
                     var myModalEl = document.getElementById('modal-wrapper');
-                    var modal = bootstrap.Modal.getInstance(myModalEl)
-                    modal.hide();
+                    var modal = bootstrap.Modal.getInstance(myModalEl);
+                    if (modal) {
+                        modal.hide();
+                    }
                     closeTooltips();
                 }
 
@@ -231,8 +233,9 @@
         {% endif %}
     </head>
     <body
-        hx-ext="multi-swap,preload,morphdom-swap"
+        hx-ext="multi-swap,preload,morphdom-swap,sse"
         hx-swap="transition:true"
+        sse-connect="/sse"
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}

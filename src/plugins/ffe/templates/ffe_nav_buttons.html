@@ -1,6 +1,4 @@
 <div
-    hx-ext="sse"
-    sse-connect="/sse"
     hx-get="{{ url_for('ffe-nav-upload-button', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="sse:ffe-upload-event"
     hx-swap="innerHTML"

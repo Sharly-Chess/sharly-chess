@@ -1,6 +1,7 @@
 from typing import Annotated, Any
 
 from common import format_timestamp_date, format_timestamp_time
+from litestar_htmx import Reswap
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -543,7 +544,7 @@ class IndexAdminController(BaseAdminController):
         path='/admin/database-status-badge',
         name='admin-database-status-badge',
     )
-    async def htmx_admin_status(
+    async def htmx_admin_status_badge(
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect:
@@ -575,7 +576,13 @@ class IndexAdminController(BaseAdminController):
             template_name = '/admin/common/database/out_of_date_badge.html'
         else:
             template_name = '/admin/common/database/settings_badge.html'
-        return HTMXTemplate(template_name=template_name)
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_badge_and_messages.html',
+            context={
+                'badge': template_name,
+                'messages': Message.messages(request),
+            },
+        )
 
     @get(
         path='/admin/database-modal',
@@ -665,15 +672,10 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Reswap:
         database = LocalSourceDatabaseManager.get_object(database_id)
         database.update()
-        return HTMXTemplate(
-            template_name='/admin/common/database/database_update_buttons.html',
-            trigger_event='database-update-launched',
-            after='receive',
-            context={'database': database},
-        )
+        return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
     @delete(
         path='/admin/database-delete/{database_id:str}',
