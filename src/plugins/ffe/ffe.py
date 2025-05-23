@@ -22,7 +22,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
-from plugins.ffe.ffe_defaults import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
+from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase

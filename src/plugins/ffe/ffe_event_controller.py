@@ -12,7 +12,6 @@ from common.network import NetworkMonitor
 from data.event import Event
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader, FfeUploadStatus
-from plugins.ffe.ffe_defaults import FFE_DEFAULT_UPLOAD_DELAY
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
@@ -140,17 +139,7 @@ class FfeAdminEventController(BaseEventAdminController):
 
         # If auto upload is enabled, we poll at the delay
         if has_auto_upload:
-            return (
-                int(
-                    get_data(
-                        admin_event.plugin_data,
-                        'ffe_auto_upload_delay',
-                        None,
-                    )
-                    or FFE_DEFAULT_UPLOAD_DELAY
-                )
-                * 60
-            )
+            return FFEUtils.resolve_auto_upload_delay(admin_event) * 60
 
         # Otherwise, no need to poll
         return 0

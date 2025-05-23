@@ -13,7 +13,6 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.ffe_defaults import FFE_DEFAULT_UPLOAD_DELAY
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
@@ -284,14 +283,7 @@ class FfeBackgroundUploader:
                 # There's already a thread running for this tournament
                 return
 
-        delay = (
-            get_data(
-                tournament.event.plugin_data,
-                'ffe_auto_upload_delay',
-                None,
-            )
-            or FFE_DEFAULT_UPLOAD_DELAY
-        )
+        delay = FFEUtils.resolve_auto_upload_delay(tournament.event)
         wait_time = 0.1
         if not force and time() < ffe_last_upload + delay * 60:
             wait_time = max(delay * 60 - (time() - ffe_last_upload), 0.1)

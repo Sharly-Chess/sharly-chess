@@ -23,6 +23,7 @@ from data.print_documents import (
     PrintDocumentOptionManager,
 )
 from data.print_documents.documents import PlayerListPrintDocument
+from plugins.ffe.utils import FFEUtils
 from utils.enum import TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -74,6 +75,7 @@ class EventAdminController(BaseEventAdminController):
         plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
         template_context |= {
             'admin_event_tab': 'admin-event-config-tab',
+            'ffe_utils': FFEUtils,
             'plugin_event_info_rows': plugin_event_info_rows,
         }
 
