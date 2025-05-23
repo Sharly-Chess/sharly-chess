@@ -4,13 +4,17 @@
 >
     <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <div class="flex-grow-1">
-        {{ _('New results are in, refresh your browser') }}
+        {% if reason == "result" %}
+            {{ _('New results are in, refresh your browser') }}
+        {% elif reason == "checkin" %}
+            {{ _('New checkins are in, refresh your browser') }}
+        {% endif %}
     </div>
     <div class="align-self-center">
         <button
             type="button"
             class="btn btn-sm btn-outline-dark"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=event_uniq_id, tournament_id=tournament_id, round=round) }}"
+            hx-get="{{ url_for('admin-event-players-tab', event_uniq_id=event_uniq_id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
         >

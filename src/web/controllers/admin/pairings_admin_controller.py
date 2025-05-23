@@ -1293,6 +1293,26 @@ class PairingsAdminController(BaseEventAdminController):
             round_=current_round,
         )
 
+    @get(
+        path='/admin/pairings/needs-refresh-message/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-needs-refresh-message',
+    )
+    async def htmx_admin_pairings_refresh_message(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        return HTMXTemplate(
+            template_name='/admin/pairings/new_results_in.html',
+            context={
+                'event_uniq_id': event_uniq_id,
+                'tournament_id': tournament_id,
+                'round': round,
+            },
+        )
+
     @classmethod
     def publish_new_user_results(
         cls,
@@ -1301,23 +1321,17 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round_: int,
     ):
-        from web.settings import template_engine
-
         channels.publish(
             {
                 'event': f'new-user-results/{event_uniq_id}/{tournament_id}/{round_}',
-                'data': template_engine.engine.get_template(
-                    '/admin/pairings/new_results_in.html'
-                ).render(),
+                'data': '',
             },
             ['sse'],
         )
         channels.publish(
             {
                 'event': f'new-user-results/{event_uniq_id}',
-                'data': template_engine.engine.get_template(
-                    '/admin/pairings/new_results_in.html'
-                ).render(),
+                'data': '',
             },
             ['sse'],
         )

@@ -344,7 +344,7 @@ msgid "Authentication successful!"
 msgstr "Authentification réussie !"
 
 msgid "Auto upload to FFE enabled"
-msgstr ""
+msgstr "Envoi automatique vers la FFE activé"
 
 msgid "Auto-update"
 msgstr "Mise à jour"
@@ -3222,6 +3222,9 @@ msgstr "Historique"
 
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr "La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers)."
+
+msgid "Refresh"
+msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."

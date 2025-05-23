@@ -1956,14 +1956,25 @@ class PlayerAdminController(BaseEventAdminController):
 
     @classmethod
     def publish_new_checkin(cls, channels: ChannelsPlugin, event_uniq_id: str):
-        from web.settings import template_engine
-
         channels.publish(
-            {
-                'event': f'new-checkins/{event_uniq_id}',
-                'data': template_engine.engine.get_template(
-                    '/admin/players/new_checkins.html'
-                ).render(),
-            },
+            {'event': f'new-checkins/{event_uniq_id}', 'data': ''},
             ['sse'],
+        )
+
+    @get(
+        path='/admin/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
+        name='admin-players-needs-refresh-message',
+    )
+    async def htmx_admin_pairings_refresh_message(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        reason: str,
+    ) -> Template:
+        return HTMXTemplate(
+            template_name='/admin/players/players_needs_refresh.html',
+            context={
+                'event_uniq_id': event_uniq_id,
+                'reason': reason,
+            },
         )

@@ -3,6 +3,23 @@
         hx_get=url,
     ) }}
 
+    <div hx-ext="sse" sse-connect="/sse">
+        <div
+            hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
+            hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+            <div
+            hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
+            hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+    </div>
+
     <div
         class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
         style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1rem;"
@@ -51,11 +68,6 @@
             </span>
         </div>
     </div>
-
-    <div
-        style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1rem;"
-        hx-ext="sse" sse-connect="/sse" sse-swap="new-checkins/{{ admin_event.uniq_id }},new-user-results/{{ admin_event.uniq_id }}"
-    ></div>
 
     <section class="pt-1 pb-1">
         <table
