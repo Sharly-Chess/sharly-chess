@@ -1,13 +1,12 @@
 from typing import Annotated, Any
 
 from common import format_timestamp_date, format_timestamp_time
-from litestar_htmx import Reswap
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch, delete
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect

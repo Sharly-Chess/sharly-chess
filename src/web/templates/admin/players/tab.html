@@ -10,7 +10,7 @@
         hx-swap="innerHTML"
     >
     </div>
-        <div
+    <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
         hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
         hx-target="#refresh-message"
