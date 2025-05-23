@@ -11,8 +11,6 @@ import uvicorn
 from litestar import Litestar
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
-from litestar.channels import ChannelsPlugin
-from litestar.channels.backends.memory import MemoryChannelsBackend
 
 from common import REQUEST_TIMEOUT, LOG_FILE
 from common.engine import Engine
@@ -35,6 +33,7 @@ from web.settings import (
     stores,
     exception_handlers,
 )
+from web.channels import channels_plugin
 
 logger = get_logger()
 
@@ -124,11 +123,6 @@ class ServerEngine(Engine):
 
         logging_config = LOGGING_CONFIG
         logging_config['handlers']['console']['level'] = SharlyChessConfig().log_level  # type: ignore
-
-        channels_plugin = ChannelsPlugin(
-            backend=MemoryChannelsBackend(),
-            arbitrary_channels_allowed=True,
-        )
 
         app: Litestar = Litestar(
             debug=True,

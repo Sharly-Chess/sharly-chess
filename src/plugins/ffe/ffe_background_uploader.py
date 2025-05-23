@@ -17,6 +17,7 @@ from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
 from utils.enum import NeedsUpload
+from web.channels import channels_plugin
 
 logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -133,6 +134,17 @@ class FfeBackgroundUploader:
             return NeedsUpload.NO_CHANGE
 
     @classmethod
+    def publish_upload_event(cls):
+        if channels_plugin:
+            channels_plugin.publish(
+                {
+                    'event': 'ffe-upload-event',
+                    'data': '',
+                },
+                ['sse'],
+            )
+
+    @classmethod
     def upload_tournament(
         cls, event_uniq_id: str, tournament_id: int, force: bool
     ) -> None:
@@ -149,12 +161,9 @@ class FfeBackgroundUploader:
             # The tournament has been deleted
             return
 
-        if not NetworkMonitor.connected():
-            # The network is offline, we can't upload
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                FfeUploadStatus.ERROR,
-                _('Modified, but update failed'),
-            )
+        current_result = cls.get_updated_tournament_upload_result(tournament)
+        if current_result.status == FfeUploadStatus.SETTINGS_ERROR:
+            # Skip this tournament if we now have a SETTINGS_ERROR
             return
 
         if not force and not FFEUtils.resolve_auto_upload(tournament):
@@ -165,9 +174,13 @@ class FfeBackgroundUploader:
             )
             return
 
-        current_result = cls.get_updated_tournament_upload_result(tournament)
-        if current_result.status == FfeUploadStatus.SETTINGS_ERROR:
-            # Skip this tournament if we have a SETTINGS_ERROR
+        if not NetworkMonitor.connected():
+            # The network is offline, we can't upload
+            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                FfeUploadStatus.ERROR,
+                _('Modified, but update failed'),
+            )
+            cls.publish_upload_event()
             return
 
         cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
@@ -206,6 +219,8 @@ class FfeBackgroundUploader:
                 FfeUploadStatus.ERROR,
                 _('Error uploading tournament'),
             )
+        finally:
+            cls.publish_upload_event()
 
     @classmethod
     def upload_event(cls, admin_event: Event) -> None:
