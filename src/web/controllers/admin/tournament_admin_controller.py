@@ -516,7 +516,7 @@ class TournamentAdminController(BaseEventAdminController):
                             )
 
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
-                        tournament=web_context.admin_tournament
+                        event=admin_event, tournament=web_context.admin_tournament
                     )
                     plugin_form_data = {
                         key: value

@@ -343,7 +343,32 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
+msgid "Auto upload to FFE enabled"
+msgstr ""
+
 msgid "Auto-update"
+msgstr ""
+
+msgid "Auto-upload results to FFE site"
+msgstr ""
+
+msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
+msgstr ""
+
+msgid "Auto-upload to FFE enabled"
+msgstr ""
+
+#, python-format
+msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
+msgstr ""
+
+msgid "Auto-upload to FFE site disabled"
+msgstr ""
+
+msgid "Auto-upload:"
+msgstr ""
+
+msgid "Automatic"
 msgstr ""
 
 msgid "Automatically launch a browser when starting the server"
@@ -1366,6 +1391,9 @@ msgstr ""
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
+msgid "Enabled"
+msgstr ""
+
 msgid "End of upload (Ctrl-C)"
 msgstr ""
 
@@ -1394,6 +1422,9 @@ msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
 msgid "Error reading the following row (player ignored): [{row}]."
+msgstr ""
+
+msgid "Error uploading tournament"
 msgstr ""
 
 msgid "Error when updating database [{database}]."
@@ -1481,12 +1512,6 @@ msgstr "FFE"
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
-msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-msgstr ""
-
-msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
 msgid "FFE Licence"
 msgstr ""
 
@@ -1494,6 +1519,16 @@ msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number (optional):"
+msgstr ""
+
+msgid "FFE certification number and password not defined for tournament"
+msgstr ""
+
+msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#, python-format
+msgid "FFE certification number: %(ffe_id)d"
 msgstr ""
 
 msgid "FFE database"
@@ -1525,8 +1560,7 @@ msgstr ""
 msgid "FFE password:"
 msgstr ""
 
-#, python-format
-msgid "FFE qualification: %(ffe_id)s"
+msgid "FFE settings"
 msgstr ""
 
 msgid "FIDE"
@@ -1955,7 +1989,7 @@ msgstr ""
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
-msgid "Invalid FFE ID or password."
+msgid "Invalid FFE certification number or password."
 msgstr ""
 
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
@@ -2069,6 +2103,9 @@ msgstr ""
 msgid "Last update"
 msgstr ""
 
+msgid "Last upload"
+msgstr ""
+
 msgid "Launch browser:"
 msgstr ""
 
@@ -2163,6 +2200,9 @@ msgstr "Male"
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
 
+msgid "Manual"
+msgstr ""
+
 msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
@@ -2252,10 +2292,22 @@ msgstr ""
 msgid "Minimal time (handicap, seconds):"
 msgstr ""
 
+msgid "Minimum delay between uploads (minutes):"
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Modified since last upload"
+msgstr ""
+
+msgid "Modified, but update failed"
 msgstr ""
 
 #, python-format
@@ -2335,10 +2387,10 @@ msgstr ""
 msgid "No FFE Licence"
 msgstr ""
 
-msgid "No FFE operations can be done on the tournaments of this event."
+msgid "No FFE certification number"
 msgstr ""
 
-msgid "No FFE qualification"
+msgid "No FFE operations can be done on the tournaments of this event."
 msgstr ""
 
 msgid "No FIDE ID."
@@ -2522,7 +2574,7 @@ msgstr ""
 msgid "Not checked-in yet"
 msgstr ""
 
-msgid "Not connected to internet."
+msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
@@ -2734,10 +2786,19 @@ msgstr ""
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
+msgid "Papi file not defined for tournament"
+msgstr ""
+
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "Papi file not found [{file}]"
+msgstr ""
+
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi file not modified since last upload"
 msgstr ""
 
 msgid "Parings by player"
@@ -3549,6 +3610,9 @@ msgstr ""
 msgid "Starting rank"
 msgstr ""
 
+msgid "Status"
+msgstr ""
+
 msgid "Storing data..."
 msgstr ""
 
@@ -3750,6 +3814,10 @@ msgid "The maximum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr ""
+
+#, python-format
+msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4236,7 +4304,16 @@ msgstr ""
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
+msgid "Tournament modified, awaiting auto-upload"
+msgstr ""
+
+msgid "Tournament not yet uploaded"
+msgstr ""
+
 msgid "Tournament performance rating"
+msgstr ""
+
+msgid "Tournament previously uploaded"
 msgstr ""
 
 msgid "Tournament record"
@@ -4449,13 +4526,31 @@ msgstr ""
 msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
 msgstr ""
 
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgid "Upload"
+msgstr ""
+
+msgid "Upload failed"
+msgstr ""
+
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
 msgstr ""
 
 msgid "Upload the results of the tournaments"
 msgstr ""
 
 msgid "Upload the rules of the tournaments"
+msgstr ""
+
+msgid "Upload tournaments now"
+msgstr ""
+
+msgid "Upload tournaments to the FFE"
+msgstr ""
+
+msgid "Upload:"
+msgstr ""
+
+msgid "Uploading tournament..."
 msgstr ""
 
 msgid "Upper limit expected to be greater than lower limit."
@@ -4641,6 +4736,9 @@ msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
 msgid "You must create a tournament before creating screens."
+msgstr ""
+
+msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr ""
 
 msgid "Your choice (by default {default}): "
@@ -4829,4 +4927,31 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Auto-upload to FFE enabled"
+#~ msgstr ""
+
+#~ msgid "Auto-upload results to FFE site"
+#~ msgstr ""
+
+#~ msgid "FFE settings"
+#~ msgstr ""
+
+#~ msgid "Minimum delay between uploads (minutes):"
+#~ msgstr ""
+
+#~ msgid "Upload:"
+#~ msgstr ""
+
+#~ msgid "You must enter the tournament certification number and password in each tournament's settings."
+#~ msgstr ""
+
+#~ msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
+#~ msgstr ""
+
+#~ msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
+#~ msgstr ""
+
+#~ msgid "The minimum delay between auto-uploads to the FFE server ({{ ffe_default_delay }} by default)"
+#~ msgstr ""
 

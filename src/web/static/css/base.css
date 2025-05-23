@@ -140,6 +140,19 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .card-title:empty {
     display: none;
 }
+.card-plugin-block {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bs-secondary);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--bs-secondary);
+}
+.card-plugin-block + .card-plugin-block {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
 .image-screen, .card-body {
 	background-repeat: no-repeat;
 	background-position: center center;

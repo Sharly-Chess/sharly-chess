@@ -13,6 +13,7 @@ from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
+    PluginNavBarItem,
 )
 
 if TYPE_CHECKING:
@@ -215,6 +216,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def on_tournament_data_updated(self, tournament: 'Tournament'):
+        """Called when the (publishable) data of a tournament is updated"""
+
+    @hookspec
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
@@ -237,6 +242,7 @@ class AppHookSpecs:
     @hookspec
     def get_tournament_form_data(
         self,
+        event: 'Event',
         tournament: 'Tournament | None',
     ) -> dict[str, Any]:
         """Provide form data for the additional tournament form fields"""
@@ -274,6 +280,16 @@ class AppHookSpecs:
     @hookspec
     def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
         """Provide extra CSS for the print view"""
+
+    # ---------------------------------------------------------------------------------
+    # Nav bar
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def get_event_nav_bar_items_and_data(
+        self, event: 'Event'
+    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
+        """Provide extra nav bar items"""
 
     # ---------------------------------------------------------------------------------
     # User screens

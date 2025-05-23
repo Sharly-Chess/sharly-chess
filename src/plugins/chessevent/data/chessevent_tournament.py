@@ -149,6 +149,6 @@ class ChessEventTournament:
             ]
             + [
                 f'  - Rating: {self.rating}',
-                f'  - FFE qualification: {self.ffe_id}',
+                f'  - FFE ID: {self.ffe_id}',
             ]
         )

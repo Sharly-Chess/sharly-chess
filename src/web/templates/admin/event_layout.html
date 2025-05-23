@@ -98,6 +98,7 @@
 {% endblock admin_header_nav %}
 
 {% block admin_header_action_buttons %}
+    {{ admin_macros.extra_admin_nav_item("print", extra_admin_nav_items)}}
     <button
         class="btn btn-link fw-bold fe-3 px-0 py-0 fs-5"
         hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
@@ -109,6 +110,7 @@
     >
         <i class="bi bi-printer-fill"></i>
     </button>
+    {{ admin_macros.extra_admin_nav_item("database", extra_admin_nav_items)}}
     {% include '/admin/common/database/database_button.html' %}
     {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
 {% endblock admin_header_action_buttons %}
