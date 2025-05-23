@@ -32,7 +32,7 @@ logger: Logger = get_logger()
 class EventLoader:
     _valid_event_ids: list[str] = []
     _invalid_uniq_ids: list[str] = []
-    _loaded_event_metadatas_by_id: dict[str, EventMetadata] = {}
+    _loaded_events_metadata_by_id: dict[str, EventMetadata] = {}
     _loaded_events_by_id: dict[str, Event] = {}
     _loaded_events_expire_at: dict[str, datetime] = {}
 
@@ -57,7 +57,7 @@ class EventLoader:
     @classmethod
     def unload_event(cls, event_uniq_id: str):
         with suppress(KeyError):
-            del cls._loaded_event_metadatas_by_id[event_uniq_id]
+            del cls._loaded_events_metadata_by_id[event_uniq_id]
         with suppress(KeyError):
             del cls._loaded_events_by_id[event_uniq_id]
         with suppress(KeyError):
@@ -189,15 +189,15 @@ class EventLoader:
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
         try:
-            return cls._loaded_event_metadatas_by_id[uniq_id]
+            return cls._loaded_events_metadata_by_id[uniq_id]
         except KeyError:
             with EventDatabase(uniq_id) as database:
                 event_metadata = database.load_stored_event_metadata()
-            cls._loaded_event_metadatas_by_id[uniq_id] = event_metadata
+            cls._loaded_events_metadata_by_id[uniq_id] = event_metadata
             return event_metadata
 
     @classmethod
-    def get_event_metadatas(
+    def get_events_metadata(
         cls,
         status: Literal['passed', 'current', 'coming'] | None = None,
         public_only: bool = False,
@@ -214,21 +214,21 @@ class EventLoader:
             case 'coming':
                 conditions.append(lambda event: now < event.start)
         return sorted(
-            cls._filter_event_metadatas(conditions),
+            cls._filter_events_metadata(conditions),
             key=lambda event: (-event.stop, -event.start, event.name),
         )
 
     @classmethod
-    def _filter_event_metadatas(
+    def _filter_events_metadata(
         cls, conditions: list[Callable[[EventMetadata], bool]]
     ) -> list[EventMetadata]:
         cls.load_event_ids()
-        event_metadatas = [
+        events_metadata = [
             cls.load_event_metadata(uniq_id) for uniq_id in cls._valid_event_ids
         ]
         return [
             event_metadata
-            for event_metadata in event_metadatas
+            for event_metadata in events_metadata
             if all(condition(event_metadata) for condition in conditions)
         ]
 

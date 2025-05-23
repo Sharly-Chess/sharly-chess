@@ -217,6 +217,9 @@ class StoredEvent(BaseStoredEvent):
 
 @dataclass
 class EventMetadata(BaseStoredEvent):
+    """Class containing the metadata of an event required
+    for display on the event selection pages."""
+
     tournament_count: int = 0
     timer_count: int = 0
     screen_count: int = 0

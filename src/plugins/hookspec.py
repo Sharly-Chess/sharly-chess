@@ -24,7 +24,11 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
     from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
-    from database.sqlite.event.event_store import StoredEvent, StoredTournament
+    from database.sqlite.event.event_store import (
+        BaseStoredEvent,
+        StoredEvent,
+        StoredTournament,
+    )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
@@ -176,7 +180,7 @@ class AppHookSpecs:
 
     @hookspec
     def augment_event_after_db_fetch(
-        self, stored_event: 'StoredEvent', row: dict[str, Any]
+        self, stored_event: 'BaseStoredEvent', row: dict[str, Any]
     ):
         """Add plugin specific data to the StoredEvent after all columns are fetched from the database"""
 

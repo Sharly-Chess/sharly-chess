@@ -16,7 +16,7 @@ from web.controllers.base_controller import WebContext
 
 if TYPE_CHECKING:
     from data.event import Event
-    from database.sqlite.event.event_store import StoredEvent
+    from database.sqlite.event.event_store import BaseStoredEvent, StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
@@ -76,7 +76,7 @@ class ChessEventPlugin(Plugin):
 
     @hookimpl
     def augment_event_after_db_fetch(
-        self, stored_event: 'StoredEvent', row: dict[str, Any]
+        self, stored_event: 'BaseStoredEvent', row: dict[str, Any]
     ):
         if not stored_event.plugin_data:
             stored_event.plugin_data = {}

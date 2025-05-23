@@ -16,9 +16,9 @@ class IndexUserController(BaseUserController):
         web_context: UserWebContext,
     ) -> Template | ClientRedirect:
         public_only = not web_context.admin_auth
-        passed_events = EventLoader.get_event_metadatas('passed', public_only)
-        current_events = EventLoader.get_event_metadatas('current', public_only)
-        coming_events = EventLoader.get_event_metadatas('coming', public_only)
+        passed_events = EventLoader.get_events_metadata('passed', public_only)
+        current_events = EventLoader.get_events_metadata('current', public_only)
+        coming_events = EventLoader.get_events_metadata('coming', public_only)
         nav_tabs: dict[str, dict] = {
             'current_events': {
                 'title': _('Current events ({num})').format(
@@ -77,12 +77,12 @@ class IndexUserController(BaseUserController):
         web_context: UserWebContext,
         date: float,
     ) -> bool:
-        event_metadatas = EventLoader.get_event_metadatas(
+        events_metadata = EventLoader.get_events_metadata(
             public_only=not web_context.admin_auth
         )
         return any(
             max(event.last_update, event.last_tournament_update or 0) > date
-            for event in event_metadatas
+            for event in events_metadata
         )
 
     def _user(

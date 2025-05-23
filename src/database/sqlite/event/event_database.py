@@ -8,7 +8,7 @@ from functools import cached_property
 from logging import Logger
 from pathlib import Path
 from sqlite3 import OperationalError
-from typing import Any, TYPE_CHECKING, override, Self
+from typing import Any, TYPE_CHECKING, override, Self, cast
 
 import yaml
 from packaging.version import Version
@@ -925,7 +925,7 @@ class EventDatabase(MigrationDatabase):
         plugin_manager.hook.augment_event_after_db_fetch(
             stored_event=stored_event, row=row
         )
-        return stored_event
+        return cast(T, stored_event)
 
     def load_stored_event(self) -> StoredEvent:
         self.execute('SELECT * FROM `info`')

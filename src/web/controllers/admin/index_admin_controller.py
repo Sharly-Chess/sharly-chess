@@ -134,9 +134,9 @@ class IndexAdminController(BaseAdminController):
 
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
-        passed_events = EventLoader.get_event_metadatas('passed')
-        current_events = EventLoader.get_event_metadatas('current')
-        coming_events = EventLoader.get_event_metadatas('coming')
+        passed_events = EventLoader.get_events_metadata('passed')
+        current_events = EventLoader.get_events_metadata('current')
+        coming_events = EventLoader.get_events_metadata('coming')
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
                 'title': _('Current events ({num})').format(
