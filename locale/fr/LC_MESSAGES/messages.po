@@ -1433,10 +1433,6 @@ msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 msgid "Error while creating the database: {error}."
 msgstr "Erreur lors de la création de la base de données: {error}."
 
-#, python-format
-msgid "Errors: %(num)d"
-msgstr "Erreurs : %(num)d"
-
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
 
@@ -1946,10 +1942,6 @@ msgstr "Chemin incorrect [{path}]."
 msgid "Increment (optional, seconds):"
 msgstr "Incrément (optionel, en secondes) :"
 
-#, python-format
-msgid "Informations: %(num)d"
-msgstr "Informations : %(num)d"
-
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
 
@@ -2439,17 +2431,11 @@ msgstr "Aucun pilote d'afficheurs"
 msgid "No display controllers."
 msgstr "Aucun pilote d'afficheurs."
 
-msgid "No errors"
-msgstr "Aucune erreur"
-
 msgid "No events found."
 msgstr "Aucun évènement trouvé."
 
 msgid "No hours."
 msgstr "Aucun horaire."
-
-msgid "No informations"
-msgstr "Aucun message d'information"
 
 msgid "No internet connection and no local database."
 msgstr "Aucune base de données locale et aucune connexion à internet."
@@ -2564,9 +2550,6 @@ msgstr "Aucun changement détecté."
 
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
-
-msgid "No warnings"
-msgstr "Aucun avertissement"
 
 msgid "None"
 msgstr "Aucun"
@@ -4631,10 +4614,6 @@ msgstr "Attention : la suppression d'un évènement est définitive !"
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
-
-#, python-format
-msgid "Warnings: %(num)d"
-msgstr "Avertissements : %(num)d"
 
 msgid "Web access"
 msgstr "Accès web"

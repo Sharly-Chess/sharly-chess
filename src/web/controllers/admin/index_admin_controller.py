@@ -1,5 +1,6 @@
 from typing import Annotated, Any
 
+from common import format_timestamp_date, format_timestamp_time
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -132,36 +133,38 @@ class IndexAdminController(BaseAdminController):
             )
 
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        event_loader: EventLoader = EventLoader.get(request=web_context.request)
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
+        passed_events = EventLoader.get_events_metadata('passed')
+        current_events = EventLoader.get_events_metadata('current')
+        coming_events = EventLoader.get_events_metadata('coming')
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
                 'title': _('Current events ({num})').format(
-                    num=len(event_loader.current_events) or '-'
+                    num=len(current_events) or '-'
                 ),
                 'template': 'index/events_tab.html',
-                'events': event_loader.current_events,
-                'disabled': not event_loader.current_events,
+                'events': current_events,
+                'disabled': not current_events,
                 'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar',
             },
             'coming_events': {
                 'title': _('Upcoming events ({num})').format(
-                    num=len(event_loader.coming_events) or '-'
+                    num=len(coming_events) or '-'
                 ),
                 'template': 'index/events_tab.html',
-                'events': event_loader.coming_events,
-                'disabled': not event_loader.coming_events,
+                'events': coming_events,
+                'disabled': not coming_events,
                 'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
             },
             'passed_events': {
                 'title': _('Passed events ({num})').format(
-                    num=len(event_loader.passed_events) or '-'
+                    num=len(passed_events) or '-'
                 ),
                 'template': 'index/events_tab.html',
-                'events': event_loader.passed_events,
-                'disabled': not event_loader.passed_events,
+                'events': passed_events,
+                'disabled': not passed_events,
                 'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus',
             },
@@ -212,6 +215,8 @@ class IndexAdminController(BaseAdminController):
             ),
             'event_card_blocks': event_card_blocks,
             'row_cycler': cls.get_cycler(['odd', 'even']),
+            'format_timestamp_date': format_timestamp_date,
+            'format_timestamp_time': format_timestamp_time,
         }
 
         match modal:
