@@ -132,7 +132,7 @@ class SharlyChessConfig(metaclass=Singleton):
     ffe_upload_delay: int = 180
 
     """ The URL of the project. """
-    url: str = 'https://github.com/sharly-chess/sharly-chess'
+    url: str = 'https://sharly-chess.com'
 
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
@@ -215,6 +215,7 @@ class SharlyChessConfig(metaclass=Singleton):
     htmx_preload_version: Version = Version('2.1.0')
     htmx_remove_me_version: Version = Version('2.0.0')
     htmx_multi_swap_version: Version = Version('2.0.0')
+    htmx_sse_version: Version = Version('2.2.3')
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')

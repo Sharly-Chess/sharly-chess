@@ -10,8 +10,8 @@
     <i class="bi bi-database"></i>
     <span
         hx-get="{{ url_for('admin-database-status-badge') }}"
-        hx-trigger="load"
+        hx-trigger="sse:database-status-updated, load"
         hx-target="this"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
     ></span>
 </button>

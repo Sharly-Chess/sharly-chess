@@ -1,0 +1,12 @@
+<tr>
+    <th scope="row" class="text-nowrap">{{ _('FFE') }}</th>
+    <td class="{% if not admin_event.plugin_data.chessevent.chessevent_user_id or not admin_event.plugin_data.chessevent.chessevent_event_id %}fst-italic{% endif %}">
+        {% if admin_event.plugin_data.ffe.ffe_auto_upload %}
+            {{ _(
+                'Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)',
+                ffe_auto_upload_delay=ffe_utils.resolve_auto_upload_delay(admin_event) ) }}
+        {% else %}
+            {{ _('Auto-upload to FFE site disabled') }}
+        {% endif %}
+    </td>
+</tr>

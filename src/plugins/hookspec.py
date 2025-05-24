@@ -13,6 +13,7 @@ from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
+    PluginNavBarItem,
 )
 
 if TYPE_CHECKING:
@@ -24,7 +25,11 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
     from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
-    from database.sqlite.event.event_store import StoredEvent, StoredTournament
+    from database.sqlite.event.event_store import (
+        BaseStoredEvent,
+        StoredEvent,
+        StoredTournament,
+    )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
@@ -176,7 +181,7 @@ class AppHookSpecs:
 
     @hookspec
     def augment_event_after_db_fetch(
-        self, stored_event: 'StoredEvent', row: dict[str, Any]
+        self, stored_event: 'BaseStoredEvent', row: dict[str, Any]
     ):
         """Add plugin specific data to the StoredEvent after all columns are fetched from the database"""
 
@@ -215,6 +220,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def on_tournament_data_updated(self, tournament: 'Tournament'):
+        """Called when the (publishable) data of a tournament is updated"""
+
+    @hookspec
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
@@ -237,6 +246,7 @@ class AppHookSpecs:
     @hookspec
     def get_tournament_form_data(
         self,
+        event: 'Event',
         tournament: 'Tournament | None',
     ) -> dict[str, Any]:
         """Provide form data for the additional tournament form fields"""
@@ -254,6 +264,10 @@ class AppHookSpecs:
     @hookspec
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template to be added to tournament cards"""
+
+    @hookspec
+    def get_tournament_card_menu_items_template(self) -> str:
+        """Provide a path to the template to be added to the action menu"""
 
     # ---------------------------------------------------------------------------------
     # Printing
@@ -274,6 +288,16 @@ class AppHookSpecs:
     @hookspec
     def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
         """Provide extra CSS for the print view"""
+
+    # ---------------------------------------------------------------------------------
+    # Nav bar
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def get_event_nav_bar_items_and_data(
+        self, event: 'Event'
+    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
+        """Provide extra nav bar items"""
 
     # ---------------------------------------------------------------------------------
     # User screens

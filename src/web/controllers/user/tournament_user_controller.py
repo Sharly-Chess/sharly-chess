@@ -10,12 +10,15 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
+from litestar.channels import ChannelsPlugin
 
 from common.i18n import _
 from data.board import Board
 from data.player import Player
 from data.tournament import Tournament
 from utils.enum import Result
+from web.controllers.admin.pairings_admin_controller import PairingsAdminController
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import BaseController
 from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.base_user_controller import BaseUserController
@@ -217,6 +220,7 @@ class CheckInUserController(BaseInputUserController):
     async def htmx_user_toggle_check_in(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         event_uniq_id: str,
         screen_uniq_id: str,
         tournament_id: int,
@@ -240,6 +244,7 @@ class CheckInUserController(BaseInputUserController):
         player_web_context.tournament.check_in_player(
             player_web_context.player, not player_web_context.player.check_in
         )
+        PlayerAdminController.publish_new_checkin(channels, event_uniq_id)
         SessionHandler.set_session_user_last_check_in_updated(
             request, player_web_context.tournament.id, player_web_context.player.id
         )
@@ -392,6 +397,7 @@ class ResultUserController(BaseInputUserController):
     def _user_update_result(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         event_uniq_id: str,
         screen_uniq_id: str,
         tournament_id: int,
@@ -436,6 +442,9 @@ class ResultUserController(BaseInputUserController):
             board_web_context.tournament.add_result(
                 board_web_context.board, Result.from_papi_value(result)
             )
+        PairingsAdminController.publish_new_user_results(
+            channels, event_uniq_id, tournament_id, round_
+        )
         SessionHandler.set_session_last_result_updated(
             request, board_web_context.tournament.id, round_, board_web_context.board.id
         )
@@ -459,6 +468,7 @@ class ResultUserController(BaseInputUserController):
     async def htmx_user_add_result(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         event_uniq_id: str,
         screen_uniq_id: str,
         tournament_id: int,
@@ -468,6 +478,7 @@ class ResultUserController(BaseInputUserController):
     ) -> Template | ClientRedirect:
         return self._user_update_result(
             request,
+            channels=channels,
             event_uniq_id=event_uniq_id,
             screen_uniq_id=screen_uniq_id,
             tournament_id=tournament_id,
@@ -485,6 +496,7 @@ class ResultUserController(BaseInputUserController):
     async def htmx_user_delete_result(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         event_uniq_id: str,
         screen_uniq_id: str,
         tournament_id: int,
@@ -493,6 +505,7 @@ class ResultUserController(BaseInputUserController):
     ) -> Template | ClientRedirect:
         return self._user_update_result(
             request,
+            channels=channels,
             event_uniq_id=event_uniq_id,
             screen_uniq_id=screen_uniq_id,
             tournament_id=tournament_id,

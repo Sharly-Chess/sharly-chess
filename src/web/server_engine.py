@@ -26,7 +26,14 @@ from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.manager import plugin_manager
-from web.settings import route_handlers, template_config, middlewares, stores
+from web.settings import (
+    route_handlers,
+    template_config,
+    middlewares,
+    stores,
+    exception_handlers,
+)
+from web.channels import channels_plugin
 
 logger = get_logger()
 
@@ -116,21 +123,25 @@ class ServerEngine(Engine):
 
         logging_config = LOGGING_CONFIG
         logging_config['handlers']['console']['level'] = SharlyChessConfig().log_level  # type: ignore
+
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,
             route_handlers=route_handlers,
+            exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
             logging_config=LoggingConfig(**logging_config),  # type: ignore
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
+            plugins=[channels_plugin],
         )
         uvicorn.run(
             app,
             host=sharly_chess_config.web_host,
             port=sharly_chess_config.web_port,
             log_config=logging_config,
+            timeout_graceful_shutdown=0,
         )
 
     @property

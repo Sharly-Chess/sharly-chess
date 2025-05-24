@@ -1,10 +1,39 @@
 from enum import IntEnum
+from functools import partial
 from typing import Self
 
 from common.i18n import _
+from data.event import Event
+from data.tournament import Tournament
 from data.pairings import PairingVariation, PairingSystem, systems, variations
+from plugins.ffe import PLUGIN_NAME
 from plugins.pairing_acceleration import pairing_variations as accelerations
-from plugins.utils import PluginCoreMapper
+from plugins.utils import PluginCoreMapper, PluginUtils
+
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+FFE_MIN_UPLOAD_DELAY = 3
+FFE_DEFAULT_UPLOAD_DELAY = 3
+
+
+class FFEUtils:
+    @staticmethod
+    def resolve_auto_upload(tournament: Tournament) -> str | None:
+        if (
+            ffe_auto_upload := get_data(tournament.plugin_data, 'ffe_auto_upload')
+        ) is not None:
+            return ffe_auto_upload
+        return get_data(tournament.event.plugin_data, 'ffe_auto_upload')
+
+    @staticmethod
+    def resolve_auto_upload_delay(event: Event) -> int:
+        if (
+            ffe_auto_upload_delay := get_data(
+                event.plugin_data, 'ffe_auto_upload_delay'
+            )
+        ) is not None:
+            return ffe_auto_upload_delay
+        return FFE_DEFAULT_UPLOAD_DELAY
 
 
 class PlayerFFELicence(IntEnum):

@@ -1,11 +1,12 @@
 from typing import Annotated, Any
 
+from common import format_timestamp_date, format_timestamp_time
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch, delete
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, Redirect
@@ -132,36 +133,38 @@ class IndexAdminController(BaseAdminController):
             )
 
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        event_loader: EventLoader = EventLoader.get(request=web_context.request)
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
+        passed_events = EventLoader.get_events_metadata('passed')
+        current_events = EventLoader.get_events_metadata('current')
+        coming_events = EventLoader.get_events_metadata('coming')
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
                 'title': _('Current events ({num})').format(
-                    num=len(event_loader.current_events) or '-'
+                    num=len(current_events) or '-'
                 ),
                 'template': 'index/events_tab.html',
-                'events': event_loader.current_events,
-                'disabled': not event_loader.current_events,
+                'events': current_events,
+                'disabled': not current_events,
                 'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar',
             },
             'coming_events': {
                 'title': _('Upcoming events ({num})').format(
-                    num=len(event_loader.coming_events) or '-'
+                    num=len(coming_events) or '-'
                 ),
                 'template': 'index/events_tab.html',
-                'events': event_loader.coming_events,
-                'disabled': not event_loader.coming_events,
+                'events': coming_events,
+                'disabled': not coming_events,
                 'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check',
             },
             'passed_events': {
                 'title': _('Passed events ({num})').format(
-                    num=len(event_loader.passed_events) or '-'
+                    num=len(passed_events) or '-'
                 ),
                 'template': 'index/events_tab.html',
-                'events': event_loader.passed_events,
-                'disabled': not event_loader.passed_events,
+                'events': passed_events,
+                'disabled': not passed_events,
                 'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus',
             },
@@ -212,6 +215,8 @@ class IndexAdminController(BaseAdminController):
             ),
             'event_card_blocks': event_card_blocks,
             'row_cycler': cls.get_cycler(['odd', 'even']),
+            'format_timestamp_date': format_timestamp_date,
+            'format_timestamp_time': format_timestamp_time,
         }
 
         match modal:
@@ -538,7 +543,7 @@ class IndexAdminController(BaseAdminController):
         path='/admin/database-status-badge',
         name='admin-database-status-badge',
     )
-    async def htmx_admin_status(
+    async def htmx_admin_status_badge(
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect:
@@ -570,7 +575,13 @@ class IndexAdminController(BaseAdminController):
             template_name = '/admin/common/database/out_of_date_badge.html'
         else:
             template_name = '/admin/common/database/settings_badge.html'
-        return HTMXTemplate(template_name=template_name)
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_badge_and_messages.html',
+            context={
+                'badge': template_name,
+                'messages': Message.messages(request),
+            },
+        )
 
     @get(
         path='/admin/database-modal',
@@ -660,15 +671,10 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Reswap:
         database = LocalSourceDatabaseManager.get_object(database_id)
         database.update()
-        return HTMXTemplate(
-            template_name='/admin/common/database/database_update_buttons.html',
-            trigger_event='database-update-launched',
-            after='receive',
-            context={'database': database},
-        )
+        return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
     @delete(
         path='/admin/database-delete/{database_id:str}',

@@ -1,0 +1,15 @@
+{% extends '/common/base.html' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+    <div class="error-page-container">
+        <h1>{{ _('500 - Internal Server Error') }}</h1>
+        <div class="error-page-logo">
+            {{ macros.sharly_chess_logo() }}
+        </div>
+        <p>{{ _('Sorry, an unexpected error has occurred.') }}</p>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

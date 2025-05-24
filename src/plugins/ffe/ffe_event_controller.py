@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Annotated, Any
 from litestar import get, post
 from litestar.response import Template
@@ -5,16 +6,23 @@ from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
+from common import format_timestamp_date_time
 from common.i18n import _
 from common.network import NetworkMonitor
-from plugins.ffe.engine.ffe_session import FFESession
+from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader, FfeUploadStatus
+from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.utils import PlayerFFELicence
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence
+from plugins.utils import PluginUtils
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminController
+from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
+
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeAdminEventController(BaseEventAdminController):
@@ -88,8 +96,8 @@ class FfeAdminEventController(BaseEventAdminController):
         errors = {}
         # Compare to False, None means 'unable to check'
         if ffe_auth_valid is False:
-            errors['ffe_id'] = _('Invalid FFE ID or password.')
-            errors['ffe_password'] = _('Invalid FFE ID or password.')
+            errors['ffe_id'] = _('Invalid FFE certification number or password.')
+            errors['ffe_password'] = _('Invalid FFE certification number or password.')
 
         return HTMXTemplate(
             template_name='ffe_tournament_ffe_auth_fields.html',
@@ -101,5 +109,162 @@ class FfeAdminEventController(BaseEventAdminController):
                 'ffe_auth_valid': ffe_auth_valid is True,
                 'ffe_password_visible': data['ffe_password_visible'] == 'true',
                 'errors': errors,
+            },
+        )
+
+    @get(
+        path='/ffe/ffe-upload-modal/{event_uniq_id:str}',
+        name='ffe-upload-modal',
+    )
+    async def htmx_admin_ffe_upload_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        assert web_context.admin_event is not None
+
+        FfeBackgroundUploader.update_eligible_tournaments(web_context.admin_event)
+
+        return HTMXTemplate(
+            template_name='/ffe_upload_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
+            context=web_context.template_context
+            | {
+                'format_timestamp_date_time': format_timestamp_date_time,
+                'result_id': FfeBackgroundUploader.result_id,
+                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
+                'ffe_utils': FFEUtils,
+            },
+        )
+
+    def _render_upload_results(
+        self,
+        request: HTMXRequest,
+        web_context: BaseEventAdminWebContext,
+    ) -> Template | ClientRedirect:
+        assert web_context.admin_event is not None
+
+        return HTMXTemplate(
+            template_name='/ffe_upload_results.html',
+            context=web_context.template_context
+            | {
+                'format_timestamp_date_time': format_timestamp_date_time,
+                'result_id': FfeBackgroundUploader.result_id,
+                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
+                'ffe_utils': FFEUtils,
+            },
+        )
+
+    @get(
+        path='/ffe/ffe-upload-results/{event_uniq_id:str}',
+        name='ffe-upload-results',
+    )
+    async def htmx_admin_ffe_upload_results(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        return self._render_upload_results(request, web_context)
+
+    @post(
+        path='/ffe/ffe-upload/{event_uniq_id:str}',
+        name='ffe-upload',
+    )
+    async def htmx_admin_ffe_upload(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        FfeBackgroundUploader.upload_event(admin_event)
+
+        return self._render_upload_results(request, web_context)
+
+    @post(
+        path='/ffe/ffe-upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-upload-tournament',
+    )
+    async def htmx_admin_ffe_upload_tournament(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+
+        FfeBackgroundUploader.schedule_upload(tournament, True)
+
+        return self._render_upload_results(request, web_context)
+
+    @get(
+        path='/ffe/nav-upload-button/{event_uniq_id:str}',
+        name='ffe-nav-upload-button',
+    )
+    async def htmx_admin_ffe_nav_upload_button(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+
+        has_upload_error = False
+        statuses = FfeBackgroundUploader.upload_status_messages
+        tournaments = admin_event.tournaments
+        for tournament in tournaments:
+            result = statuses.get(FfeBackgroundUploader.result_id(tournament), None)
+            if result and result.status == FfeUploadStatus.ERROR:
+                has_upload_error = True
+                break
+
+        return HTMXTemplate(
+            template_name='/ffe_upload_button.html',
+            context=web_context.template_context
+            | {
+                'has_upload_error': has_upload_error,
             },
         )

@@ -10,12 +10,13 @@ from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.static_files import create_static_files_router
+from litestar.status_codes import HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.file import FileStore
 from litestar.stores.base import Store
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
-from common import BASE_DIR, TMP_DIR
+from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.i18n import gettext, ngettext
 
 from plugins.manager import plugin_manager
@@ -89,16 +90,11 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     ],
 ]
 
-# Keep this here for the day we need to add extra functions to templates
-# def template_test_function(ctx: dict[str, Any], param: str) -> str:
-#     request: HTMXRequest = ctx["request"]
-#     return f'le résultat de template_test_function(): string=[{param}], session=[{request.session}]'
-#
-# def register_template_callables(engine: JinjaTemplateEngine) -> None:
-#     engine.register_template_callable(
-#         key="callable_test_function",
-#         template_callable=template_test_function,
-#     )
+exception_handlers = {HTTP_404_NOT_FOUND: IndexController.handle_404_exception}
+if not DEVEL_ENV:
+    exception_handlers |= {
+        HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_500_exception
+    }
 
 
 class FileSystemLoaderWithRelativePath(FileSystemLoader):

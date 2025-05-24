@@ -20,7 +20,14 @@
     </td>
     <td id="{{ database.id }}-updated-at" class="text-center"></td>
     <td class="text-end">
-        {% include 'database_update_buttons.html' %}
+        <div
+            hx-get="{{ url_for('admin-database-status', database_id=database.id) }}"
+            hx-trigger="sse:database-status-updated/{{ database.id }}"
+            hx-target="this"
+            hx-swap="innerHTML"
+        >
+            {% include 'database_update_buttons.html' %}
+        </div>
     </td>
     <script>
         function rowUpdater() {

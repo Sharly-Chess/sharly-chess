@@ -1,0 +1,59 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Upload tournaments to the FFE') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <table
+                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+            >
+                <thead>
+                    <th>
+                        {{ _('Tournament') }}
+                    </th>
+                    <th>
+                        {{ _('Mode') }}
+                    </th>
+                    <th>
+                        {{ _('Status') }}
+                    </th>
+                    <th class="text-center text-nowrap">
+                        {{ _('Last upload') }}
+                    </th>
+                    <th></th>
+                    <th class="text-center">
+                        {{ _('FFE') }}
+                    </th>
+                </thead>
+                {% include 'ffe_upload_results.html' %}
+            </table>
+
+            <div class="text-center my-4">
+                <button
+                    type="button"
+                    hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="#upload-results"
+                    hx-swap="outerHTML"
+                    class="text-nowrap white btn btn-outline-primary"
+                    hx-on::before-request="$('#upload-results .status').addClass('invisible')"
+                >
+                    <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
+                    {{ _('Upload tournaments now') }}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-primary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

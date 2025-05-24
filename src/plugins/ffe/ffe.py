@@ -6,7 +6,7 @@ from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable, override
+from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
 from dateutil.relativedelta import relativedelta
@@ -20,6 +20,10 @@ from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks import TieBreak
+from database.sqlite.sqlite_database import SQLiteDatabase
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
+from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
@@ -36,10 +40,10 @@ from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
-from plugins.ffe.utils import PlayerFFELicence
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginEngineArgument, PluginUtils
+from plugins.utils import Plugin, PluginEngineArgument, PluginNavBarItem, PluginUtils
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -47,6 +51,7 @@ from web.controllers.base_controller import BaseController, WebContext
 
 if TYPE_CHECKING:
     from data.event import Event
+    from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
@@ -128,6 +133,7 @@ class FfePlugin(Plugin):
         return [
             FfeSearchController,
             FfeAdminEventController,
+            FfeAdminTournamentController,
         ]
 
     @hookimpl
@@ -571,8 +577,95 @@ class FfePlugin(Plugin):
         updater_types.append(FfePlayerUpdater)
 
     # ---------------------------------------------------------------------------------
+    # Events
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def augment_event_after_db_fetch(
+        self, stored_event: 'StoredEvent', row: dict[str, Any]
+    ):
+        if not stored_event.plugin_data:
+            stored_event.plugin_data = {}
+        stored_event.plugin_data[self.id] = {
+            'ffe_auto_upload': row.get('ffe_auto_upload', False),
+            'ffe_auto_upload_delay': row.get('ffe_auto_upload_delay', None),
+        }
+
+    @hookimpl
+    def event_data_for_db_write(self, stored_event: 'StoredEvent') -> dict[str, Any]:
+        td = stored_event.plugin_data
+        return {
+            'ffe_auto_upload': int(self.get_data(td, 'ffe_auto_upload')),
+            'ffe_auto_upload_delay': self.get_data(td, 'ffe_auto_upload_delay'),
+        }
+
+    @hookimpl
+    def get_event_info_rows_template(self) -> str:
+        return '/ffe_event_info_rows.html'
+
+    @hookimpl
+    def get_event_card_block_template(self) -> str:
+        return '/ffe_event_card_block.html'
+
+    @hookimpl
+    def get_event_form_fields_template(self) -> str:
+        return '/ffe_event_form_fields.html'
+
+    @hookimpl
+    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
+        if not event:
+            return {
+                'ffe_auto_upload': 'off',
+                'ffe_auto_upload_delay': '',
+                'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
+            }
+
+        return {
+            'ffe_auto_upload': WebContext.value_to_form_data(
+                bool(self.get_data(event.plugin_data, 'ffe_auto_upload', False))
+            ),
+            'ffe_auto_upload_delay': WebContext.value_to_form_data(
+                self.get_data(event.plugin_data, 'ffe_auto_upload_delay', '')
+            ),
+            'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
+        }
+
+    @hookimpl
+    def get_validated_event_form_fields(
+        self,
+        action: str,
+        event: 'Event | None',
+        data: dict[str, str],
+        errors: dict[str, str],
+    ) -> dict[str, Any]:
+        ffe_auto_upload = WebContext.form_data_to_bool(data, 'ffe_auto_upload')
+        ffe_auto_upload_delay = WebContext.form_data_to_int(
+            data, field := 'ffe_auto_upload_delay'
+        )
+        if ffe_auto_upload_delay and ffe_auto_upload_delay < FFE_MIN_UPLOAD_DELAY:
+            errors[field] = _(
+                f'The delay must be at least {FFE_MIN_UPLOAD_DELAY} minutes to avoid overloading the FFE server.'
+            )
+
+        # Keep data other than these two fields
+        previous_data = event.plugin_data.get(self.id, {}) if event else {}
+
+        return {
+            self.id: previous_data
+            | {
+                'ffe_auto_upload': ffe_auto_upload or False,
+                'ffe_auto_upload_delay': ffe_auto_upload_delay,
+            }
+        }
+
+    # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def on_tournament_data_updated(self, tournament: 'Tournament'):
+        if FFEUtils.resolve_auto_upload(tournament):
+            FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def augment_tournament_after_db_fetch(
@@ -583,6 +676,9 @@ class FfePlugin(Plugin):
         stored_tournament.plugin_data[self.id] = {
             'ffe_id': row.get('ffe_id', ''),
             'ffe_password': row.get('ffe_password', ''),
+            'ffe_auto_upload': SQLiteDatabase.load_bool_or_none_from_database_field(
+                row.get('ffe_auto_upload', None)
+            ),
             'ffe_last_upload': row.get('ffe_last_upload', 0.0),
             'ffe_last_rules_upload': row.get('ffe_last_rules_upload', 0.0),
         }
@@ -595,6 +691,7 @@ class FfePlugin(Plugin):
         return {
             'ffe_id': self.get_data(data, 'ffe_id', None),
             'ffe_password': self.get_data(data, 'ffe_password', None),
+            'ffe_auto_upload': self.get_data(data, 'ffe_auto_upload', None),
         }
 
     @hookimpl
@@ -615,10 +712,30 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_data(
-        self, tournament: 'Tournament | None'
+        self, event: 'Event', tournament: 'Tournament | None'
     ) -> dict[str, Any]:
+        ffe_auto_upload_options: dict[str, str] = {
+            '': '',
+            WebContext.value_to_form_data(False): _('Disabled'),
+        } | {
+            WebContext.value_to_form_data(True): _('Enabled'),
+        }
+        event_auto_upload = bool(
+            self.get_data(event.plugin_data, 'ffe_auto_upload', False)
+        )
+        ffe_auto_upload_options[''] = _('By default - {option}').format(
+            option=ffe_auto_upload_options[
+                WebContext.value_to_form_data(event_auto_upload)
+            ]
+        )
+
         if not tournament:
-            return {'ffe_id': '', 'ffe_password': ''}
+            return {
+                'ffe_id': '',
+                'ffe_password': '',
+                'ffe_auto_upload': '',
+                'ffe_auto_upload_options': ffe_auto_upload_options,
+            }
 
         return {
             'ffe_id': WebContext.value_to_form_data(
@@ -627,6 +744,10 @@ class FfePlugin(Plugin):
             'ffe_password': WebContext.value_to_form_data(
                 self.get_data(tournament.plugin_data, 'ffe_password', None)
             ),
+            'ffe_auto_upload': WebContext.value_to_form_data(
+                self.get_data(tournament.plugin_data, 'ffe_auto_upload', None)
+            ),
+            'ffe_auto_upload_options': ffe_auto_upload_options,
         }
 
     @hookimpl
@@ -647,7 +768,7 @@ class FfePlugin(Plugin):
             errors['ffe_password'] = _(
                 'The password of the tournament on the FFE website is made of 10 uppercase letters.'
             )
-
+        ffe_auto_upload = WebContext.form_data_to_bool(data, 'ffe_auto_upload')
         # Keep data other than these two fields (such as file upload times)
         previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
 
@@ -656,12 +777,22 @@ class FfePlugin(Plugin):
             | {
                 'ffe_id': ffe_id,
                 'ffe_password': ffe_password,
+                'ffe_auto_upload': ffe_auto_upload,
             }
         }
 
     @hookimpl
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
-        return ('/ffe_tournament_card_block.html', {})
+        return (
+            '/ffe_tournament_card_block.html',
+            {
+                'ffe_utils': FFEUtils,
+            },
+        )
+
+    @hookimpl
+    def get_tournament_card_menu_items_template(self) -> str:
+        return '/ffe_tournament_action_items.html'
 
     # ---------------------------------------------------------------------------------
     # Printing
@@ -695,6 +826,19 @@ class FfePlugin(Plugin):
         if isinstance(document, PlayerPrintDocument):
             return '.player-table .league { text-align: center; }'
         return ''
+
+    # ---------------------------------------------------------------------------------
+    # Nav bar
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_event_nav_bar_items_and_data(
+        self, event: 'Event'
+    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
+        return (
+            [PluginNavBarItem(at='database', template='/ffe_nav_buttons.html')],
+            {},
+        )
 
     # ---------------------------------------------------------------------------------
     # User screens

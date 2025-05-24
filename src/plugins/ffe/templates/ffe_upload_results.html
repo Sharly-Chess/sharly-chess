@@ -1,0 +1,62 @@
+<tbody
+    id="upload-results"
+    hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
+    hx-trigger="sse:ffe-upload-event"
+    hx-swap="outerHTML"
+>
+    {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
+        {% with ffe_auto_upload=ffe_utils.resolve_auto_upload(tournament) %}
+            <tr>
+                <td style="width: 0;" class="text-nowrap">
+                    {{ tournament.name }}
+                </td>
+                <td style="width: 0;" class="text-nowrap">
+                    {% if ffe_auto_upload %}
+                        {{ _("Automatic") }}
+                    {% else %}
+                        {{ _('Manual') }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% with result=upload_status_messages[result_id(tournament)] if result_id(tournament) in upload_status_messages %}
+                        {% if result %}
+                            <span id="t_{{tournament.id}}" class="status {% if result.status == 5 %}text-success{% elif result.status >= 7 %}text-danger{% endif %}">
+                                {{ result.message }}
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td class="text-center text-nowrap" style="width: 0;">
+                    {% if tournament.plugin_data.ffe.ffe_last_upload %}
+                        {{ format_timestamp_date_time(tournament.plugin_data.ffe.ffe_last_upload) }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="width: 0;">
+                    {% if tournament.plugin_data.ffe.ffe_id %}
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-sm text-nowrap"
+                            hx-post="{{ url_for('ffe-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                            hx-target="#upload-results"
+                            hx-swap="outerHTML"
+                            class="text-nowrap white btn btn-secondary"
+                            hx-on::before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
+                        >
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                            {{ _('Upload') }}
+                        </button>
+                    {% endif %}
+                </td>
+                <td class="text-center" style="width: 0;">
+                    {% if tournament.plugin_data.ffe.ffe_id %}
+                        <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament.plugin_data.ffe.ffe_id }}" target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endwith %}
+    {% endfor %}
+</tbody>

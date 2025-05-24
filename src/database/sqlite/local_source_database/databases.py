@@ -24,7 +24,7 @@ from utils.entity import IdentifiableEntity
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
-
+from web.channels import channels_plugin
 
 logger = get_logger()
 
@@ -45,6 +45,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.stop_event = threading.Event()
         self.outdated_warning: bool = False
         self.stored_source_database: StoredLocalSourceDatabase
+
         with ConfigDatabase() as database:
             stored_source_database = database.load_stored_local_source_database(self.id)
         if stored_source_database:
@@ -126,8 +127,27 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def log_prefix(self) -> str:
         return _('Database [{database}] - ').format(database=self.name)
 
+    @classmethod
+    def publish_database_status_updated(cls):
+        if channels_plugin:
+            channels_plugin.publish(
+                {
+                    'event': 'database-status-updated',
+                    'data': '',
+                },
+                ['sse'],
+            )
+            channels_plugin.publish(
+                {
+                    'event': f'database-status-updated/{cls.static_id()}',
+                    'data': '',
+                },
+                ['sse'],
+            )
+
     def on_outdated(self):
         self.outdate_action.on_outdated(self)
+        self.publish_database_status_updated()
 
     @property
     def updated_at_str(self) -> str:
@@ -149,6 +169,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def stop_update(cls, status: bool) -> None:
         cls.is_updating = False
         cls.update_status = status
+        cls.publish_database_status_updated()
 
     @override
     def delete(self):
@@ -157,6 +178,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(self.default_stored_database)
             database.commit()
+        self.publish_database_status_updated()
 
     def check(self):
         """Checks if the database exists and is up-to-date.
@@ -192,6 +214,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         3. Populate the temp database from the source file
         4. Copy the temp file to the correct file location"""
         self.__class__.is_updating = True
+        self.publish_database_status_updated()
         if not NetworkMonitor.connected():
             logger.warning(self.log_prefix + _('Not connected, impossible to update.'))
             return self.stop_update(False)

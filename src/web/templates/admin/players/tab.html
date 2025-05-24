@@ -4,6 +4,21 @@
     ) }}
 
     <div
+        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
+        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
+    <div
+        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
+        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
+
+    <div
         class="d-flex mb-2 align-items-center flex-wrap gap-1 z-3"
         style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1rem;"
     >
@@ -12,9 +27,24 @@
         {% endcall %}
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-2 ms-auto flex-wrap justify-content-end">
-            {% with compact=false, tournament=none %}
-                {% include 'players_diff.html' %}
-            {% endwith %}
+            <div class="dropdown d-inline">
+                <span
+                    {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                >
+                    <button
+                        class="btn btn-outline-primary dropdown-toggle mx-auto"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i class="bi-arrow-repeat pe-1"></i>
+                        {{ _('Update players') }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% include 'players_diff.html' %}
+                    </ul>
+                </span>
+            </div>
             {% if admin_event.players_sorted_by_name %}
                 {% include 'download_players.html' %}
             {% endif %}

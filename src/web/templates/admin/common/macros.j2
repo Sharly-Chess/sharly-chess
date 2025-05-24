@@ -747,12 +747,23 @@ with_indicator: display a loading indicator, optional
     {% endwith %}
 {% endmacro %}
 
+
+{% macro extra_admin_nav_item(
+    at,
+    extra_nav_items = {}
+) %}
+    {% set nav_items=extra_nav_items[at] or [] %}
+    {% for nav_item in nav_items %}
+        {% include nav_item.template %}
+    {% endfor %}
+{% endmacro %}
+
 {% macro display_controller_assign_dropdown(
     display_controllers,
     object_type,
     object_uniq_id
 ) %}
-    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a display controller.', 'top') }}>
+    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', _('Assign to a display controller.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button"
             data-bs-toggle="dropdown"

@@ -55,7 +55,14 @@ class FFESession(Session):
     """A requests session specialized for communication with the FFE website.
     Currently, it relies on hacks, because no API is available."""
 
-    def __init__(self, tournament: Tournament | None, debug: bool):
+    def __init__(
+        self,
+        tournament: Tournament | None,
+        debug: bool,
+        report_info=print_interactive_info,
+        report_success=print_interactive_success,
+        report_error=print_interactive_error,
+    ):
         super().__init__()
         self.tournament: Tournament | None = tournament
         self.debug = debug
@@ -63,6 +70,9 @@ class FFESession(Session):
         self.auth_state: dict[str, str | None] = {}
         self.tournament_ffe_url: str | None = None
         self.last_url_read: str | None = None
+        self.report_info = report_info
+        self.report_success = report_success
+        self.report_error = report_error
 
     def _read_url(
         self, url: str, data: dict[str, str] | None, files: dict[str, Path] | None
@@ -270,7 +280,7 @@ class FFESession(Session):
                 )
         tag = parser.getElementById(VIEW_LINK_ID)
         if not tag:
-            print_interactive_error(_('Authentication failed.'))
+            self.report_error(_('Authentication failed.'))
             return False
         value = getattr(tag, 'attributesDict', {}).get('href', '')
         self.tournament_ffe_url = value
@@ -363,7 +373,7 @@ class FFESession(Session):
     def get_id_and_password(
         self, do_log: bool = False
     ) -> tuple[str | None, str | None]:
-        """Fetches the FFE ID and password for the tournament from the plugin data."""
+        """Fetches the certification number and password for the tournament from the plugin data."""
 
         assert self.tournament is not None
         pd = self.tournament.plugin_data
@@ -372,9 +382,9 @@ class FFESession(Session):
         if not ffe_id or not ffe_password:
             if do_log:
                 logger.warning(
-                    _(
-                        'FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'
-                    ).format(tournament_name=self.tournament.name)
+                    'FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'.format(
+                        tournament_name=self.tournament.name
+                    )
                 )
                 return None, None
             else:
@@ -404,9 +414,9 @@ class FFESession(Session):
                 '> auth_state[%s]=[%s]', UPLOAD_LINK_ID, self.auth_state[UPLOAD_LINK_ID]
             )
         if self.auth_state[UPLOAD_LINK_ID] is None:
-            print_interactive_warning(
+            self.report_error(
                 _(
-                    'Upload link not found, check that the tournament is not marked as finished on the FFE website.'
+                    'Upload link not found, check that the tournament is not marked as finished on the FFE website'
                 )
             )
             return
@@ -447,6 +457,7 @@ class FFESession(Session):
             return
         __, error = self._parse_html_content(html)
         if error:
+            self.report_error(_('Upload failed'))
             return
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
             now = time.time()
@@ -460,7 +471,7 @@ class FFESession(Session):
                 ),
             )
             event_database.commit()
-        print_interactive_success(_('Results upload OK'))
+        self.report_success(_('Results upload OK'))
         if not set_visible:
             return
         print_interactive_info(_('Making the tournament visible on the FFE website...'))
@@ -482,9 +493,10 @@ class FFESession(Session):
             return
         if set_visible_link_id.lower().startswith('désactiver'):
             print_interactive_info(_('Data is already displayed on the FFE website.'))
+            self.report_info(_('Data is already displayed on the FFE website.'))
             return
         if not set_visible_link_id.lower().startswith('activer'):
-            print_interactive_error(
+            self.report_error(
                 _('Invalid display link text [{text}]').format(
                     text=self.auth_state[SET_VISIBLE_LINK_ID]
                 )
@@ -503,7 +515,7 @@ class FFESession(Session):
         html = self._read_url(url=url, data=post_data, files=None)
         if not html:
             return
-        print_interactive_success(_('Results upload OK'))
+        self.report_success(_('Tournament visibility successfully set'))
 
     def upload_rules(self) -> None:
         """Upload the rules of the tournament to the FFE admin website."""
@@ -530,7 +542,7 @@ class FFESession(Session):
                 self.auth_state[UPLOAD_RULES_LINK_ID],
             )
         if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
-            logger.warning(
+            self.report_error(
                 _(
                     'Rules upload link not found, check that the tournament is not marked as finished on the FFE website.'
                 )
@@ -572,4 +584,4 @@ class FFESession(Session):
                 ),
             )
             event_database.commit()
-        logger.info('Rules upload OK')
+        self.report_success(_('Rules uploaded'))

@@ -239,3 +239,10 @@ class ExtraAdminColumn(NamedTuple):
     at: str
     header_template: str
     cell_template: str
+
+
+class PluginNavBarItem(NamedTuple):
+    """Class representing a plugin item in the navigation bar."""
+
+    at: str
+    template: str

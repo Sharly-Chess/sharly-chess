@@ -114,7 +114,13 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "404 - Page Not Found"
+msgstr ""
+
 msgid "50+"
+msgstr ""
+
+msgid "500 - Internal Server Error"
 msgstr ""
 
 msgid "65+"
@@ -188,6 +194,9 @@ msgid "Action delay"
 msgstr ""
 
 msgid "Action: {action}"
+msgstr ""
+
+msgid "Actions"
 msgstr ""
 
 msgid "Actions:"
@@ -307,6 +316,9 @@ msgstr ""
 msgid "Argument --server is deprecated, ignored."
 msgstr ""
 
+msgid "Assign a screen to the controller."
+msgstr ""
+
 msgid "Assign a zero-point bye for the next round"
 msgstr ""
 
@@ -314,6 +326,9 @@ msgid "Assign the players a zero-point bye for the next round (players will be a
 msgstr ""
 
 msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
+msgstr ""
+
+msgid "Assign to a display controller."
 msgstr ""
 
 msgid "Assign zero-point byes for the rest of the tournament"
@@ -337,7 +352,32 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
+msgid "Auto upload to FFE enabled"
+msgstr ""
+
 msgid "Auto-update"
+msgstr ""
+
+msgid "Auto-upload results to FFE site"
+msgstr ""
+
+msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
+msgstr ""
+
+msgid "Auto-upload to FFE enabled"
+msgstr ""
+
+#, python-format
+msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
+msgstr ""
+
+msgid "Auto-upload to FFE site disabled"
+msgstr ""
+
+msgid "Auto-upload:"
+msgstr ""
+
+msgid "Automatic"
 msgstr ""
 
 msgid "Automatically launch a browser when starting the server"
@@ -479,6 +519,9 @@ msgid "By board"
 msgstr ""
 
 msgid "By default - {option}"
+msgstr ""
+
+msgid "By default, tournaments are not visible on the FFE site."
 msgstr ""
 
 #, python-format
@@ -628,25 +671,6 @@ msgid "Click to check-in the player."
 msgstr ""
 
 msgid "Click to check-out the player."
-msgstr ""
-
-msgid "Clone"
-msgstr ""
-
-msgid "Clone the rotator."
-msgstr ""
-
-msgid "Clone the screen family."
-msgstr ""
-
-msgid "Clone the timer."
-msgstr ""
-
-msgid "Clone the tournament."
-msgstr ""
-
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 msgid "Close"
@@ -1100,6 +1124,25 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Duplicate"
+msgstr ""
+
+msgid "Duplicate the rotator."
+msgstr ""
+
+msgid "Duplicate the screen family."
+msgstr ""
+
+msgid "Duplicate the timer."
+msgstr ""
+
+msgid "Duplicate the tournament."
+msgstr ""
+
+#, python-format
+msgid "Duplication of screen family [%(family_uniq_id)s]"
+msgstr ""
+
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
@@ -1360,6 +1403,9 @@ msgstr ""
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
+msgid "Enabled"
+msgstr ""
+
 msgid "End of upload (Ctrl-C)"
 msgstr ""
 
@@ -1390,14 +1436,13 @@ msgstr ""
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
+msgid "Error uploading tournament"
+msgstr ""
+
 msgid "Error when updating database [{database}]."
 msgstr ""
 
 msgid "Error while creating the database: {error}."
-msgstr ""
-
-#, python-format
-msgid "Errors: %(num)d"
 msgstr ""
 
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
@@ -1475,12 +1520,6 @@ msgstr "FFE"
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
-msgid "FFE ID and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-msgstr ""
-
-msgid "FFE ID not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
 msgid "FFE Licence"
 msgstr ""
 
@@ -1488,6 +1527,16 @@ msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number (optional):"
+msgstr ""
+
+msgid "FFE certification number and password not defined for tournament"
+msgstr ""
+
+msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+#, python-format
+msgid "FFE certification number: %(ffe_id)d"
 msgstr ""
 
 msgid "FFE database"
@@ -1519,8 +1568,10 @@ msgstr ""
 msgid "FFE password:"
 msgstr ""
 
-#, python-format
-msgid "FFE qualification: %(ffe_id)s"
+msgid "FFE settings"
+msgstr ""
+
+msgid "FFE site"
 msgstr ""
 
 msgid "FIDE"
@@ -1785,6 +1836,9 @@ msgstr ""
 msgid "Go back to the home page."
 msgstr ""
 
+msgid "Go to the display controller."
+msgstr ""
+
 msgid "Go to the first screen."
 msgstr ""
 
@@ -1906,10 +1960,6 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
-#, python-format
-msgid "Informations: %(num)d"
-msgstr ""
-
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
@@ -1949,7 +1999,7 @@ msgstr ""
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr ""
 
-msgid "Invalid FFE ID or password."
+msgid "Invalid FFE certification number or password."
 msgstr ""
 
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
@@ -2063,6 +2113,9 @@ msgstr ""
 msgid "Last update"
 msgstr ""
 
+msgid "Last upload"
+msgstr ""
+
 msgid "Launch browser:"
 msgstr ""
 
@@ -2148,6 +2201,9 @@ msgstr ""
 msgid "Make the tournaments visible on the FFE website"
 msgstr ""
 
+msgid "Make visible on FFE site"
+msgstr ""
+
 msgid "Making the tournament visible on the FFE website..."
 msgstr ""
 
@@ -2155,6 +2211,9 @@ msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
 msgid "Mandatory for the first hour, optional for next hours."
+msgstr ""
+
+msgid "Manual"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -2246,10 +2305,22 @@ msgstr ""
 msgid "Minimal time (handicap, seconds):"
 msgstr ""
 
+msgid "Minimum delay between uploads (minutes):"
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Missing parameter (code: [{code}]): [{error}]."
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Modified since last upload"
+msgstr ""
+
+msgid "Modified, but update failed"
 msgstr ""
 
 #, python-format
@@ -2302,10 +2373,16 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "New checkins are in, refresh your browser"
+msgstr ""
+
 msgid "New display controller"
 msgstr ""
 
 msgid "New event"
+msgstr ""
+
+msgid "New results are in, refresh your browser"
 msgstr ""
 
 msgid "New tournament"
@@ -2329,10 +2406,10 @@ msgstr ""
 msgid "No FFE Licence"
 msgstr ""
 
-msgid "No FFE operations can be done on the tournaments of this event."
+msgid "No FFE certification number"
 msgstr ""
 
-msgid "No FFE qualification"
+msgid "No FFE operations can be done on the tournaments of this event."
 msgstr ""
 
 msgid "No FIDE ID."
@@ -2381,16 +2458,13 @@ msgstr ""
 msgid "No display controllers."
 msgstr ""
 
-msgid "No errors"
-msgstr ""
-
 msgid "No events found."
 msgstr ""
 
 msgid "No hours."
 msgstr ""
 
-msgid "No informations"
+msgid "No internet connection"
 msgstr ""
 
 msgid "No internet connection and no local database."
@@ -2507,16 +2581,13 @@ msgstr ""
 msgid "No valid hour defined."
 msgstr ""
 
-msgid "No warnings"
-msgstr ""
-
 msgid "None"
 msgstr ""
 
 msgid "Not checked-in yet"
 msgstr ""
 
-msgid "Not connected to internet."
+msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
@@ -2728,10 +2799,19 @@ msgstr ""
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
+msgid "Papi file not defined for tournament"
+msgstr ""
+
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "Papi file not found [{file}]"
+msgstr ""
+
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi file not modified since last upload"
 msgstr ""
 
 msgid "Parings by player"
@@ -3167,6 +3247,9 @@ msgstr "Record"
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
 msgstr ""
 
+msgid "Refresh"
+msgstr ""
+
 msgid "Refresh this page."
 msgstr ""
 
@@ -3333,6 +3416,9 @@ msgstr ""
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
+msgid "Rules uploaded"
+msgstr ""
+
 msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
 msgstr "S-Berger"
 
@@ -3480,6 +3566,12 @@ msgstr ""
 msgid "Sonnenborn-Berger"
 msgstr ""
 
+msgid "Sorry, an unexpected error has occurred."
+msgstr ""
+
+msgid "Sorry, the page you are looking for does not exist."
+msgstr ""
+
 msgid "Sort by:"
 msgstr ""
 
@@ -3535,6 +3627,9 @@ msgid "Starting Sharly Chess server, please wait..."
 msgstr ""
 
 msgid "Starting rank"
+msgstr ""
+
+msgid "Status"
 msgstr ""
 
 msgid "Storing data..."
@@ -3738,6 +3833,10 @@ msgid "The maximum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr ""
+
+#, python-format
+msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4224,10 +4323,25 @@ msgstr ""
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
+msgid "Tournament modified, awaiting auto-upload"
+msgstr ""
+
+msgid "Tournament not yet uploaded"
+msgstr ""
+
 msgid "Tournament performance rating"
 msgstr ""
 
+msgid "Tournament previously uploaded"
+msgstr ""
+
 msgid "Tournament record"
+msgstr ""
+
+msgid "Tournament rules are not set"
+msgstr ""
+
+msgid "Tournament visibility successfully set"
 msgstr ""
 
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
@@ -4316,6 +4430,12 @@ msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
 msgid "Unable to create Papi files."
+msgstr ""
+
+msgid "Unable to set tournament visibility"
+msgstr ""
+
+msgid "Unable to upload tournament rules"
 msgstr ""
 
 msgid "Undefined"
@@ -4434,16 +4554,37 @@ msgstr ""
 msgid "Updating"
 msgstr ""
 
-msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
+msgid "Upload"
 msgstr ""
 
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgid "Upload failed"
+msgstr ""
+
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
+msgstr ""
+
+msgid "Upload rules"
 msgstr ""
 
 msgid "Upload the results of the tournaments"
 msgstr ""
 
 msgid "Upload the rules of the tournaments"
+msgstr ""
+
+msgid "Upload tournaments now"
+msgstr ""
+
+msgid "Upload tournaments to the FFE"
+msgstr ""
+
+msgid "Upload:"
+msgstr ""
+
+msgid "Uploading the PDF rules file allow the players to read the rules online."
+msgstr ""
+
+msgid "Uploading tournament..."
 msgstr ""
 
 msgid "Upper limit expected to be greater than lower limit."
@@ -4523,10 +4664,6 @@ msgid "Warning: the deletion of an event is permanent!"
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
-msgstr ""
-
-#, python-format
-msgid "Warnings: %(num)d"
 msgstr ""
 
 msgid "Web access"
@@ -4629,6 +4766,9 @@ msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
 msgid "You must create a tournament before creating screens."
+msgstr ""
+
+msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr ""
 
 msgid "Your choice (by default {default}): "
