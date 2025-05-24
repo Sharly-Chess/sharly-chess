@@ -664,10 +664,6 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
-msgstr ""
-
 msgid "Close"
 msgstr ""
 
@@ -1132,6 +1128,10 @@ msgid "Duplicate the timer."
 msgstr ""
 
 msgid "Duplicate the tournament."
+msgstr ""
+
+#, python-format
+msgid "Duplication of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"

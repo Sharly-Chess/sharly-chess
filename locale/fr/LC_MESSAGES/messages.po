@@ -664,10 +664,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
 
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
-msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
-
 msgid "Close"
 msgstr "Fermer"
 
@@ -1133,6 +1129,10 @@ msgstr "Dupliquer le chronomètre."
 
 msgid "Duplicate the tournament."
 msgstr "Dupliquer le tournoi"
+
+#, python-format
+msgid "Duplication of screen family [%(family_uniq_id)s]"
+msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"

@@ -27,7 +27,7 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 class FfeAdminTournamentController(BaseEventAdminController):
     @post(
-        path='/ffe/make-visible/{event_uniq_id:str}/tournament/{tournament_id:int}',
+        path='/ffe/make-visible/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-make-visible',
     )
     async def htmx_ffe_make_visible(
@@ -109,7 +109,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         return self.render_messages(request)
 
     @post(
-        path='/ffe/upload-rules/{event_uniq_id:str}/tournament/{tournament_id:int}',
+        path='/ffe/upload-rules/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-upload-rules',
     )
     async def htmx_ffe_upload_rules(
