@@ -595,7 +595,7 @@ class FfePlugin(Plugin):
     def event_data_for_db_write(self, stored_event: 'StoredEvent') -> dict[str, Any]:
         td = stored_event.plugin_data
         return {
-            'ffe_auto_upload': int(self.get_data(td, 'ffe_auto_upload')),
+            'ffe_auto_upload': int(self.get_data(td, 'ffe_auto_upload') or False),
             'ffe_auto_upload_delay': self.get_data(td, 'ffe_auto_upload_delay'),
         }
 
