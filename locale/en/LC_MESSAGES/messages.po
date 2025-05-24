@@ -2261,7 +2261,7 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
-msgid "May be used for per-round prize giveaways etc.."
+msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"

@@ -2261,7 +2261,7 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
-msgid "May be used for per-round prize giveaways etc.."
+msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
@@ -2483,7 +2483,7 @@ msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr "Aucun règlement à mettre à jour sur le site web FFE (à jour)."
 
 msgid "No pairing found for this player in the current round."
-msgstr "No pairing found for this player in the current round."
+msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
 msgid "No pairings."
 msgstr "Aucun appariement."
