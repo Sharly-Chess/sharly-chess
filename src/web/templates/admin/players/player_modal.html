@@ -5,9 +5,9 @@
                 {% if action == 'create' %}
                     {{ _('Player creation') }}
                 {% elif action == 'update' %}
-                    {{ _('Edition of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
+                    {{ _('Edition of player [%(first_name)s %(last_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of player [%(last_name)s %(first_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
+                    {{ _('Deletion of player [%(first_name)s %(last_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
                 {% else %}
                     ?
                 {% endif %}

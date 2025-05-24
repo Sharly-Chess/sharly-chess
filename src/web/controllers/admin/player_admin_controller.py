@@ -1242,7 +1242,7 @@ class PlayerAdminController(BaseEventAdminController):
                     Message.error(
                         request,
                         _(
-                            'Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].'
+                            'Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}].'
                         ).format(
                             last_name=player.last_name,
                             first_name=player.first_name,
@@ -1325,7 +1325,7 @@ class PlayerAdminController(BaseEventAdminController):
             Message.success(
                 request,
                 _(
-                    'Player [{last_name} {first_name}] has been moved '
+                    'Player [{first_name} {last_name}] has been moved '
                     'from tournament [{src_tournament_uniq_id}] '
                     'to tournament [{dst_tournament_uniq_id}].'
                 ).format(
@@ -1355,7 +1355,7 @@ class PlayerAdminController(BaseEventAdminController):
         if player.has_real_pairings:
             raise ValueError(
                 _(
-                    'Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}].'
                 ).format(
                     last_name=player.last_name,
                     first_name=player.first_name,
