@@ -1,4 +1,5 @@
 import copy
+import random
 import time
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +16,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.board import Board
 from data.event import Event
 from data.input_output import (
     PlayerUpdaterManager,
@@ -24,6 +26,7 @@ from data.input_output import (
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
+from data.player import Player
 from data.print_documents import PrintDocumentManager
 from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
@@ -390,6 +393,9 @@ class TournamentAdminController(BaseEventAdminController):
             for (block_template, data) in tournament_card_blocks_and_data
             for key, value in data.items()
         }
+        tournament_action_menu_items = (
+            plugin_manager.hook.get_tournament_card_menu_items_template()
+        )
         tournament_exporters: list[TournamentExporter] = (
             TournamentExporterManager.objects()
         )
@@ -398,6 +404,7 @@ class TournamentAdminController(BaseEventAdminController):
             'paired_bye_result_options': cls._get_paired_bye_result_options(),
             'tournament_card_blocks': tournament_card_blocks,
             'tournament_exporters': tournament_exporters,
+            'tournament_action_menu_items': tournament_action_menu_items,
             'admin_tournaments_show_details': (
                 SessionHandler.get_session_admin_tournaments_show_details(
                     web_context.request
@@ -405,6 +412,7 @@ class TournamentAdminController(BaseEventAdminController):
             ),
             'player_updater_options': PlayerUpdaterManager.options(),
         } | tournament_card_block_data
+
         match modal:
             case None:
                 pass
@@ -1028,4 +1036,90 @@ class TournamentAdminController(BaseEventAdminController):
         } | print_document.template_context
         return HTMXTemplate(
             template_name=print_document.template_name, context=template_context
+        )
+
+    @get(
+        path=[
+            '/admin/random-player/{event_uniq_id:str}',
+            '/admin/random-player/{event_uniq_id:str}/{tournament_id:int}',
+        ],
+        name='admin-random-player',
+    )
+    async def htmx_random_player(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        assert web_context.admin_event is not None
+        admin_event: Event = web_context.admin_event
+        admin_tournament: Tournament | None = web_context.admin_tournament
+
+        if not admin_tournament:
+            admin_tournament = random.choice(
+                list(admin_event.tournaments_by_id.values())
+            )
+
+        players = admin_tournament.players if admin_tournament else None
+        random_player = random.choice(list(players)) if players else None
+
+        board: Board | None = None
+        if random_player is not None:
+            board = next(
+                (
+                    b
+                    for b in admin_tournament.boards
+                    if (
+                        b.white_player is not None
+                        and b.white_player.id == random_player.id
+                    )
+                    or (
+                        b.black_player is not None
+                        and b.black_player.id == random_player.id
+                    )
+                ),
+                None,
+            )
+
+        opponent: Player | None = None
+        if random_player and board is not None:
+            if board.white_player and board.white_player.id != random_player.id:
+                opponent = board.white_player
+            elif board.black_player and board.black_player.id != random_player.id:
+                opponent = board.black_player
+
+        return HTMXTemplate(
+            template_name='admin/tournaments/random_player_modal.html',
+            context={
+                'player_name': _('{first_name} {last_name}').format(
+                    first_name=random_player.first_name
+                    if random_player.first_name
+                    else '',
+                    last_name=random_player.last_name
+                    if random_player.last_name
+                    else '',
+                )
+                if random_player
+                else None,
+                'random_player': random_player,
+                'opponent_name': _('{first_name} {last_name}').format(
+                    first_name=opponent.first_name if opponent.first_name else '',
+                    last_name=opponent.last_name if opponent.last_name else '',
+                )
+                if opponent
+                else None,
+                'tournament': admin_tournament,
+                'board': board,
+            },
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
         )

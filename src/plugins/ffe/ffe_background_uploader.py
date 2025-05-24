@@ -146,7 +146,11 @@ class FfeBackgroundUploader:
 
     @classmethod
     def upload_tournament(
-        cls, event_uniq_id: str, tournament_id: int, force: bool
+        cls,
+        event_uniq_id: str,
+        tournament_id: int,
+        force: bool,
+        make_visible: bool = False,
     ) -> None:
         """Upload a tournament to FFE."""
 

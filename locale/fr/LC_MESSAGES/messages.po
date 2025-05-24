@@ -196,6 +196,9 @@ msgstr "Délai d'action"
 msgid "Action: {action}"
 msgstr "Action : {action}"
 
+msgid "Actions"
+msgstr "Actions"
+
 msgid "Actions:"
 msgstr "Actions :"
 
@@ -512,6 +515,9 @@ msgstr "Par échiquier"
 msgid "By default - {option}"
 msgstr "Par défaut - {option}"
 
+msgid "By default, tournaments are not visible on the FFE site."
+msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
+
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
@@ -640,6 +646,9 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chess
 msgid "Choose a custom image:"
 msgstr "Choisissez une image personnalisée :"
 
+msgid "Choose a player at random"
+msgstr "Choisir un·e joueur·euse au hasard"
+
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
@@ -660,25 +669,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
-
-msgid "Clone"
-msgstr "Dupliquer"
-
-msgid "Clone the rotator."
-msgstr "Dupliquer l'écran rotatif."
-
-msgid "Clone the screen family."
-msgstr "Dupliquer la famille d'écrans."
-
-msgid "Clone the timer."
-msgstr "Dupliquer le chronomètre."
-
-msgid "Clone the tournament."
-msgstr "Dupliquer le tournoi"
-
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
-msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
 
 msgid "Close"
 msgstr "Fermer"
@@ -1131,6 +1121,25 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+msgid "Duplicate the rotator."
+msgstr "Dupliquer l'écran rotatif."
+
+msgid "Duplicate the screen family."
+msgstr "Dupliquer la famille d'écrans."
+
+msgid "Duplicate the timer."
+msgstr "Dupliquer le chronomètre."
+
+msgid "Duplicate the tournament."
+msgstr "Dupliquer le tournoi"
+
+#, python-format
+msgid "Duplication of screen family [%(family_uniq_id)s]"
+msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
+
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
@@ -1558,6 +1567,9 @@ msgstr "Mot de passe FFE :"
 
 msgid "FFE settings"
 msgstr "Paramètres FFE"
+
+msgid "FFE site"
+msgstr "Site de la FFE"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2183,6 +2195,9 @@ msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 msgid "Make the tournaments visible on the FFE website"
 msgstr "Rendre les tournois visibles sur le site web FFE..."
 
+msgid "Make visible on FFE site"
+msgstr "Rendre visible sur le site de la FFE"
+
 msgid "Making the tournament visible on the FFE website..."
 msgstr "Affichage des tournois sur le site web FFE..."
 
@@ -2245,6 +2260,9 @@ msgstr "Nombre maximum de résultats : %(num)d"
 
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
+
+msgid "May be used for per-round prize giveaways etc.."
+msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
@@ -2443,6 +2461,9 @@ msgstr "Aucun évènement trouvé."
 msgid "No hours."
 msgstr "Aucun horaire."
 
+msgid "No internet connection"
+msgstr "Aucune connexion à internet"
+
 msgid "No internet connection and no local database."
 msgstr "Aucune base de données locale et aucune connexion à internet."
 
@@ -2460,6 +2481,9 @@ msgstr "Aucun résultat à mettre à jour sur le site web FFE (à jour)."
 
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr "Aucun règlement à mettre à jour sur le site web FFE (à jour)."
+
+msgid "No pairing found for this player in the current round."
+msgstr "No pairing found for this player in the current round."
 
 msgid "No pairings."
 msgstr "Aucun appariement."
@@ -2481,6 +2505,9 @@ msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
 
 msgid "No players found."
 msgstr "Aucun·e joueur·euse trouvé·e."
+
+msgid "No players to choose from."
+msgstr "Aucun·e joueur·euse à sélectionner."
 
 msgid "No players updated."
 msgstr "Aucun·e joueur·euse mis·e à jour."
@@ -2711,6 +2738,10 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
 
+#, python-format
+msgid "Paired against: %(opponent_name)s"
+msgstr "Apparié·e contre : %(opponent_name)s"
+
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
@@ -2899,6 +2930,10 @@ msgstr "Les écrans d'affichage des joueur·euses présentent les appariements p
 
 msgid "Playing"
 msgstr "En cours"
+
+#, python-format
+msgid "Playing in tournament [%(uniq_id)s]"
+msgstr "Participe au tournoi [%(uniq_id)s]"
 
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
@@ -3135,6 +3170,9 @@ msgstr "R"
 msgid "Random"
 msgstr "Aléatoire"
 
+msgid "Random player"
+msgstr "Joueur·euse aléatoire"
+
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
 
@@ -3343,6 +3381,10 @@ msgstr "La ronde %(round)d est en cours."
 msgid "Round #{round}"
 msgstr "Ronde n°{round}"
 
+#, python-format
+msgid "Round %(round)d - Board %(board_number)d"
+msgstr "Ronde %(round)d – Echiquier %(board_number)d"
+
 msgid "Round number or text:"
 msgstr "Numéro de ronde ou texte :"
 
@@ -3391,6 +3433,9 @@ msgstr "Règlement défini"
 
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
+
+msgid "Rules uploaded"
+msgstr "Règlement téléversé"
 
 msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
 msgstr "S-Berger"
@@ -4311,6 +4356,12 @@ msgstr "Tournoi mis en ligne précédemment"
 msgid "Tournament record"
 msgstr "Historique"
 
+msgid "Tournament rules are not set"
+msgstr "Le règlement du tournoi n’est pas défini"
+
+msgid "Tournament visibility successfully set"
+msgstr "Visibilité du tournoi définie avec succès"
+
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
@@ -4398,6 +4449,12 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
+
+msgid "Unable to set tournament visibility"
+msgstr "Impossible de définir la visibilité du tournoi"
+
+msgid "Unable to upload tournament rules"
+msgstr "Impossible de téléverser le règlement du tournoi"
 
 msgid "Undefined"
 msgstr "Non défini"
@@ -4515,9 +4572,6 @@ msgstr "Mettre à jour les informations des joueur·euses à partir d'une source
 msgid "Updating"
 msgstr "Mise à jour"
 
-msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
-msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
-
 msgid "Upload"
 msgstr "Mettre en ligne"
 
@@ -4526,6 +4580,9 @@ msgstr "Échec de la mise en ligne"
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
+
+msgid "Upload rules"
+msgstr "Téléverser le règlement"
 
 msgid "Upload the results of the tournaments"
 msgstr "Mettre en ligne les résultats des tournois."
@@ -4541,6 +4598,9 @@ msgstr "Mettre en ligne les tournois vers la FFE"
 
 msgid "Upload:"
 msgstr "Mise en ligne :"
+
+msgid "Uploading the PDF rules file allow the players to read the rules online."
+msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueurs·euses de lire les règles en ligne."
 
 msgid "Uploading tournament..."
 msgstr "Mise en ligne en cours…"
@@ -4886,6 +4946,9 @@ msgstr "Il y a {days} jours"
 
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
+
+msgid "{first_name} {last_name}"
+msgstr "{last_name} {first_name}"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."

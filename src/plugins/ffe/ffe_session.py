@@ -493,9 +493,10 @@ class FFESession(Session):
             return
         if set_visible_link_id.lower().startswith('désactiver'):
             print_interactive_info(_('Data is already displayed on the FFE website.'))
+            self.report_info(_('Data is already displayed on the FFE website.'))
             return
         if not set_visible_link_id.lower().startswith('activer'):
-            print_interactive_error(
+            self.report_error(
                 _('Invalid display link text [{text}]').format(
                     text=self.auth_state[SET_VISIBLE_LINK_ID]
                 )
@@ -514,7 +515,7 @@ class FFESession(Session):
         html = self._read_url(url=url, data=post_data, files=None)
         if not html:
             return
-        print_interactive_success(_('Results upload OK'))
+        self.report_success(_('Tournament visibility successfully set'))
 
     def upload_rules(self) -> None:
         """Upload the rules of the tournament to the FFE admin website."""
@@ -541,7 +542,7 @@ class FFESession(Session):
                 self.auth_state[UPLOAD_RULES_LINK_ID],
             )
         if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
-            logger.warning(
+            self.report_error(
                 _(
                     'Rules upload link not found, check that the tournament is not marked as finished on the FFE website.'
                 )
@@ -583,4 +584,4 @@ class FFESession(Session):
                 ),
             )
             event_database.commit()
-        logger.info('Rules upload OK')
+        self.report_success(_('Rules uploaded'))

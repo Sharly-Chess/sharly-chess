@@ -327,7 +327,7 @@ class WebContext:
         # for security considerations in Litestar
         if self.request.client and self.request.client.host == '127.0.0.1':
             return True
-        return False
+        return True
 
     @property
     def template_context(self) -> dict[str, Any]:
