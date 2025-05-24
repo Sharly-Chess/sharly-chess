@@ -173,6 +173,24 @@
                     </ul>
                 </li>
             {% endif %}
+            <li>
+                <span
+                    {{ macros.tooltip_attributes('info', _('May be used for per-round prize giveaways etc..'), 'top') }}
+                >
+                    <button
+                        class="dropdown-item text-nowrap"
+                        hx-get="{{ url_for('admin-random-player', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {% if not tournament.file_exists %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi bi-dice-3-fill pe-1"></i>
+                        {{ _('Choose a player at random') }}
+                    </button>
+                </span>
+            </li>
             {% for items_template in tournament_action_menu_items %}
                 <li><hr class="dropdown-divider"></li>
                 {% include items_template %}

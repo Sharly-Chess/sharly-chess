@@ -646,6 +646,9 @@ msgstr ""
 msgid "Choose a custom image:"
 msgstr ""
 
+msgid "Choose a player at random"
+msgstr ""
+
 msgid "Choose the columns displayed."
 msgstr ""
 
@@ -2258,6 +2261,9 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
+msgid "May be used for per-round prize giveaways etc.."
+msgstr ""
+
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
 
@@ -2476,6 +2482,9 @@ msgstr ""
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr ""
 
+msgid "No pairing found for this player in the current round."
+msgstr ""
+
 msgid "No pairings."
 msgstr ""
 
@@ -2495,6 +2504,9 @@ msgid "No players found in {seconds:.2f} seconds."
 msgstr ""
 
 msgid "No players found."
+msgstr ""
+
+msgid "No players to choose from."
 msgstr ""
 
 msgid "No players updated."
@@ -2726,6 +2738,10 @@ msgstr ""
 msgid "Pair tournament"
 msgstr ""
 
+#, python-format
+msgid "Paired against: %(opponent_name)s"
+msgstr ""
+
 msgid "Pairing Allocated Bye"
 msgstr ""
 
@@ -2913,6 +2929,10 @@ msgid "Players screens show pairings by alphabetical order."
 msgstr ""
 
 msgid "Playing"
+msgstr ""
+
+#, python-format
+msgid "Playing in tournament [%(uniq_id)s]"
 msgstr ""
 
 msgid "Please ask the organizer to get the password."
@@ -3150,6 +3170,9 @@ msgstr "R"
 msgid "Random"
 msgstr ""
 
+msgid "Random player"
+msgstr ""
+
 msgid "Randomly select the pairing numbers."
 msgstr ""
 
@@ -3356,6 +3379,10 @@ msgid "Round #%(round)d is running."
 msgstr ""
 
 msgid "Round #{round}"
+msgstr ""
+
+#, python-format
+msgid "Round %(round)d - Board %(board_number)d"
 msgstr ""
 
 msgid "Round number or text:"
@@ -4920,6 +4947,9 @@ msgstr ""
 msgid "{family_type}-screen"
 msgstr ""
 
+msgid "{first_name} {last_name}"
+msgstr ""
+
 msgid "{number} players written to the database."
 msgstr ""
 
@@ -4948,13 +4978,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "%(first_name)s %(last_name)s] - Round %(num)s"
-#~ msgstr ""
-
-#~ msgid "Deletion of player [%(first_name)s %(last_name)s]]"
-#~ msgstr ""
-
-#~ msgid "Edition of player [%(first_name)s %(last_name)s]]"
-#~ msgstr ""
 

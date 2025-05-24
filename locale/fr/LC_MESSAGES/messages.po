@@ -646,6 +646,9 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chess
 msgid "Choose a custom image:"
 msgstr "Choisissez une image personnalisée :"
 
+msgid "Choose a player at random"
+msgstr "Choisir un·e joueur·euse au hasard"
+
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
@@ -2258,6 +2261,9 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
+msgid "May be used for per-round prize giveaways etc.."
+msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
+
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
 
@@ -2476,6 +2482,9 @@ msgstr "Aucun résultat à mettre à jour sur le site web FFE (à jour)."
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr "Aucun règlement à mettre à jour sur le site web FFE (à jour)."
 
+msgid "No pairing found for this player in the current round."
+msgstr "No pairing found for this player in the current round."
+
 msgid "No pairings."
 msgstr "Aucun appariement."
 
@@ -2496,6 +2505,9 @@ msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
 
 msgid "No players found."
 msgstr "Aucun·e joueur·euse trouvé·e."
+
+msgid "No players to choose from."
+msgstr "Aucun·e joueur·euse à sélectionner."
 
 msgid "No players updated."
 msgstr "Aucun·e joueur·euse mis·e à jour."
@@ -2726,6 +2738,10 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
 
+#, python-format
+msgid "Paired against: %(opponent_name)s"
+msgstr "Apparié·e contre : %(opponent_name)s"
+
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
@@ -2914,6 +2930,10 @@ msgstr "Les écrans d'affichage des joueur·euses présentent les appariements p
 
 msgid "Playing"
 msgstr "En cours"
+
+#, python-format
+msgid "Playing in tournament [%(uniq_id)s]"
+msgstr "Participe au tournoi [%(uniq_id)s]"
 
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
@@ -3150,6 +3170,9 @@ msgstr "R"
 msgid "Random"
 msgstr "Aléatoire"
 
+msgid "Random player"
+msgstr "Joueur·euse aléatoire"
+
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
 
@@ -3357,6 +3380,10 @@ msgstr "La ronde %(round)d est en cours."
 
 msgid "Round #{round}"
 msgstr "Ronde n°{round}"
+
+#, python-format
+msgid "Round %(round)d - Board %(board_number)d"
+msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
 msgid "Round number or text:"
 msgstr "Numéro de ronde ou texte :"
@@ -4919,6 +4946,9 @@ msgstr "Il y a {days} jours"
 
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
+
+msgid "{first_name} {last_name}"
+msgstr "{last_name} {first_name}"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
