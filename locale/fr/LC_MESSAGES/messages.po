@@ -29,7 +29,7 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
 #, python-format
-msgid "%(last_name)s %(first_name)s - Round %(num)s"
+msgid "%(first_name)s %(last_name)s - Round %(num)s"
 msgstr "%(last_name)s %(first_name)s - Ronde %(num)s"
 
 #, python-format
@@ -965,7 +965,7 @@ msgid "Deletion of event [%(event_uniq_id)s]"
 msgstr "Suppression de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgid "Deletion of player [%(first_name)s %(last_name)s]"
 msgstr "Suppression du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #, python-format
@@ -1347,7 +1347,7 @@ msgid "Edition of event [%(event_uniq_id)s]"
 msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Edition of player [%(last_name)s %(first_name)s]"
+msgid "Edition of player [%(first_name)s %(last_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #, python-format
@@ -2867,13 +2867,13 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
-msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgid "Player [{first_name} {last_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
 
-msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgid "Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
 
 msgid "Player creation"
