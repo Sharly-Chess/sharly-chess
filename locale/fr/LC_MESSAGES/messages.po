@@ -316,6 +316,9 @@ msgstr "Êtes vous sûr de vouloir continuer ?"
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
 
+msgid "Assign a screen to the controller."
+msgstr "Attribuer un écran au pilote."
+
 msgid "Assign a zero-point bye for the next round"
 msgstr "Marquer forfait pour la ronde à venir"
 
@@ -324,6 +327,9 @@ msgstr "Marquer les joueur·euses forfait pour la ronde à venir (pointage autor
 
 msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
 msgstr "Marquer les joueur·euses forfait pour le reste du tournoi (pas de pointage autorisé sans suppression des forfaits)."
+
+msgid "Assign to a display controller."
+msgstr "Attribuer à un pilote d'écran."
 
 msgid "Assign zero-point byes for the rest of the tournament"
 msgstr "Marquer forfait pour le reste du tournoi"
@@ -1829,6 +1835,9 @@ msgstr "Revenir à la page des évènements."
 
 msgid "Go back to the home page."
 msgstr "Revenir à la page d'accueil."
+
+msgid "Go to the display controller."
+msgstr "Aller au pilote d'écran."
 
 msgid "Go to the first screen."
 msgstr "Aller au premier écran."
