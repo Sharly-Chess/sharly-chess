@@ -16,8 +16,8 @@ from common.i18n import (
     locales,
     set_locale,
     get_locale,
-    locale_localized_name,
 )
+from common.i18n.utils import locale_localized_name
 from common.logger import print_interactive_input, input_interactive
 from common.singleton import Singleton
 from data.player import Federation
@@ -60,13 +60,13 @@ class SharlyChessConfig(metaclass=Singleton):
         logging.ERROR: 'ERROR',
     }
 
-    def __init__(self, silent: bool = False):
+    def __init__(self):
         self.web_port: int | None = None
         self.stored_config: StoredConfig = self.load()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
         # offline databases download, ...
-        if not silent and not self.stored_config.locale:
+        if not self.stored_config.locale:
             set_locale(get_locale())
             print_interactive_input(_('The following languages are available:'))
             locale_range = range(1, len(locales) + 1)
@@ -138,6 +138,8 @@ class SharlyChessConfig(metaclass=Singleton):
     mail: str = 'contact@sharly-chess.com'
 
     version = SHARLY_CHESS_VERSION
+
+    en_copyright: str = '© Sharly Chess project 2013-2025'
 
     @property
     def copyright(self) -> str:

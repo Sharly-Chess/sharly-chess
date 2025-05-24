@@ -30,19 +30,13 @@ from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER
 from data.pairings.engines import BbpPairings
 from common import SHARLY_CHESS_VERSION
 from common.sharly_chess_config import SharlyChessConfig
-from common.logger import (
-    get_logger,
-    print_interactive_info,
-    print_interactive_success,
-    print_interactive_warning,
-)
+from common.logger import get_logger
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from common.installation_checker import (
     InstallationChecker,
 )
 from plugins import PLUGINS_DIR
-from scripts.i18n.i18n_check import I18nChecker
 
 # Enable experimental features for force the installation of the experimental tools and libs before exporting
 enable_experimental_features(True)
@@ -73,14 +67,14 @@ def clean(clean_zip: bool):
         PROJECT_DIR,
     ]:
         if Path(d).is_dir():
-            print_interactive_info(f'Deleting folder {d}...')
+            logger.info('Deleting folder [%s]...', d)
             shutil.rmtree(d)
     if SPEC_FILE.is_file():
-        print_interactive_info(f'Deleting file {SPEC_FILE}...')
+        logger.info('Deleting file [%s]...', SPEC_FILE)
         SPEC_FILE.unlink()
     if clean_zip:
         if ZIP_FILE.is_file():
-            print_interactive_info(f'Deleting file {ZIP_FILE}...')
+            logger.info('Deleting file [%s]...', ZIP_FILE)
             ZIP_FILE.unlink()
 
 
@@ -154,15 +148,14 @@ def build_exe():
         FFE_SQL_SERVER_CREDENTIALS_FILE,
     ]
     for file in files:
-        print(file)
         pyinstaller_params.append(
             f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
         )
     run(pyinstaller_params)
 
 
-def create_project(silent: bool = False):
-    print_interactive_info(f'Adding data from folder {PROJECT_DIR} to {DATA_DIR}...')
+def create_project():
+    logger.info('Adding data from folder [%s] to [%s]...', PROJECT_DIR, DATA_DIR)
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     tools_dir: Path = PROJECT_DIR / 'tools'
     tools_dir.mkdir(parents=True, exist_ok=True)
@@ -171,8 +164,8 @@ def create_project(silent: bool = False):
         tools_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
     )
     bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
-    print_interactive_info(
-        f'Copying {bbp_pairings.executable_dir} to {bbp_pairings_dir}...'
+    logger.info(
+        'Copying [%s] to [%s]...', bbp_pairings.executable_dir, bbp_pairings_dir
     )
     shutil.copytree(bbp_pairings.executable_dir, bbp_pairings_dir, dirs_exist_ok=True)
     # create an empty events dir
@@ -182,24 +175,23 @@ def create_project(silent: bool = False):
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
     target_file = tools_dir / 'ffe.bat'
-    sharly_chess_copyright: str = SharlyChessConfig(silent).copyright
-    print_interactive_info(f'Creating batch file {target_file}...')
+    logger.info('Creating batch file [%s]...', target_file)
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Sharly Chess FFE client, please wait...\n'
-            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {sharly_chess_copyright} - {SharlyChessConfig.url}\n'
+            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.en_copyright} - {SharlyChessConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --ffe\n'
             f'pause\n'
         )
     target_file = tools_dir / 'chessevent.bat'
-    print_interactive_info(f'Creating batch file {target_file}...')
+    logger.info('Creating batch file [%s]]...', target_file)
     with open(target_file, 'wt', encoding='utf-8') as f:
         f.write(
             f'@echo off\n'
             f'echo Starting Sharly Chess ChessEvent client, please wait...\n'
-            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {sharly_chess_copyright} - {SharlyChessConfig.url}\n'
+            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.en_copyright} - {SharlyChessConfig.url}\n'
             f'cd ..\n'
             f'{EXE_FILENAME} --chessevent\n'
             f'pause\n'
@@ -207,7 +199,7 @@ def create_project(silent: bool = False):
 
 
 def create_zip_files():
-    print_interactive_info(f'Creating archive {ZIP_FILE}...')
+    logger.info('Creating archive [%s]...', ZIP_FILE)
     ZIP_FILE.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(ZIP_FILE, 'w', ZIP_DEFLATED) as zip_file:
         os.chdir(PROJECT_DIR)
@@ -223,10 +215,10 @@ def create_zip_files():
 
 def build_test():
     if not TEST_DIR.is_dir():
-        print_interactive_info(f'Creating test environment in {TEST_DIR}...')
+        logger.info('Creating test environment in [%s]...', TEST_DIR)
         TEST_DIR.mkdir(parents=True)
     else:
-        print_interactive_info(f'Updating test environment in {TEST_DIR}...')
+        logger.info('Updating test environment in [%s]...', TEST_DIR)
         shutil.rmtree(TEST_DIR / '_internal', ignore_errors=True)
     with ZipFile(ZIP_FILE, 'r') as zip_file:
         zip_file.extractall(TEST_DIR)
@@ -244,19 +236,18 @@ def main():
                 f'Version [{args.github}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
             )
         else:
-            print_interactive_success(f'Version [{args.github}] is valid.')
+            logger.info('Version [%s] is valid.', args.github)
     else:
-        print_interactive_info('The version is not verified (not running on GitHub).')
+        logger.info('The version is not verified (not running on GitHub).')
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
-    if not I18nChecker().ok:
-        print_interactive_warning('Translations are not perfect.')
     build_exe()
-    create_project(silent=args.github)
+    create_project()
     create_zip_files()
     build_test()
     clean(clean_zip=False)
 
 
-main()
+if __name__ == '__main__':
+    main()

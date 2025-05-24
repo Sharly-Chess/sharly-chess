@@ -1,16 +1,16 @@
 import gettext as gettext_lib
+import sys
 import threading
 from gettext import GNUTranslations
 from logging import Logger
 from pathlib import Path
-from string import capwords
-
-from babel import Locale
 
 from common import BASE_DIR, DEVEL_ENV
 from common.exception import SharlyChessException
+from common.i18n.babel_checker import BabelChecker
+from common.i18n.locale_info import LocaleInfo
+
 from common.logger import get_logger
-from common.i18n.babel import BabelWrapper
 
 logger: Logger = get_logger()
 
@@ -38,26 +38,6 @@ for l_entry in _locale_dir.iterdir():
             raise SharlyChessException(
                 f'Invalid locale [{l_entry.name}] (MO file [{mo_file}] not found), exiting.'
             )
-
-# For developers only, look if the i18n strings have changed to refresh the MO files if needed
-if DEVEL_ENV:
-    BabelWrapper.refresh_i18n_files(locales)
-
-# Now load the translations.
-_all_translations: dict[str, GNUTranslations] = {}
-for loc in locales:
-    try:
-        _all_translations[loc] = gettext_lib.translation(
-            'messages',
-            _locale_dir,
-            [
-                loc,
-            ],
-        )
-    except Exception as ex:
-        raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
-
-logger.debug('Locales found: %s', ', '.join(locales))
 
 # The translators (assigned to the locales).
 translators: dict[str, list[dict[str, str | None]]] = {
@@ -89,6 +69,40 @@ translators |= {
     if locale not in translators
 }
 
+locale_infos: dict[str, LocaleInfo] = {
+    locale: LocaleInfo(
+        locale, _locale_dir, locale == DEFAULT_LOCALE, translators[locale]
+    )
+    for locale in locales
+}
+
+# For developers only, look if the i18n strings have changed to refresh the MO files if needed
+# (build the MO files if not found)
+if Path(sys.argv[0]).stem == 'export':
+    # When exporting the EXE, stop on error
+    if not BabelChecker(locale_infos, DEFAULT_LOCALE).ok:
+        logger.error('Translations are not perfect.')
+        sys.exit(1)
+elif DEVEL_ENV:
+    # For developers other use cases, only print messages on errors
+    BabelChecker(locale_infos, DEFAULT_LOCALE)
+
+# Now load the translations.
+_all_translations: dict[str, GNUTranslations] = {}
+for loc in locales:
+    try:
+        _all_translations[loc] = gettext_lib.translation(
+            'messages',
+            _locale_dir,
+            [
+                loc,
+            ],
+        )
+    except Exception as ex:
+        raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
+
+logger.debug('Locales found: %s', ', '.join(locales))
+
 # Initialize the current thread with the default locale.
 _thread_local_data = threading.local()
 
@@ -112,16 +126,6 @@ def set_locale(locale: str) -> bool:
     else:
         logger.warning('Unknown locale [%s].', locale)
         return False
-
-
-def locale_flag_url(locale: str):
-    """Returns the uri of a locale to the image of its flag."""
-    return f'/static/images/locales/{locale}.svg'
-
-
-def locale_localized_name(locale: str) -> str:
-    """Returns the locale in its own language."""
-    return capwords(str(Locale.parse(locale).get_display_name()))
 
 
 def gettext(message: str, locale: str | None = None):

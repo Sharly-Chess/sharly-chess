@@ -15,8 +15,10 @@ from litestar.status_codes import HTTP_200_OK
 from common.i18n import (
     _,
     DEFAULT_LOCALE,
-    locale_localized_name,
     locales,
+)
+from common.i18n.utils import (
+    locale_localized_name,
 )
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase

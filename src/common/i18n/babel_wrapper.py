@@ -1,14 +1,16 @@
-import hashlib
+import json
 import re
 import shutil
 import sys
 from logging import Logger
 from pathlib import Path
 
-from common import BASE_DIR
+from common import BASE_DIR, TMP_DIR
 from common.logger import get_logger
 
 from babel.messages.frontend import CommandLineInterface
+
+from utils.file import file_fingerprint
 
 logger: Logger = get_logger()
 
@@ -40,15 +42,6 @@ class BabelWrapper:
         logger.debug('Babel returned %d.', return_code or 0)
 
     @classmethod
-    def file_fingerprint(cls, file: Path) -> bytes:
-        """Returns a digest of a file."""
-        hash_md5 = hashlib.md5()
-        with open(file, 'rb') as f:
-            for chunk in iter(lambda: f.read(4096), b''):
-                hash_md5.update(chunk)
-        return hash_md5.digest()
-
-    @classmethod
     def extract_i18n_strings(cls) -> bool:
         """Updates the POT file from the source files, returns True if the POT file has changed, False otherwise."""
         logger.debug('Babel configuration (%s):', cls.config_file)
@@ -58,7 +51,7 @@ class BabelWrapper:
                     logger.debug(stripped_line)
         pot_fingerprint: bytes
         if cls.pot_file.is_file():
-            pot_fingerprint = cls.file_fingerprint(cls.pot_file)
+            pot_fingerprint = file_fingerprint(cls.pot_file)
         else:
             pot_fingerprint = bytearray()
         tmp_file: Path = cls.pot_file.with_suffix('.tmp')
@@ -75,7 +68,7 @@ class BabelWrapper:
                 f'{BASE_DIR}',
             ],
         )
-        if changed := (cls.file_fingerprint(tmp_file) != pot_fingerprint):
+        if changed := (file_fingerprint(tmp_file) != pot_fingerprint):
             shutil.move(tmp_file, cls.pot_file)
         else:
             tmp_file.unlink()
@@ -106,7 +99,7 @@ class BabelWrapper:
                 ],
             )
         else:
-            po_fingerprint = cls.file_fingerprint(po_file)
+            po_fingerprint = file_fingerprint(po_file)
         logger.debug('Updating %s...', po_file)
         tmp_file: Path = po_file.with_suffix('.tmp')
         shutil.copy(po_file, tmp_file)
@@ -122,7 +115,7 @@ class BabelWrapper:
                 '--omit-header',
             ],
         )
-        if changed := (cls.file_fingerprint(tmp_file) != po_fingerprint):
+        if changed := (file_fingerprint(tmp_file) != po_fingerprint):
             shutil.move(tmp_file, po_file)
         else:
             tmp_file.unlink()
@@ -153,63 +146,45 @@ class BabelWrapper:
         cls,
     ):
         """Returns True if at least one i18n source file has changed, False otherwise."""
-        logger.debug('Checking i18n source files...')
+        logger.info('Checking if i18n source files have been updated...')
         pattern_found: bool = False
-        pot_mtime: float = cls.pot_file.lstat().st_mtime
+        updated_file_found: bool = False
+        fingerprints_file = TMP_DIR / 'i18n-src.json'
+        old_fingerprints: dict[str, str] = {}
+        try:
+            with open(fingerprints_file) as f:
+                old_fingerprints = json.load(f)
+        except FileNotFoundError:
+            updated_file_found = True
+        new_fingerprints: dict[str, str] = {}
         with open(cls.config_file, 'r') as f:
             # looking for patterns in the Babel configuration file
             for line in f:
                 if matches := re.match(r'\[\w+: *(.*)]', line):
                     pattern_found = True
                     for file in Path('.').glob(matches.group(1)):
-                        if file.lstat().st_mtime > pot_mtime:
-                            logger.debug(
-                                'File [%s] is more recent than [%s]', file, cls.pot_file
-                            )
-                            return True
-        if not pattern_found:
-            logger.error('No file pattern found in [%s].', cls.config_file)
-            return False
-        logger.debug('No source file updated.')
-        return False
-
-    @classmethod
-    def refresh_i18n_files(
-        cls,
-        locales: list[str],
-    ):
-        """Refresh the i18n files (if needed only)."""
-        new_i18n_strings: bool = False
-        if cls.i18n_files_changed():
-            logger.debug('Extracting i18n strings...')
-            new_i18n_strings = BabelWrapper.extract_i18n_strings()
-            if new_i18n_strings:
-                logger.debug('I18n strings have changed.')
+                        new_fingerprints[str(file)] = file_fingerprint(file).hex()
+                        if not updated_file_found:
+                            if str(file) not in old_fingerprints:
+                                logger.info(
+                                    'File [%s] is new, the POT file need to be rebuild.',
+                                    file,
+                                )
+                                updated_file_found = True
+                            elif (
+                                new_fingerprints[str(file)]
+                                != old_fingerprints[str(file)]
+                            ):
+                                logger.info(
+                                    'File [%s] has been updated, the POT file needs to be rebuilt.',
+                                    file,
+                                )
+                                updated_file_found = True
+        if not updated_file_found:
+            if not pattern_found:
+                logger.error('No file pattern found in [%s].', cls.config_file)
             else:
-                logger.debug('I18n strings are unchanged.')
-        for locale in locales:
-            po_file: Path = cls.locale_po_file(locale)
-            mo_file: Path = cls.locale_mo_file(locale)
-            update_po_file: bool = (
-                new_i18n_strings
-                or not po_file.is_file()
-                or po_file.lstat().st_mtime < cls.pot_file.lstat().st_mtime
-            )
-            if update_po_file:
-                new_po_strings = BabelWrapper.update_po_file(locale)
-            else:
-                new_po_strings = False
-            update_mo_file: bool = (
-                new_po_strings
-                or not mo_file.is_file()
-                or mo_file.lstat().st_mtime < po_file.lstat().st_mtime
-            )
-            if update_mo_file:
-                BabelWrapper.update_mo_file(locale)
-                logger.info('Translation has been updated for locale [%s].', locale)
-        cls.pot_file.touch()
-        for locale in locales:
-            po_file: Path = cls.locale_po_file(locale)
-            mo_file: Path = cls.locale_mo_file(locale)
-            po_file.touch()
-            mo_file.touch()
+                logger.info('No source files updated, no need to rebuild the POT file.')
+        with open(fingerprints_file, 'w') as f:
+            json.dump(new_fingerprints, f)
+        return updated_file_found
