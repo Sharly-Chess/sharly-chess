@@ -11,7 +11,7 @@
                 'Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect.',
                 default=admin_event.plugin_data.ffe.ffe_auto_upload
             ),
-            select_options=data.ffe_auto_upload_options,
+            select_options=ffe_auto_upload_options,
             data=data, errors=errors
         ) }}
     </div>

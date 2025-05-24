@@ -707,13 +707,9 @@ class FfePlugin(Plugin):
             )
 
     @hookimpl
-    def get_tournament_form_fields_template(self) -> str:
-        return '/ffe_tournament_form_fields.html'
-
-    @hookimpl
-    def get_tournament_form_data(
+    def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
-    ) -> dict[str, Any]:
+    ) -> tuple[str, dict[str, Any]]:
         ffe_auto_upload_options: dict[str, str] = {
             '': '',
             WebContext.value_to_form_data(False): _('Disabled'),
@@ -729,12 +725,22 @@ class FfePlugin(Plugin):
             ]
         )
 
+        return (
+            '/ffe_tournament_form_fields.html',
+            {
+                'ffe_auto_upload_options': ffe_auto_upload_options,
+            },
+        )
+
+    @hookimpl
+    def get_tournament_form_data(
+        self, event: 'Event', tournament: 'Tournament | None'
+    ) -> dict[str, Any]:
         if not tournament:
             return {
                 'ffe_id': '',
                 'ffe_password': '',
                 'ffe_auto_upload': '',
-                'ffe_auto_upload_options': ffe_auto_upload_options,
             }
 
         return {
@@ -747,7 +753,6 @@ class FfePlugin(Plugin):
             'ffe_auto_upload': WebContext.value_to_form_data(
                 self.get_data(tournament.plugin_data, 'ffe_auto_upload', None)
             ),
-            'ffe_auto_upload_options': ffe_auto_upload_options,
         }
 
     @hookimpl

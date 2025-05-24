@@ -207,8 +207,13 @@ class ChessEventPlugin(Plugin):
             )
 
     @hookimpl
-    def get_tournament_form_fields_template(self) -> str:
-        return '/chessevent_tournament_form_fields.html'
+    def get_tournament_form_fields_template_and_data(
+        self, event: 'Event', tournament: 'Tournament | None'
+    ) -> tuple[str, dict[str, Any]]:
+        return (
+            '/chessevent_tournament_form_fields.html',
+            {},
+        )
 
     @hookimpl
     def get_tournament_form_data(
