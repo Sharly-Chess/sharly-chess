@@ -11,6 +11,14 @@
     {% endif %}
 </div>
 
+<div
+    hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+    hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_round }}"
+    hx-target="#refresh-message"
+    hx-swap="innerHTML"
+>
+</div>
+
 {% if admin_tournament %}
     {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
 

@@ -33,6 +33,7 @@ from web.settings import (
     stores,
     exception_handlers,
 )
+from web.channels import channels_plugin
 
 logger = get_logger()
 
@@ -122,6 +123,7 @@ class ServerEngine(Engine):
 
         logging_config = LOGGING_CONFIG
         logging_config['handlers']['console']['level'] = SharlyChessConfig().log_level  # type: ignore
+
         app: Litestar = Litestar(
             debug=True,
             request_class=HTMXRequest,
@@ -132,12 +134,14 @@ class ServerEngine(Engine):
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
+            plugins=[channels_plugin],
         )
         uvicorn.run(
             app,
             host=sharly_chess_config.web_host,
             port=sharly_chess_config.web_port,
             log_config=logging_config,
+            timeout_graceful_shutdown=0,
         )
 
     @property

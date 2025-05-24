@@ -1,0 +1,28 @@
+<div
+    class="alert message-warning alert-dismissible fade show p-2 d-flex align-items-start gap-3"
+    role="alert"
+>
+    <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div class="flex-grow-1">
+        {{ _('New results are in, refresh your browser') }}
+    </div>
+    <div class="align-self-center">
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-dark"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=event_uniq_id, tournament_id=tournament_id, round=round) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {{ _('Refresh')}}
+        </button>
+    </div>
+    <button
+        type="button"
+        class="btn-close position-static p-0"
+        style="margin: 4px 0 0 0;"
+        data-bs-dismiss="alert"
+        data-bs-dismiss="modal"
+        aria-label="_('Hide')"
+    ></button>
+</div>

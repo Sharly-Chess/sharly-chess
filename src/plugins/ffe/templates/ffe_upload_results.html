@@ -1,10 +1,8 @@
 <tbody
     id="upload-results"
-    {% if poll_frequency %}
-        hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
-        hx-trigger="every {{poll_frequency}}s queue:none"
-        hx-swap="outerHTML"
-    {% endif %}
+    hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
+    hx-trigger="sse:ffe-upload-event"
+    hx-swap="outerHTML"
 >
     {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
         {% with ffe_auto_upload=ffe_utils.resolve_auto_upload(tournament) %}
@@ -62,6 +60,3 @@
         {% endwith %}
     {% endfor %}
 </tbody>
-{% if oob_button %}
-    {% include '/ffe_upload_button.html' %}
-{% endif %}

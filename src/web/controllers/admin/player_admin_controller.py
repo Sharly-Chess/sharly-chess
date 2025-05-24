@@ -12,6 +12,7 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
+from litestar.channels import ChannelsPlugin
 
 from common import unicode_normalize
 from common.i18n import _, ngettext
@@ -1952,3 +1953,28 @@ class PlayerAdminController(BaseEventAdminController):
             'admin_players_update_extra_columns': extra_columns,
         }
         return self._admin_event_render(template_context)
+
+    @classmethod
+    def publish_new_checkin(cls, channels: ChannelsPlugin, event_uniq_id: str):
+        channels.publish(
+            {'event': f'new-checkins/{event_uniq_id}', 'data': ''},
+            ['sse'],
+        )
+
+    @get(
+        path='/admin/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
+        name='admin-players-needs-refresh-message',
+    )
+    async def htmx_admin_pairings_refresh_message(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        reason: str,
+    ) -> Template:
+        return HTMXTemplate(
+            template_name='/admin/players/players_needs_refresh.html',
+            context={
+                'event_uniq_id': event_uniq_id,
+                'reason': reason,
+            },
+        )

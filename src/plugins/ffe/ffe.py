@@ -615,6 +615,7 @@ class FfePlugin(Plugin):
             return {
                 'ffe_auto_upload': 'off',
                 'ffe_auto_upload_delay': '',
+                'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
             }
 
         return {
@@ -829,10 +830,8 @@ class FfePlugin(Plugin):
         self, event: 'Event'
     ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
         return (
-            [PluginNavBarItem(at='database', template='/ffe_upload_button.html')],
-            {
-                'poll_frequency': FfeAdminEventController.poll_frequency(event),
-            },
+            [PluginNavBarItem(at='database', template='/ffe_nav_buttons.html')],
+            {},
         )
 
     # ---------------------------------------------------------------------------------

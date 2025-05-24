@@ -2352,10 +2352,16 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "New checkins are in, refresh your browser"
+msgstr ""
+
 msgid "New display controller"
 msgstr ""
 
 msgid "New event"
+msgstr ""
+
+msgid "New results are in, refresh your browser"
 msgstr ""
 
 msgid "New tournament"
@@ -3215,6 +3221,9 @@ msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
 msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
+msgstr ""
+
+msgid "Refresh"
 msgstr ""
 
 msgid "Refresh this page."

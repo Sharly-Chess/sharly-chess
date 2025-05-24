@@ -15,9 +15,6 @@
             type="button"
             class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
             disabled
-            hx-get="{{ url_for('admin-database-status', database_id=database.id) }}"
-            hx-trigger="every 10s"
-            hx-target="closest div"
             hx-swap="outerHTML"
         >
             <i

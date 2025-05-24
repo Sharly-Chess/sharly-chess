@@ -1,8 +1,13 @@
-from litestar import get
+import asyncio
+import json
+from typing import AsyncGenerator
+from litestar import Response, get
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
+from litestar.channels import ChannelsPlugin
+from litestar.response import ServerSentEventMessage, ServerSentEvent
 
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
@@ -103,6 +108,31 @@ class IndexController(BaseController):
             context=web_context.template_context,
         )
 
+    @get('/sse')
+    async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:
+        async def generator() -> AsyncGenerator[ServerSentEventMessage, None]:
+            try:
+                async with channels.start_subscription(['sse']) as subscriber:
+                    async for raw_event in subscriber.iter_events():
+                        # Parse from string if needed
+                        if isinstance(raw_event, (bytes, str)):
+                            event = json.loads(raw_event)
+                        else:
+                            event = raw_event
+
+                        yield ServerSentEventMessage(
+                            event=event.get('event', 'message'),
+                            data=event.get('data', ''),
+                        )
+            except asyncio.CancelledError:
+                return
+
+        return ServerSentEvent(generator())
+
     @staticmethod
     def handle_500_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
         return Redirect(path=request.app.route_reverse('500'))
+
+    @get('/.well-known/appspecific/com.chrome.devtools.json')
+    async def chrome_devtools_placeholder(self) -> Response:
+        return Response(content='{}', media_type='application/json')

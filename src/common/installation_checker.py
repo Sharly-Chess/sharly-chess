@@ -211,6 +211,12 @@ class InstallationChecker:
             'htmx/multi-swap-{version}/multi-swap.js',
         ),
         WebLibFileInstaller(
+            'HTMX SSE extension',
+            SharlyChessConfig.htmx_sse_version,
+            'https://unpkg.com/htmx-ext-sse@{version}',
+            'htmx/sse-{version}/sse.js',
+        ),
+        WebLibFileInstaller(
             'jQuery',
             SharlyChessConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',

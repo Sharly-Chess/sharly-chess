@@ -7,9 +7,6 @@
     preload
     data-bs-toggle="modal"
     data-bs-target="#modal-wrapper"
-    {% if oob_button %}
-        hx-swap-oob="true"
-    {% endif %}
 >
     <i class="bi bi-cloud-arrow-up-fill" style="height: 20px"></i>
     <span style="font-size: 0.6rem;">
@@ -18,12 +15,6 @@
     <span
         class="nav-icon-badge position-absolute p-0 rounded-circle bg-danger {% if has_upload_error %}visible{% else %}invisible{% endif %}"
         style="font-size: 15px; bottom: 3px;"
-        {% if poll_frequency %}
-            hx-get="{{ url_for('ffe-nav-upload-button', event_uniq_id=admin_event.uniq_id) }}"
-            hx-trigger="every {{ poll_frequency }}s queue:none"
-            hx-target="closest button"
-            hx-swap="outerHTML"
-        {% endif %}
     >
         {% if has_upload_error %}
             <i class="bi bi-exclamation"></i>
