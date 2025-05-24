@@ -382,15 +382,16 @@ class TournamentAdminController(BaseEventAdminController):
             web_context
         )
 
-        tournament_card_blocks_and_data = (
+        tournament_form_fields_templates_and_data = (
             plugin_manager.hook.get_tournament_card_block_template_and_data()
         )
         tournament_card_blocks = [
-            block_template for (block_template, data) in tournament_card_blocks_and_data
+            block_template
+            for (block_template, data) in tournament_form_fields_templates_and_data
         ]
         tournament_card_block_data = {
             key: value
-            for (block_template, data) in tournament_card_blocks_and_data
+            for (block_template, data) in tournament_form_fields_templates_and_data
             for key, value in data.items()
         }
         tournament_action_menu_items = (
@@ -593,9 +594,21 @@ class TournamentAdminController(BaseEventAdminController):
                 if errors is None:
                     errors = {}
 
-                plugin_form_fields_templates = (
-                    plugin_manager.hook.get_tournament_form_fields_template() or []
+                plugin_results = (
+                    plugin_manager.hook.get_tournament_form_fields_template_and_data(
+                        event=admin_event, tournament=admin_tournament
+                    )
                 )
+
+                plugin_form_fields_templates = [
+                    template for template, _ in plugin_results
+                ]
+                form_fields_templates_data = {
+                    key: value
+                    for _, data in plugin_results
+                    for key, value in data.items()
+                }
+
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
@@ -614,7 +627,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'action': action,
                     'data': data,
                     'errors': errors,
-                }
+                } | form_fields_templates_data
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_event_render(template_context)

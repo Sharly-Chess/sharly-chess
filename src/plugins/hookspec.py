@@ -240,7 +240,9 @@ class AppHookSpecs:
         """Do any tournament specific initialisation when a Tournament object is initialised"""
 
     @hookspec
-    def get_tournament_form_fields_template(self) -> str:
+    def get_tournament_form_fields_template_and_data(
+        self, event: 'Event', tournament: 'Tournament | None'
+    ) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template containing additional tournament form fields"""
 
     @hookspec
