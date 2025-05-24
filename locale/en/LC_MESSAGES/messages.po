@@ -515,6 +515,9 @@ msgstr ""
 msgid "By default - {option}"
 msgstr ""
 
+msgid "By default, tournaments are not visible on the FFE site."
+msgstr ""
+
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr ""
@@ -4567,6 +4570,9 @@ msgid "Upload tournaments to the FFE"
 msgstr ""
 
 msgid "Upload:"
+msgstr ""
+
+msgid "Uploading the PDF rules file allow the players to read the rules online."
 msgstr ""
 
 msgid "Uploading tournament..."

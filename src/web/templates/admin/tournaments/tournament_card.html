@@ -115,11 +115,15 @@
         </button>
         <ul class="dropdown-menu">
             <li class="dropdown-submenu">
-                <a class="dropdown-item d-flex justify-content-between" href="#">
-                    <span><i class="bi-arrow-repeat pe-1"></i>
-                    {{ _('Update players') }}</span>
-                    <i class="ps-3 bi bi-caret-right-fill"></i>
-                </a>
+                <button class="dropdown-item d-flex justify-content-between">
+                    <span
+                        {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                    >
+                        <span><i class="bi-arrow-repeat pe-1"></i>
+                        {{ _('Update players') }}</span>
+                        <i class="ps-3 bi bi-caret-right-fill"></i>
+                    </span>
+                </button>
                 <ul class="dropdown-menu">
                     {% include '/admin/players/players_diff.html' %}
                 </ul>
@@ -151,11 +155,11 @@
             </li>
             {% if EXPERIMENTAL_FEATURES %}
                 <li class="dropdown-submenu">
-                    <a class="dropdown-item d-flex justify-content-between" href="#">
+                    <button class="dropdown-item d-flex justify-content-between" href="#">
                         <span><i class="bi-download pe-1"></i>
                         {{ _('Export') }}</span>
                         <i class="ps-3 bi bi-caret-right-fill"></i>
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                         {% for exporter in tournament_exporters %}
                             <li

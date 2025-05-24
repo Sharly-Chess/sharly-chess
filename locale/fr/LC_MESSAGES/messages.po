@@ -515,6 +515,9 @@ msgstr "Par échiquier"
 msgid "By default - {option}"
 msgstr "Par défaut - {option}"
 
+msgid "By default, tournaments are not visible on the FFE site."
+msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
+
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
@@ -4568,6 +4571,9 @@ msgstr "Mettre en ligne les tournois vers la FFE"
 
 msgid "Upload:"
 msgstr "Mise en ligne :"
+
+msgid "Uploading the PDF rules file allow the players to read the rules online."
+msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueurs·euses de lire les règles en ligne."
 
 msgid "Uploading tournament..."
 msgstr "Mise en ligne en cours…"
