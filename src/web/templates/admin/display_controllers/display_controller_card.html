@@ -29,7 +29,18 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', 'Assign to a display controller.', 'top') }}>
+    {% if display_controller.assigned_object %}
+        <span {{ macros.tooltip_attributes('info', _('Go to the display controller.'), 'top') }}>
+            <a
+                class="btn btn-sm btn-outline-primary"
+                href="{{ url_for('user-display-controller', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
+                target="_blank"
+            >
+                <i class="bi bi-eye"></i>
+            </a>
+        </span>
+    {% endif %}
+    <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', _('Assign a screen to the controller.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button"
             data-bs-toggle="dropdown"

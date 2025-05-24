@@ -313,6 +313,9 @@ msgstr ""
 msgid "Argument --server is deprecated, ignored."
 msgstr ""
 
+msgid "Assign a screen to the controller."
+msgstr ""
+
 msgid "Assign a zero-point bye for the next round"
 msgstr ""
 
@@ -320,6 +323,9 @@ msgid "Assign the players a zero-point bye for the next round (players will be a
 msgstr ""
 
 msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
+msgstr ""
+
+msgid "Assign to a display controller."
 msgstr ""
 
 msgid "Assign zero-point byes for the rest of the tournament"
@@ -4829,4 +4835,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Go to the display controller."
+#~ msgstr ""
 
