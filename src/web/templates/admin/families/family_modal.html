@@ -15,7 +15,7 @@
                         ?
                     {% endif %}
                 {% elif action == 'clone' %}
-                    {{ _('Cloning of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
+                    {{ _('Duplication of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
                 {% elif action == 'update' %}
                     {{ _('Edition of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
                 {% elif action == 'delete' %}

@@ -136,23 +136,6 @@
 {% endblock %}
 
 {% block card_buttons_left %}
-    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the screen family.'), 'top') }}>
-        <button
-            class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=family.id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi-pencil-fill pe-1"></i>
-            {{ _('Edit') }}
-        </button>
-    </span>
-{% endblock %}
-
-{% block card_buttons_right %}
     {% if family.calculated_first_screen_id %}
         <span {{ macros.tooltip_attributes('info', _('Go to the first screen.'), 'top') }}>
             <a
@@ -164,7 +147,23 @@
             </a>
         </span>
     {% endif %}
-    <span {{ macros.tooltip_attributes('info', _('Clone the screen family.'), 'top') }}>
+{% endblock %}
+
+{% block card_buttons_right %}
+    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the screen family.'), 'top') }}>
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-get="{{ url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=family.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-pencil-fill"></i>
+        </button>
+    </span>
+    <span {{ macros.tooltip_attributes('info', _('Duplicate the screen family.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-family-modal', action='clone', event_uniq_id=admin_event.uniq_id, family_id=family.id) }}"

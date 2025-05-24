@@ -196,6 +196,9 @@ msgstr ""
 msgid "Action: {action}"
 msgstr ""
 
+msgid "Actions"
+msgstr ""
+
 msgid "Actions:"
 msgstr ""
 
@@ -512,6 +515,9 @@ msgstr ""
 msgid "By default - {option}"
 msgstr ""
 
+msgid "By default, tournaments are not visible on the FFE site."
+msgstr ""
+
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr ""
@@ -659,25 +665,6 @@ msgid "Click to check-in the player."
 msgstr ""
 
 msgid "Click to check-out the player."
-msgstr ""
-
-msgid "Clone"
-msgstr ""
-
-msgid "Clone the rotator."
-msgstr ""
-
-msgid "Clone the screen family."
-msgstr ""
-
-msgid "Clone the timer."
-msgstr ""
-
-msgid "Clone the tournament."
-msgstr ""
-
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 msgid "Close"
@@ -1131,6 +1118,25 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Duplicate"
+msgstr ""
+
+msgid "Duplicate the rotator."
+msgstr ""
+
+msgid "Duplicate the screen family."
+msgstr ""
+
+msgid "Duplicate the timer."
+msgstr ""
+
+msgid "Duplicate the tournament."
+msgstr ""
+
+#, python-format
+msgid "Duplication of screen family [%(family_uniq_id)s]"
+msgstr ""
+
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
@@ -1557,6 +1563,9 @@ msgid "FFE password:"
 msgstr ""
 
 msgid "FFE settings"
+msgstr ""
+
+msgid "FFE site"
 msgstr ""
 
 msgid "FIDE"
@@ -2183,6 +2192,9 @@ msgstr ""
 msgid "Make the tournaments visible on the FFE website"
 msgstr ""
 
+msgid "Make visible on FFE site"
+msgstr ""
+
 msgid "Making the tournament visible on the FFE website..."
 msgstr ""
 
@@ -2441,6 +2453,9 @@ msgid "No events found."
 msgstr ""
 
 msgid "No hours."
+msgstr ""
+
+msgid "No internet connection"
 msgstr ""
 
 msgid "No internet connection and no local database."
@@ -3392,6 +3407,9 @@ msgstr ""
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
+msgid "Rules uploaded"
+msgstr ""
+
 msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
 msgstr "S-Berger"
 
@@ -4311,6 +4329,12 @@ msgstr ""
 msgid "Tournament record"
 msgstr ""
 
+msgid "Tournament rules are not set"
+msgstr ""
+
+msgid "Tournament visibility successfully set"
+msgstr ""
+
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr ""
 
@@ -4397,6 +4421,12 @@ msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
 msgid "Unable to create Papi files."
+msgstr ""
+
+msgid "Unable to set tournament visibility"
+msgstr ""
+
+msgid "Unable to upload tournament rules"
 msgstr ""
 
 msgid "Undefined"
@@ -4515,9 +4545,6 @@ msgstr ""
 msgid "Updating"
 msgstr ""
 
-msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
-msgstr ""
-
 msgid "Upload"
 msgstr ""
 
@@ -4525,6 +4552,9 @@ msgid "Upload failed"
 msgstr ""
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
+msgstr ""
+
+msgid "Upload rules"
 msgstr ""
 
 msgid "Upload the results of the tournaments"
@@ -4540,6 +4570,9 @@ msgid "Upload tournaments to the FFE"
 msgstr ""
 
 msgid "Upload:"
+msgstr ""
+
+msgid "Uploading the PDF rules file allow the players to read the rules online."
 msgstr ""
 
 msgid "Uploading tournament..."
@@ -4915,31 +4948,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Auto-upload to FFE enabled"
-#~ msgstr ""
-
-#~ msgid "Auto-upload results to FFE site"
-#~ msgstr ""
-
-#~ msgid "FFE settings"
-#~ msgstr ""
-
-#~ msgid "Minimum delay between uploads (minutes):"
-#~ msgstr ""
-
-#~ msgid "Upload:"
-#~ msgstr ""
-
-#~ msgid "You must enter the tournament certification number and password in each tournament's settings."
-#~ msgstr ""
-
-#~ msgid "FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website."
-#~ msgstr ""
-
-#~ msgid "The delay must be at least 3 minutes to avoid overloading the FFE server."
-#~ msgstr ""
-
-#~ msgid "The minimum delay between auto-uploads to the FFE server ({{ ffe_default_delay }} by default)"
-#~ msgstr ""
 

@@ -50,7 +50,8 @@
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                <i class="{{ check_in_data['class'] }} pe-1"></i>{{ check_in_data['text'] }} ({{ check_in_data['number'] }})
+                                <i class="{{ check_in_data['class'] }} pe-1"></i>
+                                {{ check_in_data['text'] }} ({{ check_in_data['number'] }})
                             </label>
                         </li>
                     {% endfor %}

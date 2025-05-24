@@ -196,6 +196,9 @@ msgstr "Délai d'action"
 msgid "Action: {action}"
 msgstr "Action : {action}"
 
+msgid "Actions"
+msgstr "Actions"
+
 msgid "Actions:"
 msgstr "Actions :"
 
@@ -512,6 +515,9 @@ msgstr "Par échiquier"
 msgid "By default - {option}"
 msgstr "Par défaut - {option}"
 
+msgid "By default, tournaments are not visible on the FFE site."
+msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
+
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
@@ -660,25 +666,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
-
-msgid "Clone"
-msgstr "Dupliquer"
-
-msgid "Clone the rotator."
-msgstr "Dupliquer l'écran rotatif."
-
-msgid "Clone the screen family."
-msgstr "Dupliquer la famille d'écrans."
-
-msgid "Clone the timer."
-msgstr "Dupliquer le chronomètre."
-
-msgid "Clone the tournament."
-msgstr "Dupliquer le tournoi"
-
-#, python-format
-msgid "Cloning of screen family [%(family_uniq_id)s]"
-msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
 
 msgid "Close"
 msgstr "Fermer"
@@ -1131,6 +1118,25 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+msgid "Duplicate the rotator."
+msgstr "Dupliquer l'écran rotatif."
+
+msgid "Duplicate the screen family."
+msgstr "Dupliquer la famille d'écrans."
+
+msgid "Duplicate the timer."
+msgstr "Dupliquer le chronomètre."
+
+msgid "Duplicate the tournament."
+msgstr "Dupliquer le tournoi"
+
+#, python-format
+msgid "Duplication of screen family [%(family_uniq_id)s]"
+msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
+
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
@@ -1558,6 +1564,9 @@ msgstr "Mot de passe FFE :"
 
 msgid "FFE settings"
 msgstr "Paramètres FFE"
+
+msgid "FFE site"
+msgstr "Site de la FFE"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2183,6 +2192,9 @@ msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 msgid "Make the tournaments visible on the FFE website"
 msgstr "Rendre les tournois visibles sur le site web FFE..."
 
+msgid "Make visible on FFE site"
+msgstr "Rendre visible sur le site de la FFE"
+
 msgid "Making the tournament visible on the FFE website..."
 msgstr "Affichage des tournois sur le site web FFE..."
 
@@ -2442,6 +2454,9 @@ msgstr "Aucun évènement trouvé."
 
 msgid "No hours."
 msgstr "Aucun horaire."
+
+msgid "No internet connection"
+msgstr "Aucune connexion à internet"
 
 msgid "No internet connection and no local database."
 msgstr "Aucune base de données locale et aucune connexion à internet."
@@ -3392,6 +3407,9 @@ msgstr "Règlement défini"
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
 
+msgid "Rules uploaded"
+msgstr "Règlement téléversé"
+
 msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
 msgstr "S-Berger"
 
@@ -4311,6 +4329,12 @@ msgstr "Tournoi mis en ligne précédemment"
 msgid "Tournament record"
 msgstr "Historique"
 
+msgid "Tournament rules are not set"
+msgstr "Le règlement du tournoi n’est pas défini"
+
+msgid "Tournament visibility successfully set"
+msgstr "Visibilité du tournoi définie avec succès"
+
 msgid "Tournament {tournament_uniq_id} ({numbers_str})"
 msgstr "Tournoi {tournament_uniq_id} ({numbers_str})"
 
@@ -4398,6 +4422,12 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
+
+msgid "Unable to set tournament visibility"
+msgstr "Impossible de définir la visibilité du tournoi"
+
+msgid "Unable to upload tournament rules"
+msgstr "Impossible de téléverser le règlement du tournoi"
 
 msgid "Undefined"
 msgstr "Non défini"
@@ -4515,9 +4545,6 @@ msgstr "Mettre à jour les informations des joueur·euses à partir d'une source
 msgid "Updating"
 msgstr "Mise à jour"
 
-msgid "Updating the players' information from an external data source is not possible when the Papi file is not found."
-msgstr "La mise à jour des joueur·euses n'est pas possible lorsque le fichier Papi n'est pas trouvé."
-
 msgid "Upload"
 msgstr "Mettre en ligne"
 
@@ -4526,6 +4553,9 @@ msgstr "Échec de la mise en ligne"
 
 msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
+
+msgid "Upload rules"
+msgstr "Téléverser le règlement"
 
 msgid "Upload the results of the tournaments"
 msgstr "Mettre en ligne les résultats des tournois."
@@ -4541,6 +4571,9 @@ msgstr "Mettre en ligne les tournois vers la FFE"
 
 msgid "Upload:"
 msgstr "Mise en ligne :"
+
+msgid "Uploading the PDF rules file allow the players to read the rules online."
+msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueurs·euses de lire les règles en ligne."
 
 msgid "Uploading tournament..."
 msgstr "Mise en ligne en cours…"
