@@ -29,7 +29,6 @@ from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
-from plugins.ffe.engine.ffe_engine import FFEEngine
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
     FfePlayerUpdater,
@@ -43,7 +42,7 @@ from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginEngineArgument, PluginNavBarItem, PluginUtils
+from plugins.utils import Plugin, PluginNavBarItem, PluginUtils
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -144,10 +143,6 @@ class FfePlugin(Plugin):
             'ffe_leagues': self.FFE_LEAGUES,
             'ffe_auth_valid': '',
         }
-
-    @hookimpl
-    def get_engine_argument(self) -> PluginEngineArgument:
-        return PluginEngineArgument('f', 'ffe', 'run the FFE utilities', FFEEngine)
 
     # ---------------------------------------------------------------------------------
     # Data sources

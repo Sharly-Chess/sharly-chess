@@ -63,7 +63,7 @@ INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
-FFE_SQL_SERVER_CREDENTIALS_FILE: Path = SOURCE_DIR / 'plugins' / 'ffe' / '.credentials'
+FFE_SQL_SERVER_CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 
 
 def clean(clean_zip: bool):
@@ -181,18 +181,7 @@ def create_project(silent: bool = False):
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
-    target_file = tools_dir / 'ffe.bat'
     sharly_chess_copyright: str = SharlyChessConfig(silent).copyright
-    print_interactive_info(f'Creating batch file {target_file}...')
-    with open(target_file, 'wt', encoding='utf-8') as f:
-        f.write(
-            f'@echo off\n'
-            f'echo Starting Sharly Chess FFE client, please wait...\n'
-            f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {sharly_chess_copyright} - {SharlyChessConfig.url}\n'
-            f'cd ..\n'
-            f'{EXE_FILENAME} --ffe\n'
-            f'pause\n'
-        )
     target_file = tools_dir / 'chessevent.bat'
     print_interactive_info(f'Creating batch file {target_file}...')
     with open(target_file, 'wt', encoding='utf-8') as f:

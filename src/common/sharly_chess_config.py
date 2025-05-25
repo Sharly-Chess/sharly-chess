@@ -27,13 +27,7 @@ from database.sqlite.config.config_store import StoredConfig
 
 
 class SharlyChessConfig(metaclass=Singleton):
-    """The configuration for the application, read from the database.
-    Only 5 properties can be configured:
-        1. The logging level
-        2. The web host IP
-        3. The web port
-        4. Whether a browser window opens
-        5. The delay between FFE uploads."""
+    """The configuration for the application, read from the database."""
 
     # The default log level, used by default.
     default_log_level: int = logging.INFO
@@ -126,10 +120,6 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
-
-    # The delay between two uploads to the FFE website.
-    # TODO move this to the ffe plugin
-    ffe_upload_delay: int = 180
 
     """ The URL of the project. """
     url: str = 'https://sharly-chess.com'
