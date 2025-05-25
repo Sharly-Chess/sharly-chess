@@ -73,7 +73,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             try:
                 FFESession(
                     tournament,
-                    debug=False,
                     report_error=partial(report, tournament, FfeUploadStatus.ERROR),
                     report_info=partial(report, tournament, FfeUploadStatus.INFO),
                     report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
@@ -160,7 +159,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             try:
                 FFESession(
                     tournament,
-                    debug=False,
                     report_error=partial(report, tournament, FfeUploadStatus.ERROR),
                     report_info=partial(report, tournament, FfeUploadStatus.INFO),
                     report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
@@ -254,7 +252,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             try:
                 if html := FFESession(
                     tournament,
-                    debug=False,
                     report_error=partial(report, tournament, FfeUploadStatus.ERROR),
                     report_info=partial(report, tournament, FfeUploadStatus.INFO),
                     report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
