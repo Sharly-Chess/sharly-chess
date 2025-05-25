@@ -38,7 +38,7 @@
         <li>
             <span
                 {% if tournament.plugin_data.ffe.ffe_id %}
-                    {{ macros.tooltip_attributes('info', _('Uploading the PDF rules file allow the players to read the rules online.'), 'right') }}
+                    {{ macros.tooltip_attributes('info', _('Uploading the PDF rules file allows the players to read the rules online.'), 'right') }}
                 {% else %}
                     {{ macros.tooltip_attributes('warning', _('FFE certification number and password not defined for tournament.'), 'right') }}
                 {% endif %}

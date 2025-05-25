@@ -4611,7 +4611,7 @@ msgstr "Mettre en ligne les tournois vers la FFE"
 msgid "Upload:"
 msgstr "Mise en ligne :"
 
-msgid "Uploading the PDF rules file allow the players to read the rules online."
+msgid "Uploading the PDF rules file allows the players to read the rules online."
 msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
 
 msgid "Uploading tournament..."

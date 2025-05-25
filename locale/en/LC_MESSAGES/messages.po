@@ -4611,7 +4611,7 @@ msgstr ""
 msgid "Upload:"
 msgstr ""
 
-msgid "Uploading the PDF rules file allow the players to read the rules online."
+msgid "Uploading the PDF rules file allows the players to read the rules online."
 msgstr ""
 
 msgid "Uploading tournament..."
