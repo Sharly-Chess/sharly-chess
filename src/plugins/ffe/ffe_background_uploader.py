@@ -66,31 +66,31 @@ class FfeBackgroundUploader:
             if cls.ffe_last_upload(tournament):
                 result = FfeUploadResult(
                     FfeUploadStatus.UPLOADED,
-                    _('Tournament previously uploaded'),
+                    _('Tournament previously uploaded.'),
                 )
             else:
                 result = FfeUploadResult(
                     FfeUploadStatus.NEVER,
-                    _('Tournament not yet uploaded'),
+                    _('Tournament not yet uploaded.'),
                 )
             cls.upload_status_messages[result_id] = result
 
         if not cls.check_id_and_password(tournament):
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('FFE certification number and password not defined for tournament'),
+                _('FFE certification number and password not defined for tournament.'),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file:
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not defined for tournament'),
+                _('Papi file not defined for tournament.'),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file_exists:
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not found [{file}]').format(
+                _('Papi file not found [{file}].').format(
                     file=tournament.file,
                 ),
             )
@@ -182,7 +182,7 @@ class FfeBackgroundUploader:
             # The network is offline, we can't upload
             cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                 FfeUploadStatus.ERROR,
-                _('Modified, but update failed'),
+                _('Modified, but no internet connection'),
             )
             cls.publish_upload_event()
             return
@@ -257,7 +257,7 @@ class FfeBackgroundUploader:
                 # The network is offline, we can't upload
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                     FfeUploadStatus.INFO,
-                    _('Not connected to internet'),
+                    _('No internet connection'),
                 )
             else:
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(

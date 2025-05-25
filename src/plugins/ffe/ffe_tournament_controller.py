@@ -1,4 +1,5 @@
 from functools import partial
+
 from litestar import post
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, ClientRedirect

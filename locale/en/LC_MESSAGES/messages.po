@@ -1532,7 +1532,7 @@ msgstr ""
 msgid "FFE certification number (optional):"
 msgstr ""
 
-msgid "FFE certification number and password not defined for tournament"
+msgid "FFE certification number and password not defined for tournament."
 msgstr ""
 
 msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
@@ -2326,7 +2326,7 @@ msgstr ""
 msgid "Modified since last upload"
 msgstr ""
 
-msgid "Modified, but update failed"
+msgid "Modified, but no internet connection"
 msgstr ""
 
 #, python-format
@@ -2815,13 +2815,13 @@ msgstr ""
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
-msgid "Papi file not defined for tournament"
+msgid "Papi file not defined for tournament."
 msgstr ""
 
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Papi file not found [{file}]"
+msgid "Papi file not found [{file}]."
 msgstr ""
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
@@ -3698,6 +3698,9 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
+msgid "FFE certification number and password not defined for tournament."
+msgstr ""
+
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 
@@ -4353,13 +4356,13 @@ msgstr ""
 msgid "Tournament modified, awaiting auto-upload"
 msgstr ""
 
-msgid "Tournament not yet uploaded"
+msgid "Tournament not yet uploaded."
 msgstr ""
 
 msgid "Tournament performance rating"
 msgstr ""
 
-msgid "Tournament previously uploaded"
+msgid "Tournament previously uploaded."
 msgstr ""
 
 msgid "Tournament record"
@@ -4587,7 +4590,7 @@ msgstr ""
 msgid "Upload failed"
 msgstr ""
 
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
 msgid "Upload rules"

@@ -1532,8 +1532,8 @@ msgstr "Identifiant unique FFE :"
 msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
 
-msgid "FFE certification number and password not defined for tournament"
-msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
+msgid "FFE certification number and password not defined for tournament."
+msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi."
 
 msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
 msgstr "Numéro d’homologation FFE non défini pour le tournoi [{tournament_uniq_id}]."
@@ -2326,8 +2326,8 @@ msgstr "Mode"
 msgid "Modified since last upload"
 msgstr "Modifié depuis le dernier envoi"
 
-msgid "Modified, but update failed"
-msgstr "Modifié, mais l’envoi a échoué"
+msgid "Modified, but no internet connection"
+msgstr "Modifié, mais pas de connexion internet"
 
 #, python-format
 msgid "Moving on to round #%(round)d"
@@ -2815,13 +2815,13 @@ msgstr "Le fichier Papi [{file}] a été créé (joueur·euses : {num})."
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
-msgid "Papi file not defined for tournament"
+msgid "Papi file not defined for tournament."
 msgstr "Fichier Papi non défini pour le tournoi"
 
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Papi file not found [{file}]"
+msgid "Papi file not found [{file}]."
 msgstr "Fichier Papi introuvable [{file}]"
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
@@ -3698,6 +3698,9 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
+msgid "FFE certification number and password not defined for tournament."
+msgstr "le numéro d'homologation et le mot de passe du tournoi ne sont pas définis."
+
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
@@ -4353,14 +4356,14 @@ msgstr "Tournoi exempt de droits d'homologation."
 msgid "Tournament modified, awaiting auto-upload"
 msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
 
-msgid "Tournament not yet uploaded"
-msgstr "Tournoi pas encore mis en ligne"
+msgid "Tournament not yet uploaded."
+msgstr "Tournoi pas encore mis en ligne."
 
 msgid "Tournament performance rating"
 msgstr "Performance sur le tournoi"
 
-msgid "Tournament previously uploaded"
-msgstr "Tournoi mis en ligne précédemment"
+msgid "Tournament previously uploaded."
+msgstr "Tournoi mis en ligne précédemment."
 
 msgid "Tournament record"
 msgstr "Historique"
@@ -4587,7 +4590,7 @@ msgstr "Mettre en ligne"
 msgid "Upload failed"
 msgstr "Échec de la mise en ligne"
 
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
 msgid "Upload rules"
@@ -4609,7 +4612,7 @@ msgid "Upload:"
 msgstr "Mise en ligne :"
 
 msgid "Uploading the PDF rules file allow the players to read the rules online."
-msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueurs·euses de lire les règles en ligne."
+msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
 
 msgid "Uploading tournament..."
 msgstr "Mise en ligne en cours…"
