@@ -82,7 +82,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
                     'Error while setting tournament visibility: %s', tournament_id
                 )
                 result = FfeUploadResult(
-                    FfeUploadStatus.ERROR, _('Unable to set tournament visibility')
+                    FfeUploadStatus.ERROR, _('Unable to set tournament visibility.')
                 )
 
         if result:
@@ -105,7 +105,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         else:
             Message.error(
                 request,
-                _('Unable to set tournament visibility'),
+                _('Unable to set tournament visibility.'),
             )
 
         return self.render_messages(request)
@@ -168,7 +168,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
                     'Error while uploading tournament rules: %s', tournament_id
                 )
                 result = FfeUploadResult(
-                    FfeUploadStatus.ERROR, _('Unable to upload tournament rules')
+                    FfeUploadStatus.ERROR, _('Unable to upload tournament rules.')
                 )
 
         if result:
@@ -191,7 +191,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         else:
             Message.error(
                 request,
-                _('Unable to upload tournament rules'),
+                _('Unable to upload tournament rules.'),
             )
 
         return self.render_messages(request)
@@ -277,7 +277,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
             except Exception:
                 logger.exception('Error while downloading fees: %s', tournament_id)
                 result = FfeUploadResult(
-                    FfeUploadStatus.ERROR, _('Unable to download tournament fees')
+                    FfeUploadStatus.ERROR, _('Unable to download tournament fees.')
                 )
 
         if result:
@@ -300,7 +300,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         else:
             Message.error(
                 request,
-                _('Unable to download tournament fees'),
+                _('Unable to download tournament fees.'),
             )
 
         return self.render_messages(request)

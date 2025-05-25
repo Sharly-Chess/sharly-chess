@@ -4384,14 +4384,14 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
 
-msgid "Unable to download tournament fees"
-msgstr "Impossible de télécharger les droits d'homologation"
+msgid "Unable to download tournament fees."
+msgstr "Impossible de télécharger les droits d'homologation."
 
-msgid "Unable to set tournament visibility"
-msgstr "Impossible de définir la visibilité du tournoi"
+msgid "Unable to set tournament visibility."
+msgstr "Impossible de définir la visibilité du tournoi."
 
-msgid "Unable to upload tournament rules"
-msgstr "Impossible de téléverser le règlement du tournoi"
+msgid "Unable to upload tournament rules."
+msgstr "Impossible de téléverser le règlement du tournoi."
 
 msgid "Undefined"
 msgstr "Non défini"

@@ -4384,13 +4384,13 @@ msgstr ""
 msgid "Unable to create Papi files."
 msgstr ""
 
-msgid "Unable to download tournament fees"
+msgid "Unable to download tournament fees."
 msgstr ""
 
-msgid "Unable to set tournament visibility"
+msgid "Unable to set tournament visibility."
 msgstr ""
 
-msgid "Unable to upload tournament rules"
+msgid "Unable to upload tournament rules."
 msgstr ""
 
 msgid "Undefined"
