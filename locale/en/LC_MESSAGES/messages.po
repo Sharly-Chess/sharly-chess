@@ -337,9 +337,6 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Authenticating..."
-msgstr ""
-
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr ""
 
@@ -766,9 +763,6 @@ msgstr ""
 msgid "Contact and registration"
 msgstr ""
 
-msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-msgstr ""
-
 msgid "Continue"
 msgstr ""
 
@@ -1040,9 +1034,6 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
-msgstr ""
-
-msgid "Display link not found, check that a Papi file has already been sent."
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -1821,9 +1812,6 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
-msgid "Getting fees for tournament [{ffe_id}]..."
-msgstr ""
-
 msgid "Go back to the events page."
 msgstr ""
 
@@ -1955,9 +1943,6 @@ msgid "Increment (optional, seconds):"
 msgstr ""
 
 msgid "Initial time (optional, seconds):"
-msgstr ""
-
-msgid "Initializing a session to [{url}]..."
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
@@ -2193,9 +2178,6 @@ msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Make visible on FFE site"
-msgstr ""
-
-msgid "Making the tournament visible on the FFE website..."
 msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
@@ -3500,12 +3482,6 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr ""
-
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr ""
-
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
@@ -4249,9 +4225,6 @@ msgstr ""
 
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
-msgstr ""
-
-msgid "Tournament [{ffe_id}]:"
 msgstr ""
 
 msgid "Tournament [{tournament_id}] not found."

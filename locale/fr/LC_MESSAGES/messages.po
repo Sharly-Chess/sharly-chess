@@ -337,9 +337,6 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
-msgid "Authenticating..."
-msgstr "Authentification..."
-
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr "Erreur d'authentification (code : [{code}]) for [{user_id}] ([{chessevent_string}])."
 
@@ -766,9 +763,6 @@ msgstr "Connexions à ChessEvent"
 msgid "Contact and registration"
 msgstr "Contact et inscription"
 
-msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-msgstr "Le contenu de l'URL [{url}] n'est pa valide (input[id=[{id]] introuvable)."
-
 msgid "Continue"
 msgstr "Continuer"
 
@@ -1041,9 +1035,6 @@ msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
-
-msgid "Display link not found, check that a Papi file has already been sent."
-msgstr "Lien d'affichage non trouvé, vérifier qu'un fichier Papi a déjà été téléchargé."
 
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
@@ -1821,9 +1812,6 @@ msgstr "Générer les appariements pour toutes les rondes du tournoi."
 msgid "Generate pairings for this round."
 msgstr "Générer les appariements pour cette ronde."
 
-msgid "Getting fees for tournament [{ffe_id}]..."
-msgstr "Récupération des droits d'homologation pour le tournoi [{ffe_id}]..."
-
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
 
@@ -1956,9 +1944,6 @@ msgstr "Incrément (optionel, en secondes) :"
 
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
-
-msgid "Initializing a session to [{url}]..."
-msgstr "Initialisation d'une session vers [{url}]..."
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
@@ -2194,9 +2179,6 @@ msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
-
-msgid "Making the tournament visible on the FFE website..."
-msgstr "Affichage des tournois sur le site web FFE..."
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
@@ -3500,12 +3482,6 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection: %(selection)s"
 
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
-
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
-
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 
@@ -4250,9 +4226,6 @@ msgstr "Le tournoi [%(tournament_uniq_id)s] est terminé."
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr "Le tournoi [%(tournament_uniq_id)s] est en cours."
-
-msgid "Tournament [{ffe_id}]:"
-msgstr "Tournoi [{ffe_id}] :"
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
