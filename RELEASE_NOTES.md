@@ -25,6 +25,10 @@ English version below
 
 - Correction d'un bug de saisie sur le mot de passe FFE (2.6.2)
 
+### Gestion des joueur·euses
+
+- Correction d'un bug sur la mise à jour des tables fixes des joueur·euses (2.6.4)
+
 ### Gestion des appariements
 
 - Ajout de l'onglet Appariements (2.6.0)
@@ -38,6 +42,7 @@ English version below
 
 - Ajout des pilotes d'afficheurs (2.6.0)
 - Correction d'un bug de mise à jour des écrans rotatifs et des écrans de familles (2.6.3)
+- Ajout d'une traduction manquante sur les cartes des pilotes d'afficheurs (2.6.4)
 
 ### ChessEvent
 
@@ -70,6 +75,10 @@ English version below
 
 - Fixed a bug on FFE password input (2.6.2)
 
+## Players management
+
+- Fixed a bug on updating the fixed tables of players (2.6.4)
+
 ### Pairings management
 
 - Added the Pairings tab (2.6.0)
@@ -83,6 +92,7 @@ English version below
 
 - Added display controllers (2.6.0)
 - Fixed a bug on the refresh of rotators and family screens (2.6.3)
+- Added a missing translation on the display controller cards (2.6.4)
 
 ### ChessEvent
 
