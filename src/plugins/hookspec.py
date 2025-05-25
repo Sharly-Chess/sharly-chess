@@ -67,6 +67,7 @@ class AppHookSpecs:
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
 
+    # TODO remove this hook after having integrated ChessEvent into the web UI
     @hookspec
     def get_engine_argument(self) -> PluginEngineArgument:
         """Provide an engine argument"""
