@@ -1094,7 +1094,13 @@ msgstr ""
 msgid "Double-round Berger"
 msgstr ""
 
+msgid "Download fees"
+msgstr ""
+
 msgid "Download fees invoices"
+msgstr ""
+
+msgid "Download the fees that the organizer should pay to the FFE."
 msgstr ""
 
 msgid "Download the files (ZIP archive)"
@@ -2065,13 +2071,13 @@ msgstr ""
 msgid "Invalid player number range."
 msgstr ""
 
+msgid "Invalid response from the FFE website."
+msgstr ""
+
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
 msgid "Invalid value [{value}]."
-msgstr ""
-
-msgid "Invoice saved to [{file}]."
 msgstr ""
 
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
@@ -2815,16 +2821,16 @@ msgstr ""
 msgid "Papi file [{tournament_file}] not found."
 msgstr ""
 
-msgid "Papi file not defined for tournament."
-msgstr ""
-
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Papi file not found [{file}]."
+msgid "Papi file not defined for tournament."
 msgstr ""
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Papi file not found [{file}]."
 msgstr ""
 
 msgid "Papi file not modified since last upload"
@@ -3698,9 +3704,6 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
-msgid "FFE certification number and password not defined for tournament."
-msgstr ""
-
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 
@@ -4460,6 +4463,9 @@ msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
 msgid "Unable to create Papi files."
+msgstr ""
+
+msgid "Unable to download tournament fees"
 msgstr ""
 
 msgid "Unable to set tournament visibility"

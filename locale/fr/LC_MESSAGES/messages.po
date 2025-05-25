@@ -1094,8 +1094,14 @@ msgstr "Document :"
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
 
+msgid "Download fees"
+msgstr "Télécharger les droits d'homologation"
+
 msgid "Download fees invoices"
 msgstr "Télécharger les factures d'homologation"
+
+msgid "Download the fees that the organizer should pay to the FFE."
+msgstr "Télécharger les droits d'homologation que l'organisateur·ice doit payer à la FFE."
 
 msgid "Download the files (ZIP archive)"
 msgstr "Télécharger les fichiers (archive ZIP)"
@@ -2065,14 +2071,14 @@ msgstr "Numéro de téléphone [{phone}] non valide."
 msgid "Invalid player number range."
 msgstr "Intervalle de joueur·euses invalide."
 
+msgid "Invalid response from the FFE website."
+msgstr "Réponse non valide du site FFE."
+
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
-
-msgid "Invoice saved to [{file}]."
-msgstr "Facture sauvée dans [{file}]."
 
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
 msgstr "Ka."
@@ -2815,17 +2821,17 @@ msgstr "Le fichier Papi [{file}] a été créé (joueur·euses : {num})."
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
-msgid "Papi file not defined for tournament."
-msgstr "Fichier Papi non défini pour le tournoi"
-
 msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Papi file not found [{file}]."
-msgstr "Fichier Papi introuvable [{file}]"
+msgid "Papi file not defined for tournament."
+msgstr "Fichier Papi non défini pour le tournoi."
 
 msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
+
+msgid "Papi file not found [{file}]."
+msgstr "Fichier Papi introuvable [{file}]."
 
 msgid "Papi file not modified since last upload"
 msgstr "Le fichier Papi n’a pas été modifié depuis la dernière mise en ligne"
@@ -3698,9 +3704,6 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-msgid "FFE certification number and password not defined for tournament."
-msgstr "le numéro d'homologation et le mot de passe du tournoi ne sont pas définis."
-
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
@@ -4461,6 +4464,9 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
+
+msgid "Unable to download tournament fees"
+msgstr "Impossible de télécharger les droits d'homologation"
 
 msgid "Unable to set tournament visibility"
 msgstr "Impossible de définir la visibilité du tournoi"

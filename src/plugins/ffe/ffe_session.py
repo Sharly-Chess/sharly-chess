@@ -1,7 +1,6 @@
 from functools import partial
 import re
 import time
-import webbrowser
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
@@ -45,8 +44,6 @@ UPLOAD_FILE_ID: str = 'ctl00$ContentPlaceHolderMain$UploadPapi'
 UPLOAD_RULES_LINK_ID: str = 'ctl00_ContentPlaceHolderMain_CmdUploadRI'
 UPLOAD_RULES_EVENT: str = UPLOAD_RULES_LINK_ID.replace('_', '$')
 UPLOAD_RULES_FILE_ID: str = 'ctl00$ContentPlaceHolderMain$UploadRI'
-
-FEES_DIR: Path = Path('fees')
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -301,18 +298,22 @@ class FFESession(Session):
             return False
         return True
 
-    def get_fees(self) -> None:
+    def get_fees(self) -> str | None:
         """Downloads the fees for the tournament."""
 
         assert self.tournament is not None
         (ffe_id, ffe_password) = self.get_id_and_password(True)
+        if not ffe_id:
+            return None
+
         print_interactive_info(
             _('Getting fees for tournament [{ffe_id}]...').format(ffe_id=ffe_id)
         )
+
         if not self._ffe_init():
-            return
+            return None
         if not self._ffe_auth(ffe_id, ffe_password):
-            return
+            return None
         assert self.auth_state
         if self.debug:
             logger.info(
@@ -320,20 +321,20 @@ class FFESession(Session):
             )
         fees_link_id = self.auth_state[FEES_LINK_ID]
         if fees_link_id is None:
-            print_interactive_warning(
+            self.report_error(
                 _(
                     'Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website.'
                 )
             )
-            return
+            return None
         if fees_link_id.lower() == 'tournoi exempté de droits':
-            print_interactive_info(_('Tournament exempt from registration fees.'))
-            return
+            self.report_info(_('Tournament exempt from registration fees.'))
+            return None
         if fees_link_id.lower() != 'afficher la facture':
-            print_interactive_error(
+            self.report_error(
                 _('Invalid fees link text [{text}].').format(text=fees_link_id)
             )
-            return
+            return None
         url = FFE_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
             '__EVENTTARGET': FEES_EVENT,
@@ -346,29 +347,32 @@ class FFESession(Session):
         }
         html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return
-        FEES_DIR.mkdir(exist_ok=True, parents=True)
+            return None
         base: AdvancedTag = AdvancedTag('base')
         base.setAttribute('href', FFE_URL)
         parser, error = self._parse_html_content(html)
         assert parser is not None
         if error:
-            return
+            logger.error(
+                'Could not parse FFE response to [%s] with POST data [%s].',
+                url,
+                str(post_data),
+            )
+            logger.debug('Response received:\n%s', html)
+            self.report_error(_('Invalid response from the FFE website.'))
+            return None
         head: AdvancedTag | None = parser.getElementsByTagName('head')[0]
         if not head:
-            return
+            logger.error(
+                'Could not find tag HEAD in the FFE response to [%s] with POST data [%s].',
+                url,
+                str(post_data),
+            )
+            logger.debug('Response received:\n%s', html)
+            self.report_error(_('Invalid response from the FFE website.'))
+            return None
         head.insertBefore(base, head.getChildren()[0])
-        file: Path = Path(
-            FEES_DIR,
-            str(get_data(self.tournament.plugin_data, 'ffe_id')) + '-fees.html',
-        )
-        with open(file, 'w', encoding='utf-8') as f:
-            f.write(parser.getHTML())
-        webbrowser.open(f'file://{file.resolve()}', new=2)
-        print_interactive_success(
-            _('Invoice saved to [{file}].').format(file=file.resolve())
-        )
-        return
+        return parser.getHTML()
 
     def get_id_and_password(
         self, do_log: bool = False

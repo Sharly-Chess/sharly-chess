@@ -1,7 +1,8 @@
 from functools import partial
+from tempfile import NamedTemporaryFile
 
-from litestar import post
-from litestar.response import Template
+from litestar import post, get
+from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect
 
 from common.i18n import _
@@ -192,6 +193,95 @@ class FfeAdminTournamentController(BaseEventAdminController):
             Message.error(
                 request,
                 _('Unable to upload tournament rules'),
+            )
+
+        return self.render_messages(request)
+
+    @get(
+        path='/ffe/download-fees/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-download-fees',
+    )
+    async def htmx_ffe_download_fees(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect | File:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+
+        result: FfeUploadResult | None = (
+            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
+        )
+
+        if not NetworkMonitor.connected():
+            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
+
+        def report(
+            tournament: Tournament, status: FfeUploadStatus, message: str
+        ) -> None:
+            nonlocal result
+            result = FfeUploadResult(status, message)
+
+        if not result or (
+            result.status != FfeUploadStatus.SETTINGS_ERROR
+            and result.status != FfeUploadStatus.ERROR
+        ):
+            try:
+                if html := FFESession(
+                    tournament,
+                    debug=False,
+                    report_error=partial(report, tournament, FfeUploadStatus.ERROR),
+                    report_info=partial(report, tournament, FfeUploadStatus.INFO),
+                    report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
+                ).get_fees():
+                    temp_file = NamedTemporaryFile(
+                        delete=False, mode='w', suffix='.html'
+                    )
+                    with temp_file:
+                        temp_file.write(html)
+                    return File(
+                        path=temp_file.name,
+                        filename=f'{event_uniq_id}-{tournament.uniq_id}-fees.html',
+                    )
+            except Exception:
+                logger.exception('Error while downloading fees: %s', tournament_id)
+                result = FfeUploadResult(
+                    FfeUploadStatus.ERROR, _('Unable to download tournament fees')
+                )
+
+        if result:
+            match result.status:
+                case FfeUploadStatus.ERROR:
+                    Message.error(
+                        request,
+                        result.message,
+                    )
+                case FfeUploadStatus.INFO:
+                    Message.info(
+                        request,
+                        result.message,
+                    )
+                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
+                    Message.success(
+                        request,
+                        result.message,
+                    )
+        else:
+            Message.error(
+                request,
+                _('Unable to download tournament fees'),
             )
 
         return self.render_messages(request)
