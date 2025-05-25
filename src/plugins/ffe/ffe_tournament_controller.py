@@ -1,10 +1,11 @@
 from functools import partial
-from tempfile import NamedTemporaryFile
+from pathlib import Path
 
 from litestar import post, get
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect
 
+from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -197,16 +198,28 @@ class FfeAdminTournamentController(BaseEventAdminController):
 
         return self.render_messages(request)
 
+    @staticmethod
+    def tournament_fees_file(
+        tournament,
+    ) -> Path:
+        return (
+            TMP_DIR
+            / 'ffe'
+            / 'fees'
+            / tournament.event.uniq_id
+            / f'{tournament.uniq_id}.html'
+        )
+
     @get(
-        path='/ffe/download-fees/{event_uniq_id:str}/{tournament_id:int}',
-        name='ffe-download-fees',
+        path='/ffe/extract-fees/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-extract-fees',
     )
-    async def htmx_ffe_download_fees(
+    async def htmx_ffe_extract_fees(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | File:
+    ) -> Template | ClientRedirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -246,15 +259,24 @@ class FfeAdminTournamentController(BaseEventAdminController):
                     report_info=partial(report, tournament, FfeUploadStatus.INFO),
                     report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
                 ).get_fees():
-                    temp_file = NamedTemporaryFile(
-                        delete=False, mode='w', suffix='.html'
+                    fees_file = self.tournament_fees_file(tournament)
+                    fees_file.parent.mkdir(parents=True, exist_ok=True)
+                    with open(fees_file, 'w') as f:
+                        f.write(html)
+                    url: str = request.app.route_reverse(
+                        'ffe-download-fees',
+                        event_uniq_id=event_uniq_id,
+                        tournament_id=tournament_id,
                     )
-                    with temp_file:
-                        temp_file.write(html)
-                    return File(
-                        path=temp_file.name,
-                        filename=f'{event_uniq_id}-{tournament.uniq_id}-fees.html',
+                    logger.debug(
+                        'Fees written to [%s], redirecting to [%s].',
+                        fees_file,
+                        url,
                     )
+                    response: ClientRedirect = ClientRedirect(redirect_to=url)
+                    # cf https://github.com/bigskysoftware/htmx/issues/3189
+                    response.set_header('HX-Trigger', 'downloadReady')
+                    return response
             except Exception:
                 logger.exception('Error while downloading fees: %s', tournament_id)
                 result = FfeUploadResult(
@@ -285,3 +307,33 @@ class FfeAdminTournamentController(BaseEventAdminController):
             )
 
         return self.render_messages(request)
+
+    @get(
+        path='/ffe/download-fees/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-download-fees',
+    )
+    async def ffe_download_fees(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect | File:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+
+        file: Path = self.tournament_fees_file(tournament)
+        return File(
+            path=file,
+            filename=f'{event_uniq_id}-{tournament.uniq_id}-fees.html',
+        )
