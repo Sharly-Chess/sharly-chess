@@ -66,33 +66,44 @@ class FfeBackgroundUploader:
             if cls.ffe_last_upload(tournament):
                 result = FfeUploadResult(
                     FfeUploadStatus.UPLOADED,
-                    _('Tournament previously uploaded'),
+                    _('Tournament previously uploaded.'),
                 )
             else:
                 result = FfeUploadResult(
                     FfeUploadStatus.NEVER,
-                    _('Tournament not yet uploaded'),
+                    _('Tournament not yet uploaded.'),
                 )
             cls.upload_status_messages[result_id] = result
 
         if not cls.check_id_and_password(tournament):
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('FFE certification number and password not defined for tournament'),
+                _('FFE certification number and password not defined for tournament.'),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file:
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not defined for tournament'),
+                _('Papi file not defined for tournament.'),
             )
             cls.upload_status_messages[result_id] = result
         elif not tournament.file_exists:
             result = FfeUploadResult(
                 FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not found [{file}]').format(
+                _('Papi file not found [{file}].').format(
                     file=tournament.file,
                 ),
+            )
+            cls.upload_status_messages[result_id] = result
+        elif (
+            not FFEUtils.resolve_auto_upload(tournament)
+            and cls.ffe_upload_needed(tournament) == NeedsUpload.YES
+        ):
+            # For manual updates tell the user that the tournament has been modified
+            # For auto uploads, schedule_upload should have already an appropriate message
+            result = FfeUploadResult(
+                FfeUploadStatus.INFO,
+                _('Modified since last upload'),
             )
             cls.upload_status_messages[result_id] = result
         return result
@@ -182,14 +193,14 @@ class FfeBackgroundUploader:
             # The network is offline, we can't upload
             cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                 FfeUploadStatus.ERROR,
-                _('Modified, but update failed'),
+                _('Modified, but no internet connection'),
             )
             cls.publish_upload_event()
             return
 
         cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
             FfeUploadStatus.IN_PROGRESS,
-            _('Uploading tournament...'),
+            _('Uploading tournament…'),
         )
 
         logger.info(
@@ -208,7 +219,6 @@ class FfeBackgroundUploader:
         try:
             FFESession(
                 tournament,
-                debug=False,
                 report_error=partial(report, tournament, FfeUploadStatus.ERROR),
                 report_info=partial(report, tournament, FfeUploadStatus.INFO),
                 report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
@@ -257,11 +267,11 @@ class FfeBackgroundUploader:
                 # The network is offline, we can't upload
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                     FfeUploadStatus.INFO,
-                    _('Not connected to internet'),
+                    _('No internet connection'),
                 )
             else:
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                    FfeUploadStatus.IN_PROGRESS, _('Uploading tournament...')
+                    FfeUploadStatus.IN_PROGRESS, _('Uploading tournament…')
                 )
 
         def _upload_tournaments(cls: FfeBackgroundUploader) -> None:
@@ -312,7 +322,7 @@ class FfeBackgroundUploader:
         else:
             cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                 FfeUploadStatus.IN_PROGRESS,
-                _('Uploading tournament...'),
+                _('Uploading tournament…'),
             )
 
         timer = Timer(

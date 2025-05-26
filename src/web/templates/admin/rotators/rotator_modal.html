@@ -5,7 +5,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Rotator creation') }}
                 {% elif action == 'update' %}
-                    {{ _('Edition of rotator [%(rotator_uniq_id)s]', rotator_uniq_id=admin_rotator.uniq_id) }}
+                    {{ _('Editing of rotator [%(rotator_uniq_id)s]', rotator_uniq_id=admin_rotator.uniq_id) }}
                 {% elif action == 'delete' %}
                     {{ _('Deletion of rotator [%(rotator_uniq_id)s]', rotator_uniq_id=admin_rotator.uniq_id) }}
                 {% else %}

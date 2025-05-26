@@ -19,7 +19,7 @@
                         ?
                     {% endif %}
                 {% elif action == 'update' %}
-                    {{ _('Edition of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                    {{ _('Editing of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
                 {% elif action == 'delete' %}
                     {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
                 {% else %}

@@ -5,7 +5,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Event creation') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% elif action == 'update' %}
-                    {{ _('Edition of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}<span style="font-size: 90%">{{ macros.doc_icon('events-update', 'ms-2') }}</span>
+                    {{ _('Editing of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}<span style="font-size: 90%">{{ macros.doc_icon('events-update', 'ms-2') }}</span>
                 {% else %}
                     {{ _('Deletion of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                 {% endif %}

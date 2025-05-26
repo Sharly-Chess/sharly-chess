@@ -5,7 +5,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Display controller creation') }}
                 {% elif action == 'update' %}
-                    {{ _('Edition of display controller [%(display_controller_uniq_id)s]', display_controller_uniq_id=admin_display_controller.uniq_id) }}
+                    {{ _('Editing of display controller [%(display_controller_uniq_id)s]', display_controller_uniq_id=admin_display_controller.uniq_id) }}
                 {% elif action == 'delete' %}
                     {{ _('Deletion of display controller [%(display_controller_uniq_id)s]', display_controller_uniq_id=admin_display_controller.uniq_id) }}
                 {% else %}

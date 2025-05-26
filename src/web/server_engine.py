@@ -42,7 +42,7 @@ def launch_browser(url: str):
     # Set the locale as the function is called in a new thread.
     set_locale(SharlyChessConfig().locale)
     print_interactive_info(
-        _('Opening the welcome page [{url}] in a browser...').format(url=url)
+        _('Opening the welcome page [{url}] in a browser…').format(url=url)
     )
     while True:
         try:
@@ -50,7 +50,7 @@ def launch_browser(url: str):
             break
         except requests.RequestException as e:
             print_interactive_info(
-                _('Web server not started yet ({ex}), waiting...').format(
+                _('Web server not started yet ({ex}), waiting…').format(
                     ex=e.__class__.__name__
                 )
             )
@@ -74,7 +74,7 @@ class ServerEngine(Engine):
         )
         logger.debug(' - Platform: %s', platform.platform())
         logger.debug(' - Architecture: %s', ' '.join(platform.architecture()))
-        print_interactive_info(_('Starting Sharly Chess server, please wait...'))
+        print_interactive_info(_('Starting Sharly Chess server, Please wait…'))
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         print_interactive_info(
             _('Logging level: {log_level}').format(
