@@ -80,6 +80,7 @@ class FFESession(Session):
                 if data:
                     logger.debug('- data:')
                     for field_id, field in data.items():
+                        field = str(field) if field is not None else ''
                         if (
                             'password' in field_id.lower()
                             or 'passwd' in field_id.lower()
