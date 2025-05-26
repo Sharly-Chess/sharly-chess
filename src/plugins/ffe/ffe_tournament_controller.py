@@ -272,7 +272,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
                     )
                     response: ClientRedirect = ClientRedirect(redirect_to=url)
                     # cf https://github.com/bigskysoftware/htmx/issues/3189
-                    response.set_header('HX-Trigger', 'downloadReady')
+                    response.set_header('HX-Trigger', 'download_ready')
                     return response
             except Exception:
                 logger.exception('Error while downloading fees: %s', tournament_id)

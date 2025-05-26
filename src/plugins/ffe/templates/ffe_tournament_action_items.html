@@ -80,15 +80,6 @@
                     <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
                     {{ _('Download fees') }}
                 </button>
-                {% if tournament.plugin_data.ffe.ffe_id %}
-                    {# cf https://github.com/bigskysoftware/htmx/issues/3189 #}
-                    <script>
-                        document.getElementById("ffe-extract-fees-button").addEventListener("downloadReady", function () {
-                            // workaround for htmx not automatically doing this when redirecting
-                            document.getElementById("please-wait").classList.remove("htmx-request");
-                        });
-                    </script>
-                {% endif %}
             </span>
         </li>
     </ul>
