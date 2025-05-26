@@ -153,26 +153,24 @@
                     </button>
                 </span>
             </li>
-            {% if EXPERIMENTAL_FEATURES %}
-                <li class="dropdown-submenu">
-                    <button class="dropdown-item d-flex justify-content-between" href="#">
-                        <span><i class="bi-download pe-1"></i>
-                        {{ _('Export') }}</span>
-                        <i class="ps-3 bi bi-caret-right-fill"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% for exporter in tournament_exporters %}
-                            <li
-                                class="dropdown-item text-start cursor-pointer"
-                                onclick="window.open('{{ url_for('admin-tournament-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, exporter_id=exporter.id) }}', '_blank')"
-                                {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
-                            >
-                                {{ exporter.name }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
+            <li class="dropdown-submenu">
+                <button class="dropdown-item d-flex justify-content-between" href="#">
+                    <span><i class="bi-download pe-1"></i>
+                    {{ _('Export') }}</span>
+                    <i class="ps-3 bi bi-caret-right-fill"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    {% for exporter in tournament_exporters %}
+                        <li
+                            class="dropdown-item text-start cursor-pointer"
+                            onclick="window.open('{{ url_for('admin-tournament-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, exporter_id=exporter.id) }}', '_blank')"
+                            {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                        >
+                            {{ exporter.name }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
             <li>
                 <span
                     {{ macros.tooltip_attributes('info', _('May be used for per-round prize giveaways etc.'), 'top') }}
