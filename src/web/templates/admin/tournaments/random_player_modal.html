@@ -1,0 +1,54 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Random player') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if not random_player %}
+                <p class="text-center">
+                    {{ _('No players to choose from.') }}
+                </p>
+            {% else %}
+                <h3 class="text-center">
+                    {{ player_name }} ({{ random_player.rating }})
+                </h3>
+                {% if random_player.club %}
+                    <h4 class="col-12 text-center">
+                        {{ random_player.club.name }}
+                    </h4>
+                {% endif %}
+                {% if tournament %}
+                    <div class="text-center">
+                        {{ _('Playing in tournament [%(uniq_id)s]', uniq_id=tournament.uniq_id) }}
+                        {% if tournament.current_round and board is not none %}
+                            <p>
+                                {{ _('Round %(round)d - Board %(board_number)d', round=tournament.current_round, board_number=board.number) }}
+                            </p>
+                            {% if opponent_name %}
+                                <p>
+                                    {{ _('Paired against: %(opponent_name)s', opponent_name=opponent_name) }}
+                                </p>
+                            {% else %}
+                                <p>
+                                    {{ _('No pairing found for this player in the current round.') }}
+                                </p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-primary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -234,6 +234,7 @@ class PapiDatabase(AccessDatabase):
                 'Commentaire',
                 'InscriptionDu',
                 'InscriptionRegle',
+                'Fixe',
             ]
             + [tr.papi_value_field for tr in TournamentRating]
             + [tr.papi_type_field for tr in TournamentRating]
@@ -254,6 +255,7 @@ class PapiDatabase(AccessDatabase):
                 player.comment,
                 player.owed,
                 player.paid,
+                player.fixed or 0,
             ]
             + [player.get_rating(tr).value for tr in TournamentRating]
             + [player.get_rating(tr).type.to_papi_value for tr in TournamentRating]

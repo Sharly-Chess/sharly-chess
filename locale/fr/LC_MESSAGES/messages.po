@@ -29,7 +29,7 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
 #, python-format
-msgid "%(last_name)s %(first_name)s - Round %(num)s"
+msgid "%(first_name)s %(last_name)s - Round %(num)s"
 msgstr "%(last_name)s %(first_name)s - Ronde %(num)s"
 
 #, python-format
@@ -652,6 +652,9 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chess
 msgid "Choose a custom image:"
 msgstr "Choisissez une image personnalisée :"
 
+msgid "Choose a player at random"
+msgstr "Choisir un·e joueur·euse au hasard"
+
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
@@ -971,7 +974,7 @@ msgid "Deletion of event [%(event_uniq_id)s]"
 msgstr "Suppression de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Deletion of player [%(last_name)s %(first_name)s]"
+msgid "Deletion of player [%(first_name)s %(last_name)s]"
 msgstr "Suppression du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #, python-format
@@ -1353,7 +1356,7 @@ msgid "Edition of event [%(event_uniq_id)s]"
 msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Edition of player [%(last_name)s %(first_name)s]"
+msgid "Edition of player [%(first_name)s %(last_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #, python-format
@@ -2267,6 +2270,9 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
+msgid "May be used for per-round prize giveaways etc."
+msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
+
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
 
@@ -2485,6 +2491,9 @@ msgstr "Aucun résultat à mettre à jour sur le site web FFE (à jour)."
 msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr "Aucun règlement à mettre à jour sur le site web FFE (à jour)."
 
+msgid "No pairing found for this player in the current round."
+msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
+
 msgid "No pairings."
 msgstr "Aucun appariement."
 
@@ -2505,6 +2514,9 @@ msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
 
 msgid "No players found."
 msgstr "Aucun·e joueur·euse trouvé·e."
+
+msgid "No players to choose from."
+msgstr "Aucun·e joueur·euse à sélectionner."
 
 msgid "No players updated."
 msgstr "Aucun·e joueur·euse mis·e à jour."
@@ -2735,6 +2747,10 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
 
+#, python-format
+msgid "Paired against: %(opponent_name)s"
+msgstr "Apparié·e contre : %(opponent_name)s"
+
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
@@ -2876,13 +2892,13 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(last_name)s %(first_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
-msgid "Player [{last_name} {first_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgid "Player [{first_name} {last_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
 
-msgid "Player [{last_name} {first_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgid "Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{last_name} {first_name}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
 
 msgid "Player creation"
@@ -2923,6 +2939,10 @@ msgstr "Les écrans d'affichage des joueur·euses présentent les appariements p
 
 msgid "Playing"
 msgstr "En cours"
+
+#, python-format
+msgid "Playing in tournament [%(uniq_id)s]"
+msgstr "Participe au tournoi [%(uniq_id)s]"
 
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
@@ -3159,6 +3179,9 @@ msgstr "R"
 msgid "Random"
 msgstr "Aléatoire"
 
+msgid "Random player"
+msgstr "Joueur·euse aléatoire"
+
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
 
@@ -3366,6 +3389,10 @@ msgstr "La ronde %(round)d est en cours."
 
 msgid "Round #{round}"
 msgstr "Ronde n°{round}"
+
+#, python-format
+msgid "Round %(round)d - Board %(board_number)d"
+msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
 msgid "Round number or text:"
 msgstr "Numéro de ronde ou texte :"
@@ -4928,6 +4955,9 @@ msgstr "Il y a {days} jours"
 
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
+
+msgid "{first_name} {last_name}"
+msgstr "{last_name} {first_name}"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
