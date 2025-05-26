@@ -220,9 +220,7 @@ class FFESession(Session):
         """Initializes a session on the FFE admin website (mostly gets state variables).
         Return True on success, False otherwise."""
         url = FFE_URL
-        print_interactive_info(
-            _('Initializing a session to [{url}]...').format(url=url)
-        )
+        print_interactive_info(_('Initializing a session to [{url}]…').format(url=url))
         html: str | None = self._read_url(url=url, data=None, files=None)
         if not html:
             return False
@@ -239,7 +237,7 @@ class FFESession(Session):
         assert self.ffe_state
         if ffe_id is None or ffe_password is None:
             return False
-        print_interactive_info(_('Authenticating...'))
+        print_interactive_info(_('Authenticating…'))
         url = FFE_URL + '/Default.aspx'
         post_data: dict[str, str] = {
             VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
@@ -307,7 +305,7 @@ class FFESession(Session):
         assert self.tournament is not None
         (ffe_id, ffe_password) = self.get_id_and_password(True)
         print_interactive_info(
-            _('Getting fees for tournament [{ffe_id}]...').format(ffe_id=ffe_id)
+            _('Getting fees for tournament [{ffe_id}]…').format(ffe_id=ffe_id)
         )
         if not self._ffe_init():
             return
@@ -401,7 +399,7 @@ class FFESession(Session):
             return
 
         print_interactive_info(
-            _('Sending tournament [{ffe_id}] ({file}) to the FFE website...').format(
+            _('Sending tournament [{ffe_id}] ({file}) to the FFE website…').format(
                 ffe_id=ffe_id, file=self.tournament.file
             )
         )
@@ -474,7 +472,7 @@ class FFESession(Session):
         self.report_success(_('Results upload OK'))
         if not set_visible:
             return
-        print_interactive_info(_('Making the tournament visible on the FFE website...'))
+        print_interactive_info(_('Making the tournament visible on the FFE website…'))
         if self.debug:
             logger.info(
                 '> auth_state[%s]=[%s]',
@@ -528,7 +526,7 @@ class FFESession(Session):
 
         print_interactive_info(
             _(
-                'Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...'
+                'Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website…'
             ).format(ffe_id=ffe_id, file=self.tournament.rules)
         )
         if not self._ffe_init():

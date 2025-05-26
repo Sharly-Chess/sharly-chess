@@ -189,7 +189,7 @@ class FfeBackgroundUploader:
 
         cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
             FfeUploadStatus.IN_PROGRESS,
-            _('Uploading tournament...'),
+            _('Uploading tournament…'),
         )
 
         logger.info(
@@ -261,7 +261,7 @@ class FfeBackgroundUploader:
                 )
             else:
                 cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                    FfeUploadStatus.IN_PROGRESS, _('Uploading tournament...')
+                    FfeUploadStatus.IN_PROGRESS, _('Uploading tournament…')
                 )
 
         def _upload_tournaments(cls: FfeBackgroundUploader) -> None:
@@ -312,7 +312,7 @@ class FfeBackgroundUploader:
         else:
             cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                 FfeUploadStatus.IN_PROGRESS,
-                _('Uploading tournament...'),
+                _('Uploading tournament…'),
             )
 
         timer = Timer(

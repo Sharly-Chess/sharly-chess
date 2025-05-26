@@ -340,7 +340,7 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Authenticating..."
+msgid "Authenticating…"
 msgstr ""
 
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
@@ -1115,7 +1115,7 @@ msgstr ""
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr ""
 
-msgid "Downloading source file..."
+msgid "Downloading source file…"
 msgstr ""
 
 msgid "Drag the hours to order them."
@@ -1344,39 +1344,39 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
 #, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of display controller [%(display_controller_uniq_id)s]"
+msgid "Editing of display controller [%(display_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of event [%(event_uniq_id)s]"
+msgid "Editing of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of player [%(first_name)s %(last_name)s]"
+msgid "Editing of player [%(first_name)s %(last_name)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of rotator [%(rotator_uniq_id)s]"
+msgid "Editing of rotator [%(rotator_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of screen [%(screen_uniq_id)s]"
+msgid "Editing of screen [%(screen_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of screen family [%(family_uniq_id)s]"
+msgid "Editing of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of timer [%(timer_uniq_id)s]"
+msgid "Editing of timer [%(timer_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Edition of tournament [%(tournament_uniq_id)s]"
+msgid "Editing of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
@@ -1830,7 +1830,7 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
-msgid "Getting fees for tournament [{ffe_id}]..."
+msgid "Getting fees for tournament [{ffe_id}]…"
 msgstr ""
 
 msgid "Go back to the events page."
@@ -1966,7 +1966,7 @@ msgstr ""
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
-msgid "Initializing a session to [{url}]..."
+msgid "Initializing a session to [{url}]…"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
@@ -2207,7 +2207,7 @@ msgstr ""
 msgid "Make visible on FFE site"
 msgstr ""
 
-msgid "Making the tournament visible on the FFE website..."
+msgid "Making the tournament visible on the FFE website…"
 msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
@@ -2683,7 +2683,7 @@ msgstr ""
 msgid "Open/close check-in."
 msgstr ""
 
-msgid "Opening the welcome page [{url}] in a browser..."
+msgid "Opening the welcome page [{url}] in a browser…"
 msgstr ""
 
 msgid "Opponent"
@@ -3052,10 +3052,10 @@ msgstr ""
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
-msgid "Please wait until the application settings have been set on the server..."
+msgid "Please wait until the application settings have been set on the server…"
 msgstr ""
 
-msgid "Please wait..."
+msgid "Please wait…"
 msgstr ""
 
 msgid "Plugins"
@@ -3514,13 +3514,13 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-msgid "Search the FFE database for names, FFE ID, ..."
+msgid "Search the FFE database for names, FFE ID, …"
 msgstr ""
 
-msgid "Search the FIDE database for names, FIDE ID, federation..."
+msgid "Search the FIDE database for names, FIDE ID, federation…"
 msgstr ""
 
-msgid "Searching..."
+msgid "Searching…"
 msgstr ""
 
 msgid "Seed color"
@@ -3539,10 +3539,10 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
+msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website…"
 msgstr ""
 
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
+msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website…"
 msgstr ""
 
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
@@ -3650,7 +3650,7 @@ msgstr ""
 msgid "Start:"
 msgstr ""
 
-msgid "Starting Sharly Chess server, please wait..."
+msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
@@ -3659,7 +3659,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-msgid "Storing data..."
+msgid "Storing data…"
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -4614,7 +4614,7 @@ msgstr ""
 msgid "Uploading the PDF rules file allows the players to read the rules online."
 msgstr ""
 
-msgid "Uploading tournament..."
+msgid "Uploading tournament…"
 msgstr ""
 
 msgid "Upper limit expected to be greater than lower limit."
@@ -4699,7 +4699,7 @@ msgstr ""
 msgid "Web access"
 msgstr ""
 
-msgid "Web server not started yet ({ex}), waiting..."
+msgid "Web server not started yet ({ex}), waiting…"
 msgstr ""
 
 msgid "Weekly"
@@ -4783,7 +4783,7 @@ msgstr ""
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
-msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
