@@ -416,7 +416,7 @@ class FFESession(Session):
         if self.auth_state[UPLOAD_LINK_ID] is None:
             self.report_error(
                 _(
-                    'Upload link not found, check that the tournament is not marked as finished on the FFE website'
+                    'Upload link not found, check that the tournament is not marked as finished on the FFE website.'
                 )
             )
             return

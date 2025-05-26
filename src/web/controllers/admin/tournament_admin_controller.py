@@ -53,10 +53,9 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         event_uniq_id: str,
         tournament_id: int | None,
         data: Annotated[
-            dict[str, str],
+            dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
+        ],
     ):
         super().__init__(
             request,
