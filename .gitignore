@@ -72,3 +72,5 @@ __pycache__/
 /src/web/static/lib/Sortable
 /src/web/static/lib/jstree
 /src/web/static/lib/morphdom
+
+/src/common/i18n/.auto-update

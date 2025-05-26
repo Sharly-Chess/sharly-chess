@@ -76,14 +76,18 @@ locale_infos: dict[str, LocaleInfo] = {
     for locale in locales
 }
 
+_program_name: str = Path(sys.argv[0]).stem
 # For developers only, look if the i18n strings have changed to refresh the MO files if needed
 # (build the MO files if not found)
-if Path(sys.argv[0]).stem == 'export':
+if _program_name == 'export':
     # When exporting the EXE, stop on error
     if not BabelChecker(locale_infos, DEFAULT_LOCALE).ok:
         logger.error('Translations are not perfect.')
         sys.exit(1)
-elif DEVEL_ENV:
+elif (
+    _program_name == 'update'
+    or (BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update').is_file()
+):
     # For developers other use cases, only print messages on errors
     BabelChecker(locale_infos, DEFAULT_LOCALE)
 
