@@ -1,18 +1,27 @@
+import json
+import re
 import time
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
 
-from common import BASE_DIR
+from common import BASE_DIR, TMP_DIR
 from common.i18n.utils import locale_flag_url, locale_localized_name
 from common.i18n.babel_wrapper import BabelWrapper
 from common.i18n.locale_info import LocaleInfo
 from common.logger import get_logger
+from utils.file import file_fingerprint
 
 logger: Logger = get_logger()
 
 
-class BabelChecker(BabelWrapper):
+class BabelUpdater(BabelWrapper):
+    """Update all the files that need to updated (POT, PO, MO), and check the translations.
+    Usage:
+    if BabelUpdater().ok:
+        ...
+    """
+
     def __init__(
         self,
         locale_infos: dict[str, LocaleInfo],
@@ -21,7 +30,7 @@ class BabelChecker(BabelWrapper):
         self.locale_infos: dict[str, LocaleInfo] = locale_infos
         self.default_locale: str = default_locale
         new_i18n_strings: bool = False
-        if self.i18n_files_changed():
+        if self.i18n_source_files_changed():
             logger.info('Extracting i18n strings...')
             new_i18n_strings = self.extract_i18n_strings()
             if new_i18n_strings:
@@ -72,6 +81,57 @@ class BabelChecker(BabelWrapper):
                 break
         if self.ok:
             logger.info('Translations OK.')
+
+    @classmethod
+    def i18n_source_files_changed(
+        cls,
+    ):
+        """Returns True if at least one i18n source file has changed, False otherwise."""
+        logger.info('Checking if i18n source files have been updated...')
+        pattern_found: bool = False
+        updated_file_found: bool = False
+        fingerprints_file = TMP_DIR / 'i18n-src.json'
+        old_fingerprints: dict[str, str] = {}
+        try:
+            with open(fingerprints_file) as f:
+                old_fingerprints = json.load(f)
+        except FileNotFoundError:
+            updated_file_found = True
+        new_fingerprints: dict[str, str] = {}
+        with open(cls.config_file, 'r') as f:
+            # looking for patterns in the Babel configuration file
+            for line in f:
+                if matches := re.match(r'\[\w+: *(.*)]', line):
+                    pattern_found = True
+                    for file in Path('.').glob(matches.group(1)):
+                        new_fingerprints[str(file)] = file_fingerprint(file).hex()
+                        if not updated_file_found:
+                            if str(file) not in old_fingerprints:
+                                logger.info(
+                                    'File [%s] is new, the POT file need to be rebuild.',
+                                    file,
+                                )
+                                updated_file_found = True
+                            elif (
+                                new_fingerprints[str(file)]
+                                != old_fingerprints[str(file)]
+                            ):
+                                logger.info(
+                                    'File [%s] has been updated, the POT file needs to be rebuilt.',
+                                    file,
+                                )
+                                updated_file_found = True
+        if not pattern_found:
+            logger.error('No file pattern found in [%s].', cls.config_file)
+            return False
+        if not updated_file_found:
+            if cls.pot_file.is_file():
+                logger.info('No source files updated, no need to rebuild the POT file.')
+                return False
+            logger.info('POT file not found, needs to be rebuilt.')
+        with open(fingerprints_file, 'w') as f:
+            json.dump(new_fingerprints, f)
+        return True
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
@@ -161,3 +221,17 @@ class BabelChecker(BabelWrapper):
             for line in lines_before_comment + lines + lines_after_comment:
                 f.write(line)
         logger.info('Wrote [%s].', doc_file)
+
+
+class BabelMOFilesUpdater(BabelWrapper):
+    """Update all the MO files.
+    Usage:
+    BabelMOFilesUpdater()
+    """
+
+    def __init__(
+        self,
+        locales: list[str],
+    ):
+        for locale in locales:
+            self.update_mo_file(locale)

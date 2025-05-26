@@ -8,6 +8,8 @@ from types import ModuleType
 
 from packaging.version import Version, InvalidVersion
 
+from common.i18n import update_i18n_files
+
 sys.path.extend(
     map(
         str,
@@ -231,6 +233,7 @@ def main():
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
+    update_i18n_files()
     build_exe()
     create_project()
     create_zip_files()

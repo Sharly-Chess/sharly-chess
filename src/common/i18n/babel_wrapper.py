@@ -1,15 +1,12 @@
-import json
-import re
 import shutil
 import sys
 from logging import Logger
 from pathlib import Path
 
-from common import BASE_DIR, TMP_DIR
-from common.logger import get_logger
-
 from babel.messages.frontend import CommandLineInterface
 
+from common import BASE_DIR
+from common.logger import get_logger
 from utils.file import file_fingerprint
 
 logger: Logger = get_logger()
@@ -140,51 +137,3 @@ class BabelWrapper:
         locale: str,
     ) -> Path:
         return cls.locale_po_file(locale).with_suffix('.mo')
-
-    @classmethod
-    def i18n_files_changed(
-        cls,
-    ):
-        """Returns True if at least one i18n source file has changed, False otherwise."""
-        logger.info('Checking if i18n source files have been updated...')
-        pattern_found: bool = False
-        updated_file_found: bool = False
-        fingerprints_file = TMP_DIR / 'i18n-src.json'
-        old_fingerprints: dict[str, str] = {}
-        try:
-            with open(fingerprints_file) as f:
-                old_fingerprints = json.load(f)
-        except FileNotFoundError:
-            updated_file_found = True
-        new_fingerprints: dict[str, str] = {}
-        with open(cls.config_file, 'r') as f:
-            # looking for patterns in the Babel configuration file
-            for line in f:
-                if matches := re.match(r'\[\w+: *(.*)]', line):
-                    pattern_found = True
-                    for file in Path('.').glob(matches.group(1)):
-                        new_fingerprints[str(file)] = file_fingerprint(file).hex()
-                        if not updated_file_found:
-                            if str(file) not in old_fingerprints:
-                                logger.info(
-                                    'File [%s] is new, the POT file need to be rebuild.',
-                                    file,
-                                )
-                                updated_file_found = True
-                            elif (
-                                new_fingerprints[str(file)]
-                                != old_fingerprints[str(file)]
-                            ):
-                                logger.info(
-                                    'File [%s] has been updated, the POT file needs to be rebuilt.',
-                                    file,
-                                )
-                                updated_file_found = True
-        if not updated_file_found:
-            if not pattern_found:
-                logger.error('No file pattern found in [%s].', cls.config_file)
-            else:
-                logger.info('No source files updated, no need to rebuild the POT file.')
-        with open(fingerprints_file, 'w') as f:
-            json.dump(new_fingerprints, f)
-        return updated_file_found

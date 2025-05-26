@@ -1,5 +1,4 @@
 import gettext as gettext_lib
-import sys
 import threading
 from gettext import GNUTranslations
 from logging import Logger
@@ -7,7 +6,7 @@ from pathlib import Path
 
 from common import BASE_DIR, DEVEL_ENV
 from common.exception import SharlyChessException
-from common.i18n.babel_checker import BabelChecker
+from common.i18n.babel_updaters import BabelUpdater, BabelMOFilesUpdater
 from common.i18n.locale_info import LocaleInfo
 
 from common.logger import get_logger
@@ -76,20 +75,20 @@ locale_infos: dict[str, LocaleInfo] = {
     for locale in locales
 }
 
-_program_name: str = Path(sys.argv[0]).stem
-# For developers only, look if the i18n strings have changed to refresh the MO files if needed
-# (build the MO files if not found)
-if _program_name == 'export':
-    # When exporting the EXE, stop on error
-    if not BabelChecker(locale_infos, DEFAULT_LOCALE).ok:
-        logger.error('Translations are not perfect.')
-        sys.exit(1)
-elif (
-    _program_name == 'update'
-    or (BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update').is_file()
-):
-    # For developers other use cases, only print messages on errors
-    BabelChecker(locale_infos, DEFAULT_LOCALE)
+_auto_update_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update'
+
+if DEVEL_ENV:
+    if _auto_update_file.is_file():
+        BabelUpdater(locale_infos, DEFAULT_LOCALE)
+    else:
+        BabelMOFilesUpdater(locales)
+
+
+def update_i18n_files():
+    """Update all the i18n files if needed (does nothing when .auto-update is found not to do the job twice)."""
+    if not _auto_update_file.is_file():
+        BabelUpdater(locale_infos, DEFAULT_LOCALE)
+
 
 # Now load the translations.
 _all_translations: dict[str, GNUTranslations] = {}

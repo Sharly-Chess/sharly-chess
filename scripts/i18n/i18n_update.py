@@ -1,3 +1,3 @@
-from common.logger import get_logger
+from common.i18n import update_i18n_files
 
-get_logger().info('Updating MO files...')
+update_i18n_files()
