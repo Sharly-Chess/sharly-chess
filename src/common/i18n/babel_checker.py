@@ -123,7 +123,7 @@ class BabelChecker(BabelWrapper):
         lines.append('| ' + ' | '.join(headers) + ' |\n')
         lines.append('|--' + ('|:--:' * (len(headers) - 1)) + '|\n')
         for locale, locale_info in self.locale_infos.items():
-            line: str = f'|<img src="../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
+            line: str = f'|<img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
             line += f'| {len(locale_info.messages)} '
             line += f'| {len(locale_info.empty_optional_messages)} '
             line += f'| {len(locale_info.empty_mandatory_messages)} '
