@@ -3629,6 +3629,9 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
+msgid "FFE certification number and password not defined for tournament."
+msgstr ""
+
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 

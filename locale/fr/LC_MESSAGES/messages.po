@@ -3629,6 +3629,9 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
+msgid "FFE certification number and password not defined for tournament."
+msgstr "le numéro d'homologation et le mot de passe du tournoi ne sont pas définis."
+
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
