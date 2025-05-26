@@ -10,6 +10,10 @@ English version below
 
 - Optimisation du temps de chargement de la page des évènements (2.7.0)
 
+### Gestion des tournois
+
+- Ajout des exports PGN et TRF 16 (2.7.0)
+
 ### FFE
 
 - Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
@@ -26,6 +30,10 @@ English version below
 ## Web interface
 
 - Optimized the load time of the events page (2.7.0)
+
+### Tournaments management
+
+- Added PGN and TRF 16 exports (2.7.0)
 
 ### FFE
 
