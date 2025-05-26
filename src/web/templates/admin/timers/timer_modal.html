@@ -5,7 +5,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Timer creation') }}
                 {% elif action == 'update' %}
-                    {{ _('Edition of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
+                    {{ _('Editing of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
                 {% elif action == 'delete' %}
                     {{ _('Deletion of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
                 {% else %}

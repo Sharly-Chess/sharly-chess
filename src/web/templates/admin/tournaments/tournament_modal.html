@@ -5,7 +5,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Tournament creation') }}
                 {% elif action == 'update' %}
-                    {{ _('Edition of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+                    {{ _('Editing of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
                 {% elif action == 'delete' %}
                     {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
                 {% else %}
