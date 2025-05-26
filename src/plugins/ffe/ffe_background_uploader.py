@@ -95,6 +95,17 @@ class FfeBackgroundUploader:
                 ),
             )
             cls.upload_status_messages[result_id] = result
+        elif (
+            not FFEUtils.resolve_auto_upload(tournament)
+            and cls.ffe_upload_needed(tournament) == NeedsUpload.YES
+        ):
+            # For manual updates tell the user that the tournament has been modified
+            # For auto uploads, schedule_upload should have already an appropriate message
+            result = FfeUploadResult(
+                FfeUploadStatus.INFO,
+                _('Modified since last upload'),
+            )
+            cls.upload_status_messages[result_id] = result
         return result
 
     @classmethod
