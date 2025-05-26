@@ -89,7 +89,7 @@ class FfeAdminEventController(BaseEventAdminController):
             ffe_password = data['ffe_password']
 
             if ffe_id and ffe_password:
-                ffe_auth_valid = FFESession(tournament=None, debug=False).test_auth(
+                ffe_auth_valid = FFESession(tournament=None).test_auth(
                     ffe_id=ffe_id, ffe_password=ffe_password
                 )
 

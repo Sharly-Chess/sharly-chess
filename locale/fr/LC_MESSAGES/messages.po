@@ -340,8 +340,8 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
-msgid "Authenticating..."
-msgstr "Authentification..."
+msgid "Authenticating…"
+msgstr "Authentification…"
 
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr "Erreur d'authentification (code : [{code}]) for [{user_id}] ([{chessevent_string}])."
@@ -769,9 +769,6 @@ msgstr "Connexions à ChessEvent"
 msgid "Contact and registration"
 msgstr "Contact et inscription"
 
-msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-msgstr "Le contenu de l'URL [{url}] n'est pa valide (input[id=[{id]] introuvable)."
-
 msgid "Continue"
 msgstr "Continuer"
 
@@ -1045,9 +1042,6 @@ msgstr "Pilotes d'afficheurs ({num})"
 msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
 
-msgid "Display link not found, check that a Papi file has already been sent."
-msgstr "Lien d'affichage non trouvé, vérifier qu'un fichier Papi a déjà été téléchargé."
-
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
 
@@ -1094,8 +1088,11 @@ msgstr "Document :"
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
 
-msgid "Download fees invoices"
-msgstr "Télécharger les factures d'homologation"
+msgid "Download fees"
+msgstr "Télécharger les droits d'homologation"
+
+msgid "Download the fees that the organizer should pay to the FFE."
+msgstr "Télécharger les droits d'homologation que l'organisateur·ice doit payer à la FFE."
 
 msgid "Download the files (ZIP archive)"
 msgstr "Télécharger les fichiers (archive ZIP)"
@@ -1115,8 +1112,8 @@ msgstr "Télécharger les joueur·euses."
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les joueur·euses sans numéros de téléphone ou adresse email ne seront pas inclus·es."
 
-msgid "Downloading source file..."
-msgstr "Téléchargement du fichier source..."
+msgid "Downloading source file…"
+msgstr "Téléchargement du fichier source…"
 
 msgid "Drag the hours to order them."
 msgstr "Faites glisser les horaires pour les ordonner."
@@ -1344,39 +1341,39 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
 #, python-format
-msgid "Edition of default timers for event [%(event_uniq_id)s]"
+msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Edition of display controller [%(display_controller_uniq_id)s]"
+msgid "Editing of display controller [%(display_controller_uniq_id)s]"
 msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 
 #, python-format
-msgid "Edition of event [%(event_uniq_id)s]"
+msgid "Editing of event [%(event_uniq_id)s]"
 msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Edition of player [%(first_name)s %(last_name)s]"
+msgid "Editing of player [%(first_name)s %(last_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #, python-format
-msgid "Edition of rotator [%(rotator_uniq_id)s]"
+msgid "Editing of rotator [%(rotator_uniq_id)s]"
 msgstr "Édition de l'écran rotatif [%(rotator_uniq_id)s]"
 
 #, python-format
-msgid "Edition of screen [%(screen_uniq_id)s]"
+msgid "Editing of screen [%(screen_uniq_id)s]"
 msgstr "Édition de l'écran [%(screen_uniq_id)s]"
 
 #, python-format
-msgid "Edition of screen family [%(family_uniq_id)s]"
+msgid "Editing of screen family [%(family_uniq_id)s]"
 msgstr "Édition de la famille d'écrans [%(family_uniq_id)s]"
 
 #, python-format
-msgid "Edition of timer [%(timer_uniq_id)s]"
+msgid "Editing of timer [%(timer_uniq_id)s]"
 msgstr "Édition du chronomètre [%(timer_uniq_id)s]"
 
 #, python-format
-msgid "Edition of tournament [%(tournament_uniq_id)s]"
+msgid "Editing of tournament [%(tournament_uniq_id)s]"
 msgstr "Édition du tournoi [%(tournament_uniq_id)s]"
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
@@ -1408,9 +1405,6 @@ msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes
 
 msgid "Enabled"
 msgstr "Activé"
-
-msgid "End of upload (Ctrl-C)"
-msgstr "Fin de mise en ligne (Ctrl-C)"
 
 msgid "End round"
 msgstr "Terminer la ronde"
@@ -1511,9 +1505,6 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "F *** THE LETTER TO ANSWER FEES"
-msgstr "H"
-
 msgid "FFE"
 msgstr "FFE"
 
@@ -1532,11 +1523,8 @@ msgstr "Identifiant unique FFE :"
 msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
 
-msgid "FFE certification number and password not defined for tournament"
-msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi"
-
-msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
-msgstr "Numéro d’homologation FFE non défini pour le tournoi [{tournament_uniq_id}]."
+msgid "FFE certification number and password not defined for tournament."
+msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi."
 
 #, python-format
 msgid "FFE certification number: %(ffe_id)d"
@@ -1830,8 +1818,8 @@ msgstr "Générer les appariements pour toutes les rondes du tournoi."
 msgid "Generate pairings for this round."
 msgstr "Générer les appariements pour cette ronde."
 
-msgid "Getting fees for tournament [{ffe_id}]..."
-msgstr "Récupération des droits d'homologation pour le tournoi [{ffe_id}]..."
+msgid "Getting fees for tournament [{ffe_id}]…"
+msgstr "Récupération des droits d'homologation pour le tournoi [{ffe_id}]…"
 
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
@@ -1966,8 +1954,8 @@ msgstr "Incrément (optionel, en secondes) :"
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
 
-msgid "Initializing a session to [{url}]..."
-msgstr "Initialisation d'une session vers [{url}]..."
+msgid "Initializing a session to [{url}]…"
+msgstr "Initialisation d'une session vers [{url}]…"
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
@@ -2065,14 +2053,14 @@ msgstr "Numéro de téléphone [{phone}] non valide."
 msgid "Invalid player number range."
 msgstr "Intervalle de joueur·euses invalide."
 
+msgid "Invalid response from the FFE website."
+msgstr "Réponse non valide du site FFE."
+
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
-
-msgid "Invoice saved to [{file}]."
-msgstr "Facture sauvée dans [{file}]."
 
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
 msgstr "Ka."
@@ -2202,13 +2190,13 @@ msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Make the tournaments visible on the FFE website"
-msgstr "Rendre les tournois visibles sur le site web FFE..."
+msgstr "Rendre les tournois visibles sur le site web FFE…"
 
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
 
-msgid "Making the tournament visible on the FFE website..."
-msgstr "Affichage des tournois sur le site web FFE..."
+msgid "Making the tournament visible on the FFE website…"
+msgstr "Affichage des tournois sur le site web FFE…"
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
@@ -2326,8 +2314,8 @@ msgstr "Mode"
 msgid "Modified since last upload"
 msgstr "Modifié depuis le dernier envoi"
 
-msgid "Modified, but update failed"
-msgstr "Modifié, mais l’envoi a échoué"
+msgid "Modified, but no internet connection"
+msgstr "Modifié, mais pas de connexion internet"
 
 #, python-format
 msgid "Moving on to round #%(round)d"
@@ -2415,9 +2403,6 @@ msgstr "Aucune licence FFE"
 msgid "No FFE certification number"
 msgstr "Pas d'homologation FFE"
 
-msgid "No FFE operations can be done on the tournaments of this event."
-msgstr "Aucune opération FFE ne peut être réalisée sur les tournois de cet évènement."
-
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
 
@@ -2484,12 +2469,6 @@ msgstr "Mél non défini."
 
 msgid "No name set, by default [{name}]"
 msgstr "Nom non défini, par défaut [{name}]"
-
-msgid "No need to upload the results to the FFE website (up to date)."
-msgstr "Aucun résultat à mettre à jour sur le site web FFE (à jour)."
-
-msgid "No need to upload the rules to the FFE website (up to date)."
-msgstr "Aucun règlement à mettre à jour sur le site web FFE (à jour)."
 
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
@@ -2683,8 +2662,8 @@ msgstr "Ouvrir le pointage pour le tournoi [%(tournament_uniq_id)s]."
 msgid "Open/close check-in."
 msgstr "Ouvrir/fermer le pointage."
 
-msgid "Opening the welcome page [{url}] in a browser..."
-msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur..."
+msgid "Opening the welcome page [{url}] in a browser…"
+msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur…"
 
 msgid "Opponent"
 msgstr "Adversaire"
@@ -2815,17 +2794,11 @@ msgstr "Le fichier Papi [{file}] a été créé (joueur·euses : {num})."
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
 
-msgid "Papi file not defined for tournament"
-msgstr "Fichier Papi non défini pour le tournoi"
+msgid "Papi file not defined for tournament."
+msgstr "Fichier Papi non défini pour le tournoi."
 
-msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
-msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
-
-msgid "Papi file not found [{file}]"
-msgstr "Fichier Papi introuvable [{file}]"
-
-msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
-msgstr "Fichier Papi [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
+msgid "Papi file not found [{file}]."
+msgstr "Fichier Papi introuvable [{file}]."
 
 msgid "Papi file not modified since last upload"
 msgstr "Le fichier Papi n’a pas été modifié depuis la dernière mise en ligne"
@@ -3052,11 +3025,11 @@ msgstr "Veuillez utiliser Papi pour générer les appariements."
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
 
-msgid "Please wait until the application settings have been set on the server..."
-msgstr "La configuration est en cours sur le serveur, veuillez patienter..."
+msgid "Please wait until the application settings have been set on the server…"
+msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
 
-msgid "Please wait..."
-msgstr "Veuillez patienter..."
+msgid "Please wait…"
+msgstr "Veuillez patienter…"
 
 msgid "Plugins"
 msgstr "Plug-ins"
@@ -3101,7 +3074,7 @@ msgid "Print"
 msgstr "Imprimer"
 
 msgid "Print players, results, etc."
-msgstr "Imprimer les participant·es, les résultats, les classements..."
+msgstr "Imprimer les participant·es, les résultats, les classements…"
 
 msgid "Printing is not possible when the Papi file is not found."
 msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas trouvé."
@@ -3172,9 +3145,6 @@ msgstr "Quitter"
 #, python-format
 msgid "R %(round)d *** ROUND FOR PRINT VIEW"
 msgstr "R %(round)d"
-
-msgid "R *** THE LETTER TO ANSWER RULES"
-msgstr "R"
 
 msgid "Random"
 msgstr "Aléatoire"
@@ -3425,17 +3395,8 @@ msgstr "Rondes jouées"
 msgid "Rules"
 msgstr "Règles"
 
-msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
-msgstr "Fichier de règlement [{file}] introuvable pour le tournoi [{tournament_uniq_id}]."
-
-msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
-msgstr "Fichier de règlement non défini pour le tournoi [{tournament_uniq_id}]."
-
 msgid "Rules file location:"
 msgstr "Emplacement du règlement :"
-
-msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
-msgstr "Fichier de règlement non défini pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Rules file set"
 msgstr "Règlement défini"
@@ -3514,14 +3475,14 @@ msgstr "Écrans : %(num)d"
 msgid "Search"
 msgstr "Recherche"
 
-msgid "Search the FFE database for names, FFE ID, ..."
-msgstr "Rechercher dans la base de données FFE par nom, identifiant FFE..."
+msgid "Search the FFE database for names, FFE ID…"
+msgstr "Rechercher dans la base de données FFE par nom, identifiant FFE…"
 
-msgid "Search the FIDE database for names, FIDE ID, federation..."
+msgid "Search the FIDE database for names, FIDE ID, federation…"
 msgstr "Rechercher dans la base de données FIDE par nom, identifiant FIDE, fédération…"
 
-msgid "Searching..."
-msgstr "Recherche en cours..."
+msgid "Searching…"
+msgstr "Recherche en cours…"
 
 msgid "Seed color"
 msgstr "Couleur initiale"
@@ -3539,11 +3500,11 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection: %(selection)s"
 
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
+msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website…"
+msgstr "Envoi du règlement du tournoi [{ffe_id}] ({file}) sur le site web FFE…"
 
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website..."
-msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE..."
+msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website…"
+msgstr "Envoi du tournoi [{ffe_id}] ({file}) sur le site web FFE…"
 
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
@@ -3650,8 +3611,8 @@ msgstr "Standard :"
 msgid "Start:"
 msgstr "Début :"
 
-msgid "Starting Sharly Chess server, please wait..."
-msgstr "Démarrage du serveur Sharly Chess, veuillez patienter..."
+msgid "Starting Sharly Chess server, Please wait…"
+msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
 msgid "Starting rank"
 msgstr "Classement initial"
@@ -3659,8 +3620,8 @@ msgstr "Classement initial"
 msgid "Status"
 msgstr "Status"
 
-msgid "Storing data..."
-msgstr "Stockage des données..."
+msgid "Storing data…"
+msgstr "Stockage des données…"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
@@ -3670,12 +3631,6 @@ msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de to
 
 msgid "Swiss"
 msgstr "Suisse"
-
-msgid "T *** THE LETTER TO ANSWER TEST"
-msgstr "T"
-
-msgid "Test the tournament passwords on the FFE website"
-msgstr "Tester les mots de passe des tournois sur le site web FFE"
 
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
@@ -4296,9 +4251,6 @@ msgstr "Le tournoi [%(tournament_uniq_id)s] est terminé."
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr "Le tournoi [%(tournament_uniq_id)s] est en cours."
 
-msgid "Tournament [{ffe_id}]:"
-msgstr "Tournoi [{ffe_id}] :"
-
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
 
@@ -4353,14 +4305,14 @@ msgstr "Tournoi exempt de droits d'homologation."
 msgid "Tournament modified, awaiting auto-upload"
 msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
 
-msgid "Tournament not yet uploaded"
-msgstr "Tournoi pas encore mis en ligne"
+msgid "Tournament not yet uploaded."
+msgstr "Tournoi pas encore mis en ligne."
 
 msgid "Tournament performance rating"
 msgstr "Performance sur le tournoi"
 
-msgid "Tournament previously uploaded"
-msgstr "Tournoi mis en ligne précédemment"
+msgid "Tournament previously uploaded."
+msgstr "Tournoi mis en ligne précédemment."
 
 msgid "Tournament record"
 msgstr "Historique"
@@ -4399,9 +4351,6 @@ msgstr "Tournois affichés :"
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois: %(num)d"
-
-msgid "Tournaments: {tournament_ffe_ids}"
-msgstr "Tournois : {tournament_ffe_ids}"
 
 msgid "Tournaments: {tournament_names}"
 msgstr "Tournois : {tournament_names}"
@@ -4459,11 +4408,14 @@ msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
 
-msgid "Unable to set tournament visibility"
-msgstr "Impossible de définir la visibilité du tournoi"
+msgid "Unable to download tournament fees."
+msgstr "Impossible de télécharger les droits d'homologation."
 
-msgid "Unable to upload tournament rules"
-msgstr "Impossible de téléverser le règlement du tournoi"
+msgid "Unable to set tournament visibility."
+msgstr "Impossible de définir la visibilité du tournoi."
+
+msgid "Unable to upload tournament rules."
+msgstr "Impossible de téléverser le règlement du tournoi."
 
 msgid "Undefined"
 msgstr "Non défini"
@@ -4587,17 +4539,11 @@ msgstr "Mettre en ligne"
 msgid "Upload failed"
 msgstr "Échec de la mise en ligne"
 
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website"
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
 msgid "Upload rules"
 msgstr "Téléverser le règlement"
-
-msgid "Upload the results of the tournaments"
-msgstr "Mettre en ligne les résultats des tournois."
-
-msgid "Upload the rules of the tournaments"
-msgstr "Mettre en ligne le règlement des tournois"
 
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
@@ -4608,10 +4554,10 @@ msgstr "Mettre en ligne les tournois vers la FFE"
 msgid "Upload:"
 msgstr "Mise en ligne :"
 
-msgid "Uploading the PDF rules file allow the players to read the rules online."
-msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueurs·euses de lire les règles en ligne."
+msgid "Uploading the PDF rules file allows the players to read the rules online."
+msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
 
-msgid "Uploading tournament..."
+msgid "Uploading tournament…"
 msgstr "Mise en ligne en cours…"
 
 msgid "Upper limit expected to be greater than lower limit."
@@ -4622,9 +4568,6 @@ msgstr "Limite Elo haute"
 
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
-
-msgid "V *** THE LETTER TO ANSWER VISIBLE"
-msgstr "V"
 
 msgid "Variation"
 msgstr "Variante"
@@ -4696,8 +4639,8 @@ msgstr "Attention : vous essayez d'exécuter une opération interdite par le rè
 msgid "Web access"
 msgstr "Accès web"
 
-msgid "Web server not started yet ({ex}), waiting..."
-msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter..."
+msgid "Web server not started yet ({ex}), waiting…"
+msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter…"
 
 msgid "Weekly"
 msgstr "Une semaine"
@@ -4780,8 +4723,8 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
-msgid "You define the type of data to display (results, pairings, ranking...) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
-msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement...) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
+msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
 msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
@@ -4976,11 +4919,6 @@ msgid "{num} player found."
 msgid_plural "{num} players found."
 msgstr[0] "{num} joueur·euse trouvé·e."
 msgstr[1] "{num} joueur·euses trouvé·es."
-
-msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgstr[0] "{recent_updates} tournoi a été mis à jour depuis moins de {ffe_upload_delay} secondes, en attente."
-msgstr[1] "{recent_updates} tournois ont été mis à jour depuis moins de {ffe_upload_delay} secondes, en attente."
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"

@@ -61,6 +61,7 @@ class ChessEventPlugin(Plugin):
     ) -> PluginMigrationManager:
         return self.get_migration_manager(event_database)
 
+    # TODO remove this hook after having integrated ChessEvent into the web UI
     @hookimpl
     def get_engine_argument(self) -> PluginEngineArgument:
         return PluginEngineArgument(

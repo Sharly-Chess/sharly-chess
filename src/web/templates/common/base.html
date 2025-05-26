@@ -202,6 +202,12 @@
                     document.body.removeChild(form);
                 })
 
+                window.addEventListener("download_ready", function () {
+                    // Workaround for htmx not automatically doing this when redirecting
+                    // https://github.com/bigskysoftware/htmx/issues/3189
+                    document.getElementById("please-wait").classList.remove("htmx-request");
+                });
+
                 window.addEventListener("renumber_players_and_close_modal", function(event) {
                     var cells = document.querySelectorAll("#players-table th.index");
                     cells.forEach((cell, i) => {
@@ -250,7 +256,7 @@
             {% endif %}
         {% endif %}
         {% if redirect_url %}
-            <p>{{ _('Please wait...') }}</p>
+            <p>{{ _('Please wait…') }}</p>
             <script>
                 $(location).attr('href', '{{ redirect_url }}');
             </script>

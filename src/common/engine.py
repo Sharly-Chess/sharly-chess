@@ -43,7 +43,7 @@ logger = get_logger()
 
 
 class Engine(ABC):
-    """Base class for both ChessEvent, FFE and web server engines."""
+    """Base class for both ChessEvent and web server engines."""
 
     def __init__(self):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.

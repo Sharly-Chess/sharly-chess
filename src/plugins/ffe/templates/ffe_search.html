@@ -4,7 +4,7 @@
     {{ admin_macros.text_input(
         name='search_ffe',
         label=_('FFE database:'),
-        help_text=_('Search the FFE database for names, FFE ID, ...')
+        help_text=_('Search the FFE database for names, FFE ID…')
             if ffe_search_available else
             _('No internet connection and no local database.'),
         placeholder=_('E.g.: %(string)s', string='pierre dupont paris'),
@@ -16,6 +16,6 @@
         hx_sync="this:replace",
         with_indicator=true,
         dropdown_id='ffe-search-results' if ffe_search_available else '',
-        dropdown_item=_('Searching...')
+        dropdown_item=_('Searching…')
     ) }}
 </span>
