@@ -3514,7 +3514,7 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-msgid "Search the FFE database for names, FFE ID, …"
+msgid "Search the FFE database for names, FFE ID…"
 msgstr ""
 
 msgid "Search the FIDE database for names, FIDE ID, federation…"

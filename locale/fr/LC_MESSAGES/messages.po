@@ -3514,7 +3514,7 @@ msgstr "Écrans : %(num)d"
 msgid "Search"
 msgstr "Recherche"
 
-msgid "Search the FFE database for names, FFE ID, …"
+msgid "Search the FFE database for names, FFE ID…"
 msgstr "Rechercher dans la base de données FFE par nom, identifiant FFE…"
 
 msgid "Search the FIDE database for names, FIDE ID, federation…"
