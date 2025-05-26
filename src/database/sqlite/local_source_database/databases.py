@@ -218,12 +218,12 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         if not NetworkMonitor.connected():
             logger.warning(self.log_prefix + _('Not connected, impossible to update.'))
             return self.stop_update(False)
-        logger.info(self.log_prefix + _('Downloading source file...'))
+        logger.info(self.log_prefix + _('Downloading source file…'))
         if not self._download_source_file():
             return self.stop_update(False)
         if self.stop_event.is_set():
             return self.stop_update(False)
-        logger.info(self.log_prefix + _('Storing data...'))
+        logger.info(self.log_prefix + _('Storing data…'))
         tmp_file = self.file.with_suffix('.tmp')
         tmp_file.unlink(missing_ok=True)
         new_database = SQLiteDatabase(tmp_file, write=True)

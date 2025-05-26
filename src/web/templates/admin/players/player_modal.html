@@ -5,7 +5,7 @@
                 {% if action == 'create' %}
                     {{ _('Player creation') }}
                 {% elif action == 'update' %}
-                    {{ _('Edition of player [%(first_name)s %(last_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
+                    {{ _('Editing of player [%(first_name)s %(last_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
                 {% elif action == 'delete' %}
                     {{ _('Deletion of player [%(first_name)s %(last_name)s]', last_name=admin_player.last_name, first_name=admin_player.first_name) }}
                 {% else %}
@@ -44,7 +44,7 @@
                                 {{ admin_macros.text_input(
                                     name='search_fide',
                                     label=_('FIDE database:'),
-                                    help_text=_('Search the FIDE database for names, FIDE ID, federation...')
+                                    help_text=_('Search the FIDE database for names, FIDE ID, federation…')
                                         if fide_search_available else
                                         _('The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases.'),
                                     placeholder=_('E.g.: john doe'),
