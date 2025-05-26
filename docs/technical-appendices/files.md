@@ -7,7 +7,6 @@
 | **`events\*.sce`**               | **Data**          | SQLite        | The event files (one file by event, `sce` stands for **S**harly **C**hess **E**vent)                          |
 | **`papi\*.papi`**                | **Data**          | Access        | The Papi files (one by tournament, `papi` is the default folder for Papi files)                               |
 | `custom\*.*`                     | Custom            | Any           | The customization files (background images)                                                                   |
-| `tools\ffe.bat`                  | Script            | Windows batch | The script of the _FFE_ plugin                                                                                |
 | `tools\chessevent.bat`           | Script            | Windows batch | The script of the _ChessEvent_ plugin                                                                         |
 | `tools\bbpPairings\*`            | Library           | Windows EXE   | The bbpPairings library used for Swiss pairing                                                                |
 | `tmp\*.*`                        | Temporary         | Any           | The temporary files used by _Sharly Chess_                                                                    |

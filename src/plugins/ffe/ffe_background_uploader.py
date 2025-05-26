@@ -208,7 +208,6 @@ class FfeBackgroundUploader:
         try:
             FFESession(
                 tournament,
-                debug=False,
                 report_error=partial(report, tournament, FfeUploadStatus.ERROR),
                 report_info=partial(report, tournament, FfeUploadStatus.INFO),
                 report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),

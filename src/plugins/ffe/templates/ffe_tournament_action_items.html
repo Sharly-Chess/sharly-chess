@@ -58,5 +58,29 @@
                 </button>
             </span>
         </li>
+        <li>
+            <span
+                {% if tournament.plugin_data.ffe.ffe_id %}
+                    {{ macros.tooltip_attributes('info', _('Download the fees that the organizer should pay to the FFE.'), 'right') }}
+                {% else %}
+                    {{ macros.tooltip_attributes('warning', _('FFE certification number and password not defined for tournament.'), 'right') }}
+                {% endif %}
+            >
+                <button
+                    id="ffe-extract-fees-button"
+                    class="dropdown-item text-nowrap"
+                    {% if tournament.plugin_data.ffe.ffe_id %}
+                        hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% else %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
+                    {{ _('Download fees') }}
+                </button>
+            </span>
+        </li>
     </ul>
 </li>

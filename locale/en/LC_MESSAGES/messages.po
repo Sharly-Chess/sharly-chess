@@ -199,9 +199,6 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-msgid "Actions:"
-msgstr ""
-
 msgid "Add"
 msgstr ""
 
@@ -769,9 +766,6 @@ msgstr ""
 msgid "Contact and registration"
 msgstr ""
 
-msgid "Content of URL [{url}] is not valid (input[id=[{id]] not found)."
-msgstr ""
-
 msgid "Continue"
 msgstr ""
 
@@ -1045,9 +1039,6 @@ msgstr ""
 msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr ""
 
-msgid "Display link not found, check that a Papi file has already been sent."
-msgstr ""
-
 msgid "Display of a screen exit button:"
 msgstr ""
 
@@ -1094,7 +1085,10 @@ msgstr ""
 msgid "Double-round Berger"
 msgstr ""
 
-msgid "Download fees invoices"
+msgid "Download fees"
+msgstr ""
+
+msgid "Download the fees that the organizer should pay to the FFE."
 msgstr ""
 
 msgid "Download the files (ZIP archive)"
@@ -1409,9 +1403,6 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-msgid "End of upload (Ctrl-C)"
-msgstr ""
-
 msgid "End round"
 msgstr ""
 
@@ -1511,9 +1502,6 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "F *** THE LETTER TO ANSWER FEES"
-msgstr "F"
-
 msgid "FFE"
 msgstr ""
 
@@ -1533,9 +1521,6 @@ msgid "FFE certification number (optional):"
 msgstr ""
 
 msgid "FFE certification number and password not defined for tournament."
-msgstr ""
-
-msgid "FFE certification number not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #, python-format
@@ -2065,13 +2050,13 @@ msgstr ""
 msgid "Invalid player number range."
 msgstr ""
 
+msgid "Invalid response from the FFE website."
+msgstr ""
+
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
 msgid "Invalid value [{value}]."
-msgstr ""
-
-msgid "Invoice saved to [{file}]."
 msgstr ""
 
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
@@ -2199,9 +2184,6 @@ msgstr "Mail"
 
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr ""
-
-msgid "Make the tournaments visible on the FFE website"
 msgstr ""
 
 msgid "Make visible on FFE site"
@@ -2415,9 +2397,6 @@ msgstr ""
 msgid "No FFE certification number"
 msgstr ""
 
-msgid "No FFE operations can be done on the tournaments of this event."
-msgstr ""
-
 msgid "No FIDE ID."
 msgstr ""
 
@@ -2483,12 +2462,6 @@ msgid "No mail defined."
 msgstr ""
 
 msgid "No name set, by default [{name}]"
-msgstr ""
-
-msgid "No need to upload the results to the FFE website (up to date)."
-msgstr ""
-
-msgid "No need to upload the rules to the FFE website (up to date)."
 msgstr ""
 
 msgid "No pairing found for this player in the current round."
@@ -2818,13 +2791,7 @@ msgstr ""
 msgid "Papi file not defined for tournament."
 msgstr ""
 
-msgid "Papi file not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
 msgid "Papi file not found [{file}]."
-msgstr ""
-
-msgid "Papi file not found [{file}] for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Papi file not modified since last upload"
@@ -3173,9 +3140,6 @@ msgstr ""
 msgid "R %(round)d *** ROUND FOR PRINT VIEW"
 msgstr "R %(round)d"
 
-msgid "R *** THE LETTER TO ANSWER RULES"
-msgstr "R"
-
 msgid "Random"
 msgstr ""
 
@@ -3425,16 +3389,7 @@ msgstr ""
 msgid "Rules"
 msgstr ""
 
-msgid "Rules file [{file}] not found for tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Rules file defined by a URL for tournament [{tournament_uniq_id}]."
-msgstr ""
-
 msgid "Rules file location:"
-msgstr ""
-
-msgid "Rules file not defined for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Rules file set"
@@ -3669,12 +3624,6 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
-msgstr ""
-
-msgid "T *** THE LETTER TO ANSWER TEST"
-msgstr "T"
-
-msgid "Test the tournament passwords on the FFE website"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -4299,9 +4248,6 @@ msgstr ""
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr ""
 
-msgid "Tournament [{ffe_id}]:"
-msgstr ""
-
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
@@ -4403,9 +4349,6 @@ msgstr ""
 msgid "Tournaments: %(num)d"
 msgstr ""
 
-msgid "Tournaments: {tournament_ffe_ids}"
-msgstr ""
-
 msgid "Tournaments: {tournament_names}"
 msgstr ""
 
@@ -4462,10 +4405,13 @@ msgstr ""
 msgid "Unable to create Papi files."
 msgstr ""
 
-msgid "Unable to set tournament visibility"
+msgid "Unable to download tournament fees."
 msgstr ""
 
-msgid "Unable to upload tournament rules"
+msgid "Unable to set tournament visibility."
+msgstr ""
+
+msgid "Unable to upload tournament rules."
 msgstr ""
 
 msgid "Undefined"
@@ -4596,12 +4542,6 @@ msgstr ""
 msgid "Upload rules"
 msgstr ""
 
-msgid "Upload the results of the tournaments"
-msgstr ""
-
-msgid "Upload the rules of the tournaments"
-msgstr ""
-
 msgid "Upload tournaments now"
 msgstr ""
 
@@ -4625,9 +4565,6 @@ msgstr ""
 
 msgid "Use no timer"
 msgstr ""
-
-msgid "V *** THE LETTER TO ANSWER VISIBLE"
-msgstr "V"
 
 msgid "Variation"
 msgstr ""
@@ -4977,11 +4914,6 @@ msgstr[1] ""
 
 msgid "{num} player found."
 msgid_plural "{num} players found."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{recent_updates} tournament has been updated less than {ffe_upload_delay} seconds ago, waiting."
-msgid_plural "{recent_updates} tournaments have been updated less than {ffe_upload_delay} seconds ago, waiting."
 msgstr[0] ""
 msgstr[1] ""
 
