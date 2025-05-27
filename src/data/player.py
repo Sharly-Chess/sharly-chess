@@ -145,7 +145,7 @@ class TournamentPlayer:
             if round_index < before_round and (pairing.played or not only_played)
         )
 
-    def points_after(self, after_round: int, only_played: bool = False) -> float:
+    def points_after(self, after_round: int) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
         # is preserved in 3.6+ dict, because I can't be sure insertion order
         # is the correct (increasing) round order
@@ -155,7 +155,7 @@ class TournamentPlayer:
         return sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
-            if round_index <= after_round and (pairing.played or not only_played)
+            if round_index <= after_round
         )
 
     def total_points(self, only_played: bool = False) -> float:

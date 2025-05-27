@@ -28,7 +28,7 @@ def papi_performance_bonus(fractional_score: float) -> int | float:
     smaller_difference = percent - percent_int
     if smaller_difference > 0:
         smaller_difference *= performance_table[index + 1] - bonus
-        bonus += smaller_difference
+    bonus += smaller_difference
     if fractional_score < 0.5:
         bonus *= -1
     return bonus

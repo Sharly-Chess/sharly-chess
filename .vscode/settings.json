@@ -185,7 +185,7 @@
     "*.html": "jinja"
   },
   "python.analysis.typeCheckingMode": "off",
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.formatOnPaste": false,
   "[jinja]": {
     "editor.formatOnSave": false
