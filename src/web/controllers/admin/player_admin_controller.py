@@ -1955,11 +1955,21 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_render(template_context)
 
     @classmethod
-    def publish_new_checkin(cls, channels: ChannelsPlugin, event_uniq_id: str):
+    def publish_new_checkin(
+        cls, channels: ChannelsPlugin, event_uniq_id: str, player: Player
+    ):
         channels.publish(
             {'event': f'new-checkins/{event_uniq_id}', 'data': ''},
             ['sse'],
         )
+        if player.tournament is not None:
+            channels.publish(
+                {
+                    'event': f'new-checkins/{event_uniq_id}/{player.tournament.id}/{player.tournament.current_round}',
+                    'data': '',
+                },
+                ['sse'],
+            )
 
     @get(
         path='/admin/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
@@ -1972,8 +1982,11 @@ class PlayerAdminController(BaseEventAdminController):
         reason: str,
     ) -> Template:
         return HTMXTemplate(
-            template_name='/admin/players/players_needs_refresh.html',
+            template_name='/admin/common/needs_refresh.html',
             context={
+                'url': request.app.route_reverse(
+                    'admin-event-players-tab', event_uniq_id=event_uniq_id
+                ),
                 'event_uniq_id': event_uniq_id,
                 'reason': reason,
             },

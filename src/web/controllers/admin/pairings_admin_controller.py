@@ -1294,7 +1294,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/pairings/needs-refresh-message/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/admin/pairings/needs-refresh-message/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{reason:str}',
         name='admin-pairings-needs-refresh-message',
     )
     async def htmx_admin_pairings_refresh_message(
@@ -1303,13 +1303,18 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
+        reason: str,
     ) -> Template:
         return HTMXTemplate(
-            template_name='/admin/pairings/new_results_in.html',
+            template_name='/admin/common/needs_refresh.html',
             context={
-                'event_uniq_id': event_uniq_id,
-                'tournament_id': tournament_id,
-                'round': round,
+                'url': request.app.route_reverse(
+                    'admin-event-pairings-tab',
+                    event_uniq_id=event_uniq_id,
+                    tournament_id=tournament_id,
+                    round=round,
+                ),
+                'reason': reason,
             },
         )
 
