@@ -12,8 +12,15 @@
 </div>
 
 <div
-    hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-    hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_round }}"
+    hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
+    hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}"
+    hx-target="#refresh-message"
+    hx-swap="innerHTML"
+>
+</div>
+<div
+    hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
+    hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}""
     hx-target="#refresh-message"
     hx-swap="innerHTML"
 >

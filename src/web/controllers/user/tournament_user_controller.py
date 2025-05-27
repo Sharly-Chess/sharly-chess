@@ -244,7 +244,9 @@ class CheckInUserController(BaseInputUserController):
         player_web_context.tournament.check_in_player(
             player_web_context.player, not player_web_context.player.check_in
         )
-        PlayerAdminController.publish_new_checkin(channels, event_uniq_id)
+        PlayerAdminController.publish_new_checkin(
+            channels, event_uniq_id, player_web_context.player
+        )
         SessionHandler.set_session_user_last_check_in_updated(
             request, player_web_context.tournament.id, player_web_context.player.id
         )

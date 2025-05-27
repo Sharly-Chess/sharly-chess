@@ -129,7 +129,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     @classmethod
     def publish_database_status_updated(cls):
-        if channels_plugin:
+        # The auto-update can start before the channels plugin is initialized,
+        # so we check if it exists before trying to publish.
+        if channels_plugin and channels_plugin._pub_queue is not None:
             channels_plugin.publish(
                 {
                     'event': 'database-status-updated',
