@@ -793,22 +793,38 @@ class Tournament:
         if not any(player.estimated for player in players):
             return
 
+        # NOTE(Amaras): Because EM did not take into account HPB in his code,
+        # this function must be used instead of Player.points_after
+        def papi_points_after(player: Player, after_round: int) -> float:
+            return sum(
+                pairing.result.points(self.point_values)
+                for round_index, pairing in player.pairings.items()
+                if round_index <= after_round
+                and (
+                    pairing.played
+                    or pairing.result in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)
+                )
+            )
+
         max_possible_points = Result.GAIN.points(self.point_values) * after_round
 
         # NOTE(Amaras): only points from played games should be counted
         players = sorted(
             players,
-            key=lambda player: player.points_after(after_round, only_played=True),
+            key=lambda player: papi_points_after(player, after_round),
         )
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
             for points, group in groupby(
                 players,
-                key=lambda player: player.points_after(after_round, only_played=True),
+                key=lambda player: papi_points_after(player, after_round),
             )
         }
 
-        point_keys = sorted(players_by_points.keys())
+        point_keys = [0]
+        while (current_points := point_keys[-1]) < max_possible_points:
+            current_points += Result.DRAW.points(self.point_values)
+            point_keys.append(current_points)
         level_estimations = {points: 0 for points in point_keys}
 
         # NOTE(Amaras): if there are rated players in the score group,
