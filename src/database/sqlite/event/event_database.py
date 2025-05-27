@@ -183,7 +183,9 @@ class EventDatabase(MigrationDatabase):
     def _populate(self):
         try:
             with EventDatabase(self.uniq_id, write=True) as event_database:
-                yml_file = SharlyChessConfig.database_yml_path / f'{self.uniq_id}.yml'
+                yml_file = (
+                    SharlyChessConfig.example_events_yml_path / f'{self.uniq_id}.yml'
+                )
                 event_dict = yaml.safe_load(yml_file.read_text(encoding='utf-8'))
                 self._check_populate_dict(
                     yml_file,
