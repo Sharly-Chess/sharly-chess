@@ -3,7 +3,7 @@
     role="alert"
 >
     <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
-    <div class="flex-grow-1">
+    <div class="flex-grow-1 align-self-center">
         {% if reason == "result" %}
             {{ _('New results are in, refresh your browser') }}
         {% elif reason == "checkin" %}
@@ -14,7 +14,7 @@
         <button
             type="button"
             class="btn btn-sm btn-outline-dark"
-            hx-get="{{ url_for('admin-event-players-tab', event_uniq_id=event_uniq_id) }}"
+            hx-get="{{ url }}"
             hx-target="body"
             hx-indicator="#please-wait"
         >
