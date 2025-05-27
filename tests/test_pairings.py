@@ -1,8 +1,7 @@
 # Needs to be imported first to avoid circular import
-
-from data.pairings.engines import BergerPairingEngine
 from plugins import manager  # Noqa E402
 
+from data.pairings.engines import BergerPairingEngine
 from utils.tests import BaseTestCase
 
 
