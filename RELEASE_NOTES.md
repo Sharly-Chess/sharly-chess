@@ -14,10 +14,14 @@ English version below
 
 - Ajout des exports PGN et TRF 16 (2.7.0)
 
-### FFE
+## FFE
 
 - Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
 - Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
+
+## ChessEvent
+
+- Correction des dates de naissance avant le 01/01/1970 (2.7.0)
 
 ---
 
@@ -37,7 +41,11 @@ English version below
 
 - Added PGN and TRF 16 exports (2.7.0)
 
-### FFE
+## FFE
 
 - Integration of the FFE operations to the web UI (2.7.0)
 - Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
+
+## ChessEvent
+
+- Fixed birth dates prior to 1970-01-01 (2.7.0)
