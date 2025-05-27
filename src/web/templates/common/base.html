@@ -239,9 +239,8 @@
         {% endif %}
     </head>
     <body
-        hx-ext="multi-swap,preload,morphdom-swap,sse"
+        hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
-        sse-connect="/sse"
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
