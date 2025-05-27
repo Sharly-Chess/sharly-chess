@@ -337,9 +337,6 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Authenticating…"
-msgstr ""
-
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr ""
 
@@ -1815,9 +1812,6 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
-msgid "Getting fees for tournament [{ffe_id}]…"
-msgstr ""
-
 msgid "Go back to the events page."
 msgstr ""
 
@@ -1949,9 +1943,6 @@ msgid "Increment (optional, seconds):"
 msgstr ""
 
 msgid "Initial time (optional, seconds):"
-msgstr ""
-
-msgid "Initializing a session to [{url}]…"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
@@ -2187,9 +2178,6 @@ msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Make visible on FFE site"
-msgstr ""
-
-msgid "Making the tournament visible on the FFE website…"
 msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
@@ -3494,12 +3482,6 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
-msgid "Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website…"
-msgstr ""
-
-msgid "Sending tournament [{ffe_id}] ({file}) to the FFE website…"
-msgstr ""
-
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
@@ -3645,9 +3627,6 @@ msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq
 msgstr ""
 
 msgid "The FFE ID is a positive integer."
-msgstr ""
-
-msgid "FFE certification number and password not defined for tournament."
 msgstr ""
 
 msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."

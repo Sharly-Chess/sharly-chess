@@ -19,10 +19,12 @@ from phonenumbers.phonenumberutil import NumberParseException
 from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.i18n import (
     set_locale,
-    locale_localized_name,
-    locale_flag_url,
     locales,
     get_locale,
+)
+from common.i18n.utils import (
+    locale_localized_name,
+    locale_flag_url,
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
