@@ -17,6 +17,7 @@ English version below
 ### FFE
 
 - Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
+- Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
 
 ---
 
@@ -30,6 +31,7 @@ English version below
 ## Web interface
 
 - Optimized the load time of the events page (2.7.0)
+- Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
 
 ### Tournaments management
 
@@ -38,3 +40,4 @@ English version below
 ### FFE
 
 - Integration of the FFE operations to the web UI (2.7.0)
+- Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
