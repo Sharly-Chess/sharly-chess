@@ -179,14 +179,17 @@ class SharlyChessConfig(metaclass=Singleton):
     # The extension of Papi files.
     papi_ext: str = 'papi'
 
-    # The path to database source files (see below).
-    _database_path: Path = BASE_DIR / 'src/database'
+    # The path to raw SQL files.
+    database_sql_path: Path = BASE_DIR / 'src' / 'database' / 'sql'
 
-    # The path to SQL files (used to create new event databases).
-    database_sql_path: Path = _database_path / 'sql'
+    # The path of the files used to generate example event databases.
+    example_events_path = BASE_DIR / 'example_events'
 
     # The path to YAML files (used to create example databases).
-    database_yml_path: Path = _database_path / 'yml'
+    example_events_yml_path = example_events_path / 'yml'
+
+    # The path to the papi files referenced by the example databases.
+    example_events_papi_path = example_events_path / 'papi'
 
     # The extension of YAML files.
     yml_ext: str = 'yml'

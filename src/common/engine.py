@@ -255,12 +255,22 @@ class Engine(ABC):
                     ]:
                         for event_id in (
                             file.stem
-                            for file in SharlyChessConfig.database_yml_path.glob(
+                            for file in SharlyChessConfig.example_events_yml_path.glob(
                                 f'*.{SharlyChessConfig.yml_ext}'
                             )
                             if file.stem != SharlyChessConfig.test_event_uniq_id
                         ):
                             EventDatabase(event_id).create(populate=True)
+                        SharlyChessConfig.default_papi_path.mkdir(
+                            parents=True, exist_ok=True
+                        )
+                        for file in SharlyChessConfig.example_events_papi_path.glob(
+                            f'*.{SharlyChessConfig.papi_ext}'
+                        ):
+                            shutil.copy(
+                                file,
+                                SharlyChessConfig.default_papi_path / file.name,
+                            )
                         break
                     if choice == no_answer:
                         break
