@@ -3,50 +3,26 @@ English version below
 
 ## Fonctionnement
 
-- Amélioration significative des performances (2.6.0)
-- Mise à jour de toute la documentation (2.6.0)
-- Mise en ligne du site web https://sharly-chess.com (2.6.0)
-- Déplacement des utilitaires de ``bin/`` vers ``tools/`` (2.6.0)
-- Amélioration de la mise à jour de l'application (2.6.0)
-- Amélioration des logs (2.6.0)
-
+- Suppression du script ``ffe.bat`` (2.7.0)
+- Ajout de la tombola (2.7.0)
 
 ## Interface web
 
-- Simplification du menu principal (2.6.0)
-- Ajout de liens d'aide de l'application vers le site web (2.6.0)
-- Correction d'un bug de configuration de l'application (2.6.0)
-- Correction d'un bug sur la création des écrans par défaut des tournois (2.6.0)
-- Correction d'un bug de rafraîchissement des écrans de saisie (2.6.0)
-- Correction d'un bug d'affichage des familles d'écrans (2.6.1)
-- Amélioration de la gestion des exceptions (2.6.3)
+- Optimisation du temps de chargement de la page des évènements (2.7.0)
+- Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
 
 ### Gestion des tournois
 
-- Correction d'un bug de saisie sur le mot de passe FFE (2.6.2)
+- Ajout des exports PGN et TRF 16 (2.7.0)
 
-### Gestion des joueur·euses
+## FFE
 
-- Correction d'un bug sur la mise à jour des tables fixes des joueur·euses (2.6.4)
+- Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
+- Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
 
-### Gestion des appariements
+## ChessEvent
 
-- Ajout de l'onglet Appariements (2.6.0)
-- Ajout de la gestion des appariements manuels (2.6.0)
-- Ajout de l'appariement toutes rondes par grilles de Berger, simple et aller-retour (2.6.0)
-- _Ajout de l'appariement suisse classique et accéléré (2.6.0 expérimental)_
-- _Ajout des exports PGN et TRF16 (2.6.0 expérimental)_
-- Ajout de l'impression des tables de Berger (2.6.2)
-
-### Affichage
-
-- Ajout des pilotes d'afficheurs (2.6.0)
-- Correction d'un bug de mise à jour des écrans rotatifs et des écrans de familles (2.6.3)
-- Ajout d'une traduction manquante sur les cartes des pilotes d'afficheurs (2.6.4)
-
-### ChessEvent
-
-- Correction de bugs d'import des tournois depuis ChessEvent (2.6.1, 2.6.2)
+- Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
 
 ---
 
@@ -54,46 +30,23 @@ English version below
 
 ## Usage
 
-- Significantly improved performance (2.6.0)
-- Updated all documentation (2.6.0)
-- Our website https://sharly-chess.com is now online (2.6.0)
-- Utilities which were in ``bin/`` are now in ``tools/`` (2.6.0)
-- Improved the self-update system (2.6.0)
-- Improved logging (2.6.0)
+- Removal of script ``ffe.bat`` (2.7.0)
+- Added the lottery (2.7.0)
 
 ## Web interface
 
-- Simplified the main menu (2.6.0)
-- Added help links from the app to our documentation website (2.6.0)
-- Fixed a bug on the creation of tournaments defaults screens (2.6.0)
-- Fixed a bug on results input screens refresh (2.6.0)
-- Fixed a bug on the application settings (2.6.0)
-- Fixed a bug on the display of screen families (2.6.1)
-- Improved exception handling (2.6.3)
+- Optimized the load time of the events page (2.7.0)
+- Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
 
-### Tournament management
+### Tournaments management
 
-- Fixed a bug on FFE password input (2.6.2)
+- Added PGN and TRF 16 exports (2.7.0)
 
-## Players management
+## FFE
 
-- Fixed a bug on updating the fixed tables of players (2.6.4)
+- Integration of the FFE operations to the web UI (2.7.0)
+- Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
 
-### Pairings management
+## ChessEvent
 
-- Added the Pairings tab (2.6.0)
-- Added the possibility to manual pair players (2.6.0)
-- Added Round-Robin and Double Round-Robin (2.6.0)
-- _Added Swiss Dutch pairings (2.6.0 experimental)_
-- _Added PGN and TRF16 export (2.6.0 experimental)_
-- Added the Berger grid print view (2.6.2)
-
-### Displays
-
-- Added display controllers (2.6.0)
-- Fixed a bug on the refresh of rotators and family screens (2.6.3)
-- Added a missing translation on the display controller cards (2.6.4)
-
-### ChessEvent
-
-- Fixed bugs on tournament import from ChessEvent (2.6.1, 2.6.2)
+- Fixed birth dates prior to 1970-01-01 (2.7.0)
