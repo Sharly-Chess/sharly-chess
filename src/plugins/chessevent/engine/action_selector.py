@@ -391,9 +391,7 @@ class ActionSelector(metaclass=Singleton):
                                 ).format(file=tournament.file, num=player_count)
                             )
                             if action_choice == upload_answer:
-                                FFESession(tournament, debug=False).upload(
-                                    set_visible=True
-                                )
+                                FFESession(tournament).upload(set_visible=True)
                         if frequency_choice == once_answer:
                             return True
                         time.sleep(chessevent_timeout)
