@@ -34,6 +34,48 @@ class StoredTimer:
 
 
 @dataclass
+class StoredPrizeCriterion:
+    id: int | None
+    prize_category_id: int
+    type: str
+    options: dict[str, Any]
+    index: int
+
+
+@dataclass
+class StoredPrize:
+    id: int | None
+    prize_category_id: int
+    value: int
+    is_monetary: bool
+    description: str | None
+    index: int
+
+
+@dataclass
+class StoredPrizeCategory:
+    id: int | None
+    prize_group_id: int
+    name: str
+    prize_sharing: str
+    is_main: bool
+    stored_prize_criteria: list[StoredPrizeCriterion] = field(
+        default_factory=list[StoredPrizeCriterion]
+    )
+    stored_prizes: list[StoredPrize] = field(default_factory=list[StoredPrize])
+
+
+@dataclass
+class StoredPrizeGroup:
+    id: int | None
+    tournament_id: int
+    name: str
+    stored_prized_categories: list[StoredPrizeCategory] = field(
+        default_factory=list[StoredPrizeCategory]
+    )
+
+
+@dataclass
 class StoredTournament:
     id: int | None
     uniq_id: str
@@ -65,6 +107,9 @@ class StoredTournament:
     last_result_update: float = field(default=0.0)
     last_illegal_move_update: float = field(default=0.0)
     last_check_in_update: float = field(default=0.0)
+    stored_prize_groups: list[StoredPrizeGroup] = field(
+        default_factory=list[StoredPrizeGroup]
+    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
     # Plugins can add their own tournament data

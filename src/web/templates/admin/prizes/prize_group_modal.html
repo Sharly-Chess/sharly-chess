@@ -1,0 +1,29 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Deleting prize group [%(prize_group)s]', prize_group=admin_prize_group.name) }}
+{% endblock %}
+
+{% block delete_warning %}
+    {{ _('Warning: deleting a prize group is permanent!') }}
+{% endblock %}
+
+{% block form_content %}
+    {% if admin_prize_group.categories %}
+        <p>{{ _('The following categories will also be deleted:') }}</p>
+        <ul>
+            {% for prize_category in admin_prize_group.categories %}
+                <li>{{ prize_category.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-prize-group-delete',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        prize_group_id=admin_prize_group.id,
+    ) }}
+{% endblock %}

@@ -724,6 +724,55 @@ with_indicator: display a loading indicator, optional
     ) }}
 {% endmacro %}
 
+{% macro inline_text_form(
+    id,
+    name,
+    value='',
+    placeholder='NO PLACEHOLDER',
+    post_url='',
+    patch_url='',
+    hide=false
+) %}
+    <form
+        id="{{ id }}-form"
+        class="input-group"
+        {% if post_url %}
+            hx-post="{{ post_url }}"
+        {% elif patch_url %}
+            hx-patch="{{ patch_url }}""
+        {% endif %}
+        {% if hide %}
+            style="display: none"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <input
+            id="{{ id }}-input"
+            name="{{ name }}"
+            type="text"
+            class="form-control"
+            placeholder="{{ placeholder }}"
+            value="{{ value }}"
+            style="outline-offset: 0px;"
+        >
+        <button id="{{ id }}-submit-button" class="btn btn-primary" type="submit" {% if not value %}disabled{% endif %}>
+            <i class="bi-check"></i>
+        </button>
+        <button id="{{ id }}-cancel-button" class="btn btn-secondary" type="button">
+            <i class="bi-x"></i>
+        </button>
+    </form>
+    <script>
+        $('#{{ id }}-input').on('input', function() {
+            $('#{{ id }}-submit-button').prop('disabled', $(this).val() === '');
+        });
+        $('#{{ id }}-input').focus(function() {
+            $('#prize-group-create-form').addClass('focus');
+        });
+    </script>
+{% endmacro %}
+
 {% macro extra_admin_column_header(
     at,
     extra_columns = {}

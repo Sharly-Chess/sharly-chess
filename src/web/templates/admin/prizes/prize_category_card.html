@@ -1,0 +1,143 @@
+{% extends '../common/card.html' %}
+
+{% block card_header %}
+    {% if prize_category.is_main %}
+        <i
+            {{ macros.tooltip_attributes('info', _('Main category'), 'top') }}
+            class="bi-star-fill pe-1"
+        ></i>
+
+    {% endif %}
+    {{ prize_category.name }}
+{% endblock %}
+
+{% block card_title %}
+    <div class="d-flex gap-2 align-items-center justify-content-center">
+        <div
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of players'), 'top') }}
+        >
+            <i class="bi-people-fill pe-1"></i>
+            {{ prize_category.players|length }}
+        </div>
+        <div
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of prizes'), 'top') }}
+        >
+            <i class="bi-trophy-fill pe-1"></i>
+            {{ prize_category.prizes|length }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block card_text %}
+    <div class="d-flex flex-column gap-1">
+        <div class="text-start">
+            {{ _('%(string)s:', string=_('Criteria')) }}&nbsp;
+            {% if prize_category.is_main %}
+                {{ _('All the players') }}
+            {% else %}
+                {{ prize_category.criteria_string }}
+            {% endif %}
+        </div>
+        <div class="text-start">
+            {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
+            {{ prize_category.total_prize_value }}
+            <i class="bi-currency-euro"></i>
+        </div>
+        <div class="text-start">
+            {{ _('%(string)s:', string=_('Prize sharing')) }}&nbsp;
+            {{ prize_category.prize_sharing.name }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block card_buttons_left %}
+    <span
+        {{ macros.tooltip_attributes(
+            'info', _('Define the prizes of the category.'), 'top'
+        ) }}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-get=""
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-collection-fill pe-1"></i>
+            {{ _('Prizes') }}
+        </button>
+    </span>
+    <span
+        {{ macros.tooltip_attributes(
+            'info',
+            _('No criteria for the main category.')
+            if prize_category.is_main else
+            _('Define the criteria for players to belong to this category.'),
+            'top')
+        }}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-get=""
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            {% if prize_category.is_main %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-filter pe-1"></i>
+            {{ _('Criteria') }}
+        </button>
+    </span>
+{% endblock %}
+
+{% block card_buttons_right %}
+    <span
+        {{ macros.tooltip_attributes('info', _('Edit the properties of the category.'), 'top') }}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-get="{{ url_for(
+                'admin-prize-category-update-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+                prize_category_id=prize_category.id,
+            ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            preload
+        >
+            <i class="bi-pencil-fill"></i>
+        </button>
+    </span>
+
+    <span {{ macros.tooltip_attributes('info', 'Delete the category.', 'top') }}>
+        <button
+            class="btn btn-sm btn-outline-danger"
+            hx-get="{{ url_for(
+                'admin-prize-category-delete-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+                prize_category_id=prize_category.id,
+            ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-trash-fill"></i>
+        </button>
+    </span>
+{% endblock %}
