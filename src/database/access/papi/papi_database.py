@@ -465,7 +465,7 @@ class PapiDatabase(AccessDatabase):
         if ts >= 0:
             dt = datetime.fromtimestamp(ts)
         else:
-            dt = datetime(1970, 1, 1) + timedelta(seconds=ts)
+            dt = datetime(1970, 1, 2) + timedelta(seconds=ts)
         return dt.strftime('%d/%m/%Y')
 
     @staticmethod
