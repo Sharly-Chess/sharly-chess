@@ -5,7 +5,6 @@ English version below
 
 - Suppression du script ``ffe.bat`` (2.7.0)
 - Ajout de la tombola (2.7.0)
-- Amélioration de l'arrêt du serveur (2.7.0)
 
 ## Interface web
 
@@ -22,7 +21,7 @@ English version below
 
 ## ChessEvent
 
-- Correction des dates de naissance avant le 01/01/1970 (2.7.0)
+- Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
 
 ---
 
@@ -32,7 +31,6 @@ English version below
 
 - Removal of script ``ffe.bat`` (2.7.0)
 - Added the lottery (2.7.0)
-- Improved the server shutdown (2.7.0)
 
 ## Web interface
 
