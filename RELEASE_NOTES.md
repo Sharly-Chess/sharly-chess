@@ -9,6 +9,7 @@ English version below
 ## Interface web
 
 - Optimisation du temps de chargement de la page des évènements (2.7.0)
+- Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
 
 ### Gestion des tournois
 
