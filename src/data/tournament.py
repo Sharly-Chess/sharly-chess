@@ -821,7 +821,7 @@ class Tournament:
             )
         }
 
-        point_keys = [0]
+        point_keys: list[float] = [0]
         while (current_points := point_keys[-1]) < max_possible_points:
             current_points += Result.DRAW.points(self.point_values)
             point_keys.append(current_points)
