@@ -32,7 +32,7 @@ jobs:
       - name: Generate i18n files
         shell: pwsh
         run: |
-          python scripts/i18n/i18n_check.py
+          python scripts/i18n/i18n_update.py
       - name: Generate FFE SQL credentials
         shell: pwsh
         env:
