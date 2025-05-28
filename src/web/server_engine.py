@@ -1,8 +1,12 @@
+import asyncio
 import platform
+import signal
 import socket
 from pathlib import Path
+import sys
 from threading import Thread
 from time import sleep
+from types import FrameType
 from webbrowser import open
 
 import pyodbc  # type: ignore
@@ -36,6 +40,13 @@ from web.settings import (
 from web.channels import channels_plugin
 
 logger = get_logger()
+
+HANDLED_SIGNALS = (
+    signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
+    signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
+)
+if sys.platform == 'win32':  # pragma: py-not-win32
+    HANDLED_SIGNALS += (signal.SIGBREAK,)  # Windows signal 21. Sent by Ctrl+Break.
 
 
 def launch_browser(url: str):
@@ -136,13 +147,34 @@ class ServerEngine(Engine):
             pdb_on_exception=self.debug,
             plugins=[channels_plugin],
         )
-        uvicorn.run(
-            app,
+
+        config = uvicorn.Config(
+            app=app,
             host=sharly_chess_config.web_host,
             port=sharly_chess_config.web_port,
             log_config=logging_config,
-            timeout_graceful_shutdown=0,
+            timeout_graceful_shutdown=5,
         )
+        server = uvicorn.Server(config)
+
+        def handle_exit(sig: int, frame: FrameType | None) -> None:
+            server.should_exit = True
+            server.force_exit = True
+            # Close the SSE connections gracefully
+            if channels_plugin and channels_plugin._pub_queue is not None:
+                channels_plugin.publish(
+                    {'event': 'server_shutdown', 'data': ''}, ['sse']
+                )
+
+        # We need to handle signals ourselves in order to gracefully shut down the SSE connections.
+        # Calling `serve` doesn't allow us to intercept signals, so we use `_serve` instead.  The only
+        # difference is that `serve` captures signals before calling `_serve` internally.
+
+        for sig in HANDLED_SIGNALS:
+            signal.signal(sig, handle_exit)
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(server._serve())
 
     @property
     def log_file_path(self) -> Path:
