@@ -5,6 +5,10 @@
 {% block head_extra %}
 {% endblock head_extra %}
 
+{% block sse %}
+hx-ext="sse" sse-connect="/sse" sse-close="server_shutdown"
+{% endblock sse %}
+
 {% block header %}
     <div
         id="admin-header"
@@ -43,7 +47,7 @@
 {% endblock header %}
 
 {% block content %}
-    <div id="admin-content" class="content admin-content tab-content p-3" hx-ext="sse" sse-connect="/sse">
+    <div id="admin-content" class="content admin-content tab-content p-3">
         <!-- block admin_content -->
         {% block admin_content %}
             ADMIN_CONTENT
