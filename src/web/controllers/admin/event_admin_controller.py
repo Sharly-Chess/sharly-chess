@@ -608,10 +608,10 @@ class EventAdminController(BaseEventAdminController):
                     player.last_name,
                     player.first_name,
                     player.year_of_birth,
-                    player.mail,
-                    player.phone,
+                    player.mail or '',
+                    player.phone or '',
                     player.gender.short_name,
-                    player.fide_id,
+                    player.fide_id or '',
                     player.tournament.uniq_id if player.tournament else '',
                     player.federation.name,
                     player.club.name if player.club else '',
@@ -676,10 +676,10 @@ class EventAdminController(BaseEventAdminController):
         players: list[Player],
     ) -> File:
         """Returns a file with all the information of the players in an ODS format."""
-        temp_file = NamedTemporaryFile(delete=False, mode='w', suffix='.ods')
+        temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
         save_data(
             temp_file,
-            cls.get_players_datasheet_columns()
+            [cls.get_players_datasheet_columns()]
             + cls.get_players_datasheet_data(players),
         )
         return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
