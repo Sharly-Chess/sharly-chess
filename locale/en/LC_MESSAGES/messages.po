@@ -114,6 +114,9 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "403 - Access Forbidden"
+msgstr ""
+
 msgid "404 - Page Not Found"
 msgstr ""
 
@@ -3534,6 +3537,9 @@ msgid "Sorry, an unexpected error has occurred."
 msgstr ""
 
 msgid "Sorry, the page you are looking for does not exist."
+msgstr ""
+
+msgid "Sorry, you are not authorized to access this page."
 msgstr ""
 
 msgid "Sort by:"

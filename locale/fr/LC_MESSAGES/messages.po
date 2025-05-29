@@ -114,6 +114,9 @@ msgstr "1er jour du mois"
 msgid "20+"
 msgstr "20+"
 
+msgid "403 - Access Forbidden"
+msgstr "403 - Accès non-autorisé"
+
 msgid "404 - Page Not Found"
 msgstr "404 - Page non trouvée"
 
@@ -3535,6 +3538,9 @@ msgstr "Désolé, une erreur inattendue s'est produite."
 
 msgid "Sorry, the page you are looking for does not exist."
 msgstr "Désolé, la page que vous recherchez n’existe pas."
+
+msgid "Sorry, you are not authorized to access this page."
+msgstr "Désolé, vous n'êtes pas autorisé à accéder à cette page."
 
 msgid "Sort by:"
 msgstr "Trier par :"
