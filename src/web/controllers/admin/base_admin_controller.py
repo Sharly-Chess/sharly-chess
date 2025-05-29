@@ -5,9 +5,11 @@ from typing import Annotated, Any
 
 import requests
 import validators
+from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
+from litestar.status_codes import HTTP_403_FORBIDDEN
 
 from common import REQUEST_TIMEOUT, format_timestamp_date
 from common.i18n import _, ngettext
@@ -35,6 +37,8 @@ class AdminWebContext(WebContext):
         admin_tab: str | None,
     ):
         super().__init__(request, data=data)
+        if not self.admin_auth:
+            raise HTTPException(status_code=HTTP_403_FORBIDDEN)
         self.admin_tab: str | None = admin_tab
         if self.error:
             return
