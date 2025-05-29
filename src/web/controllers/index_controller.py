@@ -79,6 +79,23 @@ class IndexController(BaseController):
         )
 
     @get(
+        path='/403',
+        name='403',
+        cache=1,
+    )
+    async def handle_403(self, request: HTMXRequest) -> HTMXTemplate:
+        web_context: WebContext = WebContext(request)
+
+        return HTMXTemplate(
+            template_name='errors/403.html',
+            context=web_context.template_context,
+        )
+
+    @staticmethod
+    def handle_403_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
+        return Redirect(path=request.app.route_reverse('403'))
+
+    @get(
         path='/404',
         name='404',
         cache=1,
@@ -108,6 +125,10 @@ class IndexController(BaseController):
             context=web_context.template_context,
         )
 
+    @staticmethod
+    def handle_500_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
+        return Redirect(path=request.app.route_reverse('500'))
+
     @get('/sse')
     async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:
         async def generator() -> AsyncGenerator[ServerSentEventMessage, None]:
@@ -128,10 +149,6 @@ class IndexController(BaseController):
                 return
 
         return ServerSentEvent(generator())
-
-    @staticmethod
-    def handle_500_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('500'))
 
     @get('/.well-known/appspecific/com.chrome.devtools.json')
     async def chrome_devtools_placeholder(self) -> Response:

@@ -10,7 +10,11 @@ from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.static_files import create_static_files_router
-from litestar.status_codes import HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.status_codes import (
+    HTTP_404_NOT_FOUND,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+    HTTP_403_FORBIDDEN,
+)
 from litestar.stores.file import FileStore
 from litestar.stores.base import Store
 from litestar.template import TemplateConfig
@@ -90,7 +94,10 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     ],
 ]
 
-exception_handlers = {HTTP_404_NOT_FOUND: IndexController.handle_404_exception}
+exception_handlers = {
+    HTTP_403_FORBIDDEN: IndexController.handle_403_exception,
+    HTTP_404_NOT_FOUND: IndexController.handle_404_exception,
+}
 if not DEVEL_ENV:
     exception_handlers |= {
         HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_500_exception
