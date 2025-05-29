@@ -3540,7 +3540,7 @@ msgid "Sorry, the page you are looking for does not exist."
 msgstr "Désolé, la page que vous recherchez n’existe pas."
 
 msgid "Sorry, you are not authorized to access this page."
-msgstr "Désolé, vous n'êtes pas autorisé à accéder à cette page."
+msgstr "Désolé, vous n'êtes pas autorisé·e à accéder à cette page."
 
 msgid "Sort by:"
 msgstr "Trier par :"
