@@ -24,6 +24,7 @@ English version below
 ## ChessEvent
 
 - Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
+- Normalisation des noms des joueur·euses (2.7.1)
 
 ---
 
@@ -52,3 +53,4 @@ English version below
 ## ChessEvent
 
 - Fixed birth dates prior to 1970-01-01 (2.7.0)
+- Normalized players' names (2.7.1)
