@@ -135,35 +135,58 @@ class BabelUpdater(BabelWrapper):
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
+        new_signature, new_lines = self.markdown_variable_part()
         doc_file: Path = BASE_DIR / 'docs' / 'technical-appendices' / 'i18n.md'
-        lines_before_comment: list[str] = []
-        lines_after_comment: list[str] = []
-        # Read the lines until the expected comment is found
+        start_lines: list[str] = []
+        end_lines: list[str] = []
         with open(doc_file, 'rt', encoding='utf-8') as f:
-            comment: str = '<!-- DO NOT EDIT! (START) -->'
-            comment_found: bool = False
+            start_comment_pattern: re.Pattern = re.compile(
+                r'^<!-- DO NOT EDIT! \(START ([^)]+)\) -->'
+            )
+            start_comment: str = '<!-- DO NOT EDIT! (START {signature}) -->'
+            start_comment_found: bool = False
             for line in f:
-                lines_before_comment.append(line)
-                if line.startswith(comment):
-                    comment_found = True
+                if matches := start_comment_pattern.match(line):
+                    if new_signature == matches.group(1):
+                        logger.info(f'[{doc_file}] unchanged.')
+                        return
+                    start_comment_found = True
                     break
-            if not comment_found:
+                start_lines.append(line)
+            if not start_comment_found:
                 logger.error(
-                    f'Could not edit [{doc_file}] (comment [{comment}] not found).'
+                    f'Could not edit [{doc_file}] (comment [{start_comment.format(signature="signature")}] not found).'
                 )
                 return
-            comment: str = '<!-- DO NOT EDIT! (END) -->'
-            comment_found: bool = False
+            end_comment: str = '<!-- DO NOT EDIT! (END) -->'
+            end_comment_found: bool = False
             for line in f:
-                if line.startswith(comment):
-                    comment_found = True
-                if comment_found:
-                    lines_after_comment.append(line)
-            if not comment_found:
+                if end_comment_found:
+                    end_lines.append(line)
+                if line.startswith(end_comment):
+                    end_comment_found = True
+            if not end_comment_found:
                 logger.error(
-                    f'Could not edit [{doc_file}] (comment [{comment}] not found).'
+                    f'Could not edit [{doc_file}] (comment [{end_comment}] not found).'
                 )
                 return
+        with open(doc_file, 'w', encoding='utf-8') as f:
+            for line in (
+                start_lines
+                + [
+                    f'{start_comment.format(signature=new_signature)}\n',
+                ]
+                + new_lines
+                + [
+                    f'{end_comment}\n',
+                ]
+                + end_lines
+            ):
+                f.write(line)
+        logger.info('Wrote [%s].', doc_file)
+
+    def markdown_variable_part(self) -> tuple[str, list[str]]:
+        """Returns the variable part of the i18n doc file and a signature and a list of strings."""
         lines: list[str] = []
         flags: set[str] = set()
         for locale in self.locale_infos:
@@ -182,13 +205,19 @@ class BabelUpdater(BabelWrapper):
         ]
         lines.append('| ' + ' | '.join(headers) + ' |\n')
         lines.append('|--' + ('|:--:' * (len(headers) - 1)) + '|\n')
+        locale_signatures: list[str] = []
         for locale, locale_info in self.locale_infos.items():
+            locale_signature: str = f'{locale}|{len(locale_info.messages)}|{len(locale_info.empty_optional_messages)}|{len(locale_info.empty_mandatory_messages)}'
             line: str = f'|<img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
             line += f'| {len(locale_info.messages)} '
             line += f'| {len(locale_info.empty_optional_messages)} '
             line += f'| {len(locale_info.empty_mandatory_messages)} '
             for flag in flags:
                 line += f'| {len(locale_info.flagged_messages.get(flag, []))} '
+                locale_signature += (
+                    f'|{len(locale_info.flagged_messages.get(flag, []))}'
+                )
+            locale_signatures.append(locale_signature)
             line += (
                 f'| [{locale_info.po_file.name}]('
                 + '/'.join(
@@ -217,10 +246,7 @@ class BabelUpdater(BabelWrapper):
         lines.append(
             f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n'
         )
-        with open(doc_file, 'w', encoding='utf-8') as f:
-            for line in lines_before_comment + lines + lines_after_comment:
-                f.write(line)
-        logger.info('Wrote [%s].', doc_file)
+        return '|'.join(locale_signatures), lines
 
 
 class BabelMOFilesUpdater(BabelWrapper):
