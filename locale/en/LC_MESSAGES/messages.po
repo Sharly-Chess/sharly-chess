@@ -1764,7 +1764,7 @@ msgstr ""
 msgid "French Chess Federation"
 msgstr ""
 
-msgid "French Federation specific features (player search, leagues, Papi compatibility)"
+msgid "French Federation specific features (player search, leagues, Papi compatibility)."
 msgstr ""
 
 msgid "Frequency: {frequency}"
@@ -3608,7 +3608,7 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
 msgid "Swiss"

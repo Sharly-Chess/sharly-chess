@@ -1764,8 +1764,8 @@ msgstr "Victoire par forfait"
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
 
-msgid "French Federation specific features (player search, leagues, Papi compatibility)"
-msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueurs, ligues, compatibilité avec Papi)"
+msgid "French Federation specific features (player search, leagues, Papi compatibility)."
+msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueurs, ligues, compatibilité avec Papi)."
 
 msgid "Frequency: {frequency}"
 msgstr "Fréquence : {frequency}"
@@ -3608,8 +3608,8 @@ msgstr "Stockage des données…"
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France"
-msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
+msgid "Support for the ChessEvent platform used for organising tournaments in France."
+msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."
 
 msgid "Swiss"
 msgstr "Suisse"
