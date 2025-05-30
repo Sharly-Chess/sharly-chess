@@ -12,13 +12,17 @@ English version below
 - Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
 - Interdiction de l'accès aux pages d'arbitrage pour les clients non autorisés (2.7.1)
 
+### Gestion des tournois
+
+- Ajout des exports PGN et TRF 16 (2.7.0)
+
 ### Gestion des joueur·euses
 
 - Correction et ajout de champs dans l'export des joueur·euses au format ODS (2.7.1)
 
-### Gestion des tournois
+### Gestion des appariements
 
-- Ajout des exports PGN et TRF 16 (2.7.0)
+- Diminution des temps de réaction lors de la saisie des résultats (2.7.1)
 
 ## FFE
 
@@ -45,13 +49,17 @@ English version below
 - Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
 - Forbid access to arbiters' pages for unauthorized clients (2.7.1)
 
+### Tournaments management
+
+- Added PGN and TRF 16 exports (2.7.0)
+
 # Players management
 
 - Fixed and added columns to the players ODS export (2.7.1)
 
-### Tournaments management
+# Pairings management
 
-- Added PGN and TRF 16 exports (2.7.0)
+- Reduced reaction times when entering results (2.7.1)
 
 ## FFE
 
