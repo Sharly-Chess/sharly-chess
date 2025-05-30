@@ -28,10 +28,10 @@ class Family:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_family: StoredFamily = stored_family
-        self._calculated_first: int | None = None
-        self._calculated_last: int | None = None
-        self._calculated_number: int | None = None
-        self._calculated_parts: int | None = None
+        self._calculated_first: int = 0
+        self._calculated_last: int = 0
+        self._calculated_number: int = 0
+        self._calculated_parts: int = 1
         self.error: str | None = None
 
         # http://rednafi.com/python/lru_cache_on_methods/
@@ -247,44 +247,37 @@ class Family:
             self.event.add_warning(self.error, family=self)
             return False
         players_instead_of_boards: bool
+        cut_items_number: int = 0
         match ScreenType(self.type):
             case ScreenType.BOARDS | ScreenType.INPUT:
                 if self.tournament.current_round:
                     players_instead_of_boards = False
                     total_items_number: int = len(self.tournament.boards or [])
-                    if self.first:
-                        if self.first > total_items_number:
-                            self.error = _(
-                                'Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored.'
-                            ).format(
-                                boards_number=total_items_number,
-                                tournament_uniq_id=self.tournament.uniq_id,
-                                first=self.first,
+                    if total_items_number:
+                        if self.first:
+                            self._calculated_first = max(
+                                1, min(self.first, total_items_number)
                             )
-                            self.error = (
-                                str(self.error)
-                                if self.error
-                                else _('Invalid board number range.')
+                        else:
+                            self._calculated_first = 1
+                        if self.last:
+                            self._calculated_last = max(
+                                self._calculated_first,
+                                min(self.last, total_items_number),
                             )
-                            self.event.add_warning(self.error, family=self)
-                            return False
-                        self._calculated_first = self.first
-                    else:
-                        self._calculated_first = 1
-                    if self.last:
-                        self._calculated_last = min(self.last, total_items_number)
-                    else:
-                        self._calculated_last = total_items_number
-                    cut_items_number = (
-                        self._calculated_last - self._calculated_first + 1
-                    )
+                        else:
+                            self._calculated_last = total_items_number
+                        cut_items_number = (
+                            self._calculated_last - self._calculated_first + 1
+                        )
                 else:
                     players_instead_of_boards = True
                     cut_items_number = len(
                         self.tournament.players_by_name_with_unpaired
                     )
-                    self._calculated_first = 1
-                    self._calculated_last = cut_items_number
+                    if cut_items_number:
+                        self._calculated_first = 1
+                        self._calculated_last = cut_items_number
             case ScreenType.PLAYERS | ScreenType.RANKING:
                 players_instead_of_boards = False
                 if ScreenType(self.type) == ScreenType.PLAYERS:
@@ -317,51 +310,54 @@ class Family:
                             )
                         ]
                     )
-                if self.first:
-                    if self.first > total_items_number:
-                        self.error = (
-                            str(self.error)
-                            if self.error
-                            else _('Invalid player number range.')
+                if total_items_number:
+                    if self.first:
+                        self._calculated_first = max(
+                            1, min(self.first, total_items_number)
                         )
-                        self.event.add_warning(self.error, family=self)
-                        return False
-                    self._calculated_first = self.first
-                else:
-                    self._calculated_first = 1
-                if self.last:
-                    self._calculated_last = min(self.last, total_items_number)
-                else:
-                    self._calculated_last = total_items_number
-                cut_items_number = self._calculated_last - self._calculated_first + 1
+                    else:
+                        self._calculated_first = 1
+                    if self.last:
+                        self._calculated_last = max(
+                            self._calculated_first, min(self.last, total_items_number)
+                        )
+                    else:
+                        self._calculated_last = total_items_number
+                    cut_items_number = (
+                        self._calculated_last - self._calculated_first + 1
+                    )
             case _:
                 raise ValueError(f'type={self.type}')
         if not cut_items_number:
-            self.error = _(
-                'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
-            ).format(tournament_uniq_id=self.tournament.uniq_id)
-            self.event.add_warning(str(self.error), family=self)
-            return False
-        # OK now we know the number of items and the number of the first item to take
-        # Let's go for the number of items by part and the number of parts
-        if self.number:
-            if players_instead_of_boards:
-                self._calculated_number = self.number * 2
-            else:
-                self._calculated_number = self.number
-        elif self.parts:
-            self._calculated_number = ceil(cut_items_number / self.parts)
-        else:
-            self._calculated_number = cut_items_number
-        divisor: int = self.columns * 2 if players_instead_of_boards else self.columns
-        # ensure that the number of items is divisible by the number of columns
-        if self._calculated_number % divisor != 0:
-            self._calculated_number = min(
-                (self._calculated_number // divisor + 1) * divisor, cut_items_number
+            self.event.add_warning(
+                _(
+                    'Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used.'
+                ).format(tournament_uniq_id=self.tournament.uniq_id),
+                family=self,
             )
-        # recalculate the number of parts
-        # (because the number of items by part may increase to fit the number of columns)
-        self._calculated_parts = ceil(cut_items_number / self._calculated_number)
+        else:
+            # OK now we know the number of items and the number of the first item to take
+            # Let's go for the number of items by part and the number of parts
+            if self.number:
+                if players_instead_of_boards:
+                    self._calculated_number = self.number * 2
+                else:
+                    self._calculated_number = self.number
+            elif self.parts:
+                self._calculated_number = ceil(cut_items_number / self.parts)
+            else:
+                self._calculated_number = cut_items_number
+            divisor: int = (
+                self.columns * 2 if players_instead_of_boards else self.columns
+            )
+            # ensure that the number of items is divisible by the number of columns
+            if self._calculated_number % divisor != 0:
+                self._calculated_number = min(
+                    (self._calculated_number // divisor + 1) * divisor, cut_items_number
+                )
+            # recalculate the number of parts
+            # (because the number of items by part may increase to fit the number of columns)
+            self._calculated_parts = ceil(cut_items_number / self._calculated_number)
         return True
 
     @cached_property
@@ -376,28 +372,28 @@ class Family:
         return screens_by_uniq_id
 
     @cached_property
-    def calculated_first_screen_id(self) -> str | None:
-        return next(iter(self.screens_by_uniq_id.keys()), None)
+    def calculated_first_screen_id(self) -> str:
+        return next(iter(self.screens_by_uniq_id.keys()))
 
     @cached_property
-    def calculated_first(self) -> int | None:
+    def calculated_first(self) -> int:
         self._calculate_and_cache_screens()
         return self._calculated_first
 
     @cached_property
-    def calculated_last(self) -> int | None:
+    def calculated_last(self) -> int:
         self._calculate_and_cache_screens()
         return self._calculated_last
 
     @cached_property
-    def calculated_number(self) -> int | None:
+    def calculated_number(self) -> int:
         self._calculate_and_cache_screens()
         return self._calculated_number
 
     @cached_property
     def calculated_parts(self) -> int:
         self._calculate_and_cache_screens()
-        return self._calculated_parts or 1
+        return self._calculated_parts
 
     @property
     def numbers_str(self):
