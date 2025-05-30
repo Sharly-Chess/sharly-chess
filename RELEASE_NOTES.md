@@ -11,7 +11,6 @@ English version below
 - Optimisation du temps de chargement de la page des évènements (2.7.0)
 - Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
 - Interdiction de l'accès aux pages d'arbitrage pour les clients non autorisés (2.7.1)
-- Correction de la création des écrans image (2.7.1)
 
 ### Gestion des tournois
 
