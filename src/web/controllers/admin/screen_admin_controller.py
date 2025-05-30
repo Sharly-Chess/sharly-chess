@@ -880,8 +880,6 @@ class ScreenAdminController(BaseEventAdminController):
         ) as event_database:
             match action:
                 case 'create':
-                    assert stored_screen.init_set_tournament_id is not None
-                    init_set_tournament_id: int = stored_screen.init_set_tournament_id
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
                     if stored_screen.type in [
@@ -890,6 +888,10 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.PLAYERS,
                         ScreenType.RANKING,
                     ]:
+                        assert stored_screen.init_set_tournament_id is not None
+                        init_set_tournament_id: int = (
+                            stored_screen.init_set_tournament_id
+                        )
                         event_database.add_stored_screen_set(
                             stored_screen.id, init_set_tournament_id
                         )
