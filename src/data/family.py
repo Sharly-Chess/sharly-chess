@@ -340,12 +340,7 @@ class Family:
             self.error = _(
                 'Nothing to display for tournament [{tournament_uniq_id}], family ignored.'
             ).format(tournament_uniq_id=self.tournament.uniq_id)
-            self.error = (
-                str(self.error)
-                if self.error
-                else _('Tournament can not be read, family ignored.')
-            )
-            self.event.add_warning(self.error, family=self)
+            self.event.add_warning(str(self.error), family=self)
             return False
         # OK now we know the number of items and the number of the first item to take
         # Let's go for the number of items by part and the number of parts
