@@ -51,7 +51,12 @@ class BabelUpdater(BabelWrapper):
                 new_po_strings = False
             new_errors: bool = locale_info.control()
             locale_info.print_summary()
-            if new_errors or new_po_strings or not mo_file.is_file():
+            if (
+                new_errors
+                or new_po_strings
+                or not mo_file.is_file()
+                or po_file.lstat().st_mtime > mo_file.lstat().st_mtime
+            ):
                 self.update_mo_file(locale)
                 logger.info('Translations have been updated for locale [%s].', locale)
                 mo_file_updated = True
