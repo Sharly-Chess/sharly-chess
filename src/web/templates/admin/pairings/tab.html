@@ -295,6 +295,11 @@
     }
 
     function keydownHandler(e) {
+        if ($('#pairings-table').length === 0) {
+            // The event listener is active, but the page has changed
+            return;
+        }
+
         if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
             e.preventDefault();
 
