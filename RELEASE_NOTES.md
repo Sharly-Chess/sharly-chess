@@ -61,7 +61,7 @@ English version below
 
 # Pairings management
 
-- Reduced reaction times when entering results (2.7.1)
+- Reduced reaction time when entering results (2.7.1)
 
 ## FFE
 
