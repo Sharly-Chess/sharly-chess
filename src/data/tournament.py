@@ -962,7 +962,7 @@ class Tournament:
 
     @property
     def players_by_rank(self) -> dict[int, Player]:
-        assert self._players_by_rank is not None, (
+        assert not self.players or self._players_by_rank is not None, (
             'Tournament._players_by_rank is not set, call Tournament.compute_player_ranks() before.'
         )
         return self._players_by_rank

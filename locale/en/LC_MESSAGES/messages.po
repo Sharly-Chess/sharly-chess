@@ -1999,9 +1999,6 @@ msgstr ""
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
-msgid "Invalid board number range."
-msgstr ""
-
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
@@ -2041,7 +2038,7 @@ msgstr ""
 msgid "Invalid phone number [{phone}]."
 msgstr ""
 
-msgid "Invalid player number range."
+msgid "Invalid range [{first}-{last}]."
 msgstr ""
 
 msgid "Invalid response from the FFE website."
@@ -2569,7 +2566,7 @@ msgstr ""
 msgid "Not connected, impossible to update."
 msgstr ""
 
-msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
+msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
 msgstr ""
 
 msgid "Notification"
@@ -2873,6 +2870,9 @@ msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
 msgid "Players"
+msgstr ""
+
+msgid "Players (none now)"
 msgstr ""
 
 msgid "Players ({num})"
@@ -4252,9 +4252,6 @@ msgid "Tournament [{tournament_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Tournament [{tournament_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
 msgstr ""
 
 msgid "Tournament [{tournament_uniq_id}] has started."
