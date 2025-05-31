@@ -1999,9 +1999,6 @@ msgstr "Montant [{amount}] non valide."
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 
-msgid "Invalid board number range."
-msgstr "Intervalle d'échiquiers invalide."
-
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 
@@ -2041,8 +2038,8 @@ msgstr "Mél [{mail}] non valide."
 msgid "Invalid phone number [{phone}]."
 msgstr "Numéro de téléphone [{phone}] non valide."
 
-msgid "Invalid player number range."
-msgstr "Intervalle de joueur·euses invalide."
+msgid "Invalid range [{first}-{last}]."
+msgstr "Plage invalide [{first}-{last}]. x"
 
 msgid "Invalid response from the FFE website."
 msgstr "Réponse non valide du site FFE."
@@ -2569,8 +2566,8 @@ msgstr "Aucune connection à internet"
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
 
-msgid "Nothing to display for tournament [{tournament_uniq_id}], family ignored."
-msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], famille ignorée."
+msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
+msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], un écran vide sera utilisé."
 
 msgid "Notification"
 msgstr "Notification"
@@ -2874,6 +2871,9 @@ msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
 
 msgid "Players"
 msgstr "Joueur·euses"
+
+msgid "Players (none now)"
+msgstr "Joueur·euses (aucun·e actuellement)"
 
 msgid "Players ({num})"
 msgstr "Joueur·euses ({num})"
@@ -3483,7 +3483,7 @@ msgstr "Sélection"
 
 #, python-format
 msgid "Selection: %(selection)s"
-msgstr "Sélection: %(selection)s"
+msgstr "Sélection : %(selection)s"
 
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
@@ -4253,9 +4253,6 @@ msgstr "Le tournoi [{tournament_uniq_id}] a été supprimé."
 
 msgid "Tournament [{tournament_uniq_id}] has been updated."
 msgstr "Le tournoi [{tournament_uniq_id}] a été modifié."
-
-msgid "Tournament [{tournament_uniq_id}] has only [{boards_number}] boards (< [{first}]), family ignored."
-msgstr "Le tournoi  [{tournament_uniq_id}] n'a que [{boards_number}] échiquiers (< [{first}]), famille ignorée."
 
 msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr "Le tournoi [{tournament_uniq_id}] est en cours."
