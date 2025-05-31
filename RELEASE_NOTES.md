@@ -5,6 +5,7 @@ English version below
 
 - Suppression du script ``ffe.bat`` (2.7.0)
 - Ajout de la tombola (2.7.0)
+- Acceptation de l'absence de joueur·euses dans les familles d'écrans (2.7.1)
 
 ## Interface web
 
@@ -42,13 +43,13 @@ English version below
 
 - Removal of script ``ffe.bat`` (2.7.0)
 - Added the lottery (2.7.0)
+- Accept no players in screen families (2.7.1)
 
 ## Web interface
 
 - Optimized the load time of the events page (2.7.0)
 - Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
 - Forbid access to arbiters' pages for unauthorized clients (2.7.1)
-- Fixed image screen creation (2.7.1)
 
 ### Tournaments management
 
