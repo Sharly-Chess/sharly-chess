@@ -2,6 +2,7 @@ import hashlib
 import json
 import time
 from collections.abc import Iterator
+from datetime import datetime
 from json import JSONDecodeError
 from logging import Logger
 from pathlib import Path
@@ -161,7 +162,18 @@ class ActionSelector(metaclass=Singleton):
         For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
         Returns the number of players added."""
         players_added: int = 0
-        with tournament.papi_write_database as papi_database:
+        # write data to a temporary file to limit the time no tournament file is available
+        date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
+        tmp_file: Path = (
+            TMP_DIR
+            / 'chessevent'
+            / f'{tournament.file.stem}-{date}{tournament.file.suffix}'
+        )
+        logger.debug('Writing ChessEvent data to temporary Papi file [%s]...', tmp_file)
+        tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
+        tournament.file.unlink(missing_ok=True)
+        create_empty_papi_database(tmp_file)
+        with PapiDatabase(file=tmp_file, write=True) as papi_database:
             with EventDatabase(tournament.event.uniq_id, write=True) as event_database:
                 cls.write_chessevent_info(papi_database, chessevent_tournament)
                 for player_papi_id, chessevent_player in enumerate(
@@ -185,6 +197,10 @@ class ActionSelector(metaclass=Singleton):
                 )
                 event_database.commit()
                 papi_database.commit()
+        logger.debug('Copying [%s] to [%s]...', tmp_file, tournament.file)
+        tournament.file.write_bytes(tmp_file.read_bytes())
+        logger.debug('Removing temporary Papi file [%s]...', tmp_file)
+        tmp_file.unlink(missing_ok=True)
         return players_added
 
     @classmethod
@@ -380,8 +396,6 @@ class ActionSelector(metaclass=Singleton):
                             if chessevent_tournament.error:
                                 continue
                             chessevent_timeout = chessevent_timeout_min
-                            tournament.file.unlink(missing_ok=True)
-                            create_empty_papi_database(tournament.file)
                             player_count: int = self.write_chessevent_info_to_database(
                                 tournament, chessevent_tournament, data_md5
                             )

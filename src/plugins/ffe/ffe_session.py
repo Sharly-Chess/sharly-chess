@@ -418,7 +418,7 @@ class FFESession(Session):
             / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
         )
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
-        logger.debug('Copie de %s vers %s...', self.tournament.file, tmp_file)
+        logger.debug('Copying [%s] to [%s]...', self.tournament.file, tmp_file)
         tmp_file.write_bytes(self.tournament.file.read_bytes())
         with PapiDatabase(tmp_file, write=True) as tmp_database:
             logger.debug("Deleting personal players' data...")

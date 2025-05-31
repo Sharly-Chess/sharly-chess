@@ -2,8 +2,7 @@
     <span {{ macros.tooltip_attributes('info', _('First round'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round=1"
-            hx-include="[name='tournament_id']"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
@@ -18,8 +17,7 @@
         <button
             class="btn btn-outline-primary text-nowrap"
             style="transform: scaleX(-1);"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_round - 1 }}"
-            hx-include="[name='tournament_id']"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round - 1) }}"
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
@@ -35,8 +33,7 @@
         class="form-select"
         style="width: fit-content;"
         hx-trigger="change"
-        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-        hx-include="[name='tournament_id']"
+        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
         hx-target="body"
         hx-replace-url="true"
         hx-indicator="#please-wait"
@@ -73,8 +70,7 @@
     <span {{ macros.tooltip_attributes('info', _('Current round'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}?round={{ admin_tournament.current_round }}"
-            hx-include="[name='tournament_id']"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_tournament.current_round) }}"
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
