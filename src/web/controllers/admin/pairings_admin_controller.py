@@ -462,6 +462,7 @@ class PairingsAdminController(BaseEventAdminController):
                 event_uniq_id=event_uniq_id,
                 tournament_id=tournament_id,
                 round_=round_,
+                board_id=board_id,
             )
 
         target_board_id: int | None
@@ -684,11 +685,6 @@ class PairingsAdminController(BaseEventAdminController):
                 return HTMXTemplate(
                     template_name='/common/empty.html',
                     re_swap='none',
-                    trigger_event='highlight_board',
-                    after='receive',
-                    params={
-                        'board_id': board_id,
-                    },
                 )
 
         return self._admin_update_result(
@@ -698,7 +694,6 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
             board_id=board_id,
             result=result,
-            trigger_event='highlight_board',
             validate_result=data['validate_result'] == 'true',
         )
 

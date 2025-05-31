@@ -1,6 +1,7 @@
 from logging import Logger
 from typing import Any
 
+from common import unicode_normalize
 from common.logger import get_logger
 from plugins.utils import PluginCoreMapper
 from utils.enum import (
@@ -62,7 +63,11 @@ class ChessEventPlayer:
 
         try:
             self.last_name = reader.get('last_name', str)
+            if self.last_name:
+                self.last_name = unicode_normalize(self.last_name).upper()
             self.first_name = reader.get('first_name', str)
+            if self.first_name:
+                self.first_name = unicode_normalize(self.first_name).title()
             self.federation = reader.get('federation', str)
             self.fide_id = reader.get('fide_id', int, 0)
             self.gender = reader.get_enum('gender', PlayerGender, PlayerGender.NONE)
