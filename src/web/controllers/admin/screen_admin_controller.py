@@ -880,21 +880,27 @@ class ScreenAdminController(BaseEventAdminController):
         ) as event_database:
             match action:
                 case 'create':
-                    stored_screen = event_database.add_stored_screen(stored_screen)
-                    assert stored_screen.id is not None
                     if stored_screen.type in [
                         ScreenType.BOARDS,
                         ScreenType.INPUT,
                         ScreenType.PLAYERS,
                         ScreenType.RANKING,
                     ]:
+                        # init_set_tournament_id is the id of the tournament that should be used to
+                        # create the screen_set, it is set in the screen creation form.
                         assert stored_screen.init_set_tournament_id is not None
+                        # Since EventDatabase.add_stored_screen() rewrite stored_screen, we save it now.
                         init_set_tournament_id: int = (
                             stored_screen.init_set_tournament_id
                         )
+                        stored_screen = event_database.add_stored_screen(stored_screen)
+                        assert stored_screen.id is not None
+                        # And we use it here.
                         event_database.add_stored_screen_set(
                             stored_screen.id, init_set_tournament_id
                         )
+                    else:
+                        stored_screen = event_database.add_stored_screen(stored_screen)
                     event_database.commit()
                     Message.success(
                         request,
