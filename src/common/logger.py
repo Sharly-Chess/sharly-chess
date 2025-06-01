@@ -9,102 +9,159 @@ from colorama import Fore, Style
 from common import APP_NAME
 
 
-LOGGING_CONFIG: dict[str, Any] = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'colored': {
-            '()': 'colorlog.ColoredFormatter',
-            'fmt': '%(log_color)s%(asctime)s %(levelname)-10s%(message)s%(reset)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S',
-            'reset': True,
-            'log_colors': {
-                'DEBUG': 'white',
-                'INFO': 'light_white',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'red,bg_light_white',
-            },
-            'secondary_log_colors': {},
-            'style': '%',
-        },
-        'standard': {
-            'format': '%(asctime)s %(levelname)-10s%(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S',
-            'style': '%',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'level': logging.INFO,
-            'formatter': 'colored',
-            'stream': 'ext://sys.stdout',
-        },
-    },
-    'loggers': {
-        APP_NAME: {
-            'handlers': ['console'],
-            'level': logging.DEBUG,
-            'propagate': False,
-        },
-        'litestar': {
-            'handlers': ['console'],
-            'level': logging.INFO,
-        },
-        'uvicorn': {
-            'handlers': ['console'],
-            'level': logging.INFO,
-            'propagate': False,
-        },
-        'uvicorn.error': {
-            'handlers': ['console'],
-            'level': logging.INFO,
-            'propagate': False,
-        },
-        'uvicorn.access': {
-            'handlers': ['console'],
-            'level': logging.INFO,
-            'propagate': False,
-        },
-    },
-}
+class LoggingConfigValues:
+    """This class is used to store the parameters used to build the logging config."""
 
-dictConfig(LOGGING_CONFIG)
-logger: Logger = getLogger(APP_NAME)
+    console_log_level: int = logging.INFO
+    console_color: bool = True
+    console_show_date: bool = False
+    console_show_level: bool = False
+    file_output: bool = True
+    file_path: Path | None = None
+
+
+def default_logging_config_values() -> LoggingConfigValues:
+    """The default values of the logging config, used in forms."""
+    return LoggingConfigValues()
+
+
+# The module logging parameters, used to build the logging config.
+_LOGGING_CONFIG_VALUES: LoggingConfigValues = default_logging_config_values()
+_LOGGER: Logger
+
+
+def logging_config_values() -> LoggingConfigValues:
+    """The default values of the logging config, used in forms."""
+    global _LOGGING_CONFIG_VALUES
+    return _LOGGING_CONFIG_VALUES
+
+
+def set_logging_config(
+    console_log_level: int | None = None,
+    console_color: bool | None = None,
+    console_show_date: bool | None = None,
+    console_show_level: bool | None = None,
+    file_output: bool | None = None,
+    file_path: Path | None = None,
+) -> dict[str, Any]:
+    """Set logging parameters, returns the logging config as a dict that can be used by logging libraries."""
+    global _LOGGING_CONFIG_VALUES, _LOGGER
+    if console_log_level is not None:
+        _LOGGING_CONFIG_VALUES.console_log_level = console_log_level
+    if console_color is not None:
+        _LOGGING_CONFIG_VALUES.console_color = console_color
+    if console_show_date is not None:
+        _LOGGING_CONFIG_VALUES.console_show_date = console_show_date
+    if console_show_level is not None:
+        _LOGGING_CONFIG_VALUES.console_show_level = console_show_level
+    if file_output is not None:
+        _LOGGING_CONFIG_VALUES.file_output = file_output
+    if file_path is not None:
+        _LOGGING_CONFIG_VALUES.file_path = file_path
+    if (
+        _LOGGING_CONFIG_VALUES.file_output
+        and _LOGGING_CONFIG_VALUES.file_path is not None
+    ):
+        _LOGGING_CONFIG_VALUES.file_path.parent.mkdir(parents=True, exist_ok=True)
+    dictConfig(logging_config := get_logging_config())
+    _LOGGER = getLogger(APP_NAME)
+    return logging_config
+
+
+def get_logging_config() -> dict[str, Any]:
+    """Returns the logging config as a dict that can be used by logging libraries."""
+    global _LOGGING_CONFIG_VALUES
+    console_format: str = f'{
+        "%(log_color)s" if _LOGGING_CONFIG_VALUES.console_color else ""
+    }{"%(asctime)s " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
+        "%(levelname)-10s" if _LOGGING_CONFIG_VALUES.console_show_level else ""
+    }%(message)s{"%(reset)s" if _LOGGING_CONFIG_VALUES.console_color else ""}'
+    logging_config: dict[str, Any] = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'console_formatter': {
+                '()': 'colorlog.ColoredFormatter',
+                'fmt': console_format,
+                'datefmt': '%Y-%m-%d %H:%M:%S',
+                'reset': True,
+                'log_colors': {
+                    'DEBUG': 'white',
+                    'INFO': 'light_white',
+                    'WARNING': 'yellow',
+                    'ERROR': 'red',
+                    'CRITICAL': 'red,bg_light_white',
+                },
+                'secondary_log_colors': {},
+                'style': '%',
+            },
+            'file_formatter': {
+                'format': '%(asctime)s %(levelname)-10s%(message)s',
+                'datefmt': '%Y-%m-%d %H:%M:%S',
+                'style': '%',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'level': _LOGGING_CONFIG_VALUES.console_log_level,
+                'formatter': 'console_formatter',
+                'stream': 'ext://sys.stdout',
+            },
+        },
+        'loggers': {
+            APP_NAME: {
+                'handlers': ['console'],
+                'level': logging.DEBUG,
+                'propagate': False,
+            },
+            'litestar': {
+                'handlers': ['console'],
+                'level': logging.INFO,
+            },
+            'uvicorn': {
+                'handlers': ['console'],
+                'level': logging.INFO,
+                'propagate': False,
+            },
+            'uvicorn.error': {
+                'handlers': ['console'],
+                'level': logging.INFO,
+                'propagate': False,
+            },
+            'uvicorn.access': {
+                'handlers': ['console'],
+                'level': logging.INFO,
+                'propagate': False,
+            },
+        },
+    }
+    if _LOGGING_CONFIG_VALUES.file_output:
+        logging_config['handlers']['file'] = {  # type: ignore
+            'class': 'logging.handlers.RotatingFileHandler',
+            'level': logging.DEBUG,
+            'formatter': 'file_formatter',
+            'filename': str(_LOGGING_CONFIG_VALUES.file_path),
+            'maxBytes': 500 * 1024,
+            'backupCount': 5,
+            'encoding': 'UTF-8',
+        }
+        for logger_name in logging_config['loggers']:
+            logging_config['loggers'][logger_name]['handlers'].append('file')  # type: ignore
+    return logging_config
+
+
+set_logging_config()
 
 
 def get_logger() -> Logger:
     """Returns the global logger."""
-    return logger
-
-
-def set_console_log_level(level: int):
-    global LOGGING_CONFIG, logger
-    LOGGING_CONFIG['handlers']['console']['level'] = level  # type: ignore
-    dictConfig(LOGGING_CONFIG)
-    logger = getLogger(APP_NAME)
-
-
-def set_log_file_handler(log_file: Path):
-    global LOGGING_CONFIG, logger
-    LOGGING_CONFIG['handlers']['file'] = {  # type: ignore
-        'class': 'logging.handlers.RotatingFileHandler',
-        'level': logging.DEBUG,
-        'formatter': 'standard',
-        'filename': str(log_file),
-        'maxBytes': 500 * 1024,
-        'backupCount': 5,
-        'encoding': 'UTF-8',
-    }
-    for logger_name in LOGGING_CONFIG['loggers']:
-        LOGGING_CONFIG['loggers'][logger_name]['handlers'].append('file')  # type: ignore
-    dictConfig(LOGGING_CONFIG)
-    logger = getLogger(APP_NAME)
+    global _LOGGER
+    return _LOGGER
 
 
 def __flush_logger():
-    for handler in logger.handlers:
+    for handler in _LOGGER.handlers:
         handler.flush()
 
 

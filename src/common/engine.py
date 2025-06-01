@@ -29,8 +29,7 @@ from common.logger import (
     get_logger,
     input_interactive,
     print_interactive_input,
-    set_console_log_level,
-    set_log_file_handler,
+    set_logging_config,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -49,9 +48,14 @@ class Engine(ABC):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         set_locale(sharly_chess_config.locale)
-        set_console_log_level(sharly_chess_config.log_level)
-        self.log_file_path.parent.mkdir(parents=True, exist_ok=True)
-        set_log_file_handler(self.log_file_path)
+        set_logging_config(
+            console_log_level=sharly_chess_config.console_log_level,
+            console_color=sharly_chess_config.console_color,
+            console_show_date=sharly_chess_config.console_show_date,
+            console_show_level=sharly_chess_config.console_show_level,
+            file_output=sharly_chess_config.file_output,
+            file_path=self.log_file_path,
+        )
         logger.info(
             'Sharly Chess %s - %s - %s',
             sharly_chess_config.version,

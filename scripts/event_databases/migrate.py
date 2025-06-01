@@ -11,7 +11,7 @@ from common.logger import (  # Noqa E402
     print_interactive_info,
     print_interactive_error,
     print_interactive_success,
-    set_console_log_level,
+    set_logging_config,
 )
 from data.loader import EventLoader  # Noqa E402
 from database.sqlite.config.config_database import ConfigDatabase  # Noqa E402
@@ -21,7 +21,7 @@ from database.sqlite.migration_database import MigrationDatabase  # Noqa E402
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        description=('Command migrating one or more databases to a specific migration.')
+        description='Command migrating one or more databases to a specific migration.'
     )
     parser.add_argument(
         '-e',
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         else:
             migration = args.migration
 
-    set_console_log_level(logging.DEBUG)
+    set_logging_config(console_log_level=logging.DEBUG)
     for database in databases:
         with database:
             try:

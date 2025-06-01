@@ -298,9 +298,6 @@ msgstr ""
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
-msgid "Application"
-msgstr ""
-
 msgid "Arbiter interface (private access)"
 msgstr ""
 
@@ -708,6 +705,9 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
+msgid "Colorblind people can print the logging level to distinguish important information on the console."
+msgstr ""
+
 msgid "Colors and delays"
 msgstr ""
 
@@ -761,6 +761,21 @@ msgid "Connection to the server failed: {error}."
 msgstr ""
 
 msgid "Connections ChessEvent"
+msgstr ""
+
+msgid "Console and logs"
+msgstr ""
+
+msgid "Console formatting"
+msgstr ""
+
+msgid "Console logging level"
+msgstr ""
+
+msgid "Console logging level:"
+msgstr ""
+
+msgid "Console logging level: {console_log_level}"
 msgstr ""
 
 msgid "Contact and registration"
@@ -916,6 +931,9 @@ msgstr ""
 msgid "Date:"
 msgstr ""
 
+msgid "Debug message"
+msgstr ""
+
 msgid "Default directory of the Papi files"
 msgstr ""
 
@@ -1003,6 +1021,9 @@ msgstr ""
 msgid "Directory:"
 msgstr ""
 
+msgid "Disable file output if you face performance issues on old computers (but be aware that you will not get support from the developers if you can not send them your logs)."
+msgstr ""
+
 msgid "Disabled"
 msgstr ""
 
@@ -1056,6 +1077,18 @@ msgid "Displayed round: %(round)d"
 msgstr ""
 
 msgid "Do not assign zero-point byes"
+msgstr ""
+
+msgid "Do not output logs to file"
+msgstr ""
+
+msgid "Do not show the date and time on the console"
+msgstr ""
+
+msgid "Do not show the logging level on the console"
+msgstr ""
+
+msgid "Do not use color on the console"
 msgstr ""
 
 msgid "Do nothing"
@@ -1427,6 +1460,9 @@ msgstr ""
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
+msgid "Error message"
+msgstr ""
+
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
@@ -1681,6 +1717,12 @@ msgid "File name (without extension):"
 msgstr ""
 
 msgid "File not found"
+msgstr ""
+
+msgid "File output"
+msgstr ""
+
+msgid "File output:"
 msgstr ""
 
 msgid "Filter the categories."
@@ -1945,6 +1987,9 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
+msgid "Information message"
+msgstr ""
+
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
@@ -2002,6 +2047,9 @@ msgstr ""
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
+msgid "Invalid console logging level [{console_log_level}]."
+msgstr ""
+
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
@@ -2027,9 +2075,6 @@ msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr ""
 
 msgid "Invalid locale [{locale}]."
-msgstr ""
-
-msgid "Invalid log level [{log_level}]."
 msgstr ""
 
 msgid "Invalid mail [{mail}]."
@@ -2150,15 +2195,6 @@ msgid "Local source databases settings have been updated."
 msgstr ""
 
 msgid "Location"
-msgstr ""
-
-msgid "Log level"
-msgstr ""
-
-msgid "Log level:"
-msgstr ""
-
-msgid "Logging level: {log_level}"
 msgstr ""
 
 msgid "Loss"
@@ -2657,6 +2693,9 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
+msgstr ""
+
+msgid "Output logs to file"
 msgstr ""
 
 msgid "Over 20"
@@ -3500,6 +3539,18 @@ msgstr ""
 msgid "Show all the players"
 msgstr ""
 
+msgid "Show the date and time on the console"
+msgstr ""
+
+msgid "Show the date and time on the console:"
+msgstr ""
+
+msgid "Show the logging level on the console"
+msgstr ""
+
+msgid "Show the logging level on the console:"
+msgstr ""
+
 msgid "Show/hide the boards screens."
 msgstr ""
 
@@ -3519,6 +3570,9 @@ msgid "Show/hide the results screens."
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
 msgstr ""
 
 msgid "Single Screens"
@@ -3597,6 +3651,9 @@ msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
+msgstr ""
+
+msgid "Startup"
 msgstr ""
 
 msgid "Status"
@@ -3771,9 +3828,6 @@ msgstr ""
 msgid "The location of the tournament."
 msgstr ""
 
-msgid "The log level allows you to trace the behaviour of the application."
-msgstr ""
-
 msgid "The mail addresses."
 msgstr ""
 
@@ -3801,6 +3855,9 @@ msgstr ""
 
 #, python-format
 msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
+msgstr ""
+
+msgid "The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled)."
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4545,7 +4602,16 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
+msgid "Use color on the console"
+msgstr ""
+
+msgid "Use colors on the console:"
+msgstr ""
+
 msgid "Use no timer"
+msgstr ""
+
+msgid "Using colors helps in finding quickly important information on the console."
 msgstr ""
 
 msgid "Variation"
@@ -4577,6 +4643,9 @@ msgstr ""
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
+
+msgid "Warning message"
+msgstr ""
 
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""

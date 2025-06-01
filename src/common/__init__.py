@@ -73,9 +73,9 @@ for directory in (EVENTS_DIR, TMP_DIR):
     try:
         directory.mkdir(parents=True, exist_ok=True)
     except PermissionError as error:
-        from common.logger import logger
+        from common.logger import get_logger
 
-        logger.critical(
+        get_logger().critical(
             'Could not create directory [%s]: %s',
             directory.absolute(),
             error,
@@ -92,9 +92,9 @@ if DEVEL_ENV:
         with open(BASE_DIR / 'pyproject.toml', 'rb') as f:
             version = tomllib.load(f)['project']['version']
         if Version(version) != SHARLY_CHESS_VERSION:
-            from common.logger import logger
+            from common.logger import get_logger
 
-            logger.critical(
+            get_logger().critical(
                 'Installed %s version %s does not match defined '
                 'version %s. Run `pip install -e .` then run %s again.',
                 APP_NAME,
@@ -160,14 +160,14 @@ def show_duration(func):
 
     @wraps(func)
     def show_duration_wrapper(*args, **kwargs):
-        from common.logger import logger
+        from common.logger import get_logger
 
         start_time = time.perf_counter()
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
         # first item in the args, ie `args[0]` is `self`
-        logger.warning(
+        get_logger().warning(
             '%.4fs %s.%s(%s %s)',
             total_time,
             args[0].__class__.__name__,

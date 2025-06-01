@@ -23,7 +23,7 @@
                         </h4>
                     {% endif %}
                     <h4>
-                        {{ _('Application') }}
+                        {{ _('Startup') }}
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
@@ -35,12 +35,53 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                    </div>
+                    <h4>
+                        {{ _('Console and logs') }}
+                    </h4>
+                    <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.select_input(
-                                name='log_level',
-                                label=_('Log level:'),
-                                help_text=_('The log level allows you to trace the behaviour of the application.'),
-                                select_options=log_level_options,
+                                name='console_log_level',
+                                label=_('Console logging level:'),
+                                help_text=_('The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled).'),
+                                select_options=console_log_level_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.select_input(
+                                name='console_color',
+                                label=_('Use colors on the console:'),
+                                help_text=_('Using colors helps in finding quickly important information on the console.'),
+                                select_options=console_color_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.select_input(
+                                name='console_show_date',
+                                label=_('Show the date and time on the console:'),
+                                help_text=_('Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled).'),
+                                select_options=console_show_date_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.select_input(
+                                name='console_show_level',
+                                label=_('Show the logging level on the console:'),
+                                help_text=_('Colorblind people can print the logging level to distinguish important information on the console.'),
+                                select_options=console_show_level_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.select_input(
+                                name='file_output',
+                                label=_('File output:'),
+                                help_text=_('Disable file output if you face performance issues on old computers (but be aware that you will not get support from the developers if you can not send them your logs).'),
+                                select_options=file_output_options,
                                 data=data, errors=errors
                             ) }}
                         </div>

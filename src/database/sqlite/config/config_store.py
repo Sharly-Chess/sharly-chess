@@ -8,7 +8,11 @@ from dataclasses import dataclass, field
 @dataclass
 class StoredConfig:
     force_edit: bool = True
-    log_level: int | None = None
+    console_log_level: int | None = None
+    console_color: bool | None = None
+    console_show_date: bool | None = None
+    console_show_level: bool | None = None
+    file_output: bool | None = None
     launch_browser: bool | None = None
     federation: str | None = None
     locale: str | None = None
