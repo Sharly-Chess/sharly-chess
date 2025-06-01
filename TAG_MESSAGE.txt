@@ -1,7 +1,3 @@
-First bugfix update of Sharly Chess version 2.7
+Second bugfix update of Sharly Chess version 2.7
 
-- Forbid access to arbiters' pages for unauthorized clients
-- Normalized ChessEvent players' names
-- Fixed and added columns to the players ODS export
-- Reduced reaction time when entering results on the Pairings tab
-- Fixed a bug caused by screen families with zero items
+- Fixed a bug on screen creation
