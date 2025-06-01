@@ -6,6 +6,7 @@ English version below
 - Suppression du script ``ffe.bat`` (2.7.0)
 - Ajout de la tombola (2.7.0)
 - Correction d'un bug sur les familles d'écran sans joueur·euse (2.7.1)
+- Suppression d'un avertissement au lancement du programme (2.7.2)
 
 ## Interface web
 
@@ -24,6 +25,10 @@ English version below
 ### Gestion des appariements
 
 - Diminution des temps de réaction lors de la saisie des résultats (2.7.1)
+
+### Gestion des écrans
+
+- Correction d'un bug à la création des écrans (2.7.2)
 
 ## FFE
 
@@ -44,6 +49,7 @@ English version below
 - Removal of script ``ffe.bat`` (2.7.0)
 - Added the lottery (2.7.0)
 - Fixed a bug caused by screen families with zero items (2.7.1)
+- Removed a warning at server startup (2.7.2)
 
 ## Web interface
 
@@ -62,6 +68,10 @@ English version below
 # Pairings management
 
 - Reduced reaction time when entering results (2.7.1)
+
+# Screens management
+
+- Fixed a bug on screen creation (2.7.2)
 
 ## FFE
 
