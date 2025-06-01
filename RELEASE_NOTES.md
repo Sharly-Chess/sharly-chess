@@ -25,6 +25,10 @@ English version below
 
 - Diminution des temps de réaction lors de la saisie des résultats (2.7.1)
 
+### Gestion des écrans
+
+- Correction d'un bug à la création des écrans (2.7.2)
+
 ## FFE
 
 - Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
@@ -62,6 +66,10 @@ English version below
 # Pairings management
 
 - Reduced reaction time when entering results (2.7.1)
+
+# Screens management
+
+- Fixed a bug on screen creation (2.7.2)
 
 ## FFE
 
