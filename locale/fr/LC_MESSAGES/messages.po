@@ -1723,7 +1723,7 @@ msgid "File output"
 msgstr "Écriture sur disque"
 
 msgid "File output:"
-msgstr "Écriture sur disque┬á:"
+msgstr "Écriture sur disque :"
 
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."
@@ -2077,9 +2077,6 @@ msgstr "Horaire non valide [{hour}] (avant l'horaire précédent [{previous_hour
 msgid "Invalid locale [{locale}]."
 msgstr "Langue [{locale}] non valide."
 
-msgid "Invalid log level [{log_level}]."
-msgstr "Niveau de log non valide [{log_level}]."
-
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
 
@@ -2199,15 +2196,6 @@ msgstr "les paramètres des bases de données locales ont été mis à jour."
 
 msgid "Location"
 msgstr "Lieu"
-
-msgid "Log level"
-msgstr "Niveau de log"
-
-msgid "Log level:"
-msgstr "Niveau de log :"
-
-msgid "Logging level: {log_level}"
-msgstr "Niveau de log : {log_level}"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -4985,4 +4973,16 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Invalid log level [{log_level}]."
+#~ msgstr "Niveau de log non valide [{log_level}]."
+
+#~ msgid "Log level"
+#~ msgstr "Niveau de log"
+
+#~ msgid "Log level:"
+#~ msgstr "Niveau de log :"
+
+#~ msgid "Logging level: {log_level}"
+#~ msgstr "Niveau de log : {log_level}"
 
