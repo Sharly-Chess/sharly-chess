@@ -99,6 +99,7 @@ def build_exe():
         '--paths=.',
         '--icon=src/web/static/images/sharly-chess.ico',
         '--optimize',
+        '--exclude-module pkg_resources',
         '1',
         'src/sharly_chess.py',
     ]
