@@ -6,6 +6,7 @@ English version below
 - Suppression du script ``ffe.bat`` (2.7.0)
 - Ajout de la tombola (2.7.0)
 - Correction d'un bug sur les familles d'écran sans joueur·euse (2.7.1)
+- Suppression d'un avertissement au lancement du programme (2.7.2)
 
 ## Interface web
 
@@ -48,6 +49,7 @@ English version below
 - Removal of script ``ffe.bat`` (2.7.0)
 - Added the lottery (2.7.0)
 - Fixed a bug caused by screen families with zero items (2.7.1)
+- Removed a warning at server startup (2.7.2)
 
 ## Web interface
 

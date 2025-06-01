@@ -1,3 +1,4 @@
 Second bugfix update of Sharly Chess version 2.7
 
-- Fixed a bug on screen creation
+- Fix a bug that prevented the creation of screen sets
+- Prevent setuptools warning from showing
