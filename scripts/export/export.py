@@ -99,8 +99,11 @@ def build_exe():
         '--paths=.',
         '--icon=src/web/static/images/sharly-chess.ico',
         '--optimize',
-        '--exclude-module pkg_resources',
         '1',
+        # TODO Remove this option when https://github.com/pyinstaller/pyinstaller/issues/9149 is fixed
+        # this option was add in 2.7.2 as a workaround of a bug in PyInstaller
+        # See https://github.com/pyinstaller/pyinstaller/issues/9149#issuecomment-2914294505
+        '--exclude-module=pkg_resources',
         'src/sharly_chess.py',
     ]
     migration_base_modules: list[ModuleType] = [config_migrations, event_migrations] + [
