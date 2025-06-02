@@ -106,16 +106,17 @@ class FFESession(Session):
                         for file_id, file_name in files.items()
                     }
                     response = self.post(url, data=data, files=handlers)
-                    for handler in handlers.values():
-                        handler.close()
             content: str = response.content.decode()
             date_str = datetime.strftime(
                 datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
             )
             debug_file = ffe.TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
-            with open(debug_file, 'w', encoding='utf-8') as f:
-                f.write(content)
-            logger.debug('Raw content stored to %s.', debug_file)
+            try:
+                with open(debug_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                logger.debug('Raw content stored to %s.', debug_file)
+            except OSError:
+                logger.debug('Unable to store file [%s].', debug_file)
             return content
         except ConnectionError as ex:
             logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
@@ -130,8 +131,9 @@ class FFESession(Session):
             )
         except RequestException as ex:
             logger.error('Failed to read [%s]: [%s].', url, ex)
-        for handler in handlers.values():
-            handler.close()
+        finally:
+            for handler in handlers.values():
+                handler.close()
         return None
 
     def _parse_html_content(self, html) -> tuple[AdvancedHTMLParser | None, str | None]:
