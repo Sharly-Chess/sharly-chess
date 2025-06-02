@@ -3858,7 +3858,7 @@ msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes
 msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE (par défaut : %(num)d minutes)"
 
 msgid "The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled)."
-msgstr "Le niveau minimum de log montrés sur la console (tous les niveaux de log sont ├®crits sur disque si l'├®criture sur disque est activ├®e)."
+msgstr "Le niveau minimum de log montrés sur la console (tous les niveaux de log sont écrits sur disque si l'écriture sur disque est activée)."
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
