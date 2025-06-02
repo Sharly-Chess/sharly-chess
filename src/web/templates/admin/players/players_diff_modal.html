@@ -244,7 +244,7 @@
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
-                                    {{ player.fide_id }}
+                                    {{ player.fide_id or '-' }}
                                 </td>
                                 {{ admin_macros.extra_admin_column_cell("title", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='title' %}

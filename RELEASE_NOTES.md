@@ -21,6 +21,7 @@ English version below
 ### Gestion des joueur·euses
 
 - Correction et ajout de champs dans l'export des joueur·euses au format ODS (2.7.1)
+- Correction de l'affichage des joueur·euses non-FIDE lors de la mise à jour depuis les bases de données FIDE et FFE (2.7.3)
 
 ### Gestion des appariements
 
@@ -64,6 +65,7 @@ English version below
 # Players management
 
 - Fixed and added columns to the players ODS export (2.7.1)
+- Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases (2.7.3)
 
 # Pairings management
 
