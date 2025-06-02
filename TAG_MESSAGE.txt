@@ -1,4 +1,4 @@
-Second bugfix update of Sharly Chess version 2.7
+Third bugfix update of Sharly Chess version 2.7
 
-- Fix a bug that prevented the creation of screen sets
-- Prevent setuptools warning from showing
+- Fixed FFE results upload
+- Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases

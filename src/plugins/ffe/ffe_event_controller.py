@@ -21,6 +21,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
+from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -85,8 +86,12 @@ class FfeAdminEventController(BaseEventAdminController):
         ffe_auth_valid: bool | None = None
 
         if NetworkMonitor.connected():
-            ffe_id = data['ffe_id']
-            ffe_password = data['ffe_password']
+            ffe_id: int = 0
+            try:
+                ffe_id = WebContext.form_data_to_int(data, 'ffe_id') or 0
+            except ValueError:
+                pass
+            ffe_password: str = WebContext.form_data_to_str(data, 'ffe_password') or ''
 
             if ffe_id and ffe_password:
                 ffe_auth_valid = FFESession(tournament=None).test_auth(
