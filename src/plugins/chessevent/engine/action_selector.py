@@ -34,7 +34,8 @@ from database.access.papi.papi_database import (
 )
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
-from plugins.chessevent import PLUGIN_NAME, TMP_DIR
+from plugins import chessevent
+from plugins.chessevent import PLUGIN_NAME
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
@@ -164,7 +165,8 @@ class ActionSelector(metaclass=Singleton):
         # write data to a temporary file to limit the time no tournament file is available
         date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
         tmp_file: Path = (
-            TMP_DIR / f'{tournament.file.stem}-{date}{tournament.file.suffix}'
+            chessevent.TMP_DIR
+            / f'{tournament.file.stem}-{date}{tournament.file.suffix}'
         )
         logger.debug('Writing ChessEvent data to temporary Papi file [%s]...', tmp_file)
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
@@ -349,7 +351,7 @@ class ActionSelector(metaclass=Singleton):
                                 chessevent_tournament_info = json.loads(data)
                             except JSONDecodeError as ex:
                                 error_output: Path = (
-                                    TMP_DIR
+                                    chessevent.TMP_DIR
                                     / event.uniq_id
                                     / f'{tournament.uniq_id}_error_l{ex.lineno}_c{ex.colno}_p{ex.pos}.json'
                                 )
