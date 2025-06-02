@@ -3546,7 +3546,7 @@ msgid "Show the logging level on the console"
 msgstr "Montrer le niveau de log sur la console"
 
 msgid "Show the logging level on the console:"
-msgstr "Montrer le niveau de log sur la console ;"
+msgstr "Montrer le niveau de log sur la console :"
 
 msgid "Show/hide the boards screens."
 msgstr "Afficher/cacher les écrans d'affichage des échiquiers."
