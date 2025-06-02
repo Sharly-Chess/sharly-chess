@@ -10,7 +10,6 @@ from typing import Any
 
 import chardet
 
-from common import TMP_DIR
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -35,7 +34,7 @@ from database.access.papi.papi_database import (
 )
 from database.access.papi.papi_template import create_empty_papi_database
 from database.sqlite.event.event_database import EventDatabase
-from plugins.chessevent import PLUGIN_NAME
+from plugins.chessevent import PLUGIN_NAME, TMP_DIR
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
@@ -165,9 +164,7 @@ class ActionSelector(metaclass=Singleton):
         # write data to a temporary file to limit the time no tournament file is available
         date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
         tmp_file: Path = (
-            TMP_DIR
-            / 'chessevent'
-            / f'{tournament.file.stem}-{date}{tournament.file.suffix}'
+            TMP_DIR / f'{tournament.file.stem}-{date}{tournament.file.suffix}'
         )
         logger.debug('Writing ChessEvent data to temporary Papi file [%s]...', tmp_file)
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
