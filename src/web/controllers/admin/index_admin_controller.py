@@ -82,7 +82,7 @@ class IndexAdminController(BaseAdminController):
         console_show_level: bool | None = WebContext.form_data_to_bool(
             data, 'console_show_level'
         )
-        file_output: bool | None = WebContext.form_data_to_bool(data, 'file_output')
+        experimental: bool | None = WebContext.form_data_to_bool(data, 'experimental')
         launch_browser: bool | None = WebContext.form_data_to_bool(
             data, 'launch_browser'
         )
@@ -107,7 +107,7 @@ class IndexAdminController(BaseAdminController):
             console_color=console_color,
             console_show_date=console_show_date,
             console_show_level=console_show_level,
-            file_output=file_output,
+            experimental=experimental,
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
@@ -288,8 +288,8 @@ class IndexAdminController(BaseAdminController):
                         'console_show_level': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.console_show_level
                         ),
-                        'file_output': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.file_output
+                        'experimental': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.experimental
                         ),
                         'launch_browser': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.launch_browser
@@ -357,14 +357,14 @@ class IndexAdminController(BaseAdminController):
                         'on' if SharlyChessConfig.default_console_show_level else 'off'
                     ]
                 )
-                file_output_options: dict[str, str] = {
+                experimental_options: dict[str, str] = {
                     '': '-',
-                    'on': _('Output logs to file'),
-                    'off': _('Do not output logs to file'),
+                    'on': _('Enable experimental features'),
+                    'off': _('Do not enable experimental features'),
                 }
-                file_output_options[''] = _('By default - {option}').format(
-                    option=file_output_options[
-                        'on' if SharlyChessConfig.default_file_output else 'off'
+                experimental_options[''] = _('By default - {option}').format(
+                    option=experimental_options[
+                        'on' if SharlyChessConfig.default_experimental else 'off'
                     ]
                 )
                 launch_browser_options: dict[str, str] = {
@@ -391,7 +391,7 @@ class IndexAdminController(BaseAdminController):
                     'console_color_options': console_color_options,
                     'console_show_date_options': console_show_date_options,
                     'console_show_level_options': console_show_level_options,
-                    'file_output_options': file_output_options,
+                    'experimental_options': experimental_options,
                     'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,

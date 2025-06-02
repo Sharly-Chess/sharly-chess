@@ -14,10 +14,10 @@
 | `console_color`      | `INTEGER` |            | Boolean:<br/>- `1`: Use colors on the console (default);<br/>- `0`: Do not use colors on the console                         |
 | `console_show_date`  | `INTEGER` |            | Boolean:<br/>- `1`: Show the date and time on the console;<br/>- `0`: Do not show the date and time on the console (default) |
 | `console_show_level` | `INTEGER` |            | Boolean:<br/>- `1`: Show the logging level on the console;<br/>- `0`: Do not show the logging level on the console (default) |
-| `file_output`        | `INTEGER` |            | Boolean:<br/>- `1`: Output logs to file (default);<br/>- `0`: Do not output logs to file                                     |
 | `launch_browser`     | `INTEGER` |            | Boolean:<br/>- `1`: A browser is automatically opened (default);<br/>- `0`: No browser is opened                             |
 | `federation`         | `TEXT`    |            | The default federation code for events                                                                                       |
 | `locale`             | `TEXT`    |            | The default language used for users                                                                                          |
+| `experimental`       | `INTEGER` |            | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
 
 ### `local_source_database` (local player databases)
 

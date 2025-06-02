@@ -76,15 +76,6 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='file_output',
-                                label=_('File output:'),
-                                help_text=_('Disable file output if you face performance issues on old computers (but be aware that you will not get support from the developers if you can not send them your logs).'),
-                                select_options=file_output_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
                     </div>
                     <h4>
                         {{ _('Internationalization') }}
@@ -124,6 +115,20 @@
                             ) }}
                         </div>
                     {% endfor %}
+                    <h4>
+                        {{ _('Experimental features') }}
+                    </h4>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.select_input(
+                                name='experimental',
+                                label=_('USE AT YOUR OWN RISKS!'),
+                                help_text=_('Enable experimental features to benefit from the very last (experimental!) features.'),
+                                select_options=experimental_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
                 </form>
             {% else %}
                 <form

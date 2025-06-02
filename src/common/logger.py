@@ -16,7 +16,6 @@ class LoggingConfigValues:
     console_color: bool = True
     console_show_date: bool = False
     console_show_level: bool = False
-    file_output: bool = True
     file_path: Path | None = None
 
 
@@ -41,7 +40,6 @@ def set_logging_config(
     console_color: bool | None = None,
     console_show_date: bool | None = None,
     console_show_level: bool | None = None,
-    file_output: bool | None = None,
     file_path: Path | None = None,
 ) -> dict[str, Any]:
     """Set logging parameters, returns the logging config as a dict that can be used by logging libraries."""
@@ -54,14 +52,9 @@ def set_logging_config(
         _LOGGING_CONFIG_VALUES.console_show_date = console_show_date
     if console_show_level is not None:
         _LOGGING_CONFIG_VALUES.console_show_level = console_show_level
-    if file_output is not None:
-        _LOGGING_CONFIG_VALUES.file_output = file_output
     if file_path is not None:
         _LOGGING_CONFIG_VALUES.file_path = file_path
-    if (
-        _LOGGING_CONFIG_VALUES.file_output
-        and _LOGGING_CONFIG_VALUES.file_path is not None
-    ):
+    if _LOGGING_CONFIG_VALUES.file_path is not None:
         _LOGGING_CONFIG_VALUES.file_path.parent.mkdir(parents=True, exist_ok=True)
     dictConfig(logging_config := get_logging_config())
     _LOGGER = getLogger(APP_NAME)
@@ -136,7 +129,7 @@ def get_logging_config() -> dict[str, Any]:
             },
         },
     }
-    if _LOGGING_CONFIG_VALUES.file_output:
+    if _LOGGING_CONFIG_VALUES.file_path:
         logging_config['handlers']['file'] = {  # type: ignore
             'class': 'logging.handlers.RotatingFileHandler',
             'level': logging.DEBUG,

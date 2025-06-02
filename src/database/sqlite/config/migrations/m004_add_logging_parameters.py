@@ -9,10 +9,10 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` ADD `console_color` INTEGER')
         self.database.execute('ALTER TABLE `info` ADD `console_show_date` INTEGER')
         self.database.execute('ALTER TABLE `info` ADD `console_show_level` INTEGER')
-        self.database.execute('ALTER TABLE `info` ADD `file_output` INTEGER')
+        self.database.execute('ALTER TABLE `info` ADD `experimental` INTEGER')
 
     def backward(self):
-        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `file_output`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `experimental`')
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `console_show_level`'
         )

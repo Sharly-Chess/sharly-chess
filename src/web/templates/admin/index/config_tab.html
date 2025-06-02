@@ -73,7 +73,6 @@
                     class="locale-flag"
                 />
                 {{ l_info.name }}
-                {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
                 {% if not sharly_chess_config.stored_config.locale %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
@@ -139,10 +138,10 @@
             </td>
         </tr>
         <tr class="{{ row_cycler() }}">
-            <th scope="row" class="text-nowrap">{{ _('File output') }}</th>
+            <th scope="row" class="text-nowrap">{{ _('Experimental features') }}</th>
             <td>
-                {% if sharly_chess_config.file_output %}{{ _('Yes') }}{% else %}{{ _('No') }}{% endif %}
-                {% if sharly_chess_config.stored_config.file_output is none %}
+                {% if sharly_chess_config.experimental %}{{ _('Enabled') }}{% else %}{{ _('Disabled') }}{% endif %}
+                {% if sharly_chess_config.stored_config.experimental is none %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>

@@ -9,7 +9,12 @@ import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
-from common import BASE_DIR, EVENTS_DIR, SHARLY_CHESS_VERSION
+from common import (
+    BASE_DIR,
+    EVENTS_DIR,
+    SHARLY_CHESS_VERSION,
+    enable_experimental_features,
+)
 from common.i18n import (
     DEFAULT_LOCALE,
     _,
@@ -41,8 +46,8 @@ class SharlyChessConfig(metaclass=Singleton):
     # True to use show the log_level on the console, used by default.
     default_console_show_level: bool = False
 
-    # True to output logs to file, used by default.
-    default_file_output: bool = True
+    # True to enable experimental features, used by default.
+    default_experimental: bool = False
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'
@@ -108,8 +113,8 @@ class SharlyChessConfig(metaclass=Singleton):
             console_color=self.console_color,
             console_show_date=self.console_show_date,
             console_show_level=self.console_show_level,
-            file_output=self.file_output,
         )
+        enable_experimental_features(self.experimental)
         # TODO (up to here)
 
     @property
@@ -146,11 +151,11 @@ class SharlyChessConfig(metaclass=Singleton):
             return self.default_console_show_level
 
     @property
-    def file_output(self) -> bool:
-        if self.stored_config.file_output is not None:
-            return self.stored_config.file_output
+    def experimental(self) -> bool:
+        if self.stored_config.experimental is not None:
+            return self.stored_config.experimental
         else:
-            return self.default_file_output
+            return self.default_experimental
 
     @property
     def launch_browser(self) -> bool:

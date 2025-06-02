@@ -12,7 +12,7 @@ class StoredConfig:
     console_color: bool | None = None
     console_show_date: bool | None = None
     console_show_level: bool | None = None
-    file_output: bool | None = None
+    experimental: bool | None = None
     launch_browser: bool | None = None
     federation: str | None = None
     locale: str | None = None

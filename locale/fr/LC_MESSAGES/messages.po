@@ -1021,9 +1021,6 @@ msgstr "Répertoire [{path}] non trouvé."
 msgid "Directory:"
 msgstr "Répertoire :"
 
-msgid "Disable file output if you face performance issues on old computers (but be aware that you will not get support from the developers if you can not send them your logs)."
-msgstr "Désactivez l'écriture des logs sur disque sur les vieux ordinateurs (mais soyez conscients que vous ne pourrez pas obtenir de support de la part des développeurs qui vous demanderont vos logs)."
-
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -1079,8 +1076,8 @@ msgstr "Ronde affichée : %(round)d"
 msgid "Do not assign zero-point byes"
 msgstr "Ne pas marquer forfait"
 
-msgid "Do not output logs to file"
-msgstr "Ne pas écrire les logs sur disque"
+msgid "Do not enable experimental features"
+msgstr "Ne pas activer les fonctionnalités expérimentales"
 
 msgid "Do not show the date and time on the console"
 msgstr "Ne pas montrer la date et l'heure sur la console"
@@ -1418,6 +1415,12 @@ msgstr "Tranche Elo (handicap) :"
 msgid "Email:"
 msgstr "Mél :"
 
+msgid "Enable experimental features"
+msgstr "ctiver les fonctionnalités expérimentale"
+
+msgid "Enable experimental features to benefit from the very last (experimental!) features."
+msgstr "Activer les fonctionnalités expérimentales pour bénéficier des toutes dernières fonctionnalités de l'application (expérimentales !)."
+
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
@@ -1516,6 +1519,9 @@ msgstr "Exempt"
 
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
+
+msgid "Experimental features"
+msgstr "Fonctionnalités expérimentales"
 
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
@@ -1718,12 +1724,6 @@ msgstr "Nom du fichier (sans extension) :"
 
 msgid "File not found"
 msgstr "Fichier introuvable"
-
-msgid "File output"
-msgstr "Écriture sur disque"
-
-msgid "File output:"
-msgstr "Écriture sur disque :"
 
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."
@@ -2694,9 +2694,6 @@ msgstr "Adversaire Elo [Pts]"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
-
-msgid "Output logs to file"
-msgstr "Écrire les logs sur disque"
 
 msgid "Over 20"
 msgstr "Plus de 20"
@@ -4440,6 +4437,9 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
+
+msgid "USE AT YOUR OWN RISKS!"
+msgstr "UTILISEZ À VOS PROPRES RISQUES !"
 
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."

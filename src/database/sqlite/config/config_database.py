@@ -94,7 +94,9 @@ class ConfigDatabase(MigrationDatabase):
             console_show_level=self.load_bool_or_none_from_database_field(
                 row['console_show_level']
             ),
-            file_output=self.load_bool_or_none_from_database_field(row['file_output']),
+            experimental=self.load_bool_or_none_from_database_field(
+                row['experimental']
+            ),
             federation=row['federation'],
             launch_browser=self.load_bool_or_none_from_database_field(
                 row['launch_browser']
@@ -121,7 +123,7 @@ class ConfigDatabase(MigrationDatabase):
             'console_color',
             'console_show_date',
             'console_show_level',
-            'file_output',
+            'experimental',
             'launch_browser',
             'federation',
             'locale',
@@ -132,7 +134,7 @@ class ConfigDatabase(MigrationDatabase):
             stored_config.console_color,
             stored_config.console_show_date,
             stored_config.console_show_level,
-            stored_config.file_output,
+            stored_config.experimental,
             stored_config.launch_browser,
             stored_config.federation,
             stored_config.locale,

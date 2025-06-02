@@ -1021,9 +1021,6 @@ msgstr ""
 msgid "Directory:"
 msgstr ""
 
-msgid "Disable file output if you face performance issues on old computers (but be aware that you will not get support from the developers if you can not send them your logs)."
-msgstr ""
-
 msgid "Disabled"
 msgstr ""
 
@@ -1079,7 +1076,7 @@ msgstr ""
 msgid "Do not assign zero-point byes"
 msgstr ""
 
-msgid "Do not output logs to file"
+msgid "Do not enable experimental features"
 msgstr ""
 
 msgid "Do not show the date and time on the console"
@@ -1418,6 +1415,12 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
+msgid "Enable experimental features"
+msgstr ""
+
+msgid "Enable experimental features to benefit from the very last (experimental!) features."
+msgstr ""
+
 msgid "Enable/disable the details of events on the cards below."
 msgstr ""
 
@@ -1515,6 +1518,9 @@ msgid "Exempt *** MALE"
 msgstr "Exempt"
 
 msgid "Exit button:"
+msgstr ""
+
+msgid "Experimental features"
 msgstr ""
 
 msgid "Expired FFE licence"
@@ -1717,12 +1723,6 @@ msgid "File name (without extension):"
 msgstr ""
 
 msgid "File not found"
-msgstr ""
-
-msgid "File output"
-msgstr ""
-
-msgid "File output:"
 msgstr ""
 
 msgid "Filter the categories."
@@ -2693,9 +2693,6 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
-msgstr ""
-
-msgid "Output logs to file"
 msgstr ""
 
 msgid "Over 20"
@@ -4439,6 +4436,9 @@ msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
 msgid "URL [{url}] responded code [{code}]."
+msgstr ""
+
+msgid "USE AT YOUR OWN RISKS!"
 msgstr ""
 
 msgid "Unable to create Papi files."
