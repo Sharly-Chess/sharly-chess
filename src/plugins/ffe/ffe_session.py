@@ -15,7 +15,8 @@ from common.logger import get_logger
 from data.tournament import Tournament
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
-from plugins.ffe import PLUGIN_NAME, TMP_DIR
+from plugins import ffe
+from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
@@ -111,7 +112,7 @@ class FFESession(Session):
             date_str = datetime.strftime(
                 datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
             )
-            debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
+            debug_file = ffe.TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
             with open(debug_file, 'w', encoding='utf-8') as f:
                 f.write(content)
             logger.debug('Raw content stored to %s.', debug_file)
@@ -144,7 +145,7 @@ class FFESession(Session):
             datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
         )
         debug_file = (
-            TMP_DIR
+            ffe.TMP_DIR
             / f'{(self.last_url_read or "").replace("/", "_")}-{date_str}-parsed.html'
         )
         with open(debug_file, 'w', encoding='utf-8') as file:
@@ -408,7 +409,8 @@ class FFESession(Session):
         }
         date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
         tmp_file: Path = (
-            TMP_DIR / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
+            ffe.TMP_DIR
+            / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
         )
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
         logger.debug('Copying [%s] to [%s]...', self.tournament.file, tmp_file)

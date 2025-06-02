@@ -9,7 +9,8 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.tournament import Tournament
-from plugins.ffe import PLUGIN_NAME, TMP_DIR
+from plugins import ffe
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import (
     FfeBackgroundUploader,
     FfeUploadResult,
@@ -200,7 +201,10 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament,
     ) -> Path:
         return (
-            TMP_DIR / 'fees' / tournament.event.uniq_id / f'{tournament.uniq_id}.html'
+            ffe.TMP_DIR
+            / 'fees'
+            / tournament.event.uniq_id
+            / f'{tournament.uniq_id}.html'
         )
 
     @get(

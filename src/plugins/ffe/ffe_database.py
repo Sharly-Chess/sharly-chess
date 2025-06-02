@@ -24,7 +24,8 @@ from utils.enum import (
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 
-from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR, TMP_DIR
+from plugins import ffe
+from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
 from plugins.ffe.utils import PlayerFFELicence
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -58,7 +59,7 @@ class FfeDatabase(LocalSourceDatabase):
 
     @property
     def _source_file_path(self) -> Path:
-        return TMP_DIR / 'Data.mdb'
+        return ffe.TMP_DIR / 'Data.mdb'
 
     @override
     @property
@@ -71,7 +72,7 @@ class FfeDatabase(LocalSourceDatabase):
 
     def _download_source_file(self) -> bool:
         ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
-        local_zip_file: Path = TMP_DIR / os.path.basename(ffe_database_url)
+        local_zip_file: Path = ffe.TMP_DIR / os.path.basename(ffe_database_url)
         with suppress(FileNotFoundError):
             local_zip_file.unlink()
         try:
@@ -101,7 +102,7 @@ class FfeDatabase(LocalSourceDatabase):
             return False
         self._source_file_path.unlink(missing_ok=True)
         with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-            zip_ref.extractall(TMP_DIR)
+            zip_ref.extractall(ffe.TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
             logger.error(self.log_prefix + _('Could not unzip data.'))
