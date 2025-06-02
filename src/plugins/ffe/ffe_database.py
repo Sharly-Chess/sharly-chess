@@ -10,7 +10,6 @@ from typing import Iterator, Any, override
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from data.player import Player, Federation, Club, PlayerRating
@@ -24,9 +23,8 @@ from utils.enum import (
     PlayerTitle,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
-from plugins import PLUGINS_DIR
 
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR, TMP_DIR
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
 from plugins.ffe.utils import PlayerFFELicence
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -56,7 +54,7 @@ class FfeDatabase(LocalSourceDatabase):
 
     @property
     def _schema_file_path(self) -> Path:
-        return PLUGINS_DIR / 'ffe' / 'create_ffe.sql'
+        return PLUGIN_DIR / 'create_ffe.sql'
 
     @property
     def _source_file_path(self) -> Path:
