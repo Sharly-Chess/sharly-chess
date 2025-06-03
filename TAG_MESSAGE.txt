@@ -1,1 +1,3 @@
 Fifth bugfix update of Sharly Chess version 2.7
+
+- Update players when rating types differ in data sources
