@@ -1,3 +1,4 @@
 Fourth bugfix update of Sharly Chess version 2.7
 
 - Fixed the ChessEvent players' Estimated/National rating type
+- Fix FFE auth test on the tournament editing form
