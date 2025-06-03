@@ -211,8 +211,10 @@ class FFESession(Session):
             logger.debug('Session initialized.')
         return result
 
-    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool:
-        """Authenticates on the FFE admin website."""
+    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
+        """Authenticates on the FFE admin website.
+        Returns True on success, False if the credentials are incorrect, or
+        None if they couldn't be tested."""
 
         assert self.ffe_state
         if ffe_id is None or ffe_password is None:
@@ -232,13 +234,13 @@ class FFESession(Session):
         }
         html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return False
+            return None
         parser, error = self._parse_html_content(html)
         if error:
-            return False
+            return None
         assert parser is not None
         if not self.read_ffe_state(parser, url):
-            return False
+            return None
         for id_ in [
             SET_VISIBLE_LINK_ID,
             FEES_LINK_ID,
@@ -267,9 +269,7 @@ class FFESession(Session):
         return True
 
     def test_auth(self, ffe_id: int, ffe_password: str) -> bool:
-        """Tries to authenticate on the FFE admin website for the tournament.
-        Returns True on success, False if the credentials are incorrect, or
-        None if they couldn't be tested"""
+        """Tries to authenticate on the FFE admin website for the tournament"""
 
         logger.info('Testing FFE authentication for tournament [%d]...', ffe_id)
         if not self._ffe_init():
