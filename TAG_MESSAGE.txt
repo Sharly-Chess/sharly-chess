@@ -1,1 +1,3 @@
 Fourth bugfix update of Sharly Chess version 2.7
+
+- Fix FFE auth test on the tournament editing form

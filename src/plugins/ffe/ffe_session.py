@@ -211,8 +211,10 @@ class FFESession(Session):
             logger.debug('Session initialized.')
         return result
 
-    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool:
-        """Authenticates on the FFE admin website."""
+    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
+        """Authenticates on the FFE admin website.
+        Returns True on success, False if the credentials are incorrect, or
+        None if they couldn't be tested."""
 
         assert self.ffe_state
         if ffe_id is None or ffe_password is None:
@@ -266,18 +268,17 @@ class FFESession(Session):
         logger.debug('FFE authentication succeeded.')
         return True
 
-    def test_auth(self, ffe_id: int, ffe_password: str) -> bool:
+    def test_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
         """Tries to authenticate on the FFE admin website for the tournament.
         Returns True on success, False if the credentials are incorrect, or
-        None if they couldn't be tested"""
+        None if they couldn't be tested."""
 
         logger.info('Testing FFE authentication for tournament [%d]...', ffe_id)
         if not self._ffe_init():
-            return False
-        if not self._ffe_auth(ffe_id, ffe_password):
-            return False
-        logger.info('FFE authentication succeeded.')
-        return True
+            return None
+        if auth := self._ffe_auth(ffe_id, ffe_password):
+            logger.info('FFE authentication succeeded.')
+        return auth
 
     def get_fees(self) -> str | None:
         """Downloads the fees for the tournament."""
