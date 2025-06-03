@@ -1800,6 +1800,9 @@ msgstr ""
 msgid "Games won with Black"
 msgstr ""
 
+msgid "Gen *** GENDER FOR PRINT VIEW"
+msgstr "Gen."
+
 msgid "Gender"
 msgstr ""
 
