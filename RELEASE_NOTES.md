@@ -36,16 +36,12 @@ English version below
 - Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
 - Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
 - Correction d'un bug de mise en ligne des résultats (2.7.3)
-<<<<<<< HEAD
-=======
 - Correction du test des identifiants FFE lors de l'édition des tournois (2.7.4)
->>>>>>> f7d57f99 (Fix FFE auth test on the tournament editing form (#658))
 
 ## ChessEvent
 
 - Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
 - Normalisation des noms des joueur·euses (2.7.1)
-- Correction du type de classement Estimé/National des joueur·euses (2.7.4)
 
 ---
 
@@ -86,13 +82,9 @@ English version below
 - Integration of the FFE operations to the web UI (2.7.0)
 - Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
 - Fixed a bug on FFE results upload (2.7.3)
-<<<<<<< HEAD
-=======
 - Fixed FFE auth test on the tournament editing form (2.7.4)
->>>>>>> f7d57f99 (Fix FFE auth test on the tournament editing form (#658))
 
 ## ChessEvent
 
 - Fixed birth dates prior to 1970-01-01 (2.7.0)
 - Normalized players' names (2.7.1)
-- Fixed the players' Estimated/National rating type (2.7.4)
