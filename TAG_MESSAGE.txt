@@ -1,4 +1,1 @@
-Third bugfix update of Sharly Chess version 2.7
-
-- Fixed FFE results upload
-- Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases
+Fourth bugfix update of Sharly Chess version 2.7
