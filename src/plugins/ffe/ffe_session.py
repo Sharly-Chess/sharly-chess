@@ -276,10 +276,9 @@ class FFESession(Session):
         logger.info('Testing FFE authentication for tournament [%d]...', ffe_id)
         if not self._ffe_init():
             return None
-        if not self._ffe_auth(ffe_id, ffe_password):
-            return False
-        logger.info('FFE authentication succeeded.')
-        return True
+        if auth := self._ffe_auth(ffe_id, ffe_password):
+            logger.info('FFE authentication succeeded.')
+        return auth
 
     def get_fees(self) -> str | None:
         """Downloads the fees for the tournament."""
