@@ -268,12 +268,14 @@ class FFESession(Session):
         logger.debug('FFE authentication succeeded.')
         return True
 
-    def test_auth(self, ffe_id: int, ffe_password: str) -> bool:
-        """Tries to authenticate on the FFE admin website for the tournament"""
+    def test_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
+        """Tries to authenticate on the FFE admin website for the tournament.
+        Returns True on success, False if the credentials are incorrect, or
+        None if they couldn't be tested."""
 
         logger.info('Testing FFE authentication for tournament [%d]...', ffe_id)
         if not self._ffe_init():
-            return False
+            return None
         if not self._ffe_auth(ffe_id, ffe_password):
             return False
         logger.info('FFE authentication succeeded.')
