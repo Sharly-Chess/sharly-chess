@@ -31,8 +31,8 @@ class ChessEventRatingType(PluginCoreMapper[int, PlayerRatingType]):
     @staticmethod
     def _core_object_by_plugin_value() -> dict[int, PlayerRatingType]:
         return {
-            1: PlayerRatingType.NATIONAL,
-            2: PlayerRatingType.ESTIMATED,
+            1: PlayerRatingType.ESTIMATED,
+            2: PlayerRatingType.NATIONAL,
             3: PlayerRatingType.FIDE,
         }
 
