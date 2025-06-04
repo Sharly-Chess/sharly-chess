@@ -20,7 +20,7 @@ English version below
 ## Usage
 
 - Added logging parameters and dynamically update the logging configuration (2.8.0)
-- Removed the ``--experimental`` option and activate the experimental features from the wen UI (2.8.0)
+- Removed the ``--experimental`` option and activate the experimental features from the web UI (2.8.0)
 
 ## Web interface
 
