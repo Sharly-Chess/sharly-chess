@@ -815,7 +815,7 @@ class FfePlugin(Plugin):
                 ExtraColumn(
                     at='first-round' if document.is_crosstable else 'club',
                     title=_('League *** LEAGUE FOR PRINT VIEW'),
-                    classes='center',
+                    classes='league',
                     value=lambda player: self.get_data(player.plugin_data, 'league'),
                 )
             ]
