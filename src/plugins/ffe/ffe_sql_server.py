@@ -247,7 +247,7 @@ class FFESqlServer(SqlServer):
         )
         await self.execute(
             query,
-            (id_,),
+            (str(id_),),
         )
         if row := await self.fetchone():
             return self._get_player_from_row(row)
