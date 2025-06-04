@@ -739,6 +739,9 @@ msgstr "Comment"
 msgid "Comment:"
 msgstr ""
 
+msgid "Comments *** COMMENTS FOR PRINT VIEW"
+msgstr "Comments"
+
 msgid "Configuration"
 msgstr ""
 
@@ -2879,6 +2882,9 @@ msgid "Players (none now)"
 msgstr ""
 
 msgid "Players ({num})"
+msgstr ""
+
+msgid "Players check-in list"
 msgstr ""
 
 #, python-format

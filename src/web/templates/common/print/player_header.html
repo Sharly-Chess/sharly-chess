@@ -1,12 +1,18 @@
 <tr class="player-header">
-    {{ macros.extra_column_header("rank", extra_columns)}}
-    <th class="rank text-end">
-        {% if ranking or crosstable %}
-            {{ _('Rk. *** RANK FOR PRINT VIEW') }}
-        {% else %}
-            {{ _('Nb. *** NB FOR PRINT VIEW') }}
-        {% endif %}
-    </th>
+
+    {% if checkin_list %}
+        {{ macros.extra_column_header("checkin", extra_columns)}}
+        <th class="checkin text-center"></th>
+    {% else %}
+        {{ macros.extra_column_header("rank", extra_columns)}}
+        <th class="rank text-end">
+            {% if ranking or crosstable %}
+                {{ _('Rk. *** RANK FOR PRINT VIEW') }}
+            {% else %}
+                {{ _('Nb. *** NB FOR PRINT VIEW') }}
+            {% endif %}
+        </th>
+    {% endif %}
     {{ macros.extra_column_header("title", extra_columns)}}
     <th class="title text-end">&nbsp;</th>
     {{ macros.extra_column_header("name", extra_columns)}}
@@ -29,6 +35,14 @@
     {% else %}
         {{ macros.extra_column_header("club", extra_columns)}}
         <th class="club text-start">{{ _('Club *** CLUB FOR PRINT VIEW') }}</th>
+    {% endif %}
+    {% if checkin_list %}
+        {{ macros.extra_column_header("paid", extra_columns)}}
+        <th class="category text-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</th>
+        {{ macros.extra_column_header("owes", extra_columns)}}
+        <th class="category text-center">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</th>
+        {{ macros.extra_column_header("comments", extra_columns)}}
+        <th class="category text-center">{{ _('Comments *** COMMENTS FOR PRINT VIEW') }}</th>
     {% endif %}
     {% if ranking or crosstable %}
         <th class="points text-center">

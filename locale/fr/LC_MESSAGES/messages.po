@@ -739,6 +739,9 @@ msgstr "Commentaire"
 msgid "Comment:"
 msgstr "Commentaire :"
 
+msgid "Comments *** COMMENTS FOR PRINT VIEW"
+msgstr "Commentaires"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -2880,6 +2883,9 @@ msgstr "Joueur·euses (aucun·e actuellement)"
 
 msgid "Players ({num})"
 msgstr "Joueur·euses ({num})"
+
+msgid "Players check-in list"
+msgstr "Pointage des joueur·euses"
 
 #, python-format
 msgid "Players from #%(first)d to #%(last)d"
