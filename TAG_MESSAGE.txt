@@ -1,3 +1,4 @@
 Fifth bugfix update of Sharly Chess version 2.7
 
 - Update players when rating types differ in data sources
+- Request the FFE SQL server when augmenting players created from the FIDE database
