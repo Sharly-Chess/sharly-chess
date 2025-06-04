@@ -22,6 +22,7 @@ English version below
 
 - Correction et ajout de champs dans l'export des joueur·euses au format ODS (2.7.1)
 - Correction de l'affichage des joueur·euses non-FIDE lors de la mise à jour depuis les bases de données FIDE et FFE (2.7.3)
+- Correction de la mise à jour des classements des joueur·euses (2.7.5)
 
 ### Gestion des appariements
 
@@ -37,6 +38,7 @@ English version below
 - Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
 - Correction d'un bug de mise en ligne des résultats (2.7.3)
 - Correction du test des identifiants FFE lors de l'édition des tournois (2.7.4)
+- Utilisation de la base de données du serveur fédéral lors de la création des joueur·euses à partir de la base FIDE (2.7.5)
 
 ## ChessEvent
 
@@ -69,6 +71,7 @@ English version below
 
 - Fixed and added columns to the players ODS export (2.7.1)
 - Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases (2.7.3)
+- Update players when rating types differ in data sources (2.7.5)
 
 # Pairings management
 
@@ -84,6 +87,7 @@ English version below
 - Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
 - Fixed a bug on FFE results upload (2.7.3)
 - Fixed FFE auth test on the tournament editing form (2.7.4)
+- Request the FFE SQL server when augmenting players created from the FIDE database (2.7.5)
 
 ## ChessEvent
 
