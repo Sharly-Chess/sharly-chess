@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
 from litestar.plugins.htmx import HTMXRequest
-import pluggy  # type: ignore
+import apluggy as pluggy  # type: ignore
 
 from common import APP_NAME
 

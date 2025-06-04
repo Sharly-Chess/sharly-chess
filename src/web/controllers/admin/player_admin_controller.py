@@ -1066,7 +1066,7 @@ class PlayerAdminController(BaseEventAdminController):
         if (fide_database := FideDatabase()).exists():
             with fide_database:
                 fide_player = fide_database.get_player_by_fide_id(player_fide_id)
-        await plugin_manager.hook.augment_player_after_search(player=fide_player)
+        await plugin_manager.ahook.augment_player_after_search(player=fide_player)
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,

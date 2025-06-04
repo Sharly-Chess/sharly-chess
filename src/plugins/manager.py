@@ -1,7 +1,7 @@
 from functools import cached_property
 from pathlib import Path
 
-from pluggy import PluginManager  # type: ignore
+from apluggy import PluginManager  # type: ignore
 
 from common import APP_NAME
 from plugins.hookspec import AppHookSpecs
