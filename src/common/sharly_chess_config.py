@@ -9,7 +9,12 @@ import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
-from common import BASE_DIR, EVENTS_DIR, SHARLY_CHESS_VERSION
+from common import (
+    BASE_DIR,
+    EVENTS_DIR,
+    SHARLY_CHESS_VERSION,
+    enable_experimental_features,
+)
 from common.i18n import (
     DEFAULT_LOCALE,
     _,
@@ -18,7 +23,7 @@ from common.i18n import (
     get_locale,
 )
 from common.i18n.utils import locale_localized_name
-from common.logger import print_interactive_input, input_interactive
+from common.logger import print_interactive_input, input_interactive, set_logging_config
 from common.singleton import Singleton
 from data.player import Federation
 from utils.enum import Result
@@ -29,8 +34,20 @@ from database.sqlite.config.config_store import StoredConfig
 class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database."""
 
-    # The default log level, used by default.
-    default_log_level: int = logging.INFO
+    # The default console log level, used by default.
+    default_console_log_level: int = logging.INFO
+
+    # True to use colors on the console, used by default.
+    default_console_color: bool = True
+
+    # True to use show the date on the console, used by default.
+    default_console_show_date: bool = False
+
+    # True to use show the log_level on the console, used by default.
+    default_console_show_level: bool = False
+
+    # True to enable experimental features, used by default.
+    default_experimental: bool = False
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'
@@ -46,8 +63,8 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default behaviour to open a browser after the startup of the web server.
     default_launch_browser: bool = True
 
-    """ The accepted log levels. """
-    log_levels: dict[int, str] = {
+    """ The accepted console log levels. """
+    console_log_levels: dict[int, str] = {
         logging.DEBUG: 'DEBUG',
         logging.INFO: 'INFO',
         logging.WARNING: 'WARNING',
@@ -56,7 +73,15 @@ class SharlyChessConfig(metaclass=Singleton):
 
     def __init__(self):
         self.web_port: int | None = None
-        self.stored_config: StoredConfig = self.load()
+        self.stored_config: StoredConfig = StoredConfig()
+        self.load()
+
+    def reload(self):
+        self.load()
+
+    def load(self):
+        with ConfigDatabase() as config_database:
+            self.stored_config: StoredConfig = config_database.load_stored_config()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
         # offline databases download, ...
@@ -82,29 +107,55 @@ class SharlyChessConfig(metaclass=Singleton):
                 self.stored_config.locale = locales[locale_num - 1]
                 config_database.update_stored_config(self.stored_config)
                 config_database.commit()
-            set_locale(self.locale)
-        # TODO (up to here)
-
-    def reload(self):
-        self.stored_config = self.load()
         set_locale(self.locale)
-
-    @staticmethod
-    def load() -> StoredConfig:
-        with ConfigDatabase() as config_database:
-            return config_database.load_stored_config()
+        set_logging_config(
+            console_log_level=self.console_log_level,
+            console_color=self.console_color,
+            console_show_date=self.console_show_date,
+            console_show_level=self.console_show_level,
+        )
+        enable_experimental_features(self.experimental)
+        # TODO (up to here)
 
     @property
     def force_edit(self) -> bool:
         return self.stored_config.force_edit
 
     @property
-    def log_level(self) -> int:
-        return self.stored_config.log_level or self.default_log_level
+    def console_log_level(self) -> int:
+        return self.stored_config.console_log_level or self.default_console_log_level
 
     @property
-    def log_level_str(self) -> str:
-        return self.log_levels[self.log_level]
+    def console_log_level_str(self) -> str:
+        return self.console_log_levels[self.console_log_level]
+
+    @property
+    def console_color(self) -> bool:
+        if self.stored_config.console_color is not None:
+            return self.stored_config.console_color
+        else:
+            return self.default_console_color
+
+    @property
+    def console_show_date(self) -> bool:
+        if self.stored_config.console_show_date is not None:
+            return self.stored_config.console_show_date
+        else:
+            return self.default_console_show_date
+
+    @property
+    def console_show_level(self) -> bool:
+        if self.stored_config.console_show_level is not None:
+            return self.stored_config.console_show_level
+        else:
+            return self.default_console_show_level
+
+    @property
+    def experimental(self) -> bool:
+        if self.stored_config.experimental is not None:
+            return self.stored_config.experimental
+        else:
+            return self.default_experimental
 
     @property
     def launch_browser(self) -> bool:

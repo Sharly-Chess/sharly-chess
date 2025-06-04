@@ -5,11 +5,11 @@ from litestar import post, get
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect
 
-from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.tournament import Tournament
+from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import (
     FfeBackgroundUploader,
@@ -201,8 +201,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament,
     ) -> Path:
         return (
-            TMP_DIR
-            / 'ffe'
+            ffe.TMP_DIR
             / 'fees'
             / tournament.event.uniq_id
             / f'{tournament.uniq_id}.html'

@@ -73,7 +73,6 @@
                     class="locale-flag"
                 />
                 {{ l_info.name }}
-                {% if l_info.experimental %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
                 {% if not sharly_chess_config.stored_config.locale %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
@@ -108,10 +107,41 @@
             </td>
         </tr>
         <tr class="{{ row_cycler() }}">
-            <th scope="row" class="text-nowrap">{{ _('Log level') }}</th>
+            <th scope="row" class="text-nowrap">{{ _('Console logging level') }}</th>
             <td>
-                {{ sharly_chess_config.log_levels[sharly_chess_config.log_level] }}
-                {% if not sharly_chess_config.stored_config.log_level %}
+                {{ sharly_chess_config.console_log_levels[sharly_chess_config.console_log_level] }}
+                {% if not sharly_chess_config.stored_config.console_log_level %}
+                    <span class="fst-italic">
+                        {{ _('(by default)') }}
+                    </span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr class="{{ row_cycler() }}">
+            <th scope="row" class="text-nowrap">{{ _('Console formatting') }}</th>
+            <td>
+                <pre class="mb-0">
+                    {%- for console_level, console_level_info in console_level_infos.items() -%}
+                        {%- if not loop.first -%}
+                            <br/>
+                        {%- endif -%}
+                        <span style="color: {{ console_level_info['color'] }}; {%- if sharly_chess_config.console_log_level > console_level -%}text-decoration: line-through;{%- endif -%}">
+                            {%- if sharly_chess_config.console_show_date -%}
+                                {{ console_formatted_current_date }}&nbsp;
+                            {%- endif -%}
+                            {%- if sharly_chess_config.console_show_level -%}
+                                {{ console_level_info['name'] }}&nbsp;
+                            {%- endif -%}
+                            {{ console_level_info['text'] }}</span>
+                    {%- endfor -%}
+                </pre>
+            </td>
+        </tr>
+        <tr class="{{ row_cycler() }}">
+            <th scope="row" class="text-nowrap">{{ _('Experimental features') }}</th>
+            <td>
+                {% if sharly_chess_config.experimental %}{{ _('Enabled') }}{% else %}{{ _('Disabled') }}{% endif %}
+                {% if sharly_chess_config.stored_config.experimental is none %}
                     <span class="fst-italic">
                         {{ _('(by default)') }}
                     </span>

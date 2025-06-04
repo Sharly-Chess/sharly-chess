@@ -10,12 +10,12 @@ from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 
-from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from data.tournament import Tournament
 from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
+from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils
 
@@ -106,16 +106,17 @@ class FFESession(Session):
                         for file_id, file_name in files.items()
                     }
                     response = self.post(url, data=data, files=handlers)
-                    for handler in handlers.values():
-                        handler.close()
             content: str = response.content.decode()
             date_str = datetime.strftime(
                 datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
             )
-            debug_file = TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
-            with open(debug_file, 'w', encoding='utf-8') as f:
-                f.write(content)
-            logger.debug('Raw content stored to %s.', debug_file)
+            debug_file = ffe.TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
+            try:
+                with open(debug_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                logger.debug('Raw content stored to %s.', debug_file)
+            except OSError:
+                logger.debug('Unable to store file [%s].', debug_file)
             return content
         except ConnectionError as ex:
             logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
@@ -123,15 +124,16 @@ class FFESession(Session):
             logger.error('Failed to read [%s] (timeout): [%s].', url, ex)
         except HTTPError as ex:
             logger.error(
-                'Failed to read [%s] (error code [%s]): [%s].',
+                'Failed to read [%s] (error code [%d]): [%s].',
                 url,
                 ex.errno,
                 ex.strerror,
             )
         except RequestException as ex:
             logger.error('Failed to read [%s]: [%s].', url, ex)
-        for handler in handlers.values():
-            handler.close()
+        finally:
+            for handler in handlers.values():
+                handler.close()
         return None
 
     def _parse_html_content(self, html) -> tuple[AdvancedHTMLParser | None, str | None]:
@@ -145,7 +147,7 @@ class FFESession(Session):
             datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
         )
         debug_file = (
-            TMP_DIR
+            ffe.TMP_DIR
             / f'{(self.last_url_read or "").replace("/", "_")}-{date_str}-parsed.html'
         )
         with open(debug_file, 'w', encoding='utf-8') as file:
@@ -209,8 +211,10 @@ class FFESession(Session):
             logger.debug('Session initialized.')
         return result
 
-    def _ffe_auth(self, ffe_id: str | None, ffe_password: str | None) -> bool | None:
-        """Authenticates on the FFE admin website."""
+    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
+        """Authenticates on the FFE admin website.
+        Returns True on success, False if the credentials are incorrect, or
+        None if they couldn't be tested."""
 
         assert self.ffe_state
         if ffe_id is None or ffe_password is None:
@@ -223,20 +227,20 @@ class FFESession(Session):
                 VIEW_STATE_GENERATOR_INPUT_ID
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
-            'ctl00$TextLogin': ffe_id,
+            'ctl00$TextLogin': str(ffe_id),
             'ctl00$TextPassword': ffe_password,
             'ctl00$CmdLogin.x': '12',
             'ctl00$CmdLogin.y': '6',
         }
         html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return None
+            return False
         parser, error = self._parse_html_content(html)
         if error:
-            return None
+            return False
         assert parser is not None
         if not self.read_ffe_state(parser, url):
-            return None
+            return False
         for id_ in [
             SET_VISIBLE_LINK_ID,
             FEES_LINK_ID,
@@ -264,25 +268,24 @@ class FFESession(Session):
         logger.debug('FFE authentication succeeded.')
         return True
 
-    def test_auth(self, ffe_id: str | None, ffe_password: str | None) -> bool:
+    def test_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
         """Tries to authenticate on the FFE admin website for the tournament.
         Returns True on success, False if the credentials are incorrect, or
-        None if they couldn't be tested"""
+        None if they couldn't be tested."""
 
         logger.info('Testing FFE authentication for tournament [%d]...', ffe_id)
         if not self._ffe_init():
-            return False
-        if not self._ffe_auth(ffe_id, ffe_password):
-            return False
-        logger.info('FFE authentication succeeded.')
-        return True
+            return None
+        if auth := self._ffe_auth(ffe_id, ffe_password):
+            logger.info('FFE authentication succeeded.')
+        return auth
 
     def get_fees(self) -> str | None:
         """Downloads the fees for the tournament."""
 
         assert self.tournament is not None
-        (ffe_id, ffe_password) = self.get_id_and_password(True)
-        if not ffe_id:
+        ffe_id, ffe_password = self.get_id_and_password()
+        if not ffe_id or not ffe_password:
             return None
 
         logger.info('Getting fees for tournament [%d]...', ffe_id)
@@ -353,33 +356,29 @@ class FFESession(Session):
         return html
 
     def get_id_and_password(
-        self, do_log: bool = False
-    ) -> tuple[str | None, str | None]:
+        self,
+    ) -> tuple[int | None, str | None]:
         """Fetches the certification number and password for the tournament from the plugin data."""
 
         assert self.tournament is not None
         pd = self.tournament.plugin_data
-        ffe_id = get_data(pd, 'ffe_id')
-        ffe_password = get_data(pd, 'ffe_password')
+        ffe_id: int | None = get_data(pd, 'ffe_id')
+        ffe_password: str | None = get_data(pd, 'ffe_password')
         if not ffe_id or not ffe_password:
-            if do_log:
-                logger.warning(
-                    'FFE certification number and password are not correctly set for tournament [{tournament_name}], data can not be sent to the FFE website.'.format(
-                        tournament_name=self.tournament.name
-                    )
-                )
-                return None, None
-            else:
-                assert ffe_id
-                assert ffe_password
-        return ffe_id, ffe_password
+            logger.warning(
+                'FFE certification number and password are not correctly set for tournament [%s], data can not be sent to the FFE website.',
+                self.tournament.uniq_id,
+            )
+            return None, None
+        else:
+            return ffe_id, ffe_password
 
     def upload(self, set_visible: bool):
         """Upload the tournament to the FFE admin website."""
 
         assert self.tournament is not None
-        (ffe_id, ffe_password) = self.get_id_and_password(True)
-        if not ffe_id:
+        ffe_id, ffe_password = self.get_id_and_password()
+        if not ffe_id or not ffe_password:
             return
 
         logger.info(
@@ -413,8 +412,7 @@ class FFESession(Session):
         }
         date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
         tmp_file: Path = (
-            TMP_DIR
-            / 'ffe'
+            ffe.TMP_DIR
             / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
         )
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
@@ -501,8 +499,8 @@ class FFESession(Session):
 
         assert self.tournament is not None
         assert self.tournament.rules is not None
-        (ffe_id, ffe_password) = self.get_id_and_password(True)
-        if not ffe_id:
+        ffe_id, ffe_password = self.get_id_and_password()
+        if not ffe_id or not ffe_password:
             return
 
         logger.info(
