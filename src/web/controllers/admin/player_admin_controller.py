@@ -53,7 +53,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         request: HTMXRequest,
         event_uniq_id: str,
         player_id: int | None = None,
-        player_fide_id: int | None = None,
+        player: Player | None = None,
         player_from_plugin: Player | None = None,
         tournament_id: int | None = None,
         data: Annotated[
@@ -75,14 +75,8 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Player [{player_id}] not found.')
                 return
-        elif player_fide_id:
-            # player_fide_id is set when is a player is to be imported from the FIDE database
-            if (fide_database := FideDatabase()).exists():
-                with fide_database:
-                    self.admin_player = fide_database.get_player_by_fide_id(
-                        player_fide_id
-                    )
-            plugin_manager.hook.augment_player_after_search(player=self.admin_player)
+        elif player:
+            self.admin_player = player
         elif player_from_plugin:
             # A player has been returned via a plugin search
             self.admin_player = player_from_plugin
@@ -497,7 +491,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None = None,
         old_player_id: int | None = None,
         deleted_player_id: int | None = None,
-        player_fide_id: int | None = None,
+        player: Player | None = None,
         player_from_plugin: Player | None = None,
         tournament_id: int | None = None,
         page: int | None = None,
@@ -508,7 +502,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player_fide_id=player_fide_id,
+            player=player,
             player_from_plugin=player_from_plugin,
             tournament_id=tournament_id,
             data=data,
@@ -1066,14 +1060,19 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        player_fide_id: int | None,
+        player_fide_id: int,
     ) -> Template | ClientRedirect:
+        # player_fide_id is set when is a player is to be imported from the FIDE database
+        if (fide_database := FideDatabase()).exists():
+            with fide_database:
+                fide_player = fide_database.get_player_by_fide_id(player_fide_id)
+        await plugin_manager.hook.augment_player_after_search(player=fide_player)
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
             modal='player',
             action='create',
-            player_fide_id=player_fide_id,
+            player=fide_player,
         )
 
     @get(
@@ -1131,7 +1130,7 @@ class PlayerAdminController(BaseEventAdminController):
                     request,
                     event_uniq_id=event_uniq_id,
                     player_id=player_id,
-                    player_fide_id=None,
+                    player=None,
                     player_from_plugin=None,
                     tournament_id=None,
                     data=data,
@@ -1152,7 +1151,7 @@ class PlayerAdminController(BaseEventAdminController):
                 modal='player',
                 action=action,
                 player_id=player_id,
-                player_fide_id=None,
+                player=None,
                 player_from_plugin=None,
                 data=data,
                 errors=player.errors,
@@ -1285,7 +1284,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player_fide_id=None,
+            player=None,
             player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
@@ -1518,7 +1517,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player_fide_id=None,
+            player=None,
             player_from_plugin=None,
             tournament_id=None,
             data=data,
@@ -1576,7 +1575,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=None,
-            player_fide_id=None,
+            player=None,
             player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
@@ -1612,7 +1611,7 @@ class PlayerAdminController(BaseEventAdminController):
             modal='close_check_in',
             action=None,
             player_id=None,
-            player_fide_id=None,
+            player=None,
             player_from_plugin=None,
             tournament_id=tournament_id,
         )
@@ -1633,7 +1632,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=None,
-            player_fide_id=None,
+            player=None,
             player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
@@ -1737,7 +1736,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player_fide_id=None,
+            player=None,
             player_from_plugin=None,
             tournament_id=None,
             data=data,
