@@ -1,3 +1,0 @@
-First stable version of Sharly Chess 2.8
-
-- Added logging parameters and dynamically update the logging configuration
