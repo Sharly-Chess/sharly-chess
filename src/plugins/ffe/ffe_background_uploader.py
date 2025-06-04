@@ -203,11 +203,7 @@ class FfeBackgroundUploader:
             _('Uploading tournament…'),
         )
 
-        logger.info(
-            'Uploading tournament [{tournament_uniq_id}]...'.format(
-                tournament_uniq_id=tournament.uniq_id
-            )
-        )
+        logger.info('Uploading tournament [%s]...', tournament.uniq_id)
 
         def report(
             tournament: Tournament, status: FfeUploadStatus, message: str
@@ -224,11 +220,7 @@ class FfeBackgroundUploader:
                 report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
             ).upload(set_visible=False)
         except Exception as e:
-            logger.error(
-                'Error uploading tournament [{tournament_uniq_id}]: {error}'.format(
-                    tournament_uniq_id=tournament.uniq_id, error=str(e)
-                )
-            )
+            logger.error('Error uploading tournament [%s]: [%s]', tournament.uniq_id, e)
             cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
                 FfeUploadStatus.ERROR,
                 _('Error uploading tournament'),
