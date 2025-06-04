@@ -298,9 +298,6 @@ msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne 
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
 
-msgid "Application"
-msgstr "Application"
-
 msgid "Arbiter interface (private access)"
 msgstr "Arbitrage (accès privé)"
 
@@ -708,6 +705,9 @@ msgstr "Club :"
 msgid "Color"
 msgstr "Couleur"
 
+msgid "Colorblind people can print the logging level to distinguish important information on the console."
+msgstr "Les personnes percevant mal les couleurs peuvent imprimer le niveau de log pour distinguer les différents niveaux d'information sur la console."
+
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
 
@@ -762,6 +762,21 @@ msgstr "La connexion au serveur a échoué : {error}."
 
 msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
+
+msgid "Console and logs"
+msgstr "Console et logs"
+
+msgid "Console formatting"
+msgstr "Format des logs sur la console"
+
+msgid "Console logging level"
+msgstr "Niveau de log sur la console"
+
+msgid "Console logging level:"
+msgstr "Niveau de log sur la console :"
+
+msgid "Console logging level: {console_log_level}"
+msgstr "Niveau de log sur la console : {console_log_level}"
 
 msgid "Contact and registration"
 msgstr "Contact et inscription"
@@ -916,6 +931,9 @@ msgstr "Date naiss. :"
 msgid "Date:"
 msgstr "Date :"
 
+msgid "Debug message"
+msgstr "Message de déboggage"
+
 msgid "Default directory of the Papi files"
 msgstr "Répertoire par défaut des fichiers Papi"
 
@@ -1057,6 +1075,18 @@ msgstr "Ronde affichée : %(round)d"
 
 msgid "Do not assign zero-point byes"
 msgstr "Ne pas marquer forfait"
+
+msgid "Do not enable experimental features"
+msgstr "Ne pas activer les fonctionnalités expérimentales"
+
+msgid "Do not show the date and time on the console"
+msgstr "Ne pas montrer la date et l'heure sur la console"
+
+msgid "Do not show the logging level on the console"
+msgstr "Ne pas montrer le niveau de log sur la console"
+
+msgid "Do not use color on the console"
+msgstr "Ne pas utiliser de couleur sur la console"
 
 msgid "Do nothing"
 msgstr "Ne rien faire"
@@ -1385,6 +1415,12 @@ msgstr "Tranche Elo (handicap) :"
 msgid "Email:"
 msgstr "Mél :"
 
+msgid "Enable experimental features"
+msgstr "ctiver les fonctionnalités expérimentale"
+
+msgid "Enable experimental features to benefit from the very last (experimental!) features."
+msgstr "Activer les fonctionnalités expérimentales pour bénéficier des toutes dernières fonctionnalités de l'application (expérimentales !)."
+
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
@@ -1426,6 +1462,9 @@ msgstr "Saisir le résultat"
 
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
+
+msgid "Error message"
+msgstr "Message d'erreur"
 
 msgid "Error reading the following row (player ignored): [{row}]."
 msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
@@ -1480,6 +1519,9 @@ msgstr "Exempt"
 
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
+
+msgid "Experimental features"
+msgstr "Fonctionnalités expérimentales"
 
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
@@ -1948,6 +1990,9 @@ msgstr "Chemin incorrect [{path}]."
 msgid "Increment (optional, seconds):"
 msgstr "Incrément (optionel, en secondes) :"
 
+msgid "Information message"
+msgstr "Message d'information"
+
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
 
@@ -2005,6 +2050,9 @@ msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 
+msgid "Invalid console logging level [{console_log_level}]."
+msgstr "Niveau de log console non valide [{console_log_level}]."
+
 msgid "Invalid date [{date_str}]."
 msgstr "Date non valide [{date_str}]."
 
@@ -2031,9 +2079,6 @@ msgstr "Horaire non valide [{hour}] (avant l'horaire précédent [{previous_hour
 
 msgid "Invalid locale [{locale}]."
 msgstr "Langue [{locale}] non valide."
-
-msgid "Invalid log level [{log_level}]."
-msgstr "Niveau de log non valide [{log_level}]."
 
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
@@ -2154,15 +2199,6 @@ msgstr "les paramètres des bases de données locales ont été mis à jour."
 
 msgid "Location"
 msgstr "Lieu"
-
-msgid "Log level"
-msgstr "Niveau de log"
-
-msgid "Log level:"
-msgstr "Niveau de log :"
-
-msgid "Logging level: {log_level}"
-msgstr "Niveau de log : {log_level}"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -3503,6 +3539,18 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
+msgid "Show the date and time on the console"
+msgstr "Montrer la date et l'heure sur la console"
+
+msgid "Show the date and time on the console:"
+msgstr "Montrer la date et l'heure sur la console :"
+
+msgid "Show the logging level on the console"
+msgstr "Montrer le niveau de log sur la console"
+
+msgid "Show the logging level on the console:"
+msgstr "Montrer le niveau de log sur la console :"
+
 msgid "Show/hide the boards screens."
 msgstr "Afficher/cacher les écrans d'affichage des échiquiers."
 
@@ -3523,6 +3571,9 @@ msgstr "Afficher/cacher les écrans d'affichage des résultats."
 
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
+
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
+msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites sur disque si l'écriture sur disque est activée)."
 
 msgid "Single Screens"
 msgstr "Écrans simples"
@@ -3601,6 +3652,9 @@ msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
 msgid "Starting rank"
 msgstr "Classement initial"
+
+msgid "Startup"
+msgstr "Démarrage"
 
 msgid "Status"
 msgstr "Status"
@@ -3774,9 +3828,6 @@ msgstr "Le lieu du tournoi (par défaut [%(location)s])."
 msgid "The location of the tournament."
 msgstr "Le lieu du tournoi."
 
-msgid "The log level allows you to trace the behaviour of the application."
-msgstr "Le niveau de log permet de trancer le comportement de l'application."
-
 msgid "The mail addresses."
 msgstr "Les adresses mél."
 
@@ -3805,6 +3856,9 @@ msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si
 #, python-format
 msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE (par défaut : %(num)d minutes)"
+
+msgid "The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled)."
+msgstr "Le niveau minimum de log montrés sur la console (tous les niveaux de log sont écrits sur disque si l'écriture sur disque est activée)."
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
@@ -4387,6 +4441,9 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
+msgid "USE AT YOUR OWN RISKS!"
+msgstr "UTILISEZ À VOS PROPRES RISQUES !"
+
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
 
@@ -4548,8 +4605,17 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
+msgid "Use color on the console"
+msgstr "Utiliser les couleurs sur la console"
+
+msgid "Use colors on the console:"
+msgstr "Utiliser les couleurs sur la console :"
+
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
+
+msgid "Using colors helps in finding quickly important information on the console."
+msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
 
 msgid "Variation"
 msgstr "Variante"
@@ -4580,6 +4646,9 @@ msgstr "VICTOIRE BLANCS"
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
+
+msgid "Warning message"
+msgstr "Message d'avertissement"
 
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
@@ -4907,4 +4976,16 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Invalid log level [{log_level}]."
+#~ msgstr "Niveau de log non valide [{log_level}]."
+
+#~ msgid "Log level"
+#~ msgstr "Niveau de log"
+
+#~ msgid "Log level:"
+#~ msgstr "Niveau de log :"
+
+#~ msgid "Logging level: {log_level}"
+#~ msgstr "Niveau de log : {log_level}"
 

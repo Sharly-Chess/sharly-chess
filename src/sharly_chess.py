@@ -7,7 +7,7 @@ try:
 
     arguments = init_script()
 
-    from common import DEVEL_ENV, enable_experimental_features
+    from common import DEVEL_ENV
     from common.i18n import _
     from common.logger import (
         get_logger,
@@ -22,7 +22,6 @@ try:
     logger = get_logger()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--experimental', action='store_true')
     parser.add_argument('--server', action='store_true')
     engine_argument_names: list[str] = []
     plugin_engine_arguments: list['PluginEngineArgument'] = (
@@ -45,7 +44,6 @@ try:
         )
     args = parser.parse_args(arguments)
 
-    enable_experimental_features(bool(args.experimental))
     if args.server:
         print_interactive_warning(_('Argument --server is deprecated, ignored.'))
     try:

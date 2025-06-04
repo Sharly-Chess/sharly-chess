@@ -23,14 +23,12 @@ from common import (
     DEVEL_ENV,
     EVENTS_DIR,
 )
-from common.i18n import _, set_locale
+from common.i18n import _
 from common.installation_checker import InstallationChecker
 from common.logger import (
     get_logger,
     input_interactive,
     print_interactive_input,
-    set_console_log_level,
-    set_log_file_handler,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -48,10 +46,6 @@ class Engine(ABC):
     def __init__(self):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        set_locale(sharly_chess_config.locale)
-        set_console_log_level(sharly_chess_config.log_level)
-        self.log_file_path.parent.mkdir(parents=True, exist_ok=True)
-        set_log_file_handler(self.log_file_path)
         logger.info(
             'Sharly Chess %s - %s - %s',
             sharly_chess_config.version,

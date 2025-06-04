@@ -1,4 +1,3 @@
-Fourth bugfix update of Sharly Chess version 2.7
+First stable version of Sharly Chess 2.8
 
-- Fixed the ChessEvent players' Estimated/National rating type
-- Fix FFE auth test on the tournament editing form
+- Added logging parameters and dynamically update the logging configuration
