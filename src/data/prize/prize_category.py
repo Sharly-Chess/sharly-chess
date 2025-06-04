@@ -7,9 +7,9 @@ from data.player import Player
 from data.prize.managers import PrizeSharingManager
 from data.prize.prize_criterion import PrizeCriterion
 from data.prize.prize import Prize
-from data.prize.prize_sharing import PrizeSharing
+from data.prize.prize_sharing import PrizeSharing, NoPrizeSharing
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredPrizeCategory
+from database.sqlite.event.event_store import StoredPrizeCategory, StoredPrize
 
 if TYPE_CHECKING:
     from data.prize.prize_group import PrizeGroup
@@ -70,6 +70,10 @@ class PrizeCategory:
         return self.prizes_by_id.values()
 
     @property
+    def sorted_prizes(self) -> list[Prize]:
+        return sorted(self.prizes, key=lambda prize: prize.index)
+
+    @property
     def players(self) -> list[Player]:
         return [
             player
@@ -85,6 +89,14 @@ class PrizeCategory:
         return ', '.join(str(criterion.player_filter) for criterion in self.criteria)
 
     @property
+    def are_prizes_shared(self) -> bool:
+        return self.prize_sharing != NoPrizeSharing()
+
+    @property
+    def has_non_monetary_prizes(self):
+        return any(not prize.is_monetary for prize in self.prizes)
+
+    @property
     def total_prize_value(self) -> int:
         return sum(prize.value for prize in self.prizes)
 
@@ -94,4 +106,45 @@ class PrizeCategory:
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize_category(self.stored_prize_category)
+            database.commit()
+
+    def get_default_prize_index(self, value: int):
+        return next(
+            (
+                index
+                for index, prize in enumerate(self.sorted_prizes)
+                if prize.value < value
+            ),
+            len(self.prizes),
+        )
+
+    def add_prize(self, stored_prize: StoredPrize) -> Prize:
+        with self.get_event_database() as database:
+            object_id = database.add_stored_prize(stored_prize)
+            database.commit()
+        prize = Prize(self, stored_prize)
+        stored_prize.id = object_id
+        prize_ids = [prize.id for prize in self.sorted_prizes]
+        prize_ids.insert(stored_prize.index, object_id)
+        self.prizes_by_id[object_id] = prize
+        self.reorder_prizes(prize_ids)
+        return prize
+
+    def delete_prize(self, prize_id: int):
+        with self.get_event_database() as database:
+            database.delete_stored_prize(prize_id)
+            database.commit()
+        if prize_id in self.prizes_by_id:
+            del self.prizes_by_id[prize_id]
+        self.reorder_prizes([prize.id for prize in self.sorted_prizes])
+
+    def reorder_prizes(self, sorted_prize_ids: list[int]):
+        with self.get_event_database() as database:
+            for prize in self.prizes:
+                if prize.id not in sorted_prize_ids:
+                    raise ValueError(f'Missing prize id: {prize.id}')
+                index = sorted_prize_ids.index(prize.id)
+                if index != prize.index:
+                    prize.stored_prize.index = index
+                    database.update_stored_prize_index(prize.id, index)
             database.commit()

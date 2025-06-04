@@ -184,6 +184,11 @@ class Event:
         return self.stored_event.federation
 
     @property
+    def prize_currency(self) -> str:
+        # TODO (Molrn) Define the currency from the event form
+        return '€'
+
+    @property
     def formatted_start_date_time(self) -> str:
         return format_timestamp_date_time(self.start)
 

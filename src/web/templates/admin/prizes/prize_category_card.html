@@ -6,7 +6,6 @@
             {{ macros.tooltip_attributes('info', _('Main category'), 'top') }}
             class="bi-star-fill pe-1"
         ></i>
-
     {% endif %}
     {{ prize_category.name }}
 {% endblock %}
@@ -60,7 +59,13 @@
     >
         <button
             class="btn btn-sm btn-outline-primary"
-            hx-get=""
+            hx-get="{{ url_for(
+                'admin-prizes-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+                prize_category_id=prize_category.id,
+            ) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload
@@ -77,8 +82,8 @@
             _('No criteria for the main category.')
             if prize_category.is_main else
             _('Define the criteria for players to belong to this category.'),
-            'top')
-        }}
+            'top'
+        ) }}
     >
         <button
             class="btn btn-sm btn-outline-primary"

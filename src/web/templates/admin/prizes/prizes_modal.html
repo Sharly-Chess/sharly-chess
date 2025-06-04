@@ -1,0 +1,126 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: fit-content;"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Prizes of category [%(category)s]', category=admin_prize_category.name) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if admin_prize_category.prizes %}
+                <p>{{ _('Drag the prizes to order them.') }}</p>
+                <form
+                    class="d-flex flex-column gap-2 {% if admin_prize_category.prizes|length > 1 %}sortable{% endif %}"
+                    hx-patch="{{ url_for(
+                        'admin-prizes-reorder',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id,
+                        prize_category_id=admin_prize_category.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-trigger="end"
+                    hx-indicator="#please-wait"
+                >
+                    {% for prize in admin_prize_category.sorted_prizes %}
+                        {% set warning=loop.previtem and loop.previtem.value < prize.value %}
+                        <div class="{% if admin_prize_category.prizes|length > 1 %}cursor-grab{% endif %}">
+                            <input type="hidden" name="prize_ids" value='{{ prize.id }}'/>
+                            <div class="border border-{% if warning %}warning{% else %}secondary{% endif %}">
+                                <div class="p-2 d-flex align-items-start gap-4">
+                                    <div class="flex-grow-1">
+                                        {% if not prize.is_monetary and not prize.description %}
+                                            <i>{{ _('Non-monetary prize') }}</i>
+                                        {% endif %}
+                                        {{ prize.tabular_representation }}
+                                        {% if warning %}
+                                            <br/>
+                                            <span class="text-warning">
+                                                {{ _('Prize value greater than the previous prize.') }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                        {% if admin_prize_category.prizes|length > 1 %}
+                                            <i class="bi-arrows-move"></i>
+                                        {% endif %}
+                                        <button
+                                            class="btn btn-sm btn-outline-primary text-nowrap"
+                                            hx-get="{{ url_for(
+                                                'admin-prize-update-modal',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                prize_group_id=admin_prize_group.id,
+                                                prize_category_id=admin_prize_category.id,
+                                                prize_id=prize.id,
+                                            ) }}"
+                                            preload
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-pencil-fill"></i>
+                                        </button>
+                                        <button
+                                            class="btn btn-sm btn-outline-danger text-nowrap"
+                                            hx-delete="{{ url_for(
+                                                'admin-prize-delete',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                prize_group_id=admin_prize_group.id,
+                                                prize_category_id=admin_prize_category.id,
+                                                prize_id=prize.id,
+                                            ) }}"
+                                            preload
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-trash-fill"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            {% else %}
+                <div class="text-danger">{{ _('No prizes.') }}</div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-prize-create-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                    prize_category_id=admin_prize_category.id,
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
+                {{ _('Add a prize') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because the prizes might have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

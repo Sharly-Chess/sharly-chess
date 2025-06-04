@@ -2,6 +2,7 @@ import weakref
 from _weakref import ReferenceType
 from typing import TYPE_CHECKING
 
+from common.i18n import _
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrize
 
@@ -36,12 +37,31 @@ class Prize:
         return self.stored_prize.is_monetary
 
     @property
-    def description(self) -> str | None:
+    def description(self) -> str:
         return self.stored_prize.description
 
     @property
     def index(self) -> int:
         return self.stored_prize.index
 
+    @property
+    def tabular_representation(self) -> str:
+        currency = self.prize_category.prize_group.tournament.event.prize_currency
+        if self.is_monetary:
+            return f'{self.value} {currency}'
+        elif self.value:
+            return _('{prize_description} (value: {value} {currency})').format(
+                prize_description=self.description,
+                value=self.value,
+                currency=currency,
+            )
+        else:
+            return self.description
+
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()
+
+    def update(self):
+        with self.get_event_database() as database:
+            database.update_stored_prize(self.stored_prize)
+            database.commit()

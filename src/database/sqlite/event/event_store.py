@@ -48,7 +48,7 @@ class StoredPrize:
     prize_category_id: int
     value: int
     is_monetary: bool
-    description: str | None
+    description: str
     index: int
 
 

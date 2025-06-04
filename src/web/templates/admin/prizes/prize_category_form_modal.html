@@ -70,7 +70,11 @@
                             id="prize-sharing-container"
                             class="col-12 col-md-4 mb-3"
                             {{ macros.tooltip_attributes(
-                                'info', _('Prizes can only be shared for main categories.'), 'top'
+                                'info',
+                                _('The category contains non-monetary prizes which can not be shared.')
+                                if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
+                                _('Prizes can only be shared for main categories.'),
+                                'top'
                             ) }}
                         >
                             {{ admin_macros.select_input(
@@ -81,6 +85,7 @@
                                     'with the same points are eligible for prizes.'
                                 ),
                                 select_options=prize_sharing_options,
+                                disabled=admin_prize_category and admin_prize_category.has_non_monetary_prizes,
                                 data=data, errors=errors
                             ) }}
                             <input
@@ -90,28 +95,30 @@
                                 value="{{ not_main_prize_sharing }}"
                             >
                         </div>
-                        <script>
-                            $('#is-main').on('change', (event) => {
-                                const tooltip = new bootstrap.Tooltip(
-                                    document.getElementById('prize-sharing-container')
-                                );
-                                const prizeSharing = document.getElementById('prize-sharing');
-                                const hiddenPrizeSharing = document.getElementById(
-                                    'hidden-prize-sharing'
-                                );
-                                if (event.target.checked) {
-                                    prizeSharing.disabled = false;
-                                    hiddenPrizeSharing.disabled = true;
-                                    tooltip.disable();
-                                } else {
-                                    prizeSharing.value = '{{ not_main_prize_sharing }}';
-                                    prizeSharing.disabled = true;
-                                    hiddenPrizeSharing.disabled = false;
-                                    tooltip.enable();
-                                }
-                            });
-                            setTimeout(() => $('#is-main').trigger('change'), 50);
-                        </script>
+                        {% if not (admin_prize_category and admin_prize_category.has_non_monetary_prizes) %}
+                            <script>
+                                $('#is-main').on('change', (event) => {
+                                    const tooltip = new bootstrap.Tooltip(
+                                        document.getElementById('prize-sharing-container')
+                                    );
+                                    const prizeSharing = document.getElementById('prize-sharing');
+                                    const hiddenPrizeSharing = document.getElementById(
+                                        'hidden-prize-sharing'
+                                    );
+                                    if (event.target.checked) {
+                                        prizeSharing.disabled = false;
+                                        hiddenPrizeSharing.disabled = true;
+                                        tooltip.disable();
+                                    } else {
+                                        prizeSharing.value = '{{ not_main_prize_sharing }}';
+                                        prizeSharing.disabled = true;
+                                        hiddenPrizeSharing.disabled = false;
+                                        tooltip.enable();
+                                    }
+                                });
+                                setTimeout(() => $('#is-main').trigger('change'), 50);
+                            </script>
+                        {% endif %}
                     {% endwith %}
                 </div>
             </form>

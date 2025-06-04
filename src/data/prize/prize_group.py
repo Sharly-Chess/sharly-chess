@@ -83,6 +83,5 @@ class PrizeGroup:
         with self.get_event_database() as database:
             database.delete_stored_prize_category(category_id)
             database.commit()
-
         if category_id in self.categories_by_id:
             del self.categories_by_id[category_id]
