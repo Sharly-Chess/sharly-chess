@@ -2,6 +2,16 @@
 
 {% block cards_container_title %}
     {{ _('Prizes') }}
+    {% if admin_prize_group %}
+        {{ macros.refresh_listener(
+            hx_get=url_for(
+                'admin-event-prizes-tab',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+            ),
+        ) }}
+    {% endif %}
 {% endblock %}
 
 {% block right_buttons_classes %}d-flex gap-4 align-items-end{% endblock %}
