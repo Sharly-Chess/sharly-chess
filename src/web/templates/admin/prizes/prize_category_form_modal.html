@@ -60,7 +60,7 @@
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
-                                placeholder=_('E.g.: My category'),
+                                placeholder=_('E.g.: %(string)s', string=_('My category')),
                                 help_text=_('The name of the category.'),
                                 data=data, errors=errors
                             ) }}
@@ -79,7 +79,7 @@
                         >
                             {{ admin_macros.select_input(
                                 name='prize_sharing',
-                                label=_('Prize sharing:'),
+                                label=_('%(string)s:', string=_('Prize sharing')),
                                 help_text=_(
                                     'The way to share the prizes when two or more players '
                                     'with the same points are eligible for prizes.'

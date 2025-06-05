@@ -35,8 +35,17 @@
             {{ _('%(string)s:', string=_('Criteria')) }}&nbsp;
             {% if prize_category.is_main %}
                 {{ _('All the players') }}
-            {% else %}
+            {% elif prize_category.criteria %}
                 {{ prize_category.criteria_string }}
+            {% else %}
+                <span class="text-danger">
+                    <i>{{ _('Undefined') }}</i>
+                    <i
+                        class="bi-exclamation-triangle-fill ps-1"
+                        {{ macros.tooltip_attributes('info', _('Only the main category should have no criteria.'), 'top') }}
+                    ></i>
+                </span>
+
             {% endif %}
         </div>
         <div class="text-start">
@@ -87,7 +96,13 @@
     >
         <button
             class="btn btn-sm btn-outline-primary"
-            hx-get=""
+            hx-get="{{ url_for(
+                'admin-prize-criteria-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+                prize_category_id=prize_category.id,
+            ) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload

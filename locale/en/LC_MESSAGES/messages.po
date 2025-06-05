@@ -45,6 +45,18 @@ msgid "%(minutes)d minutes before"
 msgstr ""
 
 #, python-format
+msgid "%(num)d criterion"
+msgid_plural "%(num)d criteria"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d prize"
+msgid_plural "%(num)d prizes"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
 
@@ -205,6 +217,9 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
+msgid "Add a criterion"
+msgstr ""
+
 msgid "Add a display controller to the event."
 msgstr ""
 
@@ -224,6 +239,12 @@ msgid "Add a hour"
 msgstr ""
 
 msgid "Add a player to the event."
+msgstr ""
+
+msgid "Add a prize"
+msgstr ""
+
+msgid "Add a prize category to the prize group."
 msgstr ""
 
 msgid "Add a rotator to the event."
@@ -278,6 +299,9 @@ msgid "All"
 msgstr ""
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
+msgstr ""
+
+msgid "All the players"
 msgstr ""
 
 msgid "All the players intended to play the coming round did check-in."
@@ -375,6 +399,9 @@ msgid "Automatic"
 msgstr ""
 
 msgid "Automatically launch a browser when starting the server"
+msgstr ""
+
+msgid "Average"
 msgstr ""
 
 msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
@@ -805,6 +832,9 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
+msgid "Create a category"
+msgstr ""
+
 msgid "Create a display controller"
 msgstr ""
 
@@ -812,6 +842,15 @@ msgid "Create a display controller now to get started."
 msgstr ""
 
 msgid "Create a family now to get started."
+msgstr ""
+
+msgid "Create a prize category now to get started."
+msgstr ""
+
+msgid "Create a prize group"
+msgstr ""
+
+msgid "Create a prize group for the tournament."
 msgstr ""
 
 msgid "Create a rotator"
@@ -854,6 +893,13 @@ msgid "Create the Papi files"
 msgstr ""
 
 msgid "Create the Papi files and send them to the FFE website"
+msgstr ""
+
+msgid "Criteria"
+msgstr ""
+
+#, python-format
+msgid "Criteria of category [%(category)s]"
 msgstr ""
 
 msgid "Crosstable"
@@ -952,6 +998,18 @@ msgstr ""
 msgid "Default timer configuration"
 msgstr ""
 
+msgid "Define as main category"
+msgstr ""
+
+msgid "Define as monetary"
+msgstr ""
+
+msgid "Define the criteria for players to belong to this category."
+msgstr ""
+
+msgid "Define the prizes of the category."
+msgstr ""
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
@@ -965,6 +1023,9 @@ msgstr ""
 msgid "Delete the display controller."
 msgstr ""
 
+msgid "Delete the prize group."
+msgstr ""
+
 msgid "Delete the rotator."
 msgstr ""
 
@@ -975,6 +1036,14 @@ msgid "Delete the timer."
 msgstr ""
 
 msgid "Delete the tournament."
+msgstr ""
+
+#, python-format
+msgid "Deleting prize category [%(prize_category)s]"
+msgstr ""
+
+#, python-format
+msgid "Deleting prize group [%(prize_group)s]"
 msgstr ""
 
 msgid "Deletion date"
@@ -1010,6 +1079,12 @@ msgstr ""
 
 #, python-format
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr ""
 
 msgid "Details"
@@ -1145,7 +1220,13 @@ msgstr ""
 msgid "Downloading source file…"
 msgstr ""
 
+msgid "Drag the criteria to order them."
+msgstr ""
+
 msgid "Drag the hours to order them."
+msgstr ""
+
+msgid "Drag the prizes to order them."
 msgstr ""
 
 msgid "Drag the sets to order them."
@@ -1340,10 +1421,16 @@ msgstr ""
 msgid "Edit the hours of the timer"
 msgstr ""
 
+msgid "Edit the name of the prize group."
+msgstr ""
+
 msgid "Edit the player's properties."
 msgstr ""
 
 msgid "Edit the player's tournament record."
+msgstr ""
+
+msgid "Edit the properties of the category."
 msgstr ""
 
 msgid "Edit the properties of the display controller."
@@ -1384,6 +1471,10 @@ msgstr ""
 
 #, python-format
 msgid "Editing of player [%(first_name)s %(last_name)s]"
+msgstr ""
+
+#, python-format
+msgid "Editing of prize category [%(prize_category)s]"
 msgstr ""
 
 #, python-format
@@ -1791,6 +1882,9 @@ msgstr ""
 msgid "Font size adjustment for the screen where 100%% is the default font size."
 msgstr ""
 
+msgid "For non-monetary prizes, the value is used for reward priority."
+msgstr ""
+
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr ""
 
@@ -1849,6 +1943,9 @@ msgid "Gen *** GENDER FOR PRINT VIEW"
 msgstr "Gen."
 
 msgid "Gender"
+msgstr ""
+
+msgid "Gender ({gender})"
 msgstr ""
 
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
@@ -1911,6 +2008,9 @@ msgid "Highlight"
 msgstr ""
 
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
+msgstr ""
+
+msgid "Hort system"
 msgstr ""
 
 msgid "Hour [{uniq_id}] already exists."
@@ -2219,6 +2319,15 @@ msgstr "Mail"
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
+msgid "Main categories are open to all the players."
+msgstr ""
+
+msgid "Main category"
+msgstr ""
+
+msgid "Main group"
+msgstr ""
+
 msgid "Make visible on FFE site"
 msgstr ""
 
@@ -2345,6 +2454,12 @@ msgstr ""
 msgid "Moving on to round #%(round)d"
 msgstr ""
 
+msgid "My category"
+msgstr ""
+
+msgid "My group"
+msgstr ""
+
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
@@ -2455,6 +2570,12 @@ msgstr ""
 msgid "No category"
 msgstr ""
 
+msgid "No criteria for the main category."
+msgstr ""
+
+msgid "No criteria."
+msgstr ""
+
 msgid "No current events."
 msgstr ""
 
@@ -2527,6 +2648,12 @@ msgstr ""
 msgid "No players."
 msgstr ""
 
+msgid "No prize category"
+msgstr ""
+
+msgid "No prizes."
+msgstr ""
+
 msgid "No recording"
 msgstr ""
 
@@ -2596,6 +2723,9 @@ msgstr ""
 msgid "No valid hour defined."
 msgstr ""
 
+msgid "Non-monetary prize"
+msgstr ""
+
 msgid "None"
 msgstr ""
 
@@ -2624,8 +2754,14 @@ msgstr ""
 msgid "Number of games won"
 msgstr ""
 
+msgid "Number of players"
+msgstr ""
+
 #, python-format
 msgid "Number of players: %(num)d"
+msgstr ""
+
+msgid "Number of prizes"
 msgstr ""
 
 msgid "Number of wins"
@@ -2677,6 +2813,9 @@ msgid "Only arbiters can view private rotators."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
+msgstr ""
+
+msgid "Only the main category should have no criteria."
 msgstr ""
 
 #, python-format
@@ -2968,6 +3107,9 @@ msgstr ""
 msgid "Please enter a date after the start date."
 msgstr ""
 
+msgid "Please enter a name."
+msgstr ""
+
 msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
@@ -3110,6 +3252,61 @@ msgid "Printing is not possible when the Papi file is not found."
 msgstr ""
 
 msgid "Private event"
+msgstr ""
+
+msgid "Prize category [{prize_category}] successfully created."
+msgstr ""
+
+msgid "Prize category [{prize_category}] successfully deleted."
+msgstr ""
+
+msgid "Prize category [{prize_category}] successfully updated."
+msgstr ""
+
+msgid "Prize category creation"
+msgstr ""
+
+msgid "Prize creation"
+msgstr ""
+
+msgid "Prize criterion creation"
+msgstr ""
+
+msgid "Prize criterion edition"
+msgstr ""
+
+msgid "Prize edition"
+msgstr ""
+
+msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
+msgstr ""
+
+msgid "Prize group [{prize_group}] successfully created."
+msgstr ""
+
+msgid "Prize group [{prize_group}] successfully deleted."
+msgstr ""
+
+msgid "Prize groups"
+msgstr ""
+
+msgid "Prize sharing"
+msgstr ""
+
+msgid "Prize value greater than the previous prize."
+msgstr ""
+
+msgid "Prizes"
+msgstr ""
+
+msgid "Prizes can only be shared for main categories."
+msgstr ""
+
+msgid "Prizes of categories with prize sharing can only be monetary."
+msgstr ""
+
+#, python-format
+msgid "Prizes of category [%(category)s]"
 msgstr ""
 
 msgid "Proceed"
@@ -3770,6 +3967,9 @@ msgstr ""
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
+msgid "The category contains non-monetary prizes which can not be shared."
+msgstr ""
+
 msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
@@ -3789,6 +3989,9 @@ msgstr ""
 msgid "The default language used."
 msgstr ""
 
+msgid "The description of the prize."
+msgstr ""
+
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr ""
@@ -3806,6 +4009,9 @@ msgstr ""
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
+msgid "The following categories will also be deleted:"
+msgstr ""
+
 msgid "The following languages are available:"
 msgstr ""
 
@@ -3816,6 +4022,9 @@ msgid "The following screen families will also be deleted:"
 msgstr ""
 
 msgid "The following screens will also be deleted:"
+msgstr ""
+
+msgid "The gender of the players of the category."
 msgstr ""
 
 msgid "The initial time in seconds (may be empty if an increment is set)."
@@ -3876,6 +4085,9 @@ msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
+msgstr ""
+
+msgid "The name of the category."
 msgstr ""
 
 msgid "The name of the display controller, optional."
@@ -4052,6 +4264,9 @@ msgstr ""
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr ""
 
+msgid "The related objects will also be deleted:"
+msgstr ""
+
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
@@ -4111,13 +4326,25 @@ msgstr ""
 msgid "The tournament to print."
 msgstr ""
 
+msgid "The type of criterion used to filter the players."
+msgstr ""
+
 msgid "The type of document to print."
 msgstr ""
 
 msgid "The type of rating to use for the tournament."
 msgstr ""
 
+msgid "The type of reward of the prize (monetary / non-monetary)."
+msgstr ""
+
 msgid "The variation of the pairing system."
+msgstr ""
+
+msgid "The way to share the prizes when two or more players with the same points are eligible for prizes."
+msgstr ""
+
+msgid "There can only be one main category per tournament."
 msgstr ""
 
 msgid "There is no pairings for this round (last round with pairings: #{round})."
@@ -4279,6 +4506,9 @@ msgstr ""
 msgid "Top cut must be at most equal to bottom cut."
 msgstr ""
 
+msgid "Total prize value"
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
@@ -4402,6 +4632,12 @@ msgstr "Tr."
 
 msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr. Buchholz"
+
+msgid "Trophy"
+msgstr ""
+
+msgid "Type"
+msgstr ""
 
 msgid "Type:"
 msgstr ""
@@ -4623,6 +4859,9 @@ msgstr ""
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr ""
 
+msgid "Value"
+msgstr ""
+
 msgid "Variation"
 msgstr ""
 
@@ -4657,6 +4896,12 @@ msgid "Warning message"
 msgstr ""
 
 msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+msgstr ""
+
+msgid "Warning: deleting a prize category is permanent!"
+msgstr ""
+
+msgid "Warning: deleting a prize group is permanent!"
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
@@ -4786,7 +5031,13 @@ msgstr ""
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
 msgstr ""
 
+msgid "You must create a prize group before creating a prize category."
+msgstr ""
+
 msgid "You must create a screen or a family of screens before creating a rotator."
+msgstr ""
+
+msgid "You must create a tournament before creating a prize group."
 msgstr ""
 
 msgid "You must create a tournament before creating a screen family."
@@ -4976,6 +5227,9 @@ msgid "{num} player found."
 msgid_plural "{num} players found."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "{prize_description} (value: {value} {currency})"
+msgstr ""
 
 msgid "{screen_type}-screen"
 msgstr ""

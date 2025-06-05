@@ -1,0 +1,9 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Gender')),
+        help_text=_('The gender of the players of the category.'),
+        select_options=option.gender_options,
+        data=data, errors=errors
+    ) }}
+</div>

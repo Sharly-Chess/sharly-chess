@@ -5,18 +5,18 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Prizes of category [%(category)s]', category=admin_prize_category.name) }}
+                {{ _('Criteria of category [%(category)s]', category=admin_prize_category.name) }}
             </h2>
         </div>
         <div class="modal-body">
-            {% if admin_prize_category.prizes %}
+            {% if admin_prize_category.criteria %}
                 {% if admin_prize_category.prizes|length > 1 %}
-                    <p>{{ _('Drag the prizes to order them.') }}</p>
+                    <p>{{ _('Drag the criteria to order them.') }}</p>
                 {% endif %}
                 <form
-                    class="d-flex flex-column gap-2 {% if admin_prize_category.prizes|length > 1 %}sortable{% endif %}"
+                    class="d-flex flex-column gap-2 {% if admin_prize_category.criteria|length > 1 %}sortable{% endif %}"
                     hx-patch="{{ url_for(
-                        'admin-prizes-reorder',
+                        'admin-prize-criteria-reorder',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         prize_group_id=admin_prize_group.id,
@@ -26,37 +26,27 @@
                     hx-trigger="end"
                     hx-indicator="#please-wait"
                 >
-                    {% for prize in admin_prize_category.sorted_prizes %}
-                        {% set warning=loop.previtem and loop.previtem.value < prize.value %}
-                        <div class="{% if admin_prize_category.prizes|length > 1 %}cursor-grab{% endif %}">
-                            <input type="hidden" name="prize_ids" value='{{ prize.id }}'/>
-                            <div class="border border-{% if warning %}warning{% else %}secondary{% endif %}">
+                    {% for criterion in admin_prize_category.sorted_criteria %}
+                        <div class="{% if admin_prize_category.criteria|length > 1 %}cursor-grab{% endif %}">
+                            <input type="hidden" name="criterion_ids" value='{{ criterion.id }}'/>
+                            <div class="border border-secondary">
                                 <div class="p-2 d-flex align-items-start gap-4">
                                     <div class="flex-grow-1">
-                                        {% if not prize.is_monetary and not prize.description %}
-                                            <i>{{ _('Non-monetary prize') }}</i>
-                                        {% endif %}
-                                        {{ prize.tabular_representation }}
-                                        {% if warning %}
-                                            <br/>
-                                            <span class="text-warning">
-                                                {{ _('Prize value greater than the previous prize.') }}
-                                            </span>
-                                        {% endif %}
+                                        {{ criterion.player_filter }}
                                     </div>
                                     <div class="flex-shrink-0 d-flex gap-2 align-items-center">
-                                        {% if admin_prize_category.prizes|length > 1 %}
+                                        {% if admin_prize_category.criteria|length > 1 %}
                                             <i class="bi-arrows-move"></i>
                                         {% endif %}
                                         <button
                                             class="btn btn-sm btn-outline-primary text-nowrap"
                                             hx-get="{{ url_for(
-                                                'admin-prize-update-modal',
+                                                'admin-prize-criterion-update-modal',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=admin_tournament.id,
                                                 prize_group_id=admin_prize_group.id,
                                                 prize_category_id=admin_prize_category.id,
-                                                prize_id=prize.id,
+                                                prize_criterion_id=criterion.id,
                                             ) }}"
                                             preload
                                             hx-target="body"
@@ -68,12 +58,12 @@
                                         <button
                                             class="btn btn-sm btn-outline-danger text-nowrap"
                                             hx-delete="{{ url_for(
-                                                'admin-prize-delete',
+                                                'admin-prize-criterion-delete',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=admin_tournament.id,
                                                 prize_group_id=admin_prize_group.id,
                                                 prize_category_id=admin_prize_category.id,
-                                                prize_id=prize.id,
+                                                prize_criterion_id=criterion.id,
                                             ) }}"
                                             preload
                                             hx-target="body"
@@ -89,7 +79,7 @@
                     {% endfor %}
                 </form>
             {% else %}
-                <div class="text-danger">{{ _('No prizes.') }}</div>
+                <div class="text-danger">{{ _('No criteria.') }}</div>
             {% endif %}
         </div>
         <div class="modal-footer">
@@ -104,7 +94,7 @@
             <button
                 class="btn btn-primary text-nowrap"
                 hx-get="{{ url_for(
-                    'admin-prize-create-modal',
+                    'admin-prize-criterion-create-modal',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id,
                     prize_group_id=admin_prize_group.id,
@@ -113,14 +103,14 @@
                 hx-indicator="#please-wait"
             >
                 <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Add a prize') }}
+                {{ _('Add a criterion') }}
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    // We need to reload the page when the modal is hidden, because the prizes might have changed.
+    // We need to reload the page when the modal is hidden, because the criteria might have changed.
     $(document).one('hide.bs.modal', function(e) {
         e.preventDefault();
         document.body.dispatchEvent(new CustomEvent('request_refresh'));

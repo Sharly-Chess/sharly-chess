@@ -51,7 +51,7 @@
     {% if admin_prize_group %}
         <div class="d-flex flex-column">
             <div style="font-size: 0.8rem;">
-                {{ _('Prize groups:') }}
+                {{ _('%(string)s:', string=_('Prize groups')) }}
             </div>
             <div class="d-flex align-items-end">
                 <select
@@ -89,7 +89,7 @@
                 {{ admin_macros.inline_text_form(
                     'prize-group-create',
                     name='name',
-                    placeholder=_('E.g.: Main group'),
+                    placeholder=_('E.g.: %(string)s', string=_('Main group')),
                     post_url=url_for(
                         'admin-prize-group-create',
                         event_uniq_id=admin_event.uniq_id,
@@ -112,7 +112,7 @@
                 {{ admin_macros.inline_text_form(
                     'prize-group-update',
                     name='name',
-                    placeholder=_('E.g.: My group'),
+                    placeholder=_('E.g.: %(string)s', string=_('My group')),
                     value=admin_prize_group.name,
                     patch_url=url_for(
                         'admin-prize-group-update',
@@ -183,7 +183,7 @@
                 {{ admin_macros.inline_text_form(
                     'prize-group-create',
                     name='name',
-                    placeholder=_('E.g.: My group'),
+                    placeholder=_('E.g.: %(string)s', string=_('My group')),
                     post_url=url_for('admin-prize-group-create', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
                     hide=true,
                 ) }}

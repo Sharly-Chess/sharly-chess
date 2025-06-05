@@ -9,7 +9,12 @@ from litestar_htmx import HTMXRequest, ClientRedirect
 
 from common.i18n import _
 from common.logger import get_logger
-from data.prize.managers import PrizeSharingManager
+from data.prize.managers import (
+    PrizeSharingManager,
+    PlayerFilterManager,
+    PlayerFilterOptionManager,
+)
+from data.prize.player_filters import PlayerFilter, GenderPlayerFilter
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_criterion import PrizeCriterion
@@ -20,8 +25,10 @@ from database.sqlite.event.event_store import (
     StoredPrizeGroup,
     StoredPrizeCategory,
     StoredPrize,
+    StoredPrizeCriterion,
 )
 from utils.enum import FormAction
+from utils.option import OptionError
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -576,6 +583,305 @@ class PrizeAdminController(BaseEventAdminController):
         )
 
     # -------------------------------------------------------------------------
+    # Prize criteria
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _validate_prize_criterion_form_data(
+        cls, data: dict[str, str]
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        field = 'type'
+        player_filter_id = data.get(field, '')
+        try:
+            PlayerFilterManager.get_type(player_filter_id)
+        except KeyError:
+            message = f'Unknown player filter ID [{player_filter_id}].'
+            errors[field] = message
+            logger.error(message)
+            return errors
+        player_filter = cls.player_filter_from_data(data)
+        try:
+            player_filter.validate_options()
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+        return errors
+
+    @staticmethod
+    def player_filter_from_data(data: dict[str, str]) -> PlayerFilter:
+        player_filter_type = PlayerFilterManager.get_type(data['type'])
+        options = []
+        for option in player_filter_type.default_options():
+            value = WebContext.form_data_to_value(
+                data,
+                option.id,
+                option.type,
+                option.default_value,
+            )
+            options.append(type(option)(value))
+        return player_filter_type(options)
+
+    @staticmethod
+    def _prize_criterion_form_modal_context(
+        data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
+    ) -> dict[str, Any]:
+        default_option_data = {
+            option.id: option.default_value
+            for option in PlayerFilterOptionManager.objects()
+        }
+        return {
+            'modal': 'prize_criterion_form',
+            'action': action,
+            'player_filter_select_options': PlayerFilterManager.options(),
+            'player_filter_options': PlayerFilterOptionManager.objects(),
+            'containers_by_type': {
+                player_filter.id: [
+                    option.container_id for option in player_filter.default_options()
+                ]
+                for player_filter in PlayerFilterManager.objects()
+            },
+            'data': default_option_data | data,
+            'errors': errors or {},
+        }
+
+    @post(
+        path=(
+            '/admin/prizes/prize-criterion/create/{event_uniq_id:str}'
+            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-criterion-create',
+    )
+    async def htmx_admin_prize_criterion_create(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+        )
+        if web_context.error:
+            return web_context.error
+        if errors := self._validate_prize_criterion_form_data(data):
+            return self._admin_event_prizes_render(
+                web_context,
+                self._prize_criterion_form_modal_context(
+                    data, FormAction.CREATE, errors
+                ),
+            )
+        prize_category = web_context.get_admin_prize_category()
+        player_filter = self.player_filter_from_data(data)
+        prize_category.add_criterion(
+            StoredPrizeCriterion(
+                id=None,
+                prize_category_id=prize_category.id,
+                type=player_filter.id,
+                options={option.id: option.value for option in player_filter.options},
+                index=len(prize_category.criteria),
+            )
+        )
+        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
+
+    @patch(
+        path=(
+            '/admin/prizes/prize-criterion/update/{event_uniq_id:str}'
+            '/{tournament_id:int}/{prize_group_id:int}'
+            '/{prize_category_id:int}/{prize_criterion_id:int}'
+        ),
+        name='admin-prize-criterion-update',
+    )
+    async def htmx_admin_prize_criterion_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+        prize_criterion_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request,
+            event_uniq_id,
+            tournament_id,
+            prize_group_id,
+            prize_category_id,
+            prize_criterion_id=prize_criterion_id,
+        )
+        if web_context.error:
+            return web_context.error
+        if errors := self._validate_prize_criterion_form_data(data):
+            return self._admin_event_prizes_render(
+                web_context,
+                self._prize_criterion_form_modal_context(
+                    data, FormAction.UPDATE, errors
+                ),
+            )
+        player_filter = self.player_filter_from_data(data)
+        prize_criterion = web_context.get_admin_prize_criterion()
+        stored_prize_criterion = prize_criterion.stored_prize_criterion
+        stored_prize_criterion.type = player_filter.id
+        stored_prize_criterion.options = {
+            option.id: option.value for option in player_filter.options
+        }
+        prize_criterion.update()
+        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
+
+    @delete(
+        path=(
+            '/admin/prizes/prize-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/{prize_group_id:int}/{prize_category_id:int}/{prize_criterion_id:int}'
+        ),
+        name='admin-prize-criterion-delete',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_prize_criterion_delete(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+        prize_criterion_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request,
+            event_uniq_id,
+            tournament_id,
+            prize_group_id,
+            prize_category_id,
+            prize_criterion_id=prize_criterion_id,
+        )
+        if web_context.error:
+            return web_context.error
+        prize_category = web_context.get_admin_prize_category()
+        prize_category.delete_criterion(prize_criterion_id)
+        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
+
+    @patch(
+        path=(
+            '/admin/prizes/reorder-criteria/{event_uniq_id:str}'
+            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-criteria-reorder',
+    )
+    async def htmx_admin_prize_criteria_reorder(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request,
+            event_uniq_id,
+            tournament_id,
+            prize_group_id,
+            prize_category_id,
+        )
+        if web_context.error:
+            return web_context.error
+        prize_category = web_context.get_admin_prize_category()
+        prize_category.reorder_criteria(data['criterion_ids'])
+        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
+
+    @get(
+        path=(
+            '/admin/prizes/prize-criteria-modal/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-criteria-modal',
+    )
+    async def htmx_admin_prize_criteria_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_prizes_render(
+            PrizeAdminWebContext(
+                request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            ),
+            {'modal': 'prize_criteria'},
+        )
+
+    @get(
+        path=(
+            '/admin/prizes/criterion-modal/create/{event_uniq_id:str}'
+            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-criterion-create-modal',
+    )
+    async def htmx_admin_prize_criterion_create_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+        )
+        data = {'type': GenderPlayerFilter.static_id()}
+        return self._admin_event_prizes_render(
+            web_context,
+            self._prize_criterion_form_modal_context(data, FormAction.CREATE),
+        )
+
+    @get(
+        path=(
+            '/admin/prizes/criterion-modal/update/{event_uniq_id:str}'
+            '/{tournament_id:int}/{prize_group_id:int}'
+            '/{prize_category_id:int}/{prize_criterion_id:int}'
+        ),
+        name='admin-prize-criterion-update-modal',
+    )
+    async def htmx_admin_prize_criterion_update_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+        prize_criterion_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request,
+            event_uniq_id,
+            tournament_id,
+            prize_group_id,
+            prize_category_id,
+            prize_criterion_id=prize_criterion_id,
+        )
+        if web_context.error:
+            return web_context.error
+        prize_criterion = web_context.get_admin_prize_criterion()
+        data = {'type': prize_criterion.player_filter.id} | {
+            option.id: option.value for option in prize_criterion.player_filter.options
+        }
+        return self._admin_event_prizes_render(
+            web_context,
+            self._prize_criterion_form_modal_context(data, FormAction.UPDATE),
+        )
+
+    # -------------------------------------------------------------------------
     # Prizes
     # -------------------------------------------------------------------------
 
@@ -686,7 +992,6 @@ class PrizeAdminController(BaseEventAdminController):
                 web_context,
                 self._prize_form_modal_context(data, FormAction.UPDATE, errors),
             )
-        print(data)
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
 

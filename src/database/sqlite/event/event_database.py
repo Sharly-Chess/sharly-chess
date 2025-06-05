@@ -2764,6 +2764,12 @@ class EventDatabase(MigrationDatabase):
             tuple(fields.values()) + (stored_prize_criterion.id,),
         )
 
+    def update_stored_prize_criterion_index(self, prize_criterion_id: int, index: int):
+        self.execute(
+            'UPDATE `prize_criterion` SET `index` = ? WHERE `id` = ?',
+            (index, prize_criterion_id),
+        )
+
     def delete_stored_prize_criterion(self, prize_criterion_id: int):
         self.execute(
             'DELETE FROM `prize_criterion` WHERE `id` = ?;', (prize_criterion_id,)

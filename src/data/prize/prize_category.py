@@ -9,7 +9,11 @@ from data.prize.prize_criterion import PrizeCriterion
 from data.prize.prize import Prize
 from data.prize.prize_sharing import PrizeSharing, NoPrizeSharing
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredPrizeCategory, StoredPrize
+from database.sqlite.event.event_store import (
+    StoredPrizeCategory,
+    StoredPrize,
+    StoredPrizeCriterion,
+)
 
 if TYPE_CHECKING:
     from data.prize.prize_group import PrizeGroup
@@ -66,6 +70,10 @@ class PrizeCategory:
         return self.criteria_by_id.values()
 
     @property
+    def sorted_criteria(self) -> list[PrizeCriterion]:
+        return sorted(self.criteria, key=lambda criteria: criteria.index)
+
+    @property
     def prizes(self) -> Collection[Prize]:
         return self.prizes_by_id.values()
 
@@ -106,6 +114,34 @@ class PrizeCategory:
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize_category(self.stored_prize_category)
+            database.commit()
+
+    def add_criterion(self, stored_criterion: StoredPrizeCriterion) -> PrizeCriterion:
+        with self.get_event_database() as database:
+            object_id = database.add_stored_prize_criterion(stored_criterion)
+            database.commit()
+        stored_criterion.id = object_id
+        prize_criterion = PrizeCriterion(self, stored_criterion)
+        self.criteria_by_id[object_id] = prize_criterion
+        return prize_criterion
+
+    def delete_criterion(self, criterion_id: int):
+        with self.get_event_database() as database:
+            database.delete_stored_prize_criterion(criterion_id)
+            database.commit()
+        if criterion_id in self.criteria_by_id:
+            del self.criteria_by_id[criterion_id]
+        self.reorder_criteria([criterion.id for criterion in self.sorted_criteria])
+
+    def reorder_criteria(self, sorted_criterion_ids: list[int]):
+        with self.get_event_database() as database:
+            for criterion in self.criteria:
+                if criterion.id not in sorted_criterion_ids:
+                    raise ValueError(f'Missing criterion id: {criterion.id}')
+                index = sorted_criterion_ids.index(criterion.id)
+                if index != criterion.index:
+                    criterion.stored_prize_criterion.index = index
+                    database.update_stored_prize_criterion_index(criterion.id, index)
             database.commit()
 
     def get_default_prize_index(self, value: int):

@@ -75,7 +75,7 @@
                         {{ admin_macros.text_input(
                             name='description',
                             label=_('%(string)s:', string=_('Description')),
-                            placeholder=_('E.g.: Trophy'),
+                            placeholder=_('E.g.: %(string)s', string=_('Trophy')),
                             help_text=_('The description of the prize.'),
                             data=data, errors=errors
                         ) }}
