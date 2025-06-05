@@ -12,6 +12,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
     def entity_types() -> list[type[PrintDocument]]:
         return [
             documents.PlayerListPrintDocument,
+            documents.PlayerCheckinListPrintDocument,
             documents.PairingPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,

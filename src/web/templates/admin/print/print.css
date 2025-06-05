@@ -10,6 +10,9 @@ tr.even td { background-color: #FFFFFF; }
 tr.odd td { background-color: #E0E0E0; }
 {# ========== WIDTH, MARGINS, PADDING ==========#}
 body { margin: 4px; }
+tr td, tr th {
+    padding: 2px 4px;
+}
 .split-by-title { margin: 16px 0 12px; }
 {# ========== FONT SIZE ========== #}
 .page-title { font-size: 24pt; }
@@ -19,4 +22,9 @@ body { margin: 4px; }
 .page-title,
 .page-subtitle,
 .split-by-title { font-weight: bold; }
-{# ========== TEXT ALIGN ========== #}
+{# ========== CELLS ========== #}
+.checkin {
+    font-size: 18px;
+    padding: 0 6px 2px;
+    position: relative;
+}
