@@ -18,7 +18,7 @@
                 >
                     <button
                         class="btn btn-outline-primary text-nowrap"
-                        {% if admin_tournament.are_pairing_settings_valid and admin_round != 1 %}
+                        {% if admin_round != 1 %}
                             hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                         {% else %}
                             hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
