@@ -996,7 +996,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
 
-        stored_prize.value = WebContext.form_data_to_int(data, 'value') or 1
+        stored_prize.value = WebContext.form_data_to_float(data, 'value') or 1.0
         stored_prize.is_monetary = (
             WebContext.form_data_to_bool(data, 'is_monetary') or False
         )
@@ -1114,7 +1114,7 @@ class PrizeAdminController(BaseEventAdminController):
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
         data = {
-            'value': '',
+            'value': WebContext.value_to_form_data(0.0),
             'is_monetary': WebContext.value_to_form_data(True),
             'description': '',
         }
