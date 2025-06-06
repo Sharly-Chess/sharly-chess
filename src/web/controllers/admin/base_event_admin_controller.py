@@ -42,6 +42,10 @@ class BaseEventAdminWebContext(AdminWebContext):
                 self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
 
+    def get_admin_event(self) -> Event:
+        assert self.admin_event is not None
+        return self.admin_event
+
     def check_admin_tab(self):
         pass
 
@@ -52,13 +56,12 @@ class BaseEventAdminWebContext(AdminWebContext):
         }
 
     def get_tournament_options(self) -> dict[str, str]:
-        if self.admin_event is None:
-            raise RuntimeError('admin_event not defined')
+        event = self.get_admin_event()
         return {
             self.value_to_form_data(
                 tournament.id
             ): f'{tournament.name} ({tournament.uniq_id})'
-            for tournament in self.admin_event.tournaments_sorted_by_uniq_id
+            for tournament in event.tournaments_sorted_by_uniq_id
         }
 
 
@@ -119,6 +122,10 @@ class BaseEventAdminController(BaseAdminController):
             'admin-event-pairings-tab': {
                 'title': _('Pairings'),
                 'template': 'pairings/tab.html',
+            },
+            'admin-event-prizes-tab': {
+                'title': _('Prizes'),
+                'template': 'prizes/tab.html',
             },
             'admin-event-views': {
                 'title': _('Screens'),
