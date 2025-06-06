@@ -2574,7 +2574,7 @@ class EventDatabase(MigrationDatabase):
         for row in self.fetchall():
             prize_group = self._row_to_stored_prize_group(row)
             assert prize_group.id is not None
-            prize_group.stored_prized_categories = (
+            prize_group.stored_prize_categories = (
                 self.load_prize_group_stored_prize_categories(prize_group.id)
             )
             stored_prize_groups.append(prize_group)

@@ -23,7 +23,7 @@ class PrizeGroup:
 
     def _get_categories_by_id(self) -> dict[int, PrizeCategory]:
         category_by_id = {}
-        for stored_category in self.stored_prize_group.stored_prized_categories:
+        for stored_category in self.stored_prize_group.stored_prize_categories:
             assert stored_category.id is not None
             category_by_id[stored_category.id] = PrizeCategory(self, stored_category)
         return category_by_id

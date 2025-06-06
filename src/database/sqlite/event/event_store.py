@@ -71,7 +71,7 @@ class StoredPrizeGroup:
     id: int | None
     tournament_id: int
     name: str
-    stored_prized_categories: list[StoredPrizeCategory] = field(
+    stored_prize_categories: list[StoredPrizeCategory] = field(
         default_factory=list[StoredPrizeCategory]
     )
 
