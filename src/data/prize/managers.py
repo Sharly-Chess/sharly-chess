@@ -1,8 +1,5 @@
-from data.prize.player_filter_options import (
-    PlayerFilterOption,
-    GenderPlayerFilterOption,
-)
-from data.prize.player_filters import PlayerFilter, GenderPlayerFilter
+from data.prize.player_filter_options import PlayerFilterOption
+from data.prize.player_filters import PlayerFilter
 from data.prize.prize_sharing import (
     PrizeSharing,
     NoPrizeSharing,
@@ -15,13 +12,21 @@ from utils.entity import EntityManager
 class PlayerFilterManager(EntityManager[PlayerFilter]):
     @staticmethod
     def entity_types() -> list[type[PlayerFilter]]:
-        return [GenderPlayerFilter]
+        from data.prize import player_filters as filters
+
+        return [filters.GenderPlayerFilter, filters.RatingPlayerFilter]
 
 
 class PlayerFilterOptionManager(EntityManager[PlayerFilterOption]):
     @staticmethod
     def entity_types() -> list[type[PlayerFilterOption]]:
-        return [GenderPlayerFilterOption]
+        from data.prize import player_filter_options as options
+
+        return [
+            options.GenderOption,
+            options.MinRatingOption,
+            options.MaxRatingOption,
+        ]
 
 
 class PrizeSharingManager(EntityManager[PrizeSharing]):

@@ -358,6 +358,9 @@ msgstr ""
 msgid "Assign zero-point byes for the rest of the tournament"
 msgstr ""
 
+msgid "At least a minimum or a maximum rating must be defined."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -1822,6 +1825,12 @@ msgstr ""
 msgid "File not found"
 msgstr ""
 
+msgid "Filter out players with a greater rating."
+msgstr ""
+
+msgid "Filter out players with a lower rating."
+msgstr ""
+
 msgid "Filter the categories."
 msgstr ""
 
@@ -2325,9 +2334,6 @@ msgstr "Mail"
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
-msgid "The main category is open to all the players."
-msgstr ""
-
 msgid "Main category"
 msgstr ""
 
@@ -2394,6 +2400,9 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
+msgid "Maximum rating"
+msgstr ""
+
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
@@ -2439,6 +2448,9 @@ msgid "Minimum delay between uploads (minutes):"
 msgstr ""
 
 msgid "Minimum number of points (included):"
+msgstr ""
+
+msgid "Minimum rating"
 msgstr ""
 
 msgid "Missing parameter (code: [{code}]): [{error}]."
@@ -2819,6 +2831,9 @@ msgid "Only arbiters can view private rotators."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
+msgstr ""
+
+msgid "Only include players of this gender."
 msgstr ""
 
 #, python-format
@@ -4030,9 +4045,6 @@ msgstr ""
 msgid "The following screens will also be deleted:"
 msgstr ""
 
-msgid "The gender of the players of the category."
-msgstr ""
-
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr ""
 
@@ -4050,6 +4062,12 @@ msgid "The location of the tournament."
 msgstr ""
 
 msgid "The mail addresses."
+msgstr ""
+
+msgid "The main category can't have criteria."
+msgstr ""
+
+msgid "The main category is open to all the players."
 msgstr ""
 
 #, python-format
@@ -4072,6 +4090,9 @@ msgid "The maximum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr ""
+
+msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr ""
 
 #, python-format

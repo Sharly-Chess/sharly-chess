@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from types import UnionType
 from typing import Any
 
+from common.i18n import _
 from utils.enum import PlayerGender
 from utils.option import Option, OptionError
 from web.controllers.base_controller import WebContext
@@ -12,19 +13,15 @@ class PlayerFilterOption(Option, ABC):
 
     @property
     def template_name(self) -> str:
-        return self.template_dir + self.template_file
-
-    @property
-    def template_dir(self) -> str:
-        return 'player_filter_options/'
+        return f'player_filter_options/{self.template_file_name}.html'
 
     @property
     @abstractmethod
-    def template_file(self) -> str:
+    def template_file_name(self) -> str:
         """Name of the file of the template representing the option."""
 
 
-class GenderPlayerFilterOption(PlayerFilterOption):
+class GenderOption(PlayerFilterOption):
     @staticmethod
     def static_id() -> str:
         return 'GENDER_VALUE'
@@ -38,8 +35,8 @@ class GenderPlayerFilterOption(PlayerFilterOption):
         return PlayerGender.FEMALE.value
 
     @property
-    def template_file(self) -> str:
-        return 'gender.html'
+    def template_file_name(self) -> str:
+        return 'gender'
 
     @property
     def gender_options(self) -> dict[str, str]:
@@ -55,3 +52,60 @@ class GenderPlayerFilterOption(PlayerFilterOption):
             PlayerGender(self.value)
         except ValueError:
             raise OptionError(f'Invalid gender value: {self.value}', self)
+
+
+class RatingPlayerFilterOption(PlayerFilterOption, ABC):
+    @property
+    @abstractmethod
+    def label(self) -> str:
+        """Label of the input field."""
+
+    @property
+    @abstractmethod
+    def help_text(self) -> str:
+        """Help text of the input field."""
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def template_file_name(self) -> str:
+        return 'rating'
+
+    def validate(self):
+        super().validate()
+        if self.value and self.value < 0:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+class MinRatingOption(RatingPlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'MIN_RATING'
+
+    @property
+    def label(self) -> str:
+        return _('Minimum rating')
+
+    @property
+    def help_text(self) -> str:
+        return _('Filter out players with a lower rating.')
+
+
+class MaxRatingOption(RatingPlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'MAX_RATING'
+
+    @property
+    def label(self) -> str:
+        return _('Maximum rating')
+
+    @property
+    def help_text(self) -> str:
+        return _('Filter out players with a greater rating.')

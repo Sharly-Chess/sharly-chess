@@ -358,6 +358,9 @@ msgstr "Attribuer à un pilote d'écran."
 msgid "Assign zero-point byes for the rest of the tournament"
 msgstr "Marquer forfait pour le reste du tournoi"
 
+msgid "At least a minimum or a maximum rating must be defined."
+msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -1822,6 +1825,12 @@ msgstr "Nom du fichier (sans extension) :"
 msgid "File not found"
 msgstr "Fichier introuvable"
 
+msgid "Filter out players with a greater rating."
+msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
+
+msgid "Filter out players with a lower rating."
+msgstr "Exclure les joueur·euses ayant un Elo moins élevé."
+
 msgid "Filter the categories."
 msgstr "Filtrer les catégories."
 
@@ -2325,9 +2334,6 @@ msgstr "Mél"
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
-msgid "The main category is open to all the players."
-msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
-
 msgid "Main category"
 msgstr "Catégorie générale"
 
@@ -2394,6 +2400,9 @@ msgstr "Nombre maximum de résultats : %(num)d"
 msgid "Maximum number of results: unlimited"
 msgstr "Nombre maximum de résultats : illimité"
 
+msgid "Maximum rating"
+msgstr "Elo maximum"
+
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
@@ -2440,6 +2449,9 @@ msgstr "Délai minimum entre deux envois (en minutes) :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
+
+msgid "Minimum rating"
+msgstr "Elo minimum"
 
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr "Paramètre manquant (code : [{code}]) : [{error}]."
@@ -2820,6 +2832,9 @@ msgstr "Seul·es les arbitres peuvent voir les écrans rotatifs privés."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
+
+msgid "Only include players of this gender."
+msgstr "N'inclure que les joueur·euses de ce genre."
 
 #, python-format
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
@@ -4030,9 +4045,6 @@ msgstr "Les familles d'écrans suivantes vont également être supprimées :"
 msgid "The following screens will also be deleted:"
 msgstr "Les écrans suivants vont également être supprimés :"
 
-msgid "The gender of the players of the category."
-msgstr "Le genre des joueur·euses de la catégorie."
-
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Le temps initial en secondes (peut être nul en cas d'incrément)."
 
@@ -4051,6 +4063,12 @@ msgstr "Le lieu du tournoi."
 
 msgid "The mail addresses."
 msgstr "Les adresses mél."
+
+msgid "The main category can't have criteria."
+msgstr ""
+
+msgid "The main category is open to all the players."
+msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
@@ -4073,6 +4091,9 @@ msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si ce champ est laissé vide, tous les résultats sont affichés)."
+
+msgid "The maximum rating must be at most equal to the minimum rating."
+msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 
 #, python-format
 msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
@@ -5254,16 +5275,4 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Invalid log level [{log_level}]."
-#~ msgstr "Niveau de log non valide [{log_level}]."
-
-#~ msgid "Log level"
-#~ msgstr "Niveau de log"
-
-#~ msgid "Log level:"
-#~ msgstr "Niveau de log :"
-
-#~ msgid "Logging level: {log_level}"
-#~ msgstr "Niveau de log : {log_level}"
 

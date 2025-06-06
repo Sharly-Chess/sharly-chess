@@ -1,0 +1,8 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('%(string)s:', string=option.label),
+        help_text=option.help_text,
+        data=data, errors=errors
+    ) }}
+</div>
