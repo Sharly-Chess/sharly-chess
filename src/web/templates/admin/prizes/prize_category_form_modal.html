@@ -56,7 +56,7 @@
                             name='is_main',
                             label=_('%(string)s:', string=_('Main category')),
                             placeholder=_('Define as main category'),
-                            help_text=_('Main categories are open to all the players.'),
+                            help_text=_('The main category is open to all the players.'),
                             disabled=other_main_category or has_criteria,
                             data=data, errors=errors
                         ) }}
@@ -78,7 +78,7 @@
                             'info',
                             _('The category contains non-monetary prizes which can not be shared.')
                             if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
-                            _('Prizes can only be shared for main categories.'),
+                            _('Prizes can only be shared for the main category.'),
                             'top'
                         ) }}
                     >

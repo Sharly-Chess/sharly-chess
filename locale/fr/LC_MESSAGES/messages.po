@@ -2325,8 +2325,8 @@ msgstr "Mél"
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
-msgid "Main categories are open to all the players."
-msgstr "Les catégories générales sont ouvertes à tou·tes les joueur·euses."
+msgid "The main category is open to all the players."
+msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 
 msgid "Main category"
 msgstr "Catégorie générale"
@@ -3302,7 +3302,7 @@ msgstr "Valeur du prix plus haute que le précédent."
 msgid "Prizes"
 msgstr "Prix"
 
-msgid "Prizes can only be shared for main categories."
+msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour les catégories générales."
 
 msgid "Prizes not shared"
@@ -4031,7 +4031,7 @@ msgid "The following screens will also be deleted:"
 msgstr "Les écrans suivants vont également être supprimés :"
 
 msgid "The gender of the players of the category."
-msgstr "\"Le genre des joueur·euses de la catégorie"
+msgstr "Le genre des joueur·euses de la catégorie."
 
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Le temps initial en secondes (peut être nul en cas d'incrément)."
@@ -4344,14 +4344,14 @@ msgstr "Le type de document à imprimer."
 msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
-msgid "The type of reward of the prize (monetary / non-monetary)."
-msgstr "Le type de récompense du prix (monétaire / non-monétaire)."
+msgid "The type of reward of the prize (monetary/non-monetary)."
+msgstr "Le type de récompense du prix (monétaire/non-monétaire)."
 
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
 
 msgid "The way to share the prizes when two or more players with the same points are eligible for prizes."
-msgstr "La manière de partager les prix lorsque 2 joueur·euses ou plus avec le même nombre de points sont éligibles pour un prix."
+msgstr "La manière de partager les prix lorsque plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix."
 
 msgid "There can only be one main category per tournament."
 msgstr "Il ne peut y avoir qu'une catégorie générale par tournoi."

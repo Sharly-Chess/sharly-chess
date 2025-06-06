@@ -2325,7 +2325,7 @@ msgstr "Mail"
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
-msgid "Main categories are open to all the players."
+msgid "The main category is open to all the players."
 msgstr ""
 
 msgid "Main category"
@@ -3302,7 +3302,7 @@ msgstr ""
 msgid "Prizes"
 msgstr ""
 
-msgid "Prizes can only be shared for main categories."
+msgid "Prizes can only be shared for the main category."
 msgstr ""
 
 msgid "Prizes not shared"
@@ -4344,7 +4344,7 @@ msgstr ""
 msgid "The type of rating to use for the tournament."
 msgstr ""
 
-msgid "The type of reward of the prize (monetary / non-monetary)."
+msgid "The type of reward of the prize (monetary/non-monetary)."
 msgstr ""
 
 msgid "The variation of the pairing system."
