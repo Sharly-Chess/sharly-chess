@@ -2621,6 +2621,7 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             prize_sharing=row['prize_sharing'],
             is_main=cls.load_bool_from_database_field(row['is_main']),
+            index=row['index'],
         )
 
     def get_stored_prize_category(
@@ -2660,7 +2661,7 @@ class EventDatabase(MigrationDatabase):
     ) -> int:
         fields = self._get_fields_dict(
             stored_prize_category,
-            ['prize_group_id', 'name', 'prize_sharing', 'is_main'],
+            ['prize_group_id', 'name', 'prize_sharing', 'is_main', 'index'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2684,6 +2685,12 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             f'UPDATE `prize_category` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_prize_category.id,),
+        )
+
+    def update_stored_prize_category_index(self, prize_category_id: int, index: int):
+        self.execute(
+            'UPDATE `prize_category` SET `index` = ? WHERE `id` = ?',
+            (index, prize_category_id),
         )
 
     def delete_stored_prize_category(self, prize_category_id: int):
@@ -2722,10 +2729,7 @@ class EventDatabase(MigrationDatabase):
         self, prize_category_id: int
     ) -> list[StoredPrizeCriterion]:
         self.execute(
-            (
-                'SELECT * FROM `prize_criterion` WHERE '
-                '`prize_category_id` = ? ORDER BY `index`'
-            ),
+            'SELECT * FROM `prize_criterion` WHERE `prize_category_id` = ?',
             (prize_category_id,),
         )
         return [self._row_to_stored_prize_criterion(row) for row in self.fetchall()]
@@ -2754,7 +2758,7 @@ class EventDatabase(MigrationDatabase):
         stored_prize_criterion: StoredPrizeCriterion,
     ):
         fields = self._get_fields_dict(
-            stored_prize_criterion, ['prize_category_id', 'type', 'index']
+            stored_prize_criterion, ['prize_category_id', 'type']
         ) | {
             'options': self.dump_to_json_database_field(stored_prize_criterion.options)
         }
@@ -2803,7 +2807,7 @@ class EventDatabase(MigrationDatabase):
         self, prize_category_id: int
     ) -> list[StoredPrize]:
         self.execute(
-            'SELECT * FROM `prize` WHERE `prize_category_id` = ? ORDER BY `index`',
+            'SELECT * FROM `prize` WHERE `prize_category_id` = ?',
             (prize_category_id,),
         )
         return [self._row_to_stored_prize(row) for row in self.fetchall()]
@@ -2832,7 +2836,7 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_prize,
-            ['prize_category_id', 'value', 'is_monetary', 'description', 'index'],
+            ['prize_category_id', 'value', 'is_monetary', 'description'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(

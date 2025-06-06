@@ -172,6 +172,9 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
+msgid "A positive value is expected."
+msgstr ""
+
 msgid "Absent"
 msgstr ""
 
@@ -1998,6 +2001,9 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
+msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
+msgstr ""
+
 msgid "Hello,"
 msgstr ""
 
@@ -2325,9 +2331,6 @@ msgstr ""
 msgid "Main category"
 msgstr ""
 
-msgid "Main group"
-msgstr ""
-
 msgid "Make visible on FFE site"
 msgstr ""
 
@@ -2568,6 +2571,9 @@ msgid "No background image set, by default [{background_image}]"
 msgstr ""
 
 msgid "No category"
+msgstr ""
+
+msgid "No criteria defined."
 msgstr ""
 
 msgid "No criteria for the main category."
@@ -2813,9 +2819,6 @@ msgid "Only arbiters can view private rotators."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
-msgstr ""
-
-msgid "Only the main category should have no criteria."
 msgstr ""
 
 #, python-format
@@ -3300,6 +3303,9 @@ msgid "Prizes"
 msgstr ""
 
 msgid "Prizes can only be shared for main categories."
+msgstr ""
+
+msgid "Prizes not shared"
 msgstr ""
 
 msgid "Prizes of categories with prize sharing can only be monetary."
@@ -4246,6 +4252,9 @@ msgstr ""
 msgid "The price the player pays to register."
 msgstr ""
 
+msgid "The prizes are not correctly sorted."
+msgstr ""
+
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr ""
 
@@ -4345,6 +4354,9 @@ msgid "The way to share the prizes when two or more players with the same points
 msgstr ""
 
 msgid "There can only be one main category per tournament."
+msgstr ""
+
+msgid "There can't be fewer players than prizes."
 msgstr ""
 
 msgid "There is no pairings for this round (last round with pairings: #{round})."
@@ -4700,6 +4712,9 @@ msgstr ""
 
 msgid "Undefined"
 msgstr ""
+
+msgid "Undefined **** PLURAL"
+msgstr "Undefined"
 
 msgid "Under 10"
 msgstr ""
@@ -5187,6 +5202,9 @@ msgstr ""
 msgid "tournament ID does not match."
 msgstr ""
 
+msgid "value: {currency_value}"
+msgstr ""
+
 msgid "vs"
 msgstr ""
 
@@ -5197,6 +5215,9 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "{currency}{value}"
+msgstr ""
 
 msgid "{days} days"
 msgstr ""
@@ -5227,9 +5248,6 @@ msgid "{num} player found."
 msgid_plural "{num} players found."
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "{prize_description} (value: {value} {currency})"
-msgstr ""
 
 msgid "{screen_type}-screen"
 msgstr ""

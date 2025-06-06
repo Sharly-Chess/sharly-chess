@@ -77,6 +77,11 @@ class PrizeGroup:
         stored_category.id = object_id
         category = PrizeCategory(self, stored_category)
         self.categories_by_id[object_id] = category
+        if stored_category.is_main:
+            category_ids = [category.id for category in self.sorted_categories]
+            category_ids.remove(object_id)
+            category_ids.insert(0, object_id)
+            self.reorder_categories(category_ids)
         return category
 
     def delete_category(self, category_id: int):
@@ -85,3 +90,17 @@ class PrizeGroup:
             database.commit()
         if category_id in self.categories_by_id:
             del self.categories_by_id[category_id]
+        self.reorder_categories()
+
+    def reorder_categories(self, sorted_category_ids: list[int] | None = None):
+        if not sorted_category_ids:
+            sorted_category_ids = [category.id for category in self.sorted_categories]
+        with self.get_event_database() as database:
+            for category in self.categories:
+                if category.id not in sorted_category_ids:
+                    raise ValueError(f'Missing category id: {category.id}')
+                index = sorted_category_ids.index(category.id)
+                if index != category.index:
+                    category.stored_prize_category.index = index
+                    database.update_stored_prize_category_index(category.id, index)
+            database.commit()

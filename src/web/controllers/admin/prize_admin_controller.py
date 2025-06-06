@@ -408,6 +408,7 @@ class PrizeAdminController(BaseEventAdminController):
                 name=WebContext.form_data_to_str(data, 'name') or '',
                 is_main=WebContext.form_data_to_bool(data, 'is_main') or False,
                 prize_sharing=data['prize_sharing'],
+                index=len(prize_group.categories),
             )
         )
         Message.success(
@@ -891,9 +892,9 @@ class PrizeAdminController(BaseEventAdminController):
         is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
         field = 'value'
         try:
-            WebContext.form_data_to_int(data, field, 0, 0)
+            WebContext.form_data_to_float(data, field, 0, 0)
         except ValueError:
-            errors[field] = _('A positive integer is expected.')
+            errors[field] = _('A positive value is expected.')
         field = 'description'
         description = WebContext.form_data_to_str(data, field) or ''
         if is_monetary and description:
@@ -943,7 +944,7 @@ class PrizeAdminController(BaseEventAdminController):
                 self._prize_form_modal_context(data, FormAction.CREATE, errors),
             )
         prize_category = web_context.get_admin_prize_category()
-        value = web_context.form_data_to_int(data, 'value') or 0
+        value = web_context.form_data_to_float(data, 'value') or 0.0
         prize_category.add_prize(
             StoredPrize(
                 id=None,

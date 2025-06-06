@@ -27,19 +27,19 @@
                     hx-indicator="#please-wait"
                 >
                     {% for prize in admin_prize_category.sorted_prizes %}
-                        {% set warning=loop.previtem and loop.previtem.value < prize.value %}
+                        {% set not_sorted_value=loop.previtem and loop.previtem.value < prize.value %}
                         <div class="{% if admin_prize_category.prizes|length > 1 %}cursor-grab{% endif %}">
                             <input type="hidden" name="prize_ids" value='{{ prize.id }}'/>
-                            <div class="border border-{% if warning %}warning{% else %}secondary{% endif %}">
+                            <div class="border border-{% if not_sorted_value %}danger{% else %}secondary{% endif %}">
                                 <div class="p-2 d-flex align-items-start gap-4">
                                     <div class="flex-grow-1">
                                         {% if not prize.is_monetary and not prize.description %}
                                             <i>{{ _('Non-monetary prize') }}</i>
                                         {% endif %}
                                         {{ prize.tabular_representation }}
-                                        {% if warning %}
+                                        {% if not_sorted_value %}
                                             <br/>
-                                            <span class="text-warning">
+                                            <span class="text-danger">
                                                 {{ _('Prize value greater than the previous prize.') }}
                                             </span>
                                         {% endif %}

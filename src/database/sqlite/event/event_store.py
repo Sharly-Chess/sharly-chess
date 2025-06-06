@@ -46,7 +46,7 @@ class StoredPrizeCriterion:
 class StoredPrize:
     id: int | None
     prize_category_id: int
-    value: int
+    value: float
     is_monetary: bool
     description: str
     index: int
@@ -59,6 +59,7 @@ class StoredPrizeCategory:
     name: str
     prize_sharing: str
     is_main: bool
+    index: int
     stored_prize_criteria: list[StoredPrizeCriterion] = field(
         default_factory=list[StoredPrizeCriterion]
     )

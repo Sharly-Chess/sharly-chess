@@ -11,21 +11,51 @@
 {% endblock %}
 
 {% block card_title %}
+    {% set player_count=prize_category.players|length %}
+    {% set prize_count=prize_category.prizes|length %}
     <div class="d-flex gap-2 align-items-center justify-content-center">
         <div
             class="text-nowrap"
             {{ macros.tooltip_attributes('info', _('Number of players'), 'top') }}
         >
             <i class="bi-people-fill pe-1"></i>
-            {{ prize_category.players|length }}
+            {{ player_count }}
         </div>
         <div
             class="text-nowrap"
             {{ macros.tooltip_attributes('info', _('Number of prizes'), 'top') }}
         >
             <i class="bi-trophy-fill pe-1"></i>
-            {{ prize_category.prizes|length }}
+            {{ prize_count }}
         </div>
+        {% if not prize_category.is_main and not prize_category.criteria %}
+            <i
+                class="bi-x-circle-fill text-danger"
+                {{ macros.tooltip_attributes('info', _('No criteria defined.'), 'top') }}
+            ></i>
+        {% elif not prize_category.is_prize_order_valid %}
+            <i
+                class="bi-x-circle-fill text-danger"
+                {{ macros.tooltip_attributes('info', _('The prizes are not correctly sorted.'), 'top') }}
+            ></i>
+        {% elif player_count < prize_count %}
+            <i
+                class="bi-x-circle-fill text-danger"
+                {{ macros.tooltip_attributes('info', _('There can\'t be fewer players than prizes.'), 'top') }}
+            ></i>
+        {% elif player_count <= prize_count + 1 %}
+            <i
+                class="bi-exclamation-triangle-fill text-warning"
+                {{ macros.tooltip_attributes(
+                    'info',
+                    _(
+                        'Having a close amount of players and prizes represents '
+                        'a risk for a prize not to be attributed.'
+                    ),
+                    'top'
+                ) }}
+            ></i>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -38,24 +68,22 @@
             {% elif prize_category.criteria %}
                 {{ prize_category.criteria_string }}
             {% else %}
-                <span class="text-danger">
-                    <i>{{ _('Undefined') }}</i>
-                    <i
-                        class="bi-exclamation-triangle-fill ps-1"
-                        {{ macros.tooltip_attributes('info', _('Only the main category should have no criteria.'), 'top') }}
-                    ></i>
+                <span class="text-secondary">
+                    <i>{{ _('Undefined **** PLURAL') }}</i>
                 </span>
-
             {% endif %}
         </div>
         <div class="text-start">
             {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
-            {{ prize_category.total_prize_value }}
-            <i class="bi-currency-euro"></i>
+            {{ prize_category.total_prize_value_str }}
         </div>
         <div class="text-start">
-            {{ _('%(string)s:', string=_('Prize sharing')) }}&nbsp;
-            {{ prize_category.prize_sharing.name }}
+            {% if prize_category.are_prizes_shared %}
+                {{ _('%(string)s:', string=_('Prize sharing')) }}&nbsp;
+                {{ prize_category.prize_sharing.name }}
+            {% else %}
+                <span class="text-secondary">{{ _('Prizes not shared') }}</span>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

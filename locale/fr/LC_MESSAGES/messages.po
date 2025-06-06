@@ -172,6 +172,9 @@ msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
+msgid "A positive value is expected."
+msgstr "Une valeur positive est attendue."
+
 msgid "Absent"
 msgstr "Absent·e"
 
@@ -1998,6 +2001,9 @@ msgstr "Système de Haley"
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
+msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
+msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
+
 msgid "Hello,"
 msgstr "Bonjour,"
 
@@ -2325,9 +2331,6 @@ msgstr "Les catégories générales sont ouvertes à tou·tes les joueur·euses.
 msgid "Main category"
 msgstr "Catégorie générale"
 
-msgid "Main group"
-msgstr "Groupe général"
-
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
 
@@ -2569,6 +2572,9 @@ msgstr "Image de fond non définie, par défaut [{background_image}]"
 
 msgid "No category"
 msgstr "Aucune catégorie"
+
+msgid "No criteria defined."
+msgstr "Aucun critère défini."
 
 msgid "No criteria for the main category."
 msgstr "Aucun critère pour la catégorie générale."
@@ -2814,9 +2820,6 @@ msgstr "Seul·es les arbitres peuvent voir les écrans rotatifs privés."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
-
-msgid "Only the main category should have no criteria."
-msgstr "Seule la catégorie générale devrait n'avoir aucun critère."
 
 #, python-format
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
@@ -3301,6 +3304,9 @@ msgstr "Prix"
 
 msgid "Prizes can only be shared for main categories."
 msgstr "Les prix ne peuvent être partagés que pour les catégories générales."
+
+msgid "Prizes not shared"
+msgstr "Prix non partagés"
 
 msgid "Prizes of categories with prize sharing can only be monetary."
 msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
@@ -4246,6 +4252,9 @@ msgstr "Le montant déjà payé."
 msgid "The price the player pays to register."
 msgstr "Le montant de l'inscription du·de la joueur·euse."
 
+msgid "The prizes are not correctly sorted."
+msgstr "Les prix ne sont pas ordonnés correctement."
+
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."
 
@@ -4346,6 +4355,9 @@ msgstr "La manière de partager les prix lorsque 2 joueur·euses ou plus avec le
 
 msgid "There can only be one main category per tournament."
 msgstr "Il ne peut y avoir qu'une catégorie générale par tournoi."
+
+msgid "There can't be fewer players than prizes."
+msgstr "Il ne peut pas y avoir moins de joueur·euses que de prix."
 
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
@@ -4700,6 +4712,9 @@ msgstr "Impossible de téléverser le règlement du tournoi."
 
 msgid "Undefined"
 msgstr "Non défini"
+
+msgid "Undefined **** PLURAL"
+msgstr "Non définis"
 
 msgid "Under 10"
 msgstr "Moins de 10"
@@ -5187,6 +5202,9 @@ msgstr "tournoi"
 msgid "tournament ID does not match."
 msgstr "L'identifiant du tournoi ne correspond pas."
 
+msgid "value: {currency_value}"
+msgstr "valeur : {currency_value}"
+
 msgid "vs"
 msgstr "contre"
 
@@ -5197,6 +5215,9 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
+
+msgid "{currency}{value}"
+msgstr "{value}{currency}"
 
 msgid "{days} days"
 msgstr "{days} jours"
@@ -5227,9 +5248,6 @@ msgid "{num} player found."
 msgid_plural "{num} players found."
 msgstr[0] "{num} joueur·euse trouvé·e."
 msgstr[1] "{num} joueur·euses trouvé·es."
-
-msgid "{prize_description} (value: {value} {currency})"
-msgstr "{prize_description} (Valeur : {value} {currency})"
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"

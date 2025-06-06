@@ -14,6 +14,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredPrizeCriterion,
 )
+from utils import StaticUtils
 
 if TYPE_CHECKING:
     from data.prize.prize_group import PrizeGroup
@@ -62,6 +63,10 @@ class PrizeCategory:
         return self.stored_prize_category.is_main
 
     @property
+    def index(self) -> int:
+        return self.stored_prize_category.index
+
+    @property
     def prize_sharing(self) -> PrizeSharing:
         return PrizeSharingManager.get_object(self.stored_prize_category.prize_sharing)
 
@@ -105,8 +110,30 @@ class PrizeCategory:
         return any(not prize.is_monetary for prize in self.prizes)
 
     @property
-    def total_prize_value(self) -> int:
+    def total_prize_value(self) -> float:
         return sum(prize.value for prize in self.prizes)
+
+    @property
+    def total_prize_value_str(self) -> str:
+        return StaticUtils.currency_value_str(self.total_prize_value, self.currency)
+
+    @property
+    def currency(self) -> str:
+        return self.prize_group.tournament.event.prize_currency
+
+    @property
+    def is_prize_order_valid(self) -> bool:
+        return self.sorted_prizes == sorted(
+            self.prizes, key=lambda prize: (-prize.value, prize.index)
+        )
+
+    @property
+    def is_valid(self) -> bool:
+        return (
+            (self.is_main or len(self.criteria) != 0)
+            and len(self.players) >= len(self.prizes)
+            and self.is_prize_order_valid
+        )
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_group.get_event_database()
@@ -131,9 +158,11 @@ class PrizeCategory:
             database.commit()
         if criterion_id in self.criteria_by_id:
             del self.criteria_by_id[criterion_id]
-        self.reorder_criteria([criterion.id for criterion in self.sorted_criteria])
+        self.reorder_criteria()
 
-    def reorder_criteria(self, sorted_criterion_ids: list[int]):
+    def reorder_criteria(self, sorted_criterion_ids: list[int] | None = None):
+        if not sorted_criterion_ids:
+            sorted_criterion_ids = [criterion.id for criterion in self.sorted_criteria]
         with self.get_event_database() as database:
             for criterion in self.criteria:
                 if criterion.id not in sorted_criterion_ids:
@@ -144,7 +173,7 @@ class PrizeCategory:
                     database.update_stored_prize_criterion_index(criterion.id, index)
             database.commit()
 
-    def get_default_prize_index(self, value: int):
+    def get_default_prize_index(self, value: float):
         return next(
             (
                 index
@@ -172,9 +201,11 @@ class PrizeCategory:
             database.commit()
         if prize_id in self.prizes_by_id:
             del self.prizes_by_id[prize_id]
-        self.reorder_prizes([prize.id for prize in self.sorted_prizes])
+        self.reorder_prizes()
 
-    def reorder_prizes(self, sorted_prize_ids: list[int]):
+    def reorder_prizes(self, sorted_prize_ids: list[int] | None = None):
+        if not sorted_prize_ids:
+            sorted_prize_ids = [prize.id for prize in self.sorted_prizes]
         with self.get_event_database() as database:
             for prize in self.prizes:
                 if prize.id not in sorted_prize_ids:

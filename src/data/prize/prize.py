@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrize
+from utils import StaticUtils
 
 if TYPE_CHECKING:
     from data.prize.prize_category import PrizeCategory
@@ -29,7 +30,7 @@ class Prize:
         return self.stored_prize.id
 
     @property
-    def value(self) -> int:
+    def value(self) -> float:
         return self.stored_prize.value
 
     @property
@@ -46,15 +47,16 @@ class Prize:
 
     @property
     def tabular_representation(self) -> str:
-        currency = self.prize_category.prize_group.tournament.event.prize_currency
+        currency_value = StaticUtils.currency_value_str(
+            self.value, self.prize_category.currency
+        )
         if self.is_monetary:
-            return f'{self.value} {currency}'
+            return currency_value
         elif self.value:
-            return _('{prize_description} (value: {value} {currency})').format(
-                prize_description=self.description,
-                value=self.value,
-                currency=currency,
+            value_str = _('value: {currency_value}').format(
+                currency_value=currency_value
             )
+            return f'{self.description} ({value_str})'
         else:
             return self.description
 
