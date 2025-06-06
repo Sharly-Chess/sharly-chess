@@ -1,7 +1,7 @@
 <tr
-    id="pairing-row-{{ board.number }}"
+    id="pairing-row-{{ board.id }}"
     class="pairing-row {{ row_class }} {{ extra_row_class }}"
-    data-board-id="{{ board.number }}"
+    data-board-id="{{ board.id }}"
     data-player-id="{{ wp.id }}"
     {% if swap_oob %}
         hx-swap-oob="true"
