@@ -219,6 +219,15 @@
                                 {% set match_player=player %}
                                 {% set player_class=player_unchanged_class %}
                             {% endif %}
+                            {% set player_context={
+                                'player': player,
+                                'diff_field_ids': diff_field_ids,
+                                'player_updated': player_updated,
+                                'match_player': match_player,
+                                'player_class': player_class,
+                                'field_updated_class': 'text-warning fw-bold',
+                                'field_unchanged_class': '',
+                            } %}
                             <tr
                                     class="{% if player_updated %}player-updated{% else %}player-unchanged{% endif %}"
                                     style="{% if update_enabled and not player_updated %}display: none{% endif %}"
@@ -239,15 +248,15 @@
                                         {% endif %}
                                     </td>
                                 {% endif %}
-                                {{ admin_macros.extra_admin_column_cell("fide_id", player_match, admin_players_update_extra_columns)}}
-                                {% set field_id='fide_id' %}
+                                {% set field_id = 'fide_id' %}
+                                {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
                                     {{ player.fide_id or '-' }}
                                 </td>
-                                {{ admin_macros.extra_admin_column_cell("title", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='title' %}
+                                {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
@@ -256,8 +265,8 @@
                                 >
                                     {{ match_player.title.short_name }}
                                 </th>
-                                {{ admin_macros.extra_admin_column_cell("name", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='name' %}
+                                {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
@@ -266,8 +275,8 @@
                                 >
                                     {{ match_player.full_name }}
                                 </td>
-                                {{ admin_macros.extra_admin_column_cell("date_of_birth", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='date_of_birth' %}
+                                {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 {% set tooltip_text=_(
@@ -289,8 +298,8 @@
                                 >
                                     {{ match_player.category }}
                                 </td>
-                                {{ admin_macros.extra_admin_column_cell("gender", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='gender' %}
+                                {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
@@ -300,7 +309,7 @@
                                     {{ admin_macros.gender_icon(match_player.gender) }}
                                     {{ match_player.gender.short_name }}
                                 </td>
-                                {{ admin_macros.extra_admin_column_cell("rating_1", player_match, admin_players_update_extra_columns)}}
+                                {{ admin_macros.extra_admin_column_cell("rating_1", player_context, admin_players_update_extra_columns)}}
                                 {% for rt in range(1, 4) %}
                                     {% set field_id='rating_' ~ rt %}
                                     {% set field_updated=player_updated and field_id in diff_field_ids %}
@@ -316,7 +325,6 @@
                                         {% endif %}
                                     </td>
                                 {% endfor %}
-                                {{ admin_macros.extra_admin_column_cell("federation", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='federation' %}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
@@ -326,8 +334,8 @@
                                 >
                                     {{ match_player.federation }}
                                 </td>
-                                {{ admin_macros.extra_admin_column_cell("club", player_match, admin_players_update_extra_columns)}}
                                 {% set field_id='club' %}
+                                {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
@@ -336,7 +344,7 @@
                                 >
                                     {{ match_player.club.name if match_player.club.name else player.club.name }}
                                 </td>
-                                {{ admin_macros.extra_admin_column_cell("end", player_match, admin_players_update_extra_columns)}}
+                                {{ admin_macros.extra_admin_column_cell("end", player_context, admin_players_update_extra_columns)}}
                                 {% if show_tournament %}
                                     <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
                                         {{ player.tournament.uniq_id }}
