@@ -2108,11 +2108,11 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 msgid "In play"
 msgstr "En jeu"
 
-msgid "Include players of greater categories"
-msgstr "Inclure les joueur·euses des catégories supérieures"
+msgid "Include greater categories"
+msgstr "Inclure les catégories supérieures"
 
-msgid "Include players of lower categories"
-msgstr "Inclure les joueur·euses des catégories inférieures"
+msgid "Include lower categories"
+msgstr "Inclure les catégories inférieures"
 
 msgid "Include players of these categories."
 msgstr "Inclure les joueur·euses de ces catégories."

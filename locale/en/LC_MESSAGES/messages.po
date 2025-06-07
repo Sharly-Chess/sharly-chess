@@ -2108,10 +2108,10 @@ msgstr ""
 msgid "In play"
 msgstr ""
 
-msgid "Include players of greater categories"
+msgid "Include greater categories"
 msgstr ""
 
-msgid "Include players of lower categories"
+msgid "Include lower categories"
 msgstr ""
 
 msgid "Include players of these categories."

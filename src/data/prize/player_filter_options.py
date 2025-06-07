@@ -178,7 +178,7 @@ class AgeLowerOption(AgeRangePlayerFilterOption):
 
     @property
     def field_placeholder(self) -> str:
-        return _('Include players of lower categories')
+        return _('Include lower categories')
 
     @property
     def other_field_id(self) -> str:
@@ -192,7 +192,7 @@ class AgeGreaterOption(AgeRangePlayerFilterOption):
 
     @property
     def field_placeholder(self) -> str:
-        return _('Include players of greater categories')
+        return _('Include greater categories')
 
     @property
     def other_field_id(self) -> str:
