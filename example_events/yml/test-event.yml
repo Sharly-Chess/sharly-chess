@@ -3,6 +3,9 @@ federation: "FID"
 public: true
 path: "tests/papi/"
 tournaments:
+  empty:
+    filename: "empty"
+    name: "An empty tournament, no players, no tie-breaks"
   tec-swiss:
     filename: "tec-swiss"
     name: "Swiss individual tournament (TEC 'Exercises in Tie-Breaking' 2.1)"

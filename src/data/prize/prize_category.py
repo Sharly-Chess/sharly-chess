@@ -86,15 +86,19 @@ class PrizeCategory:
     def sorted_prizes(self) -> list[Prize]:
         return sorted(self.prizes, key=lambda prize: prize.index)
 
+    def player_matches_criteria(self, player: Player) -> bool:
+        """Check if the player matches all criteria of this category."""
+        return all(
+            criterion.player_filter.is_player_included_function(player)
+            for criterion in self.criteria
+        )
+
     @property
     def players(self) -> list[Player]:
         return [
             player
             for player in self.prize_group.tournament.players
-            if all(
-                criterion.player_filter.is_player_included_function(player)
-                for criterion in self.criteria
-            )
+            if self.player_matches_criteria(player)
         ]
 
     @property
@@ -215,3 +219,6 @@ class PrizeCategory:
                     prize.stored_prize.index = index
                     database.update_stored_prize_index(prize.id, index)
             database.commit()
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} - {self.id}/{self.name}'
