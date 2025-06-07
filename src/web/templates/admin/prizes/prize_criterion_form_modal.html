@@ -48,7 +48,13 @@
                     </div>
                 </div>
                 {% for option in player_filter_options %}
-                    <div class="row" id="{{ option.container_id }}">
+                    <div
+                        class="row"
+                        id="{{ option.container_id }}"
+                        {% if option.container_id not in containers_by_type[data['type']] %}
+                            style="display:none"
+                        {% endif %}
+                    >
                         {% include option.template_name %}
                     </div>
                 {% endfor %}
@@ -63,7 +69,6 @@
                             );
                         {% endfor %}
                     });
-                    setTimeout(() => $('#type').trigger('change'), 50);
                 </script>
             </form>
         </div>

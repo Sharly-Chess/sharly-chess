@@ -1,0 +1,11 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Age categories')),
+        help_text=_('Include players of these categories.'),
+        select_options=option.age_category_options,
+        multiple_select=true,
+        placeholder=_('Choose at least one category.'),
+        data=data, errors=errors
+    ) }}
+</div>

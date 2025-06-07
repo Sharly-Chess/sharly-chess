@@ -14,7 +14,11 @@ class PlayerFilterManager(EntityManager[PlayerFilter]):
     def entity_types() -> list[type[PlayerFilter]]:
         from data.prize import player_filters as filters
 
-        return [filters.GenderPlayerFilter, filters.RatingPlayerFilter]
+        return [
+            filters.GenderPlayerFilter,
+            filters.RatingPlayerFilter,
+            filters.AgePlayerFilter,
+        ]
 
 
 class PlayerFilterOptionManager(EntityManager[PlayerFilterOption]):
@@ -26,6 +30,9 @@ class PlayerFilterOptionManager(EntityManager[PlayerFilterOption]):
             options.GenderOption,
             options.MinRatingOption,
             options.MaxRatingOption,
+            options.AgeCategoriesOption,
+            options.AgeLowerOption,
+            options.AgeGreaterOption,
         ]
 
 

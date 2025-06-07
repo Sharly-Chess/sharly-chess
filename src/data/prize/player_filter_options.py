@@ -3,7 +3,7 @@ from types import UnionType
 from typing import Any
 
 from common.i18n import _
-from utils.enum import PlayerGender
+from utils.enum import PlayerGender, PlayerCategory
 from utils.option import Option, OptionError
 from web.controllers.base_controller import WebContext
 
@@ -109,3 +109,91 @@ class MaxRatingOption(RatingPlayerFilterOption):
     @property
     def help_text(self) -> str:
         return _('Filter out players with a greater rating.')
+
+
+class AgeCategoriesOption(PlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'AGE_CATEGORIES'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'age_categories'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @property
+    def age_category_options(self) -> dict[str, str]:
+        return {
+            str(category.value): category.short_name
+            for category in PlayerCategory
+            if category != PlayerCategory.NONE
+        }
+
+    def validate(self):
+        self._validate_list_type(int)
+        if not self.value:
+            raise OptionError(_('At least one age category is expected.'), self)
+        for category in self.value:
+            try:
+                PlayerCategory(category)
+            except ValueError:
+                raise OptionError(f'Unknown category [{category}]', self)
+
+
+class AgeRangePlayerFilterOption(PlayerFilterOption, ABC):
+    @property
+    @abstractmethod
+    def field_placeholder(self) -> str:
+        """Placeholder of the input field."""
+
+    @property
+    @abstractmethod
+    def other_field_id(self) -> str:
+        """ID of the other range field."""
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+    @property
+    def template_file_name(self) -> str:
+        return 'age_range'
+
+
+class AgeLowerOption(AgeRangePlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'AGE_LOWER'
+
+    @property
+    def field_placeholder(self) -> str:
+        return _('Include players of lower categories')
+
+    @property
+    def other_field_id(self) -> str:
+        return AgeGreaterOption.static_id()
+
+
+class AgeGreaterOption(AgeRangePlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'AGE_GREATER'
+
+    @property
+    def field_placeholder(self) -> str:
+        return _('Include players of greater categories')
+
+    @property
+    def other_field_id(self) -> str:
+        return AgeLowerOption.static_id()

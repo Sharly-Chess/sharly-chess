@@ -292,6 +292,12 @@ msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si 
 msgid "Add player"
 msgstr "Ajouter"
 
+msgid "Age"
+msgstr "Age"
+
+msgid "Age categories"
+msgstr "Catégories d'age"
+
 msgid "Alert message"
 msgstr "Message d'alerte"
 
@@ -360,6 +366,9 @@ msgstr "Marquer forfait pour le reste du tournoi"
 
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
+
+msgid "At least one age category is expected."
+msgstr "Au moins une catégorie d'age est attendue."
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
@@ -681,6 +690,9 @@ msgstr "Choisissez une image personnalisée :"
 
 msgid "Choose a player at random"
 msgstr "Choisir un·e joueur·euse au hasard"
+
+msgid "Choose at least one category."
+msgstr "Choisir au moins une catégorie."
 
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
@@ -2096,6 +2108,15 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 msgid "In play"
 msgstr "En jeu"
 
+msgid "Include players of greater categories"
+msgstr "Inclure les joueur·euses des catégories supérieures"
+
+msgid "Include players of lower categories"
+msgstr "Inclure les joueur·euses des catégories inférieures"
+
+msgid "Include players of these categories."
+msgstr "Inclure les joueur·euses de ces catégories."
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -2835,6 +2856,9 @@ msgstr "Seuls les classements estimés sont optionnels."
 
 msgid "Only include players of this gender."
 msgstr "N'inclure que les joueur·euses de ce genre."
+
+msgid "Only one age category is expected with options including other categories."
+msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
 #, python-format
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
@@ -4065,7 +4089,7 @@ msgid "The mail addresses."
 msgstr "Les adresses mél."
 
 msgid "The main category can't have criteria."
-msgstr ""
+msgstr "La catégorie générale ne peut pas avoir de critères."
 
 msgid "The main category is open to all the players."
 msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."

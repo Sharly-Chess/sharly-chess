@@ -9,8 +9,11 @@ from data.prize.player_filter_options import (
     GenderOption,
     MinRatingOption,
     MaxRatingOption,
+    AgeCategoriesOption,
+    AgeLowerOption,
+    AgeGreaterOption,
 )
-from utils.enum import PlayerGender
+from utils.enum import PlayerGender, PlayerCategory
 from utils.option import OptionHandler, OptionError
 
 
@@ -74,6 +77,14 @@ class RatingPlayerFilter(PlayerFilter):
             return lambda player: player.rating >= min_rating
         return lambda player: min_rating <= player.rating <= max_rating
 
+    def __str__(self) -> str:
+        min_rating, max_rating = self.get_option_values()
+        if not min_rating:
+            return f'{self.name} ≤ {max_rating}'
+        if not max_rating:
+            return f'{self.name} ≥ {min_rating}'
+        return f'{min_rating} ≤ {self.name} ≤ {max_rating}'
+
     def validate_options(self):
         super().validate_options()
         min_rating, max_rating = self.get_option_values()
@@ -88,11 +99,57 @@ class RatingPlayerFilter(PlayerFilter):
                 self._get_option(MaxRatingOption),
             )
 
+
+class AgePlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'AGE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Age')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [AgeCategoriesOption, AgeLowerOption, AgeGreaterOption]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        age_categories, lower, greater = self.get_option_values()
+        categories = [PlayerCategory(category) for category in age_categories]
+        if lower:
+            category = categories[0]
+            return lambda player: (
+                player.category <= category and player.category != PlayerCategory.NONE
+            )
+        if greater:
+            category = categories[0]
+            return lambda player: player.category >= category
+        return lambda player: player.category in categories
+
     def __str__(self) -> str:
-        min_rating, max_rating = self.get_option_values()
-        rating = _('Rating')
-        if not min_rating:
-            return f'{rating} ≤ {max_rating}'
-        if not max_rating:
-            return f'{rating} ≥ {min_rating}'
-        return f'{min_rating} ≤ {rating} ≤ {max_rating}'
+        age_categories, lower, greater = self.get_option_values()
+        categories = [
+            PlayerCategory(category).short_name for category in age_categories
+        ]
+        if lower:
+            return f'{self.name} ≤ {categories[0]}'
+        if greater:
+            return f'{self.name} ≥ {categories[0]}'
+        return f'{self.name} ({", ".join(categories)})'
+
+    def validate_options(self):
+        super().validate_options()
+        age_categories, lower, greater = self.get_option_values()
+        if len(age_categories) > 1 and (lower or greater):
+            raise OptionError(
+                _(
+                    'Only one age category is expected with options including other categories.'
+                ),
+                self._get_option(AgeCategoriesOption),
+            )
+        if lower and greater:
+            raise OptionError(
+                'Only one of greater or lower option is allowed.',
+                self._get_option(AgeGreaterOption),
+            )

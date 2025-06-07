@@ -627,7 +627,7 @@ class PrizeAdminController(BaseEventAdminController):
         data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
     ) -> dict[str, Any]:
         default_option_data = {
-            option.id: option.default_value
+            option.id: WebContext.value_to_form_data(option.default_value)
             for option in PlayerFilterOptionManager.objects()
         }
         return {
@@ -656,7 +656,7 @@ class PrizeAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
@@ -669,15 +669,16 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if errors := self._validate_prize_criterion_form_data(data):
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_prize_criterion_form_data(flat_data):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_criterion_form_modal_context(
-                    data, FormAction.CREATE, errors
+                    flat_data, FormAction.CREATE, errors
                 ),
             )
         prize_category = web_context.get_admin_prize_category()
-        player_filter = self.player_filter_from_data(data)
+        player_filter = self.player_filter_from_data(flat_data)
         prize_category.add_criterion(
             StoredPrizeCriterion(
                 id=None,
@@ -701,7 +702,7 @@ class PrizeAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
@@ -720,14 +721,15 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if errors := self._validate_prize_criterion_form_data(data):
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_prize_criterion_form_data(flat_data):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_criterion_form_modal_context(
-                    data, FormAction.UPDATE, errors
+                    flat_data, FormAction.UPDATE, errors
                 ),
             )
-        player_filter = self.player_filter_from_data(data)
+        player_filter = self.player_filter_from_data(flat_data)
         prize_criterion = web_context.get_admin_prize_criterion()
         stored_prize_criterion = prize_criterion.stored_prize_criterion
         stored_prize_criterion.type = player_filter.id
@@ -875,7 +877,8 @@ class PrizeAdminController(BaseEventAdminController):
             return web_context.error
         prize_criterion = web_context.get_admin_prize_criterion()
         data = {'type': prize_criterion.player_filter.id} | {
-            option.id: option.value for option in prize_criterion.player_filter.options
+            option.id: WebContext.value_to_form_data(option.value)
+            for option in prize_criterion.player_filter.options
         }
         return self._admin_event_prizes_render(
             web_context,
