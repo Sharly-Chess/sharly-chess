@@ -301,7 +301,7 @@ with_indicator: display a loading indicator, optional
                             $('.select2-search__field').css('width', '100%');
                         </script>
                     {% elif select_options|length == 1 and not disabled %}
-                        <input type="hidden" name="{{ name }}" value="{{ selected }}" />
+                        <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />
                     {% endif %}
                 {% elif input_type == 'switch' %}
                     <input
