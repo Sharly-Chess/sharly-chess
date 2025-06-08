@@ -32,11 +32,9 @@
                             <input type="hidden" name="prize_ids" value='{{ prize.id }}'/>
                             <div class="border border-{% if not_sorted_value %}danger{% else %}secondary{% endif %}">
                                 <div class="p-2 d-flex align-items-start gap-4">
-                                    <div class="flex-grow-1">
-                                        {% if not prize.is_monetary and not prize.description %}
-                                            <i>{{ _('Non-monetary prize') }}</i>
-                                        {% endif %}
-                                        {{ prize.tabular_representation }}
+                                    <div>{{ prize.index + 1 }}.</div>
+                                    <div class="text-start flex-grow-1">
+                                        {{ prize.name|safe }}
                                         {% if not_sorted_value %}
                                             <br/>
                                             <span class="text-danger">

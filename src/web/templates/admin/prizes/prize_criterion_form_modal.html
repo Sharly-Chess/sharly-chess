@@ -13,6 +13,14 @@
             </h2>
         </div>
         <div class="modal-body">
+            {% if previous_criterion %}
+                {% with type='success', auto_remove=true, message=_(
+                    'Criterion [%(criterion)s] successfully created!',
+                    criterion=previous_criterion.name
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
             <form
                 id="modal-form"
                 hx-target="body"
@@ -36,16 +44,14 @@
                     ) }}"
                 {% endif %}
             >
-                <div class="row">
-                    <div class="col-12 mb-3">
-                        {{ admin_macros.select_input(
-                            name='type',
-                            label=_('%(string)s:', string=_('Type')),
-                            help_text=_('The type of criterion used to filter the players.'),
-                            select_options=player_filter_select_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
+                <div class="row mb-3">
+                    {{ admin_macros.select_input(
+                        name='type',
+                        label=_('%(string)s:', string=_('Type')),
+                        help_text=_('The type of criterion used to filter the players.'),
+                        select_options=player_filter_select_options,
+                        data=data, errors=errors
+                    ) }}
                 </div>
                 {% for option in player_filter_options %}
                     <div
@@ -58,6 +64,7 @@
                         {% include option.template_name %}
                     </div>
                 {% endfor %}
+                <input id="add-other" name="add_other" type="hidden" value="off">
                 <script>
                     $('#type').change(function() {
                         const type_containers = {{ containers_by_type|tojson }}[$(this).val()];
@@ -96,13 +103,28 @@
                 form="modal-form"
                 class="text-nowrap white btn btn-primary"
             >
-                <i class="bi bi-printer-fill pe-1"></i>
+                <i class="bi bi-floppy-fill pe-1"></i>
                 {% if action == 'update' %}
                     {{ _('Save') }}
                 {% else %}
                     {{ _('Create') }}
                 {% endif %}
             </button>
+            {% if action == 'create' %}
+                <button
+                    id="next-button"
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                    {{ macros.tooltip_attributes('info', _('Create this criterion then add another one.'), 'top') }}
+                >
+                    <i class="bi bi-arrow-right-circle-fill pe-1"></i>
+                    {{ _('Next') }}
+                </button>
+                <script>
+                    $('#next-button').click(() => $('#add-other').prop('value', 'on'));
+                </script>
+            {% endif %}
         </div>
     </div>
 </div>

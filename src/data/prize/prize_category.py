@@ -99,7 +99,7 @@ class PrizeCategory:
 
     @property
     def criteria_string(self) -> str:
-        return ', '.join(str(criterion.player_filter) for criterion in self.criteria)
+        return ', '.join(criterion.name for criterion in self.criteria)
 
     @property
     def are_prizes_shared(self) -> bool:

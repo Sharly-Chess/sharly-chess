@@ -48,6 +48,10 @@ class PrizeCriterion:
     def index(self) -> int:
         return self.stored_prize_criterion.index
 
+    @property
+    def name(self) -> str:
+        return str(self.player_filter)
+
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()
 

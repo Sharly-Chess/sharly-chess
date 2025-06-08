@@ -625,6 +625,16 @@ msgstr ""
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
 msgstr "Category"
 
+#, python-format
+msgid "Category [%(category)s] successfully created!"
+msgstr ""
+
+msgid "Category creation"
+msgstr ""
+
+msgid "Category edition"
+msgstr ""
+
 msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
 msgstr ""
 
@@ -934,11 +944,24 @@ msgstr ""
 msgid "Create the Papi files and send them to the FFE website"
 msgstr ""
 
+msgid "Create this category then add another one."
+msgstr ""
+
+msgid "Create this criterion then add another one."
+msgstr ""
+
+msgid "Create this prize then add another one."
+msgstr ""
+
 msgid "Criteria"
 msgstr ""
 
 #, python-format
 msgid "Criteria of category [%(category)s]"
+msgstr ""
+
+#, python-format
+msgid "Criterion [%(criterion)s] successfully created!"
 msgstr ""
 
 msgid "Crosstable"
@@ -1513,10 +1536,6 @@ msgid "Editing of player [%(first_name)s %(last_name)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of prize category [%(prize_category)s]"
-msgstr ""
-
-#, python-format
 msgid "Editing of rotator [%(rotator_uniq_id)s]"
 msgstr ""
 
@@ -2052,6 +2071,9 @@ msgstr ""
 msgid "Hello,"
 msgstr ""
 
+msgid "Hide"
+msgstr ""
+
 msgid "Hide the exit button"
 msgstr ""
 
@@ -2585,6 +2607,9 @@ msgid "New results are in, refresh your browser"
 msgstr ""
 
 msgid "New tournament"
+msgstr ""
+
+msgid "Next"
 msgstr ""
 
 msgid "Next round"
@@ -3344,6 +3369,10 @@ msgstr ""
 msgid "Private event"
 msgstr ""
 
+#, python-format
+msgid "Prize [%(prize)s] successfully created!"
+msgstr ""
+
 msgid "Prize category [{prize_category}] successfully created."
 msgstr ""
 
@@ -3351,9 +3380,6 @@ msgid "Prize category [{prize_category}] successfully deleted."
 msgstr ""
 
 msgid "Prize category [{prize_category}] successfully updated."
-msgstr ""
-
-msgid "Prize category creation"
 msgstr ""
 
 msgid "Prize creation"

@@ -625,6 +625,16 @@ msgstr "Catégorie"
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
 msgstr "Catégorie"
 
+#, python-format
+msgid "Category [%(category)s] successfully created!"
+msgstr "La catégorie [%(category)s] créée avec succès !"
+
+msgid "Category creation"
+msgstr "Création d'une catégorie"
+
+msgid "Category edition"
+msgstr "Édition d'une categorie"
+
 msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
 msgstr "Le numéro d'homologation et le mot de passe FFE ne sont pas définis, les opérations sur le site web FFE ne seront pas disponibles."
 
@@ -934,12 +944,25 @@ msgstr "Créer les fichiers Papi"
 msgid "Create the Papi files and send them to the FFE website"
 msgstr "Créer les fichiers Papi et les envoyer sur le site web FFE"
 
+msgid "Create this category then add another one."
+msgstr "Créer cette catégorie puis en ajouter une autre."
+
+msgid "Create this criterion then add another one."
+msgstr "Créer ce critère puis en ajouter un autre."
+
+msgid "Create this prize then add another one."
+msgstr "Créer ce prix puis en ajouter un autre."
+
 msgid "Criteria"
 msgstr "Critères"
 
 #, python-format
 msgid "Criteria of category [%(category)s]"
 msgstr "Critères de la catégorie [%(category)s]"
+
+#, python-format
+msgid "Criterion [%(criterion)s] successfully created!"
+msgstr "Critère [%(criterion)s] créé avec succès!"
 
 msgid "Crosstable"
 msgstr "Grille américaine"
@@ -1513,10 +1536,6 @@ msgid "Editing of player [%(first_name)s %(last_name)s]"
 msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
 
 #, python-format
-msgid "Editing of prize category [%(prize_category)s]"
-msgstr "Édition de la catégorie [%(prize_category)s]"
-
-#, python-format
 msgid "Editing of rotator [%(rotator_uniq_id)s]"
 msgstr "Édition de l'écran rotatif [%(rotator_uniq_id)s]"
 
@@ -2052,6 +2071,9 @@ msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risqu
 msgid "Hello,"
 msgstr "Bonjour,"
 
+msgid "Hide"
+msgstr "Cacher"
+
 msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
 
@@ -2586,6 +2608,9 @@ msgstr "De nouveaux résultats ont été enregistrés, actualisez votre navigate
 
 msgid "New tournament"
 msgstr "Nouveau tournoi"
+
+msgid "Next"
+msgstr "Suivant"
 
 msgid "Next round"
 msgstr "Ronde suivante"
@@ -3344,6 +3369,10 @@ msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas 
 msgid "Private event"
 msgstr "Évènement privé"
 
+#, python-format
+msgid "Prize [%(prize)s] successfully created!"
+msgstr "Prix [%(prize)s] créé avec succès !"
+
 msgid "Prize category [{prize_category}] successfully created."
 msgstr "La catégorie de prix [{prize_category}] a été créée avec succès."
 
@@ -3352,9 +3381,6 @@ msgstr "La catégorie de prix [{prize_category}] a été supprimée avec succès
 
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
-
-msgid "Prize category creation"
-msgstr "Création d'une catégorie"
 
 msgid "Prize creation"
 msgstr "Création d'un prix"

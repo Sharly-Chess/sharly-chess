@@ -1,7 +1,8 @@
-<div
-    class="alert message-warning alert-dismissible fade show p-2 d-flex align-items-start gap-3"
-    role="alert"
->
+{% extends '/common/alert.html' %}
+
+{% block type %}warning{% endblock %}
+
+{% block alert_content %}
     <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <div class="flex-grow-1 align-self-center">
         {% if reason == "result" %}
@@ -21,12 +22,4 @@
             {{ _('Refresh')}}
         </button>
     </div>
-    <button
-        type="button"
-        class="btn-close position-static p-0"
-        style="margin: 4px 0 0 0;"
-        data-bs-dismiss="alert"
-        data-bs-dismiss="modal"
-        aria-label="_('Hide')"
-    ></button>
-</div>
+{% endblock %}
