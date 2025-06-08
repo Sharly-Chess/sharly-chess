@@ -186,6 +186,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
     display: inline-block;
     width: 1.2em;
 }
+.player-unchanged .player-ffe-lic,
+.player-updated .player-ffe-lic {
+    color: unset;
+}
 .player-ffe-lic.ffe-lic-A {
     background-color: #001da3;
 }

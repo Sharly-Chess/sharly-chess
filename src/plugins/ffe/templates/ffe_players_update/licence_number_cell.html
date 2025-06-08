@@ -2,7 +2,9 @@
 
 {% set field_id='ffe_licence_number' %}
 {% if field_id in field_ids %}
-    <td scope="col" class="text-nowrap text-start {{ player_class }}">
-        {{ value.player.plugin_data.ffe.ffe_licence_number }}
+    {% set field_updated=value.player_updated and field_id in value.diff_field_ids %}
+    {% set field_class=value.field_updated_class if field_updated else value.field_unchanged_class %}
+    <td scope="col" class="text-nowrap text-start {{ value.player_class }} {{ field_class }}">
+        {{ value.match_player.plugin_data.ffe.ffe_licence_number }}
     </td>
 {% endif %}

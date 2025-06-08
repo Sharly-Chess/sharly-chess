@@ -29,31 +29,36 @@
             {{ prize_count }}
         </div>
         {% if not prize_category.is_main and not prize_category.criteria %}
-            <i
-                class="bi-x-circle-fill text-danger"
-                {{ macros.tooltip_attributes('info', _('No criteria defined.'), 'top') }}
-            ></i>
+            {% set status='error' %}
+            {% set message=_('No criteria defined.') %}
         {% elif not prize_category.is_prize_order_valid %}
-            <i
-                class="bi-x-circle-fill text-danger"
-                {{ macros.tooltip_attributes('info', _('The prizes are not correctly sorted.'), 'top') }}
-            ></i>
+            {% set status='error' %}
+            {% set message=_('The prizes are not correctly sorted.') %}
         {% elif player_count < prize_count %}
+            {% set status='error' %}
+            {% set message=_('There can\'t be fewer players than prizes.') %}
+        {% elif player_count == 0 %}
+            {% set status='warning' %}
+            {% set message=_('No players matching the criteria.') %}
+        {% elif prize_count == 0 %}
+            {% set status='warning' %}
+            {% set message=_('No prizes defined.') %}
+        {% elif player_count <= prize_count + 1 %}
+            {% set status='warning' %}
+            {% set message=_(
+                'Having a close amount of players and prizes '
+                'represents a risk for a prize not to be attributed.'
+            ) %}
+        {% endif %}
+        {% if status == 'error' %}
             <i
                 class="bi-x-circle-fill text-danger"
-                {{ macros.tooltip_attributes('info', _('There can\'t be fewer players than prizes.'), 'top') }}
+                {{ macros.tooltip_attributes('info', message, 'top') }}
             ></i>
-        {% elif player_count <= prize_count + 1 %}
+        {% elif status == 'warning' %}
             <i
                 class="bi-exclamation-triangle-fill text-warning"
-                {{ macros.tooltip_attributes(
-                    'info',
-                    _(
-                        'Having a close amount of players and prizes represents '
-                        'a risk for a prize not to be attributed.'
-                    ),
-                    'top'
-                ) }}
+                {{ macros.tooltip_attributes('info', message, 'top') }}
             ></i>
         {% endif %}
     </div>

@@ -12,6 +12,7 @@ from litestar.plugins.htmx import HTMXRequest
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.input_output import PlayerUpdater
@@ -19,9 +20,12 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
+from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
 from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
@@ -34,6 +38,8 @@ from plugins.ffe.ffe_entity import (
     FfePlayerUpdater,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
+    FfeLeaguePlayerFilter,
+    FfeLeaguesFilterOption,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
@@ -67,7 +73,7 @@ class FfePlugin(Plugin):
     @property
     def description(self) -> str:
         return _(
-            'French Federation specific features (player search, leagues, Papi compatibility)'
+            'French Federation specific features (player search, leagues, Papi compatibility).'
         )
 
     @property
@@ -353,35 +359,43 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    def augment_player_after_search(self, player: Player):
-        # Try to get more information by requesting the FFE database
-        if player.fide_id and (ffe_database := FfeDatabase()).exists():
-            with ffe_database:
-                if ffe_player := ffe_database.get_player_by_fide_id(player.fide_id):
-                    for rating_type in [
-                        TournamentRating.STANDARD,
-                        TournamentRating.RAPID,
-                        TournamentRating.BLITZ,
-                    ]:
-                        rating = player.get_rating(rating_type)
-                        if rating.type == PlayerRatingType.ESTIMATED:
-                            player.ratings[rating_type] = ffe_player.ratings[
-                                rating_type
-                            ]
-                    if (
-                        ffe_player.date_of_birth
-                        and player.year_of_birth == ffe_player.year_of_birth
-                    ):
-                        player.date_of_birth = ffe_player.date_of_birth
-                    player.comment = ffe_player.comment
-                    player.club = ffe_player.club
-                    data = ffe_player.plugin_data
-                    player.plugin_data[self.id] = {
-                        'ffe_id': self.get_data(data, 'ffe_id'),
-                        'ffe_licence': self.get_data(data, 'ffe_licence'),
-                        'ffe_licence_number': self.get_data(data, 'ffe_licence_number'),
-                        'league': self.get_data(data, 'league'),
-                    }
+    async def augment_player_after_search(self, player: Player):
+        # Try to get more information by requesting the FFE SQL server
+        if not player.fide_id:
+            return
+        ffe_player: Player | None = None
+        try:
+            # Try to get more information by requesting the FFE database
+            async with FFESqlServer() as ffe_sql_server:
+                ffe_player = await ffe_sql_server.get_player_by_fide_id(player.fide_id)
+        except SharlyChessException:
+            if (ffe_database := FfeDatabase()).exists():
+                # Try to get more information by requesting the FFE database
+                with ffe_database:
+                    ffe_player = ffe_database.get_player_by_fide_id(player.fide_id)
+        if ffe_player:
+            for rating_type in [
+                TournamentRating.STANDARD,
+                TournamentRating.RAPID,
+                TournamentRating.BLITZ,
+            ]:
+                rating = player.get_rating(rating_type)
+                if rating.type == PlayerRatingType.ESTIMATED:
+                    player.ratings[rating_type] = ffe_player.ratings[rating_type]
+            if (
+                ffe_player.date_of_birth
+                and player.year_of_birth == ffe_player.year_of_birth
+            ):
+                player.date_of_birth = ffe_player.date_of_birth
+            player.comment = ffe_player.comment
+            player.club = ffe_player.club
+            data = ffe_player.plugin_data
+            player.plugin_data[self.id] = {
+                'ffe_id': self.get_data(data, 'ffe_id'),
+                'ffe_licence': self.get_data(data, 'ffe_licence'),
+                'ffe_licence_number': self.get_data(data, 'ffe_licence_number'),
+                'league': self.get_data(data, 'league'),
+            }
 
     @hookimpl
     def set_player_default_ratings(self, federation: str, player: 'Player'):
@@ -898,3 +912,23 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
         return round
+
+    # ---------------------------------------------------------------------------------
+    # Prizes
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_prize_player_filter_types(
+        self, player_filter_types: list[type['PlayerFilter']]
+    ):
+        league: type[PlayerFilter] = FfeLeaguePlayerFilter
+        club: type[PlayerFilter] = ClubPlayerFilter
+        PluginUtils.insert_on_equals(player_filter_types, league, club)
+
+    @hookimpl
+    def insert_prize_player_filter_option_types(
+        self, player_filter_option_types: list[type['PlayerFilterOption']]
+    ):
+        league: type[PlayerFilterOption] = FfeLeaguesFilterOption
+        club: type[PlayerFilterOption] = ClubsFilterOption
+        PluginUtils.insert_on_equals(player_filter_option_types, league, club)

@@ -1,0 +1,11 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Federations')),
+        help_text=_('Only include players of these federations.'),
+        select_options=option.select_options(admin_tournament),
+        multiple_select=true,
+        placeholder=_('Choose at least one federation.'),
+        data=data, errors=errors
+    ) }}
+</div>

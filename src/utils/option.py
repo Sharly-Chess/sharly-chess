@@ -53,6 +53,12 @@ class Option(IdentifiableEntity, ABC):
         if not isinstance(self.value, self.type):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
+    def _validate_list_type(self, item_type: type):  # type: ignore
+        if not isinstance(self.value, list) or not all(
+            isinstance(item, item_type) for item in self.value
+        ):
+            raise OptionError(f'{self.value=} (expected type: {self.type})', self)
+
 
 class OptionHandler[T: Option](IdentifiableEntity, ABC):
     """Abstract class handling options."""

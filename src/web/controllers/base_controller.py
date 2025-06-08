@@ -95,6 +95,13 @@ class WebContext:
         """
         return 'light'
 
+    @staticmethod
+    def flatten_list_data(data: dict[str, str | list[str]]) -> dict[str, str]:
+        return {
+            key: value if isinstance(value, str) else ';'.join(value)
+            for key, value in data.items()
+        }
+
     @classmethod
     def form_data_to_value[T](
         cls,
@@ -109,6 +116,8 @@ class WebContext:
             float: cls.form_data_to_float,
             bool: cls.form_data_to_bool,
             date: cls.form_data_to_date,
+            list[int]: cls.form_data_to_list_int,
+            list[str]: cls.form_data_to_list_str,
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
@@ -211,6 +220,22 @@ class WebContext:
         return self.form_data_to_bool(self.data, field, empty_value)
 
     @staticmethod
+    def form_data_to_list_int(
+        data: dict[str, str], field: str, empty_value: list[int] | None = None
+    ) -> list[int]:
+        if field not in data:
+            return empty_value or []
+        return [int(element) for element in data[field].split(';')]
+
+    @staticmethod
+    def form_data_to_list_str(
+        data: dict[str, str], field: str, empty_value: list[str] | None = None
+    ) -> list[str]:
+        if field not in data:
+            return empty_value or []
+        return [element.strip() for element in data[field].split(';')]
+
+    @staticmethod
     def form_data_to_rgb(
         data: dict[str, str] | None, field: str, empty_value: str | None = None
     ) -> str | None:
@@ -277,9 +302,7 @@ class WebContext:
                 ) from e
 
     @staticmethod
-    def value_to_form_data(
-        value: str | int | float | bool | Path | Federation | Club | None,
-    ) -> str:
+    def value_to_form_data(value: Any) -> str:
         if value is None:
             return ''
         if isinstance(value, str):
@@ -296,6 +319,8 @@ class WebContext:
             return str(value)
         if isinstance(value, Club):
             return str(value)
+        if isinstance(value, list):
+            return ';'.join(str(element) for element in value)
         raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod

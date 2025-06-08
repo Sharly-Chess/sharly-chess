@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
 from litestar.plugins.htmx import HTMXRequest
-import pluggy  # type: ignore
+import apluggy as pluggy  # type: ignore
 
 from common import APP_NAME
 
@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from data.pairings.variations import SwissVariation
     from data.player import Player
     from data.print_documents import PrintDocument, PlayerSplitter
+    from data.prize.player_filter_options import PlayerFilterOption
+    from data.prize.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
@@ -131,7 +133,7 @@ class AppHookSpecs:
         """Validate the additional player form fields and returns plugin data"""
 
     @hookspec
-    def augment_player_after_search(self, player: 'Player'):
+    async def augment_player_after_search(self, player: 'Player'):
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec
@@ -339,3 +341,19 @@ class AppHookSpecs:
     @hookspec(firstresult=True)
     def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
         """Provide a function to round a ranking to an integer"""
+
+    # ---------------------------------------------------------------------------------
+    # Prizes
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_prize_player_filter_types(
+        self, player_filter_types: list[type['PlayerFilter']]
+    ):
+        """Provide extra player filters for prizes."""
+
+    @hookspec
+    def insert_prize_player_filter_option_types(
+        self, player_filter_option_types: list[type['PlayerFilterOption']]
+    ):
+        """Provide the options of the added prize player filters."""
