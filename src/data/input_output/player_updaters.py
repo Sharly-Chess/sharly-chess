@@ -2,13 +2,17 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cached_property
+from logging import Logger
 from typing import override
 
 from common.i18n import _
+from common.logger import get_logger
 from data.player import Player
 from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating
 from database.sqlite.fide.fide_database import FideDatabase
+
+logger: Logger = get_logger()
 
 
 @dataclass
@@ -55,9 +59,9 @@ class FidePlayerComparator(PlayerComparator):
         for tr in TournamentRating:
             field_id: str = f'rating_{tr.value}'
             if field_id in self.field_ids:
-                src_rating = self.player.get_rating(tr).value
-                match_rating = self.match_player.get_rating(tr).value
-                if match_rating and src_rating != match_rating:
+                src_rating = self.player.get_rating(tr)
+                match_rating = self.match_player.get_rating(tr)
+                if match_rating.value and src_rating != match_rating:
                     diff_field_ids.append(field_id)
         field_id: str = 'name'
         if field_id in self.field_ids:
