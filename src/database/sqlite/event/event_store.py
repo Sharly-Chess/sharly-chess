@@ -173,6 +173,33 @@ class StoredDisplayController:
     rotator_id: int | None = None
 
 
+CLIENT_ANY_ID: int = -1
+CLIENT_LOCALHOST_ID: int = 0
+
+
+@dataclass
+class StoredPermission:
+    id: int | None
+    locked: bool
+    client_id: int
+    role_id: int
+    tournament_id: int | None
+
+
+@dataclass
+class StoredClient:
+    id: int | None
+    locked: bool
+    name: str | None
+    username: str | None
+    password: str | None
+    ip: str | None
+    order: int | None
+    stored_permissions: list[StoredPermission] = field(
+        default_factory=list[StoredPermission]
+    )
+
+
 @dataclass
 class BaseStoredEvent:
     uniq_id: str
@@ -212,6 +239,7 @@ class StoredEvent(BaseStoredEvent):
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
+    stored_clients: list[StoredClient] = field(default_factory=list[StoredClient])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

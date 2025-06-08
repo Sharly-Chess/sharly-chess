@@ -30,6 +30,7 @@ from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from roles.permission_manager import PermissionManager
 from utils.enum import (
     ScreenType,
     PlayerGender,
@@ -824,6 +825,20 @@ class Event:
                 for display_controller in self.display_controllers_by_id.values()
             ],
         )
+
+    @cached_property
+    def permission_manager(self) -> PermissionManager:
+        if self.errors:
+            return PermissionManager(self, [])
+        return PermissionManager(self, self.stored_event.stored_clients)
+
+    def clear_permission_cache(self):
+        permission_cached_property_names = [
+            'permission_manager',
+        ]
+        for property_name in permission_cached_property_names:
+            if property_name in self.__dict__:
+                del self.__dict__[property_name]
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
