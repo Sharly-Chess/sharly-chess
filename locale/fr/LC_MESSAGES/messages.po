@@ -292,6 +292,9 @@ msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si 
 msgid "Add player"
 msgstr "Ajouter"
 
+msgid "Administrator"
+msgstr "Administrateur·ice"
+
 msgid "Age"
 msgstr "Age"
 
@@ -325,11 +328,17 @@ msgstr "Autoriser"
 msgid "An error occurred."
 msgstr "Une erreur est survenue."
 
+msgid "Any anonymous client"
+msgstr "Client anonyme"
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
+
+msgid "Application"
+msgstr "Application"
 
 msgid "Arbiter interface (private access)"
 msgstr "Arbitrage (accès privé)"
@@ -646,6 +655,9 @@ msgstr "Pointage"
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
 
+msgid "Check-in Officer"
+msgstr "Chargé·e du pointage"
+
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Le pointage est fermé pour le tournoi [%(tournament_uniq_id)s]."
@@ -693,6 +705,9 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s"
 #, python-format
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+
+msgid "Chief Arbiter"
+msgstr "Arbitre en chef·fe"
 
 msgid "Choose a custom image:"
 msgstr "Choisissez une image personnalisée :"
@@ -1119,6 +1134,9 @@ msgstr "Suppression du chronomètre [%(timer_uniq_id)s]"
 #, python-format
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr "Suppression du tournoi [%(tournament_uniq_id)s]"
+
+msgid "Deputy Chief Arbiter"
+msgstr "Arbitre adjoint·e"
 
 msgid "Description"
 msgstr "Description"
@@ -2924,6 +2942,9 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
+msgid "Organizer"
+msgstr "Organisateur·ice"
+
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
 
@@ -2985,6 +3006,9 @@ msgstr "Apparié·e contre : %(opponent_name)s"
 
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
+
+msgid "Pairing Officer"
+msgstr "Chargé·e de l'appariement"
 
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
@@ -3591,6 +3615,9 @@ msgstr "Res."
 msgid "Result"
 msgstr "Résultat"
 
+msgid "Result Officer"
+msgstr "Chargé·e des résultats"
+
 msgid "Results"
 msgstr "Résultats"
 
@@ -3804,6 +3831,9 @@ msgstr "Rechercher dans la base de données FIDE par nom, identifiant FIDE, féd
 msgid "Searching…"
 msgstr "Recherche en cours…"
 
+msgid "Sector arbiter"
+msgstr "Arbitre de secteur"
+
 msgid "Seed color"
 msgstr "Couleur initiale"
 
@@ -3924,6 +3954,9 @@ msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en prem
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
+
+msgid "Spectator"
+msgstr "Spectateur·ice"
 
 msgid "Split by:"
 msgstr "Séparateur :"
@@ -4390,6 +4423,9 @@ msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'a
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
+
+msgid "The server"
+msgstr "Serveur"
 
 msgid "The start date and time of the event."
 msgstr "La date et l'heure de début de l'évènement."

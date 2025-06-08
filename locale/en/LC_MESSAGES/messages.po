@@ -292,6 +292,9 @@ msgstr ""
 msgid "Add player"
 msgstr ""
 
+msgid "Administrator"
+msgstr ""
+
 msgid "Age"
 msgstr ""
 
@@ -325,10 +328,16 @@ msgstr ""
 msgid "An error occurred."
 msgstr ""
 
+msgid "Any anonymous client"
+msgstr ""
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
 msgid "Any number of devices can be controlled by the same display controller."
+msgstr ""
+
+msgid "Application"
 msgstr ""
 
 msgid "Arbiter interface (private access)"
@@ -646,6 +655,9 @@ msgstr ""
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
+msgid "Check-in Officer"
+msgstr ""
+
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
@@ -692,6 +704,9 @@ msgstr ""
 
 #, python-format
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
+msgstr ""
+
+msgid "Chief Arbiter"
 msgstr ""
 
 msgid "Choose a custom image:"
@@ -1118,6 +1133,9 @@ msgstr ""
 
 #, python-format
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
+msgstr ""
+
+msgid "Deputy Chief Arbiter"
 msgstr ""
 
 msgid "Description"
@@ -2924,6 +2942,9 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
+msgid "Organizer"
+msgstr ""
+
 msgid "Other ODBC drivers found on the server"
 msgstr ""
 
@@ -2984,6 +3005,9 @@ msgid "Paired against: %(opponent_name)s"
 msgstr ""
 
 msgid "Pairing Allocated Bye"
+msgstr ""
+
+msgid "Pairing Officer"
 msgstr ""
 
 msgid "Pairing number"
@@ -3591,6 +3615,9 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
+msgid "Result Officer"
+msgstr ""
+
 msgid "Results"
 msgstr ""
 
@@ -3804,6 +3831,9 @@ msgstr ""
 msgid "Searching…"
 msgstr ""
 
+msgid "Sector arbiter"
+msgstr ""
+
 msgid "Seed color"
 msgstr ""
 
@@ -3925,6 +3955,9 @@ msgstr ""
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
+msgid "Spectator"
+msgstr ""
+
 msgid "Split by:"
 msgstr ""
 
@@ -3961,7 +3994,7 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France."
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
 msgstr ""
 
 msgid "Swiss"
@@ -4389,6 +4422,9 @@ msgid "The screens displayed by the display controller are controlled by the adm
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
+msgstr ""
+
+msgid "The server"
 msgstr ""
 
 msgid "The start date and time of the event."
