@@ -144,6 +144,7 @@ class FfePlugin(Plugin):
             or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES,
             'ffe_auth_valid': '',
+            'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
         }
 
     # ---------------------------------------------------------------------------------
@@ -622,7 +623,6 @@ class FfePlugin(Plugin):
             return {
                 'ffe_auto_upload': 'off',
                 'ffe_auto_upload_delay': '',
-                'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
             }
 
         return {
@@ -632,7 +632,6 @@ class FfePlugin(Plugin):
             'ffe_auto_upload_delay': WebContext.value_to_form_data(
                 self.get_data(event.plugin_data, 'ffe_auto_upload_delay', '')
             ),
-            'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
         }
 
     @hookimpl
