@@ -20,6 +20,8 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
+from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
@@ -36,6 +38,8 @@ from plugins.ffe.ffe_entity import (
     FfePlayerUpdater,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
+    FfeLeaguePlayerFilter,
+    FfeLeaguesFilterOption,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_search_controller import FfeSearchController
@@ -908,3 +912,23 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
         return round
+
+    # ---------------------------------------------------------------------------------
+    # Prizes
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_prize_player_filter_types(
+        self, player_filter_types: list[type['PlayerFilter']]
+    ):
+        league: type[PlayerFilter] = FfeLeaguePlayerFilter
+        club: type[PlayerFilter] = ClubPlayerFilter
+        PluginUtils.insert_on_equals(player_filter_types, league, club)
+
+    @hookimpl
+    def insert_prize_player_filter_option_types(
+        self, player_filter_option_types: list[type['PlayerFilterOption']]
+    ):
+        league: type[PlayerFilterOption] = FfeLeaguesFilterOption
+        club: type[PlayerFilterOption] = ClubsFilterOption
+        PluginUtils.insert_on_equals(player_filter_option_types, league, club)

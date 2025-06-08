@@ -1,0 +1,17 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Maximum rating')),
+        help_text=_('Filter out players with a greater rating.'),
+        data=data, errors=errors
+    ) }}
+</div>
+{% if admin_tournament.players %}
+    <div>
+        {{ _(
+            'Tournament rating range: %(min_rating)d - %(max_rating)d',
+            min_rating=admin_tournament.min_player_rating,
+            max_rating=admin_tournament.max_player_rating,
+        ) }}
+    </div>
+{% endif %}
