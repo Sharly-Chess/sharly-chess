@@ -4,14 +4,21 @@ from requests import get, Response, HTTPError
 
 # Import this to avoid circular imports
 import plugins.manager  # noqa
-from common.i18n import _
-from common.logger import print_interactive_error
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.fide.fide_database import FideDatabase
 
 
 def download_federation_url(federation_id: str, flag_file: Path, flag_url) -> bool:
-    response: Response = get(flag_url, allow_redirects=True, timeout=5)
+    # Add the User-Agent header to be allowed to download from WikiPedia
+    # cf https://meta.wikimedia.org/wiki/User-Agent_policy
+    response: Response = get(
+        flag_url,
+        allow_redirects=True,
+        timeout=5,
+        headers={
+            'User-Agent': f'Sharly Chess/{SharlyChessConfig.version}',
+        },
+    )
     try:
         response.raise_for_status()
         flag_file.write_bytes(response.content)
@@ -49,10 +56,8 @@ def download_federation_flags(federation_ids: set[str]):
                 download_federation_url(federation_id, flag_file, other_url)
 
 
-def run():
-    if not FideDatabase(write=True).check():
-        print_interactive_error(_('Error while updating the FIDE database.'))
-        return
+def main():
+    FideDatabase()._update()
     with FideDatabase() as fide_database:
         federation_ids: set[str] = {
             federation_id for federation_id in fide_database.read_federation_ids()
@@ -79,4 +84,5 @@ def run():
     print('Done.')
 
 
-run()
+if __name__ == '__main__':
+    main()
