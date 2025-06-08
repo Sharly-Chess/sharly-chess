@@ -144,8 +144,7 @@ class FFESqlServer(SqlServer):
     def get_club_fields(self) -> list[str]:
         return [f'club.{f} AS Club{f}' for f in self.CLUB_FIELDS]
 
-    def get_empty_club_fields(self) -> list[str]:
-        return [f"'' AS Club{f}" for f in self.CLUB_FIELDS]
+    RATING_TYPE_CONDITION: str = f'joueur.Fide IN ({", ".join(map(lambda s: f"'{s}'", [PlayerRatingType.ESTIMATED, PlayerRatingType.NATIONAL, PlayerRatingType.FIDE]))})'
 
     @staticmethod
     def string_matches_ffe_licence_number(string: str) -> str | None:
@@ -191,7 +190,9 @@ class FFESqlServer(SqlServer):
             ('joueur.NrFFE', '', ''),
         )
         int_fields: tuple[str, ...] = ('joueur.FideCode',)
-        conditions: list[str] = []
+        conditions: list[str] = [
+            self.RATING_TYPE_CONDITION,
+        ]
         params: list[Any] = []
         for token in tokens:
             token_expressions: list[str] = [
@@ -243,7 +244,8 @@ class FFESqlServer(SqlServer):
     ) -> Player | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {field} = ? AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(
             query,
@@ -275,7 +277,7 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {field} IN ({query_array})'
+            f'WHERE {field} IN ({query_array}) AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ids))
         return (self._get_player_from_row(row) async for row in self.fetchall())
