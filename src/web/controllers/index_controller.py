@@ -1,7 +1,7 @@
 import asyncio
 import json
 from typing import AsyncGenerator
-from litestar import Response, get
+from litestar import Response, get, route, HttpMethod
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
@@ -14,6 +14,15 @@ from web.messages import Message
 
 
 class IndexController(BaseController):
+    ALL_HTTP_METHODS: list[HttpMethod] = [
+        HttpMethod.GET,
+        HttpMethod.POST,
+        HttpMethod.PATCH,
+        HttpMethod.PUT,
+        HttpMethod.HEAD,
+        HttpMethod.OPTIONS,
+    ]
+
     @get(
         path='/',
         name='index',
@@ -78,7 +87,8 @@ class IndexController(BaseController):
             request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
         )
 
-    @get(
+    @route(
+        http_method=ALL_HTTP_METHODS,
         path='/403',
         name='403',
         cache=1,
@@ -95,7 +105,8 @@ class IndexController(BaseController):
     def handle_403_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
         return Redirect(path=request.app.route_reverse('403'))
 
-    @get(
+    @route(
+        http_method=ALL_HTTP_METHODS,
         path='/404',
         name='404',
         cache=1,
@@ -112,7 +123,8 @@ class IndexController(BaseController):
     def handle_404_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
         return Redirect(path=request.app.route_reverse('404'))
 
-    @get(
+    @route(
+        http_method=ALL_HTTP_METHODS,
         path='/500',
         name='500',
         cache=1,
