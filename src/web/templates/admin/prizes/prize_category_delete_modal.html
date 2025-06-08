@@ -1,0 +1,47 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Deleting prize category [%(prize_category)s]', prize_category=admin_prize_category.name) }}
+{% endblock %}
+
+{% block delete_warning %}
+    {{ _('Warning: deleting a prize category is permanent!') }}
+{% endblock %}
+
+{% block form_content %}
+    {% if admin_prize_category.criteria or admin_prize_category.prizes %}
+        <p>
+            {{ _('The related objects will also be deleted:') }}
+        </p>
+        <ul>
+            {% if admin_prize_category.criteria %}
+                <li>
+                    {{ ngettext(
+                        '%(num)d criterion',
+                        '%(num)d criteria',
+                        admin_prize_category.criteria|length,
+                    ) }}
+                </li>
+            {% endif %}
+            {% if admin_prize_category.prizes %}
+                <li>
+                    {{ ngettext(
+                        '%(num)d prize',
+                        '%(num)d prizes',
+                        admin_prize_category.prizes|length,
+                    ) }}
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-prize-category-delete',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        prize_group_id=admin_prize_group.id,
+        prize_category_id=admin_prize_category.id
+    ) }}
+{% endblock %}

@@ -1,6 +1,10 @@
+import logging
+from datetime import datetime
+from logging import Logger
 from typing import Annotated, Any
 
 from common import format_timestamp_date, format_timestamp_time
+from common.logger import get_logging_config, get_logger
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -47,6 +51,8 @@ from web.messages import Message
 from web.session import SessionHandler
 from web.urls import admin_event_url
 
+logger: Logger = get_logger()
+
 
 class IndexAdminController(BaseAdminController):
     @classmethod
@@ -58,12 +64,25 @@ class IndexAdminController(BaseAdminController):
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        log_level: int | None = WebContext.form_data_to_int(data, field := 'log_level')
-        if log_level and log_level not in sharly_chess_config.log_levels:
-            errors[field] = _('Invalid log level [{log_level}].').format(
-                log_level=log_level
-            )
+        console_log_level: int | None = WebContext.form_data_to_int(
+            data, field := 'console_log_level'
+        )
+        if (
+            console_log_level
+            and console_log_level not in sharly_chess_config.console_log_levels
+        ):
+            errors[field] = _(
+                'Invalid console logging level [{console_log_level}].'
+            ).format(log_level=console_log_level)
             data[field] = ''
+        console_color: bool | None = WebContext.form_data_to_bool(data, 'console_color')
+        console_show_date: bool | None = WebContext.form_data_to_bool(
+            data, 'console_show_date'
+        )
+        console_show_level: bool | None = WebContext.form_data_to_bool(
+            data, 'console_show_level'
+        )
+        experimental: bool | None = WebContext.form_data_to_bool(data, 'experimental')
         launch_browser: bool | None = WebContext.form_data_to_bool(
             data, 'launch_browser'
         )
@@ -84,7 +103,11 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
-            log_level=log_level,
+            console_log_level=console_log_level,
+            console_color=console_color,
+            console_show_date=console_show_date,
+            console_show_level=console_show_level,
+            experimental=experimental,
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
@@ -204,6 +227,27 @@ class IndexAdminController(BaseAdminController):
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
 
+        console_level_infos: dict[int, dict[str, int | str]] = {
+            logging.DEBUG: {
+                'text': _('Debug message'),
+                'color': '#808080',
+            },
+            logging.INFO: {
+                'text': _('Information message'),
+                'color': '#ffffff',
+            },
+            logging.WARNING: {
+                'text': _('Warning message'),
+                'color': '#a68a0d',
+            },
+            logging.ERROR: {
+                'text': _('Error message'),
+                'color': '#f0524f',
+            },
+        }
+        for value, name in SharlyChessConfig.console_log_levels.items():
+            console_level_infos[value]['name'] = name
+
         context = web_context.template_context | {
             'odbc_drivers': odbc_drivers(),
             'access_driver': access_driver(),
@@ -219,6 +263,10 @@ class IndexAdminController(BaseAdminController):
             'row_cycler': cls.get_cycler(['odd', 'even']),
             'format_timestamp_date': format_timestamp_date,
             'format_timestamp_time': format_timestamp_time,
+            'console_level_infos': console_level_infos,
+            'console_formatted_current_date': datetime.today().strftime(
+                get_logging_config()['formatters']['console_formatter']['datefmt']
+            ),
         }
 
         match modal:
@@ -228,8 +276,20 @@ class IndexAdminController(BaseAdminController):
                 if data is None:
                     sharly_chess_config = SharlyChessConfig()
                     data = {
-                        'log_level': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.log_level
+                        'console_log_level': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.console_log_level
+                        ),
+                        'console_color': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.console_color
+                        ),
+                        'console_show_date': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.console_show_date
+                        ),
+                        'console_show_level': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.console_show_level
+                        ),
+                        'experimental': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.experimental
                         ),
                         'launch_browser': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.launch_browser
@@ -256,14 +316,56 @@ class IndexAdminController(BaseAdminController):
                         errors |= stored_plugin.errors
                 if errors is None:
                     errors = {}
-                log_level_options: dict[str, str] = {
+                console_log_level_options: dict[str, str] = {
                     '': '-',
                 } | {
-                    str(log_level): log_level_str
-                    for log_level, log_level_str in sharly_chess_config.log_levels.items()
+                    str(console_log_level): console_log_level_str
+                    for console_log_level, console_log_level_str in sharly_chess_config.console_log_levels.items()
                 }
-                log_level_options[''] = _('By default - {option}').format(
-                    option=log_level_options[str(SharlyChessConfig.default_log_level)]
+                console_log_level_options[''] = _('By default - {option}').format(
+                    option=console_log_level_options[
+                        str(SharlyChessConfig.default_console_log_level)
+                    ]
+                )
+                console_color_options: dict[str, str] = {
+                    '': '-',
+                    'on': _('Use color on the console'),
+                    'off': _('Do not use color on the console'),
+                }
+                console_color_options[''] = _('By default - {option}').format(
+                    option=console_color_options[
+                        'on' if SharlyChessConfig.default_console_color else 'off'
+                    ]
+                )
+                console_show_date_options: dict[str, str] = {
+                    '': '-',
+                    'on': _('Show the date and time on the console'),
+                    'off': _('Do not show the date and time on the console'),
+                }
+                console_show_date_options[''] = _('By default - {option}').format(
+                    option=console_show_date_options[
+                        'on' if SharlyChessConfig.default_console_show_date else 'off'
+                    ]
+                )
+                console_show_level_options: dict[str, str] = {
+                    '': '-',
+                    'on': _('Show the logging level on the console'),
+                    'off': _('Do not show the logging level on the console'),
+                }
+                console_show_level_options[''] = _('By default - {option}').format(
+                    option=console_show_level_options[
+                        'on' if SharlyChessConfig.default_console_show_level else 'off'
+                    ]
+                )
+                experimental_options: dict[str, str] = {
+                    '': '-',
+                    'on': _('Enable experimental features'),
+                    'off': _('Do not enable experimental features'),
+                }
+                experimental_options[''] = _('By default - {option}').format(
+                    option=experimental_options[
+                        'on' if SharlyChessConfig.default_experimental else 'off'
+                    ]
                 )
                 launch_browser_options: dict[str, str] = {
                     '': '-',
@@ -285,7 +387,11 @@ class IndexAdminController(BaseAdminController):
                     plugin_manager.hook.get_event_form_fields_template() or []
                 )
                 context |= {
-                    'log_level_options': log_level_options,
+                    'console_log_level_options': console_log_level_options,
+                    'console_color_options': console_color_options,
+                    'console_show_date_options': console_show_date_options,
+                    'console_show_level_options': console_show_level_options,
+                    'experimental_options': experimental_options,
                     'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,

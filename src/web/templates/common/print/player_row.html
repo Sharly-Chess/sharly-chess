@@ -1,12 +1,17 @@
 <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
-    {{ macros.extra_column_data("rank", player, extra_columns)}}
-    <td class="rank text-end">
-        {% if ranking or crosstable %}
-            {{ player.rank }}
-        {% else %}
-            {{ n|length }}
-        {% endif %}
-    </td>
+    {% if checkin_list %}
+        {{ macros.extra_column_header("checkin", extra_columns)}}
+        <td class="checkin text-center">☐</td>
+    {% else %}
+        {{ macros.extra_column_data("rank", player, extra_columns)}}
+        <td class="rank text-end">
+            {% if ranking or crosstable %}
+                {{ player.rank }}
+            {% else %}
+                {{ n|length }}
+            {% endif %}
+        </td>
+    {% endif %}
     {{ macros.extra_column_data("title", player, extra_columns)}}
     <td class="title text-end">{{ player.title.short_name }}</td>
     {{ macros.extra_column_data("name", player, extra_columns)}}
@@ -15,6 +20,8 @@
     <td class="rating text-end">{{ player.rating_str }}</td>
     {{ macros.extra_column_data("category", player, extra_columns)}}
     <td class="category text-center">{{ player.category.short_name }}</td>
+    {{ macros.extra_column_data("gender", player, extra_columns)}}
+    <td class="category text-center">{{ player.gender.short_name }}</td>
     {{ macros.extra_column_data("federation", player, extra_columns)}}
     <td class="federation text-center">{{ player.federation }}</td>
     {% if crosstable %}
@@ -25,6 +32,14 @@
     {% else %}
          {{ macros.extra_column_data("club", player, extra_columns)}}
         <td class="club text-start">{{ player.club }}</td>
+    {% endif %}
+    {% if checkin_list %}
+        {{ macros.extra_column_header("paid", extra_columns)}}
+        <td class="payment text-center">{{ player.paid }}</td>
+        {{ macros.extra_column_header("owes", extra_columns)}}
+        <td class="extra_column_header text-center">{{ player.owed }}</td>
+        {{ macros.extra_column_header("comments", extra_columns)}}
+        <td class="category text-center">{{ player.comment }}</td>
     {% endif %}
     {% if ranking or crosstable %}
         <td class="points text-center fw-bold">{{ player.points_str }}</td>

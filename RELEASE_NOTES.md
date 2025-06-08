@@ -3,26 +3,15 @@ English version below
 
 ## Fonctionnement
 
-- Suppression du script ``ffe.bat`` (2.7.0)
-- Ajout de la tombola (2.7.0)
+- Ajout de paramètres de log et mise à jour dynamique de la configuration (2.8.0)
+- Suppression de l'option ``--experimental`` et activation des fonctionnalités expérimentales depuis l'interface web (2.8.0)
 
 ## Interface web
 
-- Optimisation du temps de chargement de la page des évènements (2.7.0)
-- Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
+### Gestion des joueur·euses
 
-### Gestion des tournois
-
-- Ajout des exports PGN et TRF 16 (2.7.0)
-
-## FFE
-
-- Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
-- Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
-
-## ChessEvent
-
-- Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
+- Ajout du genre sur les impressions des joueur·euses (2.8.0)
+- Ajout des listes de pointage (2.8.0)
 
 ---
 
@@ -30,23 +19,12 @@ English version below
 
 ## Usage
 
-- Removal of script ``ffe.bat`` (2.7.0)
-- Added the lottery (2.7.0)
+- Added logging parameters and dynamically update the logging configuration (2.8.0)
+- Removed the ``--experimental`` option and activate the experimental features from the web UI (2.8.0)
 
 ## Web interface
 
-- Optimized the load time of the events page (2.7.0)
-- Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
+# Players management
 
-### Tournaments management
-
-- Added PGN and TRF 16 exports (2.7.0)
-
-## FFE
-
-- Integration of the FFE operations to the web UI (2.7.0)
-- Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
-
-## ChessEvent
-
-- Fixed birth dates prior to 1970-01-01 (2.7.0)
+- Added the gender on the player views (2.8.0)
+- Added check-in lists (2.8.0)

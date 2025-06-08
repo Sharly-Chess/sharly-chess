@@ -8,7 +8,7 @@
         {% endblock %}
     {% endcall %}
     <div class="flex-grow-1"></div>
-    <div class="d-flex gap-2 ms-auto align-items-center">
+    <div class="{% block right_buttons_classes %}d-flex gap-2 ms-auto align-items-center {% endblock %}">
         {% block cards_container_right_buttons %}
             BLOCK CARDS_CONTAINER_RIGHT_BUTTONS
         {% endblock %}

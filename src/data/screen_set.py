@@ -45,9 +45,9 @@ class ScreenSet:
         self.family_part: int | None = family_part
         self.uniq_id: str
         if self.stored_screen_set:
-            self.uniq_id = f'{self.screen.uniq_id}_{self.stored_screen_set.order}'
+            self.uniq_id = f'{self.screen.uniq_id}_{self.stored_screen_set.order:03}'
         else:
-            self.uniq_id = f'{self.screen.uniq_id}_{self.family_part}'
+            self.uniq_id = f'{self.screen.uniq_id}_{self.family_part:03}'
         fixed_boards_str: str | None = (
             self.stored_screen_set.fixed_boards_str
             if self.screen.type in [ScreenType.BOARDS, ScreenType.INPUT]
@@ -55,8 +55,8 @@ class ScreenSet:
             else None
         )
         self.fixed_board_numbers: list[int] | None = None
-        self.first: int | None = None
-        self.last: int | None = None
+        self.first: int = 0
+        self.last: int = 0
         if self.stored_screen_set:
             if fixed_boards_str is not None:
                 if fixed_boards_str:
@@ -81,16 +81,27 @@ class ScreenSet:
                         if player.fixed
                     ]
             else:
-                self.first = self.stored_screen_set.first
-                self.last = self.stored_screen_set.last
+                if self.stored_screen_set.first:
+                    self.first = max(1, self.stored_screen_set.first)
+                if self.stored_screen_set.last:
+                    self.last = max(1, self.stored_screen_set.last)
+                    if self.first:
+                        self.last = max(self.first, self.last)
+                if self.first and self.last and self.first > self.last:
+                    self.event.add_warning(
+                        _('Invalid range [{first}-{last}].').format(
+                            first=self.first, last=self.last
+                        ),
+                        screen_set=self,
+                    )
         else:
             assert self.family is not None
             self.fixed_board_numbers = []
             if (
-                self.family.calculated_first is not None
-                and self.family.calculated_last is not None
-                and self.family.calculated_number is not None
-                and self.family_part is not None
+                self.family.calculated_first
+                and self.family.calculated_last
+                and self.family.calculated_number
+                and self.family_part
             ):
                 self.first = (
                     self.family.calculated_first
@@ -102,13 +113,6 @@ class ScreenSet:
                     + self.family_part * self.family.calculated_number
                     - 1,
                 )
-        if self.first and self.last and self.first > self.last:
-            self.event.add_warning(
-                _(
-                    'Numbers {first} and {last} are not compatible ({first} > {last}).'
-                ).format(first=self.first, last=self.last),
-                screen_set=self,
-            )
         self.first_item: Any | None = None  # change this to Board | Player | None ?
         self.last_item: Any | None = None  # change this to Board | Player | None ?
         self.items_lists: list[list[Any]] | None = (
@@ -178,9 +182,9 @@ class ScreenSet:
                 else:
                     name = '%t'
             name = name.replace('%t', str(self.tournament.name))
-            if r'%f' in name and self.first_item is not None:
+            if r'%f' in name and self.first_board is not None:
                 name = name.replace(r'%f', str(self.first_board.id))
-            if r'%l' in name and self.last_item is not None:
+            if r'%l' in name and self.last_board is not None:
                 name = name.replace(r'%l', str(self.last_board.id))
             return name
         else:
@@ -200,9 +204,9 @@ class ScreenSet:
             else:
                 name = '%t'
         name = name.replace('%t', str(self.tournament.name))
-        if self.first_item is not None:
+        if self.first_player_by_name is not None:
             name = name.replace('%f', self.first_player_by_name.last_name[:8])
-        if self.last_item is not None:
+        if self.last_player_by_name is not None:
             name = name.replace('%l', self.last_player_by_name.last_name[:8])
         return name
 
@@ -242,9 +246,9 @@ class ScreenSet:
                 else:
                     name = _('%t ranking')
         name = name.replace('%t', str(self.tournament.name))
-        if self.first_item is not None:
+        if self.first_player_by_rank is not None:
             name = name.replace(r'%f', str(self.first_player_by_rank.rank))
-        if self.last_item is not None:
+        if self.last_player_by_rank is not None:
             name = name.replace('%l', str(self.last_player_by_rank.rank))
         return name
 
@@ -264,11 +268,20 @@ class ScreenSet:
                 board for board in items if board.number in self.fixed_board_numbers
             ]
         else:
-            first = self.first - 1 if self.first is not None else 0
-            last = self.last if self.last is not None else len(items)
-            selected_slice = slice(first, last)
+            if self.first:
+                first = max(1, min(self.first, len(items))) - 1
+            else:
+                first = 0
+            if self.last:
+                last = max(first, min(self.last, len(items)) - 1)
+            else:
+                last = len(items) - 1
+            selected_slice = slice(first, last + 1)
             selected_items = items[selected_slice]
             if not selected_items:
+                self.items_lists = [
+                    [],
+                ] * self.columns
                 return
             self.first_item = selected_items[0]
             self.last_item = selected_items[-1]
@@ -287,13 +300,14 @@ class ScreenSet:
 
     def _extract_boards(self):
         if self.items_lists is None:
-            assert self.tournament.boards is not None
             self._extract_data(self.tournament.boards)
 
     def clear_cache(self, tournament_id: int | None = None):
         """Clears the cache if the set is for the given tournament, or regardless of the tournament if no tournament is provided"""
         if tournament_id is None or self.tournament_id == tournament_id:
             self.items_lists = None
+            self.first_item = None
+            self.last_item = None
 
     @property
     def boards_lists(self) -> list[list[Board]]:
@@ -307,18 +321,17 @@ class ScreenSet:
         return self.items_lists
 
     @property
-    def first_board(self) -> Board:
-        if not self.first_item:
-            self._extract_boards()
+    def first_board(self) -> Board | None:
+        self._extract_boards()
         if TYPE_CHECKING:
-            assert isinstance(self.first_item, Board)
+            assert self.first_item is None or isinstance(self.first_item, Board)
         return self.first_item
 
     @property
-    def last_board(self) -> Board:
+    def last_board(self) -> Board | None:
         self._extract_boards()
         if TYPE_CHECKING:
-            assert isinstance(self.last_item, Board)
+            assert self.last_item is None or isinstance(self.last_item, Board)
         return self.last_item
 
     def _extract_players_by_name(self):
@@ -358,19 +371,17 @@ class ScreenSet:
             )
 
     @property
-    def first_player_by_name(self) -> Player:
-        if not self.first_item:
-            self._extract_players_by_name()
+    def first_player_by_name(self) -> Player | None:
+        self._extract_players_by_name()
         if TYPE_CHECKING:
-            assert isinstance(self.first_item, Player)
+            assert self.first_item is None or isinstance(self.first_item, Player)
         return self.first_item
 
     @property
-    def last_player_by_name(self) -> Player:
-        if not self.last_item:
-            self._extract_players_by_name()
+    def last_player_by_name(self) -> Player | None:
+        self._extract_players_by_name()
         if TYPE_CHECKING:
-            assert isinstance(self.last_item, Player)
+            assert self.last_item is None or isinstance(self.last_item, Player)
         return self.last_item
 
     def _extract_players_by_rank(self):
@@ -402,19 +413,17 @@ class ScreenSet:
         return self.items_lists
 
     @property
-    def first_player_by_rank(self) -> Player:
-        if not self.first_item:
-            self._extract_players_by_rank()
+    def first_player_by_rank(self) -> Player | None:
+        self._extract_players_by_rank()
         if TYPE_CHECKING:
-            assert isinstance(self.first_item, Player)
+            assert self.first_item is None or isinstance(self.first_item, Player)
         return self.first_item
 
     @property
-    def last_player_by_rank(self) -> Player:
-        if not self.last_item:
-            self._extract_players_by_rank()
+    def last_player_by_rank(self) -> Player | None:
+        self._extract_players_by_rank()
         if TYPE_CHECKING:
-            assert isinstance(self.last_item, Player)
+            assert self.last_item is None or isinstance(self.last_item, Player)
         return self.last_item
 
     @property
@@ -426,54 +435,54 @@ class ScreenSet:
             return self.family.last_update
 
     @property
-    def last_update_str(self) -> str | None:
+    def last_update_str(self) -> str:
         return format_timestamp_date_time(self.last_update)
 
     @property
-    def numbers_str(self):
+    def numbers_str(self) -> str:
         if self.fixed_board_numbers:
             return _('boards {board_numbers}').format(
                 board_numbers=', '.join(map(str, self.fixed_board_numbers))
             )
         if self.type in [ScreenType.BOARDS, ScreenType.INPUT]:
             match (self.first, self.last):
-                case (None, None):
+                case (0, 0):
                     return _('all the boards')
-                case (first, None) if first is not None:
+                case (first, 0) if first != 0:
                     return _('boards from #{first} to end').format(first=first)
                 case (first, last) if first is not None and last is not None:
                     return _('boards from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (None, last) if last is not None:
+                case (0, last) if last != 0:
                     return _('boards from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
         elif self.type in [ScreenType.PLAYERS]:
             match (self.first, self.last):
-                case (None, None):
+                case (0, 0):
                     return _('all the players')
-                case (first, None) if first is not None:
+                case (first, 0) if first != 0:
                     return _('players from #{first} to end').format(first=first)
-                case (first, last) if first is not None and last is not None:
+                case (first, last) if first != 0 and last != 0:
                     return _('players from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (None, last) if last is not None:
+                case (0, last) if last != 0:
                     return _('players from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
         else:
             match (self.first, self.last):
-                case (None, None):
+                case (0, 0):
                     return _('the whole ranking')
-                case (first, None) if first is not None:
+                case (first, 0) if first != 0:
                     return _('ranking from #{first} to end').format(first=first)
-                case (first, last) if first is not None and last is not None:
+                case (first, last) if first != 0 and last != 0:
                     return _('ranking from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (None, last) if last is not None:
+                case (0, last) if last != 0:
                     return _('ranking from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')

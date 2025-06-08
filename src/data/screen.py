@@ -244,7 +244,7 @@ class Screen:
             ):
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
-                first_last = screen_set.first is not None or screen_set.last is not None
+                first_last: bool = bool(screen_set.first or screen_set.last)
                 text: str
                 if (
                     self.type
@@ -255,7 +255,8 @@ class Screen:
                     and screen_set.tournament.current_round
                 ):
                     text = self.menu_text or self.default_boards_screen_menu_text(
-                        single_tournament=single_tournament, first_last=first_last
+                        single_tournament=single_tournament,
+                        first_last=first_last and screen_set.first_item,
                     )
                 elif self.type in [
                     ScreenType.PLAYERS,
@@ -263,12 +264,13 @@ class Screen:
                     ScreenType.BOARDS,
                 ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
-                        single_tournament=single_tournament, first_last=first_last
+                        single_tournament=single_tournament,
+                        first_last=first_last and screen_set.first_item,
                     )
                 elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last,
+                        first_last=first_last and screen_set.first_item,
                         crosstable=self.ranking_crosstable,
                     )
                 else:
@@ -277,34 +279,52 @@ class Screen:
                 if self.type == ScreenType.RANKING:
                     if '%f' in text:
                         text = text.replace(
-                            '%f', str(screen_set.first_player_by_rank.rank)
+                            '%f',
+                            str(screen_set.first_player_by_rank.rank)
+                            if screen_set.first_player_by_rank
+                            else '-',
                         )
                     if '%l' in text:
                         text = text.replace(
-                            '%l', str(screen_set.last_player_by_rank.rank)
+                            '%l',
+                            str(screen_set.last_player_by_rank.rank)
+                            if screen_set.last_player_by_rank
+                            else '-',
                         )
                 elif (
                     self.type == ScreenType.PLAYERS
                     or not screen_set.tournament.current_round
                 ):
-                    if screen_set.first_player_by_name:
-                        text = text.replace(
-                            '%f',
-                            str(screen_set.first_player_by_name.last_name[:3]).upper(),
-                        )
-                    if screen_set.last_player_by_name:
-                        text = text.replace(
-                            '%l',
-                            str(screen_set.last_player_by_name.last_name[:3]).upper(),
-                        )
+                    text = text.replace(
+                        '%f',
+                        str(screen_set.first_player_by_name.last_name[:3]).upper()
+                        if screen_set.first_player_by_name
+                        else '-',
+                    )
+                    text = text.replace(
+                        '%l',
+                        str(screen_set.last_player_by_name.last_name[:3]).upper()
+                        if screen_set.last_player_by_name
+                        else '-',
+                    )
                 elif self.type in [
                     ScreenType.INPUT,
                     ScreenType.BOARDS,
                 ]:
                     if '%f' in text:
-                        text = text.replace('%f', str(screen_set.first_board.id))
+                        text = text.replace(
+                            '%f',
+                            str(screen_set.first_board.id)
+                            if screen_set.first_board
+                            else '-',
+                        )
                     if '%l' in text:
-                        text = text.replace('%l', str(screen_set.last_board.id))
+                        text = text.replace(
+                            '%l',
+                            str(screen_set.last_board.id)
+                            if screen_set.last_board
+                            else '-',
+                        )
                 return text
             case ScreenType.RESULTS:
                 assert self.stored_screen is not None

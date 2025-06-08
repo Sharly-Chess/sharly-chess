@@ -20,6 +20,7 @@ from data.board import Board
 from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
+from data.prize.prize_group import PrizeGroup
 from data.screen import Screen
 from data.tie_breaks import (
     TieBreak,
@@ -44,7 +45,7 @@ from database.access.papi.papi_database import (
     UNPLAYED_COLOR,
 )
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament
+from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
@@ -64,7 +65,20 @@ class Tournament:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
-        if not stored_tournament.path:
+        self.prize_groups_by_id = self._get_prize_groups_by_id()
+        self._add_event_warnings()
+
+        self.stored_file_modified_timestamp: float | None = None
+        if self.file_exists:
+            self.stored_file_modified_timestamp = self.file_modified_timestamp
+        self._players: Collection[Player] | None = None
+        self._players_by_rank: dict[int, Player] | None = None
+        self._boards: list[Board] | None = None
+        # Give plugin the chance to initialise their data
+        plugin_manager.hook.on_tournament_init(tournament=self)
+
+    def _add_event_warnings(self):
+        if not self.stored_tournament.path:
             self.event.add_debug(
                 _('No directory set for the Papi file, by default [{path}].').format(
                     path=self.path
@@ -88,14 +102,6 @@ class Tournament:
                 ).format(filename=self.filename),
                 tournament=self,
             )
-        self.stored_file_modified_timestamp: float | None = None
-        if self.file_exists:
-            self.stored_file_modified_timestamp = self.file_modified_timestamp
-        self._players: Collection[Player] | None = None
-        self._players_by_rank: dict[int, Player] | None = None
-        self._boards: list[Board] | None = None
-        # Give plugin the chance to initialise their data
-        plugin_manager.hook.on_tournament_init(tournament=self)
 
     @property
     def event(self) -> 'Event':
@@ -407,6 +413,47 @@ class Tournament:
     @property
     def arbiter(self) -> str:
         return self.papi_tournament_info.arbiter
+
+    @property
+    def prize_groups(self) -> Collection[PrizeGroup]:
+        return self.prize_groups_by_id.values()
+
+    @property
+    def sorted_prize_groups(self) -> list[PrizeGroup]:
+        return sorted(
+            self.prize_groups,
+            key=lambda group: (-group.has_main_category, group.name),
+        )
+
+    @property
+    def has_main_prize_category(self) -> bool:
+        return any(prize_group.has_main_category for prize_group in self.prize_groups)
+
+    def _get_prize_groups_by_id(self) -> dict[int, PrizeGroup]:
+        prize_groups_by_id = {}
+        for stored_prize_group in self.stored_tournament.stored_prize_groups:
+            assert stored_prize_group.id is not None
+            prize_groups_by_id[stored_prize_group.id] = PrizeGroup(
+                self, stored_prize_group
+            )
+        return prize_groups_by_id
+
+    def add_prize_group(self, stored_prize_group: StoredPrizeGroup) -> PrizeGroup:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            object_id = database.add_stored_prize_group(stored_prize_group)
+            database.commit()
+        stored_prize_group.id = object_id
+        prize_group = PrizeGroup(self, stored_prize_group)
+        self.prize_groups_by_id[object_id] = prize_group
+        return prize_group
+
+    def delete_prize_group(self, prize_group_id: int):
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_prize_group(prize_group_id)
+            database.commit()
+
+        if prize_group_id in self.prize_groups_by_id:
+            del self.prize_groups_by_id[prize_group_id]
 
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
@@ -962,7 +1009,7 @@ class Tournament:
 
     @property
     def players_by_rank(self) -> dict[int, Player]:
-        assert self._players_by_rank is not None, (
+        assert not self.players or self._players_by_rank is not None, (
             'Tournament._players_by_rank is not set, call Tournament.compute_player_ranks() before.'
         )
         return self._players_by_rank

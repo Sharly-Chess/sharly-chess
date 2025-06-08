@@ -880,8 +880,14 @@ class ScreenAdminController(BaseEventAdminController):
         ) as event_database:
             match action:
                 case 'create':
-                    assert stored_screen.init_set_tournament_id is not None
-                    init_set_tournament_id: int = stored_screen.init_set_tournament_id
+                    # init_set_tournament_id is the id of the tournament that should be
+                    # used to create the default screen_set.
+                    # It is set in the screen creation form.
+                    # It needs to be saved because EventDatabase.add_stored_screen()
+                    # doesn't save it (it is not stored in the database).
+                    init_set_tournament_id: int | None = (
+                        stored_screen.init_set_tournament_id
+                    )
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
                     if stored_screen.type in [
@@ -890,6 +896,10 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.PLAYERS,
                         ScreenType.RANKING,
                     ]:
+                        if init_set_tournament_id is None:
+                            raise RuntimeError(
+                                'Missing data: not able to create default screen set'
+                            )
                         event_database.add_stored_screen_set(
                             stored_screen.id, init_set_tournament_id
                         )
