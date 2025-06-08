@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
 from litestar.plugins.htmx import HTMXRequest
-import pluggy  # type: ignore
+import apluggy as pluggy  # type: ignore
 
 from common import APP_NAME
 
@@ -131,7 +131,7 @@ class AppHookSpecs:
         """Validate the additional player form fields and returns plugin data"""
 
     @hookspec
-    def augment_player_after_search(self, player: 'Player'):
+    async def augment_player_after_search(self, player: 'Player'):
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec

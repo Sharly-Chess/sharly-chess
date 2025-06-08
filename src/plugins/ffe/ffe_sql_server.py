@@ -147,6 +147,21 @@ class FFESqlServer(SqlServer):
     def get_empty_club_fields(self) -> list[str]:
         return [f"'' AS Club{f}" for f in self.CLUB_FIELDS]
 
+    @staticmethod
+    def string_matches_ffe_licence_number(string: str) -> str | None:
+        return (
+            string
+            if string.isalnum()
+            and len(string) == 6
+            and string[0].isalpha()
+            and string[1:].isdecimal()
+            else None
+        )
+
+    @staticmethod
+    def string_matches_fide_id(string: str) -> int | None:
+        return int(string) if string.isdecimal() else None
+
     async def search_player(
         self,
         string: str,
@@ -157,15 +172,18 @@ class FFESqlServer(SqlServer):
         # licence number, so that it skips a more complex request
         string = string.upper().strip()
         # TODO: fix magic number
-        if string.isalnum() and len(string) == 6:
-            if string[0].isalpha() and string[1:].isdecimal():
-                query = (
-                    f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-                    f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-                    f'WHERE joueur.NrFFE = ?'
-                )
-                await self.execute(query, (string,))
-                return (self._get_player_from_row(row) async for row in self.fetchall())
+        if ffe_licence_number := self.string_matches_ffe_licence_number(string):
+            return await self.get_players_by_ffe_licence_number(
+                [
+                    ffe_licence_number,
+                ]
+            )
+        if fide_id := self.string_matches_fide_id(string):
+            return await self.get_players_by_fide_id(
+                [
+                    fide_id,
+                ]
+            )
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
@@ -229,7 +247,7 @@ class FFESqlServer(SqlServer):
         )
         await self.execute(
             query,
-            (id_,),
+            (str(id_),),
         )
         if row := await self.fetchone():
             return self._get_player_from_row(row)
@@ -248,15 +266,28 @@ class FFESqlServer(SqlServer):
     ) -> Player | None:
         return await self._get_player_by_id('joueur.FideCode', player_fide_id)
 
+    async def get_players_by_id(
+        self,
+        field: str,
+        player_ids: list[str] | list[int],
+    ) -> AsyncIterator[Player]:
+        query_array = ', '.join('?' for _ in player_ids)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {field} IN ({query_array})'
+        )
+        await self.execute(query, tuple(player_ids))
+        return (self._get_player_from_row(row) async for row in self.fetchall())
+
     async def get_players_by_ffe_licence_number(
         self,
         player_ffe_licence_numbers: list[str],
     ) -> AsyncIterator[Player]:
-        query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.NrFFE IN ({query_array})'
-        )
-        await self.execute(query, tuple(player_ffe_licence_numbers))
-        return (self._get_player_from_row(row) async for row in self.fetchall())
+        return await self.get_players_by_id('joueur.NrFFE', player_ffe_licence_numbers)
+
+    async def get_players_by_fide_id(
+        self,
+        player_fide_ids: list[int],
+    ) -> AsyncIterator[Player]:
+        return await self.get_players_by_id('joueur.FideCode', player_fide_ids)

@@ -878,7 +878,8 @@ class PairingsAdminController(BaseEventAdminController):
                 modal='safety-mode',
                 protected_action=PairingAction.FULL_PAIRING,
             )
-
+        if not tournament.are_pairing_settings_valid:
+            tournament.set_default_pairing_settings()
         tournament.pairing_variation.engine.generate_pairings(
             tournament, web_context.admin_round
         )

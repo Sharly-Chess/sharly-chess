@@ -180,7 +180,7 @@ class Engine(ABC):
                             _(
                                 'Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? '
                             ).format(
-                                version=previous_versions[0],
+                                version=previous_versions[0][0],
                                 y_uc=yes_answer.upper(),
                                 n_lc=no_answer.lower(),
                             )
