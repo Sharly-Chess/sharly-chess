@@ -54,6 +54,7 @@ class ConfigDatabase(MigrationDatabase):
             Version('2.4.24'): 'm001_create_info_table',
             Version('2.4.28'): 'm002_create_plugin_table',
             Version('2.4.30'): 'm003_create_local_source_database_table',
+            Version('2.8.0'): 'm004_add_logging_parameters',
         }
 
     @classmethod
@@ -83,7 +84,19 @@ class ConfigDatabase(MigrationDatabase):
         """Convert a row to a StoredConfig record."""
         return StoredConfig(
             force_edit=self.load_bool_from_database_field(row['force_edit']),
-            log_level=row['log_level'],
+            console_log_level=row['console_log_level'],
+            console_color=self.load_bool_or_none_from_database_field(
+                row['console_color']
+            ),
+            console_show_date=self.load_bool_or_none_from_database_field(
+                row['console_show_date']
+            ),
+            console_show_level=self.load_bool_or_none_from_database_field(
+                row['console_show_level']
+            ),
+            experimental=self.load_bool_or_none_from_database_field(
+                row['experimental']
+            ),
             federation=row['federation'],
             launch_browser=self.load_bool_or_none_from_database_field(
                 row['launch_browser']
@@ -106,14 +119,22 @@ class ConfigDatabase(MigrationDatabase):
         """Updates the config database with the information in the provided `stored_config`."""
         fields: list[str] = [
             'force_edit',
-            'log_level',
+            'console_log_level',
+            'console_color',
+            'console_show_date',
+            'console_show_level',
+            'experimental',
             'launch_browser',
             'federation',
             'locale',
         ]
         params: tuple = (
             stored_config.force_edit,
-            stored_config.log_level,
+            stored_config.console_log_level,
+            stored_config.console_color,
+            stored_config.console_show_date,
+            stored_config.console_show_level,
+            stored_config.experimental,
             stored_config.launch_browser,
             stored_config.federation,
             stored_config.locale,
@@ -171,8 +192,9 @@ class ConfigDatabase(MigrationDatabase):
     # StoredLocalSourceDatabase
     # ---------------------------------------------------------------------------------
 
+    @staticmethod
     def _row_to_stored_local_source_database(
-        self, row: dict[str, Any]
+        row: dict[str, Any],
     ) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=row['name'],

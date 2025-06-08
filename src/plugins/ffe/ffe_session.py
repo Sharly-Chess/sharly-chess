@@ -234,13 +234,13 @@ class FFESession(Session):
         }
         html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return None
+            return False
         parser, error = self._parse_html_content(html)
         if error:
-            return None
+            return False
         assert parser is not None
         if not self.read_ffe_state(parser, url):
-            return None
+            return False
         for id_ in [
             SET_VISIBLE_LINK_ID,
             FEES_LINK_ID,

@@ -23,8 +23,8 @@ from common.logger import (
     print_interactive_info,
     print_interactive_error,
     print_interactive_warning,
-    LOGGING_CONFIG,
     get_logger,
+    set_logging_config,
 )
 from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
@@ -88,8 +88,8 @@ class ServerEngine(Engine):
         print_interactive_info(_('Starting Sharly Chess server, Please wait…'))
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         print_interactive_info(
-            _('Logging level: {log_level}').format(
-                log_level=sharly_chess_config.log_level_str
+            _('Console logging level: {console_log_level}').format(
+                console_log_level=sharly_chess_config.console_log_level_str
             )
         )
 
@@ -132,8 +132,9 @@ class ServerEngine(Engine):
 
         NetworkMonitor.start_monitoring()
 
-        logging_config = LOGGING_CONFIG
-        logging_config['handlers']['console']['level'] = SharlyChessConfig().log_level  # type: ignore
+        logging_config = set_logging_config(
+            console_log_level=SharlyChessConfig().console_log_level
+        )
 
         app: Litestar = Litestar(
             debug=True,
