@@ -370,6 +370,15 @@ msgstr ""
 msgid "At least one age category is expected."
 msgstr ""
 
+msgid "At least one club is expected."
+msgstr ""
+
+msgid "At least one federation is expected."
+msgstr ""
+
+msgid "At least one league is expected."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -694,6 +703,15 @@ msgstr ""
 msgid "Choose at least one category."
 msgstr ""
 
+msgid "Choose at least one club."
+msgstr ""
+
+msgid "Choose at least one federation."
+msgstr ""
+
+msgid "Choose at least one league."
+msgstr ""
+
 msgid "Choose the columns displayed."
 msgstr ""
 
@@ -745,6 +763,9 @@ msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
 
 msgid "Club:"
+msgstr ""
+
+msgid "Clubs"
 msgstr ""
 
 msgid "Color"
@@ -1807,6 +1828,9 @@ msgstr "Fed."
 msgid "Federation:"
 msgstr ""
 
+msgid "Federations"
+msgstr ""
+
 msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
 msgstr ""
 
@@ -2108,6 +2132,9 @@ msgstr ""
 msgid "In play"
 msgstr ""
 
+msgid "In-tournament"
+msgstr ""
+
 msgid "Include greater categories"
 msgstr ""
 
@@ -2301,6 +2328,9 @@ msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
 msgstr "League"
 
 msgid "League:"
+msgstr ""
+
+msgid "Leagues"
 msgstr ""
 
 msgid "Libraries"
@@ -2678,6 +2708,9 @@ msgstr ""
 msgid "No players found."
 msgstr ""
 
+msgid "No players matching the criteria."
+msgstr ""
+
 msgid "No players to choose from."
 msgstr ""
 
@@ -2688,6 +2721,9 @@ msgid "No players."
 msgstr ""
 
 msgid "No prize category"
+msgstr ""
+
+msgid "No prizes defined."
 msgstr ""
 
 msgid "No prizes."
@@ -2854,6 +2890,15 @@ msgstr ""
 msgid "Only estimated ratings are optional."
 msgstr ""
 
+msgid "Only include players of these clubs."
+msgstr ""
+
+msgid "Only include players of these federations."
+msgstr ""
+
+msgid "Only include players of these leagues."
+msgstr ""
+
 msgid "Only include players of this gender."
 msgstr ""
 
@@ -2880,6 +2925,9 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
+msgstr ""
+
+msgid "Others"
 msgstr ""
 
 msgid "Over 20"
@@ -4641,6 +4689,10 @@ msgid "Tournament performance rating"
 msgstr ""
 
 msgid "Tournament previously uploaded."
+msgstr ""
+
+#, python-format
+msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
 msgstr ""
 
 msgid "Tournament record"

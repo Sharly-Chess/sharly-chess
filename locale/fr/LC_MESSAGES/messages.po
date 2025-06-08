@@ -370,6 +370,15 @@ msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
 msgid "At least one age category is expected."
 msgstr "Au moins une catégorie d'age est attendue."
 
+msgid "At least one club is expected."
+msgstr "Au moins un club est attendu."
+
+msgid "At least one federation is expected."
+msgstr "Au moins une fédération est attendue."
+
+msgid "At least one league is expected."
+msgstr "Au moins une ligue est attendue."
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -694,6 +703,15 @@ msgstr "Choisir un·e joueur·euse au hasard"
 msgid "Choose at least one category."
 msgstr "Choisir au moins une catégorie."
 
+msgid "Choose at least one club."
+msgstr "Choisir au moins un club."
+
+msgid "Choose at least one federation."
+msgstr "Choisir au moins une fédération."
+
+msgid "Choose at least one league."
+msgstr "Choisir au moins une ligue."
+
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
@@ -746,6 +764,9 @@ msgstr "Club"
 
 msgid "Club:"
 msgstr "Club :"
+
+msgid "Clubs"
+msgstr "Clubs"
 
 msgid "Color"
 msgstr "Couleur"
@@ -1807,6 +1828,9 @@ msgstr "Féd."
 msgid "Federation:"
 msgstr "Fédération :"
 
+msgid "Federations"
+msgstr "Fédérations"
+
 msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
 msgstr "Lien de facture non trouvé, vérifier qu'un fichier Papi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
 
@@ -2108,6 +2132,9 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 msgid "In play"
 msgstr "En jeu"
 
+msgid "In-tournament"
+msgstr "Dans le tournoi"
+
 msgid "Include greater categories"
 msgstr "Inclure les catégories supérieures"
 
@@ -2302,6 +2329,9 @@ msgstr "Ligue"
 
 msgid "League:"
 msgstr "Ligue :"
+
+msgid "Leagues"
+msgstr "Ligues"
 
 msgid "Libraries"
 msgstr "Bibliothèques"
@@ -2678,6 +2708,9 @@ msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
 msgid "No players found."
 msgstr "Aucun·e joueur·euse trouvé·e."
 
+msgid "No players matching the criteria."
+msgstr "Aucun·e joueur·euse correspondant aux critères."
+
 msgid "No players to choose from."
 msgstr "Aucun·e joueur·euse à sélectionner."
 
@@ -2689,6 +2722,9 @@ msgstr "Aucun·e joueur·euse."
 
 msgid "No prize category"
 msgstr "Aucune catégorie de prix"
+
+msgid "No prizes defined."
+msgstr "Aucun prix défini."
 
 msgid "No prizes."
 msgstr "Aucun prix."
@@ -2854,6 +2890,15 @@ msgstr "Seul·es les arbitres peuvent voir les écrans rotatifs privés."
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
 
+msgid "Only include players of these clubs."
+msgstr "N'inclure que les joueur·euses de ces clubs."
+
+msgid "Only include players of these federations."
+msgstr "N'inclure que les joueur·euses de ces fédérations."
+
+msgid "Only include players of these leagues."
+msgstr "N'inclure que les joueur·euses de ces ligues."
+
 msgid "Only include players of this gender."
 msgstr "N'inclure que les joueur·euses de ce genre."
 
@@ -2881,6 +2926,9 @@ msgstr "Adversaire Elo [Pts]"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
+
+msgid "Others"
+msgstr "Autres"
 
 msgid "Over 20"
 msgstr "Plus de 20"
@@ -4642,6 +4690,10 @@ msgstr "Performance sur le tournoi"
 
 msgid "Tournament previously uploaded."
 msgstr "Tournoi mis en ligne précédemment."
+
+#, python-format
+msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
+msgstr "Plage Elo du tournoi : %(min_rating)d - %(max_rating)d"
 
 msgid "Tournament record"
 msgstr "Historique"

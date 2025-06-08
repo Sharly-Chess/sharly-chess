@@ -3,7 +3,7 @@
         name=option.id,
         label=_('%(string)s:', string=_('Gender')),
         help_text=_('Only include players of this gender.'),
-        select_options=option.gender_options,
+        select_options=option.select_options(admin_tournament, false, false),
         data=data, errors=errors
     ) }}
 </div>

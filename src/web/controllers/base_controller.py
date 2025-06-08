@@ -117,6 +117,7 @@ class WebContext:
             bool: cls.form_data_to_bool,
             date: cls.form_data_to_date,
             list[int]: cls.form_data_to_list_int,
+            list[str]: cls.form_data_to_list_str,
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
@@ -225,6 +226,14 @@ class WebContext:
         if field not in data:
             return empty_value or []
         return [int(element) for element in data[field].split(';')]
+
+    @staticmethod
+    def form_data_to_list_str(
+        data: dict[str, str], field: str, empty_value: list[str] | None = None
+    ) -> list[str]:
+        if field not in data:
+            return empty_value or []
+        return [element.strip() for element in data[field].split(';')]
 
     @staticmethod
     def form_data_to_rgb(

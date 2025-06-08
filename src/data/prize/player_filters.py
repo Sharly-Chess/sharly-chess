@@ -3,7 +3,7 @@ from collections.abc import Callable
 from functools import cached_property
 
 from common.i18n import _
-from data.player import Player
+from data.player import Player, Club, Federation
 from data.prize.player_filter_options import (
     PlayerFilterOption,
     GenderOption,
@@ -12,6 +12,8 @@ from data.prize.player_filter_options import (
     AgeCategoriesOption,
     AgeLowerOption,
     AgeGreaterOption,
+    ClubsFilterOption,
+    FederationsFilterOption,
 )
 from utils.enum import PlayerGender, PlayerCategory
 from utils.option import OptionHandler, OptionError
@@ -153,3 +155,61 @@ class AgePlayerFilter(PlayerFilter):
                 'Only one of greater or lower option is allowed.',
                 self._get_option(AgeGreaterOption),
             )
+
+
+class ClubPlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'CLUB'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Club')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [ClubsFilterOption]
+
+    def get_clubs(self) -> list[Club]:
+        return [
+            Club.from_query_param(query_param)
+            for query_param in self.get_option_values()[0]
+        ]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        clubs = self.get_clubs()
+        return lambda player: player.club in clubs
+
+    def __str__(self) -> str:
+        option_str = ', '.join(club.name for club in self.get_clubs())
+        return f'{self.name} ({option_str})'
+
+
+class FederationPlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'FEDERATION'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Federation')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [FederationsFilterOption]
+
+    def get_federations(self) -> list[Federation]:
+        return [
+            Federation.from_query_param(query_param)
+            for query_param in self.get_option_values()[0]
+        ]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        federations = self.get_federations()
+        return lambda player: player.federation in federations
+
+    def __str__(self) -> str:
+        option_str = ', '.join(federation.name for federation in self.get_federations())
+        return f'{self.name} ({option_str})'
