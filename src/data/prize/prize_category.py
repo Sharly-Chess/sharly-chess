@@ -92,7 +92,7 @@ class PrizeCategory:
             player
             for player in self.prize_group.tournament.players
             if all(
-                criterion.player_filter.is_player_included(player)
+                criterion.player_filter.is_player_included_function(player)
                 for criterion in self.criteria
             )
         ]

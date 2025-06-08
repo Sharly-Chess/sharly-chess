@@ -36,6 +36,7 @@ from utils.enum import (
     Result,
     TournamentRating,
     TrfType,
+    PlayerCategory,
 )
 from database.access.papi.papi_database import (
     PapiDatabase,
@@ -516,6 +517,18 @@ class Tournament:
             key=lambda p: (p.last_name, p.first_name),
         )
 
+    @property
+    def min_player_rating(self) -> int | None:
+        if not self.players:
+            return None
+        return min(player.rating for player in self.players)
+
+    @property
+    def max_player_rating(self) -> int | None:
+        if not self.players:
+            return None
+        return max(player.rating for player in self.players)
+
     @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""
@@ -539,6 +552,13 @@ class Tournament:
         for player in self.players:
             if player.club is not None:
                 counter[player.club] += 1
+        return counter
+
+    @cached_property
+    def category_counts(self) -> Counter[PlayerCategory]:
+        counter = Counter[PlayerCategory]()
+        for player in self.players:
+            counter[player.category] += 1
         return counter
 
     @property

@@ -292,6 +292,12 @@ msgstr ""
 msgid "Add player"
 msgstr ""
 
+msgid "Age"
+msgstr ""
+
+msgid "Age categories"
+msgstr ""
+
 msgid "Alert message"
 msgstr ""
 
@@ -356,6 +362,21 @@ msgid "Assign to a display controller."
 msgstr ""
 
 msgid "Assign zero-point byes for the rest of the tournament"
+msgstr ""
+
+msgid "At least a minimum or a maximum rating must be defined."
+msgstr ""
+
+msgid "At least one age category is expected."
+msgstr ""
+
+msgid "At least one club is expected."
+msgstr ""
+
+msgid "At least one federation is expected."
+msgstr ""
+
+msgid "At least one league is expected."
 msgstr ""
 
 #, python-format
@@ -679,6 +700,18 @@ msgstr ""
 msgid "Choose a player at random"
 msgstr ""
 
+msgid "Choose at least one category."
+msgstr ""
+
+msgid "Choose at least one club."
+msgstr ""
+
+msgid "Choose at least one federation."
+msgstr ""
+
+msgid "Choose at least one league."
+msgstr ""
+
 msgid "Choose the columns displayed."
 msgstr ""
 
@@ -730,6 +763,9 @@ msgid "Club *** CLUB FOR PRINT VIEW"
 msgstr "Club"
 
 msgid "Club:"
+msgstr ""
+
+msgid "Clubs"
 msgstr ""
 
 msgid "Color"
@@ -1792,6 +1828,9 @@ msgstr "Fed."
 msgid "Federation:"
 msgstr ""
 
+msgid "Federations"
+msgstr ""
+
 msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
 msgstr ""
 
@@ -1820,6 +1859,12 @@ msgid "File name (without extension):"
 msgstr ""
 
 msgid "File not found"
+msgstr ""
+
+msgid "Filter out players with a greater rating."
+msgstr ""
+
+msgid "Filter out players with a lower rating."
 msgstr ""
 
 msgid "Filter the categories."
@@ -2087,6 +2132,18 @@ msgstr ""
 msgid "In play"
 msgstr ""
 
+msgid "In-tournament"
+msgstr ""
+
+msgid "Include greater categories"
+msgstr ""
+
+msgid "Include lower categories"
+msgstr ""
+
+msgid "Include players of these categories."
+msgstr ""
+
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -2273,6 +2330,9 @@ msgstr "League"
 msgid "League:"
 msgstr ""
 
+msgid "Leagues"
+msgstr ""
+
 msgid "Libraries"
 msgstr ""
 
@@ -2323,9 +2383,6 @@ msgstr "Mail"
 
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr ""
-
-msgid "The main category is open to all the players."
 msgstr ""
 
 msgid "Main category"
@@ -2394,6 +2451,9 @@ msgstr ""
 msgid "Maximum number of results: unlimited"
 msgstr ""
 
+msgid "Maximum rating"
+msgstr ""
+
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
@@ -2439,6 +2499,9 @@ msgid "Minimum delay between uploads (minutes):"
 msgstr ""
 
 msgid "Minimum number of points (included):"
+msgstr ""
+
+msgid "Minimum rating"
 msgstr ""
 
 msgid "Missing parameter (code: [{code}]): [{error}]."
@@ -2645,6 +2708,9 @@ msgstr ""
 msgid "No players found."
 msgstr ""
 
+msgid "No players matching the criteria."
+msgstr ""
+
 msgid "No players to choose from."
 msgstr ""
 
@@ -2655,6 +2721,9 @@ msgid "No players."
 msgstr ""
 
 msgid "No prize category"
+msgstr ""
+
+msgid "No prizes defined."
 msgstr ""
 
 msgid "No prizes."
@@ -2821,6 +2890,21 @@ msgstr ""
 msgid "Only estimated ratings are optional."
 msgstr ""
 
+msgid "Only include players of these clubs."
+msgstr ""
+
+msgid "Only include players of these federations."
+msgstr ""
+
+msgid "Only include players of these leagues."
+msgstr ""
+
+msgid "Only include players of this gender."
+msgstr ""
+
+msgid "Only one age category is expected with options including other categories."
+msgstr ""
+
 #, python-format
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
 msgstr ""
@@ -2841,6 +2925,9 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
+msgstr ""
+
+msgid "Others"
 msgstr ""
 
 msgid "Over 20"
@@ -4030,9 +4117,6 @@ msgstr ""
 msgid "The following screens will also be deleted:"
 msgstr ""
 
-msgid "The gender of the players of the category."
-msgstr ""
-
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr ""
 
@@ -4050,6 +4134,12 @@ msgid "The location of the tournament."
 msgstr ""
 
 msgid "The mail addresses."
+msgstr ""
+
+msgid "The main category can't have criteria."
+msgstr ""
+
+msgid "The main category is open to all the players."
 msgstr ""
 
 #, python-format
@@ -4072,6 +4162,9 @@ msgid "The maximum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr ""
+
+msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr ""
 
 #, python-format
@@ -4596,6 +4689,10 @@ msgid "Tournament performance rating"
 msgstr ""
 
 msgid "Tournament previously uploaded."
+msgstr ""
+
+#, python-format
+msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
 msgstr ""
 
 msgid "Tournament record"

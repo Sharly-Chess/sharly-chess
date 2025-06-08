@@ -30,6 +30,11 @@
             <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ sharly_chess_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}"></script>
+            {# https://github.com/apalfrey/select2-bootstrap-5-theme #}
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/css/select2.min.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/dark-bootstrap-5.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/bootstrap-5-' ~ sharly_chess_config.select2_bootstrap_theme_version ~ '.min.css') }}" type="text/css" />
+            <script src="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/js/select2.full.min.js') }}"></script>
             <script>
                 function setSize() {
                     {#  We store the size of the viewport, without the scrollbars, in CSS variables #}
