@@ -13,6 +13,11 @@ English version below
 - Optimisation du temps de chargement de la page des évènements (2.7.0)
 - Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
 - Interdiction de l'accès aux pages d'arbitrage pour les clients non autorisés (2.7.1)
+- Amélioration de la gestion des exceptions (2.7.6)
+
+### Gestion des évènements
+
+- Correction d'un bug sur l'édition des évènements (2.7.6)
 
 ### Gestion des tournois
 
@@ -28,6 +33,8 @@ English version below
 ### Gestion des appariements
 
 - Diminution des temps de réaction lors de la saisie des résultats (2.7.1)
+- Correction de l'entrée de résultats au clavier sur des échiquiers fixes (2.7.5)
+- Suppression du modal de configuration de l'appariement lorsque non opportun (2.7.5)
 
 ### Gestion des écrans
 
@@ -63,6 +70,11 @@ English version below
 - Optimized the load time of the events page (2.7.0)
 - Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
 - Forbid access to arbiters' pages for unauthorized clients (2.7.1)
+- Improved exception handling (2.7.6)
+
+### Event management
+
+- Fixed a bug on event editing (2.7.6)
 
 ### Tournaments management
 
@@ -78,6 +90,8 @@ English version below
 # Pairings management
 
 - Reduced reaction time when entering results (2.7.1)
+- Fixed entering results with keyboard shortcuts on fixed boards (2.7.5)
+- Removed pairing settings modal when not accurate (2.7.5)
 
 # Screens management
 
