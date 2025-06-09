@@ -99,6 +99,7 @@ class IndexController(BaseController):
         return HTMXTemplate(
             template_name='errors/403.html',
             context=web_context.template_context,
+            re_target='body',
         )
 
     @staticmethod
@@ -117,6 +118,7 @@ class IndexController(BaseController):
         return HTMXTemplate(
             template_name='errors/404.html',
             context=web_context.template_context,
+            re_target='body',
         )
 
     @staticmethod
@@ -135,6 +137,7 @@ class IndexController(BaseController):
         return HTMXTemplate(
             template_name='errors/500.html',
             context=web_context.template_context,
+            re_target='body',
         )
 
     @staticmethod

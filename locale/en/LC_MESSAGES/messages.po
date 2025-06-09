@@ -3231,6 +3231,9 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
+msgid "Reload the page"
+msgstr ""
+
 msgid "Remove the player from the event."
 msgstr ""
 
@@ -3251,6 +3254,9 @@ msgid "Request to the database failed: {error}."
 msgstr ""
 
 msgid "Res. ** RESULT FOR PRINT VIEW"
+msgstr ""
+
+msgid "Restart the application"
 msgstr ""
 
 msgid "Result"
@@ -4904,4 +4910,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Please reload the page."
+#~ msgstr ""
 

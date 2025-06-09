@@ -3231,6 +3231,9 @@ msgstr "Actualiser"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Reload the page"
+msgstr "Recharger la page"
+
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
@@ -3252,6 +3255,9 @@ msgstr "La requête à la base de données a échoué : {error}."
 
 msgid "Res. ** RESULT FOR PRINT VIEW"
 msgstr "Res."
+
+msgid "Restart the application"
+msgstr "Redémarrer l'application"
 
 msgid "Result"
 msgstr "Résultat"
@@ -4904,4 +4910,7 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Please reload the page."
+#~ msgstr ""
 

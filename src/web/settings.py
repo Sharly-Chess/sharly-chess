@@ -20,7 +20,7 @@ from litestar.stores.base import Store
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
-from common import BASE_DIR, TMP_DIR, DEVEL_ENV
+from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
 
 from plugins.manager import plugin_manager
@@ -97,11 +97,8 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 exception_handlers = {
     HTTP_403_FORBIDDEN: IndexController.handle_403_exception,
     HTTP_404_NOT_FOUND: IndexController.handle_404_exception,
+    HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_500_exception,
 }
-if not DEVEL_ENV:
-    exception_handlers |= {
-        HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_500_exception
-    }
 
 
 class FileSystemLoaderWithRelativePath(FileSystemLoader):
