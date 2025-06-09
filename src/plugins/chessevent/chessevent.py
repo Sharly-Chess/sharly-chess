@@ -34,7 +34,7 @@ class ChessEventPlugin(Plugin):
     def description(self) -> str:
         return _(
             'Support for the ChessEvent platform used '
-            'for organising tournaments in France'
+            'for organising tournaments in France.'
         )
 
     @property

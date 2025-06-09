@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
 
-from common.i18n.babel import BabelWrapper
+from common.i18n.babel_wrapper import BabelWrapper
 
 from common.i18n import DEFAULT_LOCALE
 from common.logger import (
