@@ -1,6 +1,5 @@
 from collections import deque
 from dataclasses import dataclass
-from itertools import groupby
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
@@ -10,11 +9,6 @@ from common.i18n import _
 from data.player import Player
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
-from data.prize.prize_sharing import (
-    AveragePrizeSharing,
-    HortSystemPrizeSharing,
-    NoPrizeSharing,
-)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeGroup, StoredPrizeCategory
 from utils import StaticUtils
@@ -150,9 +144,6 @@ class PrizeGroup:
             sorted_players: list[Player],
         ) -> list[Player]:
             """Returns all the players eligible to receive a prize from the main category"""
-            result: list[Player] = []
-            prize_index = 0
-            total_prizes = len(main_prizes)
 
             if main_category is None:
                 return []
@@ -163,60 +154,14 @@ class PrizeGroup:
                 if player.id not in removed_from_main_set
             ]
 
-            if main_category.prize_sharing == NoPrizeSharing():
-                return filtered_players[: len(main_prizes)]
-
-            for score, group in groupby(
-                filtered_players, key=lambda p: -(p.points or 0)
-            ):
-                group_players = list(group)
-                result.extend(group_players)
-                prize_index += len(group_players)
-
-                if prize_index >= total_prizes:
-                    break  # We've assigned enough prize "slots" to cover this last group
-
-            return result
+            return main_category.prize_sharing.calculate_eligible_players(
+                main_prizes, filtered_players
+            )
 
         def resolve_main_prizes(players: list[Player]) -> dict[int, Tuple[int, float]]:
             """Calculate the amount each player in the main group receives"""
-            resolved: dict[int, Tuple[int, float]] = {}
             assert main_category is not None
-            if main_category.prize_sharing == NoPrizeSharing():
-                for place, (player, prize) in enumerate(zip(players, main_prizes)):
-                    resolved[player.id] = (place, prize.value)
-            else:
-                num_distributed = 0
-                place = 0
-                for score, group in groupby(players, key=lambda p: p.points or 0):
-                    players_in_tie = list(group)
-                    prizes_to_share = main_prizes[
-                        num_distributed : num_distributed + len(players_in_tie)
-                    ]
-                    if main_category.prize_sharing == AveragePrizeSharing():
-                        share = sum(p.value for p in prizes_to_share) / len(
-                            players_in_tie
-                        )
-                        for player in players_in_tie:
-                            resolved[player.id] = (place, share)
-                    elif main_category.prize_sharing == HortSystemPrizeSharing():
-                        total = sum(p.value for p in prizes_to_share)
-                        for i, player in enumerate(players_in_tie):
-                            own = (
-                                prizes_to_share[i].value
-                                if i < len(prizes_to_share)
-                                else 0
-                            )
-                            resolved[player.id] = (
-                                place,
-                                0.5 * own + 0.5 * (total / len(players_in_tie)),
-                            )
-                    place += 1
-                    num_distributed += len(players_in_tie)
-                    if num_distributed >= len(main_prizes):
-                        break
-
-            return resolved
+            return main_category.prize_sharing.resolve_prizes(main_prizes, players)
 
         # Select top N players to form the initial main group winners
         top_players = calculate_eligible_main_category_players(sorted_players)
