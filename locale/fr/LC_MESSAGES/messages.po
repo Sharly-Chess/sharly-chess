@@ -220,8 +220,8 @@ msgstr "Actions"
 msgid "Add"
 msgstr "Ajouter"
 
-msgid "Add a criterion"
-msgstr "Ajouter un critère"
+msgid "Add a criterion to the list."
+msgstr "Ajouter un critère à la liste."
 
 msgid "Add a display controller to the event."
 msgstr "Ajouter un pilote d'afficheurs."
@@ -244,11 +244,11 @@ msgstr "Ajouter un horaire"
 msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
 
-msgid "Add a prize"
-msgstr "Ajouter un prix"
-
 msgid "Add a prize category to the prize group."
 msgstr "Ajouter une catégorie au groupe de prix."
+
+msgid "Add a prize to the list."
+msgstr "Ajouter un prix à la liste."
 
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
@@ -956,9 +956,8 @@ msgstr "Créer ce prix puis en ajouter un autre."
 msgid "Criteria"
 msgstr "Critères"
 
-#, python-format
-msgid "Criteria of category [%(category)s]"
-msgstr "Critères de la catégorie [%(category)s]"
+msgid "Criteria list"
+msgstr "Liste des critères"
 
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
@@ -1081,6 +1080,9 @@ msgstr "Délai :"
 
 msgid "Delete"
 msgstr "Supprimer"
+
+msgid "Delete the category."
+msgstr "Supprimer la catégorie."
 
 msgid "Delete the display controller."
 msgstr "Supprimer le pilote d'afficheurs."
@@ -1282,14 +1284,8 @@ msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les 
 msgid "Downloading source file…"
 msgstr "Téléchargement du fichier source…"
 
-msgid "Drag the criteria to order them."
-msgstr "Faites glisser les critères pour les ordonner."
-
 msgid "Drag the hours to order them."
 msgstr "Faites glisser les horaires pour les ordonner."
-
-msgid "Drag the prizes to order them."
-msgstr "Faites glisser les prix pour les ordonner."
 
 msgid "Drag the sets to order them."
 msgstr "Faites glisser les ensembles pour les ordonner."
@@ -1299,6 +1295,9 @@ msgstr "Nulle"
 
 msgid "Duplicate"
 msgstr "Dupliquer"
+
+msgid "Duplicate the category and its criteria and prizes."
+msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
 
 msgid "Duplicate the rotator."
 msgstr "Dupliquer l'écran rotatif."
@@ -3373,6 +3372,9 @@ msgstr "Évènement privé"
 msgid "Prize [%(prize)s] successfully created!"
 msgstr "Prix [%(prize)s] créé avec succès !"
 
+msgid "Prize category [{prize_category}] has been duplicated."
+msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
+
 msgid "Prize category [{prize_category}] successfully created."
 msgstr "La catégorie de prix [{prize_category}] a été créée avec succès."
 
@@ -3406,11 +3408,11 @@ msgstr "Le groupe de prix [{prize_group}] a été supprimé avec succès."
 msgid "Prize groups"
 msgstr "Groupes de prix"
 
+msgid "Prize list"
+msgstr "Liste des prix"
+
 msgid "Prize sharing"
 msgstr "Partage des prix"
-
-msgid "Prize value greater than the previous prize."
-msgstr "Valeur du prix plus haute que le précédent."
 
 msgid "Prizes"
 msgstr "Prix"
@@ -3423,10 +3425,6 @@ msgstr "Prix non partagés"
 
 msgid "Prizes of categories with prize sharing can only be monetary."
 msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
-
-#, python-format
-msgid "Prizes of category [%(category)s]"
-msgstr "Prix de la catégorie [%(category)s]"
 
 msgid "Proceed"
 msgstr "Continuer"
@@ -3987,8 +3985,8 @@ msgstr "Stockage des données…"
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France."
-msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."
+msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France"
 
 msgid "Swiss"
 msgstr "Suisse"
@@ -4108,9 +4106,6 @@ msgstr "La fédération par défaut de vos évènements."
 msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
-msgid "The description of the prize."
-msgstr "La description du prix."
-
 #, python-format
 msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
@@ -4211,9 +4206,6 @@ msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
-
-msgid "The name of the category."
-msgstr "Le nom de la catégorie."
 
 msgid "The name of the display controller, optional."
 msgstr "Le nom du pilote d'afficheurs, facultatif."
@@ -4371,9 +4363,6 @@ msgstr "Le montant déjà payé."
 msgid "The price the player pays to register."
 msgstr "Le montant de l'inscription du·de la joueur·euse."
 
-msgid "The prizes are not correctly sorted."
-msgstr "Les prix ne sont pas ordonnés correctement."
-
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."
 
@@ -4463,9 +4452,6 @@ msgstr "Le type de document à imprimer."
 msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
-msgid "The type of reward of the prize (monetary/non-monetary)."
-msgstr "Le type de récompense du prix (monétaire/non-monétaire)."
-
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
 
@@ -4475,8 +4461,8 @@ msgstr "La manière de partager les prix lorsque plusieurs joueur·euses avec le
 msgid "There can only be one main category per tournament."
 msgstr "Il ne peut y avoir qu'une catégorie générale par tournoi."
 
-msgid "There can't be fewer players than prizes."
-msgstr "Il ne peut pas y avoir moins de joueur·euses que de prix."
+msgid "There can only be one main category."
+msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
@@ -5120,6 +5106,9 @@ msgstr "Victoire"
 
 msgid "Wins"
 msgstr "Victoires"
+
+msgid "With less players than prizes, some prizes will not be attributed."
+msgstr "Avec moins de joueur·euses que de prix, certains prix vont ne pas être attribués."
 
 msgid "Withdraw from tournament"
 msgstr "Forfait définitif"

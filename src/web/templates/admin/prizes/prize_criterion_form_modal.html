@@ -14,7 +14,8 @@
         </div>
         <div class="modal-body">
             <h4 class="mb-3">
-                {{ _('Category: %(category)s', category=admin_prize_category.name) }}
+                {{ _('%(string)s:', string=_('Category')) }}
+                {{ admin_prize_category.name }}
             </h4>
             {% if previous_criterion %}
                 {% with type='success', message=_(
