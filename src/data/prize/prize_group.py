@@ -123,7 +123,7 @@ class PrizeGroup:
 
     def assign_prizes(self):
         self.tournament.compute_player_ranks(
-            correct_round=True, after_round=self.tournament.current_round
+            correct_round=False, after_round=self.tournament.max_ranking_round
         )
         sorted_players: list[Player] = list(self.tournament.players_by_rank.values())
         assigned_prizes: dict[int, AssignedPrize] = {}

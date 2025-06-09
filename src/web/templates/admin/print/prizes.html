@@ -1,0 +1,49 @@
+{% extends '/admin/print/base.html' %}
+
+{% block content %}
+    {% for prize_group in document.tournament.prize_groups %}
+        {% set assigned_prizes_by_category_id=document.assigned_prizes_by_category_id(prize_group) %}
+        {% for prize_category in prize_group.sorted_categories %}
+            <div class="section-title">
+                {{ prize_category.name }}
+            </div>
+            <table>
+                <tbody>
+                    {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
+                        <tr>
+                            {% set prize=assigned_prize.prize %}
+                            {% set player=assigned_prize.assigned_to %}
+                            <td class="text-end">{{ prize.index + 1 }}.</td>
+                            <td class="text-start">
+                                {% if player %}
+                                    {{ player.full_name }}
+                                {% else %}
+                                    <i>{{ _('No player') }}</i>
+                                {% endif %}
+                            </td>
+                            {% if player %}
+                                <td>{{ player.rating_str }}</td>
+                                <td>{{ player.category.short_name }}</td>
+                                <td>{{ player.gender.short_name }}</td>
+                                <td>{{ player.federation }}</td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            {% endif %}
+                            <td class="text-end">
+                                {% if prize.is_monetary %}
+                                    {{ prize.format_value(assigned_prize.value) }}
+                                {% else %}
+                                    {{ prize.name }}
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
