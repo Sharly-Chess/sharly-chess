@@ -1,4 +1,5 @@
 import shutil
+from itertools import zip_longest
 
 from babel.messages import Catalog, Message
 from babel.messages.pofile import read_po, write_po
@@ -7,7 +8,6 @@ import re
 from pathlib import Path
 
 from common.logger import get_logger
-from utils.file import file_fingerprint
 
 logger: Logger = get_logger()
 
@@ -175,7 +175,15 @@ class LocaleInfo:
         tmp_file: Path = self.po_file.with_suffix('.tmp')
         with open(tmp_file, 'wb') as f:
             write_po(f, catalog, width=0, omit_header=True)
-        if changed := (file_fingerprint(tmp_file) != file_fingerprint(self.po_file)):
+        # compare line by line because files differ on CR/LF
+        changed: bool = False
+        with open(self.po_file, 'r') as before_f, open(tmp_file, 'r') as after_f:
+            for before_line, after_line in zip_longest(
+                before_f.readlines(), after_f.readlines()
+            ):
+                if before_line != after_line:
+                    changed = True
+        if changed:
             shutil.move(tmp_file, self.po_file)
         else:
             tmp_file.unlink()

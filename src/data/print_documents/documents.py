@@ -91,6 +91,10 @@ class PlayerPrintDocument(PrintDocument, ABC):
         return False
 
     @property
+    def is_player_checkin_list(self) -> bool:
+        return False
+
+    @property
     def ranking_round(self) -> int | None:
         return None
 
@@ -107,6 +111,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
+            'checkin_list': self.is_player_checkin_list,
             'ranking_round': self.ranking_round,
         }
 
@@ -132,6 +137,30 @@ class PlayerListPrintDocument(PlayerPrintDocument):
     @override
     @property
     def is_player_list(self) -> bool:
+        return True
+
+
+class PlayerCheckinListPrintDocument(PlayerPrintDocument):
+    @staticmethod
+    def static_name() -> str:
+        return _('Players check-in list')
+
+    @staticmethod
+    def static_id() -> str:
+        return 'player-checkin-list'
+
+    @property
+    def title(self) -> str:
+        return _('Players check-in list')
+
+    @property
+    def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
+        return self.tournament.players_by_name_with_unpaired
+
+    @override
+    @property
+    def is_player_checkin_list(self) -> bool:
         return True
 
 

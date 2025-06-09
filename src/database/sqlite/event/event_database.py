@@ -32,6 +32,10 @@ from database.sqlite.event.event_store import (
     StoredRotator,
     StoredScreenSet,
     StoredScreen,
+    StoredPrizeGroup,
+    StoredPrizeCategory,
+    StoredPrizeCriterion,
+    StoredPrize,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -838,6 +842,22 @@ class EventDatabase(MigrationDatabase):
         return backup
 
     # ---------------------------------------------------------------------------------
+    # Utils
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def dump_to_json_database_timer_colors(cls, colors) -> str | None:
+        """Serializes the timer colors into JSON.
+        By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
+        return cls.dump_to_json_database_field(colors, {i: None for i in range(1, 4)})
+
+    @classmethod
+    def dump_to_json_database_timer_delays(cls, delays) -> str | None:
+        """Serializes the timer delays into JSON.
+        By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
+        return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
+
+    # ---------------------------------------------------------------------------------
     # Plugin metadata
     # ---------------------------------------------------------------------------------
 
@@ -934,7 +954,7 @@ class EventDatabase(MigrationDatabase):
         stored_event: StoredEvent = self._row_to_base_stored_event(
             self.fetchone(), StoredEvent
         )
-        stored_event.stored_tournaments = list(self.load_stored_tournaments())
+        stored_event.stored_tournaments = self.load_stored_tournaments()
         stored_event.stored_timers = list(self.load_stored_timers())
         stored_event.stored_families = list(self.load_stored_families())
         stored_event.stored_screens = list(self.load_stored_screens())
@@ -1373,9 +1393,17 @@ class EventDatabase(MigrationDatabase):
         self.execute('SELECT `id`, `last_update` FROM `tournament`')
         return {row['id']: row['last_update'] for row in self.fetchall()}
 
-    def load_stored_tournaments(self) -> Iterator[StoredTournament]:
+    def load_stored_tournaments(self) -> list[StoredTournament]:
         self.execute('SELECT * FROM `tournament` ORDER BY `uniq_id`')
-        yield from map(self._row_to_stored_tournament, self.fetchall())
+        stored_tournaments: list[StoredTournament] = []
+        for row in self.fetchall():
+            stored_tournament = self._row_to_stored_tournament(row)
+            assert stored_tournament.id is not None
+            stored_tournament.stored_prize_groups = (
+                self.load_tournament_stored_prize_groups(stored_tournament.id)
+            )
+            stored_tournaments.append(stored_tournament)
+        return stored_tournaments
 
     def _write_stored_tournament(
         self,
@@ -2513,3 +2541,314 @@ class EventDatabase(MigrationDatabase):
             'DELETE FROM `display_controller` WHERE `id` = ?;', (display_controller_id,)
         )
         self.set_last_update()
+
+    # ---------------------------------------------------------------------------------
+    # StoredPrizeGroup
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_prize_group(cls, row: dict[str, Any]) -> StoredPrizeGroup:
+        return StoredPrizeGroup(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            name=row['name'],
+        )
+
+    def get_stored_prize_group(self, prize_group_id: int) -> StoredPrizeGroup | None:
+        self.execute(
+            'SELECT * FROM `prize_group` WHERE `id` = ?',
+            (prize_group_id,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_prize_group(row)
+        return None
+
+    def load_tournament_stored_prize_groups(
+        self, tournament_id: int
+    ) -> list[StoredPrizeGroup]:
+        self.execute(
+            'SELECT * FROM `prize_group` WHERE `tournament_id` = ?',
+            (tournament_id,),
+        )
+        stored_prize_groups: list[StoredPrizeGroup] = []
+        for row in self.fetchall():
+            prize_group = self._row_to_stored_prize_group(row)
+            assert prize_group.id is not None
+            prize_group.stored_prize_categories = (
+                self.load_prize_group_stored_prize_categories(prize_group.id)
+            )
+            stored_prize_groups.append(prize_group)
+        return stored_prize_groups
+
+    def add_stored_prize_group(
+        self,
+        stored_prize_group: StoredPrizeGroup,
+    ) -> int:
+        fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `prize_group`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (prize_group_id := self._last_inserted_id()):
+            raise RuntimeError('Prize group insertion failed')
+        return prize_group_id
+
+    def update_stored_prize_group(
+        self,
+        stored_prize_group: StoredPrizeGroup,
+    ):
+        fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `prize_group` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_prize_group.id,),
+        )
+
+    def delete_stored_prize_group(self, prize_group_id: int):
+        self.execute('DELETE FROM `prize_group` WHERE `id` = ?;', (prize_group_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredPrizeCategory
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_prize_category(cls, row: dict[str, Any]) -> StoredPrizeCategory:
+        return StoredPrizeCategory(
+            id=row['id'],
+            prize_group_id=row['prize_group_id'],
+            name=row['name'],
+            prize_sharing=row['prize_sharing'],
+            is_main=cls.load_bool_from_database_field(row['is_main']),
+            index=row['index'],
+        )
+
+    def get_stored_prize_category(
+        self, prize_category_id: int
+    ) -> StoredPrizeCategory | None:
+        self.execute(
+            'SELECT * FROM `prize_category` WHERE `id` = ?',
+            (prize_category_id,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_prize_category(row)
+        return None
+
+    def load_prize_group_stored_prize_categories(
+        self, prize_group_id: int
+    ) -> list[StoredPrizeCategory]:
+        self.execute(
+            'SELECT * FROM `prize_category` WHERE `prize_group_id` = ?',
+            (prize_group_id,),
+        )
+        stored_prize_categories: list[StoredPrizeCategory] = []
+        for row in self.fetchall():
+            prize_category = self._row_to_stored_prize_category(row)
+            assert prize_category.id is not None
+            prize_category.stored_prize_criteria = (
+                self.load_prize_category_stored_prize_criteria(prize_category.id)
+            )
+            prize_category.stored_prizes = self.load_prize_category_stored_prizes(
+                prize_category.id
+            )
+            stored_prize_categories.append(prize_category)
+        return stored_prize_categories
+
+    def add_stored_prize_category(
+        self,
+        stored_prize_category: StoredPrizeCategory,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_prize_category,
+            ['prize_group_id', 'name', 'prize_sharing', 'is_main', 'index'],
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `prize_category`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (prize_category_id := self._last_inserted_id()):
+            raise RuntimeError('Prize category insertion failed')
+        return prize_category_id
+
+    def update_stored_prize_category(
+        self,
+        stored_prize_category: StoredPrizeCategory,
+    ):
+        fields = self._get_fields_dict(
+            stored_prize_category,
+            ['prize_group_id', 'name', 'prize_sharing', 'is_main'],
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `prize_category` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_prize_category.id,),
+        )
+
+    def update_stored_prize_category_index(self, prize_category_id: int, index: int):
+        self.execute(
+            'UPDATE `prize_category` SET `index` = ? WHERE `id` = ?',
+            (index, prize_category_id),
+        )
+
+    def delete_stored_prize_category(self, prize_category_id: int):
+        self.execute(
+            'DELETE FROM `prize_category` WHERE `id` = ?;', (prize_category_id,)
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredPrizeCriterion
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_prize_criterion(
+        cls, row: dict[str, Any]
+    ) -> StoredPrizeCriterion:
+        return StoredPrizeCriterion(
+            id=row['id'],
+            prize_category_id=row['prize_category_id'],
+            type=row['type'],
+            options=cls.load_json_from_database_field(row['options']),
+            index=row['index'],
+        )
+
+    def get_stored_prize_criterion(
+        self, prize_criterion_id: int
+    ) -> StoredPrizeCriterion | None:
+        self.execute(
+            'SELECT * FROM `prize_criterion` WHERE `id` = ?',
+            (prize_criterion_id,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_prize_criterion(row)
+        return None
+
+    def load_prize_category_stored_prize_criteria(
+        self, prize_category_id: int
+    ) -> list[StoredPrizeCriterion]:
+        self.execute(
+            'SELECT * FROM `prize_criterion` WHERE `prize_category_id` = ?',
+            (prize_category_id,),
+        )
+        return [self._row_to_stored_prize_criterion(row) for row in self.fetchall()]
+
+    def add_stored_prize_criterion(
+        self,
+        stored_prize_criterion: StoredPrizeCriterion,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_prize_criterion, ['prize_category_id', 'type', 'index']
+        ) | {
+            'options': self.dump_to_json_database_field(stored_prize_criterion.options)
+        }
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `prize_criterion`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (prize_criterion_id := self._last_inserted_id()):
+            raise RuntimeError('Prize criterion insertion failed')
+        return prize_criterion_id
+
+    def update_stored_prize_criterion(
+        self,
+        stored_prize_criterion: StoredPrizeCriterion,
+    ):
+        fields = self._get_fields_dict(
+            stored_prize_criterion, ['prize_category_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(stored_prize_criterion.options)
+        }
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `prize_criterion` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_prize_criterion.id,),
+        )
+
+    def update_stored_prize_criterion_index(self, prize_criterion_id: int, index: int):
+        self.execute(
+            'UPDATE `prize_criterion` SET `index` = ? WHERE `id` = ?',
+            (index, prize_criterion_id),
+        )
+
+    def delete_stored_prize_criterion(self, prize_criterion_id: int):
+        self.execute(
+            'DELETE FROM `prize_criterion` WHERE `id` = ?;', (prize_criterion_id,)
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredPrize
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_prize(cls, row: dict[str, Any]) -> StoredPrize:
+        return StoredPrize(
+            id=row['id'],
+            prize_category_id=row['prize_category_id'],
+            value=row['value'],
+            is_monetary=cls.load_bool_from_database_field(row['is_monetary']),
+            description=row['description'],
+            index=row['index'],
+        )
+
+    def get_stored_prize(self, prize_id: int) -> StoredPrize | None:
+        self.execute(
+            'SELECT * FROM `prize` WHERE `id` = ?',
+            (prize_id,),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_prize(row)
+        return None
+
+    def load_prize_category_stored_prizes(
+        self, prize_category_id: int
+    ) -> list[StoredPrize]:
+        self.execute(
+            'SELECT * FROM `prize` WHERE `prize_category_id` = ?',
+            (prize_category_id,),
+        )
+        return [self._row_to_stored_prize(row) for row in self.fetchall()]
+
+    def add_stored_prize(
+        self,
+        stored_prize: StoredPrize,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_prize,
+            ['prize_category_id', 'value', 'is_monetary', 'description', 'index'],
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `prize`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (prize_id := self._last_inserted_id()):
+            raise RuntimeError('Prize entry insertion failed')
+        return prize_id
+
+    def update_stored_prize(
+        self,
+        stored_prize: StoredPrize,
+    ):
+        fields = self._get_fields_dict(
+            stored_prize,
+            ['prize_category_id', 'value', 'is_monetary', 'description'],
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `prize` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_prize.id,),
+        )
+
+    def update_stored_prize_index(self, prize_id: int, index: int):
+        self.execute(
+            'UPDATE `prize` SET `index` = ? WHERE `id` = ?',
+            (index, prize_id),
+        )
+
+    def delete_stored_prize(self, prize_id: int):
+        self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))

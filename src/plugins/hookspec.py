@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from data.pairings.variations import SwissVariation
     from data.player import Player
     from data.print_documents import PrintDocument, PlayerSplitter
+    from data.prize.player_filter_options import PlayerFilterOption
+    from data.prize.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
@@ -339,3 +341,19 @@ class AppHookSpecs:
     @hookspec(firstresult=True)
     def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
         """Provide a function to round a ranking to an integer"""
+
+    # ---------------------------------------------------------------------------------
+    # Prizes
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_prize_player_filter_types(
+        self, player_filter_types: list[type['PlayerFilter']]
+    ):
+        """Provide extra player filters for prizes."""
+
+    @hookspec
+    def insert_prize_player_filter_option_types(
+        self, player_filter_option_types: list[type['PlayerFilterOption']]
+    ):
+        """Provide the options of the added prize player filters."""

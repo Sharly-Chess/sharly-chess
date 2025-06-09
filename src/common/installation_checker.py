@@ -180,6 +180,18 @@ class InstallationChecker:
             'https://github.com/patrick-steele-idem/morphdom/archive/refs/tags/v{version}.zip',
             'morphdom-{version}.zip',
         ),
+        WebLibArchiveInstaller(
+            'Select2',
+            SharlyChessConfig.select2_version,
+            'select2',
+            'select2-{version}',
+            [
+                'dist/js/select2.full.min.js',
+                'dist/css/select2.min.css',
+            ],
+            'https://github.com/select2/select2/archive/refs/tags/{version}.zip',
+            'select2-{version}.zip',
+        ),
         WebLibFileInstaller(
             'jQuery',
             SharlyChessConfig.jquery_version,
@@ -221,6 +233,13 @@ class InstallationChecker:
             SharlyChessConfig.jquery_version,
             'https://code.jquery.com/jquery-{version}.min.js',
             'jquery/jquery-{version}.min.js',
+        ),
+        WebLibFileInstaller(
+            'Select2 Bootstrap Theme',
+            SharlyChessConfig.select2_bootstrap_theme_version,
+            'https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@{version}'
+            '/dist/select2-bootstrap-5-theme.min.css',
+            'select2/themes/bootstrap-5-{version}.min.css',
         ),
     ]
 

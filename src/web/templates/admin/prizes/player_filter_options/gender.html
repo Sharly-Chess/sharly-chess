@@ -1,0 +1,9 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Gender')),
+        help_text=_('Only include players of this gender.'),
+        select_options=option.select_options(admin_tournament, false, false),
+        data=data, errors=errors
+    ) }}
+</div>

@@ -1,5 +1,8 @@
+from collections import Counter
+from collections.abc import Callable
 from functools import partial, cached_property
-from typing import override
+from types import UnionType
+from typing import override, Any
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -13,6 +16,11 @@ from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
+from data.prize.player_filter_options import (
+    PlayerFilterOption,
+    SelectPlayerFilterOption,
+)
+from data.prize.player_filters import PlayerFilter
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
@@ -20,6 +28,7 @@ from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.pairing_acceleration.pairing_settings import DualRatingLimitsSetting
 from plugins.utils import PluginUtils
 from utils.enum import Result
+from utils.option import OptionError
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -201,3 +210,70 @@ class NicoisSwissVariation(SwissVariation):
 
         # Players cannot have more than 2 virtual points
         return min(2 * gain_points, vpoints)
+
+
+class FfeLeaguePlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-LEAGUE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('League')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [FfeLeaguesFilterOption]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        leagues = self.get_option_values()[0]
+        return lambda player: get_data(player.plugin_data, 'league') in leagues
+
+    def __str__(self) -> str:
+        return f'{self.name} ({", ".join(self.get_option_values()[0])})'
+
+
+class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-LEAGUES'
+
+    @property
+    def template_name(self) -> str:
+        return '/ffe_league_player_filter_option.html'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[str]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+        from plugins.ffe.ffe import FfePlugin
+
+        return [code for code in FfePlugin.FFE_LEAGUES.keys() if code]
+
+    def get_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+        counter: Counter[str] = Counter[str]()
+        for player in tournament.players:
+            if league := get_data(player.plugin_data, 'league'):
+                counter[league] += 1
+        return counter
+
+    def get_key(self, object_: str) -> str:
+        return object_
+
+    def get_name(self, object_: str) -> str:
+        from plugins.ffe.ffe import FfePlugin
+
+        if object_ not in FfePlugin.FFE_LEAGUES:
+            return object_
+        return f'{object_} - {FfePlugin.FFE_LEAGUES[object_]}'
+
+    def validate(self):
+        self._validate_list_type(str)
+        if not self.value:
+            raise OptionError(_('At least one league is expected.'), self)
