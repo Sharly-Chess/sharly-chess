@@ -57,7 +57,7 @@ class Migration(BaseMigration):
         )
 
     def backward(self):
-        self.database.execute('DROP TABLE `prize_group`')
-        self.database.execute('DROP TABLE `prize_category`')
-        self.database.execute('DROP TABLE `prize_criterion`')
         self.database.execute('DROP TABLE `prize`')
+        self.database.execute('DROP TABLE `prize_criterion`')
+        self.database.execute('DROP TABLE `prize_category`')
+        self.database.execute('DROP TABLE `prize_group`')
