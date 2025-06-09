@@ -45,7 +45,7 @@ class PlayerFFELicence(IntEnum):
     @classmethod
     def from_papi_value(cls, value: str) -> Self:
         match value:
-            case '':
+            case '' | None:
                 return cls(cls.NONE)
             case 'N':
                 return cls(cls.N)
