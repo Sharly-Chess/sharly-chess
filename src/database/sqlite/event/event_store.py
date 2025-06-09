@@ -2,6 +2,7 @@
 All the classes of this module are basic data classes stored in the event databases.
 """
 
+from abc import ABC
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -219,30 +220,49 @@ class StoredDisplayController:
     rotator_id: int | None = None
 
 
-CLIENT_ANY_ID: int = -1
-CLIENT_LOCALHOST_ID: int = 0
-
-
 @dataclass
-class StoredPermission:
+class StoredPermission(ABC):
     id: int | None
-    locked: bool
-    client_id: int
+    active: bool
     role_id: int
-    tournament_id: int | None
+    tournament_uniq_ids: str | None
+
+
+LOCALHOST_ID: int = -2
+ANY_COMPUTER_ID: int = -1
 
 
 @dataclass
-class StoredClient:
+class StoredComputerPermission(StoredPermission):
+    computer_id: int
+    locked: int
+
+
+@dataclass
+class StoredComputer:
     id: int | None
     locked: bool
-    name: str | None
+    ip: str | None
+    stored_permissions: list[StoredComputerPermission] = field(
+        default_factory=list[StoredComputerPermission]
+    )
+
+
+ANY_USER_ID: int = -1
+
+
+@dataclass
+class StoredUserPermission(StoredPermission):
+    user_id: int
+
+
+@dataclass
+class StoredUser:
+    id: int | None
     username: str | None
     password: str | None
-    ip: str | None
-    order: int | None
-    stored_permissions: list[StoredPermission] = field(
-        default_factory=list[StoredPermission]
+    stored_user_permissions: list[StoredUserPermission] = field(
+        default_factory=list[StoredUserPermission]
     )
 
 
@@ -285,7 +305,8 @@ class StoredEvent(BaseStoredEvent):
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
-    stored_clients: list[StoredClient] = field(default_factory=list[StoredClient])
+    stored_computers: list[StoredComputer] = field(default_factory=list[StoredComputer])
+    stored_users: list[StoredUser] = field(default_factory=list[StoredUser])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

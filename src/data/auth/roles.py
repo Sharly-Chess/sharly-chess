@@ -1,21 +1,53 @@
 from enum import IntEnum
 
 from common.i18n import _
-from roles.role_scope import RoleScope
+
+
+class RoleScope(IntEnum):
+    """An enum representing the scope of the roles."""
+
+    APPLICATION = 1
+    EVENT = 2
+    TOURNAMENT = 3
+
+    @classmethod
+    def values(cls) -> tuple[int, ...]:
+        return tuple(item.value for item in cls)
+
+    @property
+    def name(self) -> str:
+        """Returns the name of the scope."""
+        match self:
+            case RoleScope.APPLICATION:
+                return _('Application')
+            case RoleScope.EVENT:
+                return _('Event')
+            case RoleScope.TOURNAMENT:
+                return _('Tournament')
+            case _:
+                raise ValueError(f'role={self}')
 
 
 class Role(IntEnum):
     """An enum representing the roles clients can have in the application."""
 
+    # Administration skills
     ADMINISTRATOR = 1
-    ORGANIZER = 2
-    CHIEF_ARBITER = 3
-    DEPUTY_CHIEF_ARBITER = 4
-    SECTOR_ARBITER = 5
-    PAIRING_OFFICER = 6
-    CHECK_IN_OFFICER = 7
-    RESULT_OFFICER = 8
-    SPECTATOR = 9
+
+    # Organization skills
+    ORGANIZER = 11
+    DISPLAY_MANAGER = 12
+
+    # Arbitration skills
+    CHIEF_ARBITER = 22
+    DEPUTY_CHIEF_ARBITER = 23
+    SECTOR_ARBITER = 24
+    PAIRING_OFFICER = 25
+    CHECK_IN_OFFICER = 26
+    RESULT_OFFICER = 27
+
+    # Other skills
+    SPECTATOR = 31
 
     @classmethod
     def values(cls) -> tuple[int, ...]:
@@ -41,6 +73,8 @@ class Role(IntEnum):
                 return _('Check-in Officer')
             case Role.RESULT_OFFICER:
                 return _('Result Officer')
+            case Role.DISPLAY_MANAGER:
+                return _('Display manager')
             case Role.SPECTATOR:
                 return _('Spectator')
             case _:
@@ -50,9 +84,15 @@ class Role(IntEnum):
     def scope(self) -> RoleScope:
         """Returns the scope of a role."""
         match self:
-            case Role.ADMINISTRATOR | Role.SPECTATOR:
+            case Role.ADMINISTRATOR:
                 return RoleScope.APPLICATION
-            case Role.ORGANIZER | Role.CHIEF_ARBITER | Role.DEPUTY_CHIEF_ARBITER:
+            case (
+                Role.ORGANIZER
+                | Role.DISPLAY_MANAGER
+                | Role.CHIEF_ARBITER
+                | Role.DEPUTY_CHIEF_ARBITER
+                | Role.SPECTATOR
+            ):
                 return RoleScope.EVENT
             case (
                 Role.SECTOR_ARBITER
@@ -70,45 +110,56 @@ class Role(IntEnum):
         match self:
             case Role.ADMINISTRATOR:
                 return [
-                    self.ADMINISTRATOR,
-                    self.SPECTATOR,
+                    Role.ADMINISTRATOR,
+                    Role.ORGANIZER,
+                    Role.CHIEF_ARBITER,
+                    Role.DEPUTY_CHIEF_ARBITER,
+                    Role.PAIRING_OFFICER,
+                    Role.SECTOR_ARBITER,
+                    Role.CHECK_IN_OFFICER,
+                    Role.RESULT_OFFICER,
+                    Role.SPECTATOR,
                 ]
             case Role.ORGANIZER:
                 return [
-                    self.SPECTATOR,
+                    Role.SPECTATOR,
+                ]
+            case Role.DISPLAY_MANAGER:
+                return [
+                    Role.SPECTATOR,
                 ]
             case Role.CHIEF_ARBITER:
                 return [
-                    self.DEPUTY_CHIEF_ARBITER,
-                    self.PAIRING_OFFICER,
-                    self.SECTOR_ARBITER,
-                    self.CHECK_IN_OFFICER,
-                    self.RESULT_OFFICER,
-                    self.SPECTATOR,
+                    Role.DEPUTY_CHIEF_ARBITER,
+                    Role.PAIRING_OFFICER,
+                    Role.SECTOR_ARBITER,
+                    Role.CHECK_IN_OFFICER,
+                    Role.RESULT_OFFICER,
+                    Role.SPECTATOR,
                 ]
             case Role.DEPUTY_CHIEF_ARBITER:
                 return [
-                    self.PAIRING_OFFICER,
-                    self.SECTOR_ARBITER,
-                    self.CHECK_IN_OFFICER,
-                    self.RESULT_OFFICER,
-                    self.SPECTATOR,
+                    Role.PAIRING_OFFICER,
+                    Role.SECTOR_ARBITER,
+                    Role.CHECK_IN_OFFICER,
+                    Role.RESULT_OFFICER,
+                    Role.SPECTATOR,
                 ]
             case Role.SECTOR_ARBITER:
                 return [
-                    self.SPECTATOR,
+                    Role.SPECTATOR,
                 ]
             case Role.PAIRING_OFFICER:
                 return [
-                    self.SPECTATOR,
+                    Role.SPECTATOR,
                 ]
             case Role.CHECK_IN_OFFICER:
                 return [
-                    self.SPECTATOR,
+                    Role.SPECTATOR,
                 ]
             case Role.RESULT_OFFICER:
                 return [
-                    self.SPECTATOR,
+                    Role.SPECTATOR,
                 ]
             case Role.SPECTATOR:
                 return []

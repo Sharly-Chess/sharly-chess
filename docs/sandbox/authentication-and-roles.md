@@ -20,6 +20,7 @@ The roles in _Sharly Chess_ are:
 
 - **Administrator** (of the application)
 - **Organizer** (of an event)
+- **Display manager** (of an event)
 - **Chief Arbiter** (of an event)
 - **Deputy Chief Arbiter** (of an event)
 - **Pairings Officer** (of tournaments)
@@ -36,8 +37,10 @@ The arbiter roles are directly inspired by the FIDE hierarchical system:
 - The Match Arbiter(s) - who can set results for their sector - are named **Results Officer** since this role may be assigned to players in _Sharly Chess_.
 
 Some roles 'include' other roles:
+- Administrators can do anything all the other roles can do;
+- Organizers can do anything Display Managers can do;
 - Chief Arbiters can do anything Deputy Chief Arbiters can do;
-- Deputy Chief Arbiters can do anything Sector Arbiters can do;
+- Deputy Chief Arbiters can do anything Sector Arbiters and Pairing Officers can do;
 - Sector Arbiters can do anything Result Officers and Check-in Officers can do.
 - All the roles can do anything Spectators can do.
 
@@ -48,76 +51,102 @@ Some roles 'include' other roles:
 
 ### Permissions by role
 
-|                                  |  Administrator  | Organizer | Chief<br/>>Arbiter | Deputy<br/>Chief<br/>Arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer | Spectator |
-|----------------------------------|:---------------:|:---------:|:------------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:------------------:|:---------:|
-| **Scope**                        | **Application** | **Event** |     **Event**      |          **Event**           |    **Tournament**    |   **Tournament**   |    **Tournament**    |   **Tournament**   | **Event** |
-| **APPLICATION MANAGEMENT**       |                 |           |                    |                              |                      |                    |                      |                    |           |
-| Update application settings      |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Manage administrators            |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| **EVENT MANAGEMENT**             |                 |           |                    |                              |                      |                    |                      |                    |           |
-| Add an Event                     |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Delete an event                  |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Rename an event                  |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Manage Organizers                |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Manage Chief Arbiters            |      :ok:       |    :x:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Manage Deputy Chief Arbiters     |      :ok:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Edit an event                    |      :ok:       |   :ok:    |        :x:         |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| **TOURNAMENT MANAGEMENT**        |                 |           |                    |                              |                      |                    |                      |                    |           |
-| Add tournaments                  |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Delete a tournament              |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Edit tournaments                 |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Open/close check-in              |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Use the pairing engine           |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Manually pair players            |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Publish pairings                 |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| View pairings before publication |       :x:       |    :x:    |        :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
-| Calculate rankings               |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Publish rankings                 |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| View rankings before publication |       :x:       |    :x:    |        :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
-| Publish rankings online          |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| **DISPLAY MANAGEMENT**           |                 |           |                    |                              |                      |                    |                      |                    |           |
-| Manage screens/families/rotators |       :x:       |   :ok:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Manage timers                    |       :x:       |   :ok:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| **PLAYERS MANAGEMENT**           |                 |           |                    |                              |                      |                    |                      |                    |           |
-| Add players                      |       :x:       |    :x:    |        :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Delete players                   |       :x:       |    :x:    |        :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Edit players                     |       :x:       |    :x:    |        :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| Check-in players                 |       :x:       |    :x:    |        :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :x:         |    :x:    |
-| **RESULTS MANAGEMENT**           |                 |           |                    |                              |                      |                    |                      |                    |           |
-| Enter results                    |       :x:       |    :x:    |        :ok:        |             :ok:             |         :ok:         |        :ok:        |         :x:          |        :ok:        |    :x:    |
-| Modify results                   |       :x:       |    :x:    |        :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
-| Use special results              |       :x:       |    :x:    |        :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
-| **VIEWING**                      |                 |           |                    |                              |                      |                    |                      |                    |           |
-| View check-in                    |      :ok:       |   :ok:    |        :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |   :ok:    |
-| View pairings                    |      :ok:       |   :ok:    |        :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |   :ok:    |
-| View results                     |      :ok:       |   :ok:    |        :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |   :ok:    |
+|                                  |  Administrator  | Organizer | Display<br/>manager | Chief<br/>Arbiter | Deputy<br/>Chief<br/>Arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer | Spectator |
+|----------------------------------|:---------------:|:---------:|:-------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:------------------:|:---------:|
+| **Scope**                        | **Application** | **Event** |      **Event**      |     **Event**     |          **Event**           |    **Tournament**    |   **Tournament**   |    **Tournament**    |   **Tournament**   | **Event** |
+| **APPLICATION MANAGEMENT**       |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| Update application settings      |      :ok:       |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Manage administrators            |      :ok:       |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Add events                       |      :ok:       |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| **EVENT MANAGEMENT**             |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| Delete an event                  |      :ok:       |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Rename an event                  |      :ok:       |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Manage Organizers                |      :ok:       |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Manage Chief Arbiters            |      :ok:       |   :ok:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Manage Deputy Chief Arbiters     |      :ok:       |    :x:    |         :x:         |       :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Edit an event                    |      :ok:       |   :ok:    |         :x:         |       :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| **TOURNAMENT MANAGEMENT**        |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| Add tournaments                  |      :ok:       |    :x:    |         :x:         |       :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Delete a tournament              |      :ok:       |    :x:    |         :x:         |       :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Edit tournaments                 |      :ok:       |    :x:    |         :x:         |       :ok:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Open/close check-in              |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Use the pairing engine           |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
+| Manually pair players            |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
+| View draft pairings              |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
+| Publish pairings                 |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| View draft rankings              |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Publish rankings                 |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| **DISPLAY MANAGEMENT**           |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| Manage screens/families/rotators |      :ok:       |   :ok:    |        :ok:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Manage timers                    |      :ok:       |   :ok:    |        :ok:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| **PLAYERS MANAGEMENT**           |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| Add players                      |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Delete players                   |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Edit players                     |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| Check-in players                 |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :ok:        |         :ok:         |        :x:         |    :x:    |
+| **RESULTS MANAGEMENT**           |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| Enter results                    |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :x:          |        :ok:        |    :x:    |
+| Modify results                   |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :ok:         |        :x:         |         :x:          |        :x:         |    :x:    |
+| Use special results              |      :ok:       |    :x:    |         :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |        :x:         |    :x:    |
+| **VIEWING**                      |                 |           |                     |                   |                              |                      |                    |                      |                    |           |
+| View private displays            |      :ok:       |   :ok:    |        :ok:         |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |    :x:    |
+| View public displays             |      :ok:       |   :ok:    |        :ok:         |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |   :ok:    |
 
-### Profiles
+### Computers
 
-Profiles are defined on the web UI by:
+Computers are defined on the web UI by:
 - an IP address (the IP address of the machine accessing the _Sharly Chess_ server);
-- credentials (a username and password, used to connect);
-- an IP address and credentials.
+- several comma-separated IP addresses.
 
-### Giving roles to profiles
+#### Examples
 
-Profiles are given roles:
-- statically: anybody connected on the _Sharly Chess_ server (``127.0.0.1```) is given the roles Administrator, Organizer and Chief Arbiter (this is locked);
-- dynamically on the web UI for all the roles on all the clients except the _Sharly Chess itself.
+| :unlock:/:lock: |     Computer      | Comment           |
+|:---------------:|:-----------------:|:------------------|
+|     :lock:      |         -         | Any computer      |
+|     :lock:      |   ``127.0.0.1``   | The server itself |
+|                 | ``192.168.1.115`` | A local computer  |
 
-In the example below:
-- Connections from the server automatically have all roles (not configurable);
-- Connections from the client ``192.168.1.115`` and authenticated with the username ``big-boss`` have the organization and chief referee roles for all tournaments;
-- Connections authenticated with the usernames ``boss-1`` and ``boss-2`` have the arbiter role, for tournaments A/B and C/D respectively;
-- The last two workstations allow check-in and results entry, respectively;
-- Other unauthenticated clients can view the display screens.
+#### Computer roles
 
-|        |      Client       |      ID      |      Comment      | Tournament |   Administrator    |     Organizer      | Chief<br/>arbiter  | Deputy<br/>Chief<br/>arbiter |  Pairings<br/>Officer   |   Sector<br/>Arbiter    |  Check-in<br/>Officer   |   Result<br/>Officer    |        Spectator        |
-|--------|:-----------------:|:------------:|:-----------------:|:----------:|:------------------:|:------------------:|:------------------:|:----------------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|
-| :lock: |   ``127.0.0.1``   |      -       |      Server       |     -      | :white_check_mark: | :white_check_mark: | :white_check_mark: |   :ballot_box_with_check:    | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-|        | ``192.168.1.115`` | ``big-boss`` |   Chief arbiter   |            |        :x:         |        :ok:        |        :ok:        |             :ok:             |          :ok:           |          :ok:           |          :ok:           |          :ok:           |          :ok:           |
-|        |         -         |  ``boss-1``  |      Arbiter      |    A, B    |        :x:         |        :x:         |        :x:         |             :ok:             |          :ok:           |          :ok:           |          :ok:           |          :ok:           |          :ok:           |
-|        |         -         |  ``boss-2``  |      Arbiter      |    C, D    |        :x:         |        :x:         |        :x:         |             :ok:             |          :ok:           |          :ok:           |          :ok:           |          :ok:           |          :ok:           |
-|        | ``192.168.1.27``  |      -       | Check-in computer |            |        :x:         |        :x:         |        :x:         |             :x:              |          :ok:           |           :x:           |          :ok:           |          :ok:           |          :ok:           |
-|        | ``192.168.1.226`` |      -       |  Result computer  |            |        :x:         |        :x:         |        :x:         |             :x:              |           :x:           |          :ok:           |          :ok:           |          :ok:           |          :ok:           |
-| :lock: |         -         |      -       |                   |    :x:     |        :x:         |        :x:         |        :x:         |             :x:              |           :x:           |          :ok:           |                         |          :ok:           |          :ok:           |
+Computers can be given roles, without any other authentication.
+
+> [!NOTE]
+> They must be trusted computers on a trusted network!
+
+| :unlock:/:lock: |     Computer      |        Comment         |   Administrator    | Organizer | Display<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer |     Spectator      |
+|:---------------:|:-----------------:|:----------------------:|:------------------:|:---------:|:-------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:------------------:|:------------------:|
+|     :lock:      |   ``127.0.0.1``   | Server (Chief Arbiter) | :white_check_mark: |   :ok:    |        :ok:         |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
+|                 | ``192.168.1.100`` |  Deputy Chief Arbiter  |        :x:         |    :x:    |         :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
+|                 | ``192.168.1.115`` |   Check-in computer    |        :x:         |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  |        :x:         |        :ok:        |
+|                 | ``192.168.1.119`` |    Result computer     |        :x:         |    :x:    |                     |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          | :white_check_mark: |        :ok:        |
+|                 |         -         |    Display computer    |        :x:         |    :x:    |                     |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         | :white_check_mark: |
+
+> [!NOTE]
+> Connections from the server automatically have the Administrator role (not configurable).
+
+### Users
+
+Users are defined on the web UI by credentials:
+- a unique username;
+- a password.
+
+#### Examples
+
+| :unlock:/:lock: |     User      | Comment                       |
+|:---------------:|:-------------:|:------------------------------|
+|                 |  ``arbiter``  | The chief arbiter |
+|                 | ``127.0.0.1`` | The server itself             |
+|                 |       -       | Anauthenticated               |
+
+> [!NOTE]
+> No need to authenticate on the server, the Administrator role is automatically given to the server.
+
+#### User roles
+
+Users can be given roles, after they authenticate.
+
+| :unlock:/:lock: |       User        |           Comment           |   Administrator    | Organizer | Display<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer  |     Spectator      |
+|:---------------:|:-----------------:|:---------------------------:|:------------------:|:---------:|:-------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:-------------------:|:------------------:|
+|                 |     ``mary``      |    Deputy Chief Arbiter     |        :x:         |    :x:    |         :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:         |        :ok:        |
+|                 |     ``john``      | Check-in and Result Officer |        :x:         |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  | :white_check_mark:  |        :ok:        |
+|                 |         -         |      _Unauthenticated_      |        :x:         |    :x:    |                     |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |         :x:         | :white_check_mark: |

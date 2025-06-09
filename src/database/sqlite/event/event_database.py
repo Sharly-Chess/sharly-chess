@@ -36,7 +36,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCategory,
     StoredPrizeCriterion,
     StoredPrize,
-    StoredClient,
+    StoredComputer,
     StoredPermission,
 )
 from database.sqlite.event import migrations
@@ -2856,22 +2856,18 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))
 
     # ---------------------------------------------------------------------------------
-    # StoredClient
+    # StoredComputer
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def _row_to_stored_client(cls, row: dict[str, Any]) -> StoredClient:
-        return StoredClient(
+    def _row_to_stored_computer(cls, row: dict[str, Any]) -> StoredComputer:
+        return StoredComputer(
             id=row['id'],
             locked=cls.load_bool_from_database_field(row['locked']),
-            name=row['name'],
-            username=row['username'],
-            password=row['password'],
             ip=row['ip'],
-            order=row['order'],
         )
 
-    def get_stored_client(self, client_id: int) -> StoredClient | None:
+    def get_stored_computer(self, client_id: int) -> StoredComputer | None:
         self.execute(
             'SELECT * FROM `client` WHERE `id` = ?',
             (client_id,),
@@ -2888,13 +2884,13 @@ class EventDatabase(MigrationDatabase):
         row: dict[str, Any] = self.fetchone()
         return (row['order_max'] if row['order_max'] else 0) + 1
 
-    def load_stored_clients(self) -> Iterator[StoredClient]:
+    def load_stored_clients(self) -> Iterator[StoredComputer]:
         self.execute(
             'SELECT * FROM `client` ORDER BY `order`',
             (),
         )
         for row in self.fetchall():
-            stored_client: StoredClient = self._row_to_stored_client(row)
+            stored_client: StoredComputer = self._row_to_stored_client(row)
             assert stored_client.id is not None
             stored_client.stored_permissions = list(
                 self.load_stored_permissions(stored_client.id)
@@ -2919,8 +2915,8 @@ class EventDatabase(MigrationDatabase):
 
     def _write_stored_client(
         self,
-        stored_client: StoredClient,
-    ) -> StoredClient:
+        stored_client: StoredComputer,
+    ) -> StoredComputer:
         fields: list[str] = [
             'name',
             'username',
@@ -2944,7 +2940,7 @@ class EventDatabase(MigrationDatabase):
             client_id: int = self._last_inserted_id()
             if client_id is None:
                 raise RuntimeError('Client insertion failed')
-            fetched_stored_client: StoredClient = self.get_stored_client(
+            fetched_stored_client: StoredComputer = self.get_stored_client(
                 client_id=client_id
             )
         else:
@@ -2954,7 +2950,7 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `client` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_client: StoredClient = self.get_stored_client(
+            fetched_stored_client: StoredComputer = self.get_stored_client(
                 client_id=stored_client.id
             )
         if fetched_stored_client is None:
@@ -2964,15 +2960,15 @@ class EventDatabase(MigrationDatabase):
 
     def add_stored_client(
         self,
-        stored_client: StoredClient,
-    ) -> StoredClient:
+        stored_client: StoredComputer,
+    ) -> StoredComputer:
         assert stored_client.id is None, f'stored_client.id={stored_client.id}'
         return self._write_stored_client(stored_client)
 
     def update_stored_client(
         self,
-        stored_client: StoredClient,
-    ) -> StoredClient:
+        stored_client: StoredComputer,
+    ) -> StoredComputer:
         assert stored_client.id is not None
         return self._write_stored_client(stored_client)
 

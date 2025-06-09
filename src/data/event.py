@@ -21,6 +21,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.entities import Computer, User
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -30,7 +31,6 @@ from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from roles.permission_manager import PermissionManager
 from utils.enum import (
     ScreenType,
     PlayerGender,
@@ -832,14 +832,38 @@ class Event:
         )
 
     @cached_property
-    def permission_manager(self) -> PermissionManager:
+    def computers_by_id(self) -> dict[int, Computer]:
         if self.errors:
-            return PermissionManager(self, [])
-        return PermissionManager(self, self.stored_event.stored_clients)
+            return {}
+        computers_by_id: dict[int, Computer] = {
+            stored_computer.id: Computer(self, stored_computer)
+            for stored_computer in self.stored_event.stored_computers
+            if stored_computer.id is not None
+        }
+        return computers_by_id
 
-    def clear_permission_cache(self):
+    def clear_computer_cache(self):
         permission_cached_property_names = [
-            'permission_manager',
+            'computers_by_id',
+        ]
+        for property_name in permission_cached_property_names:
+            if property_name in self.__dict__:
+                del self.__dict__[property_name]
+
+    @cached_property
+    def users_by_id(self) -> dict[int, User]:
+        if self.errors:
+            return {}
+        users_by_id: dict[int, User] = {
+            stored_user.id: User(self, stored_user)
+            for stored_user in self.stored_event.stored_users
+            if stored_user.id is not None
+        }
+        return users_by_id
+
+    def clear_user_cache(self):
+        permission_cached_property_names = [
+            'users_by_id',
         ]
         for property_name in permission_cached_property_names:
             if property_name in self.__dict__:
