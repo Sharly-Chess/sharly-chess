@@ -13,26 +13,27 @@
                         <tr>
                             {% set prize=assigned_prize.prize %}
                             {% set player=assigned_prize.assigned_to %}
-                            <td class="text-end">{{ prize.index + 1 }}.</td>
-                            <td class="text-start">
-                                {% if player %}
-                                    {{ player.full_name }}
-                                {% else %}
-                                    <i>{{ _('No player') }}</i>
-                                {% endif %}
-                            </td>
+                            <td>{{ prize.index + 1 }}.</td>
                             {% if player %}
+                                <td>{{ player.rank }}.</td>
+                                <td>{{ player.full_name }}</td>
                                 <td>{{ player.rating_str }}</td>
                                 <td>{{ player.category.short_name }}</td>
                                 <td>{{ player.gender.short_name }}</td>
                                 <td>{{ player.federation }}</td>
+                                <td>{{ player.club }}</td>
+                                <td>{{ player.points_str }}</td>
                             {% else %}
+                                <td></td>
+                                <td><i>{{ _('No player') }}</i></td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             {% endif %}
-                            <td class="text-end">
+                            <td>
                                 {% if prize.is_monetary %}
                                     {{ prize.format_value(assigned_prize.value) }}
                                 {% else %}
