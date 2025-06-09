@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Annotated
 
 from litestar import get, post, patch, delete
@@ -512,6 +513,49 @@ class PrizeAdminController(BaseEventAdminController):
         web_context.admin_prize_category = None
         return self._admin_event_prizes_render(web_context)
 
+    @post(
+        path=(
+            '/admin/prizes/prize-category/duplicate/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-category-duplicate',
+    )
+    async def htmx_admin_prize_category_duplicate(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+        )
+        if web_context.error:
+            return web_context.error
+        prize_group = web_context.get_admin_prize_group()
+        copy_category = web_context.get_admin_prize_category()
+        stored_category = copy.deepcopy(copy_category.stored_prize_category)
+        stored_category.index = len(prize_group.categories)
+        stored_category.stored_prizes = []
+        stored_category.stored_prize_criteria = []
+        prize_category = prize_group.add_category(stored_category)
+        for prize in copy_category.prizes:
+            stored_prize = copy.deepcopy(prize.stored_prize)
+            stored_prize.prize_category_id = prize_category.id
+            prize_category.add_prize(stored_prize)
+        for criterion in copy_category.criteria:
+            stored_criterion = copy.deepcopy(criterion.stored_prize_criterion)
+            stored_criterion.prize_category_id = prize_category.id
+            prize_category.add_criterion(stored_criterion)
+        Message.success(
+            request,
+            _('Prize category [{prize_category}] has been duplicated.').format(
+                prize_category=prize_category.name,
+            ),
+        )
+        return self._admin_event_prizes_render(web_context)
+
     @get(
         path=(
             '/admin/prizes/prize-category-modal/create/'
@@ -697,10 +741,9 @@ class PrizeAdminController(BaseEventAdminController):
                 prize_category_id=prize_category.id,
                 type=player_filter.id,
                 options={option.id: option.value for option in player_filter.options},
-                index=len(prize_category.criteria),
             )
         )
-        if WebContext.form_data_to_bool(data, 'add_other'):
+        if WebContext.form_data_to_bool(flat_data, 'add_other'):
             template_context = self._prize_criterion_form_modal_context(
                 {}, FormAction.CREATE, errors
             ) | {'previous_criterion': criterion}
@@ -786,38 +829,6 @@ class PrizeAdminController(BaseEventAdminController):
             return web_context.error
         prize_category = web_context.get_admin_prize_category()
         prize_category.delete_criterion(prize_criterion_id)
-        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
-
-    @patch(
-        path=(
-            '/admin/prizes/reorder-criteria/{event_uniq_id:str}'
-            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
-        ),
-        name='admin-prize-criteria-reorder',
-    )
-    async def htmx_admin_prize_criteria_reorder(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-    ) -> Template | ClientRedirect:
-        web_context = PrizeAdminWebContext(
-            request,
-            event_uniq_id,
-            tournament_id,
-            prize_group_id,
-            prize_category_id,
-        )
-        if web_context.error:
-            return web_context.error
-        prize_category = web_context.get_admin_prize_category()
-        prize_category.reorder_criteria(data['criterion_ids'])
         return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
 
     @get(
@@ -977,7 +988,6 @@ class PrizeAdminController(BaseEventAdminController):
                 value=value,
                 is_monetary=WebContext.form_data_to_bool(data, 'is_monetary') or False,
                 description=WebContext.form_data_to_str(data, 'description') or '',
-                index=prize_category.get_default_prize_index(value),
             )
         )
         if WebContext.form_data_to_bool(data, 'add_other'):
@@ -1027,7 +1037,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
 
-        stored_prize.value = WebContext.form_data_to_float(data, 'value') or 1.0
+        stored_prize.value = WebContext.form_data_to_float(data, 'value') or 0.0
         stored_prize.is_monetary = (
             WebContext.form_data_to_bool(data, 'is_monetary') or False
         )
@@ -1066,38 +1076,6 @@ class PrizeAdminController(BaseEventAdminController):
             return web_context.error
         prize_category = web_context.get_admin_prize_category()
         prize_category.delete_prize(prize_id)
-        return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
-
-    @patch(
-        path=(
-            '/admin/prizes/reorder-prizes/{event_uniq_id:str}'
-            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
-        ),
-        name='admin-prizes-reorder',
-    )
-    async def htmx_admin_prizes_reorder(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-    ) -> Template | ClientRedirect:
-        web_context = PrizeAdminWebContext(
-            request,
-            event_uniq_id,
-            tournament_id,
-            prize_group_id,
-            prize_category_id,
-        )
-        if web_context.error:
-            return web_context.error
-        prize_category = web_context.get_admin_prize_category()
-        prize_category.reorder_prizes(data['prize_ids'])
         return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
 
     @get(

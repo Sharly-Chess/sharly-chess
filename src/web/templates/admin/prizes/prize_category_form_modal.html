@@ -47,37 +47,44 @@
                     (not admin_prize_category or not admin_prize_category.is_main)
                 ) %}
                 {% set has_criteria=admin_prize_category and admin_prize_category.criteria %}
-                <div
-                    class="row mb-3"
-                    {% if other_main_category or has_criteria %}
-                        {{ macros.tooltip_attributes(
-                            'info',
-                            _('There can only be one main category per tournament.')
-                            if other_main_category else
-                            _('The main category can\'t have criteria.'),
-                            'top'
-                        ) }}
-                    {% endif %}
-                >
-                    {{ admin_macros.switch_input(
-                        name='is_main',
-                        label=_('%(string)s:', string=_('Main category')),
-                        placeholder=_('Define as main category'),
-                        help_text=_('The main category is open to all the players.'),
-                        disabled=other_main_category or has_criteria,
-                        data=data, errors=errors
-                    ) }}
-                </div>
                 <div class="row mb-3">
                     {{ admin_macros.text_input(
                         name='name',
                         label=_('Name:'),
                         placeholder=_('E.g.: %(string)s', string=_('My category')),
-                        help_text=_('The name of the category.'),
+                        help_text='',
                         data=data, errors=errors
                     ) }}
                 </div>
-
+                <div class="d-flex mb-3">
+                    <span
+                        class="fit-content"
+                        {% if other_main_category or has_criteria %}
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('There can only be one main category per tournament.')
+                                if other_main_category else
+                                _('The main category can\'t have criteria.'),
+                                'top'
+                            ) }}
+                        {% endif %}
+                    >
+                        {{ admin_macros.switch_input(
+                            name='is_main',
+                            label='',
+                            placeholder=_('Define as main category'),
+                            help_text='',
+                            disabled=other_main_category or has_criteria,
+                            data=data, errors=errors
+                        ) }}
+                    </span>
+                    <i
+                        class="bi bi-info-circle-fill"
+                        {{ macros.tooltip_attributes(
+                            'info', _('The main category is open to all the players.'), 'top'
+                        ) }}
+                    ></i>
+                </div>
                 <div
                     id="prize-sharing-container"
                     class="row"

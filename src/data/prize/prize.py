@@ -42,10 +42,6 @@ class Prize:
         return self.stored_prize.description
 
     @property
-    def index(self) -> int:
-        return self.stored_prize.index
-
-    @property
     def name(self) -> str:
         currency_value = StaticUtils.currency_value_str(
             self.value, self.prize_category.currency

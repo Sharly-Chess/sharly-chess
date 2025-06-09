@@ -1,7 +1,6 @@
 <div
     class="alert message-{% block type %}{{ type }}{% endblock %} alert-dismissible fade show p-2 d-flex align-items-start gap-3"
     role="alert"
-    hx-ext="remove-me"
     {% if auto_remove %}
         remove-me="10s"
     {% endif %}

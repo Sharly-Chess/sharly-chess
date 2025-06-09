@@ -13,14 +13,18 @@
             </h2>
         </div>
         <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('Category: %(category)s', category=admin_prize_category.name) }}
+            </h4>
             {% if previous_criterion %}
-                {% with type='success', auto_remove=true, message=_(
+                {% with type='success', message=_(
                     'Criterion [%(criterion)s] successfully created!',
                     criterion=previous_criterion.name
                 ) %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
+
             <form
                 id="modal-form"
                 hx-target="body"
@@ -128,3 +132,13 @@
         </div>
     </div>
 </div>
+
+{% if not admin_prize_category.criteria %}
+    <script>
+        // We need to reload the page when the modal is hidden, because the criteria might have changed.
+        $(document).one('hide.bs.modal', function(e) {
+            e.preventDefault();
+            document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        });
+    </script>
+{% endif %}

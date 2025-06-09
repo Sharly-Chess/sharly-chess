@@ -45,10 +45,6 @@ class PrizeCriterion:
         return self.stored_prize_criterion.id
 
     @property
-    def index(self) -> int:
-        return self.stored_prize_criterion.index
-
-    @property
     def name(self) -> str:
         return str(self.player_filter)
 
