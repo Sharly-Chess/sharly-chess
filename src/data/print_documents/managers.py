@@ -18,6 +18,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.PlayerRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
             documents.BergerGridPrintDocument,
+            documents.PrizeAssignmentPrintDocument,
         ]
 
 

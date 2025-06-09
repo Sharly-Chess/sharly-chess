@@ -15,6 +15,7 @@ from data.print_documents.options import (
     RoundPrintOption,
     PlayerSortPrintOption,
 )
+from data.prize.prize_group import AssignedPrize, PrizeGroup
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
@@ -442,3 +443,43 @@ class BergerGridPrintDocument(PrintDocument):
             'result_grid': self.build_result_grid(),
             'grid_id_by_player_id': self.grid_id_by_player_id,
         }
+
+
+class PrizeAssignmentPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'prize-assignment'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Prize assignment')
+
+    @property
+    def title(self) -> str:
+        assert self.tournament is not None
+        after_round = self.tournament.max_ranking_round
+        if after_round == self.tournament.rounds:
+            return self.name
+        return _('Prize assignment after round #{round}').format(round=after_round)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/prizes.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {}
+
+    @staticmethod
+    def assigned_prizes_by_category_id(
+        prize_group: PrizeGroup,
+    ) -> dict[int, list[AssignedPrize]]:
+        assigned_prizes_by_category_id: dict[int, list[AssignedPrize]] = {
+            category.id: [] for category in prize_group.categories
+        }
+        for assigned_prize in prize_group.assign_prizes()[0]:
+            if not assigned_prize.prize:
+                continue
+            category_id = assigned_prize.prize.prize_category.id
+            assigned_prizes_by_category_id[category_id].append(assigned_prize)
+        return assigned_prizes_by_category_id
