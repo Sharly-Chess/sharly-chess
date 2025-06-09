@@ -52,7 +52,7 @@ class Prize:
         )
         if self.is_monetary:
             return currency_value
-        description = self.description or f'<i>{_("Non-monetary prize")}</i>'
+        description = self.description or _('Non-monetary prize')
         if not self.value:
             return description
         value_str = _('value: {currency_value}').format(currency_value=currency_value)
