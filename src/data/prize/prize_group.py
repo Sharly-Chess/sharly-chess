@@ -306,7 +306,7 @@ class PrizeGroup:
                     ):
                         warnings.append(
                             _(
-                                "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were is now worth {new_share}."
+                                "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
                             ).format(
                                 player=player,
                                 previous_value=StaticUtils.currency_value_str(
