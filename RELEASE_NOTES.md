@@ -47,6 +47,7 @@ English version below
 - Correction d'un bug de mise en ligne des résultats (2.7.3)
 - Correction du test des identifiants FFE lors de l'édition des tournois (2.7.4)
 - Utilisation de la base de données du serveur fédéral lors de la création des joueur·euses à partir de la base FIDE (2.7.5)
+- Correction de la recherche FFE en ligne (2.7.7)
 
 ## ChessEvent
 
@@ -80,20 +81,20 @@ English version below
 
 - Added PGN and TRF 16 exports (2.7.0)
 
-# Players management
+### Players management
 
 - Fixed and added columns to the players ODS export (2.7.1)
 - Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases (2.7.3)
 - Update players when rating types differ in data sources (2.7.5)
 - Fixed the colors of the players update modal (2.7.5)
 
-# Pairings management
+### Pairings management
 
 - Reduced reaction time when entering results (2.7.1)
 - Fixed entering results with keyboard shortcuts on fixed boards (2.7.5)
 - Removed pairing settings modal when not accurate (2.7.5)
 
-# Screens management
+### Screens management
 
 - Fixed a bug on screen creation (2.7.2)
 
@@ -104,6 +105,7 @@ English version below
 - Fixed a bug on FFE results upload (2.7.3)
 - Fixed FFE auth test on the tournament editing form (2.7.4)
 - Request the FFE SQL server when augmenting players created from the FIDE database (2.7.5)
+- Fixed FFE online search (2.7.7)
 
 ## ChessEvent
 
