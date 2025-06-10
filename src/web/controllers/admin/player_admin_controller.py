@@ -835,6 +835,11 @@ class PlayerAdminController(BaseEventAdminController):
                     'fide_search_available': FideDatabase().exists(),
                     'plugin_search_templates': plugin_search_templates,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
+                    'previous_player': (
+                        admin_event.players_by_id.get(old_player_id, None)
+                        if action == 'create'
+                        else None
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -1229,8 +1234,19 @@ class PlayerAdminController(BaseEventAdminController):
                         action=action,
                         data=data,
                     )
-                tournament.add_player(player)
+                player_papi_id = tournament.add_player(player)
+                player_id = Player.player_sharly_chess_id_from_papi_id(
+                    tournament.id, player_papi_id
+                )
                 self.set_players_search_results(request, event_uniq_id)
+                if 'add_other' in data:
+                    return self._admin_event_players_render(
+                        request,
+                        event_uniq_id=event_uniq_id,
+                        modal='player',
+                        action='create',
+                        old_player_id=player_id,
+                    )
                 return self._admin_event_players_render(
                     request, event_uniq_id=event_uniq_id
                 )

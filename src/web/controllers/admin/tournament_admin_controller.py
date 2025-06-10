@@ -600,11 +600,11 @@ class TournamentAdminController(BaseEventAdminController):
                 )
 
                 plugin_form_fields_templates = [
-                    template for template, _ in plugin_results
+                    template for template, __ in plugin_results
                 ]
                 form_fields_templates_data = {
                     key: value
-                    for _, data in plugin_results
+                    for __, data in plugin_results
                     for key, value in data.items()
                 }
 
@@ -622,6 +622,9 @@ class TournamentAdminController(BaseEventAdminController):
                     'file_exists': cls._extract_papi_file_path(
                         data, admin_event
                     ).exists(),
+                    'previous_tournament': (
+                        web_context.admin_tournament if action == 'create' else None
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -904,12 +907,21 @@ class TournamentAdminController(BaseEventAdminController):
                         success_message = _(
                             'Tournament [{tournament_uniq_id}] has been created.'
                         ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                tournament_id = stored_tournament.id
                 Tournament(
                     web_context.admin_event, stored_tournament
                 ).update_papi_database_from_stored_tournament()
             event_database.commit()
-        Message.success(request, success_message)
         event_loader.clear_cache(event_uniq_id)
+        if 'add_other' in data:
+            return self._admin_event_tournaments_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='tournament',
+                action='create',
+                tournament_id=tournament_id,
+            )
+        Message.success(request, success_message)
         return self._admin_event_tournaments_render(
             request, event_uniq_id=event_uniq_id
         )

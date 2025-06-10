@@ -929,7 +929,7 @@ msgstr ""
 msgid "Create an event"
 msgstr ""
 
-msgid "Create and add default screens"
+msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
@@ -944,13 +944,7 @@ msgstr ""
 msgid "Create the Papi files and send them to the FFE website"
 msgstr ""
 
-msgid "Create this category then add another one."
-msgstr ""
-
-msgid "Create this criterion then add another one."
-msgstr ""
-
-msgid "Create this prize then add another one."
+msgid "Create with default screens"
 msgstr ""
 
 msgid "Criteria"
@@ -2608,9 +2602,6 @@ msgstr ""
 msgid "New tournament"
 msgstr ""
 
-msgid "Next"
-msgstr ""
-
 msgid "Next round"
 msgstr ""
 
@@ -3145,6 +3136,10 @@ msgstr ""
 msgid "Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
+#, python-format
+msgid "Player [%(player)s] has been created."
+msgstr ""
+
 msgid "Player [{first_name} {last_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr ""
 
@@ -3303,6 +3298,9 @@ msgid "Please enter the tournament name."
 msgstr ""
 
 msgid "Please enter valid date and time."
+msgstr ""
+
+msgid "Please select a type of criterion."
 msgstr ""
 
 msgid "Please use Papi to generate pairings."
@@ -4634,6 +4632,10 @@ msgstr "Tournament"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
+
+#, python-format
+msgid "Tournament [%(tournament)s] has been created."
+msgstr ""
 
 #, python-format
 msgid "Tournament [%(tournament_uniq_id)s] is finished."

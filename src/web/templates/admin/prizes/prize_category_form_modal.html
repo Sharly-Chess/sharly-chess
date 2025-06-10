@@ -114,7 +114,6 @@
                         value="{{ not_main_prize_sharing }}"
                     >
                 </div>
-                <input id="add-other" name="add_other" type="hidden" value="off">
                 {% if not (admin_prize_category and admin_prize_category.has_non_monetary_prizes) %}
                     <script>
                         $('#is-main').on('change', (event) => {
@@ -150,32 +149,17 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {% if action == 'update' %}
-                    {{ _('Save') }}
-                {% else %}
-                    {{ _('Create') }}
-                {% endif %}
-            </button>
-            {% if action == 'create' %}
+            {% if action == 'update' %}
                 <button
-                    id="next-button"
                     type="submit"
                     form="modal-form"
                     class="text-nowrap white btn btn-primary"
-                    {{ macros.tooltip_attributes('info', _('Create this category then add another one.'), 'top') }}
                 >
-                    <i class="bi bi-arrow-right-circle-fill pe-1"></i>
-                    {{ _('Next') }}
+                    <i class="bi bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
                 </button>
-                <script>
-                    $('#next-button').click(() => $('#add-other').prop('value', 'on'));
-                </script>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(previous_category) }}
             {% endif %}
         </div>
     </div>

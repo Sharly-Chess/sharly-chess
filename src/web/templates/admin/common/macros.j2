@@ -870,3 +870,46 @@ with_indicator: display a loading indicator, optional
         </ul>
     </div>
 {% endmacro %}
+
+{% macro split_submit_buttons(
+    options,
+    active_option,
+    form_id='modal-form'
+) %}
+    <div class="btn-group dropup">
+        <button
+            type="submit"
+            form="{{ form_id }}"
+            class="btn btn-primary {{ active_option }}-button"
+        >
+            {{ options[active_option] }}
+        </button>
+        <button
+            type="button"
+            class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+        >
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for option_id, option_name in options.items() %}
+                <button
+                    type="submit"
+                    name="{{ option_id }}"
+                    form="{{ form_id }}"
+                    class="dropdown-item {% if option_id == active_option %}active{% endif %}"
+                >
+                    {{ option_name }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}
+
+{% macro create_with_add_other_split_buttons(is_add_other_active) %}
+    {{ split_submit_buttons(
+        options={'create': _('Create'), 'add_other': _('Create and add another')},
+        active_option='add_other' if is_add_other_active else 'create'
+    )}}
+{% endmacro %}

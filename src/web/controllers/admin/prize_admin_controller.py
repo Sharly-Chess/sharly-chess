@@ -15,7 +15,7 @@ from data.prize.managers import (
     PlayerFilterManager,
     PlayerFilterOptionManager,
 )
-from data.prize.player_filters import PlayerFilter, GenderPlayerFilter
+from data.prize.player_filters import PlayerFilter
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_criterion import PrizeCriterion
@@ -422,7 +422,7 @@ class PrizeAdminController(BaseEventAdminController):
                 index=len(prize_group.categories),
             )
         )
-        if WebContext.form_data_to_bool(data, 'add_other'):
+        if 'add_other' in data:
             data = self._prize_category_default_form_data(prize_group.tournament)
             template_context = self._prize_category_modal_context(
                 data, FormAction.CREATE, errors
@@ -653,9 +653,7 @@ class PrizeAdminController(BaseEventAdminController):
         try:
             PlayerFilterManager.get_type(player_filter_id)
         except KeyError:
-            message = f'Unknown player filter ID [{player_filter_id}].'
-            errors[field] = message
-            logger.error(message)
+            errors[field] = _('Please select a type of criterion.')
             return errors
         player_filter = cls.player_filter_from_data(data)
         try:
@@ -685,18 +683,19 @@ class PrizeAdminController(BaseEventAdminController):
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
             for option in PlayerFilterOptionManager.objects()
-        } | {'type': GenderPlayerFilter.static_id()}
+        } | {'type': ''}
         return {
             'modal': 'prize_criterion_form',
             'action': action,
-            'player_filter_select_options': PlayerFilterManager.options(),
+            'player_filter_select_options': {'': '-'} | PlayerFilterManager.options(),
             'player_filter_options': PlayerFilterOptionManager.objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
                 for player_filter in PlayerFilterManager.objects()
-            },
+            }
+            | {'': []},
             'data': default_data | data,
             'errors': errors or {},
         }
@@ -743,7 +742,7 @@ class PrizeAdminController(BaseEventAdminController):
                 options={option.id: option.value for option in player_filter.options},
             )
         )
-        if WebContext.form_data_to_bool(flat_data, 'add_other'):
+        if 'add_other' in data:
             template_context = self._prize_criterion_form_modal_context(
                 {}, FormAction.CREATE, errors
             ) | {'previous_criterion': criterion}
@@ -990,7 +989,7 @@ class PrizeAdminController(BaseEventAdminController):
                 description=WebContext.form_data_to_str(data, 'description') or '',
             )
         )
-        if WebContext.form_data_to_bool(data, 'add_other'):
+        if 'add_other' in data:
             template_context = self._prize_form_modal_context(
                 {}, FormAction.CREATE, errors
             ) | {'previous_prize': prize}

@@ -71,14 +71,6 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
             {% if not admin_prize_category.is_main %}
                 <span
                     {{ macros.tooltip_attributes(
@@ -88,7 +80,7 @@
                     ) }}
                 >
                     <button
-                        class="btn btn-primary"
+                        class="btn btn-outline-primary"
                         hx-get="{{ url_for(
                             'admin-prize-criteria-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -103,6 +95,15 @@
                     </button>
                 </span>
             {% endif %}
+            <div class="flex-grow-1"></div>
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
             <button
                 class="btn btn-primary text-nowrap"
                 hx-get="{{ url_for(

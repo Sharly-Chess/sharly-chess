@@ -1197,7 +1197,7 @@ class Tournament:
         player.clear_cache()
         self.clear_cache()
 
-    def add_player(self, player: Player):
+    def add_player(self, player: Player) -> int:
         """Adds a new player to the tournament, returns the player's ID."""
         ref = (max(p.ref_id for p in self.players) if self.players_by_id else 1) + 1
         with self.papi_write_database as papi_database:
