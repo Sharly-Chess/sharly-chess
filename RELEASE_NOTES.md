@@ -29,7 +29,6 @@ English version below
 - Correction de l'affichage des joueur·euses non-FIDE lors de la mise à jour depuis les bases de données FIDE et FFE (2.7.3)
 - Correction de la mise à jour des classements des joueur·euses (2.7.5)
 - Correction des couleurs du modal de mise à jour des joueur·euses (2.7.5)
-- Correction de la recherche FFE en ligne (2.7.7)
 
 ### Gestion des appariements
 
@@ -105,7 +104,6 @@ English version below
 - Fixed a bug on FFE results upload (2.7.3)
 - Fixed FFE auth test on the tournament editing form (2.7.4)
 - Request the FFE SQL server when augmenting players created from the FIDE database (2.7.5)
-- Fixed FFE online search (2.7.7)
 
 ## ChessEvent
 
