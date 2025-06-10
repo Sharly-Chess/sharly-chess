@@ -1,4 +1,7 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 400px);"
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -10,6 +13,19 @@
             </h2>
         </div>
         <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Category')) }}
+                {{ admin_prize_category.name }}
+            </h4>
+            {% if previous_prize %}
+                {% with type='success', message=_(
+                    'Prize [%(prize)s] successfully created!',
+                    prize=previous_prize.name
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
             <form
                 id="modal-form"
                 hx-target="body"
@@ -33,12 +49,18 @@
                     ) }}"
                 {% endif %}
             >
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
-                <div class="row">
-                    <div
-                        class="col-12 col-md-4 mb-3"
+                <div class="row mb-3">
+                    {{ admin_macros.number_input(
+                        name='value',
+                        label=_('%(string)s:', string=_('Value')),
+                        help_text='',
+                        step=0.01,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="d-flex mb-3">
+                    <span
+                        class="fit-content"
                         {% if admin_prize_category.are_prizes_shared %}
                             {{ macros.tooltip_attributes(
                                 'info', _('Prizes of categories with prize sharing can only be monetary.'), 'top'
@@ -47,90 +69,101 @@
                     >
                         {{ admin_macros.switch_input(
                             name='is_monetary',
-                            label=_('%(string)s:', string=_('Type')),
+                            label='',
                             placeholder=_('Define as monetary'),
-                            help_text=_('The type of reward of the prize (monetary/non-monetary).'),
+                            help_text='',
                             disabled=admin_prize_category.are_prizes_shared,
                             data=data, errors=errors
                         ) }}
                         {% if admin_prize_category.are_prizes_shared %}
                             <input name="is_monetary" type="hidden" value="on">
                         {% endif %}
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        {{ admin_macros.number_input(
-                            name='value',
-                            label=_('%(string)s:', string=_('Value')),
-                            help_text=_('For non-monetary prizes, the value is used for reward priority.'),
-                            step=0.01,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div
-                        id="description-container"
-                        class="col-12 col-md-4 mb-3"
+                    </span>
+                    <i
+                        class="bi bi-info-circle-fill"
                         {{ macros.tooltip_attributes(
-                            'info', _('Descriptions can only be defined for non-monetary prizes.'), 'top'
+                            'info', _('For non-monetary prizes, the value is used for reward priority.'), 'top'
                         ) }}
-                    >
-                        {{ admin_macros.text_input(
-                            name='description',
-                            label=_('%(string)s:', string=_('Description')),
-                            placeholder=_('E.g.: %(string)s', string=_('Trophy')),
-                            help_text=_('The description of the prize.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <script>
-                        $('#is-monetary').on('change', (event) => {
-                            const tooltip = new bootstrap.Tooltip(
-                                document.getElementById('description-container')
-                            );
-                            const description = document.getElementById('description');
-                            if (event.target.checked) {
-                                description.disabled = true;
-                                tooltip.enable();
-                            } else {
-                                description.disabled = false;
-                                tooltip.disable();
-                            }
-                        });
-                        setTimeout(() => $('#is-monetary').trigger('change'), 50);
-                    </script>
+                    ></i>
                 </div>
+                <div
+                    id="description-container"
+                    class="row"
+                    {{ macros.tooltip_attributes(
+                        'info', _('Descriptions can only be defined for non-monetary prizes.'), 'top'
+                    ) }}
+                >
+                    {{ admin_macros.text_input(
+                        name='description',
+                        label=_('%(string)s:', string=_('Description')),
+                        placeholder=_('E.g.: %(string)s', string=_('Trophy')),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <script>
+                    $('#is-monetary').on('change', (event) => {
+                        const tooltip = new bootstrap.Tooltip(
+                            document.getElementById('description-container')
+                        );
+                        const description = document.getElementById('description');
+                        if (event.target.checked) {
+                            description.disabled = true;
+                            tooltip.enable();
+                        } else {
+                            description.disabled = false;
+                            tooltip.disable();
+                        }
+                    });
+                    setTimeout(() => $('#is-monetary').trigger('change'), 50);
+                </script>
             </form>
         </div>
         <div class="modal-footer">
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-prizes-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                    prize_category_id=admin_prize_category.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-target="#modal-wrapper"
+                {% if admin_prize_category.prizes %}
+                    hx-get="{{ url_for(
+                        'admin-prizes-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id,
+                        prize_category_id=admin_prize_category.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    data-bs-dismiss="modal"
+                {% endif %}
             >
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {% if action == 'update' %}
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi bi-floppy-fill pe-1"></i>
                     {{ _('Save') }}
-                {% else %}
-                    {{ _('Create') }}
-                {% endif %}
-            </button>
+                </button>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(previous_prize) }}
+            {% endif %}
         </div>
     </div>
 </div>
+
+{% if not admin_prize_category.prizes %}
+    <script>
+        // We need to reload the page when the modal is hidden, because the prizes might have changed.
+        $(document).one('hide.bs.modal', function(e) {
+            e.preventDefault();
+            document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        });
+    </script>
+{% endif %}

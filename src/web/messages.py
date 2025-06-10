@@ -7,7 +7,7 @@ from litestar import Request
 class Message:
     text: str
     level: int
-    html_class: str | None = field(default=None, init=False)
+    html_type: str | None = field(default=None, init=False)
     auto_remove: bool | None = field(default=None, init=False)
 
     DEBUG = 10
@@ -16,12 +16,12 @@ class Message:
     WARNING = 30
     ERROR = 40
 
-    CLASS = {
-        DEBUG: 'message-debug',
-        INFO: 'message-info',
-        SUCCESS: 'message-success',
-        WARNING: 'message-warning',
-        ERROR: 'message-error',
+    TYPE = {
+        DEBUG: 'debug',
+        INFO: 'info',
+        SUCCESS: 'success',
+        WARNING: 'warning',
+        ERROR: 'error',
     }
 
     AUTO_REMOVE = {
@@ -33,7 +33,7 @@ class Message:
     }
 
     def __post_init__(self):
-        self.html_class: str = self.CLASS[self.level]
+        self.html_type: str = self.TYPE[self.level]
         self.auto_remove: bool = self.AUTO_REMOVE[self.level]
 
     @staticmethod

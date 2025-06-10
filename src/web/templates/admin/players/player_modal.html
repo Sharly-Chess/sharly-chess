@@ -35,6 +35,14 @@
                 {% endif %}
 
                 {% if action == 'create' %}
+                    {% if previous_player %}
+                        {% with type='success', auto_remove=true, message=_(
+                            'Player [%(player)s] has been created.',
+                            player=previous_player.full_name
+                        )  %}
+                            {% include '/common/alert.html' %}
+                        {% endwith %}
+                    {% endif %}
                     <h4>
                         {{ _('Search') }}
                     </h4>
@@ -331,22 +339,34 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {% if action == 'create' %}
-                    {{ _('Add') }}
-                {% elif action == 'update' %}
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
-            </button>
+            {% if action == 'create' %}
+                {{ admin_macros.create_with_add_other_split_buttons(previous_player) }}
+            {% else %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {% if action == 'update' %}
+                        {{ _('Save') }}
+                    {% elif action == 'delete' %}
+                        {{ _('Delete') }}
+                    {% else %}
+                        ?
+                    {% endif %}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>
+
+{% if previous_player %}
+    <script>
+        // We need to reload the page when the modal is hidden, because players were added.
+        $(document).one('hide.bs.modal', function(e) {
+            e.preventDefault();
+            document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        });
+    </script>
+{% endif %}

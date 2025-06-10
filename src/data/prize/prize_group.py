@@ -52,10 +52,11 @@ class PrizeGroup:
         return sorted(
             self.categories,
             key=lambda category: (
-                -category.is_main,
-                -category.total_prize_value,
+                category.is_main,
+                category.total_prize_value,
                 category.name,
             ),
+            reverse=True,
         )
 
     @property

@@ -1,15 +1,26 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 400px);"
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'update' %}
-                    {{ _('Editing of prize category [%(prize_category)s]', prize_category=admin_prize_category.name) }}
+                    {{ _('Category edition') }}
                 {% else %}
-                     {{ _('Prize category creation') }}
+                     {{ _('Category creation') }}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
+            {% if previous_category %}
+                {% with type='success', auto_remove=true, message=_(
+                    'Category [%(category)s] successfully created!',
+                    category=previous_category.name
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
             <form
                 id="modal-form"
                 {% if action == 'update' %}
@@ -31,17 +42,23 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
-                <div class="row">
-                    {% set other_main_category=(
-                        admin_tournament.has_main_prize_category and
-                        (not admin_prize_category or not admin_prize_category.is_main)
-                    ) %}
-                    {% set has_criteria=admin_prize_category and admin_prize_category.criteria %}
-                    <div
-                        class="col-12 col-md-4 mb-3"
+                {% set other_main_category=(
+                    admin_tournament.has_main_prize_category and
+                    (not admin_prize_category or not admin_prize_category.is_main)
+                ) %}
+                {% set has_criteria=admin_prize_category and admin_prize_category.criteria %}
+                <div class="row mb-3">
+                    {{ admin_macros.text_input(
+                        name='name',
+                        label=_('Name:'),
+                        placeholder=_('E.g.: %(string)s', string=_('My category')),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="d-flex mb-3">
+                    <span
+                        class="fit-content"
                         {% if other_main_category or has_criteria %}
                             {{ macros.tooltip_attributes(
                                 'info',
@@ -54,77 +71,73 @@
                     >
                         {{ admin_macros.switch_input(
                             name='is_main',
-                            label=_('%(string)s:', string=_('Main category')),
+                            label='',
                             placeholder=_('Define as main category'),
-                            help_text=_('The main category is open to all the players.'),
+                            help_text='',
                             disabled=other_main_category or has_criteria,
                             data=data, errors=errors
                         ) }}
-                    </div>
-                    <div class="col-12 col-md-4 mb-3">
-                        {{ admin_macros.text_input(
-                            name='name',
-                            label=_('Name:'),
-                            placeholder=_('E.g.: %(string)s', string=_('My category')),
-                            help_text=_('The name of the category.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-
-                    <div
-                        id="prize-sharing-container"
-                        class="col-12 col-md-4 mb-3"
+                    </span>
+                    <i
+                        class="bi bi-info-circle-fill"
                         {{ macros.tooltip_attributes(
-                            'info',
-                            _('The category contains non-monetary prizes which can not be shared.')
-                            if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
-                            _('Prizes can only be shared for the main category.'),
-                            'top'
+                            'info', _('The main category is open to all the players.'), 'top'
                         ) }}
-                    >
-                        {{ admin_macros.select_input(
-                            name='prize_sharing',
-                            label=_('%(string)s:', string=_('Prize sharing')),
-                            help_text=_(
-                                'The way to share the prizes when two or more players '
-                                'with the same points are eligible for prizes.'
-                            ),
-                            select_options=prize_sharing_options,
-                            disabled=admin_prize_category and admin_prize_category.has_non_monetary_prizes,
-                            data=data, errors=errors
-                        ) }}
-                        <input
-                            id="hidden-prize-sharing"
-                            name="prize_sharing"
-                            type="hidden"
-                            value="{{ not_main_prize_sharing }}"
-                        >
-                    </div>
-                    {% if not (admin_prize_category and admin_prize_category.has_non_monetary_prizes) %}
-                        <script>
-                            $('#is-main').on('change', (event) => {
-                                const tooltip = new bootstrap.Tooltip(
-                                    document.getElementById('prize-sharing-container')
-                                );
-                                const prizeSharing = document.getElementById('prize-sharing');
-                                const hiddenPrizeSharing = document.getElementById(
-                                    'hidden-prize-sharing'
-                                );
-                                if (event.target.checked) {
-                                    prizeSharing.disabled = false;
-                                    hiddenPrizeSharing.disabled = true;
-                                    tooltip.disable();
-                                } else {
-                                    prizeSharing.value = '{{ not_main_prize_sharing }}';
-                                    prizeSharing.disabled = true;
-                                    hiddenPrizeSharing.disabled = false;
-                                    tooltip.enable();
-                                }
-                            });
-                            setTimeout(() => $('#is-main').trigger('change'), 50);
-                        </script>
-                    {% endif %}
+                    ></i>
                 </div>
+                <div
+                    id="prize-sharing-container"
+                    class="row"
+                    {{ macros.tooltip_attributes(
+                        'info',
+                        _('The category contains non-monetary prizes which can not be shared.')
+                        if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
+                        _('Prizes can only be shared for the main category.'),
+                        'top'
+                    ) }}
+                >
+                    {{ admin_macros.select_input(
+                        name='prize_sharing',
+                        label=_('%(string)s:', string=_('Prize sharing')),
+                        help_text=_(
+                            'The way to share the prizes when two or more players '
+                            'with the same points are eligible for prizes.'
+                        ),
+                        select_options=prize_sharing_options,
+                        disabled=admin_prize_category and admin_prize_category.has_non_monetary_prizes,
+                        data=data, errors=errors
+                    ) }}
+                    <input
+                        id="hidden-prize-sharing"
+                        name="prize_sharing"
+                        type="hidden"
+                        value="{{ not_main_prize_sharing }}"
+                    >
+                </div>
+                {% if not (admin_prize_category and admin_prize_category.has_non_monetary_prizes) %}
+                    <script>
+                        $('#is-main').on('change', (event) => {
+                            const tooltip = new bootstrap.Tooltip(
+                                document.getElementById('prize-sharing-container')
+                            );
+                            const prizeSharing = document.getElementById('prize-sharing');
+                            const hiddenPrizeSharing = document.getElementById(
+                                'hidden-prize-sharing'
+                            );
+                            if (event.target.checked) {
+                                prizeSharing.disabled = false;
+                                hiddenPrizeSharing.disabled = true;
+                                tooltip.disable();
+                            } else {
+                                prizeSharing.value = '{{ not_main_prize_sharing }}';
+                                prizeSharing.disabled = true;
+                                hiddenPrizeSharing.disabled = false;
+                                tooltip.enable();
+                            }
+                        });
+                        setTimeout(() => $('#is-main').trigger('change'), 50);
+                    </script>
+                {% endif %}
             </form>
         </div>
         <div class="modal-footer">
@@ -136,18 +149,26 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {% if action == 'update' %}
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi bi-floppy-fill pe-1"></i>
                     {{ _('Save') }}
-                {% else %}
-                    {{ _('Create') }}
-                {% endif %}
-            </button>
+                </button>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(previous_category) }}
+            {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because the categories might have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

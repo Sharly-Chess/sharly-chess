@@ -29,36 +29,23 @@
             {{ prize_count }}
         </div>
         {% if not prize_category.is_main and not prize_category.criteria %}
-            {% set status='error' %}
-            {% set message=_('No criteria defined.') %}
-        {% elif not prize_category.is_prize_order_valid %}
-            {% set status='error' %}
-            {% set message=_('The prizes are not correctly sorted.') %}
+            {% set warning=_('No criteria defined.') %}
         {% elif player_count < prize_count %}
-            {% set status='error' %}
-            {% set message=_('There can\'t be fewer players than prizes.') %}
+            {% set warning=_('With less players than prizes, some prizes will not be attributed.') %}
         {% elif player_count == 0 %}
-            {% set status='warning' %}
-            {% set message=_('No players matching the criteria.') %}
+            {% set warning=_('No players matching the criteria.') %}
         {% elif prize_count == 0 %}
-            {% set status='warning' %}
-            {% set message=_('No prizes defined.') %}
+            {% set warning=_('No prizes defined.') %}
         {% elif player_count <= prize_count + 1 %}
-            {% set status='warning' %}
-            {% set message=_(
+            {% set warning=_(
                 'Having a close amount of players and prizes '
                 'represents a risk for a prize not to be attributed.'
             ) %}
         {% endif %}
-        {% if status == 'error' %}
-            <i
-                class="bi-x-circle-fill text-danger"
-                {{ macros.tooltip_attributes('info', message, 'top') }}
-            ></i>
-        {% elif status == 'warning' %}
+        {% if warning %}
             <i
                 class="bi-exclamation-triangle-fill text-warning"
-                {{ macros.tooltip_attributes('info', message, 'top') }}
+                {{ macros.tooltip_attributes('info', warning, 'top') }}
             ></i>
         {% endif %}
     </div>
@@ -102,7 +89,9 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for(
-                'admin-prizes-modal',
+                'admin-prizes-modal'
+                if prize_category.prizes else
+                'admin-prize-create-modal',
                 event_uniq_id=admin_event.uniq_id,
                 tournament_id=admin_tournament.id,
                 prize_group_id=admin_prize_group.id,
@@ -130,7 +119,9 @@
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for(
-                'admin-prize-criteria-modal',
+                'admin-prize-criteria-modal'
+                if prize_category.criteria else
+                'admin-prize-criterion-create-modal',
                 event_uniq_id=admin_event.uniq_id,
                 tournament_id=admin_tournament.id,
                 prize_group_id=admin_prize_group.id,
@@ -173,8 +164,35 @@
             <i class="bi-pencil-fill"></i>
         </button>
     </span>
-
-    <span {{ macros.tooltip_attributes('info', 'Delete the category.', 'top') }}>
+    <form
+        hx-post="{{ url_for(
+            'admin-prize-category-duplicate',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=prize_category.id,
+        ) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        {{ macros.tooltip_attributes(
+            'info',
+            _('There can only be one main category.')
+            if prize_category.is_main else
+            _('Duplicate the category and its criteria and prizes.'),
+            'top'
+        ) }}
+    >
+        <button
+            type="submit"
+            class="btn btn-sm btn-outline-primary"
+            {% if prize_category.is_main %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-copy"></i>
+        </button>
+    </form>
+    <span {{ macros.tooltip_attributes('info', _('Delete the category.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for(

@@ -42,23 +42,17 @@ class Prize:
         return self.stored_prize.description
 
     @property
-    def index(self) -> int:
-        return self.stored_prize.index
-
-    @property
-    def tabular_representation(self) -> str:
+    def name(self) -> str:
         currency_value = StaticUtils.currency_value_str(
             self.value, self.prize_category.currency
         )
         if self.is_monetary:
             return currency_value
-        elif self.value:
-            value_str = _('value: {currency_value}').format(
-                currency_value=currency_value
-            )
-            return f'{self.description} ({value_str})'
-        else:
-            return self.description
+        description = self.description or _('Non-monetary prize')
+        if not self.value:
+            return description
+        value_str = _('value: {currency_value}').format(currency_value=currency_value)
+        return f'{description} ({value_str})'
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()
