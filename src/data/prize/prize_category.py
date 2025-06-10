@@ -89,15 +89,19 @@ class PrizeCategory:
             key=lambda prize: (-prize.value, not prize.is_monetary, prize.id),
         )
 
+    def player_matches_criteria(self, player: Player) -> bool:
+        """Check if the player matches all criteria of this category."""
+        return all(
+            criterion.player_filter.is_player_included_function(player)
+            for criterion in self.criteria
+        )
+
     @property
     def players(self) -> list[Player]:
         return [
             player
             for player in self.prize_group.tournament.players
-            if all(
-                criterion.player_filter.is_player_included_function(player)
-                for criterion in self.criteria
-            )
+            if self.player_matches_criteria(player)
         ]
 
     @property
@@ -163,3 +167,6 @@ class PrizeCategory:
             database.commit()
         if prize_id in self.prizes_by_id:
             del self.prizes_by_id[prize_id]
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} - {self.id}/{self.name}'
