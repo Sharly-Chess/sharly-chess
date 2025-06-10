@@ -174,11 +174,15 @@ class PrizesTestCase(BaseTestCase):
         player: Player,
         prize: Prize | StoredPrize,
         prize_list: list[AssignedPrize],
+        has_warning: bool = False,
     ):
-        self.assertIn(
-            player.id,
-            [prize.assigned_to.id for prize in prize_list if prize.assigned_to],
+        assigned_prize = next(
+            prize
+            for prize in prize_list
+            if prize.assigned_to and prize.assigned_to.id == player.id
         )
+        self.assertIsNotNone(assigned_prize)
+        self.assertEqual(bool(assigned_prize.warning), has_warning)
         for assigned_prize in prize_list:
             if (p := assigned_prize.assigned_to) is not None and p.id == player.id:
                 self.assertIsNotNone(assigned_prize.prize)
@@ -217,7 +221,7 @@ class PrizesTestCase(BaseTestCase):
         p4 = self.player(1700, 2)
         players = [p1, p2, p3, p4]
 
-        (prizes, warnings) = self.assign_prizes([category], players)
+        prizes = self.assign_prizes([category], players)
 
         self.assert_has_prize_value(p1, 100, prizes)
         self.assert_has_prize_value(p2, 200, prizes)
@@ -240,7 +244,7 @@ class PrizesTestCase(BaseTestCase):
         p6 = self.player(1000, 3)
         players = [p1, p2, p3, p4, p5, p6]
 
-        (prizes, warnings) = self.assign_prizes([category], players)
+        prizes = self.assign_prizes([category], players)
 
         self.assert_has_prize_value(p1, (200 + 100) / 2, prizes)
         self.assert_has_prize_value(p2, (200 + 100) / 2, prizes)
@@ -265,9 +269,8 @@ class PrizesTestCase(BaseTestCase):
         p6 = self.player(1000, 3)
         players = [p1, p2, p3, p4, p5, p6]
 
-        (prizes, warnings) = self.assign_prizes([category], players)
+        prizes = self.assign_prizes([category], players)
 
-        self.assertEqual(warnings, [])
         self.assert_has_prize_value(p1, (200 + (200 + 100) / 2) / 2, prizes)
         self.assert_has_prize_value(p2, (100 + (200 + 100) / 2) / 2, prizes)
         self.assert_has_prize_value(p3, (60 + 60 / 3) / 2, prizes)
@@ -294,9 +297,8 @@ class PrizesTestCase(BaseTestCase):
         p4 = self.player(1000, 1, PlayerGender.MALE)
         players = [p1, p2, p3, p4]
 
-        (prizes, warnings) = self.assign_prizes([category], players)
+        prizes = self.assign_prizes([category], players)
 
-        self.assertEqual(warnings, [])
         first, second = self.get_prizes()
         self.assert_has_prize(p1, second, prizes)
         self.assert_has_prize(p2, first, prizes)
@@ -340,11 +342,7 @@ class PrizesTestCase(BaseTestCase):
         p5 = self.player(1000, 2, PlayerGender.FEMALE)
         players = [p1, p2, p3, p4, p5]
 
-        (prizes, warnings) = self.assign_prizes(
-            [main_category, top_women_category], players
-        )
-
-        self.assertEqual(warnings, [])
+        prizes = self.assign_prizes([main_category, top_women_category], players)
 
         # First place
         self.assert_has_prize_value(p1, 200, prizes)
@@ -399,11 +397,7 @@ class PrizesTestCase(BaseTestCase):
         p6 = self.player(1005, 2, PlayerGender.FEMALE)
         players = [p1, p2, p3, p4, p5, p6]
 
-        (prizes, warnings) = self.assign_prizes(
-            [main_category, top_women_category], players
-        )
-
-        self.assertEqual(warnings, [])
+        prizes = self.assign_prizes([main_category, top_women_category], players)
 
         # First place
         self.assert_has_prize_value(p1, 200, prizes)
@@ -459,11 +453,7 @@ class PrizesTestCase(BaseTestCase):
         p7 = self.player(1000, 2, PlayerGender.FEMALE)
         players = [p1, p2, p3, p4, p5, p6, p7]
 
-        (prizes, warnings) = self.assign_prizes(
-            [main_category, top_women_category], players
-        )
-
-        self.assertEqual(warnings, [])
+        prizes = self.assign_prizes([main_category, top_women_category], players)
 
         # First place
         self.assert_has_prize_value(p1, 200, prizes)
@@ -519,11 +509,7 @@ class PrizesTestCase(BaseTestCase):
         p7 = self.player(1006, 3, PlayerGender.FEMALE)
         players = [p1, p2, p3, p4, p5, p6, p7]
 
-        (prizes, warnings) = self.assign_prizes(
-            [main_category, top_women_category], players
-        )
-
-        self.assertEqual(warnings, [])
+        prizes = self.assign_prizes([main_category, top_women_category], players)
 
         # First place
         self.assert_has_prize_value(p1, 200, prizes)
@@ -584,11 +570,9 @@ class PrizesTestCase(BaseTestCase):
 
         players = [p1, p2, p3, p4, p5]
 
-        (prizes, warnings) = self.assign_prizes(
+        prizes = self.assign_prizes(
             [main_category, elo_category, top_women_category], players
         )
-
-        self.assertEqual(warnings, [])
 
         # First place
         self.assert_has_prize_value(p1, 200, prizes)
@@ -633,20 +617,14 @@ class PrizesTestCase(BaseTestCase):
 
         players = [p1, p2, p3]
 
-        (prizes, warnings) = self.assign_prizes(
-            [elo_category, top_women_category], players
-        )
-
-        self.assertEqual(warnings, [])
+        prizes = self.assign_prizes([elo_category, top_women_category], players)
 
         # Elo attributed to first woman,
         self.assert_has_prize(p1, first_1600, prizes)
         self.assert_has_no_prize(p2, prizes)
         self.assert_has_no_prize(p3, prizes)
 
-        (prizes, warnings) = self.assign_prizes(
-            [top_women_category, elo_category], players
-        )
+        prizes = self.assign_prizes([top_women_category, elo_category], players)
 
         # Elo attributed to first woman,
         self.assert_has_prize(p1, first_woman, prizes)
@@ -682,12 +660,8 @@ class PrizesTestCase(BaseTestCase):
 
         players = [p1, p2, p3]
 
-        (prizes, warnings) = self.assign_prizes(
-            [main_category, top_women_category], players
-        )
-
-        self.assertEqual(len(warnings), 1)
+        prizes = self.assign_prizes([main_category, top_women_category], players)
 
         self.assert_has_prize_value(p1, 200, prizes)
-        self.assert_has_prize(p2, first_woman, prizes)
+        self.assert_has_prize(p2, first_woman, prizes, True)
         self.assert_has_prize_value(p3, 100, prizes)

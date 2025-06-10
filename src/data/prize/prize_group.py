@@ -24,6 +24,7 @@ class AssignedPrize:
     place_index: int
     assigned_to: Player | None
     value: float = 0.0
+    warning: str | None = None
 
 
 class PrizeGroup:
@@ -133,7 +134,6 @@ class PrizeGroup:
         assigned_prizes: dict[int, AssignedPrize] = {}
         removed_from_main_set: set[int] = set()
         queue: deque[AssignedPrize] = deque()
-        warnings: list[str] = []
 
         # Extract general prizes
         main_category = next(
@@ -234,6 +234,8 @@ class PrizeGroup:
             if not is_upgrade:
                 continue
 
+            warning: str | None = None
+
             if current:
                 # The player has currently won a less valuable prize
                 if current.prize is None:
@@ -305,23 +307,21 @@ class PrizeGroup:
                         prize_with_same_place
                         and next_prize.value < prize_with_same_place.value
                     ):
-                        warnings.append(
-                            _(
-                                "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
-                            ).format(
-                                player=player,
-                                previous_value=StaticUtils.currency_value_str(
-                                    current.value, next_prize.prize_category.currency
-                                ),
-                                next_value=StaticUtils.currency_value_str(
-                                    next_prize.value, next_prize.prize_category.currency
-                                ),
-                                cat_name=next_prize.prize_category.name,
-                                new_share=StaticUtils.currency_value_str(
-                                    prize_with_same_place.value,
-                                    next_prize.prize_category.currency,
-                                ),
-                            )
+                        warning = _(
+                            "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
+                        ).format(
+                            player=player,
+                            previous_value=StaticUtils.currency_value_str(
+                                current.value, next_prize.prize_category.currency
+                            ),
+                            next_value=StaticUtils.currency_value_str(
+                                next_prize.value, next_prize.prize_category.currency
+                            ),
+                            cat_name=next_prize.prize_category.name,
+                            new_share=StaticUtils.currency_value_str(
+                                prize_with_same_place.value,
+                                next_prize.prize_category.currency,
+                            ),
                         )
                 else:
                     # The new prize is higher than the current one, we add the previous prize back to the queue
@@ -348,6 +348,7 @@ class PrizeGroup:
                 place_index=prize_slot.place_index,
                 assigned_to=player,
                 value=next_prize.value,
+                warning=warning,
             )
 
         sorted_prizes = sorted(
@@ -355,4 +356,4 @@ class PrizeGroup:
             key=lambda p: (-p.prize.value if p.prize else 0, p.priority, p.place_index),
         )
 
-        return sorted_prizes, warnings
+        return sorted_prizes
