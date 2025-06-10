@@ -10,13 +10,13 @@ from database.sqlite.fide.fide_database import FideDatabase
 
 def download_federation_url(federation_id: str, flag_file: Path, flag_url) -> bool:
     # Add the User-Agent header to be allowed to download from WikiPedia
-    # cf https://meta.wikimedia.org/wiki/User-Agent_policy
+    # cf https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy
     response: Response = get(
         flag_url,
         allow_redirects=True,
         timeout=5,
         headers={
-            'User-Agent': f'Sharly Chess/{SharlyChessConfig.version}',
+            'User-Agent': f'Sharly Chess/{SharlyChessConfig.version} ({SharlyChessConfig.url}; {SharlyChessConfig.mail})',
         },
     )
     try:
