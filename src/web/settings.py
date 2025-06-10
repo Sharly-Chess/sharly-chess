@@ -95,9 +95,9 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 ]
 
 exception_handlers = {
-    HTTP_403_FORBIDDEN: IndexController.handle_403_exception,
-    HTTP_404_NOT_FOUND: IndexController.handle_404_exception,
-    HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_500_exception,
+    HTTP_403_FORBIDDEN: IndexController.handle_exception,
+    HTTP_404_NOT_FOUND: IndexController.handle_exception,
+    HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
 }
 
 

@@ -1,6 +1,9 @@
 import asyncio
 import json
+from pathlib import Path
 from typing import AsyncGenerator
+from urllib.parse import quote
+
 from litestar import Response, get, route, HttpMethod
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.exceptions import HTTPException
@@ -87,62 +90,59 @@ class IndexController(BaseController):
             request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
         )
 
+    @staticmethod
+    def handle_exception(request: HTMXRequest, exception: HTTPException) -> Redirect:
+        status_code = getattr(exception, 'status_code', 500)
+        return Redirect(
+            path=request.app.route_reverse(
+                str(status_code), src_url=quote(request.url.path)
+            )
+        )
+
     @route(
         http_method=ALL_HTTP_METHODS,
-        path='/403',
+        path='/403/{src_url:path}',
         name='403',
         cache=1,
     )
-    async def handle_403(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context: WebContext = WebContext(request)
+    async def handle_403(self, request: HTMXRequest, src_url: Path) -> HTMXTemplate:
+        web_context = WebContext(request)
 
         return HTMXTemplate(
             template_name='errors/403.html',
-            context=web_context.template_context,
+            context=web_context.template_context | {'src_url': src_url},
             re_target='body',
         )
 
-    @staticmethod
-    def handle_403_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('403'))
-
     @route(
         http_method=ALL_HTTP_METHODS,
-        path='/404',
+        path='/404/{src_url:path}',
         name='404',
         cache=1,
     )
-    async def handle_404(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context: WebContext = WebContext(request)
+    async def handle_404(self, request: HTMXRequest, src_url: Path) -> HTMXTemplate:
+        web_context = WebContext(request)
 
         return HTMXTemplate(
             template_name='errors/404.html',
-            context=web_context.template_context,
+            context=web_context.template_context | {'src_url': src_url},
             re_target='body',
         )
-
-    @staticmethod
-    def handle_404_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('404'))
 
     @route(
         http_method=ALL_HTTP_METHODS,
-        path='/500',
+        path='/500/{src_url:path}',
         name='500',
         cache=1,
     )
-    async def handle_500(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context: WebContext = WebContext(request)
+    async def handle_500(self, request: HTMXRequest, src_url: Path) -> HTMXTemplate:
+        web_context = WebContext(request)
 
         return HTMXTemplate(
             template_name='errors/500.html',
-            context=web_context.template_context,
+            context=web_context.template_context | {'src_url': src_url},
             re_target='body',
         )
-
-    @staticmethod
-    def handle_500_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('500'))
 
     @get('/sse')
     async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:
