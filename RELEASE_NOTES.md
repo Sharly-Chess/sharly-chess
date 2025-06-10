@@ -81,20 +81,20 @@ English version below
 
 - Added PGN and TRF 16 exports (2.7.0)
 
-# Players management
+### Players management
 
 - Fixed and added columns to the players ODS export (2.7.1)
 - Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases (2.7.3)
 - Update players when rating types differ in data sources (2.7.5)
 - Fixed the colors of the players update modal (2.7.5)
 
-# Pairings management
+### Pairings management
 
 - Reduced reaction time when entering results (2.7.1)
 - Fixed entering results with keyboard shortcuts on fixed boards (2.7.5)
 - Removed pairing settings modal when not accurate (2.7.5)
 
-# Screens management
+### Screens management
 
 - Fixed a bug on screen creation (2.7.2)
 
