@@ -1,3 +1,4 @@
+from types import NotImplementedType
 import weakref
 from _weakref import ReferenceType
 from typing import TYPE_CHECKING
@@ -61,3 +62,12 @@ class Prize:
         with self.get_event_database() as database:
             database.update_stored_prize(self.stored_prize)
             database.commit()
+
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        # p1 == p2 calls p1.__eq__(p2)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.id == other.id
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} - {self.stored_prize}'

@@ -5363,6 +5363,9 @@ msgid_plural "{num} players found."
 msgstr[0] "{num} joueur·euse trouvé·e."
 msgstr[1] "{num} joueur·euses trouvé·es."
 
+msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
+msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."
+
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
 

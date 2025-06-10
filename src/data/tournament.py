@@ -1002,6 +1002,7 @@ class Tournament:
         """compute and return the ranks of all the players after round *after_round*."""
         if correct_round:
             after_round = self.correct_ranking_round(after_round)
+
         if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
             self._estimate_players(self.players, after_round=after_round)
