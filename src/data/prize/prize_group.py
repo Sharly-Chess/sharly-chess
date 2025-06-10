@@ -185,13 +185,13 @@ class PrizeGroup:
 
         # Flatten all non-main prize slots into a queue
         for category in self.sorted_categories:
-            for prize in category.prizes:
+            for place, prize in enumerate(category.sorted_prizes):
                 if prize not in main_prizes:
                     queue.append(
                         AssignedPrize(
                             prize=prize,
                             priority=category.index,
-                            place_index=prize.index,
+                            place_index=place,
                             assigned_to=None,
                             value=prize.value,
                         )

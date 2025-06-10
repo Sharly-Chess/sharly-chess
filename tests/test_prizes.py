@@ -132,7 +132,6 @@ class PrizesTestCase(BaseTestCase):
         if not stored_prize_criteria:
             stored_prize_criteria = []
         for index, prize in enumerate(stored_prizes):
-            prize.index = index
             prize.prize_category_id = self.category_index
         for criterion in stored_prize_criteria:
             criterion.prize_category_id = self.category_index
@@ -155,7 +154,6 @@ class PrizesTestCase(BaseTestCase):
             prize_category_id=0,
             type=player_filter.id,
             options={option.id: option.value for option in player_filter.options},
-            index=self.criterion_index,
         )
         self.criterion_index += 1
         return criterion
@@ -167,7 +165,6 @@ class PrizesTestCase(BaseTestCase):
             value=value,
             is_monetary=is_monetary,
             description='',
-            index=self.prize_index,
         )
         self.prize_index += 1
         return prize
