@@ -3231,7 +3231,7 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
-msgid "Reload the page"
+msgid "Reload the current page"
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -3256,9 +3256,6 @@ msgstr ""
 msgid "Res. ** RESULT FOR PRINT VIEW"
 msgstr ""
 
-msgid "Restart the application"
-msgstr ""
-
 msgid "Result"
 msgstr ""
 
@@ -3281,6 +3278,9 @@ msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
 msgid "Results upload OK"
+msgstr ""
+
+msgid "Return to the home page"
 msgstr ""
 
 msgid "Return to tournament"
@@ -4910,7 +4910,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Please reload the page."
-#~ msgstr ""
 

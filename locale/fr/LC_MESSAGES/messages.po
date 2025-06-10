@@ -3231,8 +3231,8 @@ msgstr "Actualiser"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
-msgid "Reload the page"
-msgstr "Recharger la page"
+msgid "Reload the current page"
+msgstr "Recharger la page courante"
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
@@ -3255,9 +3255,6 @@ msgstr "La requête à la base de données a échoué : {error}."
 
 msgid "Res. ** RESULT FOR PRINT VIEW"
 msgstr "Res."
-
-msgid "Restart the application"
-msgstr "Redémarrer l'application"
 
 msgid "Result"
 msgstr "Résultat"
@@ -3282,6 +3279,9 @@ msgstr "Les écrans de résultats affichent les derniers résultats saisis par o
 
 msgid "Results upload OK"
 msgstr "Mise en ligne des résultats OK"
+
+msgid "Return to the home page"
+msgstr "Retourner à la page d'accueil"
 
 msgid "Return to tournament"
 msgstr "Retour au tournoi"
@@ -4910,7 +4910,4 @@ msgstr "ecran-{screen_type}"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Please reload the page."
-#~ msgstr ""
 
