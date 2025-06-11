@@ -75,17 +75,15 @@ class IndexAdminController(BaseAdminController):
                 'Invalid console logging level [{console_log_level}].'
             ).format(log_level=console_log_level)
             data[field] = ''
-        console_color: bool | None = WebContext.form_data_to_bool(data, 'console_color')
-        console_show_date: bool | None = WebContext.form_data_to_bool(
+        console_color: bool = WebContext.form_data_to_bool(data, 'console_color')
+        console_show_date: bool = WebContext.form_data_to_bool(
             data, 'console_show_date'
         )
-        console_show_level: bool | None = WebContext.form_data_to_bool(
+        console_show_level: bool = WebContext.form_data_to_bool(
             data, 'console_show_level'
         )
-        experimental: bool | None = WebContext.form_data_to_bool(data, 'experimental')
-        launch_browser: bool | None = WebContext.form_data_to_bool(
-            data, 'launch_browser'
-        )
+        experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
+        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation'
         )
@@ -128,9 +126,7 @@ class IndexAdminController(BaseAdminController):
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=bool(
-                        WebContext.form_data_to_bool(data, plugin.form_key, False)
-                    ),
+                    is_enabled=WebContext.form_data_to_bool(data, plugin.form_key),
                     errors=errors,
                 )
             )
