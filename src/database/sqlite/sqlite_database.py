@@ -148,14 +148,9 @@ class SQLiteDatabase:
             return json.dumps(if_none)
         return None
 
-    @classmethod
-    def dump_to_json_database_timer_colors(cls, colors) -> str | None:
-        """Serializes the timer colors into JSON.
-        By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
-        return cls.dump_to_json_database_field(colors, {i: None for i in range(1, 4)})
-
-    @classmethod
-    def dump_to_json_database_timer_delays(cls, delays) -> str | None:
-        """Serializes the timer delays into JSON.
-        By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
-        return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
+    @staticmethod
+    def _get_fields_dict(data_object: Any, fields: list[str]) -> dict[str, Any]:
+        """Get a dict of the attributes of a data object by name.
+        Raises an AttributeError if one of the fields is not an attribute.
+        Usage: database insertion for fields of a stored object."""
+        return {field_: getattr(data_object, field_) for field_ in fields}

@@ -1150,3 +1150,10 @@ class PointValueType(Enum):
                 return 'OUI'
             case _:
                 return 'NON'
+
+
+class FormAction(StrEnum):
+    UPDATE = 'update'
+    CREATE = 'create'
+    DUPLICATE = 'duplicate'
+    DELETE = 'delete'

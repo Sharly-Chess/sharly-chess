@@ -12,22 +12,6 @@ Clone the _GitHub_ repository https://github.com/sharly-chess/sharly-chess and s
 python src/sharly_chess.py
 ```
 
-Use the `--experimental` option to enable experimental features:
-
-```
-python src/sharly_chess.py --experimental
-```
-
-> :warning: USE EXPERIMENTAL FEATURES AT YOUR OWN RISK!
-
-### Starting the Interface with the FFE Server
-
-### Launching the interface with the FFE server
-
-```
-python src/sharly_chess.py --ffe
-```
-
 ### Launching the interface with the ChessEvent platform
 
 ```

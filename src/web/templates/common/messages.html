@@ -1,22 +1,5 @@
 {% for message in messages|reverse %}
-    <div
-        class="alert {{ message.html_class }} alert-dismissible fade show p-2 d-flex align-items-start gap-2"
-        role="alert"
-        hx-ext="remove-me"
-        {% if message.auto_remove %}
-            remove-me="20s"
-        {% endif %}
-    >
-        <div class="flex-grow-1">
-            {{ message.text }}
-        </div>
-        <button
-            type="button"
-            class="btn-close position-static p-0"
-            style="margin: 4px 0 0 0;"
-            data-bs-dismiss="alert"
-            data-bs-dismiss="modal"
-            aria-label="_('Hide')"
-        ></button>
-    </div>
+    {% with message=message.text, type=message.html_type, auto_remove=message.auto_remove %}
+        {% include 'alert.html' %}
+    {% endwith %}
 {% endfor %}

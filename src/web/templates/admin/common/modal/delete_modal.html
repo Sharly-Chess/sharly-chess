@@ -1,0 +1,39 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: fit-content;"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% block modal_title %}
+                    MODAL TITLE
+                {% endblock %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4 class="text-danger">
+                {% block delete_warning %}
+                    DELETE WARNING
+                {% endblock %}
+            </h4>
+            <form
+                id="modal-form"
+                hx-delete="{% block delete_url %}{% endblock %}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% block form_content %}{% endblock %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary text-nowrap">
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button type="submit" form="modal-form" class="text-nowrap white btn btn-danger">
+                <i class="bi-trash pe-1"></i>
+                {{ _('Delete') }}
+            </button>
+        </div>
+    </div>
+</div>

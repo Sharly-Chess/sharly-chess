@@ -40,7 +40,7 @@ from common.installation_checker import (
 )
 from plugins import PLUGINS_DIR
 
-# Enable experimental features for force the installation of the experimental tools and libs before exporting
+# Enable experimental features to force the installation of the experimental tools and libs before exporting
 enable_experimental_features(True)
 
 logger: Logger = get_logger()

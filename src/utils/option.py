@@ -27,14 +27,12 @@ class Option(IdentifiableEntity, ABC):
     @abstractmethod
     def type(self) -> type | UnionType:
         """Expected type for the value of the option"""
-        pass
 
     @property
     @abstractmethod
     def default_value(self) -> Any:
         """Value used as default for the option.
         Should be of type {self.type}"""
-        pass
 
     @property
     @abstractmethod
@@ -43,7 +41,6 @@ class Option(IdentifiableEntity, ABC):
         Template is intended to be used with a context where
         "option" refers to the Option object
         """
-        pass
 
     @property
     def container_id(self) -> str:
@@ -54,6 +51,12 @@ class Option(IdentifiableEntity, ABC):
         """Checks if the value is correctly implemented.
         Raises an OptionError if not."""
         if not isinstance(self.value, self.type):
+            raise OptionError(f'{self.value=} (expected type: {self.type})', self)
+
+    def _validate_list_type(self, item_type: type):  # type: ignore
+        if not isinstance(self.value, list) or not all(
+            isinstance(item, item_type) for item in self.value
+        ):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
 

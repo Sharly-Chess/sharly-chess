@@ -94,6 +94,15 @@ class StaticUtils:
             points_str = points_str.replace(old, new)
         return points_str
 
+    @staticmethod
+    def currency_value_str(value: float, currency: str) -> str:
+        from common.i18n import _
+
+        return _('{currency}{value}').format(
+            currency=currency,
+            value=int(value) if value.is_integer() else f'{value:.2f}',
+        )
+
 
 class SharedUtils:
     """Class containing the shared utils functions,

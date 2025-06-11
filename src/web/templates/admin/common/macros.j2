@@ -200,6 +200,7 @@ with_indicator: display a loading indicator, optional
     dropdown_id='',
     dropdown_item='',
     select_options={},
+    multiple_select=false,
     number_min='',
     number_max='',
     number_step='',
@@ -257,23 +258,50 @@ with_indicator: display a loading indicator, optional
                 "
             >
                 {% if input_type == 'select' %}
+                    {% set selected=data[name].split(';') if multiple_select else [data[name]] %}
                     <select
                         name="{{ name }}"
                         id="{{ id }}"
                         class="form-select {% if error or (name in errors) %}is-invalid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
-                        {% if disabled or select_options|length <= 1 %}
+                        {% if disabled or (select_options|length <= 1 and not multiple_select) %}
                             disabled
                         {% endif %}
+                        {% if multiple_select %}
+                            multiple
+                            style="display:none"
+                            {% if placeholder %}
+                                data-placeholder='{{ placeholder }}'
+                            {% endif %}
+                        {% endif %}
                     >
-                        {% for value, text in select_options.items() %}
-                            <option value="{{ value }}" {% if value == data[name] %}selected{%endif %}>
-                                {{ text }}
-                            </option>
+                        {% for key, text_or_options in select_options.items() %}
+                            {% if text_or_options is string %}
+                                <option value="{{ key }}" {% if key in selected %}selected{% endif %}>
+                                    {{ text_or_options }}
+                                </option>
+                            {% else %}
+                                <optgroup label="{{ key }}">
+                                    {% for value, text in text_or_options.items() %}
+                                        <option value="{{ value }}" {% if value in selected %}selected{% endif %}>
+                                            {{ text }}
+                                        </option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endif %}
                         {% endfor %}
                     </select>
-                    {% if select_options|length == 1 and not disabled %}
-                        <input type="hidden" name="{{ name }}" value="{{ data[name] }}" />
+                    {% if multiple_select %}
+                        <script>
+                            $('#{{ id }}').select2({
+                                theme: 'bootstrap-5',
+                                width: '100%',
+                                placeholder: $(this).data('placeholder'),
+                            });
+                            $('.select2-search__field').css('width', '100%');
+                        </script>
+                    {% elif select_options|length == 1 and not disabled %}
+                        <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />
                     {% endif %}
                 {% elif input_type == 'switch' %}
                     <input
@@ -620,6 +648,8 @@ with_indicator: display a loading indicator, optional
     errors={},
     error=false,
     select_options={'': 'NO OPTIONS'},
+    multiple_select=false,
+    placeholder='',
     disabled=false
 ) %}
     {{ _generic_input(
@@ -631,6 +661,8 @@ with_indicator: display a loading indicator, optional
         errors=errors,
         error=error,
         select_options=select_options,
+        multiple_select=multiple_select,
+        placeholder=placeholder,
         disabled=disabled,
     ) }}
 {% endmacro %}
@@ -724,6 +756,55 @@ with_indicator: display a loading indicator, optional
     ) }}
 {% endmacro %}
 
+{% macro inline_text_form(
+    id,
+    name,
+    value='',
+    placeholder='NO PLACEHOLDER',
+    post_url='',
+    patch_url='',
+    hide=false
+) %}
+    <form
+        id="{{ id }}-form"
+        class="input-group"
+        {% if post_url %}
+            hx-post="{{ post_url }}"
+        {% elif patch_url %}
+            hx-patch="{{ patch_url }}""
+        {% endif %}
+        {% if hide %}
+            style="display: none"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <input
+            id="{{ id }}-input"
+            name="{{ name }}"
+            type="text"
+            class="form-control"
+            placeholder="{{ placeholder }}"
+            value="{{ value }}"
+            style="outline-offset: 0px;"
+        >
+        <button id="{{ id }}-submit-button" class="btn btn-primary" type="submit" {% if not value %}disabled{% endif %}>
+            <i class="bi-check"></i>
+        </button>
+        <button id="{{ id }}-cancel-button" class="btn btn-secondary" type="button">
+            <i class="bi-x"></i>
+        </button>
+    </form>
+    <script>
+        $('#{{ id }}-input').on('input', function() {
+            $('#{{ id }}-submit-button').prop('disabled', $(this).val() === '');
+        });
+        $('#{{ id }}-input').focus(function() {
+            $('#prize-group-create-form').addClass('focus');
+        });
+    </script>
+{% endmacro %}
+
 {% macro extra_admin_column_header(
     at,
     extra_columns = {}
@@ -788,4 +869,47 @@ with_indicator: display a loading indicator, optional
             {% endfor %}
         </ul>
     </div>
+{% endmacro %}
+
+{% macro split_submit_buttons(
+    options,
+    active_option,
+    form_id='modal-form'
+) %}
+    <div class="btn-group dropup">
+        <button
+            type="submit"
+            form="{{ form_id }}"
+            class="btn btn-primary {{ active_option }}-button"
+        >
+            {{ options[active_option] }}
+        </button>
+        <button
+            type="button"
+            class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+        >
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for option_id, option_name in options.items() %}
+                <button
+                    type="submit"
+                    name="{{ option_id }}"
+                    form="{{ form_id }}"
+                    class="dropdown-item {% if option_id == active_option %}active{% endif %}"
+                >
+                    {{ option_name }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}
+
+{% macro create_with_add_other_split_buttons(is_add_other_active) %}
+    {{ split_submit_buttons(
+        options={'create': _('Create'), 'add_other': _('Create and add another')},
+        active_option='add_other' if is_add_other_active else 'create'
+    )}}
 {% endmacro %}

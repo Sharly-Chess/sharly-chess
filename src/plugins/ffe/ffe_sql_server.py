@@ -280,6 +280,20 @@ class FFESqlServer(SqlServer):
             ),
         )
 
+    async def get_players_by_id(
+        self,
+        field: str,
+        player_ids: list[str] | list[int],
+    ) -> AsyncIterator[Player]:
+        query_array = ', '.join('?' for _ in player_ids)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {field} IN ({query_array})'
+        )
+        await self.execute(query, tuple(player_ids))
+        return (self._get_player_from_row(row) async for row in self.fetchall())
+
     async def get_players_by_ffe_licence_number(
         self,
         player_ffe_licence_numbers: list[str],
