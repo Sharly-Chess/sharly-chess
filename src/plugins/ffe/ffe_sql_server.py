@@ -162,6 +162,14 @@ class FFESqlServer(SqlServer):
     def string_matches_fide_id(string: str) -> int | None:
         return int(string) if string.isdecimal() else None
 
+    @staticmethod
+    def remote_fide_id_format_1(fide_id: int) -> str:
+        return str(fide_id).rjust(8, '0').ljust(10, ' ')
+
+    @staticmethod
+    def remote_fide_id_format_2(fide_id: int) -> str:
+        return f"'{fide_id}'"
+
     async def search_player(
         self,
         string: str,
@@ -203,8 +211,8 @@ class FFESqlServer(SqlServer):
                 int_value = int(token.strip())
                 token_expressions.append('(joueur.FideCode IN (?, ?))')
                 token_params += [
-                    str(int_value).rjust(8, '0').ljust(10, ' '),
-                    f"'{int_value}'",
+                    self.remote_fide_id_format_1(int_value),
+                    self.remote_fide_id_format_2(int_value),
                 ]
             conditions += [
                 ' OR '.join(token_expressions),
@@ -237,16 +245,16 @@ class FFESqlServer(SqlServer):
 
     async def _get_player_by_id(
         self,
-        field: str,
-        id_: int | str,
+        condition: str,
+        params: tuple,
     ) -> Player | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {field} = ?'
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {condition}'
         )
         await self.execute(
             query,
-            (str(id_),),
+            params,
         )
         if row := await self.fetchone():
             return self._get_player_from_row(row)
@@ -257,13 +265,19 @@ class FFESqlServer(SqlServer):
         self,
         player_ffe_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id('joueur.Ref', player_ffe_id)
+        return await self._get_player_by_id('joueur.Ref = ?', (str(player_ffe_id),))
 
     async def get_player_by_fide_id(
         self,
         player_fide_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id('joueur.FideCode', player_fide_id)
+        return await self._get_player_by_id(
+            'joueur.FideCode IN (?, ?)',
+            (
+                self.remote_fide_id_format_1(player_fide_id),
+                self.remote_fide_id_format_2(player_fide_id),
+            ),
+        )
 
     async def get_players_by_ffe_licence_number(
         self,
@@ -290,9 +304,12 @@ class FFESqlServer(SqlServer):
         await self.execute(
             query,
             tuple(
-                str(player_fide_id).rjust(8, '0').ljust(10, ' ')
+                self.remote_fide_id_format_1(player_fide_id)
                 for player_fide_id in player_fide_ids
             )
-            + tuple(f"'{player_fide_id}'" for player_fide_id in player_fide_ids),
+            + tuple(
+                self.remote_fide_id_format_2(player_fide_id)
+                for player_fide_id in player_fide_ids
+            ),
         )
         return (self._get_player_from_row(row) async for row in self.fetchall())

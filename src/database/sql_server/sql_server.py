@@ -190,7 +190,7 @@ class SqlServer:
         assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         row = await self.cursor.fetchone()
-        return dict(zip(columns, row))
+        return dict(zip(columns, row)) if row else {}
 
     async def fetchval(self) -> Any:
         """Returns the next database cursor value."""
