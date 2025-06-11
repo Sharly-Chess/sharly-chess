@@ -1,11 +1,19 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from itertools import groupby
-from typing import Tuple, override
+from typing import override
 
 from common.i18n import _
 from data.player import Player
 from data.prize.prize import Prize
 from utils.entity import IdentifiableEntity
+
+
+@dataclass
+class SharedPrize:
+    top_prize: Prize
+    place_index: int
+    value: float
 
 
 class PrizeSharing(IdentifiableEntity, ABC):
@@ -23,7 +31,7 @@ class PrizeSharing(IdentifiableEntity, ABC):
     @abstractmethod
     def resolve_prizes(
         self, prizes: list[Prize], players: list[Player]
-    ) -> dict[int, Tuple[int, float]]:
+    ) -> dict[int, SharedPrize]:
         """Given a list of sorted players, returns a dict from player id to (place, prize_value)"""
 
 
@@ -47,10 +55,14 @@ class NoPrizeSharing(PrizeSharing):
     @override
     def resolve_prizes(
         self, prizes: list[Prize], players: list[Player]
-    ) -> dict[int, Tuple[int, float]]:
-        resolved: dict[int, Tuple[int, float]] = {}
+    ) -> dict[int, SharedPrize]:
+        resolved: dict[int, SharedPrize] = {}
         for place, (player, prize) in enumerate(zip(players, prizes)):
-            resolved[player.id] = (place, prize.value)
+            resolved[player.id] = SharedPrize(
+                top_prize=prize,
+                place_index=place,
+                value=prize.value,
+            )
         return resolved
 
 
@@ -85,8 +97,8 @@ class AveragePrizeSharing(PrizeSharing):
     @override
     def resolve_prizes(
         self, prizes: list[Prize], players: list[Player]
-    ) -> dict[int, Tuple[int, float]]:
-        resolved: dict[int, Tuple[int, float]] = {}
+    ) -> dict[int, SharedPrize]:
+        resolved: dict[int, SharedPrize] = {}
         num_distributed = 0
         place = 0
         for score, group in groupby(players, key=lambda p: p.points or 0):
@@ -96,11 +108,14 @@ class AveragePrizeSharing(PrizeSharing):
             ]
             share = sum(p.value for p in prizes_to_share) / len(players_in_tie)
             for player in players_in_tie:
-                resolved[player.id] = (place, share)
+                resolved[player.id] = SharedPrize(
+                    top_prize=prizes_to_share[0],
+                    place_index=place,
+                    value=share,
+                )
 
-            place += 1
+            place += len(players_in_tie)
             num_distributed += len(players_in_tie)
-
         return resolved
 
 
@@ -135,8 +150,8 @@ class HortSystemPrizeSharing(PrizeSharing):
     @override
     def resolve_prizes(
         self, prizes: list[Prize], players: list[Player]
-    ) -> dict[int, Tuple[int, float]]:
-        resolved: dict[int, Tuple[int, float]] = {}
+    ) -> dict[int, SharedPrize]:
+        resolved: dict[int, SharedPrize] = {}
         num_distributed = 0
         place = 0
         for score, group in groupby(players, key=lambda p: p.points or 0):
@@ -147,11 +162,12 @@ class HortSystemPrizeSharing(PrizeSharing):
             total = sum(p.value for p in prizes_to_share)
             for i, player in enumerate(players_in_tie):
                 own = prizes_to_share[i].value if i < len(prizes_to_share) else 0
-                resolved[player.id] = (
-                    place,
-                    0.5 * own + 0.5 * (total / len(players_in_tie)),
+                resolved[player.id] = SharedPrize(
+                    top_prize=prizes_to_share[0],
+                    place_index=place,
+                    value=0.5 * own + 0.5 * (total / len(players_in_tie)),
                 )
-            place += 1
+            place += len(players_in_tie)
             num_distributed += len(players_in_tie)
 
         return resolved

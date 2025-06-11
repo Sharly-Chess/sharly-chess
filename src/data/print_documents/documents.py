@@ -14,8 +14,9 @@ from data.print_documents.options import (
     PrintOption,
     RoundPrintOption,
     PlayerSortPrintOption,
+    ShowWarningsPrintOption,
 )
-from data.prize.prize_group import AssignedPrize, PrizeGroup
+from data.prize.prize_sharing import NoPrizeSharing
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
@@ -445,6 +446,31 @@ class BergerGridPrintDocument(PrintDocument):
         }
 
 
+class PrizeListPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'prize-list'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Prize list')
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/prize_list.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'ordinal_suffix': StaticUtils.ordinal_suffix,
+            'no_sharing_id': NoPrizeSharing.static_id(),
+        }
+
+
 class PrizeAssignmentPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
@@ -464,22 +490,16 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def template_name(self) -> str:
-        return '/admin/print/prizes.html'
+        return '/admin/print/prize_assignment.html'
 
     @property
     def template_context(self) -> dict[str, Any]:
-        return {}
+        return {
+            'show_warnings': self.get_option_values()[0],
+            'ordinal_suffix': StaticUtils.ordinal_suffix,
+            'no_sharing_id': NoPrizeSharing.static_id(),
+        }
 
     @staticmethod
-    def assigned_prizes_by_category_id(
-        prize_group: PrizeGroup,
-    ) -> dict[int, list[AssignedPrize]]:
-        assigned_prizes_by_category_id: dict[int, list[AssignedPrize]] = {
-            category.id: [] for category in prize_group.categories
-        }
-        for assigned_prize in prize_group.assign_prizes()[0]:
-            if not assigned_prize.prize:
-                continue
-            category_id = assigned_prize.prize.prize_category.id
-            assigned_prizes_by_category_id[category_id].append(assigned_prize)
-        return assigned_prizes_by_category_id
+    def available_options() -> list[type[PrintOption]]:
+        return [ShowWarningsPrintOption]

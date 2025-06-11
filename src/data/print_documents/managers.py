@@ -18,6 +18,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.PlayerRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
             documents.BergerGridPrintDocument,
+            documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
         ]
 
@@ -29,6 +30,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,
             options.PlayerSortPrintOption,
+            options.ShowWarningsPrintOption,
         ]
 
 

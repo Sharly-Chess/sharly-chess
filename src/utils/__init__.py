@@ -1,5 +1,5 @@
 from decimal import Decimal
-from functools import lru_cache
+from functools import lru_cache, cache
 from math import floor
 from typing import Callable
 
@@ -102,6 +102,23 @@ class StaticUtils:
             currency=currency,
             value=int(value) if value.is_integer() else f'{value:.2f}',
         )
+
+    @staticmethod
+    @cache
+    def ordinal_suffix(value: int) -> str:
+        from common.i18n import _
+
+        if value == 1:
+            return _('st *** ORDINAL SUFFIX 1')
+        if not 11 <= value <= 13:
+            match value % 10:
+                case 1:
+                    return _('st *** ORDINAL SUFFIX LAST DIGIT 1')
+                case 2:
+                    return _('nd *** ORDINAL SUFFIX LAST DIGIT 2')
+                case 3:
+                    return _('rd *** ORDINAL SUFFIX LAST DIGIT 3')
+        return _('th *** DEFAULT ORDINAL SUFFIX')
 
 
 class SharedUtils:

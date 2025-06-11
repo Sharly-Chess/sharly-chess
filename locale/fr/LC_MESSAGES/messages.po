@@ -1148,6 +1148,9 @@ msgstr "Suppression du tournoi [%(tournament_uniq_id)s]"
 msgid "Description"
 msgstr "Description"
 
+msgid "Description is mandatory for non-monetary prizes."
+msgstr "La description est objigatoire pour les prix non-monétaires."
+
 msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr "Les descriptions ne peuvent être définies que pour les prix non-monétaires."
 
@@ -2825,6 +2828,9 @@ msgstr "Prix non-monétaire"
 msgid "None"
 msgstr "Aucun"
 
+msgid "Not assigned"
+msgstr "Non-attribué"
+
 msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
 
@@ -3376,6 +3382,12 @@ msgstr "Évènement privé"
 msgid "Prize [%(prize)s] successfully created!"
 msgstr "Prix [%(prize)s] créé avec succès !"
 
+msgid "Prize assignment"
+msgstr "Attribution des prix"
+
+msgid "Prize assignment after round #{round}"
+msgstr "Attribution des prix après la ronde n°{round}"
+
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
 
@@ -3857,6 +3869,10 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
 
+#, python-format
+msgid "Shared prizes (%(prize_sharing)s)"
+msgstr "Prix partagés (%(prize_sharing)s)"
+
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 
@@ -3883,6 +3899,9 @@ msgstr "Montrer le niveau de log sur la console"
 
 msgid "Show the logging level on the console:"
 msgstr "Montrer le niveau de log sur la console :"
+
+msgid "Show warnings"
+msgstr "Afficher les avertissements"
 
 msgid "Show/hide the boards screens."
 msgstr "Afficher/cacher les écrans d'affichage des échiquiers."
@@ -5253,6 +5272,9 @@ msgstr "évènement"
 msgid "event ID does not match."
 msgstr "L'identifiant de l'évènement ne correspond pas."
 
+msgid "nd *** ORDINAL SUFFIX LAST DIGIT 2"
+msgstr "ème"
+
 msgid "no"
 msgstr "non"
 
@@ -5289,6 +5311,9 @@ msgstr "classement de {first} à la fin"
 msgid "ranking from start to #{last}"
 msgstr "classement du début à {last}"
 
+msgid "rd *** ORDINAL SUFFIX LAST DIGIT 3"
+msgstr "ème"
+
 msgid "rotator"
 msgstr "rotatif"
 
@@ -5315,6 +5340,15 @@ msgstr "écrans de {number} joueur·euses du n°{first} à la fin"
 
 msgid "screens of {number} players from start to #{last}"
 msgstr "écrans de {number} joueur·euses du début au n°{last}"
+
+msgid "st *** ORDINAL SUFFIX 1"
+msgstr "er"
+
+msgid "st *** ORDINAL SUFFIX LAST DIGIT 1"
+msgstr "ème"
+
+msgid "th *** DEFAULT ORDINAL SUFFIX"
+msgstr "ème"
 
 msgid "the whole ranking"
 msgstr "classement complet"

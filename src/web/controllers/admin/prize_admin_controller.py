@@ -28,6 +28,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredPrizeCriterion,
 )
+from utils import StaticUtils
 from utils.enum import FormAction
 from utils.option import OptionError
 from web.controllers.admin.base_event_admin_controller import (
@@ -133,6 +134,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_category': self.admin_prize_category,
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
+            'ordinal_suffix': StaticUtils.ordinal_suffix,
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
         }
@@ -949,6 +951,8 @@ class PrizeAdminController(BaseEventAdminController):
             message = 'Description is only allowed for non-monetary prizes.'
             errors[field] = message
             logger.error(message)
+        if not is_monetary and not description:
+            errors[field] = _('Description is mandatory for non-monetary prizes.')
         return errors
 
     @staticmethod
