@@ -190,7 +190,6 @@ class FFESqlServer(SqlServer):
             ('joueur.Prenom', '', '%'),
             ('joueur.NrFFE', '', ''),
         )
-        int_fields: tuple[str, ...] = ('joueur.FideCode',)
         conditions: list[str] = []
         params: list[Any] = []
         for token in tokens:
@@ -200,13 +199,13 @@ class FFESqlServer(SqlServer):
             token_params: list[str | int] = [
                 f'{field[1]}{token}{field[2]}' for field in str_fields
             ]
-            int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
-                token_expressions += [f'({field} = ?)' for field in int_fields]
+                token_expressions.append('(joueur.FideCode IN (?, ?))')
                 token_params += [
-                    int_value,
-                ] * len(int_fields)
+                    str(int_value).rjust(8, '0').ljust(10, ' '),
+                    f"'{int_value}'",
+                ]
             conditions += [
                 ' OR '.join(token_expressions),
             ]
@@ -266,28 +265,34 @@ class FFESqlServer(SqlServer):
     ) -> Player | None:
         return await self._get_player_by_id('joueur.FideCode', player_fide_id)
 
-    async def get_players_by_id(
-        self,
-        field: str,
-        player_ids: list[str] | list[int],
-    ) -> AsyncIterator[Player]:
-        query_array = ', '.join('?' for _ in player_ids)
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {field} IN ({query_array})'
-        )
-        await self.execute(query, tuple(player_ids))
-        return (self._get_player_from_row(row) async for row in self.fetchall())
-
     async def get_players_by_ffe_licence_number(
         self,
         player_ffe_licence_numbers: list[str],
     ) -> AsyncIterator[Player]:
-        return await self.get_players_by_id('joueur.NrFFE', player_ffe_licence_numbers)
+        query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE joueur.NrFFE IN ({query_array})'
+        )
+        await self.execute(query, tuple(player_ffe_licence_numbers))
+        return (self._get_player_from_row(row) async for row in self.fetchall())
 
     async def get_players_by_fide_id(
         self,
         player_fide_ids: list[int],
     ) -> AsyncIterator[Player]:
-        return await self.get_players_by_id('joueur.FideCode', player_fide_ids)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE joueur.FideCode IN ({", ".join(["?"] * 2 * len(player_fide_ids))})'
+        )
+        await self.execute(
+            query,
+            tuple(
+                str(player_fide_id).rjust(8, '0').ljust(10, ' ')
+                for player_fide_id in player_fide_ids
+            )
+            + tuple(f"'{player_fide_id}'" for player_fide_id in player_fide_ids),
+        )
+        return (self._get_player_from_row(row) async for row in self.fetchall())
