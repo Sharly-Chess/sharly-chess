@@ -13,7 +13,7 @@ English version below
 - Optimisation du temps de chargement de la page des évènements (2.7.0)
 - Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
 - Interdiction de l'accès aux pages d'arbitrage pour les clients non autorisés (2.7.1)
-- Amélioration de la gestion des exceptions (2.7.6)
+- Amélioration de la gestion des exceptions (2.7.6, 2.7.7)
 
 ### Gestion des évènements
 
@@ -74,7 +74,7 @@ English version below
 - Optimized the load time of the events page (2.7.0)
 - Instant notifications on Players and Pairings tabs for new checkins or results from user screens (2.7.0)
 - Forbid access to arbiters' pages for unauthorized clients (2.7.1)
-- Improved exception handling (2.7.6)
+- Improved exception handling (2.7.6, 2.7.7)
 
 ### Event management
 
