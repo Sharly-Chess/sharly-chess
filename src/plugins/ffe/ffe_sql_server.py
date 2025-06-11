@@ -144,8 +144,7 @@ class FFESqlServer(SqlServer):
     def get_club_fields(self) -> list[str]:
         return [f'club.{f} AS Club{f}' for f in self.CLUB_FIELDS]
 
-    def get_empty_club_fields(self) -> list[str]:
-        return [f"'' AS Club{f}" for f in self.CLUB_FIELDS]
+    RATING_TYPE_CONDITION: str = f'joueur.Fide IN ({", ".join(map(lambda s: f"'{s}'", [PlayerRatingType.ESTIMATED, PlayerRatingType.NATIONAL, PlayerRatingType.FIDE]))})'
 
     @staticmethod
     def string_matches_ffe_licence_number(string: str) -> str | None:
@@ -198,7 +197,9 @@ class FFESqlServer(SqlServer):
             ('joueur.Prenom', '', '%'),
             ('joueur.NrFFE', '', ''),
         )
-        conditions: list[str] = []
+        conditions: list[str] = [
+            self.RATING_TYPE_CONDITION,
+        ]
         params: list[Any] = []
         for token in tokens:
             token_expressions: list[str] = [
@@ -250,7 +251,7 @@ class FFESqlServer(SqlServer):
     ) -> Player | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {condition}'
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(
             query,
@@ -265,7 +266,7 @@ class FFESqlServer(SqlServer):
         self,
         player_ffe_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id('joueur.Ref = ?', (str(player_ffe_id),))
+        return await self._get_player_by_id('joueur.Ref = ?', (player_ffe_id,))
 
     async def get_player_by_fide_id(
         self,
@@ -283,11 +284,10 @@ class FFESqlServer(SqlServer):
         self,
         player_ffe_licence_numbers: list[str],
     ) -> AsyncIterator[Player]:
-        query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.NrFFE IN ({query_array})'
+            f'WHERE joueur.NrFFE IN ({", ".join(["?"] * len(player_ffe_licence_numbers))}) AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
         return (self._get_player_from_row(row) async for row in self.fetchall())
