@@ -1006,11 +1006,13 @@ class Tournament:
         for index, board in enumerate(boards, start=1):
             board.id = index
             assert board.white_player is not None
-            number: int = (
-                board.white_player.fixed
-                or (board.black_player.fixed if board.black_player else None)
-                or index
-            )
+            number: int
+            if board.white_player.fixed:
+                number = board.white_player.fixed
+            elif board.black_player and board.black_player.fixed:
+                number = board.black_player.fixed
+            else:
+                number = self.first_board_number - 1 + index
             board.number = number
             board.white_player.set_board(index, number, BoardColor.WHITE)
             if board.black_player is not None:
