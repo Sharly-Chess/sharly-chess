@@ -161,6 +161,14 @@ class FFESqlServer(SqlServer):
     def string_matches_fide_id(string: str) -> int | None:
         return int(string) if string.isdecimal() else None
 
+    @staticmethod
+    def remote_fide_id_format_1(fide_id: int) -> str:
+        return str(fide_id).rjust(8, '0').ljust(10, ' ')
+
+    @staticmethod
+    def remote_fide_id_format_2(fide_id: int) -> str:
+        return f"'{fide_id}'"
+
     async def search_player(
         self,
         string: str,
@@ -189,7 +197,6 @@ class FFESqlServer(SqlServer):
             ('joueur.Prenom', '', '%'),
             ('joueur.NrFFE', '', ''),
         )
-        int_fields: tuple[str, ...] = ('joueur.FideCode',)
         conditions: list[str] = [
             self.RATING_TYPE_CONDITION,
         ]
@@ -201,13 +208,13 @@ class FFESqlServer(SqlServer):
             token_params: list[str | int] = [
                 f'{field[1]}{token}{field[2]}' for field in str_fields
             ]
-            int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
-                token_expressions += [f'({field} = ?)' for field in int_fields]
+                token_expressions.append('(joueur.FideCode IN (?, ?))')
                 token_params += [
-                    int_value,
-                ] * len(int_fields)
+                    self.remote_fide_id_format_1(int_value),
+                    self.remote_fide_id_format_2(int_value),
+                ]
             conditions += [
                 ' OR '.join(token_expressions),
             ]
@@ -237,19 +244,18 @@ class FFESqlServer(SqlServer):
         )
         return (self._get_player_from_row(row) async for row in self.fetchall())
 
-    async def _get_player_by_id(
+    async def _get_player_by_condition(
         self,
-        field: str,
-        id_: int | str,
+        condition: str,
+        params: tuple,
     ) -> Player | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {field} = ? AND {self.RATING_TYPE_CONDITION}'
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(
             query,
-            (str(id_),),
+            params,
         )
         if row := await self.fetchone():
             return self._get_player_from_row(row)
@@ -260,36 +266,52 @@ class FFESqlServer(SqlServer):
         self,
         player_ffe_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id('joueur.Ref', player_ffe_id)
+        return await self._get_player_by_condition('joueur.Ref = ?', (player_ffe_id,))
 
     async def get_player_by_fide_id(
         self,
         player_fide_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id('joueur.FideCode', player_fide_id)
-
-    async def get_players_by_id(
-        self,
-        field: str,
-        player_ids: list[str] | list[int],
-    ) -> AsyncIterator[Player]:
-        query_array = ', '.join('?' for _ in player_ids)
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {field} IN ({query_array}) AND {self.RATING_TYPE_CONDITION}'
+        return await self._get_player_by_condition(
+            'joueur.FideCode IN (?, ?)',
+            (
+                self.remote_fide_id_format_1(player_fide_id),
+                self.remote_fide_id_format_2(player_fide_id),
+            ),
         )
-        await self.execute(query, tuple(player_ids))
-        return (self._get_player_from_row(row) async for row in self.fetchall())
 
     async def get_players_by_ffe_licence_number(
         self,
         player_ffe_licence_numbers: list[str],
     ) -> AsyncIterator[Player]:
-        return await self.get_players_by_id('joueur.NrFFE', player_ffe_licence_numbers)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE joueur.NrFFE IN ({", ".join(["?"] * len(player_ffe_licence_numbers))}) '
+            f'AND {self.RATING_TYPE_CONDITION}'
+        )
+        await self.execute(query, tuple(player_ffe_licence_numbers))
+        return (self._get_player_from_row(row) async for row in self.fetchall())
 
     async def get_players_by_fide_id(
         self,
         player_fide_ids: list[int],
     ) -> AsyncIterator[Player]:
-        return await self.get_players_by_id('joueur.FideCode', player_fide_ids)
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE joueur.FideCode IN ({", ".join(["?"] * 2 * len(player_fide_ids))}) '
+            f'AND {self.RATING_TYPE_CONDITION}'
+        )
+        await self.execute(
+            query,
+            tuple(
+                self.remote_fide_id_format_1(player_fide_id)
+                for player_fide_id in player_fide_ids
+            )
+            + tuple(
+                self.remote_fide_id_format_2(player_fide_id)
+                for player_fide_id in player_fide_ids
+            ),
+        )
+        return (self._get_player_from_row(row) async for row in self.fetchall())

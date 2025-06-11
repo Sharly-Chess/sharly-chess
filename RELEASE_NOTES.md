@@ -50,6 +50,8 @@ English version below
 - Correction du test des identifiants FFE lors de l'édition des tournois (2.7.4)
 - Utilisation de la base de données du serveur fédéral lors de la création des joueur·euses à partir de la base FIDE (2.7.5)
 - Correction de la recherche FFE en ligne (2.7.7)
+- Correction de la recherche des joueur·euses FFE par leur identifiant FIDE (2.7.7)
+- Correction de l'ajout de joueur·euses FIDE non présent·es dans la base FFE (2.7.7)
 
 ## ChessEvent
 
@@ -110,6 +112,8 @@ English version below
 - Fixed FFE auth test on the tournament editing form (2.7.4)
 - Request the FFE SQL server when augmenting players created from the FIDE database (2.7.5)
 - Fixed FFE online search (2.7.7)
+- Fixed searching FFE players by their FIDE ID (2.7.7)
+- Fixed adding FIDE players when not present in the FFE database (2.7.7)
 
 ## ChessEvent
 
