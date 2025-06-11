@@ -25,7 +25,9 @@
                 {% for prize in admin_prize_category.sorted_prizes %}
                     <div class="border border-secondary">
                         <div class="p-2 d-flex align-items-start gap-4">
-                            <div>{{ loop.index }}.</div>
+                            <b>
+                                {{ loop.index }}<sup>{{ ordinal_suffix(loop.index) }}</sup>
+                            </b>
                             <div class="text-start flex-grow-1">
                                 {{ prize.name }}
                             </div>

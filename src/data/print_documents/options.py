@@ -12,6 +12,15 @@ from utils.option import Option, OptionError
 class PrintOption(Option, ABC):
     """Parent class of all the options of print documents."""
 
+    @property
+    def template_name(self) -> str:
+        return f'/admin/event/print_options/{self.template_file_name}.html'
+
+    @property
+    def template_file_name(self) -> str:
+        """Name of the file of the template representing the option."""
+        return self.id.replace('-', '_')
+
 
 class RoundPrintOption(PrintOption):
     @staticmethod
@@ -51,10 +60,6 @@ class PlayerSplitPrintOption(PrintOption):
         return NoSplitPlayerSplitter.static_id()
 
     @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/player_split.html'
-
-    @property
     def player_splitter_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlayerSplitterManager
 
@@ -89,10 +94,6 @@ class PlayerSortPrintOption(PrintOption):
         return NamePlayerSorter.static_id()
 
     @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/player_sort.html'
-
-    @property
     def player_sorter_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlayerSorterManager
 
@@ -111,3 +112,17 @@ class PlayerSortPrintOption(PrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown player sorter: {self.value}', self)
+
+
+class ShowWarningsPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'show-warnings'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return True

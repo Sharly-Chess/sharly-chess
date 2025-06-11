@@ -1,22 +1,32 @@
 {% extends '/admin/print/base.html' %}
 
 {% block content %}
-    {% for prize_group in document.tournament.prize_groups %}
-        {% set assigned_prizes_by_category_id=document.assigned_prizes_by_category_id(prize_group) %}
+    {% if show_warnings %}
+        <div class="section-title">Warnings are enabled</div>
+    {% endif %}
+    {% for prize_group in document.tournament.sorted_prize_groups %}
+        {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
         {% for prize_category in prize_group.sorted_categories %}
             <div class="section-title">
                 {{ prize_category.name }}
             </div>
+            {% if prize_category.prize_sharing.id != no_sharing_id %}
+                <div class="section-sub-title">
+                    {{ _('Shared prizes (%(prize_sharing)s)', prize_sharing=prize_category.prize_sharing.name) }}
+                </div>
+            {% endif %}
             <table>
                 <tbody>
                     {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
                         <tr>
                             {% set prize=assigned_prize.prize %}
                             {% set player=assigned_prize.assigned_to %}
-                            <td>{{ prize.index + 1 }}.</td>
+                            <td class="important-cell">
+                                {{ loop.index }}<sup>{{ ordinal_suffix(loop.index) }}</sup>
+                            </td>
                             {% if player %}
-                                <td>{{ player.rank }}.</td>
-                                <td>{{ player.full_name }}</td>
+                                <td>{{ player.rank }}<sup>{{ ordinal_suffix(player.rank) }}</sup></td>
+                                <td class="important-cell">{{ player.full_name }}</td>
                                 <td>{{ player.rating_str }}</td>
                                 <td>{{ player.category.short_name }}</td>
                                 <td>{{ player.gender.short_name }}</td>
@@ -25,7 +35,7 @@
                                 <td>{{ player.points_str }}</td>
                             {% else %}
                                 <td></td>
-                                <td><i>{{ _('No player') }}</i></td>
+                                <td><i>{{ _('Not assigned') }}</i></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -33,11 +43,11 @@
                                 <td></td>
                                 <td></td>
                             {% endif %}
-                            <td>
+                            <td class="important-cell">
                                 {% if prize.is_monetary %}
                                     {{ prize.format_value(assigned_prize.value) }}
                                 {% else %}
-                                    {{ prize.name }}
+                                    {{ prize.description }}
                                 {% endif %}
                             </td>
 

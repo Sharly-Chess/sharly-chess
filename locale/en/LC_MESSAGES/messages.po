@@ -1142,6 +1142,9 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
+msgid "Description is mandatory for non-monetary prizes."
+msgstr ""
+
 msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr ""
 
@@ -2819,6 +2822,9 @@ msgstr ""
 msgid "None"
 msgstr ""
 
+msgid "Not assigned"
+msgstr ""
+
 msgid "Not checked-in yet"
 msgstr ""
 
@@ -3370,6 +3376,12 @@ msgstr ""
 msgid "Prize [%(prize)s] successfully created!"
 msgstr ""
 
+msgid "Prize assignment"
+msgstr ""
+
+msgid "Prize assignment after round #{round}"
+msgstr ""
+
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr ""
 
@@ -3842,6 +3854,10 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
+#, python-format
+msgid "Shared prizes (%(prize_sharing)s)"
+msgstr ""
+
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
@@ -3867,6 +3883,9 @@ msgid "Show the logging level on the console"
 msgstr ""
 
 msgid "Show the logging level on the console:"
+msgstr ""
+
+msgid "Show warnings"
 msgstr ""
 
 msgid "Show/hide the boards screens."
@@ -5235,6 +5254,9 @@ msgstr ""
 msgid "event ID does not match."
 msgstr ""
 
+msgid "nd *** ORDINAL SUFFIX LAST DIGIT 2"
+msgstr "nd"
+
 msgid "no"
 msgstr ""
 
@@ -5271,6 +5293,9 @@ msgstr ""
 msgid "ranking from start to #{last}"
 msgstr ""
 
+msgid "rd *** ORDINAL SUFFIX LAST DIGIT 3"
+msgstr "rd"
+
 msgid "rotator"
 msgstr ""
 
@@ -5297,6 +5322,15 @@ msgstr ""
 
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
+
+msgid "st *** ORDINAL SUFFIX 1"
+msgstr "st"
+
+msgid "st *** ORDINAL SUFFIX LAST DIGIT 1"
+msgstr "st"
+
+msgid "th *** DEFAULT ORDINAL SUFFIX"
+msgstr "th"
 
 msgid "the whole ranking"
 msgstr ""

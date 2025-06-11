@@ -3,12 +3,13 @@ from dataclasses import dataclass
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.player import Player
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
+from data.prize.prize_sharing import SharedPrize
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeGroup, StoredPrizeCategory
 from utils import StaticUtils
@@ -19,12 +20,13 @@ if TYPE_CHECKING:
 
 @dataclass
 class AssignedPrize:
-    prize: Prize | None
+    prize: Prize
     priority: int
     place_index: int
     assigned_to: Player | None
     value: float = 0.0
     warning: str | None = None
+    is_main: bool = False
 
 
 class PrizeGroup:
@@ -159,7 +161,7 @@ class PrizeGroup:
                 main_prizes, filtered_players
             )
 
-        def resolve_main_prizes(players: list[Player]) -> dict[int, Tuple[int, float]]:
+        def resolve_main_prizes(players: list[Player]) -> dict[int, SharedPrize]:
             """Calculate the amount each player in the main group receives"""
             assert main_category is not None
             return main_category.prize_sharing.resolve_prizes(main_prizes, players)
@@ -170,14 +172,15 @@ class PrizeGroup:
         def assign_main_awards():
             if main_category:
                 main_awards = resolve_main_prizes(top_players)
-                for player_id, (place, amount) in main_awards.items():
+                for player_id, shared_prize in main_awards.items():
                     player = next(p for p in top_players if p.id == player_id)
                     assigned_prizes[player_id] = AssignedPrize(
-                        prize=None,  # Main prizes are not assigned directly since they might be sharing several prizes
+                        prize=shared_prize.top_prize,
                         priority=0,
-                        place_index=place,
+                        place_index=shared_prize.place_index,
                         assigned_to=player,
-                        value=amount,
+                        value=shared_prize.value,
+                        is_main=True,
                     )
 
         # Assign initial main category prizes
@@ -238,14 +241,14 @@ class PrizeGroup:
 
             if current:
                 # The player has currently won a less valuable prize
-                if current.prize is None:
+                if current.is_main:
                     # The player has currently won a less valuable main prize
                     # Remove the player from the main group
                     removed_from_main_set.add(player.id)
                     iterate = True
 
                     new_top_players: list[Player] = []
-                    new_main_awards: dict[int, Tuple[int, float]] = {}
+                    new_main_awards: dict[int, SharedPrize]
 
                     while iterate:
                         new_top_players = calculate_eligible_main_category_players(
@@ -261,7 +264,7 @@ class PrizeGroup:
                         )
 
                         for player_id in newly_entered_players_ids:
-                            (place, new_main_prize_value) = new_main_awards[player_id]
+                            new_main_shared_prize = new_main_awards[player_id]
                             players_current_prize = assigned_prizes.get(player_id, None)
                             players_current_prize_value = (
                                 players_current_prize.value
@@ -270,7 +273,8 @@ class PrizeGroup:
                             )
                             if players_current_prize:
                                 if (
-                                    new_main_prize_value > players_current_prize_value
+                                    new_main_shared_prize.value
+                                    > players_current_prize_value
                                     and players_current_prize.prize
                                 ):
                                     # If the newly entered player now has a higher prize value than the current one,
@@ -297,10 +301,10 @@ class PrizeGroup:
                     prize_with_same_place = next(
                         assigned_prize
                         for assigned_prize in assigned_prizes.values()
-                        if assigned_prize.place_index == current.place_index
+                        if assigned_prize.is_main
+                        and assigned_prize.place_index == current.place_index
                         and assigned_prize.assigned_to
                         and assigned_prize.assigned_to.id != player.id
-                        and assigned_prize.prize is None
                     )
 
                     if (
@@ -357,3 +361,12 @@ class PrizeGroup:
         )
 
         return sorted_prizes
+
+    def get_assigned_prizes_by_category_id(self) -> dict[int, list[AssignedPrize]]:
+        assigned_prizes_by_category_id: dict[int, list[AssignedPrize]] = {
+            category.id: [] for category in self.categories
+        }
+        for assigned_prize in self.assign_prizes():
+            category_id = assigned_prize.prize.prize_category.id
+            assigned_prizes_by_category_id[category_id].append(assigned_prize)
+        return assigned_prizes_by_category_id

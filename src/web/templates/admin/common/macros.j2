@@ -880,7 +880,8 @@ with_indicator: display a loading indicator, optional
         <button
             type="submit"
             form="{{ form_id }}"
-            class="btn btn-primary {{ active_option }}-button"
+            name="{{ active_option }}"
+            class="btn btn-primary"
         >
             {{ options[active_option] }}
         </button>

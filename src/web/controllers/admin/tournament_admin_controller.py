@@ -1033,7 +1033,6 @@ class TournamentAdminController(BaseEventAdminController):
                     option_data,
                     print_option.id,
                     print_option.type,  # type: ignore
-                    print_option.default_value,
                 )
                 or ''
             )

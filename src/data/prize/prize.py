@@ -46,13 +46,12 @@ class Prize:
     def name(self) -> str:
         if self.is_monetary:
             return self.format_value()
-        description = self.description or _('Non-monetary prize')
         if not self.value:
-            return description
+            return self.description
         value_str = _('value: {currency_value}').format(
             currency_value=self.format_value()
         )
-        return f'{description} ({value_str})'
+        return f'{self.description} ({value_str})'
 
     def format_value(self, value: float | None = None) -> str:
         if value is None:
