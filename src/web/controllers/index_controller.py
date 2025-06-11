@@ -91,28 +91,44 @@ class IndexController(BaseController):
 
     @staticmethod
     def _error_template(
-        request: HTMXRequest, status_code: int, show_reload: bool = True
+        request: HTMXRequest,
+        status_code: int,
     ):
+        reload_message: str | None = None
+        title: str
+        error_message: str
+        if request.htmx:
+            reload_message = _('Reload the page')
         match status_code:
-            case status_codes.HTTP_500_INTERNAL_SERVER_ERROR:
-                title = _('500 - Internal Server Error')
-                message = _('Sorry, an unexpected error has occurred.')
-            case status_codes.HTTP_404_NOT_FOUND:
-                title = _('404 - Page Not Found')
-                message = _('Sorry, the page you are looking for does not exist.')
+            case status_codes.HTTP_401_UNAUTHORIZED:
+                title = _('401 - Authentication failed')
+                error_message = _('Sorry, authorization failed.')
+                if request.htmx:
+                    reload_message = _('Retry')
             case status_codes.HTTP_403_FORBIDDEN:
                 title = _('403 - Access Forbidden')
-                message = _('Sorry, you are not authorized to access this page.')
+                error_message = _('Sorry, you are not allowed to access this page.')
+                if request.htmx:
+                    reload_message = _('Retry')
+            case status_codes.HTTP_404_NOT_FOUND:
+                title = _('404 - Page Not Found')
+                error_message = _('Sorry, the page you are looking for does not exist.')
+                reload_message = None
+            case status_codes.HTTP_500_INTERNAL_SERVER_ERROR:
+                title = _('500 - Internal Server Error')
+                error_message = _('Sorry, an unexpected error has occurred.')
             case _:
-                title = f'Unhandled HTTP error (status code: {status_code})'
-                message = ''
+                title = _('{status_code} - Unknown error').format(
+                    status_code=status_code
+                )
+                error_message = _('An unexpected error occurred.')
         return HTMXTemplate(
             template_name='/error.html',
             context=WebContext(request).template_context
             | {
-                'show_reload': show_reload,
+                'reload_message': reload_message,
                 'error_title': title,
-                'error_message': message,
+                'error_message': error_message,
             },
             re_target='body',
         )
@@ -137,7 +153,7 @@ class IndexController(BaseController):
     async def handle_http_error(
         self, request: HTMXRequest, status_code: int
     ) -> HTMXTemplate:
-        return self._error_template(request, status_code, False)
+        return self._error_template(request, status_code)
 
     @get('/sse')
     async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:

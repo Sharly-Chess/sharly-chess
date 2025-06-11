@@ -114,6 +114,9 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "401 - Authentication failed"
+msgstr ""
+
 msgid "403 - Access Forbidden"
 msgstr ""
 
@@ -290,6 +293,9 @@ msgid "Allow"
 msgstr ""
 
 msgid "An error occurred."
+msgstr ""
+
+msgid "An unexpected error occurred."
 msgstr ""
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
@@ -3280,6 +3286,9 @@ msgstr ""
 msgid "Results upload OK"
 msgstr ""
 
+msgid "Retry"
+msgstr ""
+
 msgid "Return to the home page"
 msgstr ""
 
@@ -3542,10 +3551,13 @@ msgstr ""
 msgid "Sorry, an unexpected error has occurred."
 msgstr ""
 
+msgid "Sorry, authorization failed."
+msgstr ""
+
 msgid "Sorry, the page you are looking for does not exist."
 msgstr ""
 
-msgid "Sorry, you are not authorized to access this page."
+msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
 msgid "Sort by:"
@@ -4906,6 +4918,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "{screen_type}-screen"
+msgstr ""
+
+msgid "{status_code} - Unknown error"
 msgstr ""
 
 msgid "{string}: {value}"
