@@ -244,7 +244,7 @@ class FFESqlServer(SqlServer):
         )
         return (self._get_player_from_row(row) async for row in self.fetchall())
 
-    async def _get_player_by_id(
+    async def _get_player_by_condition(
         self,
         condition: str,
         params: tuple,
@@ -266,13 +266,13 @@ class FFESqlServer(SqlServer):
         self,
         player_ffe_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id('joueur.Ref = ?', (player_ffe_id,))
+        return await self._get_player_by_condition('joueur.Ref = ?', (player_ffe_id,))
 
     async def get_player_by_fide_id(
         self,
         player_fide_id: int,
     ) -> Player | None:
-        return await self._get_player_by_id(
+        return await self._get_player_by_condition(
             'joueur.FideCode IN (?, ?)',
             (
                 self.remote_fide_id_format_1(player_fide_id),
@@ -287,7 +287,8 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.NrFFE IN ({", ".join(["?"] * len(player_ffe_licence_numbers))}) AND {self.RATING_TYPE_CONDITION}'
+            f'WHERE joueur.NrFFE IN ({", ".join(["?"] * len(player_ffe_licence_numbers))}) '
+            f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
         return (self._get_player_from_row(row) async for row in self.fetchall())
@@ -299,7 +300,8 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.FideCode IN ({", ".join(["?"] * 2 * len(player_fide_ids))})'
+            f'WHERE joueur.FideCode IN ({", ".join(["?"] * 2 * len(player_fide_ids))}) '
+            f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(
             query,
