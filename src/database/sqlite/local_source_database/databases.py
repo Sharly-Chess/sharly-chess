@@ -182,7 +182,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             database.commit()
         self.publish_database_status_updated()
 
-    def check(self):
+    def check(self) -> bool:
         """Checks if the database exists and is up-to-date.
         If it exists and is outdated, execute the 'on_outdated' process.
         Returns True if the database is available after the call."""

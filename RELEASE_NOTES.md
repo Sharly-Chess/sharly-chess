@@ -12,6 +12,7 @@ English version below
 
 - Ajout du genre sur les impressions des joueur·euses (2.8.0)
 - Ajout des listes de pointage (2.8.0)
+- Mise à jour des drapeaux des fédérations (2.8.0)
 
 ### Gestion des prix
 
@@ -32,6 +33,7 @@ English version below
 
 - Added the gender on the player views (2.8.0)
 - Added check-in lists (2.8.0)
+- Updated federation flags (2.8.0)
 
 ### Prizes management
 
