@@ -36,6 +36,7 @@ English version below
 - Diminution des temps de réaction lors de la saisie des résultats (2.7.1)
 - Correction de l'entrée de résultats au clavier sur des échiquiers fixes (2.7.5)
 - Suppression du modal de configuration de l'appariement lorsque non opportun (2.7.5)
+- Prise en compte du numéro du premier échiquier des tournois (2.7.7)
 
 ### Gestion des écrans
 
@@ -95,6 +96,7 @@ English version below
 - Reduced reaction time when entering results (2.7.1)
 - Fixed entering results with keyboard shortcuts on fixed boards (2.7.5)
 - Removed pairing settings modal when not accurate (2.7.5)
+- Take into account the number of the first board of the tournaments (2.7.7)
 
 ### Screens management
 
