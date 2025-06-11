@@ -3231,6 +3231,9 @@ msgstr "Actualiser"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Reload the page"
+msgstr "Recharger la page"
+
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
@@ -4342,9 +4345,6 @@ msgstr "Tr."
 
 msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Bu. tronqué"
-
-msgid "Try again"
-msgstr "Réessayer"
 
 msgid "Type:"
 msgstr "Type :"

@@ -3231,6 +3231,9 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
+msgid "Reload the page"
+msgstr ""
+
 msgid "Remove the player from the event."
 msgstr ""
 
@@ -4342,9 +4345,6 @@ msgstr "Tr."
 
 msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr. Buchholz"
-
-msgid "Try again"
-msgstr ""
 
 msgid "Type:"
 msgstr ""
