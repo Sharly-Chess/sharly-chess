@@ -1173,6 +1173,7 @@ class Tournament:
                 'Flotteur': 'X' * 24,
                 'Pts': 0,
                 'PtA': 0,
+                'Commentaire': player.comment,
             } | plugin_data
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None

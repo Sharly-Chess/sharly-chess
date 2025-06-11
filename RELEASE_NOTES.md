@@ -29,6 +29,7 @@ English version below
 - Correction de l'affichage des joueur·euses non-FIDE lors de la mise à jour depuis les bases de données FIDE et FFE (2.7.3)
 - Correction de la mise à jour des classements des joueur·euses (2.7.5)
 - Correction des couleurs du modal de mise à jour des joueur·euses (2.7.5)
+- Correction d'un bug à la création des joueur·euses (2.7.7)
 
 ### Gestion des appariements
 
@@ -87,6 +88,7 @@ English version below
 - Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases (2.7.3)
 - Update players when rating types differ in data sources (2.7.5)
 - Fixed the colors of the players update modal (2.7.5)
+- Fixed a bug on player creation (2.7.7)
 
 ### Pairings management
 
