@@ -114,6 +114,9 @@ msgstr "1er jour du mois"
 msgid "20+"
 msgstr "20+"
 
+msgid "401 - Authentication failed"
+msgstr "401 - Authentification non valide"
+
 msgid "403 - Access Forbidden"
 msgstr "403 - Accès non-autorisé"
 
@@ -291,6 +294,9 @@ msgstr "Autoriser"
 
 msgid "An error occurred."
 msgstr "Une erreur est survenue."
+
+msgid "An unexpected error occurred."
+msgstr "Une erreur inattendue s'est produite."
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
@@ -3231,6 +3237,9 @@ msgstr "Actualiser"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Reload the page"
+msgstr "Recharger la page"
+
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
@@ -3276,6 +3285,12 @@ msgstr "Les écrans de résultats affichent les derniers résultats saisis par o
 
 msgid "Results upload OK"
 msgstr "Mise en ligne des résultats OK"
+
+msgid "Retry"
+msgstr "Ré-essayer"
+
+msgid "Return to the home page"
+msgstr "Retourner à la page d'accueil"
 
 msgid "Return to tournament"
 msgstr "Retour au tournoi"
@@ -3536,10 +3551,13 @@ msgstr "Sonnenborn-Berger"
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."
 
+msgid "Sorry, authorization failed."
+msgstr "Désolé, l'authentification a échoué."
+
 msgid "Sorry, the page you are looking for does not exist."
 msgstr "Désolé, la page que vous recherchez n’existe pas."
 
-msgid "Sorry, you are not authorized to access this page."
+msgid "Sorry, you are not allowed to access this page."
 msgstr "Désolé, vous n'êtes pas autorisé·e à accéder à cette page."
 
 msgid "Sort by:"
@@ -4901,6 +4919,9 @@ msgstr[1] "{num} joueur·euses trouvé·es."
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
+
+msgid "{status_code} - Unknown error"
+msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
