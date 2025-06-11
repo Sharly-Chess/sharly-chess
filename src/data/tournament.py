@@ -1009,8 +1009,8 @@ class Tournament:
             number: int
             if board.white_player.fixed:
                 number = board.white_player.fixed
-            elif board.black_player.fixed:
-                number = board.black_player
+            elif board.black_player and board.black_player.fixed:
+                number = board.black_player.fixed
             else:
                 number = self.first_board_number - 1 + index
             board.number = number
