@@ -59,10 +59,26 @@
             <th scope="row" class="text-nowrap">{{ _('Access from the Sharly Chess server') }}</th>
             <td><a href="{{ sharly_chess_config.local_url }}" target="_blank">{{ sharly_chess_config.local_url }}</a></td>
         </tr>
-        <tr class="{{ row_cycler() }}">
-            <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
-            <td>{% if sharly_chess_config.lan_url %}<a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
-        </tr>
+        {% if sharly_chess_config.deploy_server %}
+            <tr class="{{ row_cycler() }}">
+                <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
+                <td>
+                    {% if not sharly_chess_config.is_server_deployed %}
+                        <span
+                            class="text-warning"
+                            {{ macros.tooltip_attributes('info', _('The app needs to be restarted to deploy the server to the local network.'), 'top') }}
+                        >
+                            {{ _('Restart required') }}
+                        </span>
+                    {% elif sharly_chess_config.lan_url %}
+                        <a href="{{ sharly_chess_config.lan_url }}" target="_blank">
+                        {{ sharly_chess_config.lan_url }}</a>
+                    {% else %}
+                        <span class="fst-italic">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Default language') }}</th>
             <td>

@@ -84,6 +84,7 @@ class IndexAdminController(BaseAdminController):
         )
         experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
         launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
+        deploy_server: bool = WebContext.form_data_to_bool(data, 'deploy_server')
         federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation'
         )
@@ -108,6 +109,7 @@ class IndexAdminController(BaseAdminController):
             console_show_level=console_show_level,
             experimental=experimental,
             launch_browser=launch_browser,
+            deploy_server=deploy_server,
             federation=federation.name if federation else None,
             locale=locale,
             errors=errors,
@@ -277,19 +279,22 @@ class IndexAdminController(BaseAdminController):
                             sharly_chess_config.stored_config.console_log_level
                         ),
                         'console_color': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_color
+                            sharly_chess_config.console_color
                         ),
                         'console_show_date': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_show_date
+                            sharly_chess_config.console_show_date
                         ),
                         'console_show_level': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_show_level
+                            sharly_chess_config.console_show_level
                         ),
                         'experimental': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.experimental
+                            sharly_chess_config.experimental
                         ),
                         'launch_browser': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.launch_browser
+                            sharly_chess_config.launch_browser
+                        ),
+                        'deploy_server': WebContext.value_to_form_data(
+                            sharly_chess_config.deploy_server
                         ),
                         'federation': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.federation

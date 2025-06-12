@@ -1142,6 +1142,9 @@ msgstr ""
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
+msgid "Deploy the server to the local network"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -2024,6 +2027,9 @@ msgid "Go to the screen."
 msgstr ""
 
 msgid "Grand Master"
+msgstr ""
+
+msgid "Grants access to a public user interface to devices connected to the same network as this device."
 msgstr ""
 
 msgid "Groups"
@@ -3601,6 +3607,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR PRINT VIEW"
 msgstr ""
 
+msgid "Restart required"
+msgstr ""
+
 msgid "Result"
 msgstr ""
 
@@ -4059,6 +4068,9 @@ msgid "The Unique ID, used to reference the timer."
 msgstr ""
 
 msgid "The Unique ID, used to reference the tournament."
+msgstr ""
+
+msgid "The app needs to be restarted to deploy the server to the local network."
 msgstr ""
 
 msgid "The arbiter interface allows the management of the events."

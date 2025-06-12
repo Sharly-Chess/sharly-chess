@@ -23,9 +23,19 @@
                 {% endif %}
                 <h4>
                     {{ _('General') }}
-
                 </h4>
                 <div class="d-flex flex-column gap-2">
+                    {{ admin_macros.switch_input(
+                        name='deploy_server',
+                        label='',
+                        placeholder=_('Deploy the server to the local network'),
+                        help_text='',
+                        info=_(
+                            'Grants access to a public user interface to devices '
+                            'connected to the same network as this device.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
                     {{ admin_macros.switch_input(
                         name='launch_browser',
                         label='',
