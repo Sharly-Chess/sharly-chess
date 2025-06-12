@@ -133,7 +133,7 @@ class ServerEngine(Engine):
         NetworkMonitor.start_monitoring()
 
         logging_config = set_logging_config(
-            console_log_level=SharlyChessConfig().console_log_level
+            console_log_level=sharly_chess_config.console_log_level
         )
 
         app: Litestar = Litestar(

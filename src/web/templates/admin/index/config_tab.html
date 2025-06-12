@@ -99,11 +99,6 @@
             <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>
             <td>
                 {% if sharly_chess_config.launch_browser %}{{ _('Yes') }}{% else %}{{ _('No') }}{% endif %}
-                {% if sharly_chess_config.stored_config.launch_browser is none %}
-                    <span class="fst-italic">
-                        {{ _('(by default)') }}
-                    </span>
-                {% endif %}
             </td>
         </tr>
         <tr class="{{ row_cycler() }}">
@@ -141,11 +136,6 @@
             <th scope="row" class="text-nowrap">{{ _('Experimental features') }}</th>
             <td>
                 {% if sharly_chess_config.experimental %}{{ _('Enabled') }}{% else %}{{ _('Disabled') }}{% endif %}
-                {% if sharly_chess_config.stored_config.experimental is none %}
-                    <span class="fst-italic">
-                        {{ _('(by default)') }}
-                    </span>
-                {% endif %}
             </td>
         </tr>
         <tr class="{{ row_cycler() }}">
