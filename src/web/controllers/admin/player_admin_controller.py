@@ -837,7 +837,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'previous_player': (
                         admin_event.players_by_id.get(old_player_id, None)
-                        if action == 'create'
+                        if action == 'create' and old_player_id
                         else None
                     ),
                     'modal': modal,

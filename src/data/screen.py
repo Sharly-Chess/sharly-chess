@@ -244,7 +244,10 @@ class Screen:
             ):
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
-                first_last: bool = bool(screen_set.first or screen_set.last)
+                first_last = (
+                    bool(screen_set.first or screen_set.last)
+                    and screen_set.first_item is not None
+                )
                 text: str
                 if (
                     self.type
@@ -255,8 +258,7 @@ class Screen:
                     and screen_set.tournament.current_round
                 ):
                     text = self.menu_text or self.default_boards_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item,
+                        single_tournament, first_last
                     )
                 elif self.type in [
                     ScreenType.PLAYERS,
@@ -264,14 +266,13 @@ class Screen:
                     ScreenType.BOARDS,
                 ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item,
+                        single_tournament, first_last
                     )
                 elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item,
-                        crosstable=self.ranking_crosstable,
+                        single_tournament,
+                        first_last,
+                        self.ranking_crosstable,
                     )
                 else:
                     text = self.menu_text or ''
