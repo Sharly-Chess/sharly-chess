@@ -369,4 +369,13 @@ class PrizeGroup:
         for assigned_prize in self.assign_prizes():
             category_id = assigned_prize.prize.prize_category.id
             assigned_prizes_by_category_id[category_id].append(assigned_prize)
+        for category_id in assigned_prizes_by_category_id:
+            assigned_prizes_by_category_id[category_id] = sorted(
+                assigned_prizes_by_category_id[category_id],
+                key=lambda prize: (
+                    prize.place_index,
+                    prize.assigned_to is None,
+                    prize.assigned_to.rank if prize.assigned_to else None,
+                ),
+            )
         return assigned_prizes_by_category_id
