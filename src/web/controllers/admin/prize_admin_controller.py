@@ -417,7 +417,7 @@ class PrizeAdminController(BaseEventAdminController):
                 id=None,
                 prize_group_id=prize_group.id,
                 name=WebContext.form_data_to_str(data, 'name') or '',
-                is_main=WebContext.form_data_to_bool(data, 'is_main') or False,
+                is_main=WebContext.form_data_to_bool(data, 'is_main'),
                 prize_sharing=data['prize_sharing'],
                 index=len(prize_group.categories),
             )
@@ -469,7 +469,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_category = web_context.get_admin_prize_category()
         stored_category = prize_category.stored_prize_category
         stored_category.name = WebContext.form_data_to_str(data, 'name') or ''
-        stored_category.is_main = WebContext.form_data_to_bool(data, 'is_main') or False
+        stored_category.is_main = WebContext.form_data_to_bool(data, 'is_main')
         stored_category.prize_sharing = data['prize_sharing']
         prize_category.update()
         Message.success(
@@ -667,12 +667,7 @@ class PrizeAdminController(BaseEventAdminController):
         player_filter_type = PlayerFilterManager.get_type(data['type'])
         options = []
         for option in player_filter_type.default_options():
-            value = WebContext.form_data_to_value(
-                data,
-                option.id,
-                option.type,
-                option.default_value,
-            )
+            value = WebContext.form_data_to_value(data, option.id, option.type)
             options.append(type(option)(value))
         return player_filter_type(options)
 
@@ -985,7 +980,7 @@ class PrizeAdminController(BaseEventAdminController):
                 id=None,
                 prize_category_id=prize_category.id,
                 value=value,
-                is_monetary=WebContext.form_data_to_bool(data, 'is_monetary') or False,
+                is_monetary=WebContext.form_data_to_bool(data, 'is_monetary'),
                 description=WebContext.form_data_to_str(data, 'description') or '',
             )
         )
@@ -1037,9 +1032,7 @@ class PrizeAdminController(BaseEventAdminController):
         stored_prize = prize.stored_prize
 
         stored_prize.value = WebContext.form_data_to_float(data, 'value') or 0.0
-        stored_prize.is_monetary = (
-            WebContext.form_data_to_bool(data, 'is_monetary') or False
-        )
+        stored_prize.is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
         stored_prize.description = (
             WebContext.form_data_to_str(data, 'description') or ''
         )

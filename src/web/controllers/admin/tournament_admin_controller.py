@@ -1024,18 +1024,12 @@ class TournamentAdminController(BaseEventAdminController):
         option_data: dict[str, str] = {}
         if options:
             for option in urllib.parse.unquote(options).split('|'):
-                key, value = option.split('=')
-                option_data[key] = value
+                key, raw_value = option.split('=')
+                option_data[key] = raw_value
         print_options: list[PrintOption] = []
         for print_option in document_type.default_options():
-            value = (
-                WebContext.form_data_to_value(
-                    option_data,
-                    print_option.id,
-                    print_option.type,  # type: ignore
-                    print_option.default_value,
-                )
-                or ''
+            value = WebContext.form_data_to_value(
+                option_data, print_option.id, print_option.type
             )
             print_options.append(type(print_option)(value))
         print_document = document_type(print_options, admin_tournament)

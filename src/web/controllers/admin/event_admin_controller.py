@@ -463,12 +463,7 @@ class EventAdminController(BaseEventAdminController):
                 errors[field] = error_message
             options = []
             for option in document_type.default_options():
-                value = WebContext.form_data_to_value(
-                    data,
-                    option.id,
-                    option.type,
-                    option.default_value,
-                )
+                value = WebContext.form_data_to_value(data, option.id, option.type)
                 options.append(type(option)(value))
             document = document_type(options, tournament)
             try:

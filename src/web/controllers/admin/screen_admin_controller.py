@@ -183,7 +183,7 @@ class ScreenAdminController(BaseEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if type_ != ScreenType.IMAGE:
-                    menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
+                    menu_link = WebContext.form_data_to_bool(data, 'menu_link')
                     menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                     menu = WebContext.form_data_to_str(data, 'menu', '')
                 field = 'timer_id'
@@ -226,11 +226,8 @@ class ScreenAdminController(BaseEventAdminController):
                             if WebContext.form_data_to_bool(data, field):
                                 results_tournament_ids.append(tournament_id)
                     case ScreenType.RANKING:
-                        ranking_crosstable = (
-                            WebContext.form_data_to_bool(
-                                data, field := 'ranking_crosstable'
-                            )
-                            or False
+                        ranking_crosstable = WebContext.form_data_to_bool(
+                            data, field := 'ranking_crosstable'
                         )
                         try:
                             ranking_round = WebContext.form_data_to_int(
@@ -282,8 +279,8 @@ class ScreenAdminController(BaseEventAdminController):
                     case _:
                         raise ValueError(f'type=[{type_}]')
                 field = 'message_text'
-                message_default = bool(
-                    WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                message_default = WebContext.form_data_to_bool(
+                    data, field + '_checkbox'
                 )
                 if (
                     message_default
