@@ -7,17 +7,19 @@ htmx.onLoad(function(content) {
             animation: 150,
             ghostClass: 'blue-background-class',
             // Make the `.htmx-indicator` unsortable
-            filter: ".htmx-indicator",
-                onMove: function (evt) {
+            filter: ".htmx-indicator, .non-sortable",   
+            onMove: function (evt) {
+                // Allow for a fixed first item
+                if (evt.related.className.indexOf('non-sortable') !== -1) return 1;
                 return evt.related.className.indexOf('htmx-indicator') === -1;
             },
             // Disable sorting on the `end` event
-                onEnd: function (evt) {
+            onEnd: function (evt) {
                 this.option("disabled", true);
-            }
+            },
         });
         // Re-enable sorting on the `htmx:afterSwap` event
-            sortable.addEventListener("htmx:afterSwap", function() {
+        sortable.addEventListener("htmx:afterSwap", function() {
             sortableInstance.option("disabled", false);
         });
     }

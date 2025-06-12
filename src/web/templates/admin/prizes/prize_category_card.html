@@ -1,13 +1,28 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {% if prize_category.is_main %}
-        <i
-            {{ macros.tooltip_attributes('info', _('Main category'), 'top') }}
-            class="bi-star-fill pe-1"
-        ></i>
-    {% endif %}
-    {{ prize_category.name }}
+    <input type='hidden' name='item' value='{{ prize_category.id }}'/>
+    <div class="d-flex align-items-center">
+        <div>
+            {% if not prize_category.is_main %}
+                <i class="bi-arrows-move invisible"></i>
+            {% endif %}
+        </div>
+        <div class="flex-grow-1">
+            {% if prize_category.is_main %}
+                <i
+                    {{ macros.tooltip_attributes('info', _('Main category'), 'top') }}
+                    class="bi-star-fill pe-1"
+                ></i>
+            {% endif %}
+            {{ prize_category.name }}
+        </div>
+        <div>
+            {% if not prize_category.is_main %}
+                <i class="bi-arrows-move"></i>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block card_title %}

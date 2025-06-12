@@ -53,6 +53,7 @@ class PrizeGroup:
             self.categories,
             key=lambda category: (
                 category.is_main,
+                -category.index,
                 category.total_prize_value,
                 category.name,
             ),
