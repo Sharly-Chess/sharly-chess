@@ -49,16 +49,7 @@ class PrizeGroup:
 
     @property
     def sorted_categories(self) -> list[PrizeCategory]:
-        return sorted(
-            self.categories,
-            key=lambda category: (
-                category.is_main,
-                -category.index,
-                category.total_prize_value,
-                category.name,
-            ),
-            reverse=True,
-        )
+        return sorted(self.categories, key=lambda category: category.index)
 
     @property
     def has_main_category(self) -> bool:
@@ -73,6 +64,9 @@ class PrizeGroup:
             database.commit()
 
     def add_category(self, stored_category: StoredPrizeCategory) -> PrizeCategory:
+        stored_category.index = (
+            max((cat.index for cat in self.categories), default=0) + 1
+        )
         with self.get_event_database() as database:
             object_id = database.add_stored_prize_category(stored_category)
             database.commit()
