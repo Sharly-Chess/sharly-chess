@@ -122,7 +122,7 @@ class ServerEngine(Engine):
         print_interactive_info(
             _('Local URL: {local_url}').format(local_url=sharly_chess_config.local_url)
         )
-        if sharly_chess_config.lan_url:
+        if sharly_chess_config.lan_url and sharly_chess_config.deploy_server:
             print_interactive_info(
                 _('LAN/WAN URL: {lan_url}').format(lan_url=sharly_chess_config.lan_url)
             )
@@ -157,6 +157,7 @@ class ServerEngine(Engine):
             timeout_graceful_shutdown=5,
         )
         server = uvicorn.Server(config)
+        SharlyChessConfig.is_server_deployed = sharly_chess_config.deploy_server
 
         def handle_exit(sig: int, frame: FrameType | None) -> None:
             server.should_exit = True

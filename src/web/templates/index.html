@@ -1,7 +1,10 @@
 {% extends 'common/base.html' %}
 
 {% block content %}
-    <div id="home-content" class="content home-content mt-5">
+    <div
+        id="home-content"
+        class="content home-content mt-5 {% if not sharly_chess_config.deploy_server %}pt-5{% endif %}"
+    >
         <div style="max-width: 500px; margin: auto;">
             <div class="d-grid gap-2 col-auto mx-auto">
                 <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
@@ -43,36 +46,47 @@
                         </ul>
                     </div>
                 </div>
-                <table class="table table-responsive table-sm border-black w-auto bg-light">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col" colspan="2">{{ _('Web access') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">
-                                {{ _('From the Sharly Chess server') }}
-                            </th>
-                            <td>
-                                <a href="{{ sharly_chess_config.local_url }}" target="_blank">{{ sharly_chess_config.local_url }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                {{ _('From the local network (LAN/WAN)') }}
-                            </th>
-                            <td>
-                                {% if sharly_chess_config.lan_url %}
-                                    <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
-                                {% else %}
-                                    <span class="fst-italic">-</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                {% if sharly_chess_config.deploy_server %}
+                    <table class="table table-responsive table-sm border-black w-auto bg-light mt-2">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" colspan="2">{{ _('Web access') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    {{ _('From the Sharly Chess server') }}
+                                </th>
+                                <td>
+                                    <a href="{{ sharly_chess_config.local_url }}" target="_blank">{{ sharly_chess_config.local_url }}</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    {{ _('From the local network (LAN/WAN)') }}
+                                </th>
+                                <td>
+                                    {% if not sharly_chess_config.is_server_deployed %}
+                                        <i {{ macros.tooltip_attributes(
+                                            'info',
+                                            _('The app needs to be restarted to deploy the server to the local network.'),
+                                            'top'
+                                        ) }}>
+                                            {{ _('Restart required') }}
+                                        </i>
+                                    {% elif sharly_chess_config.lan_url %}
+                                        <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
+                                    {% else %}
+                                        <span class="fst-italic">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endif %}
                 <div
+                    class="mt-2"
                     {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
                 >
                     <button

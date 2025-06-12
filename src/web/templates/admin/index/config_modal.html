@@ -23,9 +23,60 @@
                 {% endif %}
                 <h4>
                     {{ _('General') }}
-
                 </h4>
                 <div class="d-flex flex-column gap-2">
+                    <div>
+                        <div class="d-flex">
+                            <span class="mt-2">
+                                {{ admin_macros.switch_input(
+                                    name='deploy_server',
+                                    label='',
+                                    placeholder=_('Deploy the server to the local network'),
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            </span>
+                            <button
+                                class="btn btn-sm btn-primary"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#server-help"
+                                aria-expanded="false"
+                                aria-controls="server-help"
+                            >
+                                <i class="bi-question-circle-fill pe-1"></i>
+                                {{ _('Help') }}
+                            </button>
+                        </div>
+                        <div class="collapse mt-2" id="server-help">
+                            <div class="card card-body">
+                                <p>
+                                    {{ _(
+                                        'Sharly Chess unveils all its potential when used as a server. '
+                                        'With this option enabled, devices connected to the same network as this '
+                                        'computer will gain access to a public user interface.'
+                                    ) }}
+                                </p>
+                                <p>
+                                    {{ _(
+                                        'This allows you to have multiple screens around your event, '
+                                        'some displaying live results, others letting users input their own results, '
+                                        'while you oversee everything from your computer.'
+                                    ) }}
+                                </p>
+                                <p>
+                                    {{ _(
+                                        'If you are feeling at ease with the rest of the application, '
+                                        'don\'t hesitate to give it a try, your players will thank you!'
+                                    ) }}
+                                </p>
+                                <div class="text-danger">
+                                    <i class="bi-exclamation-triangle-fill pe-1"></i>
+                                    {{ _('A restart is required to apply this modification.') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     {{ admin_macros.switch_input(
                         name='launch_browser',
                         label='',

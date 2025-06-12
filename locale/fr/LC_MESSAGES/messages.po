@@ -181,6 +181,9 @@ msgstr "Un entier positif est attendu."
 msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
 
+msgid "A restart is required to apply this modification."
+msgstr "Un redémarrage est nécessaire pour appliquer cette modification."
+
 msgid "Absent"
 msgstr "Absent·e"
 
@@ -1169,6 +1172,9 @@ msgstr "Suppression du chronomètre [%(timer_uniq_id)s]"
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr "Suppression du tournoi [%(tournament_uniq_id)s]"
 
+msgid "Deploy the server to the local network"
+msgstr "Déployer le serveur sur le réseau local"
+
 msgid "Description"
 msgstr "Description"
 
@@ -2091,6 +2097,9 @@ msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risqu
 msgid "Hello,"
 msgstr "Bonjour,"
 
+msgid "Help"
+msgstr "Aide"
+
 msgid "Hide"
 msgstr "Cacher"
 
@@ -2138,6 +2147,9 @@ msgstr "MI"
 
 msgid "Identity"
 msgstr "Identité"
+
+msgid "If you are feeling at ease with the rest of the application, don't hesitate to give it a try, your players will thank you!"
+msgstr "Si vous vous sentez à l'aise avec le reste de l'application, n'hesitez pas à y jeter un coup d'oeil, vos joueur·euses vous remercieront !"
 
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
@@ -3699,6 +3711,9 @@ msgstr "La requête à la base de données a échoué : {error}."
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
+msgid "Restart required"
+msgstr "Redémarrage requis"
+
 msgid "Result"
 msgstr "Résultat"
 
@@ -3964,6 +3979,9 @@ msgstr "Configuration de Sharly Chess"
 msgid "Sharly Chess settings have been updated."
 msgstr "La configuration de Sharly Chess a été mise à jour."
 
+msgid "Sharly Chess unveils all its potential when used as a server. With this option enabled, devices connected to the same network as this computer will gain access to a public user interface."
+msgstr "Sharly Chess dévoile tout son potentiel lorsqu'utilisé en tant que serveur. Avec cette option activée, les appareils connectés au même réseau que cet ordinateur gagneront l'accès à une interface utilisateur publique."
+
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
@@ -4179,6 +4197,9 @@ msgstr "L'identifiant unique, utilisé pour référencer le chronomètre'."
 
 msgid "The Unique ID, used to reference the tournament."
 msgstr "L'identifiant unique, utilisé pour référencer le tournoi."
+
+msgid "The app needs to be restarted to deploy the server to the local network."
+msgstr "L'application doit être redémarrée pour déployer le serveur sur le réseau local."
 
 msgid "The arbiter interface allows the management of the events."
 msgstr "L'interface d'arbitrage permet la gestion des évènements."
@@ -4586,6 +4607,9 @@ msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée 
 
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
+
+msgid "This allows you to have multiple screens around your event, some displaying live results, others letting users input their own results, while you oversee everything from your computer."
+msgstr "Cela vous permettra d'avoir des écrans aux 4 coins de votre évènement, certains affichant les résultats en live, d'autres permettant aux joueur·euses de saisir leurs résultats eux-mêmes, tandis que vous supervisez le tout depuis votre ordinateur."
 
 msgid "This display controller is private (not visible by the users)."
 msgstr "Ce pilote d'afficheurs est privé (non visible des utilisateur·ices)."

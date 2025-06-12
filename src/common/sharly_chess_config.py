@@ -36,6 +36,7 @@ class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database."""
 
     _stored_config: ClassVar[StoredConfig | None] = None
+    is_server_deployed: ClassVar[bool] = False
 
     def __init__(self):
         self.web_port: int | None = None
@@ -130,6 +131,10 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.launch_browser
 
     @property
+    def deploy_server(self) -> bool:
+        return self.stored_config.deploy_server
+
+    @property
     def federation(self) -> Federation:
         return Federation(self.stored_config.federation or self.default_federation)
 
@@ -137,8 +142,9 @@ class SharlyChessConfig(metaclass=Singleton):
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
 
-    # The port used by the Uvicorn web server.
-    web_host: str = '0.0.0.0'
+    @property
+    def web_host(self) -> str:
+        return '0.0.0.0' if self.deploy_server else self.local_ip
 
     # The ports the web server tries to start on, tried one after the other.
     web_ports: list[int] = [

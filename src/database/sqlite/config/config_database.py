@@ -94,6 +94,7 @@ class ConfigDatabase(MigrationDatabase):
             experimental=self.load_bool_from_database_field(row['experimental']),
             federation=row['federation'],
             launch_browser=self.load_bool_from_database_field(row['launch_browser']),
+            deploy_server=self.load_bool_from_database_field(row['deploy_server']),
             locale=row['locale'],
         )
 
@@ -119,6 +120,7 @@ class ConfigDatabase(MigrationDatabase):
                 'launch_browser',
                 'federation',
                 'locale',
+                'deploy_server',
             ],
         )
         field_sets = (f'`{f}` = ?' for f in fields.keys())

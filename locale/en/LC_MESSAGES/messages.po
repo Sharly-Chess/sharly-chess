@@ -181,6 +181,9 @@ msgstr ""
 msgid "A positive value is expected."
 msgstr ""
 
+msgid "A restart is required to apply this modification."
+msgstr ""
+
 msgid "Absent"
 msgstr ""
 
@@ -1169,6 +1172,9 @@ msgstr ""
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
+msgid "Deploy the server to the local network"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -2091,6 +2097,9 @@ msgstr ""
 msgid "Hello,"
 msgstr ""
 
+msgid "Help"
+msgstr ""
+
 msgid "Hide"
 msgstr ""
 
@@ -2137,6 +2146,9 @@ msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
 msgid "Identity"
+msgstr ""
+
+msgid "If you are feeling at ease with the rest of the application, don't hesitate to give it a try, your players will thank you!"
 msgstr ""
 
 msgid "Illegal moves are not recorded."
@@ -3699,6 +3711,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr ""
 
+msgid "Restart required"
+msgstr ""
+
 msgid "Result"
 msgstr ""
 
@@ -3964,6 +3979,9 @@ msgstr ""
 msgid "Sharly Chess settings have been updated."
 msgstr ""
 
+msgid "Sharly Chess unveils all its potential when used as a server. With this option enabled, devices connected to the same network as this computer will gain access to a public user interface."
+msgstr ""
+
 msgid "Show all the players"
 msgstr ""
 
@@ -4178,6 +4196,9 @@ msgid "The Unique ID, used to reference the timer."
 msgstr ""
 
 msgid "The Unique ID, used to reference the tournament."
+msgstr ""
+
+msgid "The app needs to be restarted to deploy the server to the local network."
 msgstr ""
 
 msgid "The arbiter interface allows the management of the events."
@@ -4585,6 +4606,9 @@ msgid "There is no pairings for this round (last round with pairings: #{round}).
 msgstr ""
 
 msgid "This action can not be applied to the tournaments of this event."
+msgstr ""
+
+msgid "This allows you to have multiple screens around your event, some displaying live results, others letting users input their own results, while you oversee everything from your computer."
 msgstr ""
 
 msgid "This display controller is private (not visible by the users)."
@@ -5502,3 +5526,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Grants access to a public user interface to devices connected to the same network as this device."
+#~ msgstr ""
+
