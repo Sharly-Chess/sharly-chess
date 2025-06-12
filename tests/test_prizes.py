@@ -631,7 +631,7 @@ class PrizesTestCase(BaseTestCase):
         self.assert_has_prize(p2, first_1600, prizes)
         self.assert_has_no_prize(p3, prizes)
 
-    def test_promotion_waring(self):
+    def test_promotion_warning(self):
         """Test that the priority order is respected"""
         main_category = self.stored_category(
             'all',
