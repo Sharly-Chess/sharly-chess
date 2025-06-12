@@ -26,26 +26,22 @@
 
                 </h4>
                 <div class="d-flex flex-column gap-2">
-                    <div>
-                        {{ admin_macros.switch_input(
-                            name='launch_browser',
-                            label='',
-                            placeholder=_('Launch a browser on startup'),
-                            help_text='',
-                            info=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div>
-                        {{ admin_macros.switch_input(
-                            name='experimental',
-                            label='',
-                            placeholder=_('Experimental features'),
-                            help_text='',
-                            info=_('Benefit from the very last (experimental!) features (USE AT YOUR OWN RISKS!).'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
+                    {{ admin_macros.switch_input(
+                        name='launch_browser',
+                        label='',
+                        placeholder=_('Launch a browser on startup'),
+                        help_text='',
+                        info=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.switch_input(
+                        name='experimental',
+                        label='',
+                        placeholder=_('Experimental features'),
+                        help_text='',
+                        info=_('Benefit from the very last (experimental!) features (USE AT YOUR OWN RISKS!).'),
+                        data=data, errors=errors
+                    ) }}
                 </div>
                 <h4>
                     {{ _('Console logs') }}
@@ -61,36 +57,30 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mt-2 d-flex flex-column gap-2">
-                        <div>
-                            {{ admin_macros.switch_input(
-                                name='console_show_level',
-                                label='',
-                                placeholder=_('Show the logging level'),
-                                help_text='',
-                                info=_('Colorblind people can print the logging level to distinguish important information on the console.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div>
-                            {{ admin_macros.switch_input(
-                                name='console_color',
-                                label='',
-                                help_text='',
-                                placeholder=_('Use log-level specific colors'),
-                                info=_('Using colors helps in finding quickly important information on the console.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div>
-                            {{ admin_macros.switch_input(
-                                name='console_show_date',
-                                label='',
-                                help_text='',
-                                placeholder=_('Show the date and time'),
-                                info=_('Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                        {{ admin_macros.switch_input(
+                            name='console_show_level',
+                            label='',
+                            placeholder=_('Show the logging level'),
+                            help_text='',
+                            info=_('Colorblind people can print the logging level to distinguish important information on the console.'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.switch_input(
+                            name='console_color',
+                            label='',
+                            help_text='',
+                            placeholder=_('Use log-level specific colors'),
+                            info=_('Using colors helps in finding quickly important information on the console.'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.switch_input(
+                            name='console_show_date',
+                            label='',
+                            help_text='',
+                            placeholder=_('Show the date and time'),
+                            info=_('Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled).'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
                 <h4>
@@ -121,17 +111,15 @@
                 </h4>
                 <div class="row d-fex flex-column gap-2">
                     {% for plugin in plugins %}
-                        <span>
-                            {{ admin_macros.switch_input(
-                                name=plugin.form_key,
-                                label='',
-                                placeholder=plugin.name,
-                                disabled=not plugin.is_state_editable,
-                                help_text='',
-                                info=plugin.description,
-                                data=data, errors=errors
-                            ) }}
-                        </span>
+                        {{ admin_macros.switch_input(
+                            name=plugin.form_key,
+                            label='',
+                            placeholder=plugin.name,
+                            disabled=not plugin.is_state_editable,
+                            help_text='',
+                            info=plugin.description,
+                            data=data, errors=errors
+                        ) }}
                     {% endfor %}
                 </div>
             </form>
