@@ -199,7 +199,19 @@ class WebContext:
 
     @staticmethod
     def form_data_to_bool(data: dict[str, str] | None, field: str) -> bool:
-        return data and data.get(field, '') in ('true', 'on')
+        if data is None:
+            return False
+        if field not in data:
+            data[field] = 'off'
+        return data[field] in ('true', 'on')
+
+    @staticmethod
+    def form_data_to_bool_or_none(
+        data: dict[str, str] | None, field: str
+    ) -> bool | None:
+        if data is None or not data.get(field, None):
+            return None
+        return data[field] in ('true', 'on')
 
     @staticmethod
     def form_data_to_list_int(
