@@ -420,6 +420,7 @@ class PrizeAdminController(BaseEventAdminController):
                 prize_group_id=prize_group.id,
                 name=WebContext.form_data_to_str(data, 'name') or '',
                 is_main=WebContext.form_data_to_bool(data, 'is_main'),
+                threshold=None,
                 prize_sharing=data['prize_sharing'],
                 index=len(prize_group.categories),
             )

@@ -1,5 +1,4 @@
 from collections import deque
-from dataclasses import dataclass
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
@@ -7,26 +6,15 @@ from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.player import Player
+from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
-from data.prize.prize_sharing import SharedPrize
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeGroup, StoredPrizeCategory
 from utils import StaticUtils
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
-
-
-@dataclass
-class AssignedPrize:
-    prize: Prize
-    priority: int
-    place_index: int
-    assigned_to: Player | None
-    value: float = 0.0
-    warning: str | None = None
-    is_main: bool = False
 
 
 class PrizeGroup:
@@ -138,9 +126,9 @@ class PrizeGroup:
         )
         main_prizes = list(main_category.prizes) if main_category else []
 
-        def calculate_eligible_main_category_players(
+        def calculate_main_category_prizes(
             sorted_players: list[Player],
-        ) -> list[Player]:
+        ) -> list[AssignedPrize]:
             """Returns all the players eligible to receive a prize from the main category"""
 
             if main_category is None:
@@ -152,34 +140,21 @@ class PrizeGroup:
                 if player.id not in removed_from_main_set
             ]
 
-            return main_category.prize_sharing.calculate_eligible_players(
-                main_prizes, filtered_players
+            return main_category.prize_sharing.calculate_prizes(
+                main_prizes, filtered_players, threshold=main_category.threshold
             )
 
-        def resolve_main_prizes(players: list[Player]) -> dict[int, SharedPrize]:
-            """Calculate the amount each player in the main group receives"""
-            assert main_category is not None
-            return main_category.prize_sharing.resolve_prizes(main_prizes, players)
-
-        # Select top N players to form the initial main group winners
-        top_players = calculate_eligible_main_category_players(sorted_players)
-
-        def assign_main_awards():
-            if main_category:
-                main_awards = resolve_main_prizes(top_players)
-                for player_id, shared_prize in main_awards.items():
-                    player = next(p for p in top_players if p.id == player_id)
-                    assigned_prizes[player_id] = AssignedPrize(
-                        prize=shared_prize.top_prize,
-                        priority=0,
-                        place_index=shared_prize.place_index,
-                        assigned_to=player,
-                        value=shared_prize.value,
-                        is_main=True,
-                    )
+        top_prizes = calculate_main_category_prizes(sorted_players)
+        top_players = [
+            assigned_prize.assigned_to
+            for assigned_prize in top_prizes
+            if assigned_prize.assigned_to
+        ]
 
         # Assign initial main category prizes
-        assign_main_awards()
+        for assigned_prize in top_prizes:
+            if assigned_prize.assigned_to:
+                assigned_prizes[assigned_prize.assigned_to.id] = assigned_prize
 
         # Flatten all non-main prize slots into a queue
         for category in self.sorted_categories:
@@ -243,14 +218,17 @@ class PrizeGroup:
                     iterate = True
 
                     new_top_players: list[Player] = []
-                    new_main_awards: dict[int, SharedPrize]
+                    new_top_prizes: list[AssignedPrize]
 
                     while iterate:
-                        new_top_players = calculate_eligible_main_category_players(
-                            sorted_players
-                        )
+                        new_top_prizes = calculate_main_category_prizes(sorted_players)
+                        new_top_players = [
+                            assigned_prize.assigned_to
+                            for assigned_prize in top_prizes
+                            if assigned_prize.assigned_to
+                        ]
+
                         new_top_player_ids = [player.id for player in new_top_players]
-                        new_main_awards = resolve_main_prizes(new_top_players)
                         iterate = False
 
                         newly_entered_players_ids = list(
@@ -259,7 +237,15 @@ class PrizeGroup:
                         )
 
                         for player_id in newly_entered_players_ids:
-                            new_main_shared_prize = new_main_awards[player_id]
+                            new_main_shared_prize = next(
+                                (
+                                    assigned_prize
+                                    for assigned_prize in new_top_prizes
+                                    if assigned_prize.assigned_to
+                                    and assigned_prize.assigned_to.id == player_id
+                                ),
+                                None,
+                            )
                             players_current_prize = assigned_prizes.get(player_id, None)
                             players_current_prize_value = (
                                 players_current_prize.value
@@ -268,7 +254,8 @@ class PrizeGroup:
                             )
                             if players_current_prize:
                                 if (
-                                    new_main_shared_prize.value
+                                    new_main_shared_prize
+                                    and new_main_shared_prize.value
                                     > players_current_prize_value
                                     and players_current_prize.prize
                                 ):
@@ -290,7 +277,11 @@ class PrizeGroup:
                                     iterate = True
 
                     top_players = new_top_players
-                    assign_main_awards()
+                    for assigned_prize in new_top_prizes:
+                        if assigned_prize.assigned_to:
+                            assigned_prizes[assigned_prize.assigned_to.id] = (
+                                assigned_prize
+                            )
 
                     # Find out how much the same place is worth now that the player has left the main category
                     prize_with_same_place = next(

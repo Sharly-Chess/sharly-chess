@@ -63,6 +63,10 @@ class PrizeCategory:
         return self.stored_prize_category.is_main
 
     @property
+    def threshold(self) -> float | None:
+        return self.stored_prize_category.threshold
+
+    @property
     def index(self) -> int:
         return self.stored_prize_category.index
 

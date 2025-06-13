@@ -2621,6 +2621,7 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             prize_sharing=row['prize_sharing'],
             is_main=cls.load_bool_from_database_field(row['is_main']),
+            threshold=None,
             index=row['index'],
         )
 
