@@ -84,7 +84,9 @@
                     <button
                         class="btn btn-outline-primary"
                         hx-get="{{ url_for(
-                            'admin-prize-criteria-modal',
+                            'admin-prize-criteria-modal'
+                            if admin_prize_category.criteria else
+                            'admin-prize-criterion-create-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             prize_group_id=admin_prize_group.id,
