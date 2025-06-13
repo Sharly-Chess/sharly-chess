@@ -19,16 +19,16 @@
                             {{ _('Shared prizes (%(prize_sharing)s)', prize_sharing=prize_category.prize_sharing.name) }}
                         </div>
                     {% endif %}
-                    <div class="header">{{ _('Place') }}</div>
-                    <div class="header">{{ _('Rank') }}</div>
-                    <div class="header">{{ _('Name') }}</div>
-                    <div class="header">{{ _('Elo') }}</div>
-                    <div class="header">{{ _('Cat.') }}</div>
-                    <div class="header">{{ _('Sex') }}</div>
-                    <div class="header">{{ _('Féd.') }}</div>
-                    <div class="header">{{ _('Club') }}</div>
-                    <div class="header">{{ _('Pts') }}</div>
-                    <div class="header">{{ _('Prize') }}</div>
+                    <div class="header">{{ _('Rk. *** RANK FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Name *** NAME FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Elo *** STD ELO FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _("Cat *** CATEGORY FOR PRINT VIEW") }}</div>
+                    <div class="header">{{ _('Gen *** GENDER FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Club *** CLUB FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</div>
+                    <div class="header">{{ _('Prize *** PRIZE FOR PRINT VIEW') }}</div>
                     {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
                         {% set prize=assigned_prize.prize %}
                         {% set player=assigned_prize.assigned_to %}

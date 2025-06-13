@@ -2822,9 +2822,6 @@ msgstr ""
 msgid "No valid hour defined."
 msgstr ""
 
-msgid "Non-monetary prize"
-msgstr ""
-
 msgid "None"
 msgstr ""
 
@@ -2952,6 +2949,9 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
+msgstr ""
+
+msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr ""
 
 msgid "Others"
@@ -3378,6 +3378,9 @@ msgstr ""
 msgid "Private event"
 msgstr ""
 
+msgid "Prize *** PRIZE FOR PRINT VIEW"
+msgstr "Prize"
+
 #, python-format
 msgid "Prize [%(prize)s] successfully created!"
 msgstr ""
@@ -3666,6 +3669,9 @@ msgstr ""
 
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Rk."
+
+msgid "Rk. O. *** RANK OVERALL FOR PRINT VIEW"
+msgstr "Pl. O."
 
 msgid "Rnd.Boa"
 msgstr ""

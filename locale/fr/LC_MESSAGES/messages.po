@@ -2822,9 +2822,6 @@ msgstr "Aucun changement détecté."
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
 
-msgid "Non-monetary prize"
-msgstr "Prix non-monétaire"
-
 msgid "None"
 msgstr "Aucun"
 
@@ -2953,6 +2950,9 @@ msgstr "Adversaire Elo [Pts]"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
+
+msgid "Other players in this score group are not included since the share would be less than the threshold."
+msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
 
 msgid "Others"
 msgstr "Autres"
@@ -3378,6 +3378,9 @@ msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas 
 msgid "Private event"
 msgstr "Évènement privé"
 
+msgid "Prize *** PRIZE FOR PRINT VIEW"
+msgstr "Prize"
+
 #, python-format
 msgid "Prize [%(prize)s] successfully created!"
 msgstr "Prix [%(prize)s] créé avec succès !"
@@ -3666,6 +3669,9 @@ msgstr "Retour au tournoi"
 
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Pl."
+
+msgid "Rk. O. *** RANK OVERALL FOR PRINT VIEW"
+msgstr "Pl. Gén."
 
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
