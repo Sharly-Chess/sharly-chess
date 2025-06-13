@@ -26,7 +26,7 @@
                     <div class="border border-secondary">
                         <div class="p-2 d-flex align-items-start gap-4">
                             <b>
-                                {{ loop.index }}<sup>{{ ordinal_suffix(loop.index) }}</sup>
+                                {{ ordinal_integer(loop.index) }}
                             </b>
                             <div class="text-start flex-grow-1">
                                 {{ prize.name }}

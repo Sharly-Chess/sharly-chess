@@ -105,20 +105,23 @@ class StaticUtils:
 
     @staticmethod
     @cache
-    def ordinal_suffix(value: int) -> str:
+    def ordinal_integer(value: int) -> str:
         from common.i18n import _
 
+        suffix = _('th *** DEFAULT ORDINAL SUFFIX')
         if value == 1:
-            return _('st *** ORDINAL SUFFIX 1')
-        if not 11 <= value <= 13:
+            suffix = _('st *** ORDINAL SUFFIX 1')
+        elif not 11 <= value <= 13:
             match value % 10:
                 case 1:
-                    return _('st *** ORDINAL SUFFIX LAST DIGIT 1')
+                    suffix = _('st *** ORDINAL SUFFIX LAST DIGIT 1')
                 case 2:
-                    return _('nd *** ORDINAL SUFFIX LAST DIGIT 2')
+                    suffix = _('nd *** ORDINAL SUFFIX LAST DIGIT 2')
                 case 3:
-                    return _('rd *** ORDINAL SUFFIX LAST DIGIT 3')
-        return _('th *** DEFAULT ORDINAL SUFFIX')
+                    suffix = _('rd *** ORDINAL SUFFIX LAST DIGIT 3')
+        return _('{prefix}{int_value}<sup>{suffix}</sup>').format(
+            prefix='', int_value=value, suffix=suffix
+        )
 
 
 class SharedUtils:

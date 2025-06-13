@@ -466,7 +466,7 @@ class PrizeListPrintDocument(PrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         return {
-            'ordinal_suffix': StaticUtils.ordinal_suffix,
+            'ordinal_integer': StaticUtils.ordinal_integer,
             'no_sharing_id': NoPrizeSharing.static_id(),
         }
 
@@ -496,7 +496,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         return {
             'show_warnings': self.get_option_values()[0],
-            'ordinal_suffix': StaticUtils.ordinal_suffix,
+            'ordinal_integer': StaticUtils.ordinal_integer,
             'no_sharing_id': NoPrizeSharing.static_id(),
         }
 

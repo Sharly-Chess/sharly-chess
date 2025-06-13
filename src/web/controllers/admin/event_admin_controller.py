@@ -485,6 +485,7 @@ class EventAdminController(BaseEventAdminController):
                     'options': {
                         option.id: data[option.id]
                         for option in document_type.default_options()
+                        if option.id in data
                     },
                 },
             )

@@ -5279,7 +5279,7 @@ msgid "event ID does not match."
 msgstr "L'identifiant de l'évènement ne correspond pas."
 
 msgid "nd *** ORDINAL SUFFIX LAST DIGIT 2"
-msgstr "ème"
+msgstr "e"
 
 msgid "no"
 msgstr "non"
@@ -5348,13 +5348,13 @@ msgid "screens of {number} players from start to #{last}"
 msgstr "écrans de {number} joueur·euses du début au n°{last}"
 
 msgid "st *** ORDINAL SUFFIX 1"
-msgstr "er"
+msgstr "re"
 
 msgid "st *** ORDINAL SUFFIX LAST DIGIT 1"
-msgstr "ème"
+msgstr "e"
 
 msgid "th *** DEFAULT ORDINAL SUFFIX"
-msgstr "ème"
+msgstr "e"
 
 msgid "the whole ranking"
 msgstr "classement complet"

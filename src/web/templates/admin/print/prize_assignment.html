@@ -22,7 +22,7 @@
                     <div class="header">{{ _('Rk. *** RANK FOR PRINT VIEW') }}</div>
                     <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR PRINT VIEW') }}</div>
                     <div class="header">{{ _('Name *** NAME FOR PRINT VIEW') }}</div>
-                    <div class="header">{{ _('Elo *** STD ELO FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ document.tournament.rating.print_view_header }}</div>
                     <div class="header">{{ _("Cat *** CATEGORY FOR PRINT VIEW") }}</div>
                     <div class="header">{{ _('Gen *** GENDER FOR PRINT VIEW') }}</div>
                     <div class="header">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</div>
@@ -33,10 +33,10 @@
                         {% set prize=assigned_prize.prize %}
                         {% set player=assigned_prize.assigned_to %}
                         <div class="cell place">
-                            {{ loop.index }}<sup>{{ ordinal_suffix(loop.index) }}</sup>
+                            {{ ordinal_integer(loop.index)|safe }}
                         </div>
                         {% if player %}
-                            <div class="cell place">({{ player.rank }}<sup>{{ ordinal_suffix(player.rank) }})</sup></div>
+                            <div class="cell place">({{ ordinal_integer(player.rank)|safe }})</div>
                             <div class="cell name">{{ player.full_name }}</div>
                             <div class="cell">{{ player.rating_str }}</div>
                             <div class="cell">{{ player.category.short_name }}</div>

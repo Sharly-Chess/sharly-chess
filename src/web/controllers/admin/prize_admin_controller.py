@@ -134,7 +134,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_category': self.admin_prize_category,
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
-            'ordinal_suffix': StaticUtils.ordinal_suffix,
+            'ordinal_integer': StaticUtils.ordinal_integer,
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
         }
