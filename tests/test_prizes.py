@@ -143,7 +143,7 @@ class PrizesTestCase(BaseTestCase):
             name=name,
             prize_sharing=prize_sharing.static_id(),
             is_main=is_main,
-            threshold=threshold,
+            sharing_threshold=threshold,
             stored_prize_criteria=stored_prize_criteria,
             stored_prizes=stored_prizes,
         )
