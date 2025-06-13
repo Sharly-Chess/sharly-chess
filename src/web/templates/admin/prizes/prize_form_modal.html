@@ -98,6 +98,7 @@
                         label=_('%(string)s:', string=_('Description')),
                         placeholder=_('E.g.: %(string)s', string=_('Trophy')),
                         help_text='',
+                        disabled=data['is_monetary'],
                         data=data, errors=errors
                     ) }}
                 </div>

@@ -5278,9 +5278,6 @@ msgstr ""
 msgid "event ID does not match."
 msgstr ""
 
-msgid "nd *** ORDINAL SUFFIX LAST DIGIT 2"
-msgstr "nd"
-
 msgid "no"
 msgstr ""
 
@@ -5317,9 +5314,6 @@ msgstr ""
 msgid "ranking from start to #{last}"
 msgstr ""
 
-msgid "rd *** ORDINAL SUFFIX LAST DIGIT 3"
-msgstr "rd"
-
 msgid "rotator"
 msgstr ""
 
@@ -5346,15 +5340,6 @@ msgstr ""
 
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
-
-msgid "st *** ORDINAL SUFFIX 1"
-msgstr "st"
-
-msgid "st *** ORDINAL SUFFIX LAST DIGIT 1"
-msgstr "st"
-
-msgid "th *** DEFAULT ORDINAL SUFFIX"
-msgstr "th"
 
 msgid "the whole ranking"
 msgstr ""
@@ -5422,6 +5407,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
+msgstr ""
+
+msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""
 
 msgid "{screen_type}-screen"

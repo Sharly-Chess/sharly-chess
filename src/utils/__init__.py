@@ -103,25 +103,40 @@ class StaticUtils:
             value=int(value) if value.is_integer() else f'{value:.2f}',
         )
 
-    @staticmethod
-    @cache
-    def ordinal_integer(value: int) -> str:
-        from common.i18n import _
+    @classmethod
+    def ordinal_integer(cls, value: int) -> str:
+        from common.i18n import get_locale, _
 
-        suffix = _('th *** DEFAULT ORDINAL SUFFIX')
-        if value == 1:
-            suffix = _('st *** ORDINAL SUFFIX 1')
-        elif not 11 <= value <= 13:
-            match value % 10:
-                case 1:
-                    suffix = _('st *** ORDINAL SUFFIX LAST DIGIT 1')
-                case 2:
-                    suffix = _('nd *** ORDINAL SUFFIX LAST DIGIT 2')
-                case 3:
-                    suffix = _('rd *** ORDINAL SUFFIX LAST DIGIT 3')
+        locale = get_locale()
+        affix_fn: Callable[[int], tuple[str, str]]
+        match locale:
+            case 'en':
+                affix_fn = cls._ordinal_affix_en
+            case 'fr':
+                affix_fn = cls._ordinal_affix_fr
+            case _:
+                raise NotImplementedError(
+                    f'no ordinal affix function for locale {locale}'
+                )
+        prefix, suffix = affix_fn(value)
         return _('{prefix}{int_value}<sup>{suffix}</sup>').format(
             prefix='', int_value=value, suffix=suffix
         )
+
+    @staticmethod
+    @cache
+    def _ordinal_affix_en(value: int) -> tuple[str, str]:
+        suffix = 'th'
+        if not 11 <= value <= 13:
+            suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(value % 10, suffix)
+        return '', suffix
+
+    @staticmethod
+    @cache
+    def _ordinal_affix_fr(value: int) -> tuple[str, str]:
+        if value == 1:
+            return '', 're'
+        return '', 'e'
 
 
 class SharedUtils:

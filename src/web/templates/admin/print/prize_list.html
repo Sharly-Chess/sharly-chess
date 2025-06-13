@@ -16,7 +16,7 @@
                     {% for prize in prize_category.sorted_prizes %}
                         <tr>
                             <td class="important-cell">
-                                {{ ordinal_integer(loop.index) }}
+                                {{ ordinal_integer(loop.index)|safe }}
                             </td>
                             <td>
                                 {% if prize.is_monetary %}

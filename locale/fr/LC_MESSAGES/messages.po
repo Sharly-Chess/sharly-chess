@@ -5278,9 +5278,6 @@ msgstr "évènement"
 msgid "event ID does not match."
 msgstr "L'identifiant de l'évènement ne correspond pas."
 
-msgid "nd *** ORDINAL SUFFIX LAST DIGIT 2"
-msgstr "e"
-
 msgid "no"
 msgstr "non"
 
@@ -5317,9 +5314,6 @@ msgstr "classement de {first} à la fin"
 msgid "ranking from start to #{last}"
 msgstr "classement du début à {last}"
 
-msgid "rd *** ORDINAL SUFFIX LAST DIGIT 3"
-msgstr "ème"
-
 msgid "rotator"
 msgstr "rotatif"
 
@@ -5346,15 +5340,6 @@ msgstr "écrans de {number} joueur·euses du n°{first} à la fin"
 
 msgid "screens of {number} players from start to #{last}"
 msgstr "écrans de {number} joueur·euses du début au n°{last}"
-
-msgid "st *** ORDINAL SUFFIX 1"
-msgstr "re"
-
-msgid "st *** ORDINAL SUFFIX LAST DIGIT 1"
-msgstr "e"
-
-msgid "th *** DEFAULT ORDINAL SUFFIX"
-msgstr "e"
 
 msgid "the whole ranking"
 msgstr "classement complet"
@@ -5423,6 +5408,9 @@ msgstr[1] "{num} joueur·euses trouvé·es."
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."
+
+msgid "{prefix}{int_value}<sup>{suffix}</sup>"
+msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
