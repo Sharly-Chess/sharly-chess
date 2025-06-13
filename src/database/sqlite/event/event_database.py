@@ -1517,11 +1517,6 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_tournament(stored_tournament)
 
     def delete_stored_tournament(self, tournament_id: int):
-        self._delete_tournament_stored_screens(tournament_id)
-        self._delete_tournament_stored_families(tournament_id)
-        self._delete_tournament_stored_illegal_moves(tournament_id)
-        self._delete_tournament_stored_results(tournament_id)
-        # references are not deleted on cascade as they should be!
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
 
@@ -1681,24 +1676,6 @@ class EventDatabase(MigrationDatabase):
         )
         return True
 
-    def _delete_tournament_stored_illegal_moves(
-        self, tournament_id: int, round_: int = 0
-    ):
-        self._set_tournament_last_illegal_move_update(tournament_id)
-        if round_:
-            self.execute(
-                'DELETE FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ?',
-                (
-                    tournament_id,
-                    round_,
-                ),
-            )
-        else:
-            self.execute(
-                'DELETE FROM `illegal_move` WHERE `tournament_id` = ?',
-                (tournament_id,),
-            )
-
     # ---------------------------------------------------------------------------------
     # results
     # ---------------------------------------------------------------------------------
@@ -1755,12 +1732,6 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
             (tournament_id, round_, board_id),
-        )
-
-    def _delete_tournament_stored_results(self, tournament_id: int):
-        self.execute(
-            'DELETE FROM `result` WHERE `tournament_id` = ?',
-            (tournament_id,),
         )
 
     def get_stored_results(
@@ -1960,11 +1931,6 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `family` WHERE `id` = ?;', (family_id,))
         self.set_last_update()
 
-    def _delete_tournament_stored_families(self, tournament_id: int):
-        self.execute(
-            'DELETE FROM `family` WHERE `tournament_id` = ?;', (tournament_id,)
-        )
-
     # ---------------------------------------------------------------------------------
     # StoredScreen
     # ---------------------------------------------------------------------------------
@@ -2142,28 +2108,9 @@ class EventDatabase(MigrationDatabase):
         assert stored_screen.id is not None
         return self._write_stored_screen(stored_screen)
 
-    def _delete_screen_stored_screen_sets(self, screen_id: int):
-        self.execute('DELETE FROM `screen_set` WHERE `screen_id` = ?;', (screen_id,))
-
     def delete_stored_screen(self, screen_id: int):
-        self._delete_screen_stored_screen_sets(screen_id)
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
-        self.execute(
-            'UPDATE `display_controller` SET `screen_id` = NULL WHERE screen_id = ?;',
-            (screen_id,),
-        )
         self.set_last_update()
-
-    def _delete_tournament_stored_screens(self, tournament_id: int):
-        self.execute(
-            'SELECT `screen`.`id` AS `screen_id` '
-            'FROM `screen` '
-            'JOIN `screen_set` ON `screen_set`.`screen_id` = `screen`.`id` '
-            'WHERE `screen_set`.`tournament_id` = ?',
-            (tournament_id,),
-        )
-        for row in self.fetchall():
-            self.delete_stored_screen(row['screen_id'])
 
     # ---------------------------------------------------------------------------------
     # StoredScreenSet
@@ -2431,10 +2378,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
-        self.execute(
-            'UPDATE `display_controller` SET `rotator_id` = NULL WHERE rotator_id = ?;',
-            (rotator_id,),
-        )
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------

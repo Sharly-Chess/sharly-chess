@@ -60,6 +60,7 @@ class SQLiteDatabase:
         self.cursor = self.database.cursor()
         if self.write:
             self.cursor.execute('PRAGMA journal_mode=WAL')
+            self.execute('PRAGMA foreign_keys=ON')
             self.commit()
         return self
 
