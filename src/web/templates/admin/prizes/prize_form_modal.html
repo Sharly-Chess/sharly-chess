@@ -98,7 +98,6 @@
                         label=_('%(string)s:', string=_('Description')),
                         placeholder=_('E.g.: %(string)s', string=_('Trophy')),
                         help_text='',
-                        disabled=data['is_monetary'],
                         data=data, errors=errors
                     ) }}
                 </div>
@@ -116,6 +115,7 @@
                             tooltip.disable();
                         }
                     });
+                    $('#is-monetary').trigger('change');
                     setTimeout(() => $('#is-monetary').trigger('change'), 50);
                 </script>
             </form>
