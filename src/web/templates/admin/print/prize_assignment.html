@@ -14,11 +14,9 @@
                     <div class="section-title">
                         {{ prize_category.name }}
                     </div>
-                    {% if prize_category.prize_sharing.id != no_sharing_id %}
-                        <div class="subheading">
-                            {{ _('Shared prizes (%(prize_sharing)s)', prize_sharing=prize_category.prize_sharing.name) }}
-                        </div>
-                    {% endif %}
+                    <div class="subheading">
+                        {{ shared_prizes_str }}
+                    </div>
                     <div class="header">{{ _('Rk. *** RANK FOR PRINT VIEW') }}</div>
                     <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR PRINT VIEW') }}</div>
                     <div class="header">{{ _('Name *** NAME FOR PRINT VIEW') }}</div>

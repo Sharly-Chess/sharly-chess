@@ -3439,9 +3439,6 @@ msgstr "Prix"
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."
 
-msgid "Prizes not shared"
-msgstr "Prix non partagés"
-
 msgid "Prizes of categories with prize sharing can only be monetary."
 msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
 
@@ -3875,9 +3872,18 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
 
+msgid "Share the prizes"
+msgstr "Partager les prix"
+
+msgid "Shared prizes"
+msgstr "Prix partagés"
+
 #, python-format
 msgid "Shared prizes (%(prize_sharing)s)"
 msgstr "Prix partagés (%(prize_sharing)s)"
+
+msgid "Sharing threshold"
+msgstr "Seuil de partage"
 
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
@@ -4242,6 +4248,9 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 msgid "The minimum time, whatever the ranking difference between the two players."
 msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
 
+msgid "The minimum value of a shared prize in this category (by default: no threshold)."
+msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
+
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
@@ -4460,6 +4469,9 @@ msgstr "Le système utilisé pour générer les appariements."
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
 
+msgid "The threshold can't be lower than the value of the last prize of the category ({value})."
+msgstr "Le seuil ne peut être inférieur à la valeur du dernier prix de la catégorie ({value})."
+
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
 msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
 
@@ -4493,11 +4505,14 @@ msgstr "Le type de document à imprimer."
 msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
+msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
+msgstr "La valeur doit être suprieure au seuil de partage de la catégorie ({threshold})."
+
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
 
-msgid "The way to share the prizes when two or more players with the same points are eligible for prizes."
-msgstr "La manière de partager les prix lorsque plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix."
+msgid "The way to share the prizes between players with the same points."
+msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
 
 msgid "There can only be one main category per tournament."
 msgstr "Il ne peut y avoir qu'une catégorie générale par tournoi."
@@ -5137,6 +5152,9 @@ msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
 
+msgid "When two or more players with the same points are eligible for prizes, share their prizes."
+msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
+
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."
 
@@ -5277,6 +5295,9 @@ msgstr "évènement"
 
 msgid "event ID does not match."
 msgstr "L'identifiant de l'évènement ne correspond pas."
+
+msgid "minimum: {value}"
+msgstr "minimum : {value}"
 
 msgid "no"
 msgstr "non"

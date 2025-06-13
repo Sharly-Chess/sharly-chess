@@ -2620,8 +2620,8 @@ class EventDatabase(MigrationDatabase):
             prize_group_id=row['prize_group_id'],
             name=row['name'],
             prize_sharing=row['prize_sharing'],
+            sharing_threshold=row['sharing_threshold'],
             is_main=cls.load_bool_from_database_field(row['is_main']),
-            threshold=None,
             index=row['index'],
         )
 
@@ -2662,7 +2662,14 @@ class EventDatabase(MigrationDatabase):
     ) -> int:
         fields = self._get_fields_dict(
             stored_prize_category,
-            ['prize_group_id', 'name', 'prize_sharing', 'is_main', 'index'],
+            [
+                'prize_group_id',
+                'name',
+                'prize_sharing',
+                'sharing_threshold',
+                'is_main',
+                'index',
+            ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2680,7 +2687,7 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_prize_category,
-            ['prize_group_id', 'name', 'prize_sharing', 'is_main'],
+            ['prize_group_id', 'name', 'prize_sharing', 'sharing_threshold', 'is_main'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(

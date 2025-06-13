@@ -141,7 +141,7 @@ class PrizeGroup:
             ]
 
             return main_category.prize_sharing.calculate_prizes(
-                main_prizes, filtered_players, threshold=main_category.threshold
+                main_prizes, filtered_players, threshold=main_category.sharing_threshold
             )
 
         top_prizes = calculate_main_category_prizes(sorted_players)

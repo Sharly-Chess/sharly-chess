@@ -56,8 +56,8 @@ class StoredPrizeCategory:
     prize_group_id: int
     name: str
     prize_sharing: str
+    sharing_threshold: float | None
     is_main: bool
-    threshold: float | None
     index: int
     stored_prize_criteria: list[StoredPrizeCriterion] = field(
         default_factory=list[StoredPrizeCriterion]
