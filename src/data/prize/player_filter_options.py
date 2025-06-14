@@ -6,7 +6,7 @@ from typing import Any, TYPE_CHECKING
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Club, Federation
-from utils.enum import PlayerGender, PlayerCategory
+from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import Option, OptionError
 
 if TYPE_CHECKING:
@@ -241,6 +241,42 @@ class AgeGreaterOption(AgeRangePlayerFilterOption):
     @property
     def other_field_id(self) -> str:
         return AgeLowerOption.static_id()
+
+
+class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
+    @staticmethod
+    def static_id() -> str:
+        return 'RATING_TYPES'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    def get_player_counter(self, tournament: 'Tournament') -> Counter[PlayerRatingType]:
+        return tournament.rating_type_counts
+
+    def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerRatingType]:
+        return [rating_type for rating_type in PlayerRatingType]
+
+    def get_key(self, object_: PlayerRatingType) -> str:
+        return str(object_.value)
+
+    def get_name(self, object_: PlayerRatingType) -> str:
+        return object_.name
+
+    def validate(self):
+        self._validate_list_type(int)
+        if not self.value:
+            raise OptionError(_('At least one rating type is expected.'), self)
+        for rating_type in self.value:
+            try:
+                PlayerRatingType(rating_type)
+            except ValueError:
+                raise OptionError(f'Unknown rating_type [{rating_type}]', self)
 
 
 class ClubsFilterOption(SelectPlayerFilterOption[Club]):

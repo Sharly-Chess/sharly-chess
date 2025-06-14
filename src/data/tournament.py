@@ -37,6 +37,7 @@ from utils.enum import (
     TournamentRating,
     TrfType,
     PlayerCategory,
+    PlayerRatingType,
 )
 from database.access.papi.papi_database import (
     PapiDatabase,
@@ -559,6 +560,13 @@ class Tournament:
         counter = Counter[PlayerCategory]()
         for player in self.players:
             counter[player.category] += 1
+        return counter
+
+    @cached_property
+    def rating_type_counts(self) -> Counter[PlayerRatingType]:
+        counter = Counter[PlayerRatingType]()
+        for player in self.players:
+            counter[player.rating_type] += 1
         return counter
 
     @property

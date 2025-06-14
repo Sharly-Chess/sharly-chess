@@ -385,6 +385,9 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
+msgid "At least one rating type is expected."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -726,6 +729,9 @@ msgid "Choose at least one federation."
 msgstr ""
 
 msgid "Choose at least one league."
+msgstr ""
+
+msgid "Choose at least one rating type."
 msgstr ""
 
 msgid "Choose the columns displayed."
@@ -2142,6 +2148,9 @@ msgid "Include greater categories"
 msgstr ""
 
 msgid "Include lower categories"
+msgstr ""
+
+msgid "Include players of rating types."
 msgstr ""
 
 msgid "Include players of these categories."
@@ -3565,6 +3574,12 @@ msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
 msgstr ""
 
 msgid "Rating splitting groups B and C."
+msgstr ""
+
+msgid "Rating type"
+msgstr ""
+
+msgid "Rating types"
 msgstr ""
 
 msgid "Rating:"
