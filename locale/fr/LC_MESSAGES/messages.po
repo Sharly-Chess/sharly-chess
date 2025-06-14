@@ -385,6 +385,9 @@ msgstr "Au moins une fédération est attendue."
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
+msgid "At least one rating type is expected."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -727,6 +730,9 @@ msgstr "Choisir au moins une fédération."
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
+
+msgid "Choose at least one rating type."
+msgstr ""
 
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
@@ -2143,6 +2149,9 @@ msgstr "Inclure les catégories supérieures"
 
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
+
+msgid "Include players of rating types."
+msgstr ""
 
 msgid "Include players of these categories."
 msgstr "Inclure les joueur·euses de ces catégories."
@@ -3566,6 +3575,12 @@ msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recomme
 
 msgid "Rating splitting groups B and C."
 msgstr "Classement ELO séparant les groupes B et C."
+
+msgid "Rating type"
+msgstr ""
+
+msgid "Rating types"
+msgstr ""
 
 msgid "Rating:"
 msgstr "Classement :"

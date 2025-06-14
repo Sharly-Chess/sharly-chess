@@ -1,0 +1,11 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Rating types')),
+        help_text=_('Include players of rating types.'),
+        select_options=option.select_options(admin_tournament, false),
+        multiple_select=true,
+        placeholder=_('Choose at least one rating type.'),
+        data=data, errors=errors
+    ) }}
+</div>

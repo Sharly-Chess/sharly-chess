@@ -14,8 +14,9 @@ from data.prize.player_filter_options import (
     AgeGreaterOption,
     ClubsFilterOption,
     FederationsFilterOption,
+    RatingTypesFilterOption,
 )
-from utils.enum import PlayerGender, PlayerCategory
+from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import OptionHandler, OptionError
 
 
@@ -155,6 +156,36 @@ class AgePlayerFilter(PlayerFilter):
                 'Only one of greater or lower option is allowed.',
                 self._get_option(AgeGreaterOption),
             )
+
+
+class RatingTypePlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'RATING_TYPE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Rating type')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [RatingTypesFilterOption]
+
+    def get_rating_types(self) -> list[PlayerRatingType]:
+        return [
+            PlayerRatingType(rating_type) for rating_type in self.get_option_values()[0]
+        ]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        rating_types = self.get_rating_types()
+        return lambda player: player.rating_type in rating_types
+
+    def __str__(self) -> str:
+        option_str = ', '.join(
+            rating_type.short_name for rating_type in self.get_rating_types()
+        )
+        return f'{self.name} ({option_str})'
 
 
 class ClubPlayerFilter(PlayerFilter):
