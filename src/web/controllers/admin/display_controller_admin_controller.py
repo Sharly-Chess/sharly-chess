@@ -129,7 +129,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                             ).format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
-            name = WebContext.form_data_to_str(data, 'name')
             public = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'clone' | 'update':

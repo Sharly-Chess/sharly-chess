@@ -781,7 +781,7 @@ class FfePlugin(Plugin):
             errors['ffe_password'] = _(
                 'The password of the tournament on the FFE website is made of 10 uppercase letters.'
             )
-        ffe_auto_upload = WebContext.form_data_to_bool(data, 'ffe_auto_upload')
+        ffe_auto_upload = WebContext.form_data_to_bool_or_none(data, 'ffe_auto_upload')
         # Keep data other than these two fields (such as file upload times)
         previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
 
