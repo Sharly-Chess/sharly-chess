@@ -90,7 +90,7 @@ class AveragePrizeSharing(PrizeSharing):
                     AssignedPrize(
                         prize=prizes_to_share[0],
                         priority=0,
-                        place_index=place_index,
+                        place_index=place_index + i,
                         assigned_to=player,
                         value=share,
                         is_main=True,
@@ -152,7 +152,7 @@ class HortSystemPrizeSharing(PrizeSharing):
                     AssignedPrize(
                         prize=prizes_to_share[0],
                         priority=0,
-                        place_index=place_index,
+                        place_index=place_index + i,
                         assigned_to=player,
                         value=(own + total / len(players_in_tie)) / 2,
                         is_main=True,

@@ -285,12 +285,15 @@ class PrizeGroup:
 
                     # Find out how much the same place is worth now that the player has left the main category
                     prize_with_same_place = next(
-                        assigned_prize
-                        for assigned_prize in assigned_prizes.values()
-                        if assigned_prize.is_main
-                        and assigned_prize.place_index == current.place_index
-                        and assigned_prize.assigned_to
-                        and assigned_prize.assigned_to.id != player.id
+                        (
+                            assigned_prize
+                            for assigned_prize in assigned_prizes.values()
+                            if assigned_prize.is_main
+                            and assigned_prize.place_index == current.place_index
+                            and assigned_prize.assigned_to
+                            and assigned_prize.assigned_to.id != player.id
+                        ),
+                        None,
                     )
 
                     if (
