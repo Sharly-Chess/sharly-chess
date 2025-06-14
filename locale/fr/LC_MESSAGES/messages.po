@@ -3860,10 +3860,6 @@ msgstr "Partager les prix"
 msgid "Shared prizes"
 msgstr "Prix partagés"
 
-#, python-format
-msgid "Shared prizes (%(prize_sharing)s)"
-msgstr "Prix partagés (%(prize_sharing)s)"
-
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
@@ -3912,8 +3908,8 @@ msgstr "Afficher/cacher les écrans d'affichage des résultats."
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
-msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites sur disque si l'écriture sur disque est activée)."
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
+msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
 msgid "Single Screens"
 msgstr "Écrans simples"

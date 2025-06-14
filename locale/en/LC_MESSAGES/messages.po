@@ -3860,10 +3860,6 @@ msgstr ""
 msgid "Shared prizes"
 msgstr ""
 
-#, python-format
-msgid "Shared prizes (%(prize_sharing)s)"
-msgstr ""
-
 msgid "Sharing threshold"
 msgstr ""
 
@@ -3912,7 +3908,7 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr ""
 
 msgid "Single Screens"

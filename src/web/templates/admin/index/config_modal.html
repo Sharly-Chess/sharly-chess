@@ -39,7 +39,7 @@
                         label='',
                         placeholder=_('Experimental features'),
                         help_text='',
-                        info=_('Benefit from the very last (experimental!) features (USE AT YOUR OWN RISKS!).'),
+                        info=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
                         data=data, errors=errors
                     ) }}
                 </div>
@@ -78,7 +78,10 @@
                             label='',
                             help_text='',
                             placeholder=_('Show the date and time'),
-                            info=_('Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled).'),
+                            info=_(
+                                'Showing the date and time on the console may help in identifying slow '
+                                'operations on the console (the date and time are always printed to the log files).'
+                            ),
                             data=data, errors=errors
                         ) }}
                     </div>
