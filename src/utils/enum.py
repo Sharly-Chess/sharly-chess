@@ -1,6 +1,6 @@
 """A file grouping all the "utility" classes/enum"""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum, StrEnum, IntEnum
 
 from common.i18n import _
@@ -711,12 +711,17 @@ class PlayerCategory(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @staticmethod
-    def from_year_of_birth(year_of_birth: int | None) -> 'PlayerCategory':
+    def from_year_of_birth(
+        year_of_birth: int | None, event_start: datetime, event_end: datetime
+    ) -> 'PlayerCategory':
         if not year_of_birth:
             return PlayerCategory.NONE
-        now: datetime = datetime.now()
-        ref_year: int = now.year if now.month < 9 else now.year + 1
-        age: int = ref_year - year_of_birth
+        if event_end - event_start > timedelta(days=30):
+            ref_time = max(event_start, min(datetime.now(), event_end))
+        else:
+            ref_time = event_start
+        ref_year = ref_time.year if ref_time.month < 9 else ref_time.year + 1
+        age = ref_year - year_of_birth
         if age <= 8:
             return PlayerCategory.U8
         elif age <= 10:

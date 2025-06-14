@@ -282,7 +282,13 @@ class Player(TournamentPlayer):
 
     @cached_property
     def category(self) -> PlayerCategory:
-        return PlayerCategory.from_year_of_birth(self.year_of_birth)
+        assert self.tournament is not None
+        event = self.tournament.event
+        return PlayerCategory.from_year_of_birth(
+            self.year_of_birth,
+            event.start_datetime,
+            event.stop_datetime,
+        )
 
     @property
     def rating(self) -> int:
