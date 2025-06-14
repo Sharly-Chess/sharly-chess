@@ -2156,8 +2156,8 @@ msgstr "Inclure les catégories supérieures"
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
 
-msgid "Include players of rating types."
-msgstr "Inclure les joueur·euses des types de classement."
+msgid "Include players of these rating types."
+msgstr "Inclure les joueur·euses de ces types de classement."
 
 msgid "Include players of these categories."
 msgstr "Inclure les joueur·euses de ces catégories."
