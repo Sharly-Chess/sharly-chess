@@ -428,9 +428,6 @@ msgstr "Mise en ligne automatique :"
 msgid "Automatic"
 msgstr "Automatique"
 
-msgid "Automatically launch a browser when starting the server"
-msgstr "Lancement automatique du navigateur au démarrage du serveur"
-
 msgid "Average"
 msgstr "Moyenne"
 
@@ -482,6 +479,9 @@ msgstr "Image de fond :"
 
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Ech."
+
+msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
+msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
 
 msgid "Berger"
 msgstr "Berger"
@@ -848,20 +848,17 @@ msgstr "La connexion au serveur a échoué : {error}."
 msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
 
-msgid "Console and logs"
-msgstr "Console et logs"
-
 msgid "Console formatting"
 msgstr "Format des logs sur la console"
 
 msgid "Console logging level"
 msgstr "Niveau de log sur la console"
 
-msgid "Console logging level:"
-msgstr "Niveau de log sur la console :"
-
 msgid "Console logging level: {console_log_level}"
 msgstr "Niveau de log sur la console : {console_log_level}"
+
+msgid "Console logs"
+msgstr "Logs de la console"
 
 msgid "Contact and registration"
 msgstr "Contact et inscription"
@@ -1221,21 +1218,6 @@ msgstr "Ronde affichée : %(round)d"
 msgid "Do not assign zero-point byes"
 msgstr "Ne pas marquer forfait"
 
-msgid "Do not enable experimental features"
-msgstr "Ne pas activer les fonctionnalités expérimentales"
-
-msgid "Do not show the date and time on the console"
-msgstr "Ne pas montrer la date et l'heure sur la console"
-
-msgid "Do not show the logging level on the console"
-msgstr "Ne pas montrer le niveau de log sur la console"
-
-msgid "Do not use color on the console"
-msgstr "Ne pas utiliser de couleur sur la console"
-
-msgid "Do nothing"
-msgstr "Ne rien faire"
-
 msgid "Do you want to allow manual pairings for this round?"
 msgstr "Voulez vous autoriser les appariements manuels pour cette ronde ?"
 
@@ -1568,12 +1550,6 @@ msgstr "Tranche Elo (handicap) :"
 
 msgid "Email:"
 msgstr "Mél :"
-
-msgid "Enable experimental features"
-msgstr "ctiver les fonctionnalités expérimentale"
-
-msgid "Enable experimental features to benefit from the very last (experimental!) features."
-msgstr "Activer les fonctionnalités expérimentales pour bénéficier des toutes dernières fonctionnalités de l'application (expérimentales !)."
 
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
@@ -2023,6 +1999,9 @@ msgstr "Genre"
 msgid "Gender:"
 msgstr "Genre :"
 
+msgid "General"
+msgstr "Général"
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
@@ -2333,8 +2312,8 @@ msgstr "Dernière mise à jour"
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
-msgid "Launch browser:"
-msgstr "Lancement du navigateur :"
+msgid "Launch a browser on startup"
+msgstr "Lancer un navigateur web au démarrage"
 
 msgid "Launching the browser on server startup"
 msgstr "lancement automatique du navigateur web"
@@ -2392,6 +2371,9 @@ msgstr "les paramètres des bases de données locales ont été mis à jour."
 
 msgid "Location"
 msgstr "Lieu"
+
+msgid "Logging level"
+msgstr "Niveau de log"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -3878,10 +3860,6 @@ msgstr "Partager les prix"
 msgid "Shared prizes"
 msgstr "Prix partagés"
 
-#, python-format
-msgid "Shared prizes (%(prize_sharing)s)"
-msgstr "Prix partagés (%(prize_sharing)s)"
-
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
@@ -3900,17 +3878,11 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
-msgid "Show the date and time on the console"
-msgstr "Montrer la date et l'heure sur la console"
+msgid "Show the date and time"
+msgstr "Afficher la date et l'heure"
 
-msgid "Show the date and time on the console:"
-msgstr "Montrer la date et l'heure sur la console :"
-
-msgid "Show the logging level on the console"
-msgstr "Montrer le niveau de log sur la console"
-
-msgid "Show the logging level on the console:"
-msgstr "Montrer le niveau de log sur la console :"
+msgid "Show the logging level"
+msgstr "Afficher le niveau de log"
 
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
@@ -3936,8 +3908,8 @@ msgstr "Afficher/cacher les écrans d'affichage des résultats."
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
-msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites sur disque si l'écriture sur disque est activée)."
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
+msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
 msgid "Single Screens"
 msgstr "Écrans simples"
@@ -4019,9 +3991,6 @@ msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
 msgid "Starting rank"
 msgstr "Classement initial"
-
-msgid "Startup"
-msgstr "Démarrage"
 
 msgid "Status"
 msgstr "Status"
@@ -4239,8 +4208,8 @@ msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE (par défaut : %(num)d minutes)"
 
-msgid "The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled)."
-msgstr "Le niveau minimum de log montrés sur la console (tous les niveaux de log sont écrits sur disque si l'écriture sur disque est activée)."
+msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
+msgstr "Le niveau minimum des log affichés sur la console (tous les logs détaillés sont toujours écrits dans les fichiers de log)."
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
@@ -4864,9 +4833,6 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
-msgid "USE AT YOUR OWN RISKS!"
-msgstr "UTILISEZ À VOS PROPRES RISQUES !"
-
 msgid "Unable to create Papi files."
 msgstr "Impossible de créer les fichiers Papi."
 
@@ -5031,11 +4997,8 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
-msgid "Use color on the console"
-msgstr "Utiliser les couleurs sur la console"
-
-msgid "Use colors on the console:"
-msgstr "Utiliser les couleurs sur la console :"
+msgid "Use log-level specific colors"
+msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"

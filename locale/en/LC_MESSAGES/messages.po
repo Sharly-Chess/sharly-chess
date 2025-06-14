@@ -428,9 +428,6 @@ msgstr ""
 msgid "Automatic"
 msgstr ""
 
-msgid "Automatically launch a browser when starting the server"
-msgstr ""
-
 msgid "Average"
 msgstr ""
 
@@ -482,6 +479,9 @@ msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
+
+msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
+msgstr ""
 
 msgid "Berger"
 msgstr ""
@@ -848,19 +848,16 @@ msgstr ""
 msgid "Connections ChessEvent"
 msgstr ""
 
-msgid "Console and logs"
-msgstr ""
-
 msgid "Console formatting"
 msgstr ""
 
 msgid "Console logging level"
 msgstr ""
 
-msgid "Console logging level:"
+msgid "Console logging level: {console_log_level}"
 msgstr ""
 
-msgid "Console logging level: {console_log_level}"
+msgid "Console logs"
 msgstr ""
 
 msgid "Contact and registration"
@@ -1221,21 +1218,6 @@ msgstr ""
 msgid "Do not assign zero-point byes"
 msgstr ""
 
-msgid "Do not enable experimental features"
-msgstr ""
-
-msgid "Do not show the date and time on the console"
-msgstr ""
-
-msgid "Do not show the logging level on the console"
-msgstr ""
-
-msgid "Do not use color on the console"
-msgstr ""
-
-msgid "Do nothing"
-msgstr ""
-
 msgid "Do you want to allow manual pairings for this round?"
 msgstr ""
 
@@ -1567,12 +1549,6 @@ msgid "Elo step (handicap):"
 msgstr ""
 
 msgid "Email:"
-msgstr ""
-
-msgid "Enable experimental features"
-msgstr ""
-
-msgid "Enable experimental features to benefit from the very last (experimental!) features."
 msgstr ""
 
 msgid "Enable/disable the details of events on the cards below."
@@ -2023,6 +1999,9 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
+msgid "General"
+msgstr ""
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2333,7 +2312,7 @@ msgstr ""
 msgid "Last upload"
 msgstr ""
 
-msgid "Launch browser:"
+msgid "Launch a browser on startup"
 msgstr ""
 
 msgid "Launching the browser on server startup"
@@ -2391,6 +2370,9 @@ msgid "Local source databases settings have been updated."
 msgstr ""
 
 msgid "Location"
+msgstr ""
+
+msgid "Logging level"
 msgstr ""
 
 msgid "Loss"
@@ -3878,10 +3860,6 @@ msgstr ""
 msgid "Shared prizes"
 msgstr ""
 
-#, python-format
-msgid "Shared prizes (%(prize_sharing)s)"
-msgstr ""
-
 msgid "Sharing threshold"
 msgstr ""
 
@@ -3900,16 +3878,10 @@ msgstr ""
 msgid "Show all the players"
 msgstr ""
 
-msgid "Show the date and time on the console"
+msgid "Show the date and time"
 msgstr ""
 
-msgid "Show the date and time on the console:"
-msgstr ""
-
-msgid "Show the logging level on the console"
-msgstr ""
-
-msgid "Show the logging level on the console:"
+msgid "Show the logging level"
 msgstr ""
 
 msgid "Show warnings"
@@ -3936,7 +3908,7 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr ""
 
 msgid "Single Screens"
@@ -4018,9 +3990,6 @@ msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
-msgstr ""
-
-msgid "Startup"
 msgstr ""
 
 msgid "Status"
@@ -4239,7 +4208,7 @@ msgstr ""
 msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr ""
 
-msgid "The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled)."
+msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4864,9 +4833,6 @@ msgstr ""
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-msgid "USE AT YOUR OWN RISKS!"
-msgstr ""
-
 msgid "Unable to create Papi files."
 msgstr ""
 
@@ -5031,10 +4997,7 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
-msgid "Use color on the console"
-msgstr ""
-
-msgid "Use colors on the console:"
+msgid "Use log-level specific colors"
 msgstr ""
 
 msgid "Use no timer"

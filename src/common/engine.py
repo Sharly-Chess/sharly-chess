@@ -289,7 +289,7 @@ class Engine(ABC):
             logger.info('Recovering configuration from release [%s]...', version)
             # copy the configuration database to its new destination
             shutil.copy(config_database_file, ConfigDatabase().file)
-            SharlyChessConfig().reload()
+            SharlyChessConfig.reload()
         else:
             logger.debug(
                 'Can not recover configuration from version [%s] (file [%s] not found).',
