@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Annotated, TypedDict
+from typing import Any, Annotated
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
@@ -598,9 +598,6 @@ class PrizeAdminController(BaseEventAdminController):
         )
         return self._admin_event_prizes_render(web_context)
 
-    class ReorderFormData(TypedDict):
-        item: list[int]
-
     @patch(
         path=(
             '/admin/prizes/prize-category/reorder/'
@@ -612,7 +609,7 @@ class PrizeAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            ReorderFormData,
+            dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
