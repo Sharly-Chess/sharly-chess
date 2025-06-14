@@ -17,18 +17,17 @@
                     <div class="subheading">
                         {{ prize_category.format_shared_prizes(prize_currency) }}
                     </div>
-                    <div class="header">{{ _('Rk. *** RANK FOR PRINT VIEW') }}</div>
-                    <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR PRINT VIEW') }}</div>
-                    <div class="header">{{ _('Name *** NAME FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
+                    <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}</div>
+                    <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
                     <div class="header">{{ document.tournament.rating.print_view_header }}</div>
-                    <div class="header">{{ _("Cat *** CATEGORY FOR PRINT VIEW") }}</div>
-                    <div class="header">{{ _('Gen *** GENDER FOR PRINT VIEW') }}</div>
-                    <div class="header">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</div>
-                    <div class="header">{{ _('Club *** CLUB FOR PRINT VIEW') }}</div>
-                    <div class="header">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</div>
-                    <div class="header">{{ _('Prize *** PRIZE FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _("Cat *** CATEGORY FOR TABLE HEADER") }}</div>
+                    <div class="header">{{ _('Gen *** GENDER FOR TABLE HEADER') }}</div>
+                    <div class="header">{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</div>
+                    <div class="header">{{ _('Club *** CLUB FOR TABLE HEADER') }}</div>
+                    <div class="header">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</div>
+                    <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
                     {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
-                        {% set prize=assigned_prize.prize %}
                         {% set player=assigned_prize.assigned_to %}
                         <div class="cell place">
                             {{ ordinal_integer(loop.index)|safe }}
