@@ -386,7 +386,7 @@ msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
 msgid "At least one rating type is expected."
-msgstr ""
+msgstr "Au moins un type de classement est attendu."
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
@@ -732,7 +732,7 @@ msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
 
 msgid "Choose at least one rating type."
-msgstr ""
+msgstr "Choisissez au moins un type de classement."
 
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
@@ -890,6 +890,12 @@ msgstr "Impossible de décompresser les données."
 msgid "Create"
 msgstr "Créer"
 
+msgid "Create a Prize Category now to continue."
+msgstr "Créez une catégorie de prix pour continuer."
+
+msgid "Create a Prize Group now to get started."
+msgstr "Créez un groupe de prix pour commencer."
+
 msgid "Create a category"
 msgstr "Créer une catégorie"
 
@@ -901,9 +907,6 @@ msgstr "Créez un pilote d'afficheurs maintenant commencer."
 
 msgid "Create a family now to get started."
 msgstr "Créer une famille d’écrans pour commencer."
-
-msgid "Create a prize category now to get started."
-msgstr "Créer une catégorie de prix pour commencer."
 
 msgid "Create a prize group"
 msgstr "Créer un groupe de prix"
@@ -1463,6 +1466,9 @@ msgstr "Exemple : championnat-du-monde"
 
 msgid "EXEMPT"
 msgstr "EXEMPT"
+
+msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
 
 msgid "Edit"
 msgstr "Éditer"
@@ -2151,7 +2157,7 @@ msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
 
 msgid "Include players of rating types."
-msgstr ""
+msgstr "Inclure les joueur·euses des types de classement."
 
 msgid "Include players of these categories."
 msgstr "Inclure les joueur·euses de ces catégories."
@@ -2636,6 +2642,12 @@ msgstr "Pas de fichier Papi pour le tournoi [%(tournament_uniq_id)s]."
 msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
 msgstr "Pas de fichier Papi trouvé pour le tournoi [{tournament_uniq_id}], on ne peut pas y ajouter de joueur·euses."
 
+msgid "No Prize Category"
+msgstr "Aucune catégorie de prix"
+
+msgid "No Prize Group"
+msgstr "Aucun groupe de prix"
+
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
@@ -2734,9 +2746,6 @@ msgstr "Aucun·e joueur·euse mis·e à jour."
 
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
-
-msgid "No prize category"
-msgstr "Aucune catégorie de prix"
 
 msgid "No prizes defined."
 msgstr "Aucun prix défini."
@@ -2881,6 +2890,9 @@ msgstr "Une fois"
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
 
+msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
+msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
+
 msgid "One event found, press Enter (Q to quit): "
 msgstr "Un unique évènement trouvé, tapez Entrée (Q pour quitter) : "
 
@@ -2938,6 +2950,9 @@ msgstr "Adversaire Elo"
 
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
+
+msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
@@ -3577,10 +3592,10 @@ msgid "Rating splitting groups B and C."
 msgstr "Classement ELO séparant les groupes B et C."
 
 msgid "Rating type"
-msgstr ""
+msgstr "Type de classement"
 
 msgid "Rating types"
-msgstr ""
+msgstr "Types de classement"
 
 msgid "Rating:"
 msgstr "Classement :"
@@ -3880,6 +3895,9 @@ msgstr "Seuil de partage"
 
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
+
+msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
+msgstr "Sharly Chess propose un système de gestion des prix puissant et flexible, capable de s’adapter à une grande variété de structures de récompenses en tournoi."
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
@@ -5419,4 +5437,3 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
