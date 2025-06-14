@@ -368,11 +368,17 @@ class PrizeAdminController(BaseEventAdminController):
                     errors[field] = _('A positive value is expected.')
                 elif prize_category and prize_category.prizes:
                     min_prize_value = prize_category.sorted_prizes[-1].value
-                    if threshold < min_prize_value:
+                    if threshold > min_prize_value:
                         errors[field] = _(
-                            "The threshold can't be lower than the value "
+                            "The threshold can't be greater than the value "
                             'of the last prize of the category ({value}).'
-                        ).format(value=min_prize_value)
+                        ).format(
+                            value=(
+                                int(min_prize_value)
+                                if min_prize_value.is_integer()
+                                else min_prize_value
+                            )
+                        )
         return errors
 
     @staticmethod
@@ -991,7 +997,9 @@ class PrizeAdminController(BaseEventAdminController):
                 _(
                     'The value has to be higher than the sharing '
                     'threshold of the category ({threshold}).'
-                ).format(threshold=threshold)
+                ).format(
+                    threshold=int(threshold) if threshold.is_integer() else threshold
+                )
                 if threshold
                 else _('A positive value is expected.')
             )

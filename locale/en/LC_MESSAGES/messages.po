@@ -4469,7 +4469,7 @@ msgstr ""
 msgid "The text colour of the alert messages."
 msgstr ""
 
-msgid "The threshold can't be lower than the value of the last prize of the category ({value})."
+msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr ""
 
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."

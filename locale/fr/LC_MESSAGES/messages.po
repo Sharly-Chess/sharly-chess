@@ -4469,8 +4469,8 @@ msgstr "Le système utilisé pour générer les appariements."
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
 
-msgid "The threshold can't be lower than the value of the last prize of the category ({value})."
-msgstr "Le seuil ne peut être inférieur à la valeur du dernier prix de la catégorie ({value})."
+msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
+msgstr "Le seuil ne peut être supérieur à la valeur du dernier prix de la catégorie ({value})."
 
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
 msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
