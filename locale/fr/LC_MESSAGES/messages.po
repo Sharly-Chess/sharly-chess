@@ -3385,7 +3385,7 @@ msgid "Private event"
 msgstr "Évènement privé"
 
 msgid "Prize *** PRIZE FOR PRINT VIEW"
-msgstr "Prize"
+msgstr "Prix"
 
 #, python-format
 msgid "Prize [%(prize)s] successfully created!"
