@@ -44,16 +44,19 @@ class Prize:
 
     @property
     def name(self) -> str:
-        currency_value = StaticUtils.currency_value_str(
-            self.value, self.prize_category.currency
-        )
         if self.is_monetary:
-            return currency_value
-        description = self.description or _('Non-monetary prize')
+            return self.format_value()
         if not self.value:
-            return description
-        value_str = _('value: {currency_value}').format(currency_value=currency_value)
-        return f'{description} ({value_str})'
+            return self.description
+        value_str = _('value: {currency_value}').format(
+            currency_value=self.format_value()
+        )
+        return f'{self.description} ({value_str})'
+
+    def format_value(self, value: float | None = None) -> str:
+        if value is None:
+            value = self.value
+        return StaticUtils.currency_value_str(value, self.prize_category.currency)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()

@@ -1,0 +1,59 @@
+.centered {
+    display: flex;
+    justify-content: center;
+}
+
+.prize-table {
+    display: grid;
+    grid-template-columns: max-content max-content auto max-content max-content max-content max-content auto max-content max-content;
+    gap: 0.3em 0.8em;
+    align-items: center;
+    max-width: 100%;
+    justify-items: center;
+}
+
+.section-title,
+.subheading,
+.warning
+{
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 1.2em;
+}
+
+.subheading {
+    font-style: italic;
+    margin-bottom: 0.5em;
+}
+
+.warning {
+    color: red;
+    margin-bottom: 0.8rem;
+}
+
+.header {
+    font-weight: bold;
+    text-align: center;
+}
+
+.cell {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.cell.place,
+.cell.name,
+.cell.prize
+{
+    font-weight: bold;
+}
+
+.cell.name
+{
+    justify-self: start;
+}

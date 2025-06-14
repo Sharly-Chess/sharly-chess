@@ -126,6 +126,7 @@ class PrizesTestCase(BaseTestCase):
         prize_sharing: PrizeSharing = NoPrizeSharing(),
         stored_prizes: list[StoredPrize] | None = None,
         stored_prize_criteria: list[StoredPrizeCriterion] | None = None,
+        threshold: float | None = None,
     ):
         if not stored_prizes:
             stored_prizes = []
@@ -142,6 +143,7 @@ class PrizesTestCase(BaseTestCase):
             name=name,
             prize_sharing=prize_sharing.static_id(),
             is_main=is_main,
+            sharing_threshold=threshold,
             stored_prize_criteria=stored_prize_criteria,
             stored_prizes=stored_prizes,
         )
@@ -183,23 +185,28 @@ class PrizesTestCase(BaseTestCase):
         )
         self.assertIsNotNone(assigned_prize)
         self.assertEqual(bool(assigned_prize.warning), has_warning)
-        for assigned_prize in prize_list:
-            if (p := assigned_prize.assigned_to) is not None and p.id == player.id:
-                self.assertIsNotNone(assigned_prize.prize)
-                self.assertEqual(
-                    assigned_prize.prize and assigned_prize.prize.id, prize.id
-                )
+        self.assertIsNotNone(assigned_prize.prize)
+        self.assertEqual(assigned_prize.prize and assigned_prize.prize.id, prize.id)
 
     def assert_has_prize_value(
-        self, player: Player, value: float, prize_list: list[AssignedPrize]
+        self,
+        player: Player,
+        value: float,
+        prize_list: list[AssignedPrize],
+        has_warning: bool = False,
     ):
+        assigned_prize = next(
+            prize
+            for prize in prize_list
+            if prize.assigned_to and prize.assigned_to.id == player.id
+        )
+        self.assertIsNotNone(assigned_prize)
+        self.assertEqual(bool(assigned_prize.warning), has_warning)
         self.assertIn(
             player.id,
             [prize.assigned_to.id for prize in prize_list if prize.assigned_to],
         )
-        for prize in prize_list:
-            if (p := prize.assigned_to) is not None and p.id == player.id:
-                self.assertEqual(prize.value, value)
+        self.assertEqual(assigned_prize.value, value)
 
     def assert_has_no_prize(self, player: Player, prize_list: list[AssignedPrize]):
         self.assertNotIn(
@@ -277,6 +284,56 @@ class PrizesTestCase(BaseTestCase):
         self.assert_has_prize_value(p4, (0 + 60 / 3) / 2, prizes)
         self.assert_has_prize_value(p5, (0 + 60 / 3) / 2, prizes)
         self.assert_has_no_prize(p6, prizes)
+
+    def test_average_threshold(self):
+        """Main category, average prize sharing with threshold."""
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+            self.stored_prize(60),
+        ]
+        category = self.stored_category(
+            'all', True, AveragePrizeSharing(), prizes, threshold=30
+        )
+        p1 = self.player(1000, 5)
+        p2 = self.player(1000, 4)
+        p3 = self.player(1000, 3)
+        p4 = self.player(1000, 3)
+        p5 = self.player(1000, 3)
+        players = [p1, p2, p3, p4, p5]
+
+        prizes = self.assign_prizes([category], players)
+
+        self.assert_has_prize_value(p1, 200, prizes)
+        self.assert_has_prize_value(p2, 100, prizes)
+        self.assert_has_prize_value(p3, 60 / 2, prizes)
+        self.assert_has_prize_value(p4, 60 / 2, prizes, True)
+        self.assert_has_no_prize(p5, prizes)
+
+    def test_hort_threshold(self):
+        """Main category, hort prize sharing with threshold."""
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+            self.stored_prize(60),
+        ]
+        category = self.stored_category(
+            'all', True, HortSystemPrizeSharing(), prizes, threshold=15
+        )
+        p1 = self.player(1000, 5)
+        p2 = self.player(1000, 4)
+        p3 = self.player(1000, 3)
+        p4 = self.player(1000, 3)
+        p5 = self.player(1000, 3)
+        players = [p1, p2, p3, p4, p5]
+
+        prizes = self.assign_prizes([category], players)
+
+        self.assert_has_prize_value(p1, 200, prizes)
+        self.assert_has_prize_value(p2, 100, prizes)
+        self.assert_has_prize_value(p3, (60 + 60 / 2) / 2, prizes)
+        self.assert_has_prize_value(p4, 60 / 2 / 2, prizes, True)
+        self.assert_has_no_prize(p5, prizes)
 
     def test_basic_gender(self):
         """Test the gender filter"""

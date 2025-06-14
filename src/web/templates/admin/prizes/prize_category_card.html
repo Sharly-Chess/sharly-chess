@@ -84,14 +84,7 @@
             {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
             {{ prize_category.total_prize_value_str }}
         </div>
-        <div class="text-start">
-            {% if prize_category.are_prizes_shared %}
-                {{ _('%(string)s:', string=_('Prize sharing')) }}&nbsp;
-                {{ prize_category.prize_sharing.name }}
-            {% else %}
-                <span class="text-secondary">{{ _('Prizes not shared') }}</span>
-            {% endif %}
-        </div>
+        <div class="text-start">{{ prize_category.shared_prizes_str }}</div>
     </div>
 {% endblock %}
 

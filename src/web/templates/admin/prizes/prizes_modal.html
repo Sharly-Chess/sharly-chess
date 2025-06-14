@@ -25,7 +25,9 @@
                 {% for prize in admin_prize_category.sorted_prizes %}
                     <div class="border border-secondary">
                         <div class="p-2 d-flex align-items-start gap-4">
-                            <div>{{ loop.index }}.</div>
+                            <b>
+                                {{ ordinal_integer(loop.index)|safe }}
+                            </b>
                             <div class="text-start flex-grow-1">
                                 {{ prize.name }}
                             </div>
@@ -82,7 +84,9 @@
                     <button
                         class="btn btn-outline-primary"
                         hx-get="{{ url_for(
-                            'admin-prize-criteria-modal',
+                            'admin-prize-criteria-modal'
+                            if admin_prize_category.criteria else
+                            'admin-prize-criterion-create-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             prize_group_id=admin_prize_group.id,

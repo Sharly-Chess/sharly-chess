@@ -1148,6 +1148,9 @@ msgstr "Suppression du tournoi [%(tournament_uniq_id)s]"
 msgid "Description"
 msgstr "Description"
 
+msgid "Description is mandatory for non-monetary prizes."
+msgstr "La description est objigatoire pour les prix non-monétaires."
+
 msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr "Les descriptions ne peuvent être définies que pour les prix non-monétaires."
 
@@ -2819,11 +2822,11 @@ msgstr "Aucun changement détecté."
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
 
-msgid "Non-monetary prize"
-msgstr "Prix non-monétaire"
-
 msgid "None"
 msgstr "Aucun"
+
+msgid "Not assigned"
+msgstr "Non-attribué"
 
 msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
@@ -2947,6 +2950,9 @@ msgstr "Adversaire Elo [Pts]"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
+
+msgid "Other players in this score group are not included since the share would be less than the threshold."
+msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
 
 msgid "Others"
 msgstr "Autres"
@@ -3372,9 +3378,18 @@ msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas 
 msgid "Private event"
 msgstr "Évènement privé"
 
+msgid "Prize *** PRIZE FOR PRINT VIEW"
+msgstr "Prize"
+
 #, python-format
 msgid "Prize [%(prize)s] successfully created!"
 msgstr "Prix [%(prize)s] créé avec succès !"
+
+msgid "Prize assignment"
+msgstr "Attribution des prix"
+
+msgid "Prize assignment after round #{round}"
+msgstr "Attribution des prix après la ronde n°{round}"
 
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
@@ -3423,9 +3438,6 @@ msgstr "Prix"
 
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."
-
-msgid "Prizes not shared"
-msgstr "Prix non partagés"
 
 msgid "Prizes of categories with prize sharing can only be monetary."
 msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
@@ -3655,6 +3667,9 @@ msgstr "Retour au tournoi"
 msgid "Rk. *** RANK FOR PRINT VIEW"
 msgstr "Pl."
 
+msgid "Rk. O. *** RANK OVERALL FOR PRINT VIEW"
+msgstr "Pl. Gén."
+
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
 
@@ -3857,6 +3872,19 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
 
+msgid "Share the prizes"
+msgstr "Partager les prix"
+
+msgid "Shared prizes"
+msgstr "Prix partagés"
+
+#, python-format
+msgid "Shared prizes (%(prize_sharing)s)"
+msgstr "Prix partagés (%(prize_sharing)s)"
+
+msgid "Sharing threshold"
+msgstr "Seuil de partage"
+
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 
@@ -3883,6 +3911,9 @@ msgstr "Montrer le niveau de log sur la console"
 
 msgid "Show the logging level on the console:"
 msgstr "Montrer le niveau de log sur la console :"
+
+msgid "Show warnings"
+msgstr "Afficher les avertissements"
 
 msgid "Show/hide the boards screens."
 msgstr "Afficher/cacher les écrans d'affichage des échiquiers."
@@ -4217,6 +4248,9 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 msgid "The minimum time, whatever the ranking difference between the two players."
 msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
 
+msgid "The minimum value of a shared prize in this category (by default: no threshold)."
+msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
+
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
@@ -4435,6 +4469,9 @@ msgstr "Le système utilisé pour générer les appariements."
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
 
+msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
+msgstr "Le seuil ne peut être supérieur à la valeur du dernier prix de la catégorie ({value})."
+
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
 msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
 
@@ -4468,11 +4505,14 @@ msgstr "Le type de document à imprimer."
 msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
+msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
+msgstr "La valeur doit être suprieure au seuil de partage de la catégorie ({threshold})."
+
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
 
-msgid "The way to share the prizes when two or more players with the same points are eligible for prizes."
-msgstr "La manière de partager les prix lorsque plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix."
+msgid "The way to share the prizes between players with the same points."
+msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
 
 msgid "There can only be one main category per tournament."
 msgstr "Il ne peut y avoir qu'une catégorie générale par tournoi."
@@ -5112,6 +5152,9 @@ msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
 
+msgid "When two or more players with the same points are eligible for prizes, share their prizes."
+msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
+
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."
 
@@ -5253,6 +5296,9 @@ msgstr "évènement"
 msgid "event ID does not match."
 msgstr "L'identifiant de l'évènement ne correspond pas."
 
+msgid "minimum: {value}"
+msgstr "minimum : {value}"
+
 msgid "no"
 msgstr "non"
 
@@ -5383,6 +5429,9 @@ msgstr[1] "{num} joueur·euses trouvé·es."
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."
+
+msgid "{prefix}{int_value}<sup>{suffix}</sup>"
+msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
 
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"

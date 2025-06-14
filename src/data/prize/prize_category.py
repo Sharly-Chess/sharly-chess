@@ -3,6 +3,7 @@ from _weakref import ReferenceType
 from collections.abc import Collection
 from typing import TYPE_CHECKING
 
+from common.i18n import _
 from data.player import Player
 from data.prize.managers import PrizeSharingManager
 from data.prize.prize_criterion import PrizeCriterion
@@ -63,6 +64,10 @@ class PrizeCategory:
         return self.stored_prize_category.is_main
 
     @property
+    def sharing_threshold(self) -> float | None:
+        return self.stored_prize_category.sharing_threshold
+
+    @property
     def index(self) -> int:
         return self.stored_prize_category.index
 
@@ -88,6 +93,19 @@ class PrizeCategory:
             self.prizes,
             key=lambda prize: (-prize.value, not prize.is_monetary, prize.id),
         )
+
+    @property
+    def shared_prizes_str(self) -> str:
+        if not self.are_prizes_shared:
+            return ''
+        threshold_str = ''
+        if self.sharing_threshold:
+            threshold_str = ', ' + _('minimum: {value}').format(
+                value=StaticUtils.currency_value_str(
+                    self.sharing_threshold, self.currency
+                )
+            )
+        return f'{_("Shared prizes")} ({self.prize_sharing.name}{threshold_str})'
 
     def player_matches_criteria(self, player: Player) -> bool:
         """Check if the player matches all criteria of this category."""
