@@ -480,8 +480,8 @@ msgstr "Image de fond :"
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Ech."
 
-msgid "Benefit from the very last (experimental!) features (USE AT YOUR OWN RISKS!)."
-msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales !) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
+msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
+msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
 
 msgid "Berger"
 msgstr "Berger"
@@ -3883,7 +3883,7 @@ msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
 msgid "Show the date and time"
-msgstr "Afficher la date er l'heure"
+msgstr "Afficher la date et l'heure"
 
 msgid "Show the logging level"
 msgstr "Afficher le niveau de log"

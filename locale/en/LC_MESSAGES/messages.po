@@ -480,7 +480,7 @@ msgstr ""
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
 
-msgid "Benefit from the very last (experimental!) features (USE AT YOUR OWN RISKS!)."
+msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
 msgstr ""
 
 msgid "Berger"

@@ -58,19 +58,19 @@
                     </div>
                     <div class="col-12 col-md-6 mt-2 d-flex flex-column gap-2">
                         {{ admin_macros.switch_input(
-                            name='console_show_level',
-                            label='',
-                            placeholder=_('Show the logging level'),
-                            help_text='',
-                            info=_('Colorblind people can print the logging level to distinguish important information on the console.'),
-                            data=data, errors=errors
-                        ) }}
-                        {{ admin_macros.switch_input(
                             name='console_color',
                             label='',
                             help_text='',
                             placeholder=_('Use log-level specific colors'),
                             info=_('Using colors helps in finding quickly important information on the console.'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.switch_input(
+                            name='console_show_level',
+                            label='',
+                            placeholder=_('Show the logging level'),
+                            help_text='',
+                            info=_('Colorblind people can print the logging level to distinguish important information on the console.'),
                             data=data, errors=errors
                         ) }}
                         {{ admin_macros.switch_input(
