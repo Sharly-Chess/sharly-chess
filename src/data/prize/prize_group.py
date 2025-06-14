@@ -117,6 +117,7 @@ class PrizeGroup:
         )
         sorted_players: list[Player] = list(self.tournament.players_by_rank.values())
         assigned_prizes: dict[int, AssignedPrize] = {}
+        unassigned_prizes: list[AssignedPrize] = []
         removed_from_main_set: set[int] = set()
         queue: deque[AssignedPrize] = deque()
 
@@ -200,6 +201,7 @@ class PrizeGroup:
 
             player = find_eligible_player(next_prize)
             if not player:
+                unassigned_prizes.append(prize_slot)
                 continue
 
             current = assigned_prizes.get(player.id)
@@ -218,7 +220,7 @@ class PrizeGroup:
                     iterate = True
 
                     new_top_players: list[Player] = []
-                    new_top_prizes: list[AssignedPrize]
+                    new_top_prizes: list[AssignedPrize] = []
 
                     while iterate:
                         new_top_prizes = calculate_main_category_prizes(sorted_players)
@@ -345,8 +347,8 @@ class PrizeGroup:
             )
 
         sorted_prizes = sorted(
-            assigned_prizes.values(),
-            key=lambda p: (-p.prize.value if p.prize else 0, p.priority, p.place_index),
+            list(assigned_prizes.values()) + unassigned_prizes,
+            key=lambda p: (-p.prize.value, p.priority, p.place_index),
         )
 
         return sorted_prizes
