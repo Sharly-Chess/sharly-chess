@@ -1175,6 +1175,9 @@ msgstr "Affichage"
 msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
 
+msgid "Display color, board number and opponent"
+msgstr "Affichier, la couleur, l'échiquier et l'adversaire"
+
 msgid "Display controller"
 msgstr "Pilote d'afficheurs"
 
@@ -1208,11 +1211,17 @@ msgstr "Affichage d'un bouton de sortie d'écran :"
 msgid "Display of unpaired players:"
 msgstr "Affichage des joueur·euses non apparié·es"
 
+msgid "Display only color and board number"
+msgstr "N'afficher que la couleur et l'échiquier"
+
 msgid "Display only paired players"
 msgstr "Afficher seulement les joueur·euses apparié·es"
 
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
+
+msgid "Display the players' opponent:"
+msgstr "Afficher les adversaires"
 
 #, python-format
 msgid "Displayed round: %(round)d"
@@ -3200,6 +3209,12 @@ msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
 
+msgid "Players' opponent: displayed"
+msgstr "Adversaires des joueur·euses : affichée·es"
+
+msgid "Players' opponent: hidden"
+msgstr "Adversaires des joueur·euses : cachée·es"
+
 msgid "Playing"
 msgstr "En cours"
 
@@ -3877,10 +3892,6 @@ msgstr "Partager les prix"
 
 msgid "Shared prizes"
 msgstr "Prix partagés"
-
-#, python-format
-msgid "Shared prizes (%(prize_sharing)s)"
-msgstr "Prix partagés (%(prize_sharing)s)"
 
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
@@ -5149,6 +5160,9 @@ msgstr "Lorsqu'il n'est pas défini au niveau de l'écran, le message d'alerte d
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
+msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
+msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (nulti-colonnes)."
+
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
 
@@ -5441,4 +5455,7 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Shared prizes (%(prize_sharing)s)"
+#~ msgstr "Prix partagés (%(prize_sharing)s)"
 

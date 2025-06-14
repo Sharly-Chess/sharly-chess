@@ -1175,6 +1175,9 @@ msgstr ""
 msgid "Display all the players, paired and unpaired"
 msgstr ""
 
+msgid "Display color, board number and opponent"
+msgstr ""
+
 msgid "Display controller"
 msgstr ""
 
@@ -1208,10 +1211,16 @@ msgstr ""
 msgid "Display of unpaired players:"
 msgstr ""
 
+msgid "Display only color and board number"
+msgstr ""
+
 msgid "Display only paired players"
 msgstr ""
 
 msgid "Display the exit button"
+msgstr ""
+
+msgid "Display the players' opponent:"
 msgstr ""
 
 #, python-format
@@ -3200,6 +3209,12 @@ msgstr ""
 msgid "Players screens show pairings by alphabetical order."
 msgstr ""
 
+msgid "Players' opponent: displayed"
+msgstr ""
+
+msgid "Players' opponent: hidden"
+msgstr ""
+
 msgid "Playing"
 msgstr ""
 
@@ -3876,10 +3891,6 @@ msgid "Share the prizes"
 msgstr ""
 
 msgid "Shared prizes"
-msgstr ""
-
-#, python-format
-msgid "Shared prizes (%(prize_sharing)s)"
 msgstr ""
 
 msgid "Sharing threshold"
@@ -5149,6 +5160,9 @@ msgstr ""
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
+msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
+msgstr ""
+
 msgid "When not tournament is selected, the results of all the tournaments are displayed."
 msgstr ""
 
@@ -5441,4 +5455,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Shared prizes (%(prize_sharing)s)"
+#~ msgstr ""
 

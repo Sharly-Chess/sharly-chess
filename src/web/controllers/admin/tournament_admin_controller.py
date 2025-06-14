@@ -885,6 +885,7 @@ class TournamentAdminController(BaseEventAdminController):
                                     timer_id=None,
                                     input_exit_button=None,
                                     players_show_unpaired=None,
+                                    players_show_opponent=None,
                                     results_limit=None,
                                     results_max_age=None,
                                     results_tournament_ids=[],
