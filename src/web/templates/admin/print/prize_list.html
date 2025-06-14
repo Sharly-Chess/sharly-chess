@@ -6,11 +6,9 @@
             <div class="section-title">
                 {{ prize_category.name }}
             </div>
-            {% if prize_category.prize_sharing.id != no_sharing_id %}
-                <div class="section-sub-title">
-                    {{ _('Shared prizes (%(prize_sharing)s)', prize_sharing=prize_category.prize_sharing.name) }}
-                </div>
-            {% endif %}
+            <div class="section-sub-title">
+                {{ prize_category.shared_prizes_str }}
+            </div>
             <table>
                 <tbody>
                     {% for prize in prize_category.sorted_prizes %}
