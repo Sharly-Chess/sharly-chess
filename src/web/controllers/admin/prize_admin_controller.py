@@ -602,19 +602,26 @@ class PrizeAdminController(BaseEventAdminController):
         item: list[int]
 
     @patch(
-        path='/admin/prizes/prize-category/reorder/{event_uniq_id:str}',
+        path=(
+            '/admin/prizes/prize-category/reorder/'
+            '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
+        ),
         name='admin-prizes-reorder-categories',
     )
-    async def htmx_admin_screen_reorder_sets(
+    async def htmx_admin_prize_reorder_categories(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
             ReorderFormData,
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
     ) -> Template | ClientRedirect:
-        web_context = PrizeAdminWebContext(request, event_uniq_id)
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id
+        )
         if web_context.error:
             return web_context.error
         prize_group = web_context.get_admin_prize_group()
