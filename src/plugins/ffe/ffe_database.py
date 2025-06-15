@@ -54,6 +54,10 @@ class FfeDatabase(LocalSourceDatabase):
         return 'FFE'
 
     @property
+    def _dir(self) -> Path:
+        return ffe.TMP_DIR
+
+    @property
     def _schema_file_path(self) -> Path:
         return PLUGIN_DIR / 'create_ffe.sql'
 
