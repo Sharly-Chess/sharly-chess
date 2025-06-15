@@ -1,3 +1,4 @@
+from datetime import datetime
 import weakref
 from collections import Counter
 from collections.abc import Collection
@@ -182,6 +183,14 @@ class Tournament:
     @property
     def stop_timestamp(self) -> float:
         return self.stored_tournament.stop or self.event.stop
+
+    @property
+    def start_datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.start_timestamp)
+
+    @property
+    def stop_datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.stop_timestamp)
 
     @property
     def location(self) -> str | None:

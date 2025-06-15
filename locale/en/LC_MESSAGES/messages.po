@@ -2174,7 +2174,7 @@ msgstr ""
 msgid "Include lower categories"
 msgstr ""
 
-msgid "Include players of rating types."
+msgid "Include players of these rating types."
 msgstr ""
 
 msgid "Include players of these categories."
