@@ -223,7 +223,12 @@
 {% block cards_container_cards %}
     <form
         {% if admin_prize_group and admin_prize_group.categories %}
-            hx-patch="{{ url_for('admin-prizes-reorder-categories', event_uniq_id=admin_event.uniq_id) }}"
+            hx-patch="{{ url_for(
+                'admin-prizes-reorder-categories',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+            ) }}"
             hx-target="body"
             hx-trigger="end"
         {% endif %}

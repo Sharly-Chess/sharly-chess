@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Annotated, TypedDict
+from typing import Any, Annotated
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
@@ -598,23 +598,27 @@ class PrizeAdminController(BaseEventAdminController):
         )
         return self._admin_event_prizes_render(web_context)
 
-    class ReorderFormData(TypedDict):
-        item: list[int]
-
     @patch(
-        path='/admin/prizes/prize-category/reorder/{event_uniq_id:str}',
+        path=(
+            '/admin/prizes/prize-category/reorder/'
+            '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
+        ),
         name='admin-prizes-reorder-categories',
     )
-    async def htmx_admin_screen_reorder_sets(
+    async def htmx_admin_prize_reorder_categories(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
-            ReorderFormData,
+            dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
     ) -> Template | ClientRedirect:
-        web_context = PrizeAdminWebContext(request, event_uniq_id)
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id
+        )
         if web_context.error:
             return web_context.error
         prize_group = web_context.get_admin_prize_group()
