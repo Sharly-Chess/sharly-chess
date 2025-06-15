@@ -4,7 +4,6 @@ import re
 import time
 from collections import defaultdict, Counter
 from dataclasses import dataclass
-from datetime import datetime
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -179,14 +178,6 @@ class Event:
     @property
     def stop(self) -> float:
         return self.stored_event.stop
-
-    @property
-    def start_datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.start)
-
-    @property
-    def stop_datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.stop)
 
     @property
     def federation(self) -> str:

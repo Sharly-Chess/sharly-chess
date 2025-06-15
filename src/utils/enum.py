@@ -712,14 +712,14 @@ class PlayerCategory(IntEnum):
 
     @staticmethod
     def from_year_of_birth(
-        year_of_birth: int | None, event_start: datetime, event_end: datetime
+        year_of_birth: int | None, tournament_start: datetime, tournament_end: datetime
     ) -> 'PlayerCategory':
         if not year_of_birth:
             return PlayerCategory.NONE
-        if event_end - event_start > timedelta(days=30):
-            ref_time = max(event_start, min(datetime.now(), event_end))
+        if tournament_end - tournament_start > timedelta(days=30):
+            ref_time = max(tournament_start, min(datetime.now(), tournament_end))
         else:
-            ref_time = event_start
+            ref_time = tournament_start
         ref_year = ref_time.year if ref_time.month < 9 else ref_time.year + 1
         age = ref_year - year_of_birth
         if age <= 8:
