@@ -7,7 +7,6 @@ import threading
 from sqlite3 import OperationalError, IntegrityError
 from typing import override
 
-from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -39,7 +38,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     def __init__(self, write: bool = False):
         super().__init__(
-            TMP_DIR / f'{self.id}.{SharlyChessConfig.federation_database_ext}',
+            self._dir / f'{self.id}.{SharlyChessConfig.federation_database_ext}',
             write,
         )
         self.stop_event = threading.Event()
@@ -58,6 +57,11 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                     self.stored_source_database
                 )
                 database.commit()
+
+    @property
+    @abstractmethod
+    def _dir(self) -> Path:
+        """Path to the SQlite file."""
 
     @property
     @abstractmethod

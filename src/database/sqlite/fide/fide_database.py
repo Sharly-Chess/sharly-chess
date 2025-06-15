@@ -51,6 +51,10 @@ class FideDatabase(LocalSourceDatabase):
         return 'FIDE'
 
     @property
+    def _dir(self) -> Path:
+        return TMP_DIR
+
+    @property
     def _schema_file_path(self) -> Path:
         return SharlyChessConfig.database_sql_path / 'create_fide.sql'
 
