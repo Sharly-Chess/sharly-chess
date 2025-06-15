@@ -45,8 +45,10 @@
     {% include 'display_controllers/display_controller_modal.html' %}
 {% elif modal == 'database' %}
     {% include 'common/database/database_modal.html' %}
-{% elif modal == 'prize_group' %}
-    {% include 'prizes/prize_group_modal.html' %}
+{% elif modal == 'prize_groups' %}
+    {% include 'prizes/prize_groups_modal.html' %}
+{% elif modal == 'prize_group_delete' %}
+    {% include 'prizes/prize_group_delete_modal.html' %}
 {% elif modal == 'prize_category' %}
     {% include 'prizes/prize_category_modal.html' %}
 {% elif modal == 'prize_criteria' %}

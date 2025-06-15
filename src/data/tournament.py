@@ -424,7 +424,11 @@ class Tournament:
     def sorted_prize_groups(self) -> list[PrizeGroup]:
         return sorted(
             self.prize_groups,
-            key=lambda group: (-group.has_main_category, group.name),
+            key=lambda group: (
+                not group.has_main_category,
+                -len(group.categories),
+                group.id,
+            ),
         )
 
     @property
