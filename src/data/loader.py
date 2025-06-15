@@ -30,6 +30,7 @@ logger: Logger = get_logger()
 
 
 class EventLoader:
+    id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
     _valid_event_ids: list[str] = []
     _invalid_uniq_ids: list[str] = []
     _loaded_events_metadata_by_id: dict[str, EventMetadata] = {}
@@ -104,10 +105,33 @@ class EventLoader:
 
     @classmethod
     def all_event_ids(cls) -> list[str]:
-        return [
-            file.stem
-            for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}')
-        ]
+        ids: list[str] = []
+        for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}'):
+            if cls.id_regex.match(file.stem):
+                ids.append(file.stem)
+            else:
+                new_id: str = re.sub(r'[^a-zA-Z0-9_\-]', '_', file.stem)
+                index: int = 1
+                new_file: Path = (
+                    file.parent / f'{new_id}.{SharlyChessConfig.event_database_ext}'
+                )
+                while new_file.exists():
+                    index += 1
+                    new_file = (
+                        file.parent
+                        / f'{new_id}-{index}.{SharlyChessConfig.event_database_ext}'
+                    )
+                shutil.move(file, new_file)
+                for old_file in [
+                    file.with_suffix(f'.{SharlyChessConfig.event_database_ext}-shm'),
+                    file.with_suffix(f'.{SharlyChessConfig.event_database_ext}-wal'),
+                ]:
+                    old_file.unlink(missing_ok=True)
+                logger.warning(
+                    'File [%s] has been renamed [%s]', file.name, new_file.name
+                )
+                ids.append(new_file.stem)
+        return ids
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
         """Returns the first unused event uniq_id looking like base_uniq_id:

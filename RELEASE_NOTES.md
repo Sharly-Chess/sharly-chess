@@ -18,6 +18,7 @@ English version below
 ### Gestion des évènements
 
 - Correction d'un bug sur l'édition des évènements (2.7.6)
+- Restriction des caractères utilisables dans les identifiants des évènements (2.7.8)
 
 ### Gestion des tournois
 
@@ -83,6 +84,7 @@ English version below
 ### Event management
 
 - Fixed a bug on event editing (2.7.6)
+- Restrained the characters that can be used in event IDs (2.7.8)
 
 ### Tournaments management
 
