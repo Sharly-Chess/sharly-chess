@@ -13,6 +13,19 @@
             </h2>
         </div>
         <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Category')) }}
+                {{ admin_prize_category.name }}
+            </h4>
+            {% if previous_criterion %}
+                {% with type='success', message=_(
+                    'Criterion [%(criterion)s] successfully created!',
+                    criterion=previous_criterion.name
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
             <form
                 id="modal-form"
                 hx-target="body"
@@ -36,16 +49,14 @@
                     ) }}"
                 {% endif %}
             >
-                <div class="row">
-                    <div class="col-12 mb-3">
-                        {{ admin_macros.select_input(
-                            name='type',
-                            label=_('%(string)s:', string=_('Type')),
-                            help_text=_('The type of criterion used to filter the players.'),
-                            select_options=player_filter_select_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
+                <div class="row mb-3">
+                    {{ admin_macros.select_input(
+                        name='type',
+                        label=_('%(string)s:', string=_('Type')),
+                        help_text=_('The type of criterion used to filter the players.'),
+                        select_options=player_filter_select_options,
+                        data=data, errors=errors
+                    ) }}
                 </div>
                 {% for option in player_filter_options %}
                     <div
@@ -91,18 +102,28 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi bi-printer-fill pe-1"></i>
-                {% if action == 'update' %}
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi bi-floppy-fill pe-1"></i>
                     {{ _('Save') }}
-                {% else %}
-                    {{ _('Create') }}
-                {% endif %}
-            </button>
+                </button>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(previous_criterion) }}
+            {% endif %}
         </div>
     </div>
 </div>
+
+{% if not admin_prize_category.criteria %}
+    <script>
+        // We need to reload the page when the modal is hidden, because the criteria might have changed.
+        $(document).one('hide.bs.modal', function(e) {
+            e.preventDefault();
+            document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        });
+    </script>
+{% endif %}

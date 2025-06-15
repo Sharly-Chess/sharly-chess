@@ -1,0 +1,22 @@
+{% extends '/common/base.html' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+    <div class="error-page-container">
+        <h1>{{ error_title }}</h1>
+        <div class="error-page-logo">
+            {{ macros.sharly_chess_logo() }}
+        </div>
+        <p>{{ error_message }}</p>
+        <p>
+            {% if reload_message %}
+                <a href="#" onclick="location.assign(''); return false;">{{ reload_message }}</a>
+                -
+            {% endif %}
+            <a href="#" onclick="location.assign('/'); return false;">{{ _('Return to the home page') }}</a>
+        </p>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

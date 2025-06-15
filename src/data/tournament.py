@@ -37,6 +37,7 @@ from utils.enum import (
     TournamentRating,
     TrfType,
     PlayerCategory,
+    PlayerRatingType,
 )
 from database.access.papi.papi_database import (
     PapiDatabase,
@@ -561,6 +562,13 @@ class Tournament:
             counter[player.category] += 1
         return counter
 
+    @cached_property
+    def rating_type_counts(self) -> Counter[PlayerRatingType]:
+        counter = Counter[PlayerRatingType]()
+        for player in self.players:
+            counter[player.rating_type] += 1
+        return counter
+
     @property
     def max_ranking_round(self) -> int:
         if not self.started:
@@ -1002,6 +1010,7 @@ class Tournament:
         """compute and return the ranks of all the players after round *after_round*."""
         if correct_round:
             after_round = self.correct_ranking_round(after_round)
+
         if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
             self._estimate_players(self.players, after_round=after_round)
@@ -1073,11 +1082,13 @@ class Tournament:
         for index, board in enumerate(boards, start=1):
             board.id = index
             assert board.white_player is not None
-            number: int = (
-                board.white_player.fixed
-                or (board.black_player.fixed if board.black_player else None)
-                or index
-            )
+            number: int
+            if board.white_player.fixed:
+                number = board.white_player.fixed
+            elif board.black_player and board.black_player.fixed:
+                number = board.black_player.fixed
+            else:
+                number = self.first_board_number - 1 + index
             board.number = number
             board.white_player.set_board(index, number, BoardColor.WHITE)
             if board.black_player is not None:
@@ -1197,7 +1208,7 @@ class Tournament:
         player.clear_cache()
         self.clear_cache()
 
-    def add_player(self, player: Player):
+    def add_player(self, player: Player) -> int:
         """Adds a new player to the tournament, returns the player's ID."""
         ref = (max(p.ref_id for p in self.players) if self.players_by_id else 1) + 1
         with self.papi_write_database as papi_database:
@@ -1240,6 +1251,7 @@ class Tournament:
                 'Flotteur': 'X' * 24,
                 'Pts': 0,
                 'PtA': 0,
+                'Commentaire': player.comment,
             } | plugin_data
             for round_ in range(1, 25):
                 data[f'Rd{round_:0>2}Adv'] = None

@@ -1,7 +1,8 @@
 import asyncio
 import json
 from typing import AsyncGenerator
-from litestar import Response, get
+
+from litestar import Response, get, route, HttpMethod, status_codes
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
@@ -9,11 +10,21 @@ from litestar.response import Redirect, Template
 from litestar.channels import ChannelsPlugin
 from litestar.response import ServerSentEventMessage, ServerSentEvent
 
+from common.i18n import _
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
 
 
 class IndexController(BaseController):
+    ALL_HTTP_METHODS: list[HttpMethod] = [
+        HttpMethod.GET,
+        HttpMethod.POST,
+        HttpMethod.PATCH,
+        HttpMethod.PUT,
+        HttpMethod.HEAD,
+        HttpMethod.OPTIONS,
+    ]
+
     @get(
         path='/',
         name='index',
@@ -78,56 +89,71 @@ class IndexController(BaseController):
             request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
         )
 
-    @get(
-        path='/403',
-        name='403',
-        cache=1,
-    )
-    async def handle_403(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context: WebContext = WebContext(request)
-
+    @staticmethod
+    def _error_template(
+        request: HTMXRequest,
+        status_code: int,
+    ):
+        reload_message: str | None = None
+        title: str
+        error_message: str
+        if request.htmx:
+            reload_message = _('Reload the page')
+        match status_code:
+            case status_codes.HTTP_401_UNAUTHORIZED:
+                title = _('401 - Authentication failed')
+                error_message = _('Sorry, authorization failed.')
+                if request.htmx:
+                    reload_message = _('Retry')
+            case status_codes.HTTP_403_FORBIDDEN:
+                title = _('403 - Access Forbidden')
+                error_message = _('Sorry, you are not allowed to access this page.')
+                if request.htmx:
+                    reload_message = _('Retry')
+            case status_codes.HTTP_404_NOT_FOUND:
+                title = _('404 - Page Not Found')
+                error_message = _('Sorry, the page you are looking for does not exist.')
+                reload_message = None
+            case status_codes.HTTP_500_INTERNAL_SERVER_ERROR:
+                title = _('500 - Internal Server Error')
+                error_message = _('Sorry, an unexpected error has occurred.')
+            case _:
+                title = _('{status_code} - Unknown error').format(
+                    status_code=status_code
+                )
+                error_message = _('An unexpected error occurred.')
         return HTMXTemplate(
-            template_name='errors/403.html',
-            context=web_context.template_context,
+            template_name='/error.html',
+            context=WebContext(request).template_context
+            | {
+                'reload_message': reload_message,
+                'error_title': title,
+                'error_message': error_message,
+            },
+            re_target='body',
         )
 
-    @staticmethod
-    def handle_403_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('403'))
-
-    @get(
-        path='/404',
-        name='404',
-        cache=1,
-    )
-    async def handle_404(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context: WebContext = WebContext(request)
-
-        return HTMXTemplate(
-            template_name='errors/404.html',
-            context=web_context.template_context,
+    @classmethod
+    def handle_exception(
+        cls, request: HTMXRequest, exception: HTTPException
+    ) -> Redirect | HTMXTemplate:
+        status_code = getattr(exception, 'status_code', 500)
+        if request.htmx:
+            return cls._error_template(request, status_code)
+        return Redirect(
+            path=request.app.route_reverse('http-error', status_code=status_code)
         )
 
-    @staticmethod
-    def handle_404_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('404'))
-
-    @get(
-        path='/500',
-        name='500',
+    @route(
+        http_method=ALL_HTTP_METHODS,
+        path='/error/{status_code:int}',
+        name='http-error',
         cache=1,
     )
-    async def handle_500(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context: WebContext = WebContext(request)
-
-        return HTMXTemplate(
-            template_name='errors/500.html',
-            context=web_context.template_context,
-        )
-
-    @staticmethod
-    def handle_500_exception(request: HTMXRequest, _exc: HTTPException) -> Redirect:
-        return Redirect(path=request.app.route_reverse('500'))
+    async def handle_http_error(
+        self, request: HTMXRequest, status_code: int
+    ) -> HTMXTemplate:
+        return self._error_template(request, status_code)
 
     @get('/sse')
     async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:

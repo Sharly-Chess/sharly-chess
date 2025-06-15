@@ -56,6 +56,14 @@
                         data=data, errors=errors
                     ) }}
                 {% else %}
+                    {% if previous_tournament %}
+                        {% with type='success', auto_remove=true, message=_(
+                            'Tournament [%(tournament)s] has been created.',
+                            tournament=previous_tournament.uniq_id
+                        )  %}
+                            {% include '/common/alert.html' %}
+                        {% endwith %}
+                    {% endif %}
                     <h4>
                         {{ _('Properties') }}
                     </h4>
@@ -439,34 +447,39 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {% if action in ['create', 'clone', ] %}
-                    {{ _('Create') }}
-                {% elif action == 'update' %}
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
-            </button>
             {% if action in ['create', 'clone', ] %}
+                {{ admin_macros.split_submit_buttons(
+                    options={
+                        'create': _('Create'),
+                        'add_screens': _('Create with default screens'),
+                        'add_other': _('Create and add another')
+                    },
+                    active_option='create'
+                ) }}
+            {% else %}
                 <button
                     type="submit"
                     form="modal-form"
-                    name="add_screens"
-                    class="text-nowrap white btn btn-primary"
+                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                 >
-                    <i class="bi-floppy-fill"></i>
-                    <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Create and add default screens') }}
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {% if action == 'update' %}
+                        {{ _('Save') }}
+                    {% elif action == 'delete' %}
+                        {{ _('Delete') }}
+                    {% endif %}
                 </button>
             {% endif %}
         </div>
     </div>
 </div>
+
+{% if previous_tournament %}
+    <script>
+        // We need to reload the page when the modal is hidden, because tournaments were added.
+        $(document).one('hide.bs.modal', function(e) {
+            e.preventDefault();
+            document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        });
+    </script>
+{% endif %}

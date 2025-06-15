@@ -75,17 +75,15 @@ class IndexAdminController(BaseAdminController):
                 'Invalid console logging level [{console_log_level}].'
             ).format(log_level=console_log_level)
             data[field] = ''
-        console_color: bool | None = WebContext.form_data_to_bool(data, 'console_color')
-        console_show_date: bool | None = WebContext.form_data_to_bool(
+        console_color: bool = WebContext.form_data_to_bool(data, 'console_color')
+        console_show_date: bool = WebContext.form_data_to_bool(
             data, 'console_show_date'
         )
-        console_show_level: bool | None = WebContext.form_data_to_bool(
+        console_show_level: bool = WebContext.form_data_to_bool(
             data, 'console_show_level'
         )
-        experimental: bool | None = WebContext.form_data_to_bool(data, 'experimental')
-        launch_browser: bool | None = WebContext.form_data_to_bool(
-            data, 'launch_browser'
-        )
+        experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
+        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation'
         )
@@ -103,6 +101,7 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         return StoredConfig(
+            force_edit=False,
             console_log_level=console_log_level,
             console_color=console_color,
             console_show_date=console_show_date,
@@ -128,9 +127,7 @@ class IndexAdminController(BaseAdminController):
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=bool(
-                        WebContext.form_data_to_bool(data, plugin.form_key, False)
-                    ),
+                    is_enabled=WebContext.form_data_to_bool(data, plugin.form_key),
                     errors=errors,
                 )
             )
@@ -327,56 +324,6 @@ class IndexAdminController(BaseAdminController):
                         str(SharlyChessConfig.default_console_log_level)
                     ]
                 )
-                console_color_options: dict[str, str] = {
-                    '': '-',
-                    'on': _('Use color on the console'),
-                    'off': _('Do not use color on the console'),
-                }
-                console_color_options[''] = _('By default - {option}').format(
-                    option=console_color_options[
-                        'on' if SharlyChessConfig.default_console_color else 'off'
-                    ]
-                )
-                console_show_date_options: dict[str, str] = {
-                    '': '-',
-                    'on': _('Show the date and time on the console'),
-                    'off': _('Do not show the date and time on the console'),
-                }
-                console_show_date_options[''] = _('By default - {option}').format(
-                    option=console_show_date_options[
-                        'on' if SharlyChessConfig.default_console_show_date else 'off'
-                    ]
-                )
-                console_show_level_options: dict[str, str] = {
-                    '': '-',
-                    'on': _('Show the logging level on the console'),
-                    'off': _('Do not show the logging level on the console'),
-                }
-                console_show_level_options[''] = _('By default - {option}').format(
-                    option=console_show_level_options[
-                        'on' if SharlyChessConfig.default_console_show_level else 'off'
-                    ]
-                )
-                experimental_options: dict[str, str] = {
-                    '': '-',
-                    'on': _('Enable experimental features'),
-                    'off': _('Do not enable experimental features'),
-                }
-                experimental_options[''] = _('By default - {option}').format(
-                    option=experimental_options[
-                        'on' if SharlyChessConfig.default_experimental else 'off'
-                    ]
-                )
-                launch_browser_options: dict[str, str] = {
-                    '': '-',
-                    'on': _('Automatically launch a browser when starting the server'),
-                    'off': _('Do nothing'),
-                }
-                launch_browser_options[''] = _('By default - {option}').format(
-                    option=launch_browser_options[
-                        'on' if SharlyChessConfig.default_launch_browser else 'off'
-                    ]
-                )
                 locale_options: dict[str, str] = {
                     '': '-',
                 } | {locale: locale_localized_name(locale) for locale in locales}
@@ -388,11 +335,6 @@ class IndexAdminController(BaseAdminController):
                 )
                 context |= {
                     'console_log_level_options': console_log_level_options,
-                    'console_color_options': console_color_options,
-                    'console_show_date_options': console_show_date_options,
-                    'console_show_level_options': console_show_level_options,
-                    'experimental_options': experimental_options,
-                    'launch_browser_options': launch_browser_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'federation_options': cls._get_federation_options(
@@ -606,7 +548,7 @@ class IndexAdminController(BaseAdminController):
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
             config_database.commit()
-        SharlyChessConfig().reload()
+        SharlyChessConfig.reload()
         plugin_manager.reload_register()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return self._admin_render(request=request, data=None, admin_tab='config')

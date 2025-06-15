@@ -1,3 +1,4 @@
+from types import NotImplementedType
 import weakref
 from _weakref import ReferenceType
 from typing import TYPE_CHECKING
@@ -42,23 +43,20 @@ class Prize:
         return self.stored_prize.description
 
     @property
-    def index(self) -> int:
-        return self.stored_prize.index
-
-    @property
-    def tabular_representation(self) -> str:
-        currency_value = StaticUtils.currency_value_str(
-            self.value, self.prize_category.currency
-        )
+    def name(self) -> str:
         if self.is_monetary:
-            return currency_value
-        elif self.value:
-            value_str = _('value: {currency_value}').format(
-                currency_value=currency_value
-            )
-            return f'{self.description} ({value_str})'
-        else:
+            return self.format_value()
+        if not self.value:
             return self.description
+        value_str = _('value: {currency_value}').format(
+            currency_value=self.format_value()
+        )
+        return f'{self.description} ({value_str})'
+
+    def format_value(self, value: float | None = None) -> str:
+        if value is None:
+            value = self.value
+        return StaticUtils.currency_value_str(value, self.prize_category.currency)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()
@@ -67,3 +65,12 @@ class Prize:
         with self.get_event_database() as database:
             database.update_stored_prize(self.stored_prize)
             database.commit()
+
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        # p1 == p2 calls p1.__eq__(p2)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.id == other.id
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} - {self.stored_prize}'

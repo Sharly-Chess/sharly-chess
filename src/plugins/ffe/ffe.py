@@ -148,6 +148,7 @@ class FfePlugin(Plugin):
             or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES,
             'ffe_auth_valid': '',
+            'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
         }
 
     # ---------------------------------------------------------------------------------
@@ -626,7 +627,6 @@ class FfePlugin(Plugin):
             return {
                 'ffe_auto_upload': 'off',
                 'ffe_auto_upload_delay': '',
-                'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
             }
 
         return {
@@ -636,7 +636,6 @@ class FfePlugin(Plugin):
             'ffe_auto_upload_delay': WebContext.value_to_form_data(
                 self.get_data(event.plugin_data, 'ffe_auto_upload_delay', '')
             ),
-            'ffe_default_delay': FFE_DEFAULT_UPLOAD_DELAY,
         }
 
     @hookimpl
@@ -782,7 +781,7 @@ class FfePlugin(Plugin):
             errors['ffe_password'] = _(
                 'The password of the tournament on the FFE website is made of 10 uppercase letters.'
             )
-        ffe_auto_upload = WebContext.form_data_to_bool(data, 'ffe_auto_upload')
+        ffe_auto_upload = WebContext.form_data_to_bool_or_none(data, 'ffe_auto_upload')
         # Keep data other than these two fields (such as file upload times)
         previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
 

@@ -2,6 +2,8 @@ name: "Test Event"
 federation: "FID"
 public: true
 path: "tests/papi/"
+start: "2024-12-31 23:59"
+stop: "2025-01-01 00:00"
 tournaments:
   tec-swiss:
     filename: "tec-swiss"

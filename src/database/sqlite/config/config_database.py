@@ -54,7 +54,6 @@ class ConfigDatabase(MigrationDatabase):
             Version('2.4.24'): 'm001_create_info_table',
             Version('2.4.28'): 'm002_create_plugin_table',
             Version('2.4.30'): 'm003_create_local_source_database_table',
-            Version('2.8.0'): 'm004_add_logging_parameters',
         }
 
     @classmethod
@@ -85,31 +84,22 @@ class ConfigDatabase(MigrationDatabase):
         return StoredConfig(
             force_edit=self.load_bool_from_database_field(row['force_edit']),
             console_log_level=row['console_log_level'],
-            console_color=self.load_bool_or_none_from_database_field(
-                row['console_color']
-            ),
-            console_show_date=self.load_bool_or_none_from_database_field(
+            console_color=self.load_bool_from_database_field(row['console_color']),
+            console_show_date=self.load_bool_from_database_field(
                 row['console_show_date']
             ),
-            console_show_level=self.load_bool_or_none_from_database_field(
+            console_show_level=self.load_bool_from_database_field(
                 row['console_show_level']
             ),
-            experimental=self.load_bool_or_none_from_database_field(
-                row['experimental']
-            ),
+            experimental=self.load_bool_from_database_field(row['experimental']),
             federation=row['federation'],
-            launch_browser=self.load_bool_or_none_from_database_field(
-                row['launch_browser']
-            ),
+            launch_browser=self.load_bool_from_database_field(row['launch_browser']),
             locale=row['locale'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
         """Gets all the information about the config and returns a corresponding StoredConfig record."""
-        self.execute(
-            'SELECT * FROM `info`',
-            (),
-        )
+        self.execute('SELECT * FROM `info`')
         return self._row_to_stored_config(self.fetchone())
 
     def load_stored_config(self) -> StoredConfig:
@@ -117,30 +107,24 @@ class ConfigDatabase(MigrationDatabase):
 
     def update_stored_config(self, stored_config: StoredConfig) -> StoredConfig:
         """Updates the config database with the information in the provided `stored_config`."""
-        fields: list[str] = [
-            'force_edit',
-            'console_log_level',
-            'console_color',
-            'console_show_date',
-            'console_show_level',
-            'experimental',
-            'launch_browser',
-            'federation',
-            'locale',
-        ]
-        params: tuple = (
-            stored_config.force_edit,
-            stored_config.console_log_level,
-            stored_config.console_color,
-            stored_config.console_show_date,
-            stored_config.console_show_level,
-            stored_config.experimental,
-            stored_config.launch_browser,
-            stored_config.federation,
-            stored_config.locale,
+        fields = self._get_fields_dict(
+            stored_config,
+            [
+                'force_edit',
+                'console_log_level',
+                'console_color',
+                'console_show_date',
+                'console_show_level',
+                'experimental',
+                'launch_browser',
+                'federation',
+                'locale',
+            ],
         )
-        field_sets = (f'`{f}` = ?' for f in fields)
-        self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
+        field_sets = (f'`{f}` = ?' for f in fields.keys())
+        self.execute(
+            f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
+        )
         return self._get_stored_config()
 
     # ---------------------------------------------------------------------------------

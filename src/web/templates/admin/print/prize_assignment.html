@@ -1,0 +1,72 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'prizes.css' %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="centered">
+        <div class="prize-table">
+            {% for prize_group in document.tournament.sorted_prize_groups %}
+                {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
+                {% for prize_category in prize_group.sorted_categories %}
+                    <div class="section-title">
+                        {{ prize_category.name }}
+                    </div>
+                    <div class="subheading">
+                        {{ prize_category.shared_prizes_str }}
+                    </div>
+                    <div class="header">{{ _('Rk. *** RANK FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Name *** NAME FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ document.tournament.rating.print_view_header }}</div>
+                    <div class="header">{{ _("Cat *** CATEGORY FOR PRINT VIEW") }}</div>
+                    <div class="header">{{ _('Gen *** GENDER FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Fed *** FEDERATION FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Club *** CLUB FOR PRINT VIEW') }}</div>
+                    <div class="header">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</div>
+                    <div class="header">{{ _('Prize *** PRIZE FOR PRINT VIEW') }}</div>
+                    {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
+                        {% set prize=assigned_prize.prize %}
+                        {% set player=assigned_prize.assigned_to %}
+                        <div class="cell place">
+                            {{ ordinal_integer(loop.index)|safe }}
+                        </div>
+                        {% if player %}
+                            <div class="cell place">({{ ordinal_integer(player.rank)|safe }})</div>
+                            <div class="cell name">{{ player.full_name }}</div>
+                            <div class="cell">{{ player.rating_str }}</div>
+                            <div class="cell">{{ player.category.short_name }}</div>
+                            <div class="cell">{{ player.gender.short_name }}</div>
+                            <div class="cell">{{ player.federation }}</div>
+                            <div class="cell club">{{ player.club }}</div>
+                            <div class="cell">{{ player.points_str }}</div>
+                        {% else %}
+                            <div class="cell"></div>
+                            <div class="cell"><i>{{ _('Not assigned') }}</i></div>
+                            <div class="cell"></div>
+                            <div class="cell"></div>
+                            <div class="cell"></div>
+                            <div class="cell"></div>
+                            <div class="cell"></div>
+                            <div class="cell"></div>
+                        {% endif %}
+                        <div class="cell prize">
+                            {% if prize.is_monetary %}
+                                {{ prize.format_value(assigned_prize.value) }}
+                            {% else %}
+                                {{ prize.description }}
+                            {% endif %}
+                        </div>
+                        {% if show_warnings and assigned_prize.warning %}
+                            <div class="warning">
+                                {{ assigned_prize.warning|replace('. ', '.<br>', 1)|safe }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

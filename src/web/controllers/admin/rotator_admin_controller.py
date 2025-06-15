@@ -121,7 +121,7 @@ class RotatorAdminController(BaseEventAdminController):
                         family_ids.append(family_id)
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
-                    data, field + '_checkbox', False
+                    data, field + '_checkbox'
                 )
                 if message_default and web_context.admin_rotator:
                     # do not change the original value when the default message is used

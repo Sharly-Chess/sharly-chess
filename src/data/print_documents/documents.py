@@ -14,7 +14,9 @@ from data.print_documents.options import (
     PrintOption,
     RoundPrintOption,
     PlayerSortPrintOption,
+    ShowWarningsPrintOption,
 )
+from data.prize.prize_sharing import NoPrizeSharing
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
@@ -442,3 +444,62 @@ class BergerGridPrintDocument(PrintDocument):
             'result_grid': self.build_result_grid(),
             'grid_id_by_player_id': self.grid_id_by_player_id,
         }
+
+
+class PrizeListPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'prize-list'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Prize list')
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/prize_list.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'ordinal_integer': StaticUtils.ordinal_integer,
+            'no_sharing_id': NoPrizeSharing.static_id(),
+        }
+
+
+class PrizeAssignmentPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'prize-assignment'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Prize assignment')
+
+    @property
+    def title(self) -> str:
+        assert self.tournament is not None
+        after_round = self.tournament.max_ranking_round
+        if after_round == self.tournament.rounds:
+            return self.name
+        return _('Prize assignment after round #{round}').format(round=after_round)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/prize_assignment.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'show_warnings': self.get_option_values()[0],
+            'ordinal_integer': StaticUtils.ordinal_integer,
+            'no_sharing_id': NoPrizeSharing.static_id(),
+        }
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [ShowWarningsPrintOption]

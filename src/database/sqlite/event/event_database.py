@@ -1523,6 +1523,7 @@ class EventDatabase(MigrationDatabase):
         self._delete_tournament_stored_families(tournament_id)
         self._delete_tournament_stored_illegal_moves(tournament_id)
         self._delete_tournament_stored_results(tournament_id)
+        self._delete_tournament_prize_groups(tournament_id)
         # references are not deleted on cascade as they should be!
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
@@ -2609,7 +2610,19 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_stored_prize_group(self, prize_group_id: int):
+        self.execute(
+            'SELECT `id` FROM `prize_category` WHERE `prize_group_id` = ?',
+            (prize_group_id,),
+        )
+        for row in self.fetchall():
+            self.delete_stored_prize_category(row['id'])
         self.execute('DELETE FROM `prize_group` WHERE `id` = ?;', (prize_group_id,))
+
+    def _delete_tournament_prize_groups(self, tournament_id: int):
+        self.execute(
+            'DELETE FROM `prize_group` WHERE `tournament_id` = ?;',
+            (tournament_id,),
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredPrizeCategory
@@ -2622,6 +2635,7 @@ class EventDatabase(MigrationDatabase):
             prize_group_id=row['prize_group_id'],
             name=row['name'],
             prize_sharing=row['prize_sharing'],
+            sharing_threshold=row['sharing_threshold'],
             is_main=cls.load_bool_from_database_field(row['is_main']),
             index=row['index'],
         )
@@ -2663,7 +2677,14 @@ class EventDatabase(MigrationDatabase):
     ) -> int:
         fields = self._get_fields_dict(
             stored_prize_category,
-            ['prize_group_id', 'name', 'prize_sharing', 'is_main', 'index'],
+            [
+                'prize_group_id',
+                'name',
+                'prize_sharing',
+                'sharing_threshold',
+                'is_main',
+                'index',
+            ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2681,7 +2702,7 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_prize_category,
-            ['prize_group_id', 'name', 'prize_sharing', 'is_main'],
+            ['prize_group_id', 'name', 'prize_sharing', 'sharing_threshold', 'is_main'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(
@@ -2696,6 +2717,14 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_stored_prize_category(self, prize_category_id: int):
+        self.execute(
+            'DELETE FROM `prize_criterion` WHERE `prize_category_id` = ?;',
+            (prize_category_id,),
+        )
+        self.execute(
+            'DELETE FROM `prize` WHERE `prize_category_id` = ?;',
+            (prize_category_id,),
+        )
         self.execute(
             'DELETE FROM `prize_category` WHERE `id` = ?;', (prize_category_id,)
         )
@@ -2713,7 +2742,6 @@ class EventDatabase(MigrationDatabase):
             prize_category_id=row['prize_category_id'],
             type=row['type'],
             options=cls.load_json_from_database_field(row['options']),
-            index=row['index'],
         )
 
     def get_stored_prize_criterion(
@@ -2741,7 +2769,7 @@ class EventDatabase(MigrationDatabase):
         stored_prize_criterion: StoredPrizeCriterion,
     ) -> int:
         fields = self._get_fields_dict(
-            stored_prize_criterion, ['prize_category_id', 'type', 'index']
+            stored_prize_criterion, ['prize_category_id', 'type']
         ) | {
             'options': self.dump_to_json_database_field(stored_prize_criterion.options)
         }
@@ -2770,12 +2798,6 @@ class EventDatabase(MigrationDatabase):
             tuple(fields.values()) + (stored_prize_criterion.id,),
         )
 
-    def update_stored_prize_criterion_index(self, prize_criterion_id: int, index: int):
-        self.execute(
-            'UPDATE `prize_criterion` SET `index` = ? WHERE `id` = ?',
-            (index, prize_criterion_id),
-        )
-
     def delete_stored_prize_criterion(self, prize_criterion_id: int):
         self.execute(
             'DELETE FROM `prize_criterion` WHERE `id` = ?;', (prize_criterion_id,)
@@ -2793,7 +2815,6 @@ class EventDatabase(MigrationDatabase):
             value=row['value'],
             is_monetary=cls.load_bool_from_database_field(row['is_monetary']),
             description=row['description'],
-            index=row['index'],
         )
 
     def get_stored_prize(self, prize_id: int) -> StoredPrize | None:
@@ -2820,7 +2841,7 @@ class EventDatabase(MigrationDatabase):
     ) -> int:
         fields = self._get_fields_dict(
             stored_prize,
-            ['prize_category_id', 'value', 'is_monetary', 'description', 'index'],
+            ['prize_category_id', 'value', 'is_monetary', 'description'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2844,12 +2865,6 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             f'UPDATE `prize` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_prize.id,),
-        )
-
-    def update_stored_prize_index(self, prize_id: int, index: int):
-        self.execute(
-            'UPDATE `prize` SET `index` = ? WHERE `id` = ?',
-            (index, prize_id),
         )
 
     def delete_stored_prize(self, prize_id: int):

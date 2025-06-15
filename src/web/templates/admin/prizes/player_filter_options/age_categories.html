@@ -3,7 +3,7 @@
         name=option.id,
         label=_('%(string)s:', string=_('Age categories')),
         help_text=_('Include players of these categories.'),
-        select_options=option.select_options(admin_tournament, include_unknown=false),
+        select_options=option.select_options(admin_tournament, false, false),
         multiple_select=true,
         placeholder=_('Choose at least one category.'),
         data=data, errors=errors

@@ -151,7 +151,7 @@ class FamilyAdminController(BaseEventAdminController):
                     case _:
                         raise ValueError(f'action=[{action}]')
             name = WebContext.form_data_to_str(data, 'name')
-            public = bool(WebContext.form_data_to_bool(data, 'public'))
+            public = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'clone' | 'update':
                 field = 'tournament_id'
@@ -186,7 +186,7 @@ class FamilyAdminController(BaseEventAdminController):
                     font_size = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                menu_link = WebContext.form_data_to_bool(data, 'menu_link', False)
+                menu_link = WebContext.form_data_to_bool(data, 'menu_link')
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 menu = WebContext.form_data_to_str(data, 'menu', '')
                 field = 'timer_id'
@@ -229,11 +229,8 @@ class FamilyAdminController(BaseEventAdminController):
                             data, 'players_show_unpaired'
                         )
                     case 'ranking':
-                        ranking_crosstable = (
-                            WebContext.form_data_to_bool(
-                                data, field := 'ranking_crosstable'
-                            )
-                            or False
+                        ranking_crosstable = WebContext.form_data_to_bool(
+                            data, field := 'ranking_crosstable'
                         )
                         try:
                             ranking_round = WebContext.form_data_to_int(
@@ -272,8 +269,8 @@ class FamilyAdminController(BaseEventAdminController):
                     errors['parts'] = error
                     errors['number'] = error
                 field = 'message_text'
-                message_default = bool(
-                    WebContext.form_data_to_bool(data, field + '_checkbox', False)
+                message_default = WebContext.form_data_to_bool(
+                    data, field + '_checkbox'
                 )
                 if message_default and web_context.admin_family:
                     # do not change the original value when the default message is used

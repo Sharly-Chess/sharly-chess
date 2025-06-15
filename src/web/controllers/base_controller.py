@@ -108,7 +108,6 @@ class WebContext:
         data: dict[str, str],
         field: str,
         expected_type: T,
-        empty_value: str | None = None,
     ) -> T | None:
         type_functions: dict[type, Callable] = {
             str: cls.form_data_to_str,
@@ -121,7 +120,7 @@ class WebContext:
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
-                return function(data, field, empty_value)
+                return function(data, field)
         raise ValueError(f'Unsupported type: {expected_type}')
 
     @staticmethod
@@ -199,25 +198,20 @@ class WebContext:
         return self.form_data_to_float(self.data, field, empty_value, minimum)
 
     @staticmethod
-    def form_data_to_bool(
-        data: dict[str, str] | None, field: str, empty_value: bool | None = None
-    ) -> bool | None:
+    def form_data_to_bool(data: dict[str, str] | None, field: str) -> bool:
         if data is None:
-            return empty_value
-        data[field] = data.get(field, '')
-        if data[field] is not None:
-            data[field] = data[field].strip().lower()
-        if not data[field]:
-            return empty_value
-        return data[field] in [
-            'true',
-            'on',
-        ]
+            return False
+        if field not in data:
+            data[field] = 'off'
+        return data[field] in ('true', 'on')
 
-    def _form_data_to_bool(
-        self, field: str, empty_value: bool | None = None
+    @staticmethod
+    def form_data_to_bool_or_none(
+        data: dict[str, str] | None, field: str
     ) -> bool | None:
-        return self.form_data_to_bool(self.data, field, empty_value)
+        if data is None or not data.get(field, None):
+            return None
+        return data[field] in ('true', 'on')
 
     @staticmethod
     def form_data_to_list_int(

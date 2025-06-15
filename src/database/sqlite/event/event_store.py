@@ -40,7 +40,6 @@ class StoredPrizeCriterion:
     prize_category_id: int
     type: str
     options: dict[str, Any]
-    index: int
 
 
 @dataclass
@@ -50,7 +49,6 @@ class StoredPrize:
     value: float
     is_monetary: bool
     description: str
-    index: int
 
 
 @dataclass
@@ -59,6 +57,7 @@ class StoredPrizeCategory:
     prize_group_id: int
     name: str
     prize_sharing: str
+    sharing_threshold: float | None
     is_main: bool
     index: int
     stored_prize_criteria: list[StoredPrizeCriterion] = field(

@@ -1,4 +1,5 @@
-from typing import Any, Annotated
+import copy
+from typing import Any, Annotated, TypedDict
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
@@ -14,12 +15,12 @@ from data.prize.managers import (
     PlayerFilterManager,
     PlayerFilterOptionManager,
 )
-from data.prize.player_filters import PlayerFilter, GenderPlayerFilter
+from data.prize.player_filters import PlayerFilter
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_criterion import PrizeCriterion
 from data.prize.prize_group import PrizeGroup
-from data.prize.prize_sharing import NoPrizeSharing
+from data.prize.prize_sharing import NoPrizeSharing, AveragePrizeSharing
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredPrizeGroup,
@@ -27,6 +28,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredPrizeCriterion,
 )
+from utils import StaticUtils
 from utils.enum import FormAction
 from utils.option import OptionError
 from web.controllers.admin.base_event_admin_controller import (
@@ -132,6 +134,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_category': self.admin_prize_category,
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
+            'ordinal_integer': StaticUtils.ordinal_integer,
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
         }
@@ -336,40 +339,72 @@ class PrizeAdminController(BaseEventAdminController):
     # -------------------------------------------------------------------------
 
     @staticmethod
-    def _validate_prize_category_form_data(data: dict[str, str]) -> dict[str, str]:
+    def _validate_prize_category_form_data(
+        data: dict[str, str], prize_category: PrizeCategory | None = None
+    ) -> dict[str, str]:
         errors: dict[str, str] = {}
         field = 'name'
         if not WebContext.form_data_to_str(data, field):
             errors[field] = _('Please enter a name.')
         is_main = WebContext.form_data_to_bool(data, 'is_main')
-        field = 'prize_sharing'
-        prize_sharing_id = WebContext.form_data_to_str(data, field) or ''
-        try:
-            prize_sharing = PrizeSharingManager.get_object(prize_sharing_id)
-            if not is_main and prize_sharing != NoPrizeSharing():
-                message = (
-                    f'Prize sharing [{prize_sharing.name}] '
-                    'only allowed for main categories'
-                )
-                errors[field] = message
-                logger.error(message)
-        except KeyError:
-            message = f'Unknown prize sharing ID [{prize_sharing_id}]'
+        share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
+        if not is_main and share_prizes:
+            message = 'Prize sharing is only allowed for the main category'
             errors[field] = message
             logger.error(message)
+        if share_prizes:
+            field = 'prize_sharing'
+            prize_sharing_id = WebContext.form_data_to_str(data, field) or ''
+            try:
+                PrizeSharingManager.get_object(prize_sharing_id)
+            except KeyError:
+                message = f'Unknown prize sharing ID [{prize_sharing_id}]'
+                errors[field] = message
+                logger.error(message)
+            field = 'sharing_threshold'
+            threshold = WebContext.form_data_to_float(data, field)
+            if threshold is not None:
+                if threshold < 0:
+                    errors[field] = _('A positive value is expected.')
+                elif prize_category and prize_category.prizes:
+                    min_prize_value = prize_category.sorted_prizes[-1].value
+                    if threshold > min_prize_value:
+                        errors[field] = _(
+                            "The threshold can't be greater than the value "
+                            'of the last prize of the category ({value}).'
+                        ).format(
+                            value=(
+                                int(min_prize_value)
+                                if min_prize_value.is_integer()
+                                else min_prize_value
+                            )
+                        )
         return errors
 
     @staticmethod
     def _prize_category_modal_context(
         data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
     ) -> dict[str, Any]:
+        prize_sharing_options = PrizeSharingManager.options()
+        prize_sharing_options.pop(NoPrizeSharing.static_id())
         return {
             'modal': 'prize_category',
             'action': action,
-            'prize_sharing_options': PrizeSharingManager.options(),
-            'not_main_prize_sharing': NoPrizeSharing.static_id(),
+            'prize_sharing_options': prize_sharing_options,
             'data': data,
             'errors': errors or {},
+        }
+
+    @staticmethod
+    def _prize_category_default_form_data(tournament: Tournament) -> dict[str, str]:
+        return {
+            'name': '',
+            'is_main': WebContext.value_to_form_data(
+                not tournament.has_main_prize_category
+            ),
+            'share_prizes': WebContext.value_to_form_data(False),
+            'sharing_threshold': '',
+            'prize_sharing': AveragePrizeSharing.static_id(),
         }
 
     @post(
@@ -401,23 +436,40 @@ class PrizeAdminController(BaseEventAdminController):
                 self._prize_category_modal_context(data, FormAction.CREATE, errors),
             )
         prize_group = web_context.get_admin_prize_group()
+        share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         prize_category = prize_group.add_category(
             StoredPrizeCategory(
                 id=None,
                 prize_group_id=prize_group.id,
                 name=WebContext.form_data_to_str(data, 'name') or '',
-                is_main=WebContext.form_data_to_bool(data, 'is_main') or False,
-                prize_sharing=data['prize_sharing'],
+                is_main=WebContext.form_data_to_bool(data, 'is_main'),
+                sharing_threshold=(
+                    WebContext.form_data_to_float(data, 'sharing_threshold')
+                    if share_prizes
+                    else None
+                ),
+                prize_sharing=(
+                    data['prize_sharing']
+                    if share_prizes
+                    else NoPrizeSharing.static_id()
+                ),
                 index=len(prize_group.categories),
             )
         )
-        Message.success(
-            request,
-            _('Prize category [{prize_category}] successfully created.').format(
-                prize_category=prize_category.name
-            ),
-        )
-        return self._admin_event_prizes_render(web_context)
+        if 'add_other' in data:
+            data = self._prize_category_default_form_data(prize_group.tournament)
+            template_context = self._prize_category_modal_context(
+                data, FormAction.CREATE, errors
+            ) | {'previous_category': prize_category}
+        else:
+            template_context = {}
+            Message.success(
+                request,
+                _('Prize category [{prize_category}] successfully created.').format(
+                    prize_category=prize_category.name
+                ),
+            )
+        return self._admin_event_prizes_render(web_context, template_context)
 
     @patch(
         path=(
@@ -443,16 +495,24 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if errors := self._validate_prize_category_form_data(data):
+        prize_category = web_context.get_admin_prize_category()
+        if errors := self._validate_prize_category_form_data(data, prize_category):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_category_modal_context(data, FormAction.UPDATE, errors),
             )
-        prize_category = web_context.get_admin_prize_category()
+        share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         stored_category = prize_category.stored_prize_category
         stored_category.name = WebContext.form_data_to_str(data, 'name') or ''
-        stored_category.is_main = WebContext.form_data_to_bool(data, 'is_main') or False
-        stored_category.prize_sharing = data['prize_sharing']
+        stored_category.is_main = WebContext.form_data_to_bool(data, 'is_main')
+        stored_category.prize_sharing = (
+            data['prize_sharing'] if share_prizes else NoPrizeSharing.static_id()
+        )
+        stored_category.sharing_threshold = (
+            WebContext.form_data_to_float(data, 'sharing_threshold')
+            if share_prizes
+            else None
+        )
         prize_category.update()
         Message.success(
             request,
@@ -495,6 +555,72 @@ class PrizeAdminController(BaseEventAdminController):
         web_context.admin_prize_category = None
         return self._admin_event_prizes_render(web_context)
 
+    @post(
+        path=(
+            '/admin/prizes/prize-category/duplicate/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-category-duplicate',
+    )
+    async def htmx_admin_prize_category_duplicate(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+        )
+        if web_context.error:
+            return web_context.error
+        prize_group = web_context.get_admin_prize_group()
+        copy_category = web_context.get_admin_prize_category()
+        stored_category = copy.deepcopy(copy_category.stored_prize_category)
+        stored_category.index = len(prize_group.categories)
+        stored_category.stored_prizes = []
+        stored_category.stored_prize_criteria = []
+        prize_category = prize_group.add_category(stored_category)
+        for prize in copy_category.prizes:
+            stored_prize = copy.deepcopy(prize.stored_prize)
+            stored_prize.prize_category_id = prize_category.id
+            prize_category.add_prize(stored_prize)
+        for criterion in copy_category.criteria:
+            stored_criterion = copy.deepcopy(criterion.stored_prize_criterion)
+            stored_criterion.prize_category_id = prize_category.id
+            prize_category.add_criterion(stored_criterion)
+        Message.success(
+            request,
+            _('Prize category [{prize_category}] has been duplicated.').format(
+                prize_category=prize_category.name,
+            ),
+        )
+        return self._admin_event_prizes_render(web_context)
+
+    class ReorderFormData(TypedDict):
+        item: list[int]
+
+    @patch(
+        path='/admin/prizes/prize-category/reorder/{event_uniq_id:str}',
+        name='admin-prizes-reorder-categories',
+    )
+    async def htmx_admin_screen_reorder_sets(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        data: Annotated[
+            ReorderFormData,
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(request, event_uniq_id)
+        if web_context.error:
+            return web_context.error
+        prize_group = web_context.get_admin_prize_group()
+        prize_group.reorder_categories(data['item'])
+        return self._admin_event_prizes_render(web_context)
+
     @get(
         path=(
             '/admin/prizes/prize-category-modal/create/'
@@ -514,14 +640,9 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        tournament = web_context.get_admin_tournament()
-        data = {
-            'name': '',
-            'is_main': WebContext.value_to_form_data(
-                not tournament.has_main_prize_category
-            ),
-            'prize_sharing': NoPrizeSharing.static_id(),
-        }
+        data = self._prize_category_default_form_data(
+            web_context.get_admin_tournament()
+        )
         return self._admin_event_prizes_render(
             web_context,
             self._prize_category_modal_context(data, FormAction.CREATE),
@@ -548,11 +669,17 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         prize_category = web_context.get_admin_prize_category()
+        share_prizes = prize_category.are_prizes_shared
         data = {
             'name': WebContext.value_to_form_data(prize_category.name),
             'is_main': WebContext.value_to_form_data(prize_category.is_main),
-            'prize_sharing': prize_category.prize_sharing.id,
+            'sharing_threshold': WebContext.value_to_form_data(
+                prize_category.sharing_threshold
+            ),
+            'share_prizes': WebContext.value_to_form_data(share_prizes),
         }
+        if share_prizes:
+            data['prize_sharing'] = prize_category.prize_sharing.id
         return self._admin_event_prizes_render(
             web_context,
             self._prize_category_modal_context(data, FormAction.UPDATE),
@@ -597,9 +724,7 @@ class PrizeAdminController(BaseEventAdminController):
         try:
             PlayerFilterManager.get_type(player_filter_id)
         except KeyError:
-            message = f'Unknown player filter ID [{player_filter_id}].'
-            errors[field] = message
-            logger.error(message)
+            errors[field] = _('Please select a type of criterion.')
             return errors
         player_filter = cls.player_filter_from_data(data)
         try:
@@ -613,12 +738,7 @@ class PrizeAdminController(BaseEventAdminController):
         player_filter_type = PlayerFilterManager.get_type(data['type'])
         options = []
         for option in player_filter_type.default_options():
-            value = WebContext.form_data_to_value(
-                data,
-                option.id,
-                option.type,
-                option.default_value,
-            )
+            value = WebContext.form_data_to_value(data, option.id, option.type)
             options.append(type(option)(value))
         return player_filter_type(options)
 
@@ -626,22 +746,23 @@ class PrizeAdminController(BaseEventAdminController):
     def _prize_criterion_form_modal_context(
         data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
     ) -> dict[str, Any]:
-        default_option_data = {
+        default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
             for option in PlayerFilterOptionManager.objects()
-        }
+        } | {'type': ''}
         return {
             'modal': 'prize_criterion_form',
             'action': action,
-            'player_filter_select_options': PlayerFilterManager.options(),
+            'player_filter_select_options': {'': '-'} | PlayerFilterManager.options(),
             'player_filter_options': PlayerFilterOptionManager.objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
                 for player_filter in PlayerFilterManager.objects()
-            },
-            'data': default_option_data | data,
+            }
+            | {'': []},
+            'data': default_data | data,
             'errors': errors or {},
         }
 
@@ -679,16 +800,21 @@ class PrizeAdminController(BaseEventAdminController):
             )
         prize_category = web_context.get_admin_prize_category()
         player_filter = self.player_filter_from_data(flat_data)
-        prize_category.add_criterion(
+        criterion = prize_category.add_criterion(
             StoredPrizeCriterion(
                 id=None,
                 prize_category_id=prize_category.id,
                 type=player_filter.id,
                 options={option.id: option.value for option in player_filter.options},
-                index=len(prize_category.criteria),
             )
         )
-        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
+        if 'add_other' in data:
+            template_context = self._prize_criterion_form_modal_context(
+                {}, FormAction.CREATE, errors
+            ) | {'previous_criterion': criterion}
+        else:
+            template_context = {'modal': 'prize_criteria'}
+        return self._admin_event_prizes_render(web_context, template_context)
 
     @patch(
         path=(
@@ -770,38 +896,6 @@ class PrizeAdminController(BaseEventAdminController):
         prize_category.delete_criterion(prize_criterion_id)
         return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
 
-    @patch(
-        path=(
-            '/admin/prizes/reorder-criteria/{event_uniq_id:str}'
-            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
-        ),
-        name='admin-prize-criteria-reorder',
-    )
-    async def htmx_admin_prize_criteria_reorder(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-    ) -> Template | ClientRedirect:
-        web_context = PrizeAdminWebContext(
-            request,
-            event_uniq_id,
-            tournament_id,
-            prize_group_id,
-            prize_category_id,
-        )
-        if web_context.error:
-            return web_context.error
-        prize_category = web_context.get_admin_prize_category()
-        prize_category.reorder_criteria(data['criterion_ids'])
-        return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
-
     @get(
         path=(
             '/admin/prizes/prize-criteria-modal/{event_uniq_id:str}/'
@@ -842,10 +936,9 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
-        data = {'type': GenderPlayerFilter.static_id()}
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_criterion_form_modal_context(data, FormAction.CREATE),
+            self._prize_criterion_form_modal_context({}, FormAction.CREATE),
         )
 
     @get(
@@ -890,30 +983,49 @@ class PrizeAdminController(BaseEventAdminController):
     # -------------------------------------------------------------------------
 
     @staticmethod
-    def _validate_prize_form_data(data: dict[str, str]) -> dict[str, str]:
+    def _validate_prize_form_data(
+        data: dict[str, str], prize_category: PrizeCategory
+    ) -> dict[str, str]:
         errors: dict[str, str] = {}
         is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
         field = 'value'
+        threshold = prize_category.sharing_threshold
         try:
-            WebContext.form_data_to_float(data, field, 0, 0)
+            WebContext.form_data_to_float(data, field, 0, threshold or 0)
         except ValueError:
-            errors[field] = _('A positive value is expected.')
+            errors[field] = (
+                _(
+                    'The value has to be higher than the sharing '
+                    'threshold of the category ({threshold}).'
+                ).format(
+                    threshold=int(threshold) if threshold.is_integer() else threshold
+                )
+                if threshold
+                else _('A positive value is expected.')
+            )
         field = 'description'
         description = WebContext.form_data_to_str(data, field) or ''
         if is_monetary and description:
             message = 'Description is only allowed for non-monetary prizes.'
             errors[field] = message
             logger.error(message)
+        if not is_monetary and not description:
+            errors[field] = _('Description is mandatory for non-monetary prizes.')
         return errors
 
     @staticmethod
     def _prize_form_modal_context(
         data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
     ) -> dict[str, Any]:
+        default_data = {
+            'value': WebContext.value_to_form_data(0.0),
+            'is_monetary': WebContext.value_to_form_data(True),
+            'description': '',
+        }
         return {
             'modal': 'prize_form',
             'action': action,
-            'data': data,
+            'data': default_data | (data or {}),
             'errors': errors or {},
         }
 
@@ -941,24 +1053,29 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if errors := self._validate_prize_form_data(data):
+        prize_category = web_context.get_admin_prize_category()
+        if errors := self._validate_prize_form_data(data, prize_category):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_form_modal_context(data, FormAction.CREATE, errors),
             )
-        prize_category = web_context.get_admin_prize_category()
         value = web_context.form_data_to_float(data, 'value') or 0.0
-        prize_category.add_prize(
+        prize = prize_category.add_prize(
             StoredPrize(
                 id=None,
                 prize_category_id=prize_category.id,
                 value=value,
-                is_monetary=WebContext.form_data_to_bool(data, 'is_monetary') or False,
+                is_monetary=WebContext.form_data_to_bool(data, 'is_monetary'),
                 description=WebContext.form_data_to_str(data, 'description') or '',
-                index=prize_category.get_default_prize_index(value),
             )
         )
-        return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
+        if 'add_other' in data:
+            template_context = self._prize_form_modal_context(
+                {}, FormAction.CREATE, errors
+            ) | {'previous_prize': prize}
+        else:
+            template_context = {'modal': 'prizes'}
+        return self._admin_event_prizes_render(web_context, template_context)
 
     @patch(
         path=(
@@ -991,7 +1108,8 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if errors := self._validate_prize_form_data(data):
+        prize_category = web_context.get_admin_prize_category()
+        if errors := self._validate_prize_form_data(data, prize_category):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_form_modal_context(data, FormAction.UPDATE, errors),
@@ -999,10 +1117,8 @@ class PrizeAdminController(BaseEventAdminController):
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
 
-        stored_prize.value = WebContext.form_data_to_float(data, 'value') or 1.0
-        stored_prize.is_monetary = (
-            WebContext.form_data_to_bool(data, 'is_monetary') or False
-        )
+        stored_prize.value = WebContext.form_data_to_float(data, 'value') or 0.0
+        stored_prize.is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
         stored_prize.description = (
             WebContext.form_data_to_str(data, 'description') or ''
         )
@@ -1038,38 +1154,6 @@ class PrizeAdminController(BaseEventAdminController):
             return web_context.error
         prize_category = web_context.get_admin_prize_category()
         prize_category.delete_prize(prize_id)
-        return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
-
-    @patch(
-        path=(
-            '/admin/prizes/reorder-prizes/{event_uniq_id:str}'
-            '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
-        ),
-        name='admin-prizes-reorder',
-    )
-    async def htmx_admin_prizes_reorder(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-    ) -> Template | ClientRedirect:
-        web_context = PrizeAdminWebContext(
-            request,
-            event_uniq_id,
-            tournament_id,
-            prize_group_id,
-            prize_category_id,
-        )
-        if web_context.error:
-            return web_context.error
-        prize_category = web_context.get_admin_prize_category()
-        prize_category.reorder_prizes(data['prize_ids'])
         return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
 
     @get(
@@ -1116,14 +1200,9 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
-        data = {
-            'value': WebContext.value_to_form_data(0.0),
-            'is_monetary': WebContext.value_to_form_data(True),
-            'description': '',
-        }
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_form_modal_context(data, FormAction.CREATE),
+            self._prize_form_modal_context({}, FormAction.CREATE),
         )
 
     @get(
