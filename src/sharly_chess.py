@@ -69,4 +69,7 @@ except Exception:
     except Exception:
         print(message)
     print('An error occurred.')
-input('Press Enter to end.')
+from contextlib import suppress
+
+with suppress(UnicodeDecodeError):
+    input('Press Enter to end.')

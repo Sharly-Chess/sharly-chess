@@ -30,6 +30,7 @@ English version below
 - Correction de la mise à jour des classements des joueur·euses (2.7.5)
 - Correction des couleurs du modal de mise à jour des joueur·euses (2.7.5)
 - Correction d'un bug à la création des joueur·euses (2.7.7)
+- Correction des index des bases de données des joueur·euses (2.7.8)
 
 ### Gestion des appariements
 
@@ -37,6 +38,8 @@ English version below
 - Correction de l'entrée de résultats au clavier sur des échiquiers fixes (2.7.5)
 - Suppression du modal de configuration de l'appariement lorsque non opportun (2.7.5)
 - Prise en compte du numéro du premier échiquier des tournois (2.7.7)
+- Correction d'un bug en l'absence de tournois (2.7.8)
+- Correction de la numérotation des échiquiers (2.7.8)
 
 ### Gestion des écrans
 
@@ -92,6 +95,7 @@ English version below
 - Update players when rating types differ in data sources (2.7.5)
 - Fixed the colors of the players update modal (2.7.5)
 - Fixed a bug on player creation (2.7.7)
+- Fixed the indices of the players databases (2.7.8)
 
 ### Pairings management
 
@@ -99,6 +103,8 @@ English version below
 - Fixed entering results with keyboard shortcuts on fixed boards (2.7.5)
 - Removed pairing settings modal when not accurate (2.7.5)
 - Take into account the number of the first board of the tournaments (2.7.7)
+- Fixed a bug when no tournament (2.7.8)
+- Fixed the board numbering (2.7.8)
 
 ### Screens management
 
