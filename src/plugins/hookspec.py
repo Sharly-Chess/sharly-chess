@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from decimal import Decimal
 from collections.abc import Iterable
+from pathlib import Path
 from typing import Any, TYPE_CHECKING, Optional
 
 from litestar.plugins.htmx import HTMXRequest
@@ -73,6 +74,10 @@ class AppHookSpecs:
     @hookspec
     def get_engine_argument(self) -> PluginEngineArgument:
         """Provide an engine argument"""
+
+    @hookspec
+    def get_files_to_recover(self) -> list[Path]:
+        """Provide extra files to recover when recovering previous releases."""
 
     # ---------------------------------------------------------------------------------
     # Data sources
