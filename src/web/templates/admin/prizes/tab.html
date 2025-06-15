@@ -1,7 +1,7 @@
 {% extends '../../common/cards_container.html' %}
 
 {% block cards_container_title %}
-    {{ _('Prizes') }}
+    {{ _('Prizes') }}{{ macros.doc_icon('prizes', '') }}
     {% if admin_prize_group %}
         {{ macros.refresh_listener(
             hx_get=url_for(
@@ -231,14 +231,34 @@
         <div
             class="row {% if admin_prize_group and admin_prize_group.categories %}sortable{% endif %}"
         >
-            {% if not admin_prize_group or not admin_prize_group.categories %}
+            {% if not admin_prize_group %}
                 <div class="mx-auto" style="max-width: 500px;">
                     <h5 class="mt-2 my-5 text-center">
-                        {{ _('No prize category') }}
+                        {{ _('No Prize Group') }}
                     </h5>
-                    <p>#TODO: Documentation</p>
                     <p>
-                        {{ _('Create a prize category now to get started.') }}
+                        {{ _('Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures.') }}
+                    </p>
+                    <p>
+                        {{ _('Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups.') }}
+                    </p>
+                    <p>
+                        {{ _('Create a Prize Group now to get started.') }}
+                    </p>
+                </div>
+            {% elif not admin_prize_group.categories %}
+                <div class="mx-auto" style="max-width: 500px;">
+                    <h5 class="mt-2 my-5 text-center">
+                        {{ _('No Prize Category') }}
+                    </h5>
+                    <p>
+                        {{ _('Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal).') }}
+                    </p>
+                    <p>
+                        {{ _('One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system.') }}
+                    </p>
+                    <p>
+                        {{ _('Create a Prize Category now to continue.') }}
                     </p>
                 </div>
             {% else %}
