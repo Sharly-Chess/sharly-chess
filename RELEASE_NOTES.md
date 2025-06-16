@@ -44,6 +44,7 @@ English version below
 ### Gestion des écrans
 
 - Correction d'un bug à la création des écrans (2.7.2)
+- Correction du rafraichissement des écrans de résultats (2.7.8)
 
 ## FFE
 
@@ -109,6 +110,7 @@ English version below
 ### Screens management
 
 - Fixed a bug on screen creation (2.7.2)
+- Fixed the refresh of results screens (2.7.8)
 
 ## FFE
 
