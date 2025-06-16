@@ -62,6 +62,7 @@ English version below
 - Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
 - Normalisation des noms des joueur·euses (2.7.1)
 - Correction du type de classement Estimé/National des joueur·euses (2.7.4)
+- Correction de la mise à jour sur le site FFE depuis le script ChessEvent (2.7.8)
 
 ---
 
@@ -128,3 +129,4 @@ English version below
 - Fixed birth dates prior to 1970-01-01 (2.7.0)
 - Normalized players' names (2.7.1)
 - Fixed the players' Estimated/National rating type (2.7.4)
+- Fixed the upload to the FFE website from the ChessEvent script (2.7.8)
