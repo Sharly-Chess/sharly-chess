@@ -878,6 +878,9 @@ msgstr "Niveau de log sur la console : {console_log_level}"
 msgid "Console logs"
 msgstr "Logs de la console"
 
+msgid "Consult the players and the prize assignment of this category."
+msgstr "Consulter les joueur·euses et l'attribution des prix de la catégorie."
+
 msgid "Contact and registration"
 msgstr "Contact et inscription"
 

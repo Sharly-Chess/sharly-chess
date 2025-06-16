@@ -878,6 +878,9 @@ msgstr ""
 msgid "Console logs"
 msgstr ""
 
+msgid "Consult the players and the prize assignment of this category."
+msgstr ""
+
 msgid "Contact and registration"
 msgstr ""
 

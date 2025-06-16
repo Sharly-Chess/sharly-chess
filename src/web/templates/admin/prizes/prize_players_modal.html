@@ -74,7 +74,7 @@
                                 {{ ordinal_integer(loop.index)|safe }}
                             </td>
                             {% if not admin_prize_category.is_main %}
-                                <td>
+                                <td class="{{ prize_class }}">
                                     ({{ ordinal_integer(player.rank)|safe }})
                                 </td>
                             {% endif %}
