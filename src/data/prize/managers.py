@@ -1,3 +1,5 @@
+from data.prize.currencies import Currency
+from data.prize import currencies
 from data.prize.player_filter_options import PlayerFilterOption
 from data.prize.player_filters import PlayerFilter
 from data.prize.prize_sharing import (
@@ -58,4 +60,14 @@ class PrizeSharingManager(EntityManager[PrizeSharing]):
             NoPrizeSharing,
             AveragePrizeSharing,
             HortSystemPrizeSharing,
+        ]
+
+
+class CurrencyManager(EntityManager[Currency]):
+    @staticmethod
+    def entity_types() -> list[type[Currency]]:
+        return [
+            currencies.EuroCurrency,
+            currencies.DollarCurrency,
+            currencies.PoundSterlingCurrency,
         ]

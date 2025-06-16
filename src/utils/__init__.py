@@ -1,7 +1,12 @@
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
+
+from babel.numbers import format_currency, format_compact_currency
+
+if TYPE_CHECKING:
+    from data.prize.currencies import Currency
 
 
 class StaticUtils:
@@ -95,13 +100,18 @@ class StaticUtils:
         return points_str
 
     @staticmethod
-    def currency_value_str(value: float, currency: str) -> str:
-        from common.i18n import _
+    def currency_value_str(value: float, currency: 'Currency') -> str:
+        from common.i18n import get_locale
 
-        return _('{currency}{value}').format(
-            currency=currency,
-            value=int(value) if value.is_integer() else f'{value:.2f}',
-        )
+        locale = get_locale()
+        if value.is_integer():
+            return format_compact_currency(
+                value,
+                currency.babel_value,
+                locale=locale,
+                fraction_digits=6,
+            )
+        return format_currency(value, currency.babel_value, locale=locale)
 
     @classmethod
     def ordinal_integer(cls, value: int) -> str:

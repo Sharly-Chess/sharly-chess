@@ -7,6 +7,7 @@ from common import format_timestamp_date, format_timestamp_time
 from common.logger import get_logging_config, get_logger
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
+from data.prize.managers import CurrencyManager
 from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch, delete
@@ -100,6 +101,7 @@ class IndexAdminController(BaseAdminController):
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
+        prize_currency = WebContext.form_data_to_str(data, 'prize_currency') or ''
         return StoredConfig(
             force_edit=False,
             console_log_level=console_log_level,
@@ -110,6 +112,7 @@ class IndexAdminController(BaseAdminController):
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
+            prize_currency=prize_currency,
             errors=errors,
         )
 
@@ -293,6 +296,9 @@ class IndexAdminController(BaseAdminController):
                         'locale': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.locale
                         ),
+                        'prize_currency': WebContext.value_to_form_data(
+                            sharly_chess_config.prize_currency.id
+                        ),
                     }
                     for plugin in plugin_manager.all_plugins:
                         data[plugin.form_key] = WebContext.value_to_form_data(
@@ -336,6 +342,7 @@ class IndexAdminController(BaseAdminController):
                     'federation_options': cls._get_federation_options(
                         SharlyChessConfig.default_federation
                     ),
+                    'prize_currency_options': CurrencyManager.options(),
                     'modal': modal,
                     'data': data,
                     'errors': errors,

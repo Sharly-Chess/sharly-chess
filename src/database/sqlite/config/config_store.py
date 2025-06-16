@@ -14,8 +14,9 @@ class StoredConfig:
     console_show_level: bool
     experimental: bool
     launch_browser: bool
-    federation: str | None = None
-    locale: str | None = None
+    federation: str | None
+    locale: str | None
+    prize_currency: str
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
