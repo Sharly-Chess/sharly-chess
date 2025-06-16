@@ -151,12 +151,11 @@ class FFESession(Session):
             / f'{(self.last_url_read or "").replace("/", "_")}-{date_str}-parsed.html'
         )
         try:
-            with open(debug_file, 'w', encoding='utf-8') as file:
-                file.write(parser.getHTML())
-            logger.debug('Raw content stored to %s.', debug_file)
+            with open(debug_file, 'w', encoding='utf-8') as f:
+                f.write(parser.getHTML())
+            logger.debug('Parsed content stored to %s.', debug_file)
         except OSError:
             logger.debug('Unable to store file [%s].', debug_file)
-        logger.debug('Parsed content stored to %s', debug_file)
         tag: AdvancedTag | None = parser.getElementById(
             tag_id := 'ctl00_ContentPlaceHolderMain_LabelError'
         )
