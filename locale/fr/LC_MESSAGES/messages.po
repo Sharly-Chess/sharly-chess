@@ -172,6 +172,9 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
+msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »), les caractère invalides ont été remplacés par un souligné."
+
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
 

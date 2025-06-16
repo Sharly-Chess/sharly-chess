@@ -172,6 +172,9 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
+msgstr ""
+
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
