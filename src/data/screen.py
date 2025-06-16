@@ -256,7 +256,7 @@ class Screen:
                 ):
                     text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item,
+                        first_last=first_last and screen_set.first_item is not None,
                     )
                 elif self.type in [
                     ScreenType.PLAYERS,
@@ -265,12 +265,12 @@ class Screen:
                 ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item,
+                        first_last=first_last and screen_set.first_item is not None,
                     )
                 elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item,
+                        first_last=first_last and screen_set.first_item is not None,
                         crosstable=self.ranking_crosstable,
                     )
                 else:
@@ -314,15 +314,25 @@ class Screen:
                     if '%f' in text:
                         text = text.replace(
                             '%f',
-                            str(screen_set.first_board.id)
+                            str(
+                                screen_set.first_board.id
+                                + screen_set.tournament.first_board_number
+                                - 1
+                            )
                             if screen_set.first_board
+                            and screen_set.first_board.id is not None
                             else '-',
                         )
                     if '%l' in text:
                         text = text.replace(
                             '%l',
-                            str(screen_set.last_board.id)
+                            str(
+                                screen_set.last_board.id
+                                + screen_set.tournament.first_board_number
+                                - 1
+                            )
                             if screen_set.last_board
+                            and screen_set.last_board.id is not None
                             else '-',
                         )
                 return text
