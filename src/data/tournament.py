@@ -35,6 +35,7 @@ from utils.enum import (
     Result,
     TournamentRating,
     TrfType,
+    ScreenType,
 )
 from database.access.papi.papi_database import (
     PapiDatabase,
@@ -532,9 +533,27 @@ class Tournament:
     def dependent_screens(self) -> list[Screen]:
         dependent_screens = []
         for screen in self.event.basic_screens_by_id.values():
-            for screen_set in screen.screen_sets_sorted_by_order:
-                if screen_set.tournament.id == self.id:
-                    dependent_screens.append(screen)
+            match screen.type:
+                case (
+                    ScreenType.INPUT
+                    | ScreenType.BOARDS
+                    | ScreenType.PLAYERS
+                    | ScreenType.RANKING
+                ):
+                    for screen_set in screen.screen_sets_sorted_by_order:
+                        if screen_set.tournament.id == self.id:
+                            dependent_screens.append(screen)
+                case ScreenType.RESULTS:
+                    if (
+                        not screen.results_tournament_ids
+                        or self.id in screen.results_tournament_ids
+                    ):
+                        dependent_screens.append(screen)
+                case ScreenType.IMAGE:
+                    pass
+                case _:
+                    raise ValueError(f'{screen.type=}')
+
         return dependent_screens
 
     @cached_property
@@ -1075,7 +1094,9 @@ class Tournament:
             )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.add_stored_result(self.id, round_, board, white_result)
+            self.stored_tournament.last_result_update = (
+                event_database.add_stored_result(self.id, round_, board, white_result)
+            )
             event_database.commit()
         self.players_by_id[board.white_player.id].pairings[round_].result = white_result
         self.players_by_id[board.black_player.id].pairings[round_].result = black_result
@@ -1110,7 +1131,11 @@ class Tournament:
                 )
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.delete_stored_result(self.id, self.current_round, board.id)
+            self.stored_tournament.last_result_update = (
+                event_database.delete_stored_result(
+                    self.id, self.current_round, board.id
+                )
+            )
             event_database.commit()
         logger.info(
             'Removed result: %s %s %d.%d.',
