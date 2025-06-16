@@ -161,9 +161,8 @@ class IndexAdminController(BaseAdminController):
         coming_events = EventLoader.get_events_metadata('coming')
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
-                'title': _('Current events ({num})').format(
-                    num=len(current_events) or '-'
-                ),
+                'section_title': _('Events'),
+                'title': _('Current ({num})').format(num=len(current_events) or '-'),
                 'template': 'index/events_tab.html',
                 'events': current_events,
                 'disabled': not current_events,
@@ -171,9 +170,7 @@ class IndexAdminController(BaseAdminController):
                 'icon_class': 'bi-calendar',
             },
             'coming_events': {
-                'title': _('Upcoming events ({num})').format(
-                    num=len(coming_events) or '-'
-                ),
+                'title': _('Upcoming ({num})').format(num=len(coming_events) or '-'),
                 'template': 'index/events_tab.html',
                 'events': coming_events,
                 'disabled': not coming_events,
@@ -181,9 +178,7 @@ class IndexAdminController(BaseAdminController):
                 'icon_class': 'bi-calendar-check',
             },
             'passed_events': {
-                'title': _('Passed events ({num})').format(
-                    num=len(passed_events) or '-'
-                ),
+                'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
                 'template': 'index/events_tab.html',
                 'events': passed_events,
                 'disabled': not passed_events,
@@ -191,7 +186,7 @@ class IndexAdminController(BaseAdminController):
                 'icon_class': 'bi-calendar-minus',
             },
             'archives': {
-                'title': _('Archived events ({num})').format(
+                'title': _('Archived ({num})').format(
                     num=len(archive_loader.archives_sorted_by_date) or '-'
                 ),
                 'template': 'index/archives_tab.html',
@@ -201,7 +196,8 @@ class IndexAdminController(BaseAdminController):
                 'icon_class': 'bi-archive',
             },
             'config': {
-                'title': _('Sharly Chess settings'),
+                'divider': True,
+                'title': _('Settings'),
                 'template': 'index/config_tab.html',
                 'icon_class': 'bi-gear',
                 'disabled': False,

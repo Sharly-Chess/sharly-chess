@@ -1,25 +1,34 @@
 {% extends 'common/base.html' %}
 
 {% block admin_header_back_button %}
-    <button
-        class="btn btn-link fs-3 fw-bold px-1 py-0"
-        hx-get="{{ url_for('index') }}"
-        preload
-        hx-target="body"
-        hx-push-url="true"
-        hx-swap="transition:true"
-        hx-indicator="#please-wait"
-        {{ macros.tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
-    >
-        <i class="bi-house-fill"></i>
-    </button>
+    <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
+        <button
+            class="btn px-0 py-0 d-flex align-items-center gap-2"
+            hx-get="{{ url_for('index') }}"
+            preload
+            hx-target="body"
+            hx-push-url="true"
+            hx-indicator="#please-wait"
+            hx-swap="transition:true"
+        >
+            <i class="bi-arrow-left-circle-fill"></i>
+            {{ _('Home page') }}
+        </button>
+        {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
+    </div>
 {% endblock admin_header_back_button %}
 
-{% block admin_header_nav %}
+{% block admin_nav %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
+        {% if nav_tab.divider %}
+            <div class="sidebar-divider my-3"></div>
+        {% endif %}
+        {% if nav_tab.section_title %}
+            <h4 class="ps-3 mb-2 fs-5 mt-3">{{ nav_tab.section_title }}</h4>
+        {% endif %}
         {% with active=(admin_tab == nav_id) %}
             <button
-                class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %} py-0 ms-1"
+                class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                 id="nav-{{ nav_id }}-tab"
                 hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
                 preload
@@ -39,12 +48,8 @@
             </button>
         {% endwith %}
     {% endfor %}
-{% endblock admin_header_nav %}
-
-{% block admin_header_action_buttons %}
     {% include '/admin/common/database/database_button.html' %}
-    {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
-{% endblock admin_header_action_buttons %}
+{% endblock admin_nav %}
 
 {% block admin_content %}
     {% for nav_id, nav_tab in nav_tabs.items() %}

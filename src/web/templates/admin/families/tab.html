@@ -1,10 +1,10 @@
 {% extends '../../common/cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Screen families') }}{{ macros.doc_icon('screens-families', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('screens-families', 'fs-4') }}
 {% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     {% with id='admin-families-show-details', name='admin_families_show_details', show=admin_families_show_details %}
         <div
             class="form-check form-switch d-inline-block pe-3 mt-2"
