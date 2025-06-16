@@ -226,7 +226,8 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         tournament = web_context.get_admin_tournament()
-        if not tournament.prize_groups:
+        first_group = len(tournament.prize_groups) == 0
+        if first_group:
             name = _('Main group')
         else:
             name = _('Side group')
@@ -236,14 +237,25 @@ class PrizeAdminController(BaseEventAdminController):
                 while f'{name} ({index})' in group_names:
                     index += 1
                 name = f'{name} ({index})'
-        tournament.add_prize_group(
+        prize_group = tournament.add_prize_group(
             StoredPrizeGroup(
                 id=None,
                 tournament_id=tournament.id,
                 name=name,
             )
         )
-        return self._admin_event_prizes_render(web_context, {'modal': 'prize_groups'})
+        template_context = {}
+        if first_group:
+            web_context.admin_prize_group = prize_group
+            Message.success(
+                request,
+                _('Prize group [{prize_group}] successfully created.').format(
+                    prize_group=prize_group.name
+                ),
+            )
+        else:
+            template_context = {'modal': 'prize_groups'}
+        return self._admin_event_prizes_render(web_context, template_context)
 
     @patch(
         path=(
