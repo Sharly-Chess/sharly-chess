@@ -132,6 +132,7 @@ class ScreenAdminController(BaseEventAdminController):
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
+        players_show_opponent: bool | None = None
         results_limit: int | None = None
         results_max_age: int | None = None
         results_tournament_ids: list[int] = []
@@ -206,8 +207,11 @@ class ScreenAdminController(BaseEventAdminController):
                             data, 'input_exit_button'
                         )
                     case ScreenType.PLAYERS:
-                        players_show_unpaired = WebContext.form_data_to_bool(
+                        players_show_unpaired = WebContext.form_data_to_bool_or_none(
                             data, 'players_show_unpaired'
+                        )
+                        players_show_opponent = WebContext.form_data_to_bool_or_none(
+                            data, 'players_show_opponent'
                         )
                     case ScreenType.RESULTS:
                         field = 'results_limit'
@@ -320,6 +324,7 @@ class ScreenAdminController(BaseEventAdminController):
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
+            players_show_opponent=players_show_opponent,
             results_limit=results_limit,
             results_max_age=results_max_age,
             results_tournament_ids=results_tournament_ids,
@@ -480,6 +485,7 @@ class ScreenAdminController(BaseEventAdminController):
                     message_text: str | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
+                    players_show_opponent: bool | None = None
                     results_limit: int | None = None
                     results_max_age: int | None = None
                     results_tournament_ids: list[int] | None = None
@@ -564,6 +570,7 @@ class ScreenAdminController(BaseEventAdminController):
                                     input_exit_button = web_context.admin_screen.stored_screen.input_exit_button
                                 case ScreenType.PLAYERS:
                                     players_show_unpaired = web_context.admin_screen.stored_screen.players_show_unpaired
+                                    players_show_opponent = web_context.admin_screen.stored_screen.players_show_opponent
                                 case ScreenType.RESULTS:
                                     results_limit = web_context.admin_screen.stored_screen.results_limit
                                     results_max_age = web_context.admin_screen.stored_screen.results_max_age
@@ -626,6 +633,9 @@ class ScreenAdminController(BaseEventAdminController):
                         'players_show_unpaired': WebContext.value_to_form_data(
                             players_show_unpaired
                         ),
+                        'players_show_opponent': WebContext.value_to_form_data(
+                            players_show_opponent
+                        ),
                         'results_limit': WebContext.value_to_form_data(results_limit),
                         'results_max_age': WebContext.value_to_form_data(
                             results_max_age
@@ -678,6 +688,7 @@ class ScreenAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(web_context.admin_event),
                     'input_exit_button_options': cls._get_input_exit_button_options(),
                     'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
+                    'players_show_opponent_options': cls._get_players_show_opponent_options(),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'modal': modal,
                     'action': action,

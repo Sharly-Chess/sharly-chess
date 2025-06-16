@@ -17,7 +17,9 @@
                             <tr>
                                 <th scope="col" class="player w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}</th>
                                 <th scope="col" class="pairing text-nowrap text-start">{{ _('Board & color') }}</th>
-                                <th scope="col" class="opponent w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
+                                {% if screen_set.players_show_opponent %}
+                                    <th scope="col" class="opponent w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -36,7 +38,9 @@
                                         {% else %}
                                             {% with opponent=tournament.players_by_id[opponent_id] %}
                                                 <td class="pairing bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}</td>
-                                                <td class="opponent bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]</td>
+                                                {% if screen_set.players_show_opponent %}
+                                                    <td class="opponent bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]</td>
+                                                {% endif %}
                                             {% endwith %}
                                         {% endif %}
                                     </tr>
