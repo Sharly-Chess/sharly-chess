@@ -1537,6 +1537,7 @@ class EventDatabase(MigrationDatabase):
         self._delete_tournament_stored_families(tournament_id)
         self._delete_tournament_stored_illegal_moves(tournament_id)
         self._delete_tournament_stored_results(tournament_id)
+        self._delete_tournament_prize_groups(tournament_id)
         # references are not deleted on cascade as they should be!
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
         self.set_last_update()
@@ -2635,7 +2636,19 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_stored_prize_group(self, prize_group_id: int):
+        self.execute(
+            'SELECT `id` FROM `prize_category` WHERE `prize_group_id` = ?',
+            (prize_group_id,),
+        )
+        for row in self.fetchall():
+            self.delete_stored_prize_category(row['id'])
         self.execute('DELETE FROM `prize_group` WHERE `id` = ?;', (prize_group_id,))
+
+    def _delete_tournament_prize_groups(self, tournament_id: int):
+        self.execute(
+            'DELETE FROM `prize_group` WHERE `tournament_id` = ?;',
+            (tournament_id,),
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredPrizeCategory
@@ -2730,6 +2743,14 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_stored_prize_category(self, prize_category_id: int):
+        self.execute(
+            'DELETE FROM `prize_criterion` WHERE `prize_category_id` = ?;',
+            (prize_category_id,),
+        )
+        self.execute(
+            'DELETE FROM `prize` WHERE `prize_category_id` = ?;',
+            (prize_category_id,),
+        )
         self.execute(
             'DELETE FROM `prize_category` WHERE `id` = ?;', (prize_category_id,)
         )

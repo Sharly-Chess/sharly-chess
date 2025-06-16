@@ -1,7 +1,7 @@
 import logging
 import socket
 from pathlib import Path
-from typing import overload
+from typing import overload, ClassVar
 
 import jinja2
 import litestar
@@ -34,58 +34,23 @@ from database.sqlite.config.config_store import StoredConfig
 class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database."""
 
-    # The default console log level, used by default.
-    default_console_log_level: int = logging.INFO
-
-    # True to use colors on the console, used by default.
-    default_console_color: bool = True
-
-    # True to use show the date on the console, used by default.
-    default_console_show_date: bool = False
-
-    # True to use show the log_level on the console, used by default.
-    default_console_show_level: bool = False
-
-    # True to enable experimental features, used by default.
-    default_experimental: bool = False
-
-    # The port used by the Uvicorn web server.
-    web_host: str = '0.0.0.0'
-
-    # The ports the web server tries to start on, tried one after the other.
-    web_ports: list[int] = [
-        80,
-        81,
-        8080,
-        8081,
-    ]
-
-    # The default behaviour to open a browser after the startup of the web server.
-    default_launch_browser: bool = True
-
-    """ The accepted console log levels. """
-    console_log_levels: dict[int, str] = {
-        logging.DEBUG: 'DEBUG',
-        logging.INFO: 'INFO',
-        logging.WARNING: 'WARNING',
-        logging.ERROR: 'ERROR',
-    }
+    _stored_config: ClassVar[StoredConfig | None] = None
 
     def __init__(self):
         self.web_port: int | None = None
-        self.stored_config: StoredConfig = StoredConfig()
-        self.load()
 
-    def reload(self):
-        self.load()
+    @classmethod
+    def reload(cls):
+        cls._stored_config = cls.load_stored_config()
 
-    def load(self):
+    @staticmethod
+    def load_stored_config() -> StoredConfig:
         with ConfigDatabase() as config_database:
-            self.stored_config: StoredConfig = config_database.load_stored_config()
+            stored_config: StoredConfig = config_database.load_stored_config()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
         # offline databases download, ...
-        if not self.stored_config.locale:
+        if not stored_config.locale:
             set_locale(get_locale())
             print_interactive_input(_('The following languages are available:'))
             locale_range = range(1, len(locales) + 1)
@@ -104,18 +69,26 @@ class SharlyChessConfig(metaclass=Singleton):
                 except ValueError:
                     pass
             with ConfigDatabase(write=True) as config_database:
-                self.stored_config.locale = locales[locale_num - 1]
-                config_database.update_stored_config(self.stored_config)
+                stored_config.locale = locales[locale_num - 1]
+                config_database.update_stored_config(stored_config)
                 config_database.commit()
-        set_locale(self.locale)
+        set_locale(stored_config.locale)
         set_logging_config(
-            console_log_level=self.console_log_level,
-            console_color=self.console_color,
-            console_show_date=self.console_show_date,
-            console_show_level=self.console_show_level,
+            console_log_level=stored_config.console_log_level,
+            console_color=stored_config.console_color,
+            console_show_date=stored_config.console_show_date,
+            console_show_level=stored_config.console_show_level,
         )
-        enable_experimental_features(self.experimental)
+        enable_experimental_features(stored_config.experimental)
         # TODO (up to here)
+        return stored_config
+
+    @property
+    def stored_config(self) -> StoredConfig:
+        cls = self.__class__
+        if not cls._stored_config:
+            cls._stored_config = self.load_stored_config()
+        return cls._stored_config
 
     @property
     def force_edit(self) -> bool:
@@ -131,38 +104,23 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def console_color(self) -> bool:
-        if self.stored_config.console_color is not None:
-            return self.stored_config.console_color
-        else:
-            return self.default_console_color
+        return self.stored_config.console_color
 
     @property
     def console_show_date(self) -> bool:
-        if self.stored_config.console_show_date is not None:
-            return self.stored_config.console_show_date
-        else:
-            return self.default_console_show_date
+        return self.stored_config.console_show_date
 
     @property
     def console_show_level(self) -> bool:
-        if self.stored_config.console_show_level is not None:
-            return self.stored_config.console_show_level
-        else:
-            return self.default_console_show_level
+        return self.stored_config.console_show_level
 
     @property
     def experimental(self) -> bool:
-        if self.stored_config.experimental is not None:
-            return self.stored_config.experimental
-        else:
-            return self.default_experimental
+        return self.stored_config.experimental
 
     @property
     def launch_browser(self) -> bool:
-        if self.stored_config.launch_browser is not None:
-            return self.stored_config.launch_browser
-        else:
-            return self.default_launch_browser
+        return self.stored_config.launch_browser
 
     @property
     def federation(self) -> Federation:
@@ -171,6 +129,28 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
+
+    # The port used by the Uvicorn web server.
+    web_host: str = '0.0.0.0'
+
+    # The ports the web server tries to start on, tried one after the other.
+    web_ports: list[int] = [
+        80,
+        81,
+        8080,
+        8081,
+    ]
+
+    """ The accepted console log levels. """
+    console_log_levels: dict[int, str] = {
+        logging.DEBUG: 'DEBUG',
+        logging.INFO: 'INFO',
+        logging.WARNING: 'WARNING',
+        logging.ERROR: 'ERROR',
+    }
+
+    # The default console log level, used by default.
+    default_console_log_level: int = logging.INFO
 
     """ The URL of the project. """
     url: str = 'https://sharly-chess.com'

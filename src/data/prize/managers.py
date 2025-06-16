@@ -19,6 +19,7 @@ class PlayerFilterManager(EntityManager[PlayerFilter]):
             filters.GenderPlayerFilter,
             filters.RatingPlayerFilter,
             filters.AgePlayerFilter,
+            filters.RatingTypePlayerFilter,
             filters.ClubPlayerFilter,
             filters.FederationPlayerFilter,
         ]
@@ -40,6 +41,7 @@ class PlayerFilterOptionManager(EntityManager[PlayerFilterOption]):
             options.AgeCategoriesOption,
             options.AgeLowerOption,
             options.AgeGreaterOption,
+            options.RatingTypesFilterOption,
             options.ClubsFilterOption,
             options.FederationsFilterOption,
         ]

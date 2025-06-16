@@ -7,13 +7,13 @@ from dataclasses import dataclass, field
 
 @dataclass
 class StoredConfig:
-    force_edit: bool = True
-    console_log_level: int | None = None
-    console_color: bool | None = None
-    console_show_date: bool | None = None
-    console_show_level: bool | None = None
-    experimental: bool | None = None
-    launch_browser: bool | None = None
+    force_edit: bool
+    console_log_level: int | None
+    console_color: bool
+    console_show_date: bool
+    console_show_level: bool
+    experimental: bool
+    launch_browser: bool
     federation: str | None = None
     locale: str | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])

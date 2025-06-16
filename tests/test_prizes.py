@@ -3,11 +3,25 @@ from plugins import manager  # Noqa E402
 
 from data.tournament import Tournament
 
-from data.prize.player_filter_options import GenderOption, MaxRatingOption
+from data.prize.player_filter_options import (
+    GenderOption,
+    MaxRatingOption,
+    MinRatingOption,
+    AgeCategoriesOption,
+    AgeLowerOption,
+    AgeGreaterOption,
+    ClubsFilterOption,
+    FederationsFilterOption,
+    RatingTypesFilterOption,
+)
 from data.prize.player_filters import (
     GenderPlayerFilter,
     PlayerFilter,
     RatingPlayerFilter,
+    AgePlayerFilter,
+    ClubPlayerFilter,
+    FederationPlayerFilter,
+    RatingTypePlayerFilter,
 )
 
 
@@ -22,7 +36,7 @@ from data.prize.prize_sharing import (
     PrizeSharing,
 )
 
-from data.player import Federation, Player, PlayerRating
+from data.player import Federation, Player, PlayerRating, Club
 from data.prize.prize_group import AssignedPrize
 from database.sqlite.event.event_store import (
     StoredPrize,
@@ -31,6 +45,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeGroup,
     StoredTournament,
 )
+from plugins.ffe.ffe_entity import FfeLeaguePlayerFilter, FfeLeaguesFilterOption
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -38,6 +53,7 @@ from utils.enum import (
     PlayerTitle,
     Result,
     TournamentRating,
+    PlayerCategory,
 )
 from utils.tests import BaseTestCase
 
@@ -85,16 +101,24 @@ class PrizesTestCase(BaseTestCase):
         return self.tournament.prize_groups_by_id[1].assign_prizes()
 
     def player(
-        self, elo: int, points: float, gender: PlayerGender = PlayerGender.NONE
+        self,
+        elo: int,
+        points: float,
+        gender: PlayerGender = PlayerGender.NONE,
+        rating_type: PlayerRatingType = PlayerRatingType.FIDE,
+        year_of_birth: int = 2000,
+        federation: str = 'FRA',
+        club: str = '',
+        ffe_league: str = '',
     ) -> Player:
         player = Player(
             id=0,
             first_name='A',
             last_name='B' + str(elo),
-            date_of_birth=date(1973, 6, 30),
+            date_of_birth=date(year_of_birth, 1, 1),
             gender=gender,
             fide_id=None,
-            federation=Federation('FRA'),
+            federation=Federation(federation),
             title=PlayerTitle.NONE,
             pairings={},
             mail=None,
@@ -103,13 +127,12 @@ class PrizesTestCase(BaseTestCase):
             owed=0,
             paid=0,
             ratings={
-                TournamentRating.STANDARD: PlayerRating(elo, PlayerRatingType.FIDE),
-                TournamentRating.RAPID: PlayerRating(1199, PlayerRatingType.FIDE),
-                TournamentRating.BLITZ: PlayerRating(1199, PlayerRatingType.FIDE),
+                rating: PlayerRating(elo, rating_type) for rating in TournamentRating
             },
-            club=None,
+            club=Club(club),
             fixed=False,
             check_in=False,
+            plugin_data={'ffe': {'league': ffe_league}},
         )
         player.points = points
         player.pairings = {}
@@ -121,7 +144,7 @@ class PrizesTestCase(BaseTestCase):
 
     def stored_category(
         self,
-        name: str,
+        name: str = 'category',
         is_main: bool = False,
         prize_sharing: PrizeSharing = NoPrizeSharing(),
         stored_prizes: list[StoredPrize] | None = None,
@@ -179,11 +202,15 @@ class PrizesTestCase(BaseTestCase):
         has_warning: bool = False,
     ):
         assigned_prize = next(
-            prize
-            for prize in prize_list
-            if prize.assigned_to and prize.assigned_to.id == player.id
+            (
+                prize
+                for prize in prize_list
+                if prize.assigned_to and prize.assigned_to.id == player.id
+            ),
+            None,
         )
         self.assertIsNotNone(assigned_prize)
+        assert assigned_prize is not None
         self.assertEqual(bool(assigned_prize.warning), has_warning)
         self.assertIsNotNone(assigned_prize.prize)
         self.assertEqual(assigned_prize.prize and assigned_prize.prize.id, prize.id)
@@ -334,33 +361,6 @@ class PrizesTestCase(BaseTestCase):
         self.assert_has_prize_value(p3, (60 + 60 / 2) / 2, prizes)
         self.assert_has_prize_value(p4, 60 / 2 / 2, prizes, True)
         self.assert_has_no_prize(p5, prizes)
-
-    def test_basic_gender(self):
-        """Test the gender filter"""
-        prizes = [
-            self.stored_prize(200),
-            self.stored_prize(100),
-        ]
-        criterion = self.stored_criterion(
-            GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
-        )
-        category = self.stored_category(
-            'woman', stored_prizes=prizes, stored_prize_criteria=[criterion]
-        )
-
-        p1 = self.player(1000, 4, PlayerGender.FEMALE)
-        p2 = self.player(1000, 5, PlayerGender.FEMALE)
-        p3 = self.player(1000, 6, PlayerGender.MALE)
-        p4 = self.player(1000, 1, PlayerGender.MALE)
-        players = [p1, p2, p3, p4]
-
-        prizes = self.assign_prizes([category], players)
-
-        first, second = self.get_prizes()
-        self.assert_has_prize(p1, second, prizes)
-        self.assert_has_prize(p2, first, prizes)
-        self.assert_has_no_prize(p3, prizes)
-        self.assert_has_no_prize(p4, prizes)
 
     def test_single_entrant_promotion(self):
         """Test that a player in the main category can be promoted to a better prize,
@@ -722,3 +722,471 @@ class PrizesTestCase(BaseTestCase):
         self.assert_has_prize_value(p1, 200, prizes)
         self.assert_has_prize(p2, first_woman, prizes, True)
         self.assert_has_prize_value(p3, 100, prizes)
+
+    # ---------------------------------------------------------------------------------
+    # Criteria
+    # ---------------------------------------------------------------------------------
+
+    def test_gender_criterion(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, PlayerGender.FEMALE)
+        p2 = self.player(1000, 5, PlayerGender.FEMALE)
+        p3 = self.player(1000, 6, PlayerGender.MALE)
+        p4 = self.player(1000, 4, PlayerGender.MALE)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_rating_criterion_min(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(RatingPlayerFilter([MinRatingOption(1200)]))
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1300, 3)
+        p2 = self.player(1200, 5)
+        p3 = self.player(1100, 6)
+        p4 = self.player(1000, 4)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_rating_criterion_max(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(RatingPlayerFilter([MaxRatingOption(1100)]))
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1100, 3)
+        p2 = self.player(1000, 5)
+        p3 = self.player(1200, 6)
+        p4 = self.player(1300, 4)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_rating_criterion_min_max(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            RatingPlayerFilter([MinRatingOption(1100), MaxRatingOption(1300)])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1100, 3)
+        p2 = self.player(1200, 5)
+        p3 = self.player(1000, 6)
+        p4 = self.player(1400, 4)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_age_criterion_single(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            AgePlayerFilter([AgeCategoriesOption([PlayerCategory.U14.value])])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, year_of_birth=2012)
+        p2 = self.player(1000, 5, year_of_birth=2011)
+        p3 = self.player(1000, 6, year_of_birth=2010)
+        p4 = self.player(1000, 4, year_of_birth=2013)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_age_criterion_multi(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            AgePlayerFilter(
+                [
+                    AgeCategoriesOption(
+                        [PlayerCategory.U14.value, PlayerCategory.U12.value]
+                    )
+                ]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, year_of_birth=2012)
+        p2 = self.player(1000, 5, year_of_birth=2013)
+        p3 = self.player(1000, 6, year_of_birth=2010)
+        p4 = self.player(1000, 4, year_of_birth=2015)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_age_criterion_lower(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            AgePlayerFilter(
+                [
+                    AgeCategoriesOption([PlayerCategory.U14.value]),
+                    AgeLowerOption(True),
+                ]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, year_of_birth=2012)
+        p2 = self.player(1000, 5, year_of_birth=2015)
+        p3 = self.player(1000, 6, year_of_birth=2010)
+        p4 = self.player(1000, 4, year_of_birth=2009)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_age_criterion_greater(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            AgePlayerFilter(
+                [
+                    AgeCategoriesOption([PlayerCategory.O50.value]),
+                    AgeGreaterOption(True),
+                ]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, year_of_birth=1974)
+        p2 = self.player(1000, 5, year_of_birth=1959)
+        p3 = self.player(1000, 6, year_of_birth=2000)
+        p4 = self.player(1000, 4, year_of_birth=1980)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_club_criterion_single(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        filter_in = 'Filtered in club'
+        filter_out = 'Filtered out club'
+        criterion = self.stored_criterion(
+            ClubPlayerFilter([ClubsFilterOption([Club(filter_in).to_query_param])])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, club=filter_in)
+        p2 = self.player(1000, 5, club=filter_in)
+        p3 = self.player(1000, 6, club=filter_out)
+        p4 = self.player(1000, 4, club=filter_out)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_club_criterion_multi(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        filter_in_1 = 'Filtered in club 1'
+        filter_in_2 = 'Filtered in club 2'
+        filter_out = 'Filtered out club'
+        criterion = self.stored_criterion(
+            ClubPlayerFilter(
+                [
+                    ClubsFilterOption(
+                        [
+                            Club(filter_in_1).to_query_param,
+                            Club(filter_in_2).to_query_param,
+                        ]
+                    )
+                ]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, club=filter_in_1)
+        p2 = self.player(1000, 5, club=filter_in_2)
+        p3 = self.player(1000, 6, club=filter_out)
+        p4 = self.player(1000, 4, club=filter_out)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_federation_criterion_single(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            FederationPlayerFilter(
+                [FederationsFilterOption([Federation('FRA').to_query_param])]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, federation='FRA')
+        p2 = self.player(1000, 5, federation='FRA')
+        p3 = self.player(1000, 6, federation='BEL')
+        p4 = self.player(1000, 4, federation='FID')
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_federation_criterion_multi(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            FederationPlayerFilter(
+                [
+                    FederationsFilterOption(
+                        [
+                            Federation('FRA').to_query_param,
+                            Federation('BEL').to_query_param,
+                        ]
+                    )
+                ]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, federation='FRA')
+        p2 = self.player(1000, 5, federation='BEL')
+        p3 = self.player(1000, 6, federation='GER')
+        p4 = self.player(1000, 4, federation='FID')
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_ffe_league_criterion_single(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            FfeLeaguePlayerFilter([FfeLeaguesFilterOption(['BRE'])])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, ffe_league='BRE')
+        p2 = self.player(1000, 5, ffe_league='BRE')
+        p3 = self.player(1000, 6, ffe_league='IDF')
+        p4 = self.player(1000, 4, ffe_league='BFC')
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_ffe_league_criterion_multi(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            FfeLeaguePlayerFilter([FfeLeaguesFilterOption(['BRE', 'BFC'])])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, ffe_league='BRE')
+        p2 = self.player(1000, 5, ffe_league='BFC')
+        p3 = self.player(1000, 6, ffe_league='IDF')
+        p4 = self.player(1000, 4, ffe_league='CRS')
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_rating_type_criterion_single(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            RatingTypePlayerFilter(
+                [RatingTypesFilterOption([PlayerRatingType.ESTIMATED.value])]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, rating_type=PlayerRatingType.ESTIMATED)
+        p2 = self.player(1000, 5, rating_type=PlayerRatingType.ESTIMATED)
+        p3 = self.player(1000, 6, rating_type=PlayerRatingType.FIDE)
+        p4 = self.player(1000, 4, rating_type=PlayerRatingType.NATIONAL)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)
+
+    def test_rating_type_criterion_multi(self):
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        criterion = self.stored_criterion(
+            RatingTypePlayerFilter(
+                [
+                    RatingTypesFilterOption(
+                        [
+                            PlayerRatingType.FIDE.value,
+                            PlayerRatingType.NATIONAL.value,
+                        ]
+                    )
+                ]
+            )
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, rating_type=PlayerRatingType.FIDE)
+        p2 = self.player(1000, 5, rating_type=PlayerRatingType.NATIONAL)
+        p3 = self.player(1000, 6, rating_type=PlayerRatingType.ESTIMATED)
+        p4 = self.player(1000, 4, rating_type=PlayerRatingType.ESTIMATED)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, second = self.get_prizes()
+        self.assert_has_prize(p1, second, prizes)
+        self.assert_has_prize(p2, first, prizes)
+        self.assert_has_no_prize(p3, prizes)
+        self.assert_has_no_prize(p4, prizes)

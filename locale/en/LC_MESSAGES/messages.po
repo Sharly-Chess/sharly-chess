@@ -385,6 +385,9 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
+msgid "At least one rating type is expected."
+msgstr ""
+
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
@@ -426,9 +429,6 @@ msgid "Auto-upload:"
 msgstr ""
 
 msgid "Automatic"
-msgstr ""
-
-msgid "Automatically launch a browser when starting the server"
 msgstr ""
 
 msgid "Average"
@@ -482,6 +482,9 @@ msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
 msgstr "Bd."
+
+msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
+msgstr ""
 
 msgid "Berger"
 msgstr ""
@@ -728,6 +731,9 @@ msgstr ""
 msgid "Choose at least one league."
 msgstr ""
 
+msgid "Choose at least one rating type."
+msgstr ""
+
 msgid "Choose the columns displayed."
 msgstr ""
 
@@ -848,19 +854,16 @@ msgstr ""
 msgid "Connections ChessEvent"
 msgstr ""
 
-msgid "Console and logs"
-msgstr ""
-
 msgid "Console formatting"
 msgstr ""
 
 msgid "Console logging level"
 msgstr ""
 
-msgid "Console logging level:"
+msgid "Console logging level: {console_log_level}"
 msgstr ""
 
-msgid "Console logging level: {console_log_level}"
+msgid "Console logs"
 msgstr ""
 
 msgid "Contact and registration"
@@ -887,6 +890,12 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
+msgid "Create a Prize Category now to continue."
+msgstr ""
+
+msgid "Create a Prize Group now to get started."
+msgstr ""
+
 msgid "Create a category"
 msgstr ""
 
@@ -897,9 +906,6 @@ msgid "Create a display controller now to get started."
 msgstr ""
 
 msgid "Create a family now to get started."
-msgstr ""
-
-msgid "Create a prize category now to get started."
 msgstr ""
 
 msgid "Create a prize group"
@@ -1230,21 +1236,6 @@ msgstr ""
 msgid "Do not assign zero-point byes"
 msgstr ""
 
-msgid "Do not enable experimental features"
-msgstr ""
-
-msgid "Do not show the date and time on the console"
-msgstr ""
-
-msgid "Do not show the logging level on the console"
-msgstr ""
-
-msgid "Do not use color on the console"
-msgstr ""
-
-msgid "Do nothing"
-msgstr ""
-
 msgid "Do you want to allow manual pairings for this round?"
 msgstr ""
 
@@ -1485,6 +1476,9 @@ msgstr ""
 msgid "EXEMPT"
 msgstr ""
 
+msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgstr ""
+
 msgid "Edit"
 msgstr ""
 
@@ -1576,12 +1570,6 @@ msgid "Elo step (handicap):"
 msgstr ""
 
 msgid "Email:"
-msgstr ""
-
-msgid "Enable experimental features"
-msgstr ""
-
-msgid "Enable experimental features to benefit from the very last (experimental!) features."
 msgstr ""
 
 msgid "Enable/disable the details of events on the cards below."
@@ -2032,6 +2020,9 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
+msgid "General"
+msgstr ""
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2172,6 +2163,9 @@ msgid "Include greater categories"
 msgstr ""
 
 msgid "Include lower categories"
+msgstr ""
+
+msgid "Include players of these rating types."
 msgstr ""
 
 msgid "Include players of these categories."
@@ -2342,7 +2336,7 @@ msgstr ""
 msgid "Last upload"
 msgstr ""
 
-msgid "Launch browser:"
+msgid "Launch a browser on startup"
 msgstr ""
 
 msgid "Launching the browser on server startup"
@@ -2400,6 +2394,9 @@ msgid "Local source databases settings have been updated."
 msgstr ""
 
 msgid "Location"
+msgstr ""
+
+msgid "Logging level"
 msgstr ""
 
 msgid "Loss"
@@ -2654,6 +2651,12 @@ msgstr ""
 msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
 msgstr ""
 
+msgid "No Prize Category"
+msgstr ""
+
+msgid "No Prize Group"
+msgstr ""
+
 msgid "No alert message"
 msgstr ""
 
@@ -2751,9 +2754,6 @@ msgid "No players updated."
 msgstr ""
 
 msgid "No players."
-msgstr ""
-
-msgid "No prize category"
 msgstr ""
 
 msgid "No prizes defined."
@@ -2899,6 +2899,9 @@ msgstr ""
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr ""
 
+msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
+msgstr ""
+
 msgid "One event found, press Enter (Q to quit): "
 msgstr ""
 
@@ -2955,6 +2958,9 @@ msgid "Opponent Elo"
 msgstr ""
 
 msgid "Opponent Elo [Pts]"
+msgstr ""
+
+msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
@@ -3600,6 +3606,12 @@ msgstr ""
 msgid "Rating splitting groups B and C."
 msgstr ""
 
+msgid "Rating type"
+msgstr ""
+
+msgid "Rating types"
+msgstr ""
+
 msgid "Rating:"
 msgstr ""
 
@@ -3899,6 +3911,9 @@ msgstr ""
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
+msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
+msgstr ""
+
 msgid "Sharly Chess project"
 msgstr ""
 
@@ -3911,16 +3926,10 @@ msgstr ""
 msgid "Show all the players"
 msgstr ""
 
-msgid "Show the date and time on the console"
+msgid "Show the date and time"
 msgstr ""
 
-msgid "Show the date and time on the console:"
-msgstr ""
-
-msgid "Show the logging level on the console"
-msgstr ""
-
-msgid "Show the logging level on the console:"
+msgid "Show the logging level"
 msgstr ""
 
 msgid "Show warnings"
@@ -3947,7 +3956,7 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to file if file output is enabled)."
+msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr ""
 
 msgid "Single Screens"
@@ -4029,9 +4038,6 @@ msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
-msgstr ""
-
-msgid "Startup"
 msgstr ""
 
 msgid "Status"
@@ -4250,7 +4256,7 @@ msgstr ""
 msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
 msgstr ""
 
-msgid "The minimum level of logs that will be printed on the console (all the logging levels are always printed to file if file output is enabled)."
+msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4875,9 +4881,6 @@ msgstr ""
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-msgid "USE AT YOUR OWN RISKS!"
-msgstr ""
-
 msgid "Unable to create Papi files."
 msgstr ""
 
@@ -5042,10 +5045,7 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
-msgid "Use color on the console"
-msgstr ""
-
-msgid "Use colors on the console:"
+msgid "Use log-level specific colors"
 msgstr ""
 
 msgid "Use no timer"
@@ -5455,7 +5455,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Shared prizes (%(prize_sharing)s)"
-#~ msgstr ""
 

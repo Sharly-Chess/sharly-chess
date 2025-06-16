@@ -12,14 +12,10 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` ADD `experimental` INTEGER')
 
     def backward(self):
-        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `experimental`')
-        self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN `console_show_level`'
-        )
-        self.database.execute(
-            'ALTER TABLE `tournament` DROP COLUMN `console_show_date`'
-        )
-        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `console_color`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `experimental`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `console_show_level`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `console_show_date`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `console_color`')
         self.database.execute(
             'ALTER TABLE `info` RENAME COLUMN `console_log_level` TO `log_level`'
         )

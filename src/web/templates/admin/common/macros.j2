@@ -204,6 +204,7 @@ with_indicator: display a loading indicator, optional
     number_min='',
     number_max='',
     number_step='',
+    info='',
     disabled=false,
     hx_get='',
     hx_post='',
@@ -408,6 +409,12 @@ with_indicator: display a loading indicator, optional
                     {% endif %}
                 {% endif %}
             </div>
+            {% if info %}
+                <i
+                    class="bi bi-info-circle-fill"
+                    {{ macros.tooltip_attributes('info', info, 'top') }}
+                ></i>
+            {% endif %}
             {% if dropdown_id %}
                 <ul id="{{ dropdown_id }}" class="dropdown-menu p-0">
                     {% if dropdown_item %}
@@ -672,6 +679,7 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     placeholder='NO PLACEHOLDER',
     help_text='NO HELP TEXT',
+    info='',
     data={},
     errors={},
     error=false,
@@ -683,6 +691,7 @@ with_indicator: display a loading indicator, optional
         label=label,
         placeholder=placeholder,
         help_text=help_text,
+        info=info,
         data=data,
         errors=errors,
         error=error,

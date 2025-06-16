@@ -1,3 +1,4 @@
+from datetime import datetime
 import weakref
 from collections import Counter
 from collections.abc import Collection
@@ -37,6 +38,7 @@ from utils.enum import (
     TournamentRating,
     TrfType,
     PlayerCategory,
+    PlayerRatingType,
 )
 from database.access.papi.papi_database import (
     PapiDatabase,
@@ -181,6 +183,14 @@ class Tournament:
     @property
     def stop_timestamp(self) -> float:
         return self.stored_tournament.stop or self.event.stop
+
+    @property
+    def start_datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.start_timestamp)
+
+    @property
+    def stop_datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.stop_timestamp)
 
     @property
     def location(self) -> str | None:
@@ -559,6 +569,13 @@ class Tournament:
         counter = Counter[PlayerCategory]()
         for player in self.players:
             counter[player.category] += 1
+        return counter
+
+    @cached_property
+    def rating_type_counts(self) -> Counter[PlayerRatingType]:
+        counter = Counter[PlayerRatingType]()
+        for player in self.players:
+            counter[player.rating_type] += 1
         return counter
 
     @property
