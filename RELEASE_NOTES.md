@@ -17,6 +17,10 @@ English version below
 - Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
 
 
+### Gestion des écrans
+
+- Ajout de la possibilité de ne pas afficher les adversaires sur les écrans d'appariements par ordre alphabétique (2.8.0)
+
 ### Gestion des prix
 
 - Ajout de l'onglet Prix avec la définition et le calcul des prix (2.8.0)
@@ -39,6 +43,10 @@ English version below
 - Added check-in lists (2.8.0)
 - Updated federation flags (2.8.0)
 - Calculation of the players' category relative to the date of the tournament (2.8.0)
+
+### Screens management
+
+- Added the possibility not to show the opponents on pairings screens by alphabetical order (2.8.0)
 
 ### Prizes management
 

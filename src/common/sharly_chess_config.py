@@ -319,6 +319,9 @@ class SharlyChessConfig(metaclass=Singleton):
     # True to show unpaired players on players screens (may be changed for each screen).
     default_players_show_unpaired: bool = True
 
+    # True to show the players' opponent on players screens (may be changed for each screen).
+    default_players_show_opponent: bool = True
+
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 15
 

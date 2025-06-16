@@ -156,6 +156,12 @@ class Family:
         return self.stored_family.players_show_unpaired
 
     @property
+    def players_show_opponent(self) -> bool:
+        if self.stored_family.players_show_opponent is None:
+            return SharlyChessConfig.default_players_show_opponent
+        return self.stored_family.players_show_opponent
+
+    @property
     def ranking_crosstable(self) -> bool:
         match self.type:
             case ScreenType.RANKING:

@@ -49,6 +49,16 @@
                         {{ _('(by default)') }}
                     {% endif %}
                 </div>
+                <div>
+                    {% if family.players_show_opponent %}
+                        {{ _('Players\' opponent: displayed') }}
+                    {% else %}
+                        {{ _('Players\' opponent: hidden') }}
+                    {% endif %}
+                    {% if family.stored_family.players_show_opponent is none %}
+                        {{ _('(by default)') }}
+                    {% endif %}
+                </div>
             {% endif %}
             {% if family.type == 'ranking' %}
                 <div class="{% if family.ranking_round %}text-secondary{% endif %}">

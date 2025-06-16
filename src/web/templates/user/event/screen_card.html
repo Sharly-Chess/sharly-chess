@@ -45,6 +45,14 @@
                 {% endif %}
                 {% if screen.stored_screen.players_show_unpaired is none %}({{ _('by default') }}){% endif %}
             </div>
+            <div>
+                {% if screen.players_show_unpaired %}
+                    {{ _('Players\' opponent: displayed') }}
+                {% else %}
+                    {{ _('Players\' opponent: hidden') }}
+                {% endif %}
+                {% if screen.stored_screen.players_show_opponent is none %}({{ _('by default') }}){% endif %}
+            </div>
         {% endif %}
         {% if screen.type == 'results' %}
             <div>

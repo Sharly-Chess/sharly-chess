@@ -220,6 +220,20 @@ class BaseAdminController(BaseController):
         return options
 
     @staticmethod
+    def _get_players_show_opponent_options() -> dict[str, str]:
+        options: dict[str, str] = {
+            '': '-',
+            'off': _('Display only color and board number'),
+            'on': _('Display color, board number and opponent'),
+        }
+        options[''] = _('By default - {option}').format(
+            option=options[
+                'on' if SharlyChessConfig.default_players_show_opponent else 'off'
+            ]
+        )
+        return options
+
+    @staticmethod
     def _get_ranking_crosstable_options() -> dict[str, str]:
         options: dict[str, str] = {
             'on': _('Crosstable'),

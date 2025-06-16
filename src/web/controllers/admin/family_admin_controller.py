@@ -101,6 +101,7 @@ class FamilyAdminController(BaseEventAdminController):
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
+        players_show_opponent: bool | None = None
         ranking_crosstable: bool = False
         ranking_round: int | None = None
         ranking_min_points: float | None = None
@@ -225,8 +226,11 @@ class FamilyAdminController(BaseEventAdminController):
                             data, 'input_exit_button'
                         )
                     case 'players':
-                        players_show_unpaired = WebContext.form_data_to_bool(
+                        players_show_unpaired = WebContext.form_data_to_bool_or_none(
                             data, 'players_show_unpaired'
+                        )
+                        players_show_opponent = WebContext.form_data_to_bool_or_none(
+                            data, 'players_show_opponent'
                         )
                     case 'ranking':
                         ranking_crosstable = WebContext.form_data_to_bool(
@@ -312,6 +316,7 @@ class FamilyAdminController(BaseEventAdminController):
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
+            players_show_opponent=players_show_opponent,
             ranking_crosstable=ranking_crosstable,
             ranking_round=ranking_round,
             ranking_min_points=ranking_min_points,
@@ -373,6 +378,7 @@ class FamilyAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool | None = None
+                    players_show_opponent: bool | None = None
                     ranking_crosstable: bool = False
                     ranking_round: int | None = None
                     ranking_min_points: float | None = None
@@ -434,6 +440,7 @@ class FamilyAdminController(BaseEventAdminController):
                                 case ScreenType.INPUT:
                                     input_exit_button = web_context.admin_family.stored_family.input_exit_button
                                 case ScreenType.PLAYERS:
+                                    players_show_opponent = web_context.admin_family.stored_family.players_show_opponent
                                     players_show_unpaired = web_context.admin_family.stored_family.players_show_unpaired
                                 case ScreenType.RANKING:
                                     ranking_crosstable = web_context.admin_family.stored_family.ranking_crosstable
@@ -498,6 +505,9 @@ class FamilyAdminController(BaseEventAdminController):
                         'players_show_unpaired': WebContext.value_to_form_data(
                             players_show_unpaired
                         ),
+                        'players_show_opponent': WebContext.value_to_form_data(
+                            players_show_opponent
+                        ),
                         'ranking_crosstable': WebContext.value_to_form_data(
                             ranking_crosstable
                         ),
@@ -526,6 +536,7 @@ class FamilyAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(web_context.admin_event),
                     'input_exit_button_options': cls._get_input_exit_button_options(),
                     'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
+                    'players_show_opponent_options': cls._get_players_show_opponent_options(),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'modal': modal,
                     'action': action,
