@@ -103,32 +103,37 @@ class BaseEventAdminController(BaseAdminController):
         }
         nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {
             'admin-event-config-tab': {
-                'title': admin_event.uniq_id,
+                'title': _('Configuration'),
                 'template': 'event/tab.html',
-                'icon_class': 'bi-gear',
+                'icon_class': 'bi-gear-fill',
             },
             'admin-event-tournaments-tab': {
                 'title': _('Tournaments ({num})').format(
                     num=len(admin_event.tournaments_by_id) or '-'
                 ),
                 'template': 'tournaments/tab.html',
+                'icon_class': 'bi-diagram-3-fill',
             },
             'admin-event-players-tab': {
                 'title': _('Players ({num})').format(
                     num=admin_event.player_count or '-'
                 ),
                 'template': 'players/tab.html',
+                'icon_class': 'bi-people-fill',
             },
             'admin-event-pairings-tab': {
                 'title': _('Pairings'),
                 'template': 'pairings/tab.html',
+                'icon_class': 'bi-arrow-left-right',
             },
             'admin-event-prizes-tab': {
                 'title': _('Prizes'),
                 'template': 'prizes/tab.html',
+                'icon_class': 'bi-trophy-fill',
             },
             'admin-event-views': {
                 'title': _('Screens'),
+                'icon_class': 'bi-display-fill',
                 'submenu': {
                     'admin-event-screens-tab': {
                         'title': _('Single Screens ({num})').format(
@@ -153,7 +158,6 @@ class BaseEventAdminController(BaseAdminController):
                             num=len(admin_event.timers_by_id) or '-'
                         ),
                         'template': 'timers/tab.html',
-                        'separator': 'true',
                     },
                     'admin-event-display-controllers-tab': {
                         'title': _('Display controllers ({num})').format(

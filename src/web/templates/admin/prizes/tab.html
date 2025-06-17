@@ -1,7 +1,7 @@
-{% extends '../../common/cards_container.html' %}
+{% extends '../../common/admin_cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Prizes') }}{{ macros.doc_icon('prizes', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('prizes', 'fs-4') }}
     {% if admin_prize_group %}
         {{ macros.refresh_listener(
             hx_get=url_for(
@@ -11,12 +11,20 @@
                 prize_group_id=admin_prize_group.id,
             ),
         ) }}
+    {% elif admin_tournament %}
+        {{ macros.refresh_listener(
+            hx_get=url_for(
+                'admin-event-prizes-tab',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+            )
+        ) }}
     {% endif %}
 {% endblock %}
 
 {% block right_buttons_classes %}d-flex gap-4 align-items-end{% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     <span
         {{ macros.tooltip_attributes(
             'info',
@@ -76,75 +84,15 @@
                 </select>
                 <span
                     {{ macros.tooltip_attributes(
-                        'info', _('Create a prize group for the tournament.'), 'top'
+                        'info', _('Manage the prize groups of the tournament.'), 'top'
                     ) }}
                 >
                     <button
-                        id="prize-group-create-button"
-                        class="prize-group-controls btn btn-sm btn-outline-primary mb-1 ms-1"
-                    >
-                        <i class="bi-plus-circle"></i>
-                    </button>
-                </span>
-                {{ admin_macros.inline_text_form(
-                    'prize-group-create',
-                    name='name',
-                    placeholder=_('E.g.: %(string)s', string=_('My group')),
-                    post_url=url_for(
-                        'admin-prize-group-create',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id
-                    ),
-                    hide=true,
-                ) }}
-                <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('Edit the name of the prize group.'), 'top'
-                    ) }}
-                >
-                    <button
-                        id="prize-group-update-button"
-                        class="prize-group-controls btn btn-sm btn-outline-primary mb-1 ms-1"
-                    >
-                        <i class="bi-pencil-fill"></i>
-                    </button>
-                </span>
-                {{ admin_macros.inline_text_form(
-                    'prize-group-update',
-                    name='name',
-                    placeholder=_('E.g.: %(string)s', string=_('My group')),
-                    value=admin_prize_group.name,
-                    patch_url=url_for(
-                        'admin-prize-group-update',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        prize_group_id=admin_prize_group.id
-                    ),
-                    hide=true,
-                ) }}
-                <script>
-                    $('#prize-group-update-button').click(() => {
-                        $('#prize-group-update-form').css('display', '');
-                        $('.prize-group-controls').css('display', 'none');
-                    });
-                    $('#prize-group-update-cancel-button').click(() => {
-                        $('#prize-group-update-form').css('display', 'none');
-                        $('.prize-group-controls').css('display', '');
-                    });
-                </script>
-                <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('Delete the prize group.'), 'top'
-                    ) }}
-                >
-                    <button
-                        id="prize-group-delete-button"
-                        class="prize-group-controls btn btn-sm btn-outline-danger mb-1 ms-1"
+                        class="btn text-primary"
                         hx-get="{{ url_for(
-                            'admin-prize-group-delete-modal',
+                            'admin-prize-groups-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
-                            prize_group_id=admin_prize_group.id
                         ) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
@@ -152,7 +100,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     >
-                        <i class="bi-trash"></i>
+                        <i class="bi-gear-fill"></i>
                     </button>
                 </span>
             </div>
@@ -168,38 +116,31 @@
                     ) }}
                 {% endif %}
             >
-                <button
-                    id="prize-group-create-button"
-                    class="prize-group-controls btn btn-primary text-nowrap"
+                <form
+                    hx-post="{{ url_for(
+                        'admin-prize-group-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
                     {% if not admin_tournament %}
                         disabled
                     {% endif %}
                 >
-                    <i class="bi-plus-square pe-1"></i>
-                    {{ _('Create a prize group') }}
-                </button>
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        type="submit"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi-plus-square pe-1"></i>
+                        {{ _('Create a prize group') }}
+                    </button>
+                </form>
             </span>
-            {% if admin_tournament %}
-                {{ admin_macros.inline_text_form(
-                    'prize-group-create',
-                    name='name',
-                    placeholder=_('E.g.: %(string)s', string=_('My group')),
-                    post_url=url_for('admin-prize-group-create', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
-                    hide=true,
-                ) }}
-            {% endif %}
         </span>
     {% endif %}
-    <script>
-        $('#prize-group-create-button').click(() => {
-            $('#prize-group-create-form').css('display', '');
-            $('.prize-group-controls').css('display', 'none');
-        });
-        $('#prize-group-create-cancel-button').click(() => {
-            $('#prize-group-create-form').css('display', 'none');
-            $('.prize-group-controls').css('display', '');
-        });
-    </script>
     {% if tournament_options|length > 1 %}
         <select
             name="tournament_id"

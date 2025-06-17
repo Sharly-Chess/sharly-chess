@@ -1,0 +1,7 @@
+{{ admin_macros.select_input(
+    name='players_show_opponent',
+    label=_('Display the players\' opponent:'),
+    help_text=_('When not displaying the players\' opponent (color and board numbers only), less screens are needed (with several columns).'),
+    select_options=players_show_opponent_options,
+    data=data, errors=errors
+) }}

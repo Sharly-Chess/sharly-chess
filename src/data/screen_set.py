@@ -167,6 +167,10 @@ class ScreenSet:
         return self.screen.players_show_unpaired
 
     @property
+    def players_show_opponent(self) -> bool:
+        return self.screen.players_show_opponent
+
+    @property
     def name_for_boards(self) -> str | None:
         if self.tournament.current_round:
             self._extract_boards()

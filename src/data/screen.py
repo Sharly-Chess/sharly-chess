@@ -541,6 +541,22 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
+    def players_show_opponent(self) -> bool:
+        match self.type:
+            case ScreenType.PLAYERS:
+                if self.stored_screen:
+                    if self.stored_screen.players_show_opponent is not None:
+                        return self.stored_screen.players_show_opponent
+                    else:
+                        return SharlyChessConfig.default_players_show_opponent
+                else:
+                    if self.family is None:
+                        raise RuntimeError('Family reference unexpectedly None')
+                    return self.family.players_show_opponent
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
     def icon_str(self) -> str:
         return self.type.icon_str
 

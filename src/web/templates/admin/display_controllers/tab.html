@@ -1,13 +1,13 @@
-{% extends '../../common/cards_container.html' %}
+{% extends '../../common/admin_cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Display controllers') }}{{ macros.doc_icon('screens-display-controllers', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('screens-display-controllers', '') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-display-controllers-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
 {% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     <span
         {{ macros.tooltip_attributes(
             'info',

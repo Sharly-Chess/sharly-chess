@@ -197,9 +197,16 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int | None,
         prize_group_id: int | None,
     ) -> Template | ClientRedirect:
-        return self._admin_event_prizes_render(
-            PrizeAdminWebContext(request, event_uniq_id, tournament_id, prize_group_id)
-        )
+        web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
+        if web_context.error:
+            return web_context.error
+        if prize_group_id:
+            tournament = web_context.get_admin_tournament()
+            if prize_group_id in tournament.prize_groups_by_id:
+                web_context.admin_prize_group = tournament.prize_groups_by_id[
+                    prize_group_id
+                ]
+        return self._admin_event_prizes_render(web_context)
 
     # -------------------------------------------------------------------------
     # Prize groups
@@ -212,10 +219,6 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_group_create(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template | ClientRedirect:
@@ -223,21 +226,36 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         tournament = web_context.get_admin_tournament()
+        first_group = len(tournament.prize_groups) == 0
+        if first_group:
+            name = _('Main group')
+        else:
+            name = _('Side group')
+            group_names = [group.name for group in tournament.prize_groups]
+            if name in group_names:
+                index = 1
+                while f'{name} ({index})' in group_names:
+                    index += 1
+                name = f'{name} ({index})'
         prize_group = tournament.add_prize_group(
             StoredPrizeGroup(
                 id=None,
                 tournament_id=tournament.id,
-                name=WebContext.form_data_to_str(data, 'name') or '',
+                name=name,
             )
         )
-        web_context.admin_prize_group = prize_group
-        Message.success(
-            request,
-            _('Prize group [{prize_group}] successfully created.').format(
-                prize_group=prize_group.name
-            ),
-        )
-        return self._admin_event_prizes_render(web_context)
+        template_context = {}
+        if first_group:
+            web_context.admin_prize_group = prize_group
+            Message.success(
+                request,
+                _('Prize group [{prize_group}] successfully created.').format(
+                    prize_group=prize_group.name
+                ),
+            )
+        else:
+            template_context = {'modal': 'prize_groups'}
+        return self._admin_event_prizes_render(web_context, template_context)
 
     @patch(
         path=(
@@ -263,22 +281,11 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         prize_group = web_context.get_admin_prize_group()
-        previous_name = prize_group.name
         prize_group.stored_prize_group.name = (
             WebContext.form_data_to_str(data, 'name') or ''
         )
         prize_group.update()
-        Message.success(
-            request,
-            _(
-                'Prize group [{prize_group_old}] successfully'
-                ' renamed to [{prize_group_new}].'
-            ).format(
-                prize_group_old=previous_name,
-                prize_group_new=prize_group.name,
-            ),
-        )
-        return self._admin_event_prizes_render(web_context)
+        return self._admin_event_prizes_render(web_context, {'modal': 'prize_groups'})
 
     @delete(
         path=(
@@ -301,16 +308,23 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         tournament = web_context.get_admin_tournament()
-        prize_group = web_context.get_admin_prize_group()
         tournament.delete_prize_group(prize_group_id)
-        Message.success(
-            request,
-            _('Prize group [{prize_group}] successfully deleted.').format(
-                prize_group=prize_group.name
-            ),
+        return self._admin_event_prizes_render(web_context, {'modal': 'prize_groups'})
+
+    @get(
+        path='/admin/prizes/prize-groups-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-prize-groups-modal',
+    )
+    async def htmx_admin_prize_groups_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template | ClientRedirect:
+        return self._admin_event_prizes_render(
+            PrizeAdminWebContext(request, event_uniq_id, tournament_id),
+            {'modal': 'prize_groups'},
         )
-        web_context.set_default_prize_group()
-        return self._admin_event_prizes_render(web_context)
 
     @get(
         path=(
@@ -328,10 +342,7 @@ class PrizeAdminController(BaseEventAdminController):
     ) -> Template | ClientRedirect:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(request, event_uniq_id, tournament_id, prize_group_id),
-            {
-                'modal': 'prize_group',
-                'action': FormAction.DELETE,
-            },
+            {'modal': 'prize_group_delete'},
         )
 
     # -------------------------------------------------------------------------

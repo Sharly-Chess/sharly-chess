@@ -1,13 +1,13 @@
-{% extends '../../common/cards_container.html' %}
+{% extends '../../common/admin_cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Tournaments') }}{{ macros.doc_icon('tournaments', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('tournaments', 'fs-4') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id)
     ) }}
 {% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     {% with id='admin-tournaments-show-details', name='admin_tournaments_show_details', show=admin_tournaments_show_details %}
         <div
             class="form-check form-switch d-inline-block pe-3 mt-2"

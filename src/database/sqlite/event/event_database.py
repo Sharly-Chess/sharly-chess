@@ -463,6 +463,7 @@ class EventDatabase(MigrationDatabase):
                                 'timer_uniq_id',
                                 'input_exit_button',
                                 'players_show_unpaired',
+                                'players_show_opponent',
                                 'results_limit',
                                 'results_tournament_uniq_ids',
                                 'ranking_crosstable',
@@ -491,6 +492,7 @@ class EventDatabase(MigrationDatabase):
                         type_: str = screen_dict.get('type', None)
                         input_exit_button: bool | None = None
                         players_show_unpaired: bool | None = None
+                        players_show_opponent: bool | None = None
                         results_limit: int | None = None
                         results_max_age: int | None = None
                         results_tournament_ids: list[int] = []
@@ -506,7 +508,12 @@ class EventDatabase(MigrationDatabase):
                                 )
                             case 'players':
                                 players_show_unpaired = screen_dict.get(
-                                    'players_show_unpaired', False
+                                    'players_show_unpaired',
+                                    SharlyChessConfig.default_players_show_unpaired,
+                                )
+                                players_show_opponent = screen_dict.get(
+                                    'players_show_opponent',
+                                    SharlyChessConfig.default_players_show_opponent,
                                 )
                             case 'results':
                                 results_limit: int = screen_dict.get(
@@ -574,6 +581,7 @@ class EventDatabase(MigrationDatabase):
                                 timer_id=timer_id,
                                 input_exit_button=input_exit_button,
                                 players_show_unpaired=players_show_unpaired,
+                                players_show_opponent=players_show_opponent,
                                 results_limit=results_limit,
                                 results_max_age=results_max_age,
                                 results_tournament_ids=results_tournament_ids,
@@ -649,6 +657,7 @@ class EventDatabase(MigrationDatabase):
                                 'timer_uniq_id',
                                 'input_exit_button',
                                 'players_show_unpaired',
+                                'players_show_opponent',
                                 'ranking_crosstable',
                                 'name',
                                 'columns',
@@ -677,6 +686,7 @@ class EventDatabase(MigrationDatabase):
                         ]
                         input_exit_button: bool | None = None
                         players_show_unpaired: bool | None = None
+                        players_show_opponent: bool | None = None
                         ranking_crosstable: bool = False
                         match type_:
                             case 'boards':
@@ -687,7 +697,12 @@ class EventDatabase(MigrationDatabase):
                                 )
                             case 'players':
                                 players_show_unpaired = family_dict.get(
-                                    'players_show_unpaired', False
+                                    'players_show_unpaired',
+                                    SharlyChessConfig.default_players_show_unpaired,
+                                )
+                                players_show_opponent = family_dict.get(
+                                    'players_show_opponent',
+                                    SharlyChessConfig.default_players_show_opponent,
                                 )
                             case 'ranking':
                                 ranking_crosstable = family_dict.get(
@@ -718,6 +733,7 @@ class EventDatabase(MigrationDatabase):
                                 timer_id=timer_id,
                                 input_exit_button=input_exit_button,
                                 players_show_unpaired=players_show_unpaired,
+                                players_show_opponent=players_show_opponent,
                                 ranking_crosstable=ranking_crosstable,
                                 ranking_round=None,
                                 ranking_min_points=None,
@@ -1828,6 +1844,9 @@ class EventDatabase(MigrationDatabase):
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
+            players_show_opponent=cls.load_bool_or_none_from_database_field(
+                row.get('players_show_opponent', None)
+            ),
             ranking_crosstable=cls.load_bool_from_database_field(
                 row['ranking_crosstable']
             ),
@@ -1884,6 +1903,7 @@ class EventDatabase(MigrationDatabase):
             'timer_id',
             'input_exit_button',
             'players_show_unpaired',
+            'players_show_opponent',
             'ranking_crosstable',
             'ranking_round',
             'ranking_min_points',
@@ -1910,6 +1930,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.timer_id,
             stored_family.input_exit_button,
             stored_family.players_show_unpaired,
+            stored_family.players_show_opponent,
             stored_family.ranking_crosstable,
             stored_family.ranking_round,
             stored_family.ranking_min_points,
@@ -1992,6 +2013,9 @@ class EventDatabase(MigrationDatabase):
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
+            players_show_opponent=cls.load_bool_or_none_from_database_field(
+                row['players_show_opponent']
+            ),
             results_limit=row['results_limit'],
             results_max_age=row['results_max_age'],
             results_tournament_ids=cls.load_json_from_database_field(
@@ -2053,6 +2077,7 @@ class EventDatabase(MigrationDatabase):
             'public',
             'input_exit_button',
             'players_show_unpaired',
+            'players_show_opponent',
             'columns',
             'font_size',
             'menu_link',
@@ -2079,6 +2104,9 @@ class EventDatabase(MigrationDatabase):
             stored_screen.public,
             stored_screen.input_exit_button if stored_screen.type == 'input' else None,
             stored_screen.players_show_unpaired
+            if stored_screen.type == 'players'
+            else None,
+            stored_screen.players_show_opponent
             if stored_screen.type == 'players'
             else None,
             stored_screen.columns,
