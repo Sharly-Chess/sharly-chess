@@ -10,7 +10,7 @@ class Migration(BaseMigration):
         self.database.execute(
             'CREATE TABLE `computer` ('
             '    `id` INTEGER NOT NULL,'
-            '    `id` INTEGER NOT NULL DEFAULT 0,'
+            '    `locked` INTEGER NOT NULL DEFAULT 0,'
             '    `ip` TEXT,'
             '    PRIMARY KEY(`id` AUTOINCREMENT)'
             ')'
@@ -54,7 +54,7 @@ class Migration(BaseMigration):
             ),
         ):
             self.database.execute(
-                'INSERT INTO `computer`(`computer_id`, `role_id`, `locked`) VALUES (?, ?, ?)',
+                'INSERT INTO `computer_permission`(`computer_id`, `role_id`, `locked`) VALUES (?, ?, ?)',
                 computer_permission_data,
             )
         self.database.execute(
