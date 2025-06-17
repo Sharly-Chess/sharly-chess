@@ -23,6 +23,7 @@ English version below
 ### Gestion des tournois
 
 - Ajout des exports PGN et TRF 16 (2.7.0)
+- Correction de la duplication des tie-breaks des tournois (2.7.9)
 
 ### Gestion des joueur·euses
 
@@ -92,6 +93,7 @@ English version below
 ### Tournaments management
 
 - Added PGN and TRF 16 exports (2.7.0)
+- Fixed the duplication of tournament tie-breaks (2.7.9)
 
 ### Players management
 
