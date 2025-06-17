@@ -241,6 +241,9 @@ msgstr ""
 msgid "Add a family of screens to enter the results."
 msgstr ""
 
+msgid "Add a group to the list."
+msgstr ""
+
 msgid "Add a hour"
 msgstr ""
 
@@ -310,6 +313,9 @@ msgstr ""
 msgid "All"
 msgstr ""
 
+msgid "All Events"
+msgstr ""
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr ""
 
@@ -340,10 +346,10 @@ msgstr ""
 msgid "Arbiter interface (private access)"
 msgstr ""
 
-msgid "Archived event"
+msgid "Archived ({num})"
 msgstr ""
 
-msgid "Archived events ({num})"
+msgid "Archived event"
 msgstr ""
 
 msgid "Are you sure you wish to proceed?"
@@ -911,9 +917,6 @@ msgstr ""
 msgid "Create a prize group"
 msgstr ""
 
-msgid "Create a prize group for the tournament."
-msgstr ""
-
 msgid "Create a rotator"
 msgstr ""
 
@@ -981,6 +984,9 @@ msgid "Crosstable %f-%l"
 msgstr ""
 
 msgid "Crosstable after round #{round}"
+msgstr ""
+
+msgid "Current ({num})"
 msgstr ""
 
 msgid "Current events ({num})"
@@ -1093,9 +1099,6 @@ msgstr ""
 msgid "Delete the display controller."
 msgstr ""
 
-msgid "Delete the prize group."
-msgstr ""
-
 msgid "Delete the rotator."
 msgstr ""
 
@@ -1200,9 +1203,6 @@ msgid "Display controller [{uniq_id}] already exists."
 msgstr ""
 
 msgid "Display controller creation"
-msgstr ""
-
-msgid "Display controllers"
 msgstr ""
 
 msgid "Display controllers ({num})"
@@ -1488,9 +1488,6 @@ msgstr ""
 msgid "Edit the hours of the timer"
 msgstr ""
 
-msgid "Edit the name of the prize group."
-msgstr ""
-
 msgid "Edit the player's properties."
 msgstr ""
 
@@ -1657,6 +1654,9 @@ msgid "Event creation"
 msgstr ""
 
 msgid "Event: {event_name}"
+msgstr ""
+
+msgid "Events"
 msgstr ""
 
 msgid "Events (public access)"
@@ -2067,6 +2067,9 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
+msgid "Manage the prize groups of the tournament."
+msgstr ""
+
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
@@ -2083,6 +2086,9 @@ msgid "Highlight"
 msgstr ""
 
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
+msgstr ""
+
+msgid "Home page"
 msgstr ""
 
 msgid "Hort system"
@@ -2165,10 +2171,10 @@ msgstr ""
 msgid "Include lower categories"
 msgstr ""
 
-msgid "Include players of these rating types."
+msgid "Include players of these categories."
 msgstr ""
 
-msgid "Include players of these categories."
+msgid "Include players of these rating types."
 msgstr ""
 
 msgid "Incorrect installation, exiting."
@@ -2416,6 +2422,9 @@ msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Main category"
+msgstr ""
+
+msgid "Main group"
 msgstr ""
 
 msgid "Make visible on FFE site"
@@ -2754,6 +2763,9 @@ msgid "No players updated."
 msgstr ""
 
 msgid "No players."
+msgstr ""
+
+msgid "No prize groups."
 msgstr ""
 
 msgid "No prizes defined."
@@ -3101,6 +3113,9 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
+msgid "Passed ({num})"
+msgstr ""
+
 msgid "Passed events ({num})"
 msgstr ""
 
@@ -3151,6 +3166,9 @@ msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Player / Elo"
+msgstr ""
+
+msgid "Player Databases"
 msgstr ""
 
 msgid "Player Elo"
@@ -3436,13 +3454,7 @@ msgstr ""
 msgid "Prize edition"
 msgstr ""
 
-msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
-msgstr ""
-
 msgid "Prize group [{prize_group}] successfully created."
-msgstr ""
-
-msgid "Prize group [{prize_group}] successfully deleted."
 msgstr ""
 
 msgid "Prize groups"
@@ -3728,9 +3740,6 @@ msgstr ""
 msgid "Rotator creation"
 msgstr ""
 
-msgid "Rotators"
-msgstr ""
-
 msgid "Rotators ({num})"
 msgstr ""
 
@@ -3848,9 +3857,6 @@ msgstr ""
 msgid "Screen [{uniq_id}] already exists."
 msgstr ""
 
-msgid "Screen families"
-msgstr ""
-
 msgid "Screen families:"
 msgstr ""
 
@@ -3897,6 +3903,9 @@ msgstr ""
 
 #, python-format
 msgid "Selection: %(selection)s"
+msgstr ""
+
+msgid "Settings"
 msgstr ""
 
 msgid "Share the prizes"
@@ -3959,7 +3968,7 @@ msgstr ""
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr ""
 
-msgid "Single Screens"
+msgid "Side group"
 msgstr ""
 
 msgid "Single Screens ({num})"
@@ -4806,9 +4815,6 @@ msgstr ""
 msgid "Tournament: not set"
 msgstr ""
 
-msgid "Tournaments"
-msgstr ""
-
 msgid "Tournaments ({num})"
 msgstr ""
 
@@ -4989,6 +4995,9 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
+msgid "Upcoming ({num})"
+msgstr ""
+
 msgid "Upcoming events ({num})"
 msgstr ""
 
@@ -5022,6 +5031,9 @@ msgid "Upload link not found, check that the tournament is not marked as finishe
 msgstr ""
 
 msgid "Upload rules"
+msgstr ""
+
+msgid "Upload to the FFE"
 msgstr ""
 
 msgid "Upload tournaments now"
@@ -5455,4 +5467,37 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Archived events ({num})"
+#~ msgstr ""
+
+#~ msgid "Create a prize group for the tournament."
+#~ msgstr ""
+
+#~ msgid "Delete the prize group."
+#~ msgstr ""
+
+#~ msgid "Display controllers"
+#~ msgstr ""
+
+#~ msgid "Edit the name of the prize group."
+#~ msgstr ""
+
+#~ msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
+#~ msgstr ""
+
+#~ msgid "Prize group [{prize_group}] successfully deleted."
+#~ msgstr ""
+
+#~ msgid "Rotators"
+#~ msgstr ""
+
+#~ msgid "Screen families"
+#~ msgstr ""
+
+#~ msgid "Single Screens"
+#~ msgstr ""
+
+#~ msgid "Tournaments"
+#~ msgstr ""
 

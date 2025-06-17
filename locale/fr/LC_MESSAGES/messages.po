@@ -241,6 +241,9 @@ msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage du c
 msgid "Add a family of screens to enter the results."
 msgstr "Ajouter une famille d'écrans à l'évènement."
 
+msgid "Add a group to the list."
+msgstr "Ajouter un groupe à la liste"
+
 msgid "Add a hour"
 msgstr "Ajouter un horaire"
 
@@ -310,6 +313,9 @@ msgstr "Message d'alerte :"
 msgid "All"
 msgstr "Tous"
 
+msgid "All Events"
+msgstr "Tous les évènements"
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
@@ -340,11 +346,11 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Arbiter interface (private access)"
 msgstr "Arbitrage (accès privé)"
 
+msgid "Archived ({num})"
+msgstr "Archivés ({num})"
+
 msgid "Archived event"
 msgstr "Évènement archivé"
-
-msgid "Archived events ({num})"
-msgstr "Évènements archivés ({num})"
 
 msgid "Are you sure you wish to proceed?"
 msgstr "Êtes vous sûr de vouloir continuer ?"
@@ -911,9 +917,6 @@ msgstr "Créer une famille d’écrans pour commencer."
 msgid "Create a prize group"
 msgstr "Créer un groupe de prix"
 
-msgid "Create a prize group for the tournament."
-msgstr "Créer un groupe de prix pour le tournoi."
-
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
 
@@ -982,6 +985,9 @@ msgstr "Grille américaine %f-%l"
 
 msgid "Crosstable after round #{round}"
 msgstr "Grille américaine après la ronde {round}"
+
+msgid "Current ({num})"
+msgstr "En cours ({num})"
 
 msgid "Current events ({num})"
 msgstr "Évènements en cours ({num})"
@@ -1093,9 +1099,6 @@ msgstr "Supprimer la catégorie."
 msgid "Delete the display controller."
 msgstr "Supprimer le pilote d'afficheurs."
 
-msgid "Delete the prize group."
-msgstr "Supprimer le groupe de prix."
-
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
 
@@ -1201,9 +1204,6 @@ msgstr "Le pilote d'afficheurs [{uniq_id}] existe déjà."
 
 msgid "Display controller creation"
 msgstr "Création d'un pilote d'afficheurs"
-
-msgid "Display controllers"
-msgstr "Pilotes d'afficheurs"
 
 msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheurs ({num})"
@@ -1488,9 +1488,6 @@ msgstr "Éditer la configuration de Sharly Chess."
 msgid "Edit the hours of the timer"
 msgstr "Éditer les horaires du chronomètre."
 
-msgid "Edit the name of the prize group."
-msgstr "Éditer le nom du groupe de prix."
-
 msgid "Edit the player's properties."
 msgstr "Éditer les propriétés du·de la joueur·euse."
 
@@ -1658,6 +1655,9 @@ msgstr "Création d'un évènement"
 
 msgid "Event: {event_name}"
 msgstr "Évènement : {event_name}"
+
+msgid "Events"
+msgstr "Évènements"
 
 msgid "Events (public access)"
 msgstr "Évènements (accès public)"
@@ -2067,6 +2067,9 @@ msgstr "Système de Haley"
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
+msgid "Manage the prize groups of the tournament."
+msgstr "Gérer les groupes de prix du tournoi."
+
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
 
@@ -2084,6 +2087,9 @@ msgstr "Surbrillance"
 
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
+
+msgid "Home page"
+msgstr "Accueil"
 
 msgid "Hort system"
 msgstr "Système Hort"
@@ -2165,11 +2171,11 @@ msgstr "Inclure les catégories supérieures"
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
 
-msgid "Include players of these rating types."
-msgstr "Inclure les joueur·euses de ces types de classement."
-
 msgid "Include players of these categories."
 msgstr "Inclure les joueur·euses de ces catégories."
+
+msgid "Include players of these rating types."
+msgstr "Inclure les joueur·euses de ces types de classement."
 
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
@@ -2417,6 +2423,9 @@ msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Main category"
 msgstr "Catégorie générale"
+
+msgid "Main group"
+msgstr "Groupe principal"
 
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
@@ -2755,6 +2764,9 @@ msgstr "Aucun·e joueur·euse mis·e à jour."
 
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
+
+msgid "No prize groups."
+msgstr "Aucun groupe de prix."
 
 msgid "No prizes defined."
 msgstr "Aucun prix défini."
@@ -3101,6 +3113,9 @@ msgstr "Le fichier Papi n’a pas été modifié depuis la dernière mise en lig
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
+msgid "Passed ({num})"
+msgstr "Passés ({num})"
+
 msgid "Passed events ({num})"
 msgstr "Évènements passés ({num})"
 
@@ -3152,6 +3167,9 @@ msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
+
+msgid "Player Databases"
+msgstr "Bases de données des joueur·euses"
 
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"
@@ -3436,14 +3454,8 @@ msgstr "Édition d'un critère"
 msgid "Prize edition"
 msgstr "Édition d'un prix"
 
-msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
-msgstr "Le groupe de prix [{prize_group_old}] a été renommé [{prize_group_new}]."
-
 msgid "Prize group [{prize_group}] successfully created."
 msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
-
-msgid "Prize group [{prize_group}] successfully deleted."
-msgstr "Le groupe de prix [{prize_group}] a été supprimé avec succès."
 
 msgid "Prize groups"
 msgstr "Groupes de prix"
@@ -3728,9 +3740,6 @@ msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusie
 msgid "Rotator creation"
 msgstr "Création d'un écran rotatif"
 
-msgid "Rotators"
-msgstr "Écrans rotatifs"
-
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
 
@@ -3848,9 +3857,6 @@ msgstr "Écran [{screen_uniq_id}] : {text}"
 msgid "Screen [{uniq_id}] already exists."
 msgstr "L'écran [{uniq_id}] existe déjà."
 
-msgid "Screen families"
-msgstr "Familles d'écrans"
-
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
 
@@ -3898,6 +3904,9 @@ msgstr "Sélection"
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
+
+msgid "Settings"
+msgstr "Paramètres"
 
 msgid "Share the prizes"
 msgstr "Partager les prix"
@@ -3959,8 +3968,8 @@ msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
-msgid "Single Screens"
-msgstr "Écrans simples"
+msgid "Side group"
+msgstr "Autre"
 
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
@@ -4806,9 +4815,6 @@ msgstr "Tournoi : %(tournament_name)s"
 msgid "Tournament: not set"
 msgstr "Tournoi : non défini"
 
-msgid "Tournaments"
-msgstr "Tournois"
-
 msgid "Tournaments ({num})"
 msgstr "Tournois ({num})"
 
@@ -4989,6 +4995,9 @@ msgstr "Défaite non comptabilisé pour le classement Elo"
 msgid "Unrated Win"
 msgstr "Victoire non comptabilisé pour le classement Elo"
 
+msgid "Upcoming ({num})"
+msgstr "À venir ({num})"
+
 msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
 
@@ -5023,6 +5032,9 @@ msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas 
 
 msgid "Upload rules"
 msgstr "Téléverser le règlement"
+
+msgid "Upload to the FFE"
+msgstr "Mettre en ligne sur la FFE"
 
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
@@ -5455,4 +5467,37 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Archived events ({num})"
+#~ msgstr "Évènements archivés ({num})"
+
+#~ msgid "Create a prize group for the tournament."
+#~ msgstr "Créer un groupe de prix pour le tournoi."
+
+#~ msgid "Delete the prize group."
+#~ msgstr "Supprimer le groupe de prix."
+
+#~ msgid "Display controllers"
+#~ msgstr "Pilotes d'afficheurs"
+
+#~ msgid "Edit the name of the prize group."
+#~ msgstr "Éditer le nom du groupe de prix."
+
+#~ msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
+#~ msgstr "Le groupe de prix [{prize_group_old}] a été renommé [{prize_group_new}]."
+
+#~ msgid "Prize group [{prize_group}] successfully deleted."
+#~ msgstr "Le groupe de prix [{prize_group}] a été supprimé avec succès."
+
+#~ msgid "Rotators"
+#~ msgstr "Écrans rotatifs"
+
+#~ msgid "Screen families"
+#~ msgstr "Familles d'écrans"
+
+#~ msgid "Single Screens"
+#~ msgstr "Écrans simples"
+
+#~ msgid "Tournaments"
+#~ msgstr "Tournois"
 
