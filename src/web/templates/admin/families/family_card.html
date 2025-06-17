@@ -116,19 +116,25 @@
 
         {% if family.screens_by_uniq_id|length > 0 %}
             {% for screen in family.screens_by_uniq_id.values() %}
+                {% set screen_set=screen.screen_sets_sorted_by_order[0] %}
+                {% set tournament=family.tournament %}
                 <div>
                     {{ loop.index }}.
-                    {% if family.tournament.current_round and family.type in ['boards', 'input'] %}
-                        {{ _('Boards from #%(first)d to #%(last)d', first=screen.screen_sets_sorted_by_order[0].first_board.id, last=screen.screen_sets_sorted_by_order[0].last_board.id) }}
+                    {% if tournament.current_round and family.type in ['boards', 'input'] %}
+                        {{ _(
+                            'Boards from #%(first)d to #%(last)d',
+                            first=screen_set.first_board.id + tournament.first_board_number - 1,
+                            last=screen_set.last_board.id + tournament.first_board_number - 1
+                        ) }}
                     {% elif family.type in ['boards', 'input', 'players', ] %}
-                        {% if screen.screen_sets_sorted_by_order[0].first_player_by_name %}
-                            {{ _('Players from %(first)s to %(last)s', first=screen.screen_sets_sorted_by_order[0].first_player_by_name.last_name[:8], last=screen.screen_sets_sorted_by_order[0].last_player_by_name.last_name[:8]) }}
+                        {% if screen_set.first_player_by_name %}
+                            {{ _('Players from %(first)s to %(last)s', first=screen_set.first_player_by_name.last_name[:8], last=screen_set.last_player_by_name.last_name[:8]) }}
                         {% else %}
                             {{ _('Players (none now)') }}
                         {% endif %}
                     {% else %} {# family.type == 'ranking' #}
-                        {% if screen.screen_sets_sorted_by_order[0].first_player_by_rank %}
-                            {{ _('Players from #%(first)d to #%(last)d', first=screen.screen_sets_sorted_by_order[0].first_player_by_rank.rank, last=screen.screen_sets_sorted_by_order[0].last_player_by_rank.rank) }}
+                        {% if screen_set.first_player_by_rank %}
+                            {{ _('Players from #%(first)d to #%(last)d', first=screen_set.first_player_by_rank.rank, last=screen_set.last_player_by_rank.rank) }}
                         {% else %}
                             {{ _('Players (none now)') }}
                         {% endif %}
