@@ -1,7 +1,7 @@
-{% extends '../../common/cards_container.html' %}
+{% extends '../../common/admin_cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Prizes') }}{{ macros.doc_icon('prizes', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('prizes', 'fs-4') }}
     {% if admin_prize_group %}
         {{ macros.refresh_listener(
             hx_get=url_for(
@@ -24,7 +24,7 @@
 
 {% block right_buttons_classes %}d-flex gap-4 align-items-end{% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     <span
         {{ macros.tooltip_attributes(
             'info',
@@ -84,7 +84,7 @@
                 </select>
                 <span
                     {{ macros.tooltip_attributes(
-                        'info', _('Handle the prize groups of the tournament.'), 'top'
+                        'info', _('Manage the prize groups of the tournament.'), 'top'
                     ) }}
                 >
                     <button

@@ -1,14 +1,11 @@
 {% extends '../../common/base.html' %}
 
-{% block header %}
-    <div
-        id="user-header"
-        class="header user-header border-bottom border-dark"
-        style="background-color: var(--pw-nav-bg);"
-    >
-        <div class="bs-tabs mx-3 py-2">
-            <nav class="d-flex align-items-center gap-4">
-                 <!-- block user_header_back_button -->
+{% block content %}
+    {{ macros.copyright_script(show=true) }}
+    <div id="top-nav-wrapper" class="border-bottom border-dark" style="background-color: var(--pw-nav-bg);">
+        <div id="top-nav-content" class="w-100">
+            <nav class="d-flex align-items-center gap-4 w-100">
+                <!-- block user_header_back_button -->
                 {% block user_header_back_button %}
                     USER_HEADER_BACK_BUTTON
                 {% endblock user_header_back_button %}
@@ -38,17 +35,15 @@
                 {% endwith %}
             </nav>
         </div>
-        {{ macros.copyright_script(show=true) }}
     </div>
+
     <!-- block user_header_refresher -->
     {% block user_header_refresher %}
         USER_HEADER_REFRESHER
     {% endblock user_header_refresher %}
     <!-- end block user_header_refresher -->
-{% endblock header %}
 
-{% block content %}
-    <div id="user-content" class="content user-content tab-content mx-2 p-3">
+    <div id="user-content" class="content user-content tab-content p-3">
         <!-- block user_content -->
         {% block user_content %}
             USER_CONTENT

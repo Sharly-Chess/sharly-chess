@@ -1,23 +1,25 @@
-<button
-    id="ffe-upload-button"
-    class="btn fw-bold fe-3 px-0 py-0 me-1 position-relative fs-5 d-flex flex-column align-items-center gap-0"
-    hx-get="{{ url_for('ffe-upload-modal', event_uniq_id=admin_event.uniq_id) }}"
-    hx-target="body"
-    hx-indicator="#please-wait"
-    preload
-    data-bs-toggle="modal"
-    data-bs-target="#modal-wrapper"
->
-    <i class="bi bi-cloud-arrow-up-fill" style="height: 20px"></i>
-    <span style="font-size: 0.6rem;">
-       FFE
-    </span>
-    <span
-        class="nav-icon-badge position-absolute p-0 rounded-circle bg-danger {% if has_upload_error %}visible{% else %}invisible{% endif %}"
-        style="font-size: 15px; bottom: 3px;"
+<span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Upload to the FFE'), 'right') }}>
+    <button
+        id="ffe-upload-button"
+        class="nav-link text-start d-flex align-items-center"
+        hx-get="{{ url_for('ffe-upload-modal', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        preload
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
     >
-        {% if has_upload_error %}
-            <i class="bi bi-exclamation"></i>
-        {% endif %}
-    </span>
-</button>
+        <i class="bi bi-cloud-arrow-up-fill"></i>
+        <span class="pe-2 expanded-only">
+            {{ _('Upload to the FFE') }}
+        </span>
+        <span
+            class="nav-icon-badge rounded-circle bg-danger {% if has_upload_error %}visible{% else %}invisible{% endif %}"
+            style="font-size: 15px;"
+        >
+            {% if has_upload_error %}
+                <i class="bi bi-exclamation"></i>
+            {% endif %}
+        </span>
+    </button>
+</span>

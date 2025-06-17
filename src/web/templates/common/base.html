@@ -45,14 +45,14 @@
                     document.documentElement.style.setProperty('--vh', `${vh}px`);
 
                     {#  We store the (dynamic) header height, useful for sticking things under it #}
-                    let headerHeight = document.getElementById('header-wrapper')?.offsetHeight ?? 0;
+                    let headerHeight = document.getElementById('top-nav-wrapper')?.offsetHeight ?? 0;
                     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
                   }
 
                 setSize();
 
                 window.addEventListener('resize', setSize);
-                window.addEventListener('htmx:afterSettle', setSize);
+                window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); });
 
                 function closeTooltips () {
                     $('body .tooltip').remove();
@@ -240,12 +240,47 @@
                     $(id + '-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
                     $(id + '-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
                 }
+
+                function toggle_sidebar(e) {
+                    e.preventDefault();
+                    const body = $("body");
+                    if (body.hasClass('compact-sidebar')) {
+                        body.removeClass('compact-sidebar');
+                        localStorage.setItem('sidebar-state', 'expanded');
+                    } else {
+                        body.addClass('compact-sidebar');
+                        localStorage.setItem('sidebar-state', 'compact');
+                    }
+                }
+
+                function init_sidebar() {
+                    const body = $("body");
+                    if (body) {
+                        if (localStorage.getItem('sidebar-state') == 'compact') {
+                            body.addClass('compact-sidebar');
+                        } else {
+                            body.removeClass('compact-sidebar');
+                        }
+                    }
+                }
+
+                window.addEventListener("show.bs.tooltip", function(event) {
+                    if ($(event.target).hasClass('sidebar-tooltip') && !$('body').hasClass('compact-sidebar')) {
+                        event.preventDefault();
+                    }
+                });
+
+                window.addEventListener("show.bs.dropdown", function(event) {
+                    // Close tooltip when a dropdown is opened
+                    closeTooltips();
+                });
             </script>
         {% endif %}
     </head>
     <body
         hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
+        class="d-none"
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
@@ -265,31 +300,31 @@
                 $(location).attr('href', '{{ redirect_url }}');
             </script>
         {% else %}
-            <div {% block sse %}{% endblock sse %}>
+            <div id="main-wrapper" class="" {% block sse %}{% endblock sse %}>
                 <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
                     <div id="refresh-message"></div>
                     {% include 'messages.html' %}
                 </div>
-                <div
+                {% block header %}
+                {% endblock header %}
+                <div class="sidebar">
+                    <div class="sidebar show border-end">
+                        <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start">
+                            {% block sidebar %}
+                            {% endblock sidebar %}
+                        </div>
+                        <button id="sidebar-expander" onclick="toggle_sidebar(event)">
+                            <i class="bi bi-arrows-expand-vertical"></i>
+                        </button>
+                    </div>
+                </div>
+                <main
                     id="scroll-wrapper"
                     {# Needed for the sticky copyright footer #}
                     class="d-inline-block"
                 >
-                    <div
-                        id="main-wrapper"
-                        class="d-inline-block"
-                        style="min-height: calc(var(--vh, 100vh) - 60px); min-width: var(--vw, 100vw);"
-                    >
-                        <div
-                            id="header-wrapper"
-                            class="header-wrapper top-0 start-0 position-sticky"
-                            style="width: var(--vw, 100vw); z-index: 4;"
-                        >
-                            {% block header %}
-                                HEADER
-                            {% endblock header %}
-                        </div>
-                        <div id="content-wrapper" class="©">
+                    <div id="page-wrapper">
+                        <div id="content-wrapper">
                             {% block content %}
                                 BODY CONTENT
                             {% endblock content %}
@@ -302,8 +337,6 @@
                     </div>
                     <div
                         id="copyright-wrapper"
-                        class="flex-grow-1 d-flex align-items-end justify-content-center start-0 position-sticky"
-                        style="width: var(--vw, 100vw);"
                     >
                         {# copyright may be hidden by the macros.copyright_script_macro #}
                         <div
@@ -314,7 +347,7 @@
                             Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} - {{ sharly_chess_config.url }}
                         </div>
                     </div>
-                </div>
+                </main>
                 <div id="please-wait-wrapper">
                     <div
                         id="please-wait"
@@ -344,6 +377,7 @@
             {{ macros.theme_script(theme) }}
             <script>
                 $('body').css('padding-right', '0');
+                init_sidebar();
             </script>
         {% endif %}
     </body>
@@ -352,6 +386,13 @@
         <script>
             closeTooltips();
             activateTooltips();
+
+            $(document).ready(function() {
+                init_sidebar();
+
+                // Display the body once the CSS is initialized
+                $("body").removeClass("d-none");
+            });
 
             if (typeof bootstrap !== 'undefined') {
                 // Allow the tooltip content to have a style attribute
