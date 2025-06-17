@@ -1,19 +1,5 @@
-<div id="top-nav-wrapper">
-    <div id="top-nav-content">
-        {% block top_left_nav %}
-        {% endblock %}
-        <div class="flex-grow-1"></div>
-        <div class="{% block right_buttons_classes %} d-flex gap-2 ms-auto align-items-center {% endblock %}">
-            {% block top_right_nav %}
-            {% endblock %}
-        </div>
-    </div>
+ <div class="container-fluid py-3" style="--bs-gutter-x: 0;">
+    {% block cards_container_cards %}
+        BLOCK CARDS_CONTAINER_CARDS
+    {% endblock %}
 </div>
-
- <section class="p-3">
-    <div class="container-fluid" style="--bs-gutter-x: 0;">
-        {% block cards_container_cards %}
-            BLOCK CARDS_CONTAINER_CARDS
-        {% endblock %}
-    </div>
-</section>

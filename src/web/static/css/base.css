@@ -112,23 +112,25 @@ nav h4 {
     color: var(--bs-primary);
 }
 
-nav .nav-link {
+nav.admin .nav-link {
     width: 100%;
 }
 
-nav .nav-link:hover, nav .btn-link:hover {
+nav.admin .nav-link:hover, nav.admin .btn-link:hover {
     background-color: var(--bs-body-bg);
     color: var(--bs-nav-hover-color);
 }
 
-nav .nav-link.active, nav .nav-link.active:hover {
+nav.admin .nav-link.active, nav.admin .nav-link.active:hover {
     background-color: var(--bs-primary);
     color: var(--bs-body-bg);
 }
 
 .section-title {
+    display: inline-block;
     background-color: var(--bs-primary);
     padding: .25rem 1.5rem 0.25rem 2rem;
+    margin-bottom: 2rem;
     color: var(--pw-contrast-text);
     position: relative;
     border-radius: 0 1000px 1000px 0;

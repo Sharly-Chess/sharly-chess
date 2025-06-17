@@ -1,11 +1,13 @@
 {% extends '../../common/cards_container.html' %}
 
-{% block top_left_nav %}
-    <i class="{{ event_icon_class }}"></i> {{ title }}
-{% endblock %}
-
-{% block top_right_nav %}
-{% endblock %}
+<div
+    class="mb-2 align-items-center z-3"
+    style="max-width: calc(var(--vw, 100vw) - var(--side-bar-width) - 2rem); position: sticky; left: 1rem;"
+>
+    {% call() macros.section_title() %}
+        <i class="{{ event_icon_class }}"></i> {{ title }}
+    {% endcall %}
+</div>
 
 {% block cards_container_cards %}
     <div class="row">
