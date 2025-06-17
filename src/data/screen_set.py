@@ -459,13 +459,18 @@ class ScreenSet:
                 case (0, 0):
                     return _('all the boards')
                 case (first, 0) if first != 0:
-                    return _('boards from #{first} to end').format(first=first)
+                    return _('boards from #{first} to end').format(
+                        first=first + self.tournament.first_board_number - 1,
+                    )
                 case (first, last) if first is not None and last is not None:
                     return _('boards from #{first} to #{last}').format(
-                        first=first, last=last
+                        first=first + self.tournament.first_board_number - 1,
+                        last=last + self.tournament.first_board_number - 1,
                     )
                 case (0, last) if last != 0:
-                    return _('boards from start to #{last}').format(last=last)
+                    return _('boards from start to #{last}').format(
+                        last=last + self.tournament.first_board_number - 1,
+                    )
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
         elif self.type in [ScreenType.PLAYERS]:
