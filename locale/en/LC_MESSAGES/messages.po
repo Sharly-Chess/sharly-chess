@@ -5468,36 +5468,3 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "Archived events ({num})"
-#~ msgstr ""
-
-#~ msgid "Create a prize group for the tournament."
-#~ msgstr ""
-
-#~ msgid "Delete the prize group."
-#~ msgstr ""
-
-#~ msgid "Display controllers"
-#~ msgstr ""
-
-#~ msgid "Edit the name of the prize group."
-#~ msgstr ""
-
-#~ msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
-#~ msgstr ""
-
-#~ msgid "Prize group [{prize_group}] successfully deleted."
-#~ msgstr ""
-
-#~ msgid "Rotators"
-#~ msgstr ""
-
-#~ msgid "Screen families"
-#~ msgstr ""
-
-#~ msgid "Single Screens"
-#~ msgstr ""
-
-#~ msgid "Tournaments"
-#~ msgstr ""
-

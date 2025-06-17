@@ -3169,7 +3169,7 @@ msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
 
 msgid "Player Databases"
-msgstr "Bases de données des joueur·euses"
+msgstr "Bases joueur·euses"
 
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"
@@ -5034,7 +5034,7 @@ msgid "Upload rules"
 msgstr "Téléverser le règlement"
 
 msgid "Upload to the FFE"
-msgstr "Mettre en ligne sur la FFE"
+msgstr "Publication FFE"
 
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
@@ -5467,37 +5467,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Archived events ({num})"
-#~ msgstr "Évènements archivés ({num})"
-
-#~ msgid "Create a prize group for the tournament."
-#~ msgstr "Créer un groupe de prix pour le tournoi."
-
-#~ msgid "Delete the prize group."
-#~ msgstr "Supprimer le groupe de prix."
-
-#~ msgid "Display controllers"
-#~ msgstr "Pilotes d'afficheurs"
-
-#~ msgid "Edit the name of the prize group."
-#~ msgstr "Éditer le nom du groupe de prix."
-
-#~ msgid "Prize group [{prize_group_old}] successfully renamed to [{prize_group_new}]."
-#~ msgstr "Le groupe de prix [{prize_group_old}] a été renommé [{prize_group_new}]."
-
-#~ msgid "Prize group [{prize_group}] successfully deleted."
-#~ msgstr "Le groupe de prix [{prize_group}] a été supprimé avec succès."
-
-#~ msgid "Rotators"
-#~ msgstr "Écrans rotatifs"
-
-#~ msgid "Screen families"
-#~ msgstr "Familles d'écrans"
-
-#~ msgid "Single Screens"
-#~ msgstr "Écrans simples"
-
-#~ msgid "Tournaments"
-#~ msgstr "Tournois"
 
