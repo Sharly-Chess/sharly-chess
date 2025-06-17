@@ -52,7 +52,7 @@
                 setSize();
 
                 window.addEventListener('resize', setSize);
-                window.addEventListener('htmx:afterSettle', setSize);
+                window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); });
 
                 function closeTooltips () {
                     $('body .tooltip').remove();
@@ -263,6 +263,17 @@
                         }
                     }
                 }
+
+                window.addEventListener("show.bs.tooltip", function(event) {
+                    if ($(event.target).hasClass('sidebar-tooltip') && !$('body').hasClass('compact-sidebar')) {
+                        event.preventDefault();
+                    }
+                });
+
+                window.addEventListener("show.bs.dropdown", function(event) {
+                    // Close tooltip when a dropdown is opened
+                    closeTooltips();
+                });
             </script>
         {% endif %}
     </head>

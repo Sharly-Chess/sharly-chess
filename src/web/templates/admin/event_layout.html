@@ -33,48 +33,50 @@
             {# Dropdown for compact mode #}
             {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
                 <div class="dropend compact-only w-100">
-                    <button
-                        class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        {% if nav_tab.disabled %}
-                            disabled
-                        {% endif %}
-                        aria-expanded="false"
-                    >
-                        <div class="d-flex align-items-center">
-                            {% if nav_tab.icon_class %}
-                                <i class="{{ nav_tab.icon_class }}"></i>
+                    <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+                        <button
+                            class="nav-link text-start{{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            {% if nav_tab.disabled %}
+                                disabled
                             {% endif %}
-                            <i class="bi bi-chevron-compact-right px-0"></i>
-                        </div>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
-                            {% if sub_nav.separator %}
-                                <li class="dropdown-divider"></li>
-                            {% endif %}
-                            <li>
-                                <button
-                                    class="dropdown-item {% if sub_nav_id == admin_event_tab %}active{% endif %}"
-                                    hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                                    preload
-                                    hx-target="body"
-                                    hx-push-url="true"
-                                    type="button"
-                                    hx-indicator="#please-wait"
-                                    {% if sub_nav.disabled %}
-                                        disabled
-                                    {% endif %}
-                                >
-                                    {% if nav_tab.icon_class %}
-                                        <i class="{{ sub_nav.icon_class }} pe-1"></i>
-                                    {% endif %}
-                                    {{ sub_nav.title }}
-                                </button>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                            aria-expanded="false"
+                        >
+                            <div class="d-flex align-items-center">
+                                {% if nav_tab.icon_class %}
+                                   <i class="{{ nav_tab.icon_class }}"></i>
+                                {% endif %}
+                                <i class="bi bi-chevron-compact-right px-0"></i>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
+                                {% if sub_nav.separator %}
+                                    <li class="dropdown-divider"></li>
+                                {% endif %}
+                                <li>
+                                    <button
+                                        class="dropdown-item {% if sub_nav_id == admin_event_tab %}active{% endif %}"
+                                        hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                                        preload
+                                        hx-target="body"
+                                        hx-push-url="true"
+                                        type="button"
+                                        hx-indicator="#please-wait"
+                                        {% if sub_nav.disabled %}
+                                            disabled
+                                        {% endif %}
+                                    >
+                                        {% if nav_tab.icon_class %}
+                                            <i class="{{ sub_nav.icon_class }} pe-1"></i>
+                                        {% endif %}
+                                        {{ sub_nav.title }}
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </span>
                 </div>
             {% endwith %}
 
@@ -109,7 +111,7 @@
                             {% endif %}
                         >
                             {% if nav_tab.icon_class %}
-                                <i class="indented{{ sub_nav.icon_class }}"></i>
+                                <i class="indented {{ sub_nav.icon_class }}"></i>
                             {% endif %}
                             {{ sub_nav.title }}
                         </button>
@@ -118,46 +120,50 @@
             {% endwith %}
         {% else %}
             {% with active=(admin_event_tab == nav_id) %}
-                <button
-                    class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
-                    id="nav-{{ nav_id }}-tab"
-                    hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                    preload
-                    hx-target="body"
-                    hx-push-url="true"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-{{ nav_tab.name }}"
-                    type="button"
-                    role="tab"
-                    aria-controls="nav-{{ nav_id }}"
-                    aria-selected="true"
-                    hx-indicator="#please-wait"
-                    {% if nav_tab.disabled %}
-                        disabled
-                    {% endif %}
-                >
-                    {% if nav_tab.icon_class %}
-                        <i class="{{ nav_tab.icon_class }}"></i>
-                    {% endif %}
-                    <span class="expanded-only">{{ nav_tab.title }}</span>
-                </button>
+                <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+                    <button
+                        class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                        id="nav-{{ nav_id }}-tab"
+                        hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                        preload
+                        hx-target="body"
+                        hx-push-url="true"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-{{ nav_tab.name }}"
+                        type="button"
+                        role="tab"
+                        aria-controls="nav-{{ nav_id }}"
+                        aria-selected="true"
+                        hx-indicator="#please-wait"
+                        {% if nav_tab.disabled %}
+                            disabled
+                        {% endif %}
+                    >
+                        {% if nav_tab.icon_class %}
+                            <i class="{{ nav_tab.icon_class }}"></i>
+                        {% endif %}
+                        <span class="expanded-only">{{ nav_tab.title }}</span>
+                    </button>
+                </span>
             {% endwith %}
         {% endif %}
     {% endfor %}
 
     {{ admin_macros.extra_admin_nav_item("print", extra_admin_nav_items)}}
-    <button
-        class="btn nav-link text-start"
-        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-        preload
-        data-bs-toggle="modal"
-        data-bs-target="#modal-wrapper"
-    >
-        <i class="bi bi-printer-fill"></i>
-        <span class="expanded-only">{{ _('Print') }}</span>
-    </button>
+    <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Print'), 'right') }}>
+        <button
+            class="btn nav-link text-start"
+            hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi bi-printer-fill"></i>
+            <span class="expanded-only">{{ _('Print') }}</span>
+        </button>
+    </span>
     {{ admin_macros.extra_admin_nav_item("database", extra_admin_nav_items)}}
     {% include '/admin/common/database/database_button.html' %}
 {% endblock admin_nav %}

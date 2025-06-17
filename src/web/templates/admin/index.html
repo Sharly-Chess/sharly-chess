@@ -27,26 +27,27 @@
             <h4 class="ps-3 mb-2 fs-5 mt-3">{{ nav_tab.section_title }}</h4>
         {% endif %}
         {% with active=(admin_tab == nav_id) %}
-            <button
-                class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
-                id="nav-{{ nav_id }}-tab"
-                hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
-                preload
-                hx-target="body"
-                hx-push-url="true"
-                type="button"
-                role="tab"
-                hx-indicator="#please-wait"
-                {% if nav_tab.disabled %}
-                    disabled
-                {% endif %}
-            >
-                {% if nav_tab.icon_class %}
-                    <i class="{{ nav_tab.icon_class }} pe-1"></i>
-                {% endif %}
-
-                <span class="expanded-only">{{ nav_tab.title }}</span>
-            </button>
+             <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+                <button
+                    class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                    id="nav-{{ nav_id }}-tab"
+                    hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
+                    preload
+                    hx-target="body"
+                    hx-push-url="true"
+                    type="button"
+                    role="tab"
+                    hx-indicator="#please-wait"
+                    {% if nav_tab.disabled %}
+                        disabled
+                    {% endif %}
+                >
+                    {% if nav_tab.icon_class %}
+                         <i class="{{ nav_tab.icon_class }} pe-1"></i>
+                    {% endif %}
+                    <span class="expanded-only">{{ nav_tab.title }}</span>
+                </button>
+            </span>
         {% endwith %}
     {% endfor %}
     {% include '/admin/common/database/database_button.html' %}

@@ -1026,6 +1026,9 @@ msgstr "Les données pour le tournoi [{tournament_uniq_id}] n'ont pas pu être d
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
 
+msgid "Data sources"
+msgstr "Sources données"
+
 msgid "Database"
 msgstr "Base de données"
 
@@ -2067,9 +2070,6 @@ msgstr "Système de Haley"
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
-msgid "Manage the prize groups of the tournament."
-msgstr "Gérer les groupes de prix du tournoi."
-
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
 
@@ -2432,6 +2432,9 @@ msgstr "Rendre visible sur le site de la FFE"
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
+
+msgid "Manage the prize groups of the tournament."
+msgstr "Gérer les groupes de prix du tournoi."
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
@@ -3167,9 +3170,6 @@ msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
-
-msgid "Data sources"
-msgstr "Sources données"
 
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"

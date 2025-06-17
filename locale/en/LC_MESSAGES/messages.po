@@ -1026,6 +1026,9 @@ msgstr ""
 msgid "Data is already displayed on the FFE website."
 msgstr ""
 
+msgid "Data sources"
+msgstr ""
+
 msgid "Database"
 msgstr ""
 
@@ -2067,9 +2070,6 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
-msgid "Manage the prize groups of the tournament."
-msgstr ""
-
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
@@ -2432,6 +2432,9 @@ msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
+
+msgid "Manage the prize groups of the tournament."
+msgstr ""
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
@@ -3166,9 +3169,6 @@ msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Player / Elo"
-msgstr ""
-
-msgid "Data sources"
 msgstr ""
 
 msgid "Player Elo"

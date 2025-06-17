@@ -62,6 +62,10 @@ body[data-bs-theme="light"] #main-wrapper {
     padding-right: 0.25rem;
 }
 
+.sidebar-tooltip {
+    width: 100%;
+}
+
 .sidebar i.indented {
     padding-left: 0.75rem;
 }
