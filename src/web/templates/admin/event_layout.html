@@ -30,11 +30,11 @@
     <h4 class="w-100 px-2 fs-5 mt-2 text-center">{{ admin_event.name }}</h4>
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% if 'submenu' in nav_tab %}
-
+            {# Dropdown for compact mode #}
             {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
-                <div class="dropend compact-only">
+                <div class="dropend compact-only w-100">
                     <button
-                        class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %} py-0"
+                        class="nav-link text-start{{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                         type="button"
                         data-bs-toggle="dropdown"
                         {% if nav_tab.disabled %}
@@ -42,9 +42,12 @@
                         {% endif %}
                         aria-expanded="false"
                     >
-                        {% if nav_tab.icon_class %}
-                            <i class="{{ nav_tab.icon_class }}"></i>
-                        {% endif %}
+                        <div class="d-flex align-items-center">
+                            {% if nav_tab.icon_class %}
+                                <i class="{{ nav_tab.icon_class }}"></i>
+                            {% endif %}
+                            <i class="bi bi-chevron-compact-right px-0"></i>
+                        </div>
                     </button>
                     <ul class="dropdown-menu">
                         {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
@@ -75,6 +78,7 @@
                 </div>
             {% endwith %}
 
+            {# Expanding menu for expanded mode #}
             {% with active=(admin_event_tab == nav_id) %}
                 <button
                     class="expanded-only btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
@@ -87,13 +91,13 @@
                     <span class="expanded-only">{{ nav_tab.title }}</span>
                     <i class="dropdown-arrow bi bi-chevron-right"></i>
                 </button>
-                <div class="collapse w-100" id="{{ nav_id }}-collapse">
+                <div class="collapse w-100 expanded-only" id="{{ nav_id }}-collapse">
                     {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
                         {% if sub_nav.separator %}
                             <div class="sidebar-divider"></div>
                         {% endif %}
                         <button
-                            class="nav-link text-start ps-3 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                            class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                             hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
                             preload
                             hx-target="body"
@@ -105,7 +109,7 @@
                             {% endif %}
                         >
                             {% if nav_tab.icon_class %}
-                                <i class="{{ sub_nav.icon_class }}"></i>
+                                <i class="indented{{ sub_nav.icon_class }}"></i>
                             {% endif %}
                             {{ sub_nav.title }}
                         </button>

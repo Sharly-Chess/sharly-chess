@@ -167,7 +167,7 @@ class IndexAdminController(BaseAdminController):
                 'events': current_events,
                 'disabled': not current_events,
                 'empty_str': _('No current events.'),
-                'icon_class': 'bi-calendar',
+                'icon_class': 'bi-calendar indented',
             },
             'coming_events': {
                 'title': _('Upcoming ({num})').format(num=len(coming_events) or '-'),
@@ -175,7 +175,7 @@ class IndexAdminController(BaseAdminController):
                 'events': coming_events,
                 'disabled': not coming_events,
                 'empty_str': _('No upcoming events.'),
-                'icon_class': 'bi-calendar-check',
+                'icon_class': 'bi-calendar-check indented',
             },
             'passed_events': {
                 'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
@@ -183,7 +183,7 @@ class IndexAdminController(BaseAdminController):
                 'events': passed_events,
                 'disabled': not passed_events,
                 'empty_str': _('No passed events.'),
-                'icon_class': 'bi-calendar-minus',
+                'icon_class': 'bi-calendar-minus indented',
             },
             'archives': {
                 'title': _('Archived ({num})').format(
@@ -193,7 +193,7 @@ class IndexAdminController(BaseAdminController):
                 'archives': archive_loader.archives_sorted_by_date,
                 'disabled': not archive_loader.archives_sorted_by_date,
                 'empty_str': _('No archived events.'),
-                'icon_class': 'bi-archive',
+                'icon_class': 'bi-archive indented',
             },
             'config': {
                 'divider': True,
