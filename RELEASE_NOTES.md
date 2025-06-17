@@ -8,60 +8,21 @@ English version below
 
 ## Interface web
 
-- Optimisation du temps de chargement de la page des évènements (2.7.0)
-- Ajout de notifications instantanées dans les onglets Joueur·euses et Appariements lors de nouveaux pointages ou résultats (2.7.0)
-- Interdiction de l'accès aux pages d'arbitrage pour les clients non autorisés (2.7.1)
-- Amélioration de la gestion des exceptions (2.7.6, 2.7.7)
-
-### Gestion des évènements
-
-- Correction d'un bug sur l'édition des évènements (2.7.6)
-- Restriction des caractères utilisables dans les identifiants des évènements (2.7.8)
-
-### Gestion des tournois
-
-- Ajout des exports PGN et TRF 16 (2.7.0)
-
 ### Gestion des joueur·euses
 
-- Correction et ajout de champs dans l'export des joueur·euses au format ODS (2.7.1)
-- Correction de l'affichage des joueur·euses non-FIDE lors de la mise à jour depuis les bases de données FIDE et FFE (2.7.3)
-- Correction de la mise à jour des classements des joueur·euses (2.7.5)
-- Correction des couleurs du modal de mise à jour des joueur·euses (2.7.5)
-- Correction d'un bug à la création des joueur·euses (2.7.7)
-- Correction des index des bases de données des joueur·euses (2.7.8)
+- Ajout du genre sur les impressions des joueur·euses (2.8.0)
+- Ajout des listes de pointage (2.8.0)
+- Mise à jour des drapeaux des fédérations (2.8.0)
+- Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
 
-### Gestion des appariements
-
-- Diminution des temps de réaction lors de la saisie des résultats (2.7.1)
-- Correction de l'entrée de résultats au clavier sur des échiquiers fixes (2.7.5)
-- Suppression du modal de configuration de l'appariement lorsque non opportun (2.7.5)
-- Prise en compte du numéro du premier échiquier des tournois (2.7.7)
-- Correction d'un bug en l'absence de tournois (2.7.8)
-- Correction de la numérotation des échiquiers (2.7.8)
 
 ### Gestion des écrans
 
-- Correction d'un bug à la création des écrans (2.7.2)
-- Correction du rafraichissement des écrans de résultats (2.7.8)
+- Ajout de la possibilité de ne pas afficher les adversaires sur les écrans d'appariements par ordre alphabétique (2.8.0)
 
 ### Gestion des prix
 
-- Intégration des opérations sur le site FFE sur l'interface web (2.7.0)
-- Alignement du calcul de performance avec celui de Papi en cas de joueur·euses avec demi-point joker (2.7.0)
-- Correction d'un bug de mise en ligne des résultats (2.7.3)
-- Correction du test des identifiants FFE lors de l'édition des tournois (2.7.4)
-- Utilisation de la base de données du serveur fédéral lors de la création des joueur·euses à partir de la base FIDE (2.7.5)
-- Correction de la recherche FFE en ligne (2.7.7)
-- Correction de la recherche des joueur·euses FFE par leur identifiant FIDE (2.7.7)
-- Correction de l'ajout de joueur·euses FIDE non présent·es dans la base FFE (2.7.7)
-
-## ChessEvent
-
-- Prise en compte correcte des dates de naissance antérieures au 01/01/1970 (2.7.0)
-- Normalisation des noms des joueur·euses (2.7.1)
-- Correction du type de classement Estimé/National des joueur·euses (2.7.4)
-- Correction de la mise à jour sur le site FFE depuis le script ChessEvent (2.7.8)
+- Ajout de l'onglet Prix avec la définition et le calcul des prix (2.8.0)
 
 ---
 
@@ -76,52 +37,15 @@ English version below
 
 # Players management
 
-### Event management
-
-- Fixed a bug on event editing (2.7.6)
-- Restrained the characters that can be used in event IDs (2.7.8)
-
-### Tournaments management
-
-- Added PGN and TRF 16 exports (2.7.0)
-
-### Players management
-
-- Fixed and added columns to the players ODS export (2.7.1)
-- Fixed the display of non-FIDE players when updating the players from FFE or FIDE databases (2.7.3)
-- Update players when rating types differ in data sources (2.7.5)
-- Fixed the colors of the players update modal (2.7.5)
-- Fixed a bug on player creation (2.7.7)
-- Fixed the indices of the players databases (2.7.8)
-
-### Pairings management
-
-- Reduced reaction time when entering results (2.7.1)
-- Fixed entering results with keyboard shortcuts on fixed boards (2.7.5)
-- Removed pairing settings modal when not accurate (2.7.5)
-- Take into account the number of the first board of the tournaments (2.7.7)
-- Fixed a bug when no tournament (2.7.8)
-- Fixed the board numbering (2.7.8)
+- Added the gender on the player views (2.8.0)
+- Added check-in lists (2.8.0)
+- Updated federation flags (2.8.0)
+- Calculation of the players' category relative to the date of the tournament (2.8.0)
 
 ### Screens management
 
-- Fixed a bug on screen creation (2.7.2)
-- Fixed the refresh of results screens (2.7.8)
+- Added the possibility not to show the opponents on pairings screens by alphabetical order (2.8.0)
 
 ### Prizes management
 
-- Integration of the FFE operations to the web UI (2.7.0)
-- Alignment of performance calculation with Papi’s in the case of players with a full-point or half-point bye (2.7.0)
-- Fixed a bug on FFE results upload (2.7.3)
-- Fixed FFE auth test on the tournament editing form (2.7.4)
-- Request the FFE SQL server when augmenting players created from the FIDE database (2.7.5)
-- Fixed FFE online search (2.7.7)
-- Fixed searching FFE players by their FIDE ID (2.7.7)
-- Fixed adding FIDE players when not present in the FFE database (2.7.7)
-
-## ChessEvent
-
-- Fixed birth dates prior to 1970-01-01 (2.7.0)
-- Normalized players' names (2.7.1)
-- Fixed the players' Estimated/National rating type (2.7.4)
-- Fixed the upload to the FFE website from the ChessEvent script (2.7.8)
+- Added the Prizes tab with the definition and calculation of prizes (2.8.0)
