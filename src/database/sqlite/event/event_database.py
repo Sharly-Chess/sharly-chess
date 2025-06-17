@@ -1560,14 +1560,17 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def set_tournament_last_result_update(self, tournament_id: int):
+    def set_tournament_last_result_update(self, tournament_id: int) -> float:
+        """Change the last result update of the tournament with the current date and return this date."""
+        date: float = time.time()
         self.execute(
             'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
             (
-                time.time(),
+                date,
                 tournament_id,
             ),
         )
+        return date
 
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
@@ -1745,11 +1748,12 @@ class EventDatabase(MigrationDatabase):
 
     def add_stored_result(
         self, tournament_id: int, round_: int, board: Board, result: UtilResult
-    ):
+    ) -> float:
+        """Stores a result and return the date of the update."""
         assert board.id is not None
         assert board.white_player is not None
         assert board.black_player is not None
-        self.set_tournament_last_result_update(tournament_id)
+        date: float = self.set_tournament_last_result_update(tournament_id)
         self.execute(
             'INSERT INTO `result`('
             '    `tournament_id`, `round`, `board_id`, '
@@ -1763,16 +1767,21 @@ class EventDatabase(MigrationDatabase):
                 board.white_player.id,
                 board.black_player.id,
                 result,
-                time.time(),
+                date,
             ),
         )
+        return date
 
-    def delete_stored_result(self, tournament_id: int, round_: int, board_id: int):
-        self.set_tournament_last_result_update(tournament_id)
+    def delete_stored_result(
+        self, tournament_id: int, round_: int, board_id: int
+    ) -> float:
+        """Deletes a result and return the date of the update."""
+        date: float = self.set_tournament_last_result_update(tournament_id)
         self.execute(
             'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
             (tournament_id, round_, board_id),
         )
+        return date
 
     def _delete_tournament_stored_results(self, tournament_id: int):
         self.execute(

@@ -181,14 +181,16 @@ class FfeDatabase(LocalSourceDatabase):
         self.write = True
         with self:
             self.execute(
-                'CREATE INDEX `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
             )
             self.execute(
-                'CREATE INDEX `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
             )
-            self.execute('CREATE INDEX `player_fide_id` ON `player`(`fide_id`)')
             self.execute(
-                'CREATE INDEX `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
             )
             self.commit()
 

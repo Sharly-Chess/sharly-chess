@@ -10,22 +10,21 @@
     </div>
 </div>
 
-<div
-    hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
-    hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}"
-    hx-target="#refresh-message"
-    hx-swap="innerHTML"
->
-</div>
-<div
-    hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
-    hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}""
-    hx-target="#refresh-message"
-    hx-swap="innerHTML"
->
-</div>
-
 {% if admin_tournament %}
+    <div
+        hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
+        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
+    <div
+        hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
+        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}""
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
     {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
 
     {{ macros.refresh_listener(
@@ -207,166 +206,165 @@
             </div>
         </div>
     </div>
+    <script>
+        var pairing_board_id = null;
+        var keyQueue = [];
+        var requestInFlight = false;
+
+        function scrollToTargetAdjusted(element) {
+            const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
+            const tableHeaderHeight = $('#players-table-header').height();
+            const scrollTop = $(window).scrollTop();
+            const rect = element.getBoundingClientRect();
+            const elementTop = rect.top + scrollTop;
+            const elementBottom = rect.bottom + scrollTop;
+            const viewportTop = scrollTop + headerHeight + tableHeaderHeight;
+            const viewportBottom = scrollTop + $(window).height();
+
+            // Test if the element is fully visible on the screen
+            if (elementTop < viewportTop) {
+                window.scrollTo({
+                    top: elementTop - headerHeight - tableHeaderHeight,
+                    behavior: "smooth"
+                });
+            } else if (elementBottom > (viewportBottom)) {
+                element.scrollIntoView({ behavior: "smooth", block: "end" });
+            }
+        }
+
+        function highlightBoard(board_id, with_warning) {
+            $("tr.highlight").removeClass("highlight");
+            $("tr.highlight-warning").removeClass("highlight-warning");
+            if (board_id) {
+                $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
+                $(`[data-board-id="${board_id}"]`).removeClass("text-secondary");
+                pairing_board_id = board_id;
+                scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
+            } else {
+                pairing_board_id = null;
+            }
+        }
+
+        function rowClickHandler(e) {
+            var $this = $(this);
+            highlightBoard($this.parent().data("board-id"), false);
+        };
+
+        function hasErrorRow() {
+            return $("tr.highlight-warning").length > 0
+        }
+
+        function processNextKey() {
+            if (requestInFlight || keyQueue.length === 0 || hasErrorRow()) return;
+
+            requestInFlight = true;
+            const { code, pairing_board_id: board_id } = keyQueue.shift();
+
+            htmx.ajax('PUT',
+                "{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}",
+                {
+                    target: "body",
+                    swap: "outerHTML",
+                    values: {
+                        key: code,
+                        board_id: board_id || 0,
+                        validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
+                    },
+                },
+            );
+        }
+
+        function handleShortCutKey(code) {
+            if (hasErrorRow()) {
+                // If there is a warning, do not process the key
+                keyQueue = [];
+                $("tr.highlight").removeClass("highlight");
+                return;
+            }
+            keyQueue.push({ code, pairing_board_id });
+            $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
+            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
+            if (nextBoardId) {
+                highlightBoard(nextBoardId, false);
+            }
+            processNextKey();
+        }
+
+        function keydownHandler(e) {
+            if ($('#pairings-table').length === 0) {
+                // The event listener is active, but the page has changed
+                return;
+            }
+
+            if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
+                e.preventDefault();
+
+                var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
+                if (!$row.length) {
+                    return;
+                }
+                var $next_row = $row.next();
+                var $prev_row = $row.prev();
+
+                // Highlight the next/previous row
+                if (e.key === "ArrowUp" && $prev_row.length) {
+                    highlightBoard($prev_row.data("board-id"), false);
+                } else if (e.key === "ArrowDown" && $next_row.length) {
+                    highlightBoard($next_row.data("board-id"), false);
+                }
+            }
+
+            if (!pairing_board_id || hasErrorRow()) return;
+
+            const code = event.code;
+            const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
+            if (validCodes.includes(code)) {
+                event.preventDefault();
+                handleShortCutKey(code);
+            }
+        };
+
+        function highlightBoardWithError(board_id) {
+            highlightBoard(board_id, true);
+
+            // Remove the text-secondary class from all rows that were queued
+            while (keyQueue.length > 0) {
+                const { pairing_board_id: board_id } = keyQueue.shift();
+                $('#pairing-row-' + board_id + ' td').removeClass('text-secondary')
+            }
+        }
+
+        function afterSwapHandler(e) {
+            $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
+
+            // If we've swapped a row element, process the next key
+            if (e.detail.elt?.dataset?.boardId) {
+                requestInFlight = false;
+                processNextKey();
+            }
+        }
+
+        function beforeSwapHandler(e) {
+            $("tr.pairing-row > td").off("click.pairings");
+        }
+
+        $(document).ready(function() {
+            $(document).off("keydown.pairings");
+            $(document).off("click.pairings");
+            $(document).off("htmx:beforeSwap.pairings");
+            $(document).off("htmx:afterSwap.pairings");
+            $(document).off("highlight_board_with_warning.pairings");
+
+            $(document).on("keydown.pairings", keydownHandler);
+            $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
+            $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
+            $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
+            $(document).on("highlight_board_with_warning.pairings", function(e) {
+                highlight
+                BoardWithError(e.detail.board_id);
+            });
+        });
+    </script>
 {% else %}
     {{ _('No pairings.') }}
 {% endif%}
-
-<script>
-    var pairing_board_id = null;
-    var keyQueue = [];
-    var requestInFlight = false;
-
-    function scrollToTargetAdjusted(element) {
-        const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
-        const tableHeaderHeight = $('#players-table-header').height();
-        const scrollTop = $(window).scrollTop();
-        const rect = element.getBoundingClientRect();
-        const elementTop = rect.top + scrollTop;
-        const elementBottom = rect.bottom + scrollTop;
-        const viewportTop = scrollTop + headerHeight + tableHeaderHeight;
-        const viewportBottom = scrollTop + $(window).height();
-
-        // Test if the element is fully visible on the screen
-        if (elementTop < viewportTop) {
-            window.scrollTo({
-                top: elementTop - headerHeight - tableHeaderHeight,
-                behavior: "smooth"
-            });
-        } else if (elementBottom > (viewportBottom)) {
-            element.scrollIntoView({ behavior: "smooth", block: "end" });
-        }
-    }
-
-    function highlightBoard(board_id, with_warning) {
-        $("tr.highlight").removeClass("highlight");
-        $("tr.highlight-warning").removeClass("highlight-warning");
-        if (board_id) {
-            $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
-            $(`[data-board-id="${board_id}"]`).removeClass("text-secondary");
-            pairing_board_id = board_id;
-            scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
-        } else {
-            pairing_board_id = null;
-        }
-    }
-
-    function rowClickHandler(e) {
-        var $this = $(this);
-        highlightBoard($this.parent().data("board-id"), false);
-    };
-
-    function hasErrorRow() {
-        return $("tr.highlight-warning").length > 0
-    }
-
-    function processNextKey() {
-        if (requestInFlight || keyQueue.length === 0 || hasErrorRow()) return;
-
-        requestInFlight = true;
-        const { code, pairing_board_id: board_id } = keyQueue.shift();
-
-        htmx.ajax('PUT',
-            "{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}",
-            {
-                target: "body",
-                swap: "outerHTML",
-                values: {
-                    key: code,
-                    board_id: board_id || 0,
-                    validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
-                },
-            },
-        );
-    }
-
-    function handleShortCutKey(code) {
-        if (hasErrorRow()) {
-            // If there is a warning, do not process the key
-            keyQueue = [];
-            $("tr.highlight").removeClass("highlight");
-            return;
-        }
-        keyQueue.push({ code, pairing_board_id });
-        $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
-        nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
-        if (nextBoardId) {
-            highlightBoard(nextBoardId, false);
-        }
-        processNextKey();
-    }
-
-    function keydownHandler(e) {
-        if ($('#pairings-table').length === 0) {
-            // The event listener is active, but the page has changed
-            return;
-        }
-
-        if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
-            e.preventDefault();
-
-            var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
-            if (!$row.length) {
-                return;
-            }
-            var $next_row = $row.next();
-            var $prev_row = $row.prev();
-
-            // Highlight the next/previous row
-            if (e.key === "ArrowUp" && $prev_row.length) {
-                highlightBoard($prev_row.data("board-id"), false);
-            } else if (e.key === "ArrowDown" && $next_row.length) {
-                highlightBoard($next_row.data("board-id"), false);
-            }
-        }
-
-        if (!pairing_board_id || hasErrorRow()) return;
-
-        const code = event.code;
-        const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
-        if (validCodes.includes(code)) {
-            event.preventDefault();
-            handleShortCutKey(code);
-        }
-    };
-
-    function highlightBoardWithError(board_id) {
-        highlightBoard(board_id, true);
-
-        // Remove the text-secondary class from all rows that were queued
-        while (keyQueue.length > 0) {
-            const { pairing_board_id: board_id } = keyQueue.shift();
-            $('#pairing-row-' + board_id + ' td').removeClass('text-secondary')
-        }
-    }
-
-    function afterSwapHandler(e) {
-        $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
-
-        // If we've swapped a row element, process the next key
-        if (e.detail.elt?.dataset?.boardId) {
-            requestInFlight = false;
-            processNextKey();
-        }
-    }
-
-    function beforeSwapHandler(e) {
-        $("tr.pairing-row > td").off("click.pairings");
-    }
-
-    $(document).ready(function() {
-        $(document).off("keydown.pairings");
-        $(document).off("click.pairings");
-        $(document).off("htmx:beforeSwap.pairings");
-        $(document).off("htmx:afterSwap.pairings");
-        $(document).off("highlight_board_with_warning.pairings");
-
-        $(document).on("keydown.pairings", keydownHandler);
-        $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
-        $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
-        $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
-        $(document).on("highlight_board_with_warning.pairings", function(e) {
-            highlightBoardWithError(e.detail.board_id);
-        });
-    });
-
-</script>

@@ -59,7 +59,7 @@ class SQLiteDatabase:
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
         if self.write:
-            self.cursor.execute('PRAGMA journal_mode=WAL')
+            self.cursor.execute('PRAGMA journal_mode=DELETE')
             self.commit()
         return self
 
