@@ -34,7 +34,7 @@
             {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
                 <div class="dropend compact-only w-100">
                     <button
-                        class="nav-link text-start{{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                        class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                         type="button"
                         data-bs-toggle="dropdown"
                         {% if nav_tab.disabled %}
