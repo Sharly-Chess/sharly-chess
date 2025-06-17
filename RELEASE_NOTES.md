@@ -41,6 +41,7 @@ English version below
 - Prise en compte du numéro du premier échiquier des tournois (2.7.7)
 - Correction d'un bug en l'absence de tournois (2.7.8)
 - Correction de la numérotation des échiquiers (2.7.8)
+- Correction de l'allocation des points-joker (2.7.9)
 
 ### Gestion des écrans
 
@@ -109,6 +110,7 @@ English version below
 - Take into account the number of the first board of the tournaments (2.7.7)
 - Fixed a bug when no tournament (2.7.8)
 - Fixed the board numbering (2.7.8)
+- Fixed the allocation of byes (2.7.9)
 
 ### Screens management
 
