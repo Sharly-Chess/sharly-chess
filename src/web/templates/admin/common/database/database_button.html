@@ -7,8 +7,8 @@
     data-bs-toggle="modal"
     data-bs-target="#modal-wrapper"
 >
-    <i class="bi bi-database pe-1"></i>
-    <span class="pe-2">{{ _('Player Databases') }}</span>
+    <i class="bi bi-database"></i>
+    <span class="pe-2 expanded-only">{{ _('Player Databases') }}</span>
     <span
         hx-get="{{ url_for('admin-database-status-badge') }}"
         hx-trigger="sse:database-status-updated, load"

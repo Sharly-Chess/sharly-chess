@@ -17,8 +17,10 @@
             hx-push-url="true"
             hx-indicator="#please-wait"
         >
-            <i class="fs-5 bi-arrow-left-circle-fill"></i>
-            {{ _('All Events') }}
+            <i class="back-icon bi-arrow-left-circle-fill"></i>
+            <span class="expanded-only">
+                {{ _('All Events') }}
+            </span>
         </button>
         {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
     </div>
@@ -28,16 +30,61 @@
     <h4 class="w-100 px-2 fs-5 mt-2 text-center">{{ admin_event.name }}</h4>
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% if 'submenu' in nav_tab %}
+
+            {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
+                <div class="dropend compact-only">
+                    <button
+                        class="nav-link {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %} py-0"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        {% if nav_tab.disabled %}
+                            disabled
+                        {% endif %}
+                        aria-expanded="false"
+                    >
+                        {% if nav_tab.icon_class %}
+                            <i class="{{ nav_tab.icon_class }}"></i>
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
+                            {% if sub_nav.separator %}
+                                <li class="dropdown-divider"></li>
+                            {% endif %}
+                            <li>
+                                <button
+                                    class="dropdown-item {% if sub_nav_id == admin_event_tab %}active{% endif %}"
+                                    hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                                    preload
+                                    hx-target="body"
+                                    hx-push-url="true"
+                                    type="button"
+                                    hx-indicator="#please-wait"
+                                    {% if sub_nav.disabled %}
+                                        disabled
+                                    {% endif %}
+                                >
+                                    {% if nav_tab.icon_class %}
+                                        <i class="{{ sub_nav.icon_class }} pe-1"></i>
+                                    {% endif %}
+                                    {{ sub_nav.title }}
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endwith %}
+
             {% with active=(admin_event_tab == nav_id) %}
                 <button
-                    class="btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
+                    class="expanded-only btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
                     data-bs-toggle="collapse"
                     data-bs-target="#{{ nav_id }}-collapse"
                 >
                     {% if nav_tab.icon_class %}
-                        <i class="{{ nav_tab.icon_class }} pe-1"></i>
+                        <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    {{ nav_tab.title }}
+                    <span class="expanded-only">{{ nav_tab.title }}</span>
                     <i class="dropdown-arrow bi bi-chevron-right"></i>
                 </button>
                 <div class="collapse w-100" id="{{ nav_id }}-collapse">
@@ -58,7 +105,7 @@
                             {% endif %}
                         >
                             {% if nav_tab.icon_class %}
-                                <i class="{{ sub_nav.icon_class }} pe-1"></i>
+                                <i class="{{ sub_nav.icon_class }}"></i>
                             {% endif %}
                             {{ sub_nav.title }}
                         </button>
@@ -86,9 +133,9 @@
                     {% endif %}
                 >
                     {% if nav_tab.icon_class %}
-                        <i class="{{ nav_tab.icon_class }} pe-1"></i>
+                        <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    {{ nav_tab.title }}
+                    <span class="expanded-only">{{ nav_tab.title }}</span>
                 </button>
             {% endwith %}
         {% endif %}
@@ -105,7 +152,7 @@
         data-bs-target="#modal-wrapper"
     >
         <i class="bi bi-printer-fill"></i>
-        {{ _('Print') }}
+        <span class="expanded-only">{{ _('Print') }}</span>
     </button>
     {{ admin_macros.extra_admin_nav_item("database", extra_admin_nav_items)}}
     {% include '/admin/common/database/database_button.html' %}

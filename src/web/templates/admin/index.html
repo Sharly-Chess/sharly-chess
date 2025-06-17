@@ -12,7 +12,7 @@
             hx-swap="transition:true"
         >
             <i class="bi-arrow-left-circle-fill"></i>
-            {{ _('Home page') }}
+            <span class="expanded-only">{{ _('Home page') }}</span>
         </button>
         {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
     </div>
@@ -44,7 +44,8 @@
                 {% if nav_tab.icon_class %}
                     <i class="{{ nav_tab.icon_class }} pe-1"></i>
                 {% endif %}
-                {{ nav_tab.title }}
+
+                <span class="expanded-only">{{ nav_tab.title }}</span>
             </button>
         {% endwith %}
     {% endfor %}

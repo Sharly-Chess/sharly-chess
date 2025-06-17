@@ -240,12 +240,36 @@
                     $(id + '-toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
                     $(id + '-toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
                 }
+
+                function toggle_sidebar(e) {
+                    e.preventDefault();
+                    const body = $("body");
+                    if (body.hasClass('compact-sidebar')) {
+                        body.removeClass('compact-sidebar');
+                        localStorage.setItem('sidebar-state', 'expanded');
+                    } else {
+                        body.addClass('compact-sidebar');
+                        localStorage.setItem('sidebar-state', 'compact');
+                    }
+                }
+
+                function init_sidebar() {
+                    const body = $("body");
+                    if (body) {
+                        if (localStorage.getItem('sidebar-state') == 'compact') {
+                            body.addClass('compact-sidebar');
+                        } else {
+                            body.removeClass('compact-sidebar');
+                        }
+                    }
+                }
             </script>
         {% endif %}
     </head>
     <body
         hx-ext="multi-swap,preload,morphdom-swap"
         hx-swap="transition:true"
+        class="d-none"
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
@@ -265,7 +289,7 @@
                 $(location).attr('href', '{{ redirect_url }}');
             </script>
         {% else %}
-            <div id="main-wrapper" {% block sse %}{% endblock sse %}>
+            <div id="main-wrapper" class="" {% block sse %}{% endblock sse %}>
                 <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
                     <div id="refresh-message"></div>
                     {% include 'messages.html' %}
@@ -273,11 +297,14 @@
                 {% block header %}
                 {% endblock header %}
                 <div class="sidebar">
-                    <div class="sidebar collapse collapse-horizontal show border-end">
+                    <div class="sidebar show border-end">
                         <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start">
                             {% block sidebar %}
                             {% endblock sidebar %}
                         </div>
+                        <button id="sidebar-expander" onclick="toggle_sidebar(event)">
+                            <i class="bi bi-arrows-expand-vertical"></i>
+                        </button>
                     </div>
                 </div>
                 <main
@@ -339,6 +366,7 @@
             {{ macros.theme_script(theme) }}
             <script>
                 $('body').css('padding-right', '0');
+                init_sidebar();
             </script>
         {% endif %}
     </body>
@@ -347,6 +375,13 @@
         <script>
             closeTooltips();
             activateTooltips();
+
+            $(document).ready(function() {
+                init_sidebar();
+
+                // Display the body once the CSS is initialized
+                $("body").removeClass("d-none");
+            });
 
             if (typeof bootstrap !== 'undefined') {
                 // Allow the tooltip content to have a style attribute
