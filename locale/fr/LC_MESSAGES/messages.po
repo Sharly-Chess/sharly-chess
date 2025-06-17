@@ -314,7 +314,7 @@ msgid "All"
 msgstr "Tous"
 
 msgid "All Events"
-msgstr "Tous les évènements"
+msgstr "Évènements"
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
@@ -3168,8 +3168,8 @@ msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
 
-msgid "Player Databases"
-msgstr "Bases joueur·euses"
+msgid "Data sources"
+msgstr "Sources données"
 
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"

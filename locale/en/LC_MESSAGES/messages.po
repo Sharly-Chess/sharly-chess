@@ -3168,7 +3168,7 @@ msgstr ""
 msgid "Player / Elo"
 msgstr ""
 
-msgid "Player Databases"
+msgid "Data sources"
 msgstr ""
 
 msgid "Player Elo"
