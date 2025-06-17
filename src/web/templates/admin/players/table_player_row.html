@@ -4,7 +4,7 @@
         hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
     {% endif %}
 >
-    <td class="text-nowrap text-start w-1">
+    <td class="text-nowrap text-start w-1 ps-2">
         <span class="dropdown">
             <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
                 <i class="bi-three-dots"></i>
@@ -70,8 +70,8 @@
     </td>
     {{ admin_macros.extra_admin_column_cell("name", player, admin_players_extra_columns)}}
     <td
-        class="text-nowrap position-sticky start-0 px-3"
-        style="border-right: 2px solid #454748;"
+        class="text-nowrap position-sticky px-3"
+        style="border-right: 2px solid #454748; left: var(--side-bar-width);"
     >
         {{ player.full_name }}
     </td>
@@ -256,7 +256,7 @@
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("record", player, admin_players_extra_columns)}}
     {% if 'record' in admin_players_filter_columns %}
-        <td>
+        <td class="pe-2">
             {{ admin_macros.player_record(player) }}
         </td>
     {% endif %}

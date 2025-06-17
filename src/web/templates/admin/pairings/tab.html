@@ -1,14 +1,13 @@
-<div
-    class="d-flex mb-2 align-items-center flex-wrap gap-3 z-3"
-    style="max-width: calc(var(--vw, 100vw) - 2rem); position: sticky; left: 1rem;"
->
-    {% call() macros.section_title() %}
-        {{ _('Pairings') }}{{ macros.doc_icon('pairings', '') }}
-    {% endcall %}
-    <div class="flex-grow-1"></div>
-    {% if admin_tournament %}
-        {% include '/admin/pairings/round_controls.html' %}
-    {% endif %}
+<div id="top-nav-wrapper">
+    <div id="top-nav-content">
+        <div>
+            {{ macros.doc_icon('pairings', 'fs-4') }}
+        </div>
+        <div class="flex-grow-1"></div>
+        {% if admin_tournament %}
+            {% include '/admin/pairings/round_controls.html' %}
+        {% endif %}
+    </div>
 </div>
 
 <div
@@ -34,176 +33,178 @@
         hx_include="[name='round']"
     ) }}
 
-    <div class="pt-1 pb-1 row">
-        {% if has_unpaired %}
-            <div class="col-12 col-md-3"></div>
-        {% endif %}
-        <div class="col-12 {{ 'col-md-9' if has_unpaired else 'col-md-12' }} d-flex gap-2 align-items-end">
-            <div class="flex-grow-1">
-                {% if safety_mode != 'SAFE' %}
-                    <i
-                        class="text-danger bi bi-exclamation-triangle-fill fs-4"
-                        {{ macros.tooltip_attributes('warning', _('You are in an unsafe editing mode. Change the round to exit this mode.'), 'right') }}
-                    ></i>
-                {% endif %}
-            </div>
-            <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
-                {% if admin_tournament.check_in_open %}
-                    <button
-                        class="btn btn-outline-primary text-nowrap"
-                        hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                        hx-trigger="click"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                        {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
-                    >
-                        {{ _('Close check in') }}
-                    </button>
-                {% endif %}
-                {% include admin_tournament.pairing_system.pairing_buttons_template %}
-                {% if admin_boards %}
-                    {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
-                        <div class="btn-group">
-                            <button
-                                class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
-                                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                hx-vals='{"{{ name }}": false }'
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            >
-                                {{ _('All') }}
-                            </button>
-                            <button
-                                class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
-                                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                hx-vals='{"{{ name }}": true }'
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            >
-                                {{ _('In play') }}
-                            </button>
-                        </div>
-                    {% endwith %}
-
-                    <div class="d-flex flex-column">
-                        <div style="font-size: 0.8rem;">
-                            {{ _('Keyboard shortcuts:') }}
-                            <i
-                                class="bi-info-circle-fill ps-1"
-                                {{ macros.tooltip_attributes(
-                                    '',
-                                    '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
-                                        '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
-                                    '</div>',
-                                    'top',
-                                ) }}
-                            ></i>
-                        </div>
-                        {% with action='RESULT_UPDATE' %}
+    <div class="container-fluid">
+        <div class="pt-1 pb-1 row">
+            {% if has_unpaired %}
+                <div class="col-12 col-lg-3"></div>
+            {% endif %}
+            <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} d-flex gap-2 align-items-end">
+                <div class="flex-grow-1">
+                    {% if safety_mode != 'SAFE' %}
+                        <i
+                            class="text-danger bi bi-exclamation-triangle-fill fs-4"
+                            {{ macros.tooltip_attributes('warning', _('You are in an unsafe editing mode. Change the round to exit this mode.'), 'right') }}
+                        ></i>
+                    {% endif %}
+                </div>
+                <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
+                    {% if admin_tournament.check_in_open %}
+                        <button
+                            class="btn btn-outline-primary text-nowrap"
+                            hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                            hx-trigger="click"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+                        >
+                            {{ _('Close check in') }}
+                        </button>
+                    {% endif %}
+                    {% include admin_tournament.pairing_system.pairing_buttons_template %}
+                    {% if admin_boards %}
+                        {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
                             <div class="btn-group">
-                                <span
-                                    {{ macros.tooltip_attributes(
-                                        'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
-                                    ) }}
-                                >
-                                    <button
-                                        id="overwrite-mode"
-                                        {% if action in allowed_actions %}
-                                            class="btn btn-outline-primary active"
-                                            hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                                        {% else %}
-                                            class="btn btn-outline-primary"
-                                            hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
-                                            hx-trigger="click"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-wrapper"
-                                            hx-indicator="#please-wait"
-                                            hx-target="body"
-                                            preload
-                                        {% endif %}
-                                    >
-                                        {{ _('Overwrite') }}
-                                    </button>
-                                </span>
                                 <button
-                                    id="highlight-mode"
-                                    class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
-                                    hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                                    {{ macros.tooltip_attributes(
-                                        'info',
-                                        _(
-                                            'Highlights the row if the new result is different '
-                                            'when using the keyboard shortcuts '
-                                            '(useful when re-entering all the results for verification).'
-                                        ),
-                                        'top'
-                                    ) }}
+                                    class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
+                                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                                    hx-vals='{"{{ name }}": false }'
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
                                 >
-                                    {{ _('Highlight') }}
+                                    {{ _('All') }}
+                                </button>
+                                <button
+                                    class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
+                                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                                    hx-vals='{"{{ name }}": true }'
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                >
+                                    {{ _('In play') }}
                                 </button>
                             </div>
                         {% endwith %}
-                    </div>
-                {% endif %}
+
+                        <div class="d-flex flex-column">
+                            <div style="font-size: 0.8rem;">
+                                {{ _('Keyboard shortcuts:') }}
+                                <i
+                                    class="bi-info-circle-fill ps-1"
+                                    {{ macros.tooltip_attributes(
+                                        '',
+                                        '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
+                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
+                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
+                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
+                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
+                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
+                                        '</div>',
+                                        'top',
+                                    ) }}
+                                ></i>
+                            </div>
+                            {% with action='RESULT_UPDATE' %}
+                                <div class="btn-group">
+                                    <span
+                                        {{ macros.tooltip_attributes(
+                                            'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
+                                        ) }}
+                                    >
+                                        <button
+                                            id="overwrite-mode"
+                                            {% if action in allowed_actions %}
+                                                class="btn btn-outline-primary active"
+                                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
+                                            {% else %}
+                                                class="btn btn-outline-primary"
+                                                hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                                                hx-trigger="click"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
+                                                hx-indicator="#please-wait"
+                                                hx-target="body"
+                                                preload
+                                            {% endif %}
+                                        >
+                                            {{ _('Overwrite') }}
+                                        </button>
+                                    </span>
+                                    <button
+                                        id="highlight-mode"
+                                        class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
+                                        hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _(
+                                                'Highlights the row if the new result is different '
+                                                'when using the keyboard shortcuts '
+                                                '(useful when re-entering all the results for verification).'
+                                            ),
+                                            'top'
+                                        ) }}
+                                    >
+                                        {{ _('Highlight') }}
+                                    </button>
+                                </div>
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-        {% if has_unpaired %}
-            <div class="col-12 col-md-3 mb-3">
-                {% if admin_unpaired|length > 0 %}
-                    {% with title=_('Unpaired'), unpaired=admin_unpaired %}
-                        {% include '/admin/pairings/unpaired_table.html' %}
-                    {% endwith %}
-                {% endif %}
-
-                {% if admin_bye_players|length > 0 %}
-                    {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
-                        {% include '/admin/pairings/unpaired_table.html' %}
-                    {% endwith %}
-                {% endif %}
-            </div>
-        {% endif %}
-
-        <div class="col-12 {{ 'col-md-9' if has_unpaired else 'col-md-12' }} mb-3">
-            <table
-                id="pairings-table"
-                class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
-            >
-                <thead
-                    id="players-table-header"
-                    class="position-sticky z-2"
-                    style="top: var(--header-height);"
-                >
-                    <tr>
-                        <th>{{ _('Board') }}</th>
-                        <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
-                        {% if admin_tournament.print_real_points %}
-                            <th>&nbsp;</th>
-                        {% endif %}
-                        <th>{{ _('White') }}</th>
-                        <th class="text-center">{{ _('Result') }}</th>
-                        <th>{{ _('Black') }}</th>
-                        {% if admin_tournament.print_real_points %}
-                            <th>&nbsp;</th>
-                        {% endif %}
-                        <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for board in admin_filtered_boards %}
-                        {% with wp=board.white_player, bp=board.black_player %}
-                            {% include '/admin/pairings/pairing_row.html' %}
+            {% if has_unpaired %}
+                <div class="col-12 col-lg-3 mb-3">
+                    {% if admin_unpaired|length > 0 %}
+                        {% with title=_('Unpaired'), unpaired=admin_unpaired %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                    {% endif %}
+
+                    {% if admin_bye_players|length > 0 %}
+                        {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} mb-3">
+                <table
+                    id="pairings-table"
+                    class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+                >
+                    <thead
+                        id="players-table-header"
+                        class="position-sticky z-2"
+                        style="top: var(--header-height);"
+                    >
+                        <tr>
+                            <th>{{ _('Board') }}</th>
+                            <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                            {% if admin_tournament.print_real_points %}
+                                <th>&nbsp;</th>
+                            {% endif %}
+                            <th>{{ _('White') }}</th>
+                            <th class="text-center">{{ _('Result') }}</th>
+                            <th>{{ _('Black') }}</th>
+                            {% if admin_tournament.print_real_points %}
+                                <th>&nbsp;</th>
+                            {% endif %}
+                            <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for board in admin_filtered_boards %}
+                            {% with wp=board.white_player, bp=board.black_player %}
+                                {% include '/admin/pairings/pairing_row.html' %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 {% else %}

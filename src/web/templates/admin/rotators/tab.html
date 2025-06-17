@@ -1,13 +1,13 @@
-{% extends '../../common/cards_container.html' %}
+{% extends '../../common/admin_cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Rotators') }}{{ macros.doc_icon('screens-rotators', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('screens-rotators', 'fs-4') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
 {% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     {% with id='show-details-on-rotator-list', name='admin_rotators_show_details', show=admin_rotators_show_details %}
         <div
             class="form-check form-switch d-inline-block pe-2"

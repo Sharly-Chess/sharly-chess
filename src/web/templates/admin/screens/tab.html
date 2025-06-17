@@ -1,13 +1,13 @@
-{% extends '../../common/cards_container.html' %}
+{% extends '../../common/admin_cards_container.html' %}
 
-{% block cards_container_title %}
-    {{ _('Single Screens') }}{{ macros.doc_icon('screens-single', '') }}
+{% block top_left_nav %}
+    {{ macros.doc_icon('screens-single', 'fs-4') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
 {% endblock %}
 
-{% block cards_container_right_buttons %}
+{% block top_right_nav %}
     {% with id='admin-screens-show-family-screens', name='admin_screens_show_family_screens', show=admin_screens_show_family_screens %}
         <div
             class="form-check form-switch d-inline-block pe-2"

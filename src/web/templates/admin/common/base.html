@@ -9,45 +9,29 @@
 hx-ext="sse" sse-connect="/sse" sse-close="server_shutdown"
 {% endblock sse %}
 
-{% block header %}
-    <div
-        id="admin-header"
-        class="header admin-header border-bottom"
-        style="background-color: var(--pw-nav-bg);"
-    >
-        <div class="bs-tabs mx-3 py-2">
-            <nav class="d-flex align-items-center gap-4 ">
-                <!-- block admin_header_back_button -->
-                {% block admin_header_back_button %}
-                    ADMIN_HEADER_BACK_BUTTON
-                {% endblock admin_header_back_button %}
-                <!-- end block admin_header_back_button -->
-                <div
-                    class="nav nav-underline flex-grow-1 d-flex row-gap-1 column-gap-3"
-                    style="--bs-nav-underline-gap: 0.5rem;"
-                    id="nav-tab"
-                    role="tablist"
-                >
-                    <!-- block admin_header_nav -->
-                    {% block admin_header_nav %}
-                        ADMIN_HEADER_NAV
-                    {% endblock admin_header_nav %}
-                    <!-- end block admin_header_nav -->
-                </div>
-                <!-- block admin_header_action_buttons -->
-                <div class="d-flex gap-2 align-items-center">
-                    {% block admin_header_action_buttons %}
-                        ADMIN_HEADER_ACTION_BUTTONS
-                    {% endblock admin_header_action_buttons %}
-                </div>
-                <!-- end block admin_header_action_buttons -->
-            </nav>
+{% block sidebar %}
+    <nav class="admin bs-tabs d-flex flex-column gap-2 align-items-start py-3 px-0" style="min-height: var(--vh, 100vh);">
+        <!-- block admin_header_back_button -->
+        {% block admin_header_back_button %}
+            ADMIN_HEADER_BACK_BUTTON
+        {% endblock admin_header_back_button %}
+        <!-- end block admin_header_back_button -->
+        <div
+            class="nav d-flex flex-column flex-grow-1 w-gap-1 column-gap-3 align-items-start w-100"
+            id="nav-tab"
+            role="tablist"
+        >
+            <!-- block admin_nav -->
+            {% block admin_nav %}
+                ADMIN_HEADER_NAV
+            {% endblock admin_nav %}
+            <!-- end block admin_nav -->
         </div>
-    </div>
-{% endblock header %}
+    </nav>
+{% endblock sidebar %}
 
 {% block content %}
-    <div id="admin-content" class="content admin-content tab-content p-3">
+    <div id="admin-content" class="content admin-content tab-content">
         <!-- block admin_content -->
         {% block admin_content %}
             ADMIN_CONTENT

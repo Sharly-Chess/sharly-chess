@@ -1,17 +1,20 @@
-<button
-    class="btn btn-link fw-bold fe-3 px-0 py-0 me-1 position-relative fs-5"
-    hx-get="{{ url_for('admin-database-modal') }}"
-    hx-target="body"
-    hx-indicator="#please-wait"
-    preload
-    data-bs-toggle="modal"
-    data-bs-target="#modal-wrapper"
->
-    <i class="bi bi-database"></i>
-    <span
-        hx-get="{{ url_for('admin-database-status-badge') }}"
-        hx-trigger="sse:database-status-updated, load"
-        hx-target="this"
-        hx-swap="innerHTML"
-    ></span>
-</button>
+<span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Data sources'), 'right') }}>
+    <button
+        class="nav-link text-start me-1 position-relative d-inline-flex align-items-center"
+        hx-get="{{ url_for('admin-database-modal') }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        preload
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+       <i class="bi bi-database"></i>
+        <span class="pe-2 expanded-only">{{ _('Data sources') }}</span>
+        <span
+            hx-get="{{ url_for('admin-database-status-badge') }}"
+            hx-trigger="sse:database-status-updated, load"
+            hx-target="this"
+            hx-swap="innerHTML"
+        ></span>
+    </button>
+</span>
