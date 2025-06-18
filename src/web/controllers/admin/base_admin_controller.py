@@ -1,3 +1,4 @@
+import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -319,21 +320,22 @@ class BaseAdminController(BaseController):
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
+        uniq_id: str | None = WebContext.form_data_to_str(data, field := 'uniq_id')
         if action == 'delete':
             if admin_event is None:
                 raise RuntimeError(f'{admin_event=} for [{action=}]')
             if not uniq_id:
-                errors['uniq_id'] = _('Please enter the event ID.')
+                errors[field] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
-                errors['uniq_id'] = _('event ID does not match.')
+                errors[field] = _('event ID does not match.')
         else:
             if not uniq_id:
-                errors['uniq_id'] = _('Please enter the event ID.')
-            elif uniq_id.find('/') != -1:
-                errors['uniq_id'] = _('Character [{char}] is not allowed.').format(
-                    char='/'
+                errors[field] = _('Please enter the event ID.')
+            elif not EventLoader.id_regex.match(uniq_id):
+                errors[field] = _(
+                    'Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore.'
                 )
+                data[field] = re.sub(r'[^a-zA-Z0-9_\-]', '_', uniq_id)
             else:
                 event_uniq_ids: list[str] = EventLoader.get(
                     request=request
@@ -341,14 +343,14 @@ class BaseAdminController(BaseController):
                 match action:
                     case 'clone' | 'create':
                         if uniq_id in event_uniq_ids:
-                            errors['uniq_id'] = _(
+                            errors[field] = _(
                                 'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case 'update':
                         if admin_event is None:
                             raise RuntimeError(f'{admin_event=} for [{action=}]')
                         if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
-                            errors['uniq_id'] = _(
+                            errors[field] = _(
                                 'Event [{uniq_id}] already exists.'
                             ).format(uniq_id=uniq_id)
                     case _:

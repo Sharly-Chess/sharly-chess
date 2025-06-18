@@ -187,6 +187,9 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
+msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »), les caractère invalides ont été remplacés par un souligné."
+
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
 
@@ -564,7 +567,7 @@ msgid "Boards from #%(first)d to #%(last)d"
 msgstr "échiquiers du n°%(first)d au n°%(last)d"
 
 msgid "Boards screen creation"
-msgstr "Création d'une famille d'écrans d'appariements par échiquier"
+msgstr "Création d'un écran d'appariements par échiquier"
 
 msgid "Boards screen family creation"
 msgstr "Création d'une famille d'écrans d'appariements par échiquier"
@@ -3249,7 +3252,7 @@ msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
 msgid "Players screen creation"
-msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique"
+msgstr "Création d'un écran d'appariements par ordre alphabétique"
 
 msgid "Players screen family creation"
 msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique"
