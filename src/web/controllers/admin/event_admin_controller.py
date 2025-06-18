@@ -23,7 +23,6 @@ from data.print_documents import (
     PrintDocumentOptionManager,
 )
 from data.print_documents.documents import PlayerListPrintDocument
-from data.prize.managers import CurrencyManager
 from plugins.ffe.utils import FFEUtils
 from utils.enum import TournamentRating
 from data.tournament import Tournament
@@ -102,12 +101,6 @@ class EventAdminController(BaseEventAdminController):
                 )
                 template_context |= {
                     'federation_options': cls._get_federation_options(None),
-                    'prize_currency_options': {
-                        '': _('By default - {option}').format(
-                            option=SharlyChessConfig().prize_currency.name
-                        )
-                    }
-                    | CurrencyManager.options(),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         SharlyChessConfig.default_record_illegal_moves_number
                     ),

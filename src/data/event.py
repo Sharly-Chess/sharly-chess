@@ -24,8 +24,6 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
-from data.prize.currencies import Currency
-from data.prize.managers import CurrencyManager
 from data.rotator import Rotator
 from data.screen import Screen
 from data.screen_set import ScreenSet
@@ -186,10 +184,9 @@ class Event:
         return self.stored_event.federation
 
     @property
-    def prize_currency(self) -> Currency:
-        if currency_id := self.stored_event.prize_currency:
-            return CurrencyManager.get_object(currency_id)
-        return SharlyChessConfig().prize_currency
+    def prize_currency(self) -> str:
+        # TODO (Molrn) Define the currency from the event form
+        return '€'
 
     @property
     def formatted_start_date_time(self) -> str:

@@ -90,7 +90,7 @@
                     {{ _('Internationalization') }}
                 </h4>
                 <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='federation',
                             label=_('Federation:'),
@@ -99,21 +99,12 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='locale',
                             label=_('Language:'),
                             help_text=_('The default language used.'),
                             select_options=locale_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='prize_currency',
-                            label=_('%(string)s:', string=_('Prize currency')),
-                            help_text=_('The default prize currency for your events.'),
-                            select_options=prize_currency_options,
                             data=data, errors=errors
                         ) }}
                     </div>

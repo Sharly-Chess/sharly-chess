@@ -26,7 +26,6 @@ from common.i18n.utils import locale_localized_name
 from common.logger import print_interactive_input, input_interactive, set_logging_config
 from common.singleton import Singleton
 from data.player import Federation
-from data.prize.currencies import Currency
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
@@ -130,12 +129,6 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
-
-    @property
-    def prize_currency(self) -> Currency:
-        from data.prize.managers import CurrencyManager
-
-        return CurrencyManager.get_object(self.stored_config.prize_currency)
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

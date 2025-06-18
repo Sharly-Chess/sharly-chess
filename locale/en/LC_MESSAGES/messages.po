@@ -1635,9 +1635,6 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-msgid "Euro"
-msgstr ""
-
 msgid "Event"
 msgstr ""
 
@@ -3405,9 +3402,6 @@ msgstr ""
 msgid "Port: {port}"
 msgstr ""
 
-msgid "Pound Sterling"
-msgstr ""
-
 msgid "Present"
 msgstr ""
 
@@ -3458,9 +3452,6 @@ msgid "Prize criterion creation"
 msgstr ""
 
 msgid "Prize criterion edition"
-msgstr ""
-
-msgid "Prize currency"
 msgstr ""
 
 msgid "Prize edition"
@@ -4178,9 +4169,6 @@ msgstr ""
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
 msgstr ""
 
-msgid "The currency used to represent monetary prizes."
-msgstr ""
-
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
@@ -4192,9 +4180,6 @@ msgid "The default federation for your events."
 msgstr ""
 
 msgid "The default language used."
-msgstr ""
-
-msgid "The default prize currency for your events."
 msgstr ""
 
 #, python-format
@@ -4905,9 +4890,6 @@ msgstr ""
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-msgid "US Dollar"
-msgstr ""
-
 msgid "Unable to create Papi files."
 msgstr ""
 
@@ -5440,6 +5422,9 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "{currency}{value}"
+msgstr ""
 
 msgid "{days} days"
 msgstr ""
