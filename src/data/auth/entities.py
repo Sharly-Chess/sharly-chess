@@ -1,8 +1,6 @@
 import re
-import weakref
-from _weakref import ReferenceType
 from abc import ABC
-from typing import TYPE_CHECKING, Self
+from typing import Self
 
 from database.sqlite.event.event_store import (
     StoredComputer,
@@ -11,30 +9,23 @@ from database.sqlite.event.event_store import (
     ANY_COMPUTER_ID,
     ANY_USER_ID,
 )
-from data.auth.permissions import ComputerPermission, UserPermission
-
-if TYPE_CHECKING:
-    from data.event import Event
+from data.auth.roles import Role
 
 
-class Entity(ABC):
-    """An abstract entity."""
+class AuthEntity(ABC):
+    """An abstract access entity."""
 
     def __init__(
         self,
-        event: 'Event',
+        permissions: dict[int, str | None],
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
-
-    @property
-    def event(self) -> 'Event':
-        event = self._event_ref()
-        if event is None:
-            raise RuntimeError('Event reference has been garbage collected')
-        return event
+        self.permissions_by_role: dict[Role, str | None] = {
+            Role(role_value): tournament_uniq_ids
+            for role_value, tournament_uniq_ids in permissions.items()
+        }
 
 
-class Computer(Entity):
+class Computer(AuthEntity):
     """A data wrapper around a stored computer, made of an IP specification."""
 
     LOCALHOST_IP: str = '127.0.0.1'
@@ -43,25 +34,26 @@ class Computer(Entity):
 
     def __init__(
         self,
-        event: 'Event',
         stored_computer: StoredComputer,
     ):
-        super().__init__(event)
         self.stored_computer: StoredComputer = stored_computer
-        self.permissions_by_id: dict[int, ComputerPermission] = {
-            stored_computer_permission.id: ComputerPermission(
-                self,
-                stored_computer_permission=stored_computer_permission,
-            )
-            for stored_computer_permission in self.stored_computer.stored_permissions
-            if stored_computer_permission.id
-        }
+        super().__init__(self.stored_computer.permissions)
 
     @property
     def id(self) -> int:
         """Returns the computer ID."""
         assert self.stored_computer.id is not None
         return self.stored_computer.id
+
+    @property
+    def edit_properties(self) -> bool:
+        """Returns True the computer is locked (can not be updated or deleted)."""
+        return self.stored_computer.edit_properties
+
+    @property
+    def edit_permissions(self) -> bool:
+        """Returns True the permissions of the computer can be updated."""
+        return self.stored_computer.edit_permissions
 
     @property
     def active(self) -> bool:
@@ -87,11 +79,6 @@ class Computer(Entity):
         return self.stored_computer.id == ANY_COMPUTER_ID
 
     @property
-    def locked(self) -> bool:
-        """Returns True the computer is locked (can not be updated or deleted)."""
-        return self.stored_computer.locked
-
-    @property
     def ip(self) -> str:
         """Returns the host address of the computer."""
         if self.is_localhost:
@@ -115,30 +102,32 @@ class Computer(Entity):
             return host in (ip for ip in re.split(', ;', self.stored_computer.ip) if ip)
 
 
-class User(Entity):
+class User(AuthEntity):
     """A data wrapper around a stored user.
     The class that represents a user, made of credentials (username and password)."""
 
     def __init__(
         self,
-        event: 'Event',
         stored_user: StoredUser,
     ):
-        super().__init__(event)
         self.stored_user: StoredUser = stored_user
-        self.permissions_by_id: dict[int, UserPermission] = {
-            stored_user_permission.id: UserPermission(
-                self, stored_user_permission=stored_user_permission
-            )
-            for stored_user_permission in self.stored_user.stored_user_permissions
-            if stored_user_permission.id
-        }
+        super().__init__(self.stored_user.permissions)
 
     @property
     def id(self) -> int:
         """Returns the user ID."""
         assert self.stored_user.id is not None
         return self.stored_user.id
+
+    @property
+    def edit_properties(self) -> bool:
+        """Returns True the user is locked (can not be updated or deleted)."""
+        return self.stored_user.edit_properties
+
+    @property
+    def edit_permissions(self) -> bool:
+        """Returns True the permissions of the user can be updated."""
+        return self.stored_user.edit_permissions
 
     @property
     def active(self) -> bool:
@@ -149,11 +138,6 @@ class User(Entity):
     def is_any(self) -> bool:
         """Returns True the client represent any client."""
         return self.stored_user.id == ANY_USER_ID
-
-    @property
-    def locked(self) -> bool:
-        """Returns True the client is locked (can not be updated or deleted)."""
-        return self.is_any
 
     @property
     def username(self) -> str | None:

@@ -224,14 +224,10 @@ class StoredDisplayController:
 @dataclass
 class StoredAccess(ABC):
     id: int | None
+    edit_properties: bool
+    edit_permissions: bool
     active: bool
-
-
-@dataclass
-class StoredPermission(ABC):
-    id: int | None
-    role_id: int
-    tournament_uniq_ids: str | None
+    permissions: dict[int, str | None]
 
 
 LOCALHOST_ID: int = -2
@@ -239,18 +235,8 @@ ANY_COMPUTER_ID: int = -1
 
 
 @dataclass
-class StoredComputerPermission(StoredPermission):
-    computer_id: int
-    locked: int
-
-
-@dataclass
 class StoredComputer(StoredAccess):
-    locked: bool
     ip: str | None
-    stored_permissions: list[StoredComputerPermission] = field(
-        default_factory=list[StoredComputerPermission]
-    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -258,20 +244,9 @@ ANY_USER_ID: int = -1
 
 
 @dataclass
-class StoredUserPermission(StoredPermission):
-    user_id: int
-
-
-@dataclass
 class StoredUser(StoredAccess):
     username: str | None
     password: str | None
-    stored_user_permissions: list[StoredUserPermission] = field(
-        default_factory=list[StoredUserPermission]
-    )
-    tournaments_uniq_ids_by_role_id: dict[int, str] = field(
-        default_factory=dict[int, str]
-    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

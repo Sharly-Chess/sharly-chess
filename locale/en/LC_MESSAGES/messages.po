@@ -190,6 +190,9 @@ msgstr ""
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
 msgstr ""
 
+msgid "Access"
+msgstr ""
+
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
@@ -341,9 +344,6 @@ msgid "An error occurred."
 msgstr ""
 
 msgid "An unexpected error occurred."
-msgstr ""
-
-msgid "Any anonymous client"
 msgstr ""
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
@@ -854,6 +854,21 @@ msgstr ""
 msgid "Comments *** COMMENTS FOR PRINT VIEW"
 msgstr "Comments"
 
+msgid "Computer [{ip}] already set."
+msgstr ""
+
+msgid "Computer [{ip}] has been created."
+msgstr ""
+
+msgid "Computer [{ip}] has been deleted."
+msgstr ""
+
+msgid "Computer [{ip}] has been updated."
+msgstr ""
+
+msgid "Computers ({num})"
+msgstr ""
+
 msgid "Configuration"
 msgstr ""
 
@@ -1233,6 +1248,9 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
+msgstr ""
+
+msgid "Display manager"
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -2996,10 +3014,10 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
-msgid "Organizer"
+msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organizer"
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
@@ -3306,6 +3324,9 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
+msgid "Please enter the IP address or range."
+msgstr ""
+
 msgid "Please enter the date of birth."
 msgstr ""
 
@@ -3373,6 +3394,9 @@ msgid "Please enter the tournament ID."
 msgstr ""
 
 msgid "Please enter the tournament name."
+msgstr ""
+
+msgid "Please enter the username."
 msgstr ""
 
 msgid "Please enter valid date and time."
@@ -4094,7 +4118,7 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France"
+msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
 msgid "Swiss"
@@ -4516,9 +4540,6 @@ msgid "The screens displayed by the display controller are controlled by the adm
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
-msgstr ""
-
-msgid "The server"
 msgstr ""
 
 msgid "The start date and time of the event."
@@ -5100,6 +5121,21 @@ msgid "Use log-level specific colors"
 msgstr ""
 
 msgid "Use no timer"
+msgstr ""
+
+msgid "User [{username}] already exists."
+msgstr ""
+
+msgid "User [{username}] has been created."
+msgstr ""
+
+msgid "User [{username}] has been deleted."
+msgstr ""
+
+msgid "User [{username}] has been updated."
+msgstr ""
+
+msgid "Users ({num})"
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."

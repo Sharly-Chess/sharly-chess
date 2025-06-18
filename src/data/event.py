@@ -836,15 +836,20 @@ class Event:
         if self.errors:
             return {}
         computers_by_id: dict[int, Computer] = {
-            stored_computer.id: Computer(self, stored_computer)
+            stored_computer.id: Computer(stored_computer)
             for stored_computer in self.stored_event.stored_computers
             if stored_computer.id is not None
         }
         return computers_by_id
 
+    @cached_property
+    def computers_by_ip(self) -> dict[str, Computer]:
+        return {computer.ip: computer for computer in self.computers_by_id.values()}
+
     def clear_computer_cache(self):
         permission_cached_property_names = [
             'computers_by_id',
+            'computers_by_ip',
         ]
         for property_name in permission_cached_property_names:
             if property_name in self.__dict__:
@@ -855,7 +860,7 @@ class Event:
         if self.errors:
             return {}
         users_by_id: dict[int, User] = {
-            stored_user.id: User(self, stored_user)
+            stored_user.id: User(stored_user)
             for stored_user in self.stored_event.stored_users
             if stored_user.id is not None
         }
@@ -868,6 +873,7 @@ class Event:
     def clear_user_cache(self):
         permission_cached_property_names = [
             'users_by_id',
+            'users_by_username',
         ]
         for property_name in permission_cached_property_names:
             if property_name in self.__dict__:

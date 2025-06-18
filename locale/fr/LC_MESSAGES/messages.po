@@ -190,6 +190,9 @@ msgstr "Variantes accélérées du système d'appariements suisse."
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »), les caractère invalides ont été remplacés par un souligné."
 
+msgid "Access"
+msgstr "Accès"
+
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
 
@@ -342,9 +345,6 @@ msgstr "Une erreur est survenue."
 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
-
-msgid "Any anonymous client"
-msgstr "Client anonyme"
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
@@ -854,6 +854,21 @@ msgstr "Commentaire :"
 msgid "Comments *** COMMENTS FOR PRINT VIEW"
 msgstr "Commentaires"
 
+msgid "Computer [{ip}] already set."
+msgstr "Ordinateur [{ip}] déjà défini."
+
+msgid "Computer [{ip}] has been created."
+msgstr "L'ordinateur [{ip}] a été créé."
+
+msgid "Computer [{ip}] has been deleted."
+msgstr "L'rdinateur [{ip}] a été supprimé."
+
+msgid "Computer [{ip}] has been updated."
+msgstr "L'ordinateur [{ip}] a été mis à jour."
+
+msgid "Computers ({num})"
+msgstr "Ordinateurs ({num})"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -1234,6 +1249,9 @@ msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
+
+msgid "Display manager"
+msgstr "Chargé·e de l'affichage"
 
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
@@ -3306,6 +3324,9 @@ msgstr "Veuillez entrer une date valide."
 msgid "Please enter a valid time."
 msgstr "Veuillez entrer une heure valide."
 
+msgid "Please enter the IP address or range."
+msgstr "Veuillez entrer l'adresse ou la plage IP."
+
 msgid "Please enter the date of birth."
 msgstr "Veuillez entrer la date de naissance."
 
@@ -3374,6 +3395,9 @@ msgstr "Veuillez entrer l'identifiant du tournoi."
 
 msgid "Please enter the tournament name."
 msgstr "Veuillez entrer le nom du tournoi."
+
+msgid "Please enter the username."
+msgstr "Veuillez entrer l'identifiant utilisateur."
 
 msgid "Please enter valid date and time."
 msgstr "Veuillez entrer une date et une heure valides."
@@ -4518,9 +4542,6 @@ msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'a
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
 
-msgid "The server"
-msgstr "Serveur"
-
 msgid "The start date and time of the event."
 msgstr "La date et l'heure de début de l'évènement."
 
@@ -5101,6 +5122,21 @@ msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
+
+msgid "User [{username}] already exists."
+msgstr "L'identifiant [{username}] existe déjà."
+
+msgid "User [{username}] has been created."
+msgstr "L'identifiant [{username}] a été créé."
+
+msgid "User [{username}] has been deleted."
+msgstr "L'identifiant [{username}] a été supprimé."
+
+msgid "User [{username}] has been updated."
+msgstr "L'identifiant [{username}] a été mis à jour."
+
+msgid "Users ({num})"
+msgstr "identifiants ({num})"
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."

@@ -37,7 +37,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
     StoredPrize,
     StoredComputer,
-    StoredPermission,
+    StoredUser,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -874,6 +874,13 @@ class EventDatabase(MigrationDatabase):
         """Serializes the timer delays into JSON.
         By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
         return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
+
+    @classmethod
+    def dump_to_json_database_permissions(
+        cls, permissions: dict[int, str | None]
+    ) -> str:
+        """Serializes the permissions into JSON."""
+        return cls.dump_to_json_database_field(permissions) or '{}'
 
     # ---------------------------------------------------------------------------------
     # Plugin metadata
@@ -2915,227 +2922,177 @@ class EventDatabase(MigrationDatabase):
     def _row_to_stored_computer(cls, row: dict[str, Any]) -> StoredComputer:
         return StoredComputer(
             id=row['id'],
-            locked=cls.load_bool_from_database_field(row['locked']),
+            active=cls.load_bool_from_database_field(row['active']),
+            edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
+            edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
             ip=row['ip'],
+            permissions=cls.load_json_from_database_field(row['permissions']),
         )
 
-    def get_stored_computer(self, client_id: int) -> StoredComputer | None:
+    def get_stored_computer(self, computer_id: int) -> StoredComputer | None:
         self.execute(
-            'SELECT * FROM `client` WHERE `id` = ?',
-            (client_id,),
+            'SELECT * FROM `computer` WHERE `id` = ?',
+            (computer_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
-            return self._row_to_stored_client(row)
+            return self._row_to_stored_computer(row)
         return None
 
-    def get_next_client_order(self) -> int:
+    def load_stored_computers(self) -> Iterator[StoredComputer]:
         self.execute(
-            'SELECT MAX(`order`) AS order_max FROM `client`',
-        )
-        row: dict[str, Any] = self.fetchone()
-        return (row['order_max'] if row['order_max'] else 0) + 1
-
-    def load_stored_clients(self) -> Iterator[StoredComputer]:
-        self.execute(
-            'SELECT * FROM `client` ORDER BY `order`',
+            'SELECT * FROM `computer` ORDER BY `ip`',
             (),
         )
-        for row in self.fetchall():
-            stored_client: StoredComputer = self._row_to_stored_client(row)
-            assert stored_client.id is not None
-            stored_client.stored_permissions = list(
-                self.load_stored_permissions(stored_client.id)
-            )
-            yield stored_client
+        yield from map(self._row_to_stored_computer, self.fetchall())
 
-    def reorder_stored_clients(
+    def _write_stored_computer(
         self,
-        client_ids: list[int],
-    ):
-        order: int = 1
-        for client_id in client_ids:
-            self.execute(
-                'UPDATE `client` SET `order` = ? WHERE `id` = ?',
-                (
-                    order,
-                    client_id,
-                ),
-            )
-            order += 1
-        self.set_last_update()
-
-    def _write_stored_client(
-        self,
-        stored_client: StoredComputer,
+        stored_computer: StoredComputer,
     ) -> StoredComputer:
         fields: list[str] = [
-            'name',
-            'username',
-            'password',
+            'active',
             'ip',
-            'order',
+            'permissions',
         ]
         params: list = [
-            stored_client.name,
-            stored_client.username,
-            stored_client.password,
-            stored_client.ip,
-            stored_client.order,
+            stored_computer.active,
+            stored_computer.ip,
+            self.dump_to_json_database_permissions(stored_computer.permissions),
         ]
-        if stored_client.id is None:
+        if stored_computer.id is None:
             protected_fields: list[str] = [f'`{f}`' for f in fields]
             self.execute(
-                f'INSERT INTO `client`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
+                f'INSERT INTO `computer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            client_id: int = self._last_inserted_id()
-            if client_id is None:
-                raise RuntimeError('Client insertion failed')
-            fetched_stored_client: StoredComputer = self.get_stored_client(
-                client_id=client_id
+            computer_id: int = self._last_inserted_id()
+            if computer_id is None:
+                raise RuntimeError('Computer insertion failed')
+            fetched_stored_computer: StoredComputer = self.get_stored_computer(
+                computer_id == computer_id
             )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_client.id]
+            params += [stored_computer.id]
             self.execute(
-                f'UPDATE `client` SET {", ".join(field_sets)} WHERE `id` = ?',
+                f'UPDATE `computer` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_client: StoredComputer = self.get_stored_client(
-                client_id=stored_client.id
+            fetched_stored_computer: StoredComputer = self.get_stored_computer(
+                computer_id=stored_computer.id
             )
-        if fetched_stored_client is None:
-            raise RuntimeError('Client write failed')
+        if fetched_stored_computer is None:
+            raise RuntimeError('Computer write failed')
         self.set_last_update()
-        return fetched_stored_client
+        return fetched_stored_computer
 
-    def add_stored_client(
+    def add_stored_computer(
         self,
-        stored_client: StoredComputer,
+        stored_computer: StoredComputer,
     ) -> StoredComputer:
-        assert stored_client.id is None, f'stored_client.id={stored_client.id}'
-        return self._write_stored_client(stored_client)
+        assert stored_computer.id is None, f'stored_computer.id={stored_computer.id}'
+        return self._write_stored_computer(stored_computer)
 
-    def update_stored_client(
+    def update_stored_computer(
         self,
-        stored_client: StoredComputer,
+        stored_computer: StoredComputer,
     ) -> StoredComputer:
-        assert stored_client.id is not None
-        return self._write_stored_client(stored_client)
+        assert stored_computer.id is not None
+        return self._write_stored_computer(stored_computer)
 
-    def _delete_client_stored_permissions(self, client_id: int):
-        self.execute('DELETE FROM `permission` WHERE `client_id` = ?;', (client_id,))
-
-    def delete_stored_client(self, client_id: int):
-        self._delete_client_stored_permissions(client_id)
-        self.execute('DELETE FROM `client` WHERE `id` = ?;', (client_id,))
-        order: int = 1
-        for stored_client in self.load_stored_clients():
-            self.execute(
-                'UPDATE `client` SET `order` = ? WHERE `id` = ?',
-                (
-                    order,
-                    stored_client.id,
-                ),
-            )
-            order += 1
+    def delete_stored_computer(self, computer_id: int):
+        self.execute('DELETE FROM `computer` WHERE `id` = ?;', (computer_id,))
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------
-    # StoredPermission
+    # StoredUser
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def _row_to_stored_permission(cls, row: dict[str, Any]) -> StoredPermission:
-        return StoredPermission(
+    def _row_to_stored_user(cls, row: dict[str, Any]) -> StoredUser:
+        return StoredUser(
             id=row['id'],
-            locked=cls.load_bool_from_database_field(row['locked']),
-            client_id=row['client_id'],
-            role_id=row['role_id'],
-            tournament_id=row['tournament_id'],
+            active=cls.load_bool_from_database_field(row['active']),
+            edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
+            edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
+            username=row['username'],
+            password=row['password'],
+            permissions=cls.load_json_from_database_field(row['permissions']),
         )
 
-    def get_stored_permission(self, permission_id: int) -> StoredPermission | None:
+    def get_stored_user(self, user_id: int) -> StoredUser | None:
         self.execute(
-            'SELECT * FROM `permission` WHERE `id` = ?',
-            (permission_id,),
+            'SELECT * FROM `user` WHERE `id` = ?',
+            (user_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
-            return self._row_to_stored_permission(row)
+            return self._row_to_stored_user(row)
         return None
 
-    def load_stored_permissions(self, client_id: int) -> Iterator[StoredPermission]:
+    def load_stored_users(self) -> Iterator[StoredUser]:
         self.execute(
-            'SELECT * FROM `permission` WHERE `client_id` = ? ORDER BY `role_id`',
-            (client_id,),
+            'SELECT * FROM `user` ORDER BY `username`',
+            (),
         )
-        yield from map(self._row_to_stored_permission, self.fetchall())
+        yield from map(self._row_to_stored_user, self.fetchall())
 
-    def _write_stored_permission(
+    def _write_stored_user(
         self,
-        stored_permission: StoredPermission,
-    ) -> StoredPermission:
+        stored_user: StoredUser,
+    ) -> StoredUser:
         fields: list[str] = [
-            'client_id',
-            'role_id',
-            'tournament_id',
+            'active',
+            'username',
+            'password',
+            'permissions',
         ]
         params: list = [
-            stored_permission.client_id,
-            stored_permission.role_id,
-            stored_permission.tournament_id,
+            stored_user.active,
+            stored_user.username,
+            stored_user.password,
+            self.dump_to_json_database_permissions(stored_user.permissions),
         ]
-        if stored_permission.id is None:
-            protected_fields = [f'`{f}`' for f in fields]
+        if stored_user.id is None:
+            protected_fields: list[str] = [f'`{f}`' for f in fields]
             self.execute(
-                f'INSERT INTO `permission`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
+                f'INSERT INTO `user`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            permission_id: int | None = self._last_inserted_id()
-            if permission_id is None:
-                raise RuntimeError('Permission insertion failed')
-            fetched_stored_permission: StoredPermission = self.get_stored_permission(
-                permission_id=permission_id
-            )
+            user_id: int = self._last_inserted_id()
+            if user_id is None:
+                raise RuntimeError('User insertion failed')
+            fetched_stored_user: StoredUser = self.get_stored_user(user_id=user_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_permission.id]
+            params += [stored_user.id]
             self.execute(
-                f'UPDATE `permission` SET {", ".join(field_sets)} WHERE `id` = ?',
+                f'UPDATE `user` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_permission: StoredPermission = self.get_stored_permission(
-                permission_id=stored_permission.id
+            fetched_stored_user: StoredUser = self.get_stored_user(
+                user_id=stored_user.id
             )
-        if fetched_stored_permission is None:
-            raise RuntimeError('Permission write failed')
+        if fetched_stored_user is None:
+            raise RuntimeError('User write failed')
         self.set_last_update()
-        return fetched_stored_permission
+        return fetched_stored_user
 
-    def add_stored_permission(
+    def add_stored_user(
         self,
-        client_id: int,
-        role_id: int,
-        tournament_id: int | None,
-    ) -> StoredPermission:
-        stored_permission: StoredPermission = StoredPermission(
-            id=None,
-            locked=False,
-            client_id=client_id,
-            role_id=role_id,
-            tournament_id=tournament_id,
-        )
-        return self._write_stored_permission(stored_permission)
+        stored_user: StoredUser,
+    ) -> StoredUser:
+        assert stored_user.id is None, f'stored_user.id={stored_user.id}'
+        return self._write_stored_user(stored_user)
 
-    def update_stored_permission(
+    def update_stored_user(
         self,
-        stored_permission: StoredPermission,
-    ) -> StoredPermission:
-        assert stored_permission.id is not None
-        return self._write_stored_permission(stored_permission)
+        stored_user: StoredUser,
+    ) -> StoredUser:
+        assert stored_user.id is not None
+        return self._write_stored_user(stored_user)
 
-    def delete_stored_permission(self, permission_id: int):
-        self.execute('DELETE FROM `permission` WHERE `id` = ?;', (permission_id,))
+    def delete_stored_user(self, user_id: int):
+        self.execute('DELETE FROM `user` WHERE `id` = ?;', (user_id,))
         self.set_last_update()
