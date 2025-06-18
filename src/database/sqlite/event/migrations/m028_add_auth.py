@@ -10,6 +10,7 @@ class Migration(BaseMigration):
         self.database.execute(
             'CREATE TABLE `computer` ('
             '    `id` INTEGER NOT NULL,'
+            '    `active` INTEGER NOT NULL DEFAULT 1,'
             '    `locked` INTEGER NOT NULL DEFAULT 0,'
             '    `ip` TEXT,'
             '    PRIMARY KEY(`id` AUTOINCREMENT)'
@@ -33,7 +34,6 @@ class Migration(BaseMigration):
             'CREATE TABLE `computer_permission` ('
             '    `id` INTEGER NOT NULL,'
             '    `locked` INTEGER NOT NULL DEFAULT 0,'
-            '    `active` INTEGER NOT NULL DEFAULT 1,'
             '    `computer_id` INTEGER NOT NULL,'
             '    `role_id` INTEGER NOT NULL,'
             '    `tournament_uniq_ids` TEXT,'
@@ -60,6 +60,7 @@ class Migration(BaseMigration):
         self.database.execute(
             'CREATE TABLE `user` ('
             '    `id` INTEGER NOT NULL,'
+            '    `active` INTEGER NOT NULL DEFAULT 1,'
             '    `username` TEXT,'
             '    `password` TEXT,'
             '    PRIMARY KEY(`id` AUTOINCREMENT),'
@@ -69,7 +70,6 @@ class Migration(BaseMigration):
         self.database.execute(
             'CREATE TABLE `user_permission` ('
             '    `id` INTEGER NOT NULL,'
-            '    `active` INTEGER NOT NULL,'
             '    `user_id` INTEGER NOT NULL,'
             '    `role_id` INTEGER NOT NULL,'
             '    `tournament_uniq_ids` TEXT,'

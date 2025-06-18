@@ -42,7 +42,7 @@ class AuthManager:
         assert all(role.scope == RoleScope.TOURNAMENT for role in roles)
         client: Client = Client(request, tournament.event)
         for computer in tournament.event.computers_by_id.values():
-            if computer.matches(client.host):
+            if computer.active and computer.matches(client.host):
                 for computer_permission in computer.permissions_by_id.values():
                     for role in roles:
                         if (
@@ -52,7 +52,7 @@ class AuthManager:
                             if computer_permission.tournament_matches(tournament):
                                 return True
         for user in tournament.event.users_by_id.values():
-            if user.matches(client.user):
+            if user.active and user.matches(client.user):
                 for user_permission in user.permissions_by_id.values():
                     for role in roles:
                         if (
@@ -77,7 +77,7 @@ class AuthManager:
         assert all(role.scope == RoleScope.EVENT for role in roles)
         client: Client = Client(request, event)
         for computer in event.computers_by_id.values():
-            if computer.matches(client.host):
+            if computer.active and computer.matches(client.host):
                 for computer_permission in computer.permissions_by_id.values():
                     for role in roles:
                         if (
@@ -86,7 +86,7 @@ class AuthManager:
                         ):
                             return True
         for user in event.users_by_id.values():
-            if user.matches(client.user):
+            if user.active and user.matches(client.user):
                 for user_permission in user.permissions_by_id.values():
                     for role in roles:
                         if (

@@ -167,6 +167,24 @@ class BaseEventAdminController(BaseAdminController):
                     },
                 },
             },
+            'admin-event-access': {
+                'title': _('Access'),
+                'icon_class': 'bi-key',
+                'submenu': {
+                    'admin-event-users-tab': {
+                        'title': _('Users ({num})').format(
+                            num=len(admin_event.users_by_id) or '-'
+                        ),
+                        'template': 'users/tab.html',
+                    },
+                    'admin-event-computers-tab': {
+                        'title': _('Computers ({num})').format(
+                            num=len(admin_event.computers_by_id) or '-'
+                        ),
+                        'template': 'computers/tab.html',
+                    },
+                },
+            },
         }
 
         template_context: dict[str, Any] = web_context.template_context | {

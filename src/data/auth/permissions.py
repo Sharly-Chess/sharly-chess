@@ -26,11 +26,6 @@ class Permission:
 
     @property
     @abstractmethod
-    def active(self) -> bool:
-        """Returns True if the permission is active, False otherwise."""
-
-    @property
-    @abstractmethod
     def role(self) -> Role:
         """Returns the role of the permission."""
 
@@ -79,11 +74,6 @@ class ComputerPermission(Permission):
         return self.computer.event
 
     @property
-    def active(self) -> bool:
-        """Returns True if the permission is active, False otherwise."""
-        return self.stored_computer_permission.active
-
-    @property
     def role(self) -> Role:
         """Returns the role given to the computer of the permission."""
         return Role(self.stored_computer_permission.role_id)
@@ -118,11 +108,11 @@ class UserPermission(Permission):
         return self.user.event
 
     @property
-    def active(self) -> bool:
-        """Returns True if the permission is active, False otherwise."""
-        return self.stored_user_permission.active
-
-    @property
     def role(self) -> Role:
         """Returns the role given to the user of the permission."""
         return Role(self.stored_user_permission.role_id)
+
+    @property
+    def tournament_uniq_ids(self) -> str | None:
+        """Returns the tournament unique IDs the permission applies to (if None, applies to all the tournaments)."""
+        return self.stored_user_permission.tournament_uniq_ids

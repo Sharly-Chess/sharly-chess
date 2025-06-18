@@ -63,6 +63,11 @@ class Computer(Entity):
         assert self.stored_computer.id is not None
         return self.stored_computer.id
 
+    @property
+    def active(self) -> bool:
+        """Returns the computer is active."""
+        return self.stored_computer.active
+
     @classmethod
     def host_is_localhost(cls, host: str) -> bool:
         """Returns True the host is the server itself."""
@@ -106,6 +111,7 @@ class Computer(Entity):
         elif self.is_any:
             return True
         else:
+            assert self.stored_computer.ip is not None
             return host in (ip for ip in re.split(', ;', self.stored_computer.ip) if ip)
 
 
@@ -133,6 +139,11 @@ class User(Entity):
         """Returns the user ID."""
         assert self.stored_user.id is not None
         return self.stored_user.id
+
+    @property
+    def active(self) -> bool:
+        """Returns the user is active."""
+        return self.stored_user.active
 
     @property
     def is_any(self) -> bool:

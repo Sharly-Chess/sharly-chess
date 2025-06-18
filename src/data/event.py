@@ -861,6 +861,10 @@ class Event:
         }
         return users_by_id
 
+    @cached_property
+    def users_by_username(self) -> dict[str, User]:
+        return {user.username: user for user in self.users_by_id.values()}
+
     def clear_user_cache(self):
         permission_cached_property_names = [
             'users_by_id',

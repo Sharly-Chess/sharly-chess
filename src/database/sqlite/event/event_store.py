@@ -222,9 +222,14 @@ class StoredDisplayController:
 
 
 @dataclass
-class StoredPermission(ABC):
+class StoredAccess(ABC):
     id: int | None
     active: bool
+
+
+@dataclass
+class StoredPermission(ABC):
+    id: int | None
     role_id: int
     tournament_uniq_ids: str | None
 
@@ -240,13 +245,13 @@ class StoredComputerPermission(StoredPermission):
 
 
 @dataclass
-class StoredComputer:
-    id: int | None
+class StoredComputer(StoredAccess):
     locked: bool
     ip: str | None
     stored_permissions: list[StoredComputerPermission] = field(
         default_factory=list[StoredComputerPermission]
     )
+    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 ANY_USER_ID: int = -1
@@ -258,13 +263,16 @@ class StoredUserPermission(StoredPermission):
 
 
 @dataclass
-class StoredUser:
-    id: int | None
+class StoredUser(StoredAccess):
     username: str | None
     password: str | None
     stored_user_permissions: list[StoredUserPermission] = field(
         default_factory=list[StoredUserPermission]
     )
+    tournaments_uniq_ids_by_role_id: dict[int, str] = field(
+        default_factory=dict[int, str]
+    )
+    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 @dataclass
