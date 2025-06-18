@@ -37,10 +37,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     update_status: bool | None = None
 
     def __init__(self, write: bool = False):
-        super().__init__(
-            self._dir / f'{self.id}.{SharlyChessConfig.federation_database_ext}',
-            write,
-        )
+        super().__init__(self._dir / self.file_name, write)
         self.stop_event = threading.Event()
         self.outdated_warning: bool = False
         self.stored_source_database: StoredLocalSourceDatabase
@@ -62,6 +59,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     @abstractmethod
     def _dir(self) -> Path:
         """Path to the SQlite file."""
+
+    @property
+    def file_name(self) -> str:
+        return f'{self.id}.{SharlyChessConfig.federation_database_ext}'
+
+    @property
+    def legacy_path(self) -> Path | None:
+        # Location before version 2.8.
+        # TODO Remove once 2.8 will stop being supported
+        return None
 
     @property
     @abstractmethod

@@ -10,6 +10,7 @@ from typing import Iterator, Any, override
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
+from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from data.player import Player, Federation, Club, PlayerRating
@@ -56,6 +57,10 @@ class FfeDatabase(LocalSourceDatabase):
     @property
     def _dir(self) -> Path:
         return ffe.TMP_DIR
+
+    @property
+    def legacy_path(self) -> Path | None:
+        return TMP_DIR / self.file_name
 
     @property
     def _schema_file_path(self) -> Path:

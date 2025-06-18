@@ -5,7 +5,6 @@ from collections.abc import Callable
 
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
@@ -13,11 +12,9 @@ from litestar.plugins.htmx import HTMXRequest
 from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
-import common
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.network import NetworkMonitor
-from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import PlayerUpdater
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
@@ -27,7 +24,6 @@ from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOpti
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins import ffe
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
@@ -154,15 +150,6 @@ class FfePlugin(Plugin):
             'ffe_auth_valid': '',
             'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
         }
-
-    @hookimpl
-    def get_files_to_recover(self) -> list[Path]:
-        return [
-            ffe.TMP_DIR / f'{self.id}].{SharlyChessConfig.federation_database_ext}',
-            # The FFE database is located in tmp/ffe since version 2.8
-            # try to recover also from previous versions
-            common.TMP_DIR / f'{self.id}].{SharlyChessConfig.federation_database_ext}',
-        ]
 
     # ---------------------------------------------------------------------------------
     # Data sources

@@ -1,5 +1,4 @@
 import filecmp
-import itertools
 import json
 import re
 import shutil
@@ -37,8 +36,7 @@ from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.fide.fide_database import FideDatabase
-from plugins.manager import plugin_manager
+from database.sqlite.local_source_database import LocalSourceDatabaseManager
 
 logger = get_logger()
 
@@ -329,12 +327,12 @@ class Engine(ABC):
                     logger.debug('%s > %s', str(src_file), str(tournament.file))
                     tournaments_number += 1
         logger.info('Recovering misc files...')
-        files_to_recover: list[Path] = [
-            TMP_DIR
-            / f'{FideDatabase.static_id()}].{SharlyChessConfig.federation_database_ext}',
-        ] + list(
-            itertools.chain.from_iterable(plugin_manager.hook.get_files_to_recover())
-        )
+        files_to_recover: list[Path] = []
+        for database in LocalSourceDatabaseManager.objects():
+            files_to_recover.append(database.file)
+            if legacy_path := database.legacy_path:
+                files_to_recover.append(legacy_path)
+
         misc_files: list[Path] = []
         for file_to_recover in files_to_recover:
             src_file: Path = version_dir / file_to_recover
