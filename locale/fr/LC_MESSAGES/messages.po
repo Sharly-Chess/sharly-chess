@@ -3237,7 +3237,7 @@ msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
 #, python-format
-msgid "Players of the category [%(category)s]"
+msgid "Players of category [%(category)s]"
 msgstr "Joueur·euses de la catégorie [%(category)s]"
 
 msgid "Players screen creation"
