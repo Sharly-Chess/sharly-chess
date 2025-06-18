@@ -20,7 +20,7 @@
             {% if previous_prize %}
                 {% with type='success', message=_(
                     'Prize [%(prize)s] successfully created!',
-                    prize=previous_prize.name
+                    prize=previous_prize.name(prize_currency)
                 ) %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
