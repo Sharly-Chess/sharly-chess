@@ -1,12 +1,11 @@
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
-from typing import Callable, TYPE_CHECKING
+from typing import Callable
 
+import iso4217parse
+import pycountry
 from babel.numbers import format_currency, format_compact_currency
-
-if TYPE_CHECKING:
-    from data.prize.currencies import Currency
 
 
 class StaticUtils:
@@ -100,18 +99,29 @@ class StaticUtils:
         return points_str
 
     @staticmethod
-    def currency_value_str(value: float, currency: 'Currency') -> str:
+    def currency_value_str(value: float, currency: str) -> str:
         from common.i18n import get_locale
 
         locale = get_locale()
         if value.is_integer():
             return format_compact_currency(
                 value,
-                currency.babel_value,
+                currency,
                 locale=locale,
                 fraction_digits=6,
             )
-        return format_currency(value, currency.babel_value, locale=locale)
+        return format_currency(value, currency, locale=locale)
+
+    @staticmethod
+    @cache
+    def get_country_currency(alpha_3_country_code: str) -> str | None:
+        country = pycountry.countries.get(alpha_3=alpha_3_country_code)
+        if not country:
+            return None
+        currencies = iso4217parse.by_country(country.alpha_2)
+        if not currencies:
+            return None
+        return currencies[0].alpha3
 
     @classmethod
     def ordinal_integer(cls, value: int) -> str:

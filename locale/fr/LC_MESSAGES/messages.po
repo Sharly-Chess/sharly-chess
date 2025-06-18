@@ -92,6 +92,9 @@ msgstr "Grille américaine %t"
 msgid "%t ranking"
 msgstr "Classement %t"
 
+msgid "'EUR' or '€'"
+msgstr "'EUR' ou '€'"
+
 #, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
@@ -3454,6 +3457,9 @@ msgstr "Création d'un critère"
 msgid "Prize criterion edition"
 msgstr "Édition d'un critère"
 
+msgid "Prize currency"
+msgstr "Monnaie des prix"
+
 msgid "Prize edition"
 msgstr "Édition d'un prix"
 
@@ -4168,6 +4174,9 @@ msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à 
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
+
+msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
@@ -5422,9 +5431,6 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
-
-msgid "{currency}{value}"
-msgstr "{value}{currency}"
 
 msgid "{days} days"
 msgstr "{days} jours"

@@ -119,11 +119,11 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
-                            {{ admin_macros.select_input(
+                            {{ admin_macros.text_input(
                                 name='prize_currency',
                                 label=_('%(string)s:', string=_('Prize currency')),
-                                help_text=_('The currency used to represent monetary prizes.'),
-                                select_options=prize_currency_options,
+                                placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
+                                help_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
                                 data=data, errors=errors
                             ) }}
                         </div>
