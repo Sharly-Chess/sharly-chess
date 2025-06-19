@@ -30,7 +30,7 @@ class Computer(AuthEntity):
 
     LOCALHOST_IP: str = '127.0.0.1'
     LOCALHOST_NAME: str = 'localhost'
-    UNNKOWN_IP: str = '0.0.0.0'
+    UNKOWN_IP: str = '0.0.0.0'
 
     def __init__(
         self,
@@ -88,7 +88,7 @@ class Computer(AuthEntity):
             )
         if self.unknown:
             return '{ip} ({name})'.format(
-                ip=self.UNNKOWN_IP,
+                ip=self.UNKOWN_IP,
                 name=_('unknown'),
             )
         assert self.stored_computer.ip is not None
