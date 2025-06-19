@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from functools import cached_property
+from functools import cached_property, partial
 import itertools
 from typing import Any, override
 
@@ -16,7 +16,6 @@ from data.print_documents.options import (
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
 )
-from data.prize.prize_sharing import NoPrizeSharing
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
@@ -465,9 +464,16 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        assert self.tournament is not None
+
+        prize_currency = self.tournament.event.prize_currency
         return {
             'ordinal_integer': StaticUtils.ordinal_integer,
-            'no_sharing_id': NoPrizeSharing.static_id(),
+            'prize_currency': prize_currency,
+            'format_prize_value': partial(
+                StaticUtils.currency_value_str,
+                currency=prize_currency,
+            ),
         }
 
 
@@ -494,10 +500,17 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        assert self.tournament is not None
+
+        prize_currency = self.tournament.event.prize_currency
         return {
             'show_warnings': self.get_option_values()[0],
             'ordinal_integer': StaticUtils.ordinal_integer,
-            'no_sharing_id': NoPrizeSharing.static_id(),
+            'prize_currency': prize_currency,
+            'format_prize_value': partial(
+                StaticUtils.currency_value_str,
+                currency=prize_currency,
+            ),
         }
 
     @staticmethod

@@ -218,6 +218,11 @@ class AppHookSpecs:
     ) -> dict[str, Any]:
         """Validate the additional event form fields and return as plugin data"""
 
+    @hookspec(firstresult=True)
+    def get_default_prize_currency(self) -> str:
+        """Define the prize currency used as default for events
+        organized by federations with unknown currencies."""
+
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
