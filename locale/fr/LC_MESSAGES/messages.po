@@ -3170,6 +3170,9 @@ msgstr "Performance ELO parfaite"
 msgid "Performance"
 msgstr "Performance"
 
+msgid "Performance *** PERF FOR TABULAR DISPLAY"
+msgstr "Perf."
+
 msgid "Personal"
 msgstr "Personnel"
 
@@ -3670,6 +3673,12 @@ msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
+
+msgid "Relative performances for round"
+msgstr "Performances relatives pour la ronde"
+
+msgid "Relative performances for round #{round}"
+msgstr "Performances relatives – ronde #{round}"
 
 msgid "Reload the page"
 msgstr "Recharger la page"

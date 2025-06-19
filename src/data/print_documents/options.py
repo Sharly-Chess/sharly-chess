@@ -4,7 +4,10 @@ from types import UnionType
 from typing import override, Any
 
 from common.i18n import _
-from data.print_documents.player_sorters import PlayerSorter, NamePlayerSorter
+from data.print_documents.player_sorters import (
+    PlayerSorter,
+    NamePlayerSorter,
+)
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from utils.option import Option, OptionError
 

@@ -3170,6 +3170,9 @@ msgstr ""
 msgid "Performance"
 msgstr ""
 
+msgid "Performance *** PERF FOR TABULAR DISPLAY"
+msgstr "Perf."
+
 msgid "Personal"
 msgstr ""
 
@@ -3669,6 +3672,12 @@ msgid "Refresh"
 msgstr ""
 
 msgid "Refresh this page."
+msgstr ""
+
+msgid "Relative performances for round"
+msgstr ""
+
+msgid "Relative performances for round #{round}"
 msgstr ""
 
 msgid "Reload the page"

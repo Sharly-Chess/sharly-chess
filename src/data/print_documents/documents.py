@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property, partial
 import itertools
-from typing import Any, override
+from typing import Any, Tuple, override
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -251,6 +251,89 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
     @property
     def is_crosstable(self) -> bool:
         return True
+
+
+class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
+    @staticmethod
+    def static_name() -> str:
+        return _('Relative performances for round')
+
+    @staticmethod
+    def static_id() -> str:
+        return 'round-relative-performances'
+
+    @property
+    def title(self) -> str:
+        return _('Relative performances for round #{round}').format(
+            round=self.ranking_round
+        )
+
+    @property
+    def ranking_round(self) -> int:
+        assert self.tournament is not None
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
+        )
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/round_performance.html'
+
+    @property
+    def ordered_players(self) -> list[Tuple[Player, Player, Result, float]]:
+        assert self.tournament is not None
+        ranking_round = self.ranking_round
+        if not ranking_round:
+            return []
+        results: list[Tuple[Player, Player, Result, float]] = []
+        for player in self.tournament.players:
+            pairing = player.pairings[ranking_round]
+            if pairing.opponent_id and pairing.played:
+                opponent = self.tournament.players_by_id[pairing.opponent_id]
+                max_score = Result.GAIN.points(self.tournament.point_values)
+                fractional_score = round(
+                    pairing.result.points(self.tournament.point_values) / max_score, 2
+                )
+                bonus = StaticUtils.performance_bonus(fractional_score)
+                tpr_for_round = StaticUtils.round_ranking(opponent.rating + bonus)
+                results.append(
+                    (player, opponent, pairing.result, tpr_for_round - player.rating)
+                )
+        return sorted(results, key=lambda p: -p[3])
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [RoundPrintOption]
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        ranking_round = self._get_option(RoundPrintOption)
+        if ranking_round.value is None:
+            return
+        assert self.tournament is not None
+        if ranking_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                ranking_round,
+            )
+        if ranking_round.value > self.tournament.max_ranking_round:
+            raise OptionError(
+                _('This round is not finished (last finished: #{round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
+                ranking_round,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'performances': self.ordered_players,
+        }
 
 
 class BoardPrintDocument(PrintDocument, ABC):
