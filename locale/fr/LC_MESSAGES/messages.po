@@ -4245,7 +4245,7 @@ msgid "Starting rank"
 msgstr "Classement initial"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 msgid "Storing data…"
 msgstr "Stockage des données…"
