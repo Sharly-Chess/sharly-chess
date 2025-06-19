@@ -31,13 +31,13 @@ class SessionHandler:
                 del request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
 
     @classmethod
-    def get_account(cls, request: HTMXRequest, event: 'Event') -> Account | None:
+    def get_account(cls, request: HTMXRequest, event: 'Event') -> Account:
         try:
             return event.accounts_by_id[
                 request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
             ]
         except KeyError:
-            return None
+            return event.unknown_computer
 
     AUTH_SESSION_KEY: str = 'auth'
 

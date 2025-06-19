@@ -8,6 +8,9 @@ from database.sqlite.event.event_store import (
     LOCALHOST_ID,
     ANY_COMPUTER_ID,
     ANONYMOUS_ID,
+    anonymous_stored_account,
+    localhost_stored_computer,
+    unknown_stored_computer,
 )
 from data.auth.roles import Role
 
@@ -30,7 +33,7 @@ class Computer(AuthEntity):
 
     LOCALHOST_IP: str = '127.0.0.1'
     LOCALHOST_NAME: str = 'localhost'
-    UNKOWN_IP: str = '0.0.0.0'
+    UNKNOWN_IP: str = '0.0.0.0'
 
     def __init__(
         self,
@@ -88,7 +91,7 @@ class Computer(AuthEntity):
             )
         if self.unknown:
             return '{ip} ({name})'.format(
-                ip=self.UNKOWN_IP,
+                ip=self.UNKNOWN_IP,
                 name=_('unknown'),
             )
         assert self.stored_computer.ip is not None
@@ -106,6 +109,12 @@ class Computer(AuthEntity):
         else:
             assert self.stored_computer.ip is not None
             return host == self.stored_computer.ip
+
+
+# computers are stored at event-level, this provides event-free
+# instances that can be used when no events are available (welcome page, ...)
+localhost_computer: Computer = Computer(localhost_stored_computer)
+unknown_computer: Computer = Computer(unknown_stored_computer)
 
 
 class Account(AuthEntity):
@@ -170,3 +179,8 @@ class Account(AuthEntity):
             return False
         else:
             return self.id == account.id
+
+
+# Accounts are stored at event-level, this provides an event-free
+# instance that can be used when no events are available (welcome page, ...)
+anonymous_account: Account = Account(anonymous_stored_account)

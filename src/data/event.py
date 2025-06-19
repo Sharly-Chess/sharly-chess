@@ -35,7 +35,12 @@ from utils.enum import (
     ScreenType,
     PlayerGender,
 )
-from database.sqlite.event.event_store import StoredEvent, StoredTournament
+from database.sqlite.event.event_store import (
+    StoredEvent,
+    StoredTournament,
+    ANONYMOUS_ID,
+    ANY_COMPUTER_ID,
+)
 
 logger: Logger = get_logger()
 
@@ -857,15 +862,9 @@ class Event:
             ),
         )
 
-    def clear_computer_cache(self):
-        permission_cached_property_names = [
-            'computers_by_id',
-            'computers_by_ip',
-            'computers_sorted_by_ip',
-        ]
-        for property_name in permission_cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
+    @property
+    def unknown_computer(self) -> Computer:
+        return self.computers_by_id[ANY_COMPUTER_ID]
 
     @cached_property
     def accounts_by_id(self) -> dict[int, Account]:
@@ -888,15 +887,9 @@ class Event:
             self.accounts_by_id.values(), key=lambda account: account.username or ''
         )
 
-    def clear_account_cache(self):
-        permission_cached_property_names = [
-            'accounts_by_id',
-            'accounts_by_username',
-            'accounts_sorted_by_username',
-        ]
-        for property_name in permission_cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
+    @property
+    def anonymous_account(self) -> Account:
+        return self.accounts_by_id[ANONYMOUS_ID]
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:

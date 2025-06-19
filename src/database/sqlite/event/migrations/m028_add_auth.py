@@ -1,12 +1,10 @@
-from data.auth.entities import Computer
-from data.auth.roles import Role
-from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
-    LOCALHOST_ID,
-    ANY_COMPUTER_ID,
-    ANONYMOUS_ID,
+    anonymous_stored_account,
+    localhost_stored_computer,
+    unknown_stored_computer,
 )
 from database.sqlite.migration import BaseMigration
+from database.sqlite.sqlite_database import SQLiteDatabase
 
 
 class Migration(BaseMigration):
@@ -25,30 +23,21 @@ class Migration(BaseMigration):
             ')'
         )
         for computer_data in (
-            (
-                LOCALHOST_ID,
-                False,
-                False,
-                True,
-                Computer.LOCALHOST_IP,
-                EventDatabase.dump_to_json_database_permissions(
-                    {
-                        Role.ADMINISTRATOR: None,
-                    }
-                ),
-            ),
-            (
-                ANY_COMPUTER_ID,
-                False,
-                True,
-                True,
-                Computer.UNNKOWN_IP,
-                '{}',
-            ),
+            localhost_stored_computer,
+            unknown_stored_computer,
         ):
             self.database.execute(
                 'INSERT INTO `computer`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
-                computer_data,
+                (
+                    computer_data.id,
+                    computer_data.edit_properties,
+                    computer_data.edit_permissions,
+                    computer_data.active,
+                    computer_data.ip,
+                    SQLiteDatabase.dump_to_json_database_field(
+                        computer_data.permissions
+                    ),
+                ),
             )
         self.database.execute(
             'CREATE TABLE `account` ('
@@ -63,20 +52,20 @@ class Migration(BaseMigration):
             '    UNIQUE(`username`)'
             ')'
         )
-        for account_data in (
-            (
-                ANONYMOUS_ID,
-                False,
-                True,
-                True,
-                '',
-                '',
-                '{}',
-            ),
-        ):
+        for account_data in (anonymous_stored_account,):
             self.database.execute(
                 'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                account_data,
+                (
+                    account_data.id,
+                    account_data.edit_properties,
+                    account_data.edit_permissions,
+                    account_data.active,
+                    account_data.username,
+                    account_data.password,
+                    SQLiteDatabase.dump_to_json_database_field(
+                        account_data.permissions
+                    ),
+                ),
             )
 
     def backward(self):

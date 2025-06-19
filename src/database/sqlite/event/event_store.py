@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.roles import Role
 
 
 @dataclass
@@ -240,6 +241,29 @@ class StoredComputer(StoredAccess):
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
+# computers are stored at event-level, this provides event-free
+# instances that can be used when no events are available (welcome page, ...)
+localhost_stored_computer: StoredComputer = StoredComputer(
+    id=LOCALHOST_ID,
+    edit_properties=False,
+    edit_permissions=False,
+    active=True,
+    permissions={
+        Role.ADMINISTRATOR: None,
+    },
+    ip=None,
+)
+
+unknown_stored_computer: StoredComputer = StoredComputer(
+    id=ANY_COMPUTER_ID,
+    edit_properties=False,
+    edit_permissions=True,
+    active=True,
+    permissions={},
+    ip=None,
+)
+
+
 ANONYMOUS_ID: int = -1
 
 
@@ -248,6 +272,19 @@ class StoredAccount(StoredAccess):
     username: str | None
     password: str | None
     errors: dict[str, str] = field(default_factory=dict[str, str])
+
+
+# Accounts are stored at event-level, this provides an event-free
+# instance that can be used when no events are available (welcome page, ...)
+anonymous_stored_account: StoredAccount = StoredAccount(
+    id=ANONYMOUS_ID,
+    edit_properties=False,
+    edit_permissions=True,
+    active=True,
+    permissions={},
+    username=None,
+    password=None,
+)
 
 
 @dataclass
