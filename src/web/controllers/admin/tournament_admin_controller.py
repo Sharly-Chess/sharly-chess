@@ -512,7 +512,10 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    if action == 'update':
+                    if action in [
+                        'update',
+                        'clone',
+                    ]:
                         assert admin_tournament is not None
                         assert admin_tournament.stored_tournament is not None
                         filename = admin_tournament.stored_tournament.filename

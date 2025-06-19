@@ -82,9 +82,9 @@
         </div>
         <div class="text-start">
             {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
-            {{ prize_category.total_prize_value_str }}
+            {{ prize_category.format_total_prize_value(prize_currency) }}
         </div>
-        <div class="text-start">{{ prize_category.shared_prizes_str }}</div>
+        <div class="text-start">{{ prize_category.format_shared_prizes(prize_currency) }}</div>
     </div>
 {% endblock %}
 

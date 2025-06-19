@@ -5,7 +5,7 @@
                 {% if action in ['create', 'clone', ] %}
                     {{ _('Event creation') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% elif action == 'update' %}
-                    {{ _('Editing of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}<span style="font-size: 90%">{{ macros.doc_icon('events-update', 'ms-2') }}</span>
+                    {{ _('Editing of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}<span style="font-size: 90%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% else %}
                     {{ _('Deletion of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                 {% endif %}
@@ -115,6 +115,15 @@
                                 label=_('Default directory of the Papi files:'),
                                 placeholder=_('E.g.: c:\\chess\\tournaments'),
                                 help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=sharly_chess_config.default_papi_path),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.text_input(
+                                name='prize_currency',
+                                label=_('%(string)s:', string=_('Prize currency')),
+                                placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
+                                help_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
                                 data=data, errors=errors
                             ) }}
                         </div>

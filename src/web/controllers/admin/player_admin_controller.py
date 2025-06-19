@@ -148,8 +148,6 @@ class PlayerAdminController(BaseEventAdminController):
         date_of_birth: date | None = WebContext.form_data_to_date(
             data, field := 'date_of_birth'
         )
-        if not date_of_birth:
-            errors[field] = _('Please enter the date of birth.')
         gender: PlayerGender | None = PlayerGender.NONE
         try:
             if value := WebContext.form_data_to_int(data, field := 'gender'):

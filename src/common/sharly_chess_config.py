@@ -399,6 +399,8 @@ class SharlyChessConfig(metaclass=Singleton):
         'record',
     ]
 
+    default_prize_currency = 'EUR'
+
     # The default fédération when creating events or players
     default_federation: str = 'FID'
 

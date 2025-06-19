@@ -30,6 +30,8 @@ from data.screen_set import ScreenSet
 from data.timer import Timer, TimerHour
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from plugins.manager import plugin_manager
+from utils import StaticUtils
 from utils.enum import (
     ScreenType,
     PlayerGender,
@@ -185,8 +187,13 @@ class Event:
 
     @property
     def prize_currency(self) -> str:
-        # TODO (Molrn) Define the currency from the event form
-        return '€'
+        if stored := self.stored_event.prize_currency:
+            return stored
+        if federation := StaticUtils.get_country_currency(self.federation):
+            return federation
+        if plugin := plugin_manager.hook.get_default_prize_currency():
+            return plugin
+        return SharlyChessConfig.default_prize_currency
 
     @property
     def formatted_start_date_time(self) -> str:

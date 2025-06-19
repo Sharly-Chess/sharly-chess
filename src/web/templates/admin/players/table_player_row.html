@@ -133,7 +133,7 @@
     {{ admin_macros.extra_admin_column_cell("yob", player, admin_players_extra_columns)}}
     {% if 'yob' in admin_players_filter_columns %}
         <td class="text-nowrap text-center">
-            {{ player.year_of_birth }}
+            {{ player.year_of_birth if player.year_of_birth else '' }}
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("category", player, admin_players_extra_columns)}}
