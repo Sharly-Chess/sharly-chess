@@ -93,6 +93,17 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row" class="text-nowrap">{{ _('Prize currency') }}</th>
+                <td>
+                    {{ admin_event.prize_currency }}
+                    {% if not admin_event.stored_event.prize_currency %}
+                        <span class="fst-italic">
+                            {{ _('(by default)') }}
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <th scope="row" class="text-nowrap">{{ _('Location') }}</th>
                 <td>
                     {% if admin_event.location %}

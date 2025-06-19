@@ -1,13 +1,14 @@
 {% extends '/admin/print/base.html' %}
 
 {% block content %}
+
     {% for prize_group in document.tournament.sorted_prize_groups %}
         {% for prize_category in prize_group.sorted_categories %}
             <div class="section-title">
                 {{ prize_category.name }}
             </div>
             <div class="section-sub-title">
-                {{ prize_category.shared_prizes_str }}
+                {{ prize_category.format_shared_prizes(prize_currency) }}
             </div>
             <table>
                 <tbody>
@@ -18,7 +19,7 @@
                             </td>
                             <td>
                                 {% if prize.is_monetary %}
-                                    {{ prize.format_value() }}
+                                    {{ format_prize_value(value=prize.value) }}
                                 {% else %}
                                     {{ prize.description }}
                                 {% endif %}

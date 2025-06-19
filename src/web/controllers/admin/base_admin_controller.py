@@ -371,6 +371,7 @@ class BaseAdminController(BaseController):
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
+        prize_currency: str | None = None
         match action:
             case 'clone' | 'update' | 'create':
                 name = WebContext.form_data_to_str(data, field := 'name')
@@ -484,7 +485,7 @@ class BaseAdminController(BaseController):
                         errors[field] = _(
                             'Invalid color [{color}] ([#RRGGBB] expected).'
                         ).format(color={data[field]})
-                pass
+                prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
             case 'delete':
                 if admin_event is None:
                     raise RuntimeError(f'{admin_event=} for [{action=}]')
@@ -533,6 +534,7 @@ class BaseAdminController(BaseController):
             message_text=message_text,
             message_color=message_color,
             message_background_color=message_background_color,
+            prize_currency=prize_currency,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
@@ -679,6 +681,7 @@ class BaseAdminController(BaseController):
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
+        prize_currency: str | None = None
         match action:
             case 'update' | 'clone':
                 if admin_event is None:
@@ -697,6 +700,7 @@ class BaseAdminController(BaseController):
                 message_text = stored_event.message_text
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
+                prize_currency = stored_event.prize_currency
             case 'create':
                 public = False
                 federation = SharlyChessConfig().federation.name
@@ -744,4 +748,5 @@ class BaseAdminController(BaseController):
             'message_background_color': WebContext.value_to_form_data(
                 message_background_color
             ),
+            'prize_currency': WebContext.value_to_form_data(prize_currency),
         } | plugin_form_data

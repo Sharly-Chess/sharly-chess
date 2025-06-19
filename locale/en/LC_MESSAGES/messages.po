@@ -92,6 +92,9 @@ msgstr ""
 msgid "%t ranking"
 msgstr ""
 
+msgid "'EUR' or '€'"
+msgstr ""
+
 #, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
@@ -3451,6 +3454,9 @@ msgstr ""
 msgid "Prize criterion edition"
 msgstr ""
 
+msgid "Prize currency"
+msgstr ""
+
 msgid "Prize edition"
 msgstr ""
 
@@ -4164,6 +4170,9 @@ msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr ""
+
+msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
 msgid "The date of the first hour is not defined (mandatory)."
@@ -5419,9 +5428,6 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "{currency}{value}"
-msgstr ""
 
 msgid "{days} days"
 msgstr ""
