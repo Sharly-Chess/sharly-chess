@@ -1,5 +1,6 @@
 import logging
 import socket
+import sys
 from pathlib import Path
 from typing import overload, ClassVar
 
@@ -20,15 +21,15 @@ from common.i18n import (
     _,
     locales,
     set_locale,
-    get_locale,
 )
-from common.i18n.utils import locale_localized_name
-from common.logger import print_interactive_input, input_interactive, set_logging_config
+from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
 from data.player import Federation
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
+
+logger: logging.Logger = get_logger()
 
 
 class SharlyChessConfig(metaclass=Singleton):
@@ -44,32 +45,40 @@ class SharlyChessConfig(metaclass=Singleton):
         cls._stored_config = cls.load_stored_config()
 
     @staticmethod
-    def load_stored_config() -> StoredConfig:
+    def get_user_locale() -> str | None:
+        """Returns the locale used by the user at system-level,
+        if known by the i18n stuff (otherwise returns None)."""
+        if sys.platform == 'win32':  # pragma: py-not-win32
+            import locale
+            import ctypes
+
+            windll = ctypes.windll.kernel32
+            system_user_locale: str = locale.windows_locale[
+                windll.GetUserDefaultUILanguage()
+            ]
+            logger.info('User locale: %s', system_user_locale)
+            locale: str = system_user_locale[:2]
+            if locale in locales:
+                return locale
+            logger.warning('Unknown locale: %s', locale)
+            return None
+        else:
+            raise OSError(f'{sys.platform=}')
+
+    @classmethod
+    def load_stored_config(cls) -> StoredConfig:
         with ConfigDatabase() as config_database:
             stored_config: StoredConfig = config_database.load_stored_config()
         # TODO Remove this code when all the engine dialogs have moved to the web UI
         # If the locale is not set ask for it before other things like version recovery,
         # offline databases download, ...
         if not stored_config.locale:
-            set_locale(get_locale())
-            print_interactive_input(_('The following languages are available:'))
-            locale_range = range(1, len(locales) + 1)
-            for num in locale_range:
-                locale: str = locales[num - 1]
-                print_interactive_input(
-                    f'  - [{num}] {locale} ({locale_localized_name(locale)})'
-                )
-            locale_num: int | None = None
-            while locale_num is None:
-                choice: str = input_interactive(_('Your choice: '))
-                try:
-                    locale_num = int(choice)
-                    if locale_num not in locale_range:
-                        locale_num = None
-                except ValueError:
-                    pass
+            user_locale: str | None = cls.get_user_locale()
+            if user_locale is not None:
+                stored_config.locale = user_locale
+            else:
+                stored_config.locale = locales[0]
             with ConfigDatabase(write=True) as config_database:
-                stored_config.locale = locales[locale_num - 1]
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
         set_locale(stored_config.locale)
