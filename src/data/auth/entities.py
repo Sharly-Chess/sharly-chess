@@ -1,4 +1,3 @@
-import re
 from abc import ABC
 from typing import Self
 
@@ -106,7 +105,7 @@ class Computer(AuthEntity):
             return True
         else:
             assert self.stored_computer.ip is not None
-            return host in (ip for ip in re.split(', ;', self.stored_computer.ip) if ip)
+            return host == self.stored_computer.ip
 
 
 class Account(AuthEntity):
