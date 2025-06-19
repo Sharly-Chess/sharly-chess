@@ -390,7 +390,6 @@ class ComputerAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)
-        web_context.admin_event.clear_computer_cache()
         return self._admin_event_computers_render(request, event_uniq_id=event_uniq_id)
 
     @post(

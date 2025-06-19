@@ -62,7 +62,7 @@
                 {% if roles %}
                     {% for role in roles[:1] %}
                         {% with entity=account %}
-                            {% include '../common/access_tab_role_permission_cells.html' %}
+                            {% include '../common/access/tab_role_permission_cells.html' %}
                         {% endwith %}
                     {% endfor %}
                 {% else %}
@@ -149,7 +149,7 @@
                 {% for role in roles[1:] %}
                     <tr class="">
                         {% with entity=account %}
-                            {% include '../common/access_tab_role_permission_cells.html' %}
+                            {% include '../common/access/tab_role_permission_cells.html' %}
                         {% endwith %}
                     </tr>
                 {% endfor %}
