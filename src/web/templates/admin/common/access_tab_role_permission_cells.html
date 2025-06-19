@@ -1,0 +1,15 @@
+<td class="{% if not entity.active %}text-secondary{% endif %}">
+    {{ role.name }}
+</td>
+<td class="{% if not entity.active %}text-secondary{% endif %}">
+    {% if role.has_tournament_scope %}
+        {% set permission=entity.permissions_by_role[role] %}
+        {% if permission %}
+            {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission) }}
+        {% else %}
+            {{ _('All the tournaments') }}
+        {% endif %}
+    {% else %}
+        {{ role.scope.name }}
+    {% endif %}
+</td>

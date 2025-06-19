@@ -1,3 +1,4 @@
+import re
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
@@ -10,6 +11,7 @@ from litestar.status_codes import HTTP_200_OK
 from common.i18n import _
 from data.auth.entities import Computer
 from data.auth.roles import Role
+from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredComputer
 from web.controllers.admin.base_event_admin_controller import (
@@ -52,6 +54,7 @@ class ComputerAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_computer': self.admin_computer,
+            'roles': Role.roles(),
         }
 
 
@@ -66,7 +69,7 @@ class ComputerAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        computer_id: int = 0
+        computer_id: int | None = None
         ip: str | None = None
         edit_properties: bool = True
         edit_permissions: bool = True
@@ -86,8 +89,13 @@ class ComputerAdminController(BaseEventAdminController):
         else:
             ip = WebContext.form_data_to_str(data, field := 'ip')
             if not ip:
-                errors[field] = _('Please enter the IP address or range.')
-            else:
+                errors[field] = _('Please enter the IP address.')
+            elif matches := re.match(
+                r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$',
+                ip,
+            ):
+                ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
+                data[field] = ip
                 match action:
                     case 'create' | 'clone':
                         if ip in web_context.admin_event.computers_by_ip:
@@ -105,6 +113,8 @@ class ComputerAdminController(BaseEventAdminController):
                             )
                     case _:
                         raise ValueError(f'action=[{action}]')
+            else:
+                errors[field] = _('The IP address [{ip}] is not valid.').format(ip=ip)
             active = WebContext.form_data_to_bool(data, 'active')
             for role_id in Role.values():
                 if WebContext.form_data_to_bool(data, f'role_{role_id}'):
@@ -215,6 +225,9 @@ class ComputerAdminController(BaseEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
+                    'previous_computer': (
+                        web_context.admin_computer if action == 'create' else None
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -315,6 +328,7 @@ class ComputerAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_computer.errors,
             )
+        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -331,10 +345,25 @@ class ComputerAdminController(BaseEventAdminController):
                         ),
                     )
                 case 'update':
+                    if (
+                        web_context.admin_computer is None
+                        or web_context.admin_computer.localhost
+                    ):
+                        raise RuntimeError(
+                            f'{web_context.admin_computer=} for [{action=}]'
+                        )
                     stored_computer = event_database.update_stored_computer(
                         stored_computer
                     )
                     event_database.commit()
+                    Message.success(
+                        request,
+                        _("Unknown computers' access has been updated.")
+                        if web_context.admin_computer.unknown
+                        else _('Computer [{ip}] has been updated.').format(
+                            ip=stored_computer.ip
+                        ),
+                    )
                     Message.success(
                         request,
                         _('Computer [{ip}] has been updated.').format(
@@ -342,7 +371,11 @@ class ComputerAdminController(BaseEventAdminController):
                         ),
                     )
                 case 'delete':
-                    if web_context.admin_computer is None:
+                    if (
+                        web_context.admin_computer is None
+                        or web_context.admin_computer.localhost
+                        or web_context.admin_computer.unknown
+                    ):
                         raise RuntimeError(
                             f'{web_context.admin_computer=} for [{action=}]'
                         )
@@ -356,6 +389,7 @@ class ComputerAdminController(BaseEventAdminController):
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
+        event_loader.clear_cache(event_uniq_id)
         web_context.admin_event.clear_computer_cache()
         return self._admin_event_computers_render(request, event_uniq_id=event_uniq_id)
 

@@ -1,16 +1,16 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
         <div>
-            {{ macros.doc_icon('computers', 'fs-4') }}
+            {{ macros.doc_icon('accounts', 'fs-4') }}
         </div>
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-2 ms-auto align-items-center">
             <span
-                {{ macros.tooltip_attributes('info', _('Add a computer to the event.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
             >
                 <button
                     class="btn btn-primary text-nowrap ms-1"
-                    hx-get="{{ url_for('admin-computer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                     preload
@@ -18,7 +18,7 @@
                     data-bs-target="#modal-wrapper"
                 >
                     <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Create a computer') }}
+                    {{ _('Create an account') }}
                 </button>
             </span>
         </div>
@@ -30,7 +30,7 @@
         class="table-dark"
     >
         <tr>
-            <th scope="col" class="text-nowrap">{{ _('IP address') }}</th>
+            <th scope="col" class="text-nowrap">{{ _('Username') }}</th>
             <th scope="col" class="text-nowrap">{{ _('Status') }}</th>
             <th scope="col" class="">{{ _('Permissions') }}</th>
             <th scope="col" class="">{{ _('Scope') }}</th>
@@ -38,17 +38,21 @@
         </tr>
     </thead>
     <tbody>
-        {% for computer in admin_event.computers_sorted_by_ip %}
-            {% set roles=computer.permissions_by_role.keys() | list %}
+        {% for account in admin_event.accounts_sorted_by_username %}
+            {% set roles=account.permissions_by_role.keys() | list %}
             <tr class="">
-                <th scope="row" class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                    <span class="{% if computer.localhost or computer.unknown %}fst-italic{% endif %}">
-                        {{ computer.ip }}
-                    </span>
+                <th scope="row" class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    {% if account.anonymous %}
+                        <span class="fst-italic">
+                            {{ _('Not authenticated') }}
+                        </span>
+                    {% else %}
+                        {{ account.username }}
+                    {% endif %}
                 </th>
-                <td class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                    <span class="{% if computer.unknown or computer.server %}fst-italic{% endif %}">
-                        {% if computer.active %}
+                <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <span class="{% if account.anonymous %}fst-italic{% endif %}">
+                        {% if account.active %}
                             {{ _('Enabled') }}
                         {% else %}
                             {{ _('Disabled') }}
@@ -57,32 +61,32 @@
                 </td>
                 {% if roles %}
                     {% for role in roles[:1] %}
-                        {% with entity=computer %}
+                        {% with entity=account %}
                             {% include '../common/access_tab_role_permission_cells.html' %}
                         {% endwith %}
                     {% endfor %}
                 {% else %}
-                    <td class="{% if not computer.active %}text-secondary{% endif %}">
+                    <td class="{% if not account.active %}text-secondary{% endif %}">
                         <span class="fst-italic">{{ _('No permissions') }}</span>
                     </td>
-                    <td class="{% if not computer.active %}text-secondary{% endif %}">
+                    <td class="{% if not account.active %}text-secondary{% endif %}">
                         <span class="fst-italic">-</span>
                     </td>
                 {% endif %}
-                <td class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
                     <span
-                            {% if computer.edit_properties or computer.edit_permissions %}
-                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the computer.'), 'top') }}
+                            {% if account.edit_properties or account.edit_permissions %}
+                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the account.'), 'top') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('warning', _('The properties and the permissions of this computer can not be changed.'), 'top') }}
+                                {{ macros.tooltip_attributes('warning', _('The properties and the permissions of this account can not be changed.'), 'top') }}
                             {% endif %}
                     >
                         <button
-                            {% if not computer.edit_properties and not computer.edit_permissions %}
+                            {% if not account.edit_properties and not account.edit_permissions %}
                                 disabled
                             {% else %}
                                 class="btn btn-sm btn-outline-primary"
-                                hx-get="{{ url_for('admin-computer-modal', action='update', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
+                                hx-get="{{ url_for('admin-account-modal', action='update', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 preload
@@ -94,18 +98,18 @@
                         </button>
                     </span>
                     <span
-                            {% if computer.edit_properties %}
-                                {{ macros.tooltip_attributes('info', _('Duplicate the computer.'), 'top') }}
+                            {% if account.edit_properties %}
+                                {{ macros.tooltip_attributes('info', _('Duplicate the account.'), 'top') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('warning', _('This computer can not be duplicated.'), 'top') }}
+                                {{ macros.tooltip_attributes('warning', _('This account can not be duplicated.'), 'top') }}
                             {% endif %}
                     >
                         <button
-                            {% if not computer.edit_properties %}
+                            {% if not account.edit_properties %}
                                 disabled
                             {% else %}
                                 class="btn btn-sm btn-outline-primary"
-                                hx-get="{{ url_for('admin-computer-modal', action='clone', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
+                                hx-get="{{ url_for('admin-account-modal', action='clone', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 preload
@@ -117,18 +121,18 @@
                         </button>
                     </span>
                     <span
-                            {% if computer.edit_properties %}
-                                {{ macros.tooltip_attributes('info', _('Delete the computer.'), 'top') }}
+                            {% if account.edit_properties %}
+                                {{ macros.tooltip_attributes('info', _('Delete the account.'), 'top') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('warning', _('This computer can not be deleted.'), 'top') }}
+                                {{ macros.tooltip_attributes('warning', _('This account can not be deleted.'), 'top') }}
                             {% endif %}
                     >
                         <button
-                            {% if not computer.edit_properties %}
+                            {% if not account.edit_properties %}
                                 disabled
                             {% else %}
                                 class="btn btn-sm btn-outline-danger"
-                                hx-get="{{ url_for('admin-computer-modal', action='delete', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
+                                hx-get="{{ url_for('admin-account-modal', action='delete', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 preload
@@ -144,11 +148,9 @@
             {% if roles | length > 1 %}
                 {% for role in roles[1:] %}
                     <tr class="">
-                        {% for role in roles[1:] %}
-                            {% with entity=computer %}
-                                {% include '../common/access_tab_role_permission_cells.html' %}
-                            {% endwith %}
-                        {% endfor %}
+                        {% with entity=account %}
+                            {% include '../common/access_tab_role_permission_cells.html' %}
+                        {% endwith %}
                     </tr>
                 {% endfor %}
             {% endif %}
@@ -161,7 +163,7 @@
     <br/>
     {{ _('Warning: by default, only people on your Sharly Chess server can access the application.') }}
     <br/>
-    {{ _('Creating computers allows you to grant permissions to people on other clients,') }}
+    {{ _('Creating accounts allows you to grant permissions to people on other clients,') }}
     <br/>
-    {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED COMPUTERS!') }}
+    {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!') }}
 </div>

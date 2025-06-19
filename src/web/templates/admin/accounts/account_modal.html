@@ -1,0 +1,123 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-account-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Account creation') }}
+                {% elif action == 'update' %}
+                    {% if admin_account.anonymous %}
+                        {{ _('Editing of unauthenticated access') }}
+                    {% else %}
+                        {{ _('Editing of account [%(username)s]', username=admin_account.username) }}
+                    {% endif %}
+                {% elif action == 'delete' %}
+                    {{ _('Deletion of account [%(username)s]', username=admin_account.username) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                {% if action in ['create', 'clone', ] %}
+                    hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% elif action == 'update' %}
+                    hx-patch="{{ url_for('admin-account-' ~ action, event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                {% elif action == 'delete' %}
+                    hx-delete="{{ url_for('admin-account-' ~ action, event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                {% else %}
+                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% if action == 'delete' %}
+                    <h4 class="text-danger">
+                        {{ _('Warning: the deletion of an account is permanent!') }}
+                    </h4>
+                {% else %}
+                    {% if previous_account %}
+                        {% with type='success', auto_remove=true, message=_(
+                            'Account [%(username)s] has been created.',
+                            username=previous_account.username
+                        )  %}
+                            {% include '/common/alert.html' %}
+                        {% endwith %}
+                    {% endif %}
+                    {% if not admin_account.anonymous %}
+                        <h4>
+                            {{ _('Authentication') }}
+                        </h4>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.text_input(
+                                    name='username',
+                                    label=_('ID (unique):'),
+                                    placeholder=_('E.g.: john'),
+                                    help_text=_('The Unique ID, used to authenticate.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.password_input(
+                                    name='password',
+                                    label=_('Password:'),
+                                    help_text=_('The password, used to authenticate.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.switch_input(
+                                    name='active',
+                                    label='',
+                                    help_text='',
+                                    placeholder=_('Enable this account'),
+                                    info=_(
+                                        'You can temporarily invalidate accounts by turning this switch off.'
+                                    ),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% with table_id='account-table' %}
+                        {% include '../common/modal/access_permissions_table.html' %}
+                    {% endwith %}
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action == 'update' %}
+                    {{ _('Save') }}
+                {% elif action == 'delete' %}
+                    {{ _('Delete') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>
+
+{% if previous_account %}
+    <script>
+        // We need to reload the page when the modal is hidden, because accounts were added.
+        $(document).one('hide.bs.modal', function(e) {
+            e.preventDefault();
+            document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        });
+    </script>
+{% endif %}

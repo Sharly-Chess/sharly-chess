@@ -1,3 +1,4 @@
+import re
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
@@ -8,10 +9,11 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from data.auth.entities import User
+from data.auth.entities import Account
 from data.auth.roles import Role
+from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredUser
+from database.sqlite.event.event_store import StoredAccount
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -20,12 +22,12 @@ from web.controllers.base_controller import WebContext
 from web.messages import Message
 
 
-class UserAdminWebContext(BaseEventAdminWebContext):
+class AccountAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        user_id: int | None,
+        account_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -38,83 +40,94 @@ class UserAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
         )
         assert self.admin_event is not None
-        self.admin_user: User | None = None
+        self.admin_account: Account | None = None
         if self.error:
             return
-        if user_id:
+        if account_id:
             try:
-                self.admin_user = self.admin_event.users_by_id[user_id]
+                self.admin_account = self.admin_event.accounts_by_id[account_id]
             except KeyError:
-                self._redirect_error(f'User [{user_id}] not found.')
+                self._redirect_error(f'Account [{account_id}] not found.')
                 return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'admin_user': self.admin_user,
+            'admin_account': self.admin_account,
+            'roles': Role.roles(),
         }
 
 
-class UserAdminController(BaseEventAdminController):
+class AccountAdminController(BaseEventAdminController):
     @staticmethod
-    def _admin_validate_user_update_data(
+    def _admin_validate_account_update_data(
         action: str,
-        web_context: UserAdminWebContext,
+        web_context: AccountAdminWebContext,
         data: dict[str, str] | None = None,
-    ) -> StoredUser:
+    ) -> StoredAccount:
         assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        user_id: int = 0
+        account_id: int | None = None
         username: str | None = None
         password: str | None = None
         edit_properties: bool = True
         edit_permissions: bool = True
         active: bool = False
         permissions: dict[int, str | None] = {}
-        if web_context.admin_user and action in [
+        if web_context.admin_account and action in [
             'update',
             'delete',
         ]:
-            user_id = web_context.admin_user.id
-            edit_properties = web_context.admin_user.edit_properties
-            edit_permissions = web_context.admin_user.edit_permissions
+            account_id = web_context.admin_account.id
+            edit_properties = web_context.admin_account.edit_properties
+            edit_permissions = web_context.admin_account.edit_permissions
         if action in [
             'delete',
         ]:
             pass
         else:
-            username = WebContext.form_data_to_str(data, field := 'username')
-            if not username:
-                errors[field] = _('Please enter the username.')
+            if web_context.admin_account and web_context.admin_account.anonymous:
+                username = web_context.admin_account.username
+                password = web_context.admin_account.password
+                active = web_context.admin_account.active
             else:
-                match action:
-                    case 'create' | 'clone':
-                        if username in web_context.admin_event.users_by_username:
-                            errors[field] = _(
-                                'User [{username}] already exists.'
-                            ).format(username=username)
-                    case 'update':
-                        assert web_context.admin_user is not None
-                        if (
-                            username != web_context.admin_user.username
-                            and username in web_context.admin_event.users_by_username
-                        ):
-                            errors[field] = _(
-                                'User [{username}] already exists.'
-                            ).format(username=username)
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-            password = WebContext.form_data_to_str(data, 'password')
-            active = WebContext.form_data_to_bool(data, 'active')
+                username = WebContext.form_data_to_str(data, field := 'username')
+                if not username:
+                    errors[field] = _('Please enter the username.')
+                elif not re.match(r'^[a-zA-Z0-9_\-]+$', username):
+                    errors[field] = _(
+                        'Accepted characters are letters, numbers, underscore (_) and minus (-).'
+                    )
+                else:
+                    match action:
+                        case 'create' | 'clone':
+                            if username in web_context.admin_event.accounts_by_username:
+                                errors[field] = _(
+                                    'Account [{username}] already exists.'
+                                ).format(username=username)
+                        case 'update':
+                            assert web_context.admin_account is not None
+                            if (
+                                username != web_context.admin_account.username
+                                and username
+                                in web_context.admin_event.accounts_by_username
+                            ):
+                                errors[field] = _(
+                                    'Account [{username}] already exists.'
+                                ).format(username=username)
+                        case _:
+                            raise ValueError(f'action=[{action}]')
+                password = WebContext.form_data_to_str(data, 'password')
+                active = WebContext.form_data_to_bool(data, 'active')
             for role_id in Role.values():
                 if WebContext.form_data_to_bool(data, f'role_{role_id}'):
                     permissions[role_id] = WebContext.form_data_to_str(
                         data, f'permission_{role_id}'
                     )
-        return StoredUser(
-            id=user_id,
+        return StoredAccount(
+            id=account_id,
             edit_properties=edit_properties,
             edit_permissions=edit_permissions,
             active=active,
@@ -125,20 +138,20 @@ class UserAdminController(BaseEventAdminController):
         )
 
     @classmethod
-    def _admin_event_users_render(
+    def _admin_event_accounts_render(
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
         modal: str | None = None,
         action: str | None = None,
-        user_id: int | None = None,
+        account_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        web_context: UserAdminWebContext = UserAdminWebContext(
+        web_context: AccountAdminWebContext = AccountAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            user_id=user_id,
+            account_id=account_id,
             data=data,
         )
         if web_context.error:
@@ -148,30 +161,30 @@ class UserAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
-            'admin_event_tab': 'admin-event-users-tab',
+            'admin_event_tab': 'admin-event-accounts-tab',
         }
 
         match modal:
             case None:
                 pass
-            case 'user':
+            case 'account':
                 if data is None:
                     username: str | None = None
                     active: bool | None = None
                     password: str | None = None
                     match action:
                         case 'update':
-                            assert web_context.admin_user is not None
-                            username = web_context.admin_user.stored_user.username
+                            assert web_context.admin_account is not None
+                            username = web_context.admin_account.stored_account.username
                         case 'create' | 'clone' | 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            assert web_context.admin_user is not None
-                            active = web_context.admin_user.stored_user.active
-                            password = web_context.admin_user.stored_user.password
+                            assert web_context.admin_account is not None
+                            active = web_context.admin_account.stored_account.active
+                            password = web_context.admin_account.stored_account.password
                         case 'create':
                             active = True
                         case 'delete':
@@ -197,11 +210,11 @@ class UserAdminController(BaseEventAdminController):
                     )
                     match action:
                         case 'update' | 'clone':
-                            assert web_context.admin_user is not None
+                            assert web_context.admin_account is not None
                             for (
                                 role,
                                 permission,
-                            ) in web_context.admin_user.permissions_by_role.items():
+                            ) in web_context.admin_account.permissions_by_role.items():
                                 data[f'role_{role.value}'] = (
                                     WebContext.value_to_form_data(True)
                                 )
@@ -212,13 +225,18 @@ class UserAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    stored_user: StoredUser = cls._admin_validate_user_update_data(
-                        action, web_context, data
+                    stored_account: StoredAccount = (
+                        cls._admin_validate_account_update_data(
+                            action, web_context, data
+                        )
                     )
-                    errors = stored_user.errors
+                    errors = stored_account.errors
                 if errors is None:
                     errors = {}
                 template_context |= {
+                    'previous_account': (
+                        web_context.admin_account if action == 'create' else None
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -229,59 +247,59 @@ class UserAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/users',
-        name='admin-event-users-tab',
+        path='/admin/event/{event_uniq_id:str}/accounts',
+        name='admin-event-accounts-tab',
         cache=1,
     )
-    async def htmx_admin_event_users_tab(
+    async def htmx_admin_event_accounts_tab(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_users_render(
+        return self._admin_event_accounts_render(
             request,
             event_uniq_id=event_uniq_id,
         )
 
     @get(
-        path='/admin/user-modal/create/{event_uniq_id:str}',
-        name='admin-user-create-modal',
+        path='/admin/account-modal/create/{event_uniq_id:str}',
+        name='admin-account-create-modal',
         cache=1,
     )
-    async def htmx_admin_user_create_modal(
+    async def htmx_admin_account_create_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_users_render(
+        return self._admin_event_accounts_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='user',
+            modal='account',
             action='create',
-            user_id=None,
+            account_id=None,
         )
 
     @get(
-        path='/admin/user-modal/{action:str}/{event_uniq_id:str}/{user_id:int}',
-        name='admin-user-modal',
+        path='/admin/account-modal/{action:str}/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-modal',
         cache=1,
     )
-    async def htmx_admin_user_modal(
+    async def htmx_admin_account_modal(
         self,
         request: HTMXRequest,
         action: str,
         event_uniq_id: str,
-        user_id: int | None,
+        account_id: int | None,
     ) -> Template | ClientRedirect:
-        return self._admin_event_users_render(
+        return self._admin_event_accounts_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='user',
+            modal='account',
             action=action,
-            user_id=user_id,
+            account_id=account_id,
         )
 
-    def _admin_user_update(
+    def _admin_account_update(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -290,14 +308,14 @@ class UserAdminController(BaseEventAdminController):
         ],
         action: str,
         event_uniq_id: str,
-        user_id: int | None,
+        account_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
             case 'update' | 'delete' | 'create':
-                web_context: UserAdminWebContext = UserAdminWebContext(
+                web_context: AccountAdminWebContext = AccountAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    user_id=user_id,
+                    account_id=account_id,
                     data=data,
                 )
             case _:
@@ -306,59 +324,69 @@ class UserAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        stored_user: StoredUser = self._admin_validate_user_update_data(
+        stored_account: StoredAccount = self._admin_validate_account_update_data(
             action, web_context, data
         )
-        if stored_user.errors:
-            return self._admin_event_users_render(
+        if stored_account.errors:
+            return self._admin_event_accounts_render(
                 request,
                 event_uniq_id=event_uniq_id,
-                modal='user',
+                modal='account',
                 action=action,
-                user_id=user_id,
+                account_id=account_id,
                 data=data,
-                errors=stored_user.errors,
+                errors=stored_account.errors,
             )
+        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
             match action:
                 case 'create':
-                    stored_user = event_database.add_stored_user(stored_user)
+                    stored_account = event_database.add_stored_account(stored_account)
                     event_database.commit()
                     Message.success(
                         request,
-                        _('User [{username}] has been created.').format(
-                            username=stored_user.username
+                        _('Account [{username}] has been created.').format(
+                            username=stored_account.username
                         ),
                     )
                 case 'update':
-                    stored_user = event_database.update_stored_user(stored_user)
+                    assert web_context.admin_account is not None
+                    stored_account = event_database.update_stored_account(
+                        stored_account
+                    )
                     event_database.commit()
                     Message.success(
                         request,
-                        _('User [{username}] has been updated.').format(
-                            username=stored_user.username
+                        _('Unauthenticated access has been updated.')
+                        if web_context.admin_account.anonymous
+                        else _('Account [{username}] has been updated.').format(
+                            username=stored_account.username
                         ),
                     )
                 case 'delete':
-                    if web_context.admin_user is None:
-                        raise RuntimeError(f'{web_context.admin_user=} for [{action=}]')
-                    event_database.delete_stored_user(web_context.admin_user.id)
+                    if web_context.admin_account is None:
+                        raise RuntimeError(
+                            f'{web_context.admin_account=} for [{action=}]'
+                        )
+                    if web_context.admin_account.anonymous:
+                        raise RuntimeError('Can not delete the anonymous account')
+                    event_database.delete_stored_account(web_context.admin_account.id)
                     event_database.commit()
                     Message.success(
                         request,
-                        _('User [{username}] has been deleted.').format(
-                            username=web_context.admin_user.username
+                        _('Account [{username}] has been deleted.').format(
+                            username=web_context.admin_account.username
                         ),
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
-        web_context.admin_event.clear_user_cache()
-        return self._admin_event_users_render(request, event_uniq_id=event_uniq_id)
+        event_loader.clear_cache(event_uniq_id)
+        return self._admin_event_accounts_render(request, event_uniq_id=event_uniq_id)
 
-    @post(path='/admin/user-create/{event_uniq_id:str}', name='admin-user-create')
-    async def htmx_admin_user_create(
+    @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
+    async def htmx_admin_account_create(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -367,55 +395,55 @@ class UserAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_user_update(
+        return self._admin_account_update(
             request,
             event_uniq_id=event_uniq_id,
             action='create',
-            user_id=None,
+            account_id=None,
             data=data,
         )
 
     @patch(
-        path='/admin/user-update/{event_uniq_id:str}/{user_id:int}',
-        name='admin-user-update',
+        path='/admin/account-update/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-update',
     )
-    async def htmx_admin_user_update(
+    async def htmx_admin_account_update(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        user_id: int | None,
+        account_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_user_update(
+        return self._admin_account_update(
             request,
             event_uniq_id=event_uniq_id,
             action='update',
-            user_id=user_id,
+            account_id=account_id,
             data=data,
         )
 
     @delete(
-        path='/admin/user-delete/{event_uniq_id:str}/{user_id:int}',
-        name='admin-user-delete',
+        path='/admin/account-delete/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-delete',
         status_code=HTTP_200_OK,
     )
-    async def htmx_admin_user_delete(
+    async def htmx_admin_account_delete(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        user_id: int | None,
+        account_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_user_update(
+        return self._admin_account_update(
             request,
             event_uniq_id=event_uniq_id,
             action='delete',
-            user_id=user_id,
+            account_id=account_id,
             data=data,
         )

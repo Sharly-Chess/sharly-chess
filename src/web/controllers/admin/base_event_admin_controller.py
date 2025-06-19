@@ -171,11 +171,11 @@ class BaseEventAdminController(BaseAdminController):
                 'title': _('Access'),
                 'icon_class': 'bi-key',
                 'submenu': {
-                    'admin-event-users-tab': {
-                        'title': _('Users ({num})').format(
-                            num=len(admin_event.users_by_id) or '-'
+                    'admin-event-accounts-tab': {
+                        'title': _('Accounts ({num})').format(
+                            num=len(admin_event.accounts_by_id) or '-'
                         ),
-                        'template': 'users/tab.html',
+                        'template': 'accounts/tab.html',
                     },
                     'admin-event-computers-tab': {
                         'title': _('Computers ({num})').format(

@@ -37,7 +37,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
     StoredPrize,
     StoredComputer,
-    StoredUser,
+    StoredAccount,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -987,6 +987,8 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
+        stored_event.stored_computers = list(self.load_stored_computers())
+        stored_event.stored_accounts = list(self.load_stored_accounts())
         return stored_event
 
     def load_stored_event_metadata(self) -> EventMetadata:
@@ -2926,7 +2928,10 @@ class EventDatabase(MigrationDatabase):
             edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
             edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
             ip=row['ip'],
-            permissions=cls.load_json_from_database_field(row['permissions']),
+            permissions=cls.set_dict_int_keys(
+                cls.load_json_from_database_field(row['permissions'])
+            )
+            or {},
         )
 
     def get_stored_computer(self, computer_id: int) -> StoredComputer | None:
@@ -2966,11 +2971,11 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `computer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            computer_id: int = self._last_inserted_id()
+            computer_id: int | None = self._last_inserted_id()
             if computer_id is None:
                 raise RuntimeError('Computer insertion failed')
             fetched_stored_computer: StoredComputer = self.get_stored_computer(
-                computer_id == computer_id
+                computer_id=computer_id
             )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
@@ -3006,42 +3011,45 @@ class EventDatabase(MigrationDatabase):
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------
-    # StoredUser
+    # StoredAccount
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def _row_to_stored_user(cls, row: dict[str, Any]) -> StoredUser:
-        return StoredUser(
+    def _row_to_stored_account(cls, row: dict[str, Any]) -> StoredAccount:
+        return StoredAccount(
             id=row['id'],
             active=cls.load_bool_from_database_field(row['active']),
             edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
             edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
             username=row['username'],
             password=row['password'],
-            permissions=cls.load_json_from_database_field(row['permissions']),
+            permissions=cls.set_dict_int_keys(
+                cls.load_json_from_database_field(row['permissions'])
+            )
+            or {},
         )
 
-    def get_stored_user(self, user_id: int) -> StoredUser | None:
+    def get_stored_account(self, account_id: int) -> StoredAccount | None:
         self.execute(
-            'SELECT * FROM `user` WHERE `id` = ?',
-            (user_id,),
+            'SELECT * FROM `account` WHERE `id` = ?',
+            (account_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
-            return self._row_to_stored_user(row)
+            return self._row_to_stored_account(row)
         return None
 
-    def load_stored_users(self) -> Iterator[StoredUser]:
+    def load_stored_accounts(self) -> Iterator[StoredAccount]:
         self.execute(
-            'SELECT * FROM `user` ORDER BY `username`',
+            'SELECT * FROM `account` ORDER BY `username`',
             (),
         )
-        yield from map(self._row_to_stored_user, self.fetchall())
+        yield from map(self._row_to_stored_account, self.fetchall())
 
-    def _write_stored_user(
+    def _write_stored_account(
         self,
-        stored_user: StoredUser,
-    ) -> StoredUser:
+        stored_account: StoredAccount,
+    ) -> StoredAccount:
         fields: list[str] = [
             'active',
             'username',
@@ -3049,50 +3057,52 @@ class EventDatabase(MigrationDatabase):
             'permissions',
         ]
         params: list = [
-            stored_user.active,
-            stored_user.username,
-            stored_user.password,
-            self.dump_to_json_database_permissions(stored_user.permissions),
+            stored_account.active,
+            stored_account.username,
+            stored_account.password,
+            self.dump_to_json_database_permissions(stored_account.permissions),
         ]
-        if stored_user.id is None:
+        if stored_account.id is None:
             protected_fields: list[str] = [f'`{f}`' for f in fields]
             self.execute(
-                f'INSERT INTO `user`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
+                f'INSERT INTO `account`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            user_id: int = self._last_inserted_id()
-            if user_id is None:
-                raise RuntimeError('User insertion failed')
-            fetched_stored_user: StoredUser = self.get_stored_user(user_id=user_id)
+            account_id: int = self._last_inserted_id()
+            if account_id is None:
+                raise RuntimeError('Account insertion failed')
+            fetched_stored_account: StoredAccount = self.get_stored_account(
+                account_id=account_id
+            )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_user.id]
+            params += [stored_account.id]
             self.execute(
-                f'UPDATE `user` SET {", ".join(field_sets)} WHERE `id` = ?',
+                f'UPDATE `account` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_user: StoredUser = self.get_stored_user(
-                user_id=stored_user.id
+            fetched_stored_account: StoredAccount = self.get_stored_account(
+                account_id=stored_account.id
             )
-        if fetched_stored_user is None:
-            raise RuntimeError('User write failed')
+        if fetched_stored_account is None:
+            raise RuntimeError('Account write failed')
         self.set_last_update()
-        return fetched_stored_user
+        return fetched_stored_account
 
-    def add_stored_user(
+    def add_stored_account(
         self,
-        stored_user: StoredUser,
-    ) -> StoredUser:
-        assert stored_user.id is None, f'stored_user.id={stored_user.id}'
-        return self._write_stored_user(stored_user)
+        stored_account: StoredAccount,
+    ) -> StoredAccount:
+        assert stored_account.id is None, f'{stored_account.id=}'
+        return self._write_stored_account(stored_account)
 
-    def update_stored_user(
+    def update_stored_account(
         self,
-        stored_user: StoredUser,
-    ) -> StoredUser:
-        assert stored_user.id is not None
-        return self._write_stored_user(stored_user)
+        stored_account: StoredAccount,
+    ) -> StoredAccount:
+        assert stored_account.id is not None
+        return self._write_stored_account(stored_account)
 
-    def delete_stored_user(self, user_id: int):
-        self.execute('DELETE FROM `user` WHERE `id` = ?;', (user_id,))
+    def delete_stored_account(self, account_id: int):
+        self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
         self.set_last_update()

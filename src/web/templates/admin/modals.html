@@ -59,6 +59,10 @@
     {% include 'prizes/prizes_modal.html' %}
 {% elif modal == 'prize_form' %}
     {% include 'prizes/prize_form_modal.html' %}
+{% elif modal == 'account' %}
+    {% include 'accounts/account_modal.html' %}
+{% elif modal == 'computer' %}
+    {% include 'computers/computer_modal.html' %}
 {% elif modal %}
     {% include modal ~ '_modal_not_found.html' %}
 {% endif %}

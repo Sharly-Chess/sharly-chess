@@ -1,7 +1,11 @@
 from data.auth.entities import Computer
 from data.auth.roles import Role
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import LOCALHOST_ID, ANY_COMPUTER_ID, ANY_USER_ID
+from database.sqlite.event.event_store import (
+    LOCALHOST_ID,
+    ANY_COMPUTER_ID,
+    ANONYMOUS_ID,
+)
 from database.sqlite.migration import BaseMigration
 
 
@@ -37,13 +41,9 @@ class Migration(BaseMigration):
                 ANY_COMPUTER_ID,
                 False,
                 True,
-                False,
-                Computer.ANY_IP,
-                EventDatabase.dump_to_json_database_permissions(
-                    {
-                        Role.SPECTATOR: None,
-                    }
-                ),
+                True,
+                Computer.UNNKOWN_IP,
+                '{}',
             ),
         ):
             self.database.execute(
@@ -51,7 +51,7 @@ class Migration(BaseMigration):
                 computer_data,
             )
         self.database.execute(
-            'CREATE TABLE `user` ('
+            'CREATE TABLE `account` ('
             '    `id` INTEGER NOT NULL,'
             '    `edit_properties` INTEGER NOT NULL DEFAULT 1,'
             '    `edit_permissions` INTEGER NOT NULL DEFAULT 1,'
@@ -63,26 +63,22 @@ class Migration(BaseMigration):
             '    UNIQUE(`username`)'
             ')'
         )
-        for user_data in (
+        for account_data in (
             (
-                ANY_USER_ID,
+                ANONYMOUS_ID,
                 False,
                 True,
-                False,
+                True,
                 '',
                 '',
-                EventDatabase.dump_to_json_database_permissions(
-                    {
-                        Role.SPECTATOR: None,
-                    }
-                ),
+                '{}',
             ),
         ):
             self.database.execute(
-                'INSERT INTO `computer`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                user_data,
+                'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                account_data,
             )
 
     def backward(self):
-        self.database.execute('DROP TABLE IF EXISTS `user`')
+        self.database.execute('DROP TABLE IF EXISTS `account`')
         self.database.execute('DROP TABLE IF EXISTS `computer`')

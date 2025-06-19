@@ -1,0 +1,59 @@
+<h4>
+    {{ _('Permissions') }}
+</h4>
+<div class="row">
+    <table
+        id="{{ table_id }}"
+        class="table prominent table-striped table-sm table-hover mx-auto justify-content-center"
+    >
+        <thead
+            id="{{ table_id }}-header"
+        >
+            <tr>
+                <th scope="col" class="text-nowrap text-start" colspan="2">
+                    {{ _('Role') }}
+                </th>
+                <th scope="col" class="text-nowrap text-start">
+                    {{ _('Scope') }}
+                </th>
+            </tr>
+        </thead>
+        <tbody id="{{ table_id }}-body">
+            {% for role in roles %}
+                <tr>
+                    <th scope="row" class="text-nowrap text-start">
+                        <span
+                            {{ macros.tooltip_attributes('info', role.tooltip, 'right') }}
+                        >
+                            {{ role.name }}
+                        </span>
+                    </th>
+                    <td class="text-nowrap text-center">
+                        {{ admin_macros.switch_input(
+                            name='role_' ~ role.value,
+                            label='',
+                            help_text='',
+                            placeholder='',
+                            info='',
+                            data=data, errors=errors,
+                            disabled=role.has_application_scope
+                        ) }}
+                    </td>
+                    <td class="text-nowrap text-start">
+                        {% if role.has_tournament_scope %}
+                            {{ admin_macros.text_input(
+                                name='permission_' ~ role.value,
+                                label='',
+                                placeholder=_('Tournament unique IDs'),
+                                help_text='',
+                                data=data, errors=errors
+                            ) }}
+                        {% else %}
+                            {{ role.scope.name }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

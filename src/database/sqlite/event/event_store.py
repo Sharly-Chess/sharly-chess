@@ -240,11 +240,11 @@ class StoredComputer(StoredAccess):
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
-ANY_USER_ID: int = -1
+ANONYMOUS_ID: int = -1
 
 
 @dataclass
-class StoredUser(StoredAccess):
+class StoredAccount(StoredAccess):
     username: str | None
     password: str | None
     errors: dict[str, str] = field(default_factory=dict[str, str])
@@ -290,7 +290,7 @@ class StoredEvent(BaseStoredEvent):
         default_factory=list[StoredDisplayController]
     )
     stored_computers: list[StoredComputer] = field(default_factory=list[StoredComputer])
-    stored_users: list[StoredUser] = field(default_factory=list[StoredUser])
+    stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

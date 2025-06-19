@@ -21,7 +21,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.entities import Computer, User
+from data.auth.entities import Computer, Account
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -546,7 +546,7 @@ class Event:
     @cached_property
     def tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
         """Returns the tournaments where the Papi file exists
-        (useful to tell the users why adding players is not possible)."""
+        (useful to tell the arbiters why adding players is not possible)."""
         return [
             tournament
             for tournament in self.tournaments_sorted_by_uniq_id
@@ -846,34 +846,53 @@ class Event:
     def computers_by_ip(self) -> dict[str, Computer]:
         return {computer.ip: computer for computer in self.computers_by_id.values()}
 
+    @cached_property
+    def computers_sorted_by_ip(self) -> list[Computer]:
+        return sorted(
+            self.computers_by_ip.values(),
+            key=lambda computer: (
+                not computer.localhost,
+                computer.unknown,
+                computer.ip,
+            ),
+        )
+
     def clear_computer_cache(self):
         permission_cached_property_names = [
             'computers_by_id',
             'computers_by_ip',
+            'computers_sorted_by_ip',
         ]
         for property_name in permission_cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
 
     @cached_property
-    def users_by_id(self) -> dict[int, User]:
+    def accounts_by_id(self) -> dict[int, Account]:
         if self.errors:
             return {}
-        users_by_id: dict[int, User] = {
-            stored_user.id: User(stored_user)
-            for stored_user in self.stored_event.stored_users
-            if stored_user.id is not None
+        accounts_by_id: dict[int, Account] = {
+            stored_account.id: Account(stored_account)
+            for stored_account in self.stored_event.stored_accounts
+            if stored_account.id is not None
         }
-        return users_by_id
+        return accounts_by_id
 
     @cached_property
-    def users_by_username(self) -> dict[str, User]:
-        return {user.username: user for user in self.users_by_id.values()}
+    def accounts_by_username(self) -> dict[str, Account]:
+        return {account.username: account for account in self.accounts_by_id.values()}
 
-    def clear_user_cache(self):
+    @cached_property
+    def accounts_sorted_by_username(self) -> list[Account]:
+        return sorted(
+            self.accounts_by_id.values(), key=lambda account: account.username or ''
+        )
+
+    def clear_account_cache(self):
         permission_cached_property_names = [
-            'users_by_id',
-            'users_by_username',
+            'accounts_by_id',
+            'accounts_by_username',
+            'accounts_sorted_by_username',
         ]
         for property_name in permission_cached_property_names:
             if property_name in self.__dict__:
