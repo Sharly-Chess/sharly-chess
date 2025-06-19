@@ -3282,9 +3282,6 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
-msgid "Please enter the date of birth."
-msgstr ""
-
 msgid "Please enter the date of the first hour."
 msgstr ""
 
@@ -5470,4 +5467,3 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
