@@ -967,6 +967,7 @@ class EventDatabase(MigrationDatabase):
             message_text=row['message_text'],
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
+            prize_currency=row['prize_currency'],
             last_update=row['last_update'],
         )
         plugin_manager.hook.augment_event_after_db_fetch(
@@ -1015,52 +1016,45 @@ class EventDatabase(MigrationDatabase):
             key: value for data in per_plugin_event_data for key, value in data.items()
         }
 
-        fields: list[str] = [
-            'name',
-            'start',
-            'stop',
-            'public',
-            'federation',
-            'path',
-            'location',
-            'hide_background_image',
-            'background_image',
-            'background_color',
-            'update_password',
-            'record_illegal_moves',
-            'rules',
-            'timer_colors',
-            'timer_delays',
-            'message_text',
-            'message_color',
-            'message_background_color',
-            'last_update',
-        ] + [field for field in plugin_data.keys()]
+        fields = (
+            self._get_fields_dict(
+                stored_event,
+                [
+                    'name',
+                    'start',
+                    'stop',
+                    'public',
+                    'federation',
+                    'path',
+                    'location',
+                    'hide_background_image',
+                    'background_image',
+                    'background_color',
+                    'update_password',
+                    'record_illegal_moves',
+                    'rules',
+                    'message_text',
+                    'message_color',
+                    'message_background_color',
+                    'prize_currency',
+                ],
+            )
+            | {
+                'timer_colors': self.dump_to_json_database_timer_colors(
+                    stored_event.timer_colors
+                ),
+                'timer_delays': self.dump_to_json_database_timer_delays(
+                    stored_event.timer_delays
+                ),
+                'last_update': time.time(),
+            }
+            | plugin_data
+        )
 
-        params: list = [
-            stored_event.name,
-            stored_event.start,
-            stored_event.stop,
-            stored_event.public,
-            stored_event.federation,
-            stored_event.path,
-            stored_event.location,
-            stored_event.hide_background_image,
-            stored_event.background_image,
-            stored_event.background_color,
-            stored_event.update_password,
-            stored_event.record_illegal_moves,
-            stored_event.rules,
-            self.dump_to_json_database_timer_colors(stored_event.timer_colors),
-            self.dump_to_json_database_timer_delays(stored_event.timer_delays),
-            stored_event.message_text,
-            stored_event.message_color,
-            stored_event.message_background_color,
-            time.time(),
-        ] + [value for value in plugin_data.values()]
-
-        field_sets = (f'`{f}` = ?' for f in fields)
-        self.execute(f'UPDATE `info` SET {", ".join(field_sets)}', tuple(params))
+        field_sets = (f'`{f}` = ?' for f in fields.keys())
+        self.execute(
+            f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredTimerHour

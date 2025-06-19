@@ -94,16 +94,13 @@ class PrizeCategory:
             key=lambda prize: (-prize.value, not prize.is_monetary, prize.id),
         )
 
-    @property
-    def shared_prizes_str(self) -> str:
+    def format_shared_prizes(self, currency: str) -> str:
         if not self.are_prizes_shared:
             return ''
         threshold_str = ''
         if self.sharing_threshold:
             threshold_str = ', ' + _('minimum: {value}').format(
-                value=StaticUtils.currency_value_str(
-                    self.sharing_threshold, self.currency
-                )
+                value=StaticUtils.currency_value_str(self.sharing_threshold, currency)
             )
         return f'{_("Shared prizes")} ({self.prize_sharing.name}{threshold_str})'
 
@@ -138,13 +135,8 @@ class PrizeCategory:
     def total_prize_value(self) -> float:
         return sum(prize.value for prize in self.prizes)
 
-    @property
-    def total_prize_value_str(self) -> str:
-        return StaticUtils.currency_value_str(self.total_prize_value, self.currency)
-
-    @property
-    def currency(self) -> str:
-        return self.prize_group.tournament.event.prize_currency
+    def format_total_prize_value(self, currency: str) -> str:
+        return StaticUtils.currency_value_str(self.total_prize_value, currency)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_group.get_event_database()

@@ -19,7 +19,7 @@
                 {% else %}
                     <b class="mb-1">
                         {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
-                        {{ admin_prize_category.total_prize_value_str }}
+                        {{ admin_prize_category.format_total_prize_value(prize_currency) }}
                     </b>
                 {% endif %}
                 {% for prize in admin_prize_category.sorted_prizes %}
@@ -29,7 +29,7 @@
                                 {{ ordinal_integer(loop.index)|safe }}
                             </b>
                             <div class="text-start flex-grow-1">
-                                {{ prize.name }}
+                                {{ prize.name(prize_currency) }}
                             </div>
                             <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                 <button

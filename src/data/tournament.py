@@ -249,14 +249,17 @@ class Tournament:
 
     @property
     def max_byes(self) -> int:
-        return self.stored_tournament.max_byes or SharlyChessConfig.default_max_byes
+        if self.stored_tournament.max_byes is None:
+            return SharlyChessConfig.default_max_byes
+        else:
+            return self.stored_tournament.max_byes
 
     @property
     def last_rounds_no_byes(self) -> int:
-        return (
-            self.stored_tournament.last_rounds_no_byes
-            or SharlyChessConfig.default_last_rounds_no_byes
-        )
+        if self.stored_tournament.last_rounds_no_byes is None:
+            return SharlyChessConfig.default_last_rounds_no_byes
+        else:
+            return self.stored_tournament.last_rounds_no_byes
 
     @cached_property
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
