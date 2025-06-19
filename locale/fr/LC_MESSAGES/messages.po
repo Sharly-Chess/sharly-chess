@@ -3357,9 +3357,6 @@ msgstr "Veuillez entrer une date et une heure valides."
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
 
-msgid "Please use Papi to generate pairings."
-msgstr "Veuillez utiliser Papi pour générer les appariements."
-
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
 
@@ -5473,3 +5470,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+

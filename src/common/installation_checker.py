@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 from packaging.version import Version
 
-from common import experimental_features_enabled, REQUEST_TIMEOUT, TMP_DIR, BASE_DIR
+from common import REQUEST_TIMEOUT, TMP_DIR, BASE_DIR
 from common.i18n import _
 from common.logger import (
     print_interactive_info,
@@ -246,14 +246,11 @@ class InstallationChecker:
     @classmethod
     def check(cls) -> bool:
         error: bool = False
-        installers: list[ToolInstaller] = cls.web_lib_installers
-        if experimental_features_enabled():
-            installers.insert(0, BbpPairingsInstaller())
-        for installer in installers:
+        for installer in cls.web_lib_installers + [
+            BbpPairingsInstaller(),
+        ]:
             if not installer.check_installation():
                 error = True
-        if experimental_features_enabled():
-            installers.pop(0)
         if error:
             print_interactive_error(_('Incorrect installation, exiting.'))
         return not error
