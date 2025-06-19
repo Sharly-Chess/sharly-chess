@@ -1,38 +1,37 @@
-    <div id="top-nav-wrapper">
-        <div id="top-nav-content">
-            <div class="flex-grow-1"></div>
-            <div class="d-flex gap-2 ms-auto align-items-center">
-                <span {{ macros.tooltip_attributes('info', _('Edit the Sharly Chess settings.'), 'top') }}>
-                    <button
-                        id="admin-config-edit-button"
-                        class="btn btn-outline-primary text-nowrap ms-1"
-                        hx-get="{{ url_for('admin-config-modal') }}"
-                        hx-trigger="click{% if admin_auth and sharly_chess_config.force_edit %}, load{% endif %}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-pencil-fill pe-1"></i>
-                        {{ _('Edit') }}
-                    </button>
-                </span>
-                <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-plus-square-fill pe-1"></i>
-                        {{ _('Create an event') }}
-                    </button>
-                </span>
-            </div>
+<div id="top-nav-wrapper">
+    <div id="top-nav-content">
+        <div class="flex-grow-1"></div>
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            <span {{ macros.tooltip_attributes('info', _('Edit the Sharly Chess settings.'), 'top') }}>
+                <button
+                    id="admin-config-edit-button"
+                    class="btn btn-outline-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-config-modal') }}"
+                    hx-trigger="click{% if admin_auth and sharly_chess_config.force_edit %}, load{% endif %}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-pencil-fill pe-1"></i>
+                    {{ _('Edit') }}
+                </button>
+            </span>
+            <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Create an event') }}
+                </button>
+            </span>
         </div>
     </div>
 </div>
