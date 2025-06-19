@@ -3,6 +3,10 @@ from functools import lru_cache, cache
 from math import floor
 from typing import Callable
 
+import iso4217parse
+import pycountry
+from babel.numbers import format_currency, format_compact_currency
+
 
 class StaticUtils:
     """Class containing the static utils functions"""
@@ -96,12 +100,28 @@ class StaticUtils:
 
     @staticmethod
     def currency_value_str(value: float, currency: str) -> str:
-        from common.i18n import _
+        from common.i18n import get_locale
 
-        return _('{currency}{value}').format(
-            currency=currency,
-            value=int(value) if value.is_integer() else f'{value:.2f}',
-        )
+        locale = get_locale()
+        if value.is_integer():
+            return format_compact_currency(
+                value,
+                currency,
+                locale=locale,
+                fraction_digits=6,
+            )
+        return format_currency(value, currency, locale=locale)
+
+    @staticmethod
+    @cache
+    def get_country_currency(alpha_3_country_code: str) -> str | None:
+        country = pycountry.countries.get(alpha_3=alpha_3_country_code)
+        if not country:
+            return None
+        currencies = iso4217parse.by_country(country.alpha_2)
+        if not currencies:
+            return None
+        return currencies[0].alpha3
 
     @classmethod
     def ordinal_integer(cls, value: int) -> str:

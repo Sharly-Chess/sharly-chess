@@ -15,7 +15,7 @@
                         {{ prize_category.name }}
                     </div>
                     <div class="subheading">
-                        {{ prize_category.shared_prizes_str }}
+                        {{ prize_category.format_shared_prizes(prize_currency) }}
                     </div>
                     <div class="header">{{ _('Rk. *** RANK FOR PRINT VIEW') }}</div>
                     <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR PRINT VIEW') }}</div>
@@ -54,7 +54,7 @@
                         {% endif %}
                         <div class="cell prize">
                             {% if prize.is_monetary %}
-                                {{ prize.format_value(assigned_prize.value) }}
+                                {{ format_prize_value(assigned_prize.value) }}
                             {% else %}
                                 {{ prize.description }}
                             {% endif %}
