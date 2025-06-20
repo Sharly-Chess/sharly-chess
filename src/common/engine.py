@@ -36,6 +36,7 @@ from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.local_source_database import LocalSourceDatabaseManager
 
 logger = get_logger()
 
@@ -325,6 +326,19 @@ class Engine(ABC):
                     shutil.copy(src_file, tournament.file)
                     logger.debug('%s > %s', str(src_file), str(tournament.file))
                     tournaments_number += 1
+        logger.info('Recovering misc files...')
+        files_to_recover = [
+            database.file
+            for database in LocalSourceDatabaseManager.objects()
+            if version >= database.min_recovery_version
+        ]
+        misc_files: list[Path] = []
+        for file_to_recover in files_to_recover:
+            src_file: Path = version_dir / file_to_recover
+            if src_file.is_file():
+                file_to_recover.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(src_file, file_to_recover)
+                misc_files.append(file_to_recover)
         logger.info('Recovering custom files...')
         custom_files: list[Path] = []
         custom_dir: Path = version_dir / SharlyChessConfig.custom_folder
@@ -355,6 +369,13 @@ class Engine(ABC):
             tournaments_number,
             papi_dir,
         )
+        if misc_files:
+            logger.info(
+                'Misc files recovered: %d.',
+                len(misc_files),
+            )
+            for misc_file in misc_files:
+                logger.info('- %s', str(misc_file))
         if custom_files:
             logger.info(
                 'Custom files recovered: %d (from directory [%s]).',

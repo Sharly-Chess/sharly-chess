@@ -4409,9 +4409,6 @@ msgstr ""
 msgid "The following categories will also be deleted:"
 msgstr ""
 
-msgid "The following languages are available:"
-msgstr ""
-
 msgid "The following players did not check-in:"
 msgstr ""
 
