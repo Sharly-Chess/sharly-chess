@@ -4208,9 +4208,6 @@ msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter u
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
-msgid "The following languages are available:"
-msgstr "Les langues suivantes sont disponibles :"
-
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
 
