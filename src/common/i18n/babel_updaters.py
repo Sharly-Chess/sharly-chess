@@ -108,7 +108,7 @@ class BabelUpdater(BabelWrapper):
             for line in f:
                 if matches := re.match(r'\[\w+: *(.*)]', line):
                     pattern_found = True
-                    for file in Path('.').glob(matches.group(1)):
+                    for file in BASE_DIR.glob(matches.group(1)):
                         new_fingerprints[str(file)] = file_fingerprint(file).hex()
                         if not updated_file_found:
                             if str(file) not in old_fingerprints:
