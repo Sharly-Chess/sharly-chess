@@ -58,7 +58,7 @@ class SharlyChessConfig(metaclass=Singleton):
             ]
             logger.info('User locale: %s', system_user_locale)
             user_locale: str = system_user_locale[:2]
-            if locale in locales:
+            if user_locale in locales:
                 return user_locale
             logger.warning('Unknown locale: %s', user_locale)
         return None
