@@ -5,6 +5,7 @@ English version below
 
 - Ajout de paramètres de log et mise à jour dynamique de la configuration (2.8.0)
 - Suppression de l'option ``--experimental`` et activation des fonctionnalités expérimentales depuis l'interface web (2.8.0)
+- Récupération des bases de données des joueur·euses lors des mises à jour (2.8.0)
 
 ## Interface web
 
@@ -32,6 +33,7 @@ English version below
 
 - Added logging parameters and dynamically update the logging configuration (2.8.0)
 - Removed the ``--experimental`` option and activate the experimental features from the web UI (2.8.0)
+- Recover the players database files when upgrading (2.8.0)
 
 ## Web interface
 
