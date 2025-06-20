@@ -53,6 +53,7 @@ class FideDatabase(LocalSourceDatabase):
 
     @property
     def min_recovery_version(self) -> Version:
+        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/713
         return Version('2.7.8')
 
     @property
