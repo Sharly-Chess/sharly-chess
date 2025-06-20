@@ -3984,7 +3984,7 @@ msgid "Side group"
 msgstr "Autre"
 
 msgid "Single Screens"
-msgstr "Single Screens"
+msgstr "Écrans simples"
 
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
