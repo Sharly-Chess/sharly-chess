@@ -1,4 +1,5 @@
 import copy
+from functools import partial
 from typing import Any, Annotated
 
 from litestar import get, post, patch, delete
@@ -127,6 +128,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        prize_currency = self.get_admin_event().prize_currency
         return super().template_context | {
             'admin_event_tab': 'admin-event-prizes-tab',
             'admin_tournament': self.admin_tournament,
@@ -135,7 +137,11 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
             'ordinal_integer': StaticUtils.ordinal_integer,
-            'prize_currency': self.get_admin_event().prize_currency,
+            'format_prize_value': partial(
+                StaticUtils.currency_value_str,
+                currency=prize_currency,
+            ),
+            'prize_currency': prize_currency,
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
         }
@@ -208,6 +214,40 @@ class PrizeAdminController(BaseEventAdminController):
                     prize_group_id
                 ]
         return self._admin_event_prizes_render(web_context)
+
+    @get(
+        path=(
+            '/admin/prizes/prize-players-modal/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-players-modal',
+    )
+    async def htmx_admin_prize_players_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        prize_group_id: int,
+        prize_category_id: int,
+    ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(
+            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+        )
+        if web_context.error:
+            return web_context.error
+        prize_group = web_context.get_admin_prize_group()
+        assigned_prizes_by_player_id = {
+            assigned_prize.assigned_to.id: assigned_prize
+            for assigned_prize in prize_group.assign_prizes()
+            if assigned_prize.assigned_to
+        }
+        return self._admin_event_prizes_render(
+            web_context,
+            {
+                'modal': 'prize_players',
+                'assigned_prizes_by_player_id': assigned_prizes_by_player_id,
+            },
+        )
 
     # -------------------------------------------------------------------------
     # Prize groups

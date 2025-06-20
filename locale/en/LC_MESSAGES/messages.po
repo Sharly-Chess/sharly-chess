@@ -492,7 +492,7 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
-msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
+msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Bd."
 
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
@@ -519,7 +519,7 @@ msgstr ""
 msgid "Blitz"
 msgstr ""
 
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgid "Blitz *** BLITZ ELO FOR TABLE HEADER"
 msgstr "Blitz"
 
 msgid "Blitz rating"
@@ -637,7 +637,7 @@ msgstr ""
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgid "Cat *** CATEGORY FOR TABLE HEADER"
 msgstr "Cat."
 
 msgid "Category"
@@ -793,7 +793,7 @@ msgstr "Club"
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
 msgstr "Club"
 
-msgid "Club *** CLUB FOR PRINT VIEW"
+msgid "Club *** CLUB FOR TABLE HEADER"
 msgstr "Club"
 
 msgid "Club:"
@@ -839,7 +839,7 @@ msgstr "Comment"
 msgid "Comment:"
 msgstr ""
 
-msgid "Comments *** COMMENTS FOR PRINT VIEW"
+msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Comments"
 
 msgid "Configuration"
@@ -876,6 +876,9 @@ msgid "Console logging level: {console_log_level}"
 msgstr ""
 
 msgid "Console logs"
+msgstr ""
+
+msgid "Consult the players and the prize assignment of this category."
 msgstr ""
 
 msgid "Contact and registration"
@@ -990,6 +993,9 @@ msgid "Crosstable %f-%l"
 msgstr ""
 
 msgid "Crosstable after round #{round}"
+msgstr ""
+
+msgid "Crosstable before the first round"
 msgstr ""
 
 msgid "Current ({num})"
@@ -1572,7 +1578,7 @@ msgstr ""
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
 msgid "Elo step (handicap):"
@@ -1840,7 +1846,7 @@ msgstr ""
 msgid "Family [{uniq_id}] already exists."
 msgstr ""
 
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Fed."
 
 msgid "Fed."
@@ -2017,7 +2023,7 @@ msgstr ""
 msgid "Games won with Black"
 msgstr ""
 
-msgid "Gen *** GENDER FOR PRINT VIEW"
+msgid "Gen *** GENDER FOR TABLE HEADER"
 msgstr "Gen."
 
 msgid "Gender"
@@ -2363,7 +2369,7 @@ msgstr ""
 msgid "League"
 msgstr ""
 
-msgid "League *** LEAGUE FOR PRINT VIEW"
+msgid "League *** LEAGUE FOR TABLE HEADER"
 msgstr "League"
 
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
@@ -2595,7 +2601,7 @@ msgstr "Name"
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr "Name"
 
-msgid "Name *** NAME FOR PRINT VIEW"
+msgid "Name *** NAME FOR TABLE HEADER"
 msgstr "Name"
 
 msgid "Name:"
@@ -2614,7 +2620,7 @@ msgstr "National"
 msgid "Navigation"
 msgstr ""
 
-msgid "Nb. *** NB FOR PRINT VIEW"
+msgid "Nb. *** NB FOR TABLE HEADER"
 msgstr "Nb."
 
 msgid "Nb. final rounds without byes:"
@@ -3233,6 +3239,10 @@ msgstr ""
 msgid "Players from %(first)s to %(last)s"
 msgstr ""
 
+#, python-format
+msgid "Players of category [%(category)s]"
+msgstr ""
+
 msgid "Players screen creation"
 msgstr ""
 
@@ -3423,7 +3433,7 @@ msgstr ""
 msgid "Private event"
 msgstr ""
 
-msgid "Prize *** PRIZE FOR PRINT VIEW"
+msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
 #, python-format
@@ -3434,6 +3444,9 @@ msgid "Prize assignment"
 msgstr ""
 
 msgid "Prize assignment after round #{round}"
+msgstr ""
+
+msgid "Prize assignment before the first round"
 msgstr ""
 
 msgid "Prize category [{prize_category}] has been duplicated."
@@ -3520,7 +3533,7 @@ msgstr ""
 msgid "Protected pairings editing"
 msgstr ""
 
-msgid "Pts *** POINTS FOR TABULAR DISPLAY"
+msgid "Pts *** POINTS FOR TABLE HEADER"
 msgstr "Pts"
 
 msgid "Public display controller"
@@ -3545,7 +3558,7 @@ msgid "Quit"
 msgstr ""
 
 #, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
 
 msgid "Random"
@@ -3574,7 +3587,14 @@ msgstr ""
 msgid "Ranking ({num})"
 msgstr ""
 
+#, python-format
+msgid "Ranking after round #%(round)d"
+msgstr ""
+
 msgid "Ranking after round #{round}"
+msgstr ""
+
+msgid "Ranking before the first round"
 msgstr ""
 
 msgid "Ranking only"
@@ -3592,7 +3612,7 @@ msgstr ""
 msgid "Rapid"
 msgstr ""
 
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgid "Rapid *** RAPID ELO FOR TABLE HEADER"
 msgstr "Rapid"
 
 msgid "Rapid rating"
@@ -3676,7 +3696,7 @@ msgstr ""
 msgid "Request to the database failed: {error}."
 msgstr ""
 
-msgid "Res. ** RESULT FOR PRINT VIEW"
+msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr ""
 
 msgid "Result"
@@ -3712,11 +3732,11 @@ msgstr ""
 msgid "Return to tournament"
 msgstr ""
 
-msgid "Rk. *** RANK FOR PRINT VIEW"
+msgid "Rk. *** RANK FOR TABLE HEADER"
 msgstr "Rk."
 
-msgid "Rk. O. *** RANK OVERALL FOR PRINT VIEW"
-msgstr "Pl. O."
+msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
+msgstr "Rk. O."
 
 msgid "Rnd.Boa"
 msgstr ""
