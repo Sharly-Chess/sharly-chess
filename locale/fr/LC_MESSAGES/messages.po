@@ -3750,7 +3750,7 @@ msgid "Rotator creation"
 msgstr "Création d'un écran rotatif"
 
 msgid "Rotators"
-msgstr "Rotators"
+msgstr "Écrans rotatifs"
 
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
