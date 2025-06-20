@@ -391,6 +391,7 @@ class Result(IntEnum):
             Result.HALF_POINT_BYE,
             Result.FULL_POINT_BYE,
             Result.PAIRING_ALLOCATED_BYE,
+            Result.REST_GAME,
         )
 
     @classmethod
