@@ -70,6 +70,10 @@ body[data-bs-theme="light"] #main-wrapper {
     padding-left: 0.75rem;
 }
 
+.sidebar .nav-icon-badge i {
+    padding: 0;
+}
+
 .compact-sidebar .sidebar i, .compact-sidebar .sidebar i.indented {
     font-size: 1rem;
     padding-left: 0;
