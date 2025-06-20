@@ -1,7 +1,7 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ macros.doc_icon('screens-single', 'fs-4') }}
+    {{ admin_macros.admin_title(_('Single Screens'), 'screens-single') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id),
     ) }}

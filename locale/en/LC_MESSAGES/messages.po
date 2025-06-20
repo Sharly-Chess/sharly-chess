@@ -1214,6 +1214,9 @@ msgstr ""
 msgid "Display controller creation"
 msgstr ""
 
+msgid "Display controllers"
+msgstr ""
+
 msgid "Display controllers ({num})"
 msgstr ""
 
@@ -3746,6 +3749,9 @@ msgstr ""
 msgid "Rotator creation"
 msgstr ""
 
+msgid "Rotators"
+msgstr ""
+
 msgid "Rotators ({num})"
 msgstr ""
 
@@ -3975,6 +3981,9 @@ msgid "Showing the date and time on the console may help in identifying slow ope
 msgstr ""
 
 msgid "Side group"
+msgstr ""
+
+msgid "Single Screens"
 msgstr ""
 
 msgid "Single Screens ({num})"
@@ -4822,6 +4831,9 @@ msgid "Tournament: %(tournament_name)s"
 msgstr ""
 
 msgid "Tournament: not set"
+msgstr ""
+
+msgid "Tournaments"
 msgstr ""
 
 msgid "Tournaments ({num})"

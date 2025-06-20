@@ -150,7 +150,7 @@ body[data-bs-theme="dark"] #sidebar-expander {
     top: 0;
     min-width: calc(var(--vw, 100vw) - var(--side-bar-width));
     z-index: 4;
-    background-color: rgba(var(--bs-body-bg-rgb), 0.9);
+    background-color: rgba(var(--bs-body-bg-rgb), 1);
     padding: 12px 0;
 }
 
