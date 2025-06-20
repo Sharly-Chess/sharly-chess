@@ -1,7 +1,7 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ macros.doc_icon('screens-rotators', 'fs-4') }}
+    {{ admin_macros.admin_title(_('Rotators'), 'screens-rotators') }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id),
     ) }}

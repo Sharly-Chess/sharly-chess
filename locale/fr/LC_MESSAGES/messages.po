@@ -1214,6 +1214,9 @@ msgstr "Le pilote d'afficheurs [{uniq_id}] existe déjà."
 msgid "Display controller creation"
 msgstr "Création d'un pilote d'afficheurs"
 
+msgid "Display controllers"
+msgstr "Pilotes d'afficheurs"
+
 msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheurs ({num})"
 
@@ -3746,6 +3749,9 @@ msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusie
 msgid "Rotator creation"
 msgstr "Création d'un écran rotatif"
 
+msgid "Rotators"
+msgstr "Écrans rotatifs"
+
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
 
@@ -3976,6 +3982,9 @@ msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier le
 
 msgid "Side group"
 msgstr "Autre"
+
+msgid "Single Screens"
+msgstr "Écrans simples"
 
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
@@ -4820,6 +4829,9 @@ msgstr "Tournoi : %(tournament_name)s"
 
 msgid "Tournament: not set"
 msgstr "Tournoi : non défini"
+
+msgid "Tournaments"
+msgstr "Tournois"
 
 msgid "Tournaments ({num})"
 msgstr "Tournois ({num})"

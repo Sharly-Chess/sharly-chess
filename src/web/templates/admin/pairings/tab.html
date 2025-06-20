@@ -1,8 +1,6 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
-        <div>
-            {{ macros.doc_icon('pairings', 'fs-4') }}
-        </div>
+        {{ admin_macros.admin_title(_('Pairings'), 'pairings') }}
         <div class="flex-grow-1"></div>
         {% if admin_tournament %}
             {% include '/admin/pairings/round_controls.html' %}

@@ -1,7 +1,7 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ macros.doc_icon('prizes', 'fs-4') }}
+    {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
     {% if admin_prize_group %}
         {{ macros.refresh_listener(
             hx_get=url_for(
