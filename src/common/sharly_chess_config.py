@@ -57,25 +57,26 @@ class SharlyChessConfig(metaclass=Singleton):
                 windll.GetUserDefaultUILanguage()
             ]
             logger.info('User locale: %s', system_user_locale)
-            locale: str = system_user_locale[:2]
+            user_locale: str = system_user_locale[:2]
             if locale in locales:
-                return locale
-            logger.warning('Unknown locale: %s', locale)
+                return user_locale
+            logger.warning('Unknown locale: %s', user_locale)
         return None
 
     @classmethod
     def load_stored_config(cls) -> StoredConfig:
         with ConfigDatabase() as config_database:
             stored_config: StoredConfig = config_database.load_stored_config()
-        # TODO Remove this code when all the engine dialogs have moved to the web UI
-        # If the locale is not set ask for it before other things like version recovery,
-        # offline databases download, ...
         if not stored_config.locale:
             user_locale: str | None = cls.get_user_locale()
             if user_locale is not None:
                 stored_config.locale = user_locale
             else:
                 stored_config.locale = locales[0]
+            stored_config.federation = cls.default_federations_by_locale.get(
+                stored_config.locale,
+                cls.default_federation,
+            )
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
@@ -87,7 +88,6 @@ class SharlyChessConfig(metaclass=Singleton):
             console_show_level=stored_config.console_show_level,
         )
         enable_experimental_features(stored_config.experimental)
-        # TODO (up to here)
         return stored_config
 
     @property
@@ -407,6 +407,12 @@ class SharlyChessConfig(metaclass=Singleton):
     ]
 
     default_prize_currency = 'EUR'
+
+    # The default federations set when initializing the configuration
+    # (if a locale is not found then use *default_federation*)
+    default_federations_by_locale: dict[str, str] = {
+        'fr': 'FRA',
+    }
 
     # The default fédération when creating events or players
     default_federation: str = 'FID'
