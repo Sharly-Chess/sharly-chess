@@ -327,12 +327,11 @@ class Engine(ABC):
                     logger.debug('%s > %s', str(src_file), str(tournament.file))
                     tournaments_number += 1
         logger.info('Recovering misc files...')
-        files_to_recover: list[Path] = []
-        for database in LocalSourceDatabaseManager.objects():
-            files_to_recover.append(database.file)
-            if legacy_path := database.legacy_path:
-                files_to_recover.append(legacy_path)
-
+        files_to_recover = [
+            database.file
+            for database in LocalSourceDatabaseManager.objects()
+            if version >= database.min_recovery_version
+        ]
         misc_files: list[Path] = []
         for file_to_recover in files_to_recover:
             src_file: Path = version_dir / file_to_recover

@@ -7,6 +7,9 @@ import threading
 from sqlite3 import OperationalError, IntegrityError
 from typing import override
 
+from packaging.version import Version
+
+from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -37,7 +40,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     update_status: bool | None = None
 
     def __init__(self, write: bool = False):
-        super().__init__(self._dir / self.file_name, write)
+        super().__init__(self.file_path(), write)
         self.stop_event = threading.Event()
         self.outdated_warning: bool = False
         self.stored_source_database: StoredLocalSourceDatabase
@@ -55,20 +58,22 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 )
                 database.commit()
 
+    @staticmethod
+    def _dir() -> Path:
+        """Path to the SQlite file."""
+        return TMP_DIR
+
+    @classmethod
+    def file_path(cls) -> Path:
+        return (
+            cls._dir()
+            / f'{cls.static_id()}.{SharlyChessConfig.federation_database_ext}'
+        )
+
     @property
     @abstractmethod
-    def _dir(self) -> Path:
-        """Path to the SQlite file."""
-
-    @property
-    def file_name(self) -> str:
-        return f'{self.id}.{SharlyChessConfig.federation_database_ext}'
-
-    @property
-    def legacy_path(self) -> Path | None:
-        # Location before version 2.8.
-        # TODO Remove once 2.8 will stop being supported
-        return None
+    def min_recovery_version(self) -> Version:
+        """The minimal app version for which the database can be recovered."""
 
     @property
     @abstractmethod

@@ -7,10 +7,10 @@ from logging import Logger
 from pathlib import Path
 from typing import Iterator, Any, override
 
+from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from data.player import Player, Federation, Club, PlayerRating
@@ -55,12 +55,12 @@ class FfeDatabase(LocalSourceDatabase):
         return 'FFE'
 
     @property
-    def _dir(self) -> Path:
-        return ffe.TMP_DIR
+    def min_recovery_version(self) -> Version:
+        return Version('2.7.8')
 
-    @property
-    def legacy_path(self) -> Path | None:
-        return TMP_DIR / self.file_name
+    @staticmethod
+    def _dir() -> Path:
+        return ffe.TMP_DIR
 
     @property
     def _schema_file_path(self) -> Path:

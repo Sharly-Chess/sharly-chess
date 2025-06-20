@@ -7,6 +7,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Iterator, Any, Callable, override
 
+from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
@@ -51,8 +52,8 @@ class FideDatabase(LocalSourceDatabase):
         return 'FIDE'
 
     @property
-    def _dir(self) -> Path:
-        return TMP_DIR
+    def min_recovery_version(self) -> Version:
+        return Version('2.7.8')
 
     @property
     def _schema_file_path(self) -> Path:
