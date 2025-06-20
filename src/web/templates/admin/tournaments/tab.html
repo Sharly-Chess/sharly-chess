@@ -47,8 +47,10 @@
                 {% include 'tournament_card.html' %}
             {% endfor %}
         {% else %}
-            <div class="col-12 mb-3">
-                {{ _('No tournaments.') }}
+            <div class="mx-auto" style="max-width: 500px;">
+                <h5 class="mt-2 my-5 text-center">
+                    {{ _('No tournaments.') }}
+                </h5>
             </div>
         {% endif %}
     </div>

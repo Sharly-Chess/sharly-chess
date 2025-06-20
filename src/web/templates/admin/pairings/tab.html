@@ -364,5 +364,9 @@
         });
     </script>
 {% else %}
-    {{ _('No pairings.') }}
+    <div class="mx-auto" style="max-width: 500px;">
+        <h5 class="mt-2 my-5 text-center">
+            {{ _('No pairings.') }}
+        </h5>
+    </div>
 {% endif%}
