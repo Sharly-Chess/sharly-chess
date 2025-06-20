@@ -61,9 +61,7 @@ class SharlyChessConfig(metaclass=Singleton):
             if locale in locales:
                 return locale
             logger.warning('Unknown locale: %s', locale)
-            return None
-        else:
-            raise OSError(f'{sys.platform=}')
+        return None
 
     @classmethod
     def load_stored_config(cls) -> StoredConfig:
