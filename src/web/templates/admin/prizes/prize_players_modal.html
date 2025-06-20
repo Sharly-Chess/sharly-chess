@@ -103,8 +103,8 @@
                                 {% if assigned_prize %}
                                     {% set prize_str = (
                                         format_prize_value(assigned_prize.value)
-                                        if assigned_prize.is_monetary
-                                        else assigned_prize.description
+                                        if assigned_prize.prize.is_monetary
+                                        else assigned_prize.prize.description
                                     ) %}
                                     {% if has_category_prize %}
                                         {{ prize_str }}
