@@ -17,7 +17,7 @@ English version below
 
 ### Gestion des appariements
 
-- Support officiel du moteur d'appariement _bbpPairings_ (2.8.0)
+- Support officiel du moteur interne d'appariement (_bbpPairings_) (2.8.0)
 
 ### Gestion des écrans
 
@@ -47,7 +47,7 @@ English version below
 
 ### Pairings management
 
-- Official support for the _bbpPairings_ pairing engine (2.8.0)
+- Official support for the internal pairing engine (_bbpPairings_) (2.8.0)
 
 ### Screens management
 
