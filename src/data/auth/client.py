@@ -245,6 +245,13 @@ class Client:
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
+    def can_manage_source_databases(
+        self,
+    ) -> bool:
+        """Returns true if the client can manage the local source databases."""
+        return self._has_application_role(Role.ADMINISTRATOR)
+
+    @property
     def can_delete_event(
         self,
     ) -> bool:
