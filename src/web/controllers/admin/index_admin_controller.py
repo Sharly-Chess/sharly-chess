@@ -156,9 +156,16 @@ class IndexAdminController(BaseAdminController):
 
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
-        passed_events = EventLoader.get_events_metadata('passed')
-        current_events = EventLoader.get_events_metadata('current')
-        coming_events = EventLoader.get_events_metadata('coming')
+        public_only: bool = not web_context.client.can_view_private_events
+        passed_events = EventLoader.get_events_metadata(
+            'passed', public_only=public_only
+        )
+        current_events = EventLoader.get_events_metadata(
+            'current', public_only=public_only
+        )
+        coming_events = EventLoader.get_events_metadata(
+            'coming', public_only=public_only
+        )
         nav_tabs: dict[str, dict[str, Any]] = {
             'current_events': {
                 'section_title': _('Events'),
@@ -168,6 +175,7 @@ class IndexAdminController(BaseAdminController):
                 'disabled': not current_events,
                 'empty_str': _('No current events.'),
                 'icon_class': 'bi-calendar indented',
+                'page_title': _('Current events'),
             },
             'coming_events': {
                 'title': _('Upcoming ({num})').format(num=len(coming_events) or '-'),
@@ -176,6 +184,7 @@ class IndexAdminController(BaseAdminController):
                 'disabled': not coming_events,
                 'empty_str': _('No upcoming events.'),
                 'icon_class': 'bi-calendar-check indented',
+                'page_title': _('Upcoming events'),
             },
             'passed_events': {
                 'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
@@ -184,6 +193,7 @@ class IndexAdminController(BaseAdminController):
                 'disabled': not passed_events,
                 'empty_str': _('No passed events.'),
                 'icon_class': 'bi-calendar-minus indented',
+                'page_title': _('Passed events'),
             },
             'archives': {
                 'title': _('Archived ({num})').format(
@@ -194,6 +204,7 @@ class IndexAdminController(BaseAdminController):
                 'disabled': not archive_loader.archives_sorted_by_date,
                 'empty_str': _('No archived events.'),
                 'icon_class': 'bi-archive indented',
+                'page_title': _('Archived events'),
             },
         }
         if web_context.client.can_view_application_settings:

@@ -238,6 +238,13 @@ class Client:
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
+    def can_view_detailed_event_cards(
+        self,
+    ) -> bool:
+        """Returns true if the client can view the details on the event cards."""
+        return self._has_application_role(Role.ADMINISTRATOR)
+
+    @property
     def can_delete_event(
         self,
     ) -> bool:

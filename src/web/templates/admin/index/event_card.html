@@ -39,7 +39,7 @@
             {% include block %}
         {% endfor %}
 
-        {% if admin_events_show_details %}
+        {% if client.can_view_detailed_event_cards and admin_events_show_details %}
             <div class="{% if not event.timer_count %}text-secondary{% endif %}">
                 <i class="bi-clock pe-1" ></i>
                 {% if event.timer_count %}

@@ -1,4 +1,4 @@
-{% if admin_events_show_details %}
+{% if client.can_view_detailed_event_cards and admin_events_show_details %}
     <div class="d-flex gap-2 card-plugin-block {% if not event.plugin_data.ffe.ffe_auto_upload %}text-secondary{% endif %}">
         <i class="bi bi-cloud-arrow-up-fill pe-1" ></i>
         {% if event.plugin_data.ffe.ffe_auto_upload %}
