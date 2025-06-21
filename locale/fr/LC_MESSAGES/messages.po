@@ -243,6 +243,9 @@ msgstr "Création d'un compte"
 msgid "Account: %(username)s"
 msgstr "Compte : %(username)s"
 
+msgid "Accounts"
+msgstr "Comptes"
+
 msgid "Accounts ({num})"
 msgstr "Comptes ({num})"
 
@@ -929,6 +932,9 @@ msgstr "L'ordinateur [{ip}] a été mis à jour."
 
 msgid "Computer creation"
 msgstr "Création d'un ordinateur"
+
+msgid "Computers"
+msgstr "Ordinateurs"
 
 msgid "Computers ({num})"
 msgstr "Ordinateurs ({num})"
@@ -2486,7 +2492,7 @@ msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
 msgid "Invalid username."
-msgstr Identifiant non valide.
+msgstr "Identifiant non valide."
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."

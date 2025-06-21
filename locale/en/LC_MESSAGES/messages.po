@@ -243,6 +243,9 @@ msgstr ""
 msgid "Account: %(username)s"
 msgstr ""
 
+msgid "Accounts"
+msgstr ""
+
 msgid "Accounts ({num})"
 msgstr ""
 
@@ -928,6 +931,9 @@ msgid "Computer [{ip}] has been updated."
 msgstr ""
 
 msgid "Computer creation"
+msgstr ""
+
+msgid "Computers"
 msgstr ""
 
 msgid "Computers ({num})"
