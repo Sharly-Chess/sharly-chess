@@ -844,6 +844,15 @@ with_indicator: display a loading indicator, optional
     {% endwith %}
 {% endmacro %}
 
+{% macro admin_title(
+    title,
+    doc_ref
+) %}
+    <h5 class="d-flex align-items-center gap-2 py-0 my-0 text-primary">
+        {{ macros.doc_icon(doc_ref, 'fs-5') }}
+        {{ title }}
+    </h5>
+{% endmacro %}
 
 {% macro extra_admin_nav_item(
     at,

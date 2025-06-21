@@ -831,7 +831,7 @@ class FfePlugin(Plugin):
             return [
                 ExtraColumn(
                     at='first-round' if document.is_crosstable else 'club',
-                    title=_('League *** LEAGUE FOR PRINT VIEW'),
+                    title=_('League *** LEAGUE FOR TABLE HEADER'),
                     classes='league',
                     value=lambda player: self.get_data(player.plugin_data, 'league'),
                 )
@@ -868,7 +868,7 @@ class FfePlugin(Plugin):
                 return [
                     ExtraColumn(
                         at='club',
-                        title=_('League *** LEAGUE FOR PRINT VIEW'),
+                        title=_('League *** LEAGUE FOR TABLE HEADER'),
                         classes='center',
                         value=lambda player: self.get_data(
                             player.plugin_data, 'league'
