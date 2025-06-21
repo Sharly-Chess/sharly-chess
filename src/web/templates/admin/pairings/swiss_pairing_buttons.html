@@ -7,41 +7,35 @@
 >
     {% with action='FULL_PAIRING' %}
         {% if action in existing_actions %}
-            {% if EXPERIMENTAL_FEATURES %}
-                <div
-                    {{ macros.tooltip_attributes(
-                        'info',
-                        pairings_generation_disabled_message
-                        or _('Generate pairings for this round.'),
-                        'top',
-                    ) }}
+            <div
+                {{ macros.tooltip_attributes(
+                    'info',
+                    pairings_generation_disabled_message
+                    or _('Generate pairings for this round.'),
+                    'top',
+                ) }}
+            >
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    {% if admin_round != 1 %}
+                        hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    {% else %}
+                        hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        hx-trigger="click"
+                        preload
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    {% endif %}
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if pairings_generation_disabled_message %}
+                        disabled
+                    {% endif %}
                 >
-                    <button
-                        class="btn btn-outline-primary text-nowrap"
-                        {% if admin_round != 1 %}
-                            hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        {% else %}
-                            hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                            hx-trigger="click"
-                            preload
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {% if pairings_generation_disabled_message %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-shuffle pe-1"></i>
-                        {{ _('Pair') }}
-                    </button>
-                </div>
-            {% else %}
-                <div class="text-warning text-center fst-italic lh-sm" style="width: 180px; font-size: 0.9rem;">
-                    {{ _('Please use Papi to generate pairings.') }}
-                </div>
-            {% endif %}
+                    <i class="bi-shuffle pe-1"></i>
+                    {{ _('Pair') }}
+                </button>
+            </div>
         {% endif %}
     {% endwith %}
     {% with action='FULL_UNPAIRING' %}

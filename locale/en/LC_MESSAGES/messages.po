@@ -3370,9 +3370,6 @@ msgstr ""
 msgid "Please select a type of criterion."
 msgstr ""
 
-msgid "Please use Papi to generate pairings."
-msgstr ""
-
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
@@ -5502,3 +5499,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
