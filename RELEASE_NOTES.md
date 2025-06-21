@@ -16,6 +16,9 @@ English version below
 - Mise à jour des drapeaux des fédérations (2.8.0)
 - Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
 
+### Gestion des appariements
+
+- Support officiel du moteur interne d'appariement (_bbpPairings_) (2.8.0)
 
 ### Gestion des écrans
 
@@ -43,6 +46,10 @@ English version below
 - Added check-in lists (2.8.0)
 - Updated federation flags (2.8.0)
 - Calculation of the players' category relative to the date of the tournament (2.8.0)
+
+### Pairings management
+
+- Official support for the internal pairing engine (_bbpPairings_) (2.8.0)
 
 ### Screens management
 

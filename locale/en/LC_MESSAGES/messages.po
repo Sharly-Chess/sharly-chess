@@ -3591,9 +3591,6 @@ msgstr ""
 msgid "Please select a type of criterion."
 msgstr ""
 
-msgid "Please use Papi to generate pairings."
-msgstr ""
-
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
@@ -5887,16 +5884,3 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Customization"
-#~ msgstr ""
-
-#~ msgid "No permissions"
-#~ msgstr ""
-
-#~ msgid "The properties and the permissions of this account can not be changed."
-#~ msgstr ""
-
-#~ msgid "The properties and the permissions of this computer can not be changed."
-#~ msgstr ""
-
