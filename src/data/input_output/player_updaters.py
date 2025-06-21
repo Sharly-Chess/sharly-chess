@@ -15,11 +15,18 @@ from database.sqlite.fide.fide_database import FideDatabase
 logger: Logger = get_logger()
 
 
-@dataclass
 class PlayerComparator(ABC):
-    field_ids: list[str]
-    player: Player
-    match_player: Player | None = None
+    def __init__(
+        self,
+        field_ids: list[str],
+        player: Player,
+        match_player: Player | None = None,
+    ):
+        self.field_ids = field_ids
+        self.player = player
+        if match_player:
+            match_player.tournament = player.tournament
+        self.match_player = match_player
 
     @property
     @abstractmethod
@@ -34,7 +41,6 @@ class PlayerComparator(ABC):
         ...
 
 
-@dataclass
 class FidePlayerComparator(PlayerComparator):
     def match_date_differs(self) -> bool:
         src_date = self.player.date_of_birth
