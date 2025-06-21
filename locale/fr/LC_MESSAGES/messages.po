@@ -239,6 +239,10 @@ msgstr "Le compte [{username}] a été mis à jour."
 msgid "Account creation"
 msgstr "Création d'un compte"
 
+#, python-format
+msgid "Account: %(username)s"
+msgstr "Compte : %(username)s"
+
 msgid "Accounts ({num})"
 msgstr "Comptes ({num})"
 
@@ -380,6 +384,9 @@ msgstr "Une erreur est survenue."
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
+msgid "Anonymous"
+msgstr "Anonyme"
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
 
@@ -403,6 +410,9 @@ msgstr "Êtes vous sûr de vouloir continuer ?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
+
+msgid "Ask your administrator for the username to use."
+msgstr "Demandez à votre administrateur le compte à utiliser."
 
 msgid "Assign a screen to the controller."
 msgstr "Attribuer un écran au pilote."
@@ -447,7 +457,7 @@ msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
 msgid "Authentication"
-msgstr "Authenfification"
+msgstr "Authentification"
 
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr "Erreur d'authentification (code : [{code}]) for [{user_id}] ([{chessevent_string}])."
@@ -822,6 +832,10 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
 
+#, python-format
+msgid "Client: %(host)s"
+msgstr "Client : %(host)s"
+
 msgid "Close"
 msgstr "Fermer"
 
@@ -921,6 +935,9 @@ msgstr "Ordinateurs ({num})"
 
 msgid "Configuration"
 msgstr "Configuration"
+
+msgid "Connect"
+msgstr "Connexion"
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
@@ -1292,6 +1309,9 @@ msgstr "Répertoire :"
 
 msgid "Disabled"
 msgstr "Désactivé"
+
+msgid "Disconnect"
+msgstr "Déconnexion"
 
 msgid "Display"
 msgstr "Affichage"
@@ -1760,6 +1780,9 @@ msgstr "Entrez ici l'identifiant du tournoi"
 
 msgid "Enter the event ID to confirm its deletion:"
 msgstr "Entrez l'identifiant de l'évènement pour confirmer sa suppression :"
+
+msgid "Enter the password associated with the username."
+msgstr "Entrez le mot de passe associé à l'identifiant."
 
 msgid "Enter the result"
 msgstr "Saisir le résultat"
@@ -2452,6 +2475,9 @@ msgstr "Réponse non valide du site FFE."
 
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
+
+msgid "Invalid username."
+msgstr Identifiant non valide.
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
@@ -3296,6 +3322,9 @@ msgstr "Évènements passés ({num})"
 msgid "Password"
 msgstr "Mot de passe"
 
+msgid "Password does not match."
+msgstr "Le mot de passe n'est pas correct."
+
 msgid "Password to enter results"
 msgstr "Mot de passe de saisie des résultats"
 
@@ -3660,6 +3689,9 @@ msgstr "Les prix des catégories partageant les prix ne peuvent être que monét
 
 msgid "Proceed"
 msgstr "Continuer"
+
+msgid "Profile"
+msgstr "Profil"
 
 msgid "Progressive"
 msgstr "Cumulatif"
@@ -4120,6 +4152,9 @@ msgstr "Sharly Chess propose un système de gestion des prix puissant et flexibl
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
+
+msgid "Sharly Chess server"
+msgstr "Serveur Sharly Chess"
 
 msgid "Sharly Chess settings"
 msgstr "Configuration de Sharly Chess"
@@ -5337,6 +5372,9 @@ msgstr "Ne pas utiliser de chronomètre"
 msgid "Username"
 msgstr "Identifiant"
 
+msgid "Username:"
+msgstr "Identifiant :"
+
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
 
@@ -5514,6 +5552,25 @@ msgstr "Oui"
 
 msgid "Yesterday"
 msgstr "Hier"
+
+#, python-format
+msgid "You are authenticated as \"%(username)s\" but the account is disabled (you get the same permissions as an anonymous user)."
+msgstr "Vous êtes authentifié·e en tant que « %(username)s » mais le compte est désactivé (vous avez les mêmes permissions que les utilisateur·ices anonymes)."
+
+#, python-format
+msgid "You are connected on an unknown client (%(host)s)."
+msgstr "Vous êtes connecté·e sur un client inconnu (%(host)s)."
+
+#, python-format
+msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown computer)."
+msgstr "Vous êtes connecté·e sur le client « %(host)s » mais les accès de ce client sont désactivés (vous avez les mêmes permissions que les clients inconnus)."
+
+#, python-format
+msgid "You are connected on client (%(host)s)."
+msgstr "Vous êtes connecté·e sur le client « %(host)s »."
+
+msgid "You are connected on the Sharly Chess server and have full administration privileges."
+msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilèges complets d'administration."
 
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."

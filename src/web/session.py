@@ -37,7 +37,7 @@ class SessionHandler:
                 request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
             ]
         except KeyError:
-            return event.unknown_computer
+            return event.anonymous_account
 
     AUTH_SESSION_KEY: str = 'auth'
 

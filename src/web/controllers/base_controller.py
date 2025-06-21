@@ -28,6 +28,7 @@ from common.i18n.utils import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.client import Client
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
@@ -56,6 +57,11 @@ class WebContext:
         self.error: ClientRedirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
+
+    @property
+    def client(self) -> Client:
+        """Returns the client (account and computer) of the request. This method may be overridden with an event parameter."""
+        return Client(self.request)
 
     @property
     def background_image(self) -> str | None:
@@ -380,6 +386,7 @@ class WebContext:
             'locale_infos': locale_infos,
             'locale_options': locale_options,
             'locale': SessionHandler.get_session_locale(self.request),
+            'client': self.client,
         }
 
 

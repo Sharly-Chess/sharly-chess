@@ -25,42 +25,42 @@ class Client:
     def __init__(
         self,
         request: HTMXRequest,
-        event: Event | None = None,
+        event: 'Event | None' = None,
     ):
-        self.computer: Computer = self._find_computer(request, event)
-        self.account: Account = self._find_account(request, event)
+        self.request = request
+        self.host: str = (
+            self.request.client.host
+            if self.request.client and self.request.client.host
+            else None
+        ) or '?'
+        self.event: 'Event | None' = event
+        self.computer: Computer = self._find_computer()
+        self.active_computer: Computer = (
+            self.computer if self.computer.active else unknown_computer
+        )
+        self.account: Account = self._find_account()
+        self.active_account: Account = (
+            self.account if self.account.active else anonymous_account
+        )
 
-    @staticmethod
     def _find_computer(
-        request: HTMXRequest,
-        event: Event | None,
+        self,
     ) -> Computer:
-        if not request.client:
-            return unknown_computer
-        if Computer.host_is_localhost(request.client.host):
+        if Computer.host_is_localhost(self.host):
             return localhost_computer
-        if event is None:
+        if self.event is None:
             return unknown_computer
         with suppress(KeyError):
-            computer: Computer = event.computers_by_ip[request.client.host]
-            if computer.active:
-                return computer
+            return self.event.computers_by_ip[self.host]
         return unknown_computer
 
-    @staticmethod
     def _find_account(
-        request: HTMXRequest,
-        event: Event | None,
+        self,
     ) -> Account:
-        if event is None:
+        if self.event is None:
             return anonymous_account
-        account: Account = SessionHandler.get_account(request, event)
-        if account.active:
-            return account
-        return anonymous_account
+        return SessionHandler.get_account(self.request, self.event)
 
-
-class AuthManager:
     @staticmethod
     def _tournament_matches_permission(
         tournament: Tournament,
@@ -76,10 +76,8 @@ class AuthManager:
                 return True
         return False
 
-    @classmethod
     def _has_tournament_role(
-        cls,
-        request: HTMXRequest,
+        self,
         tournament: Tournament,
         search_roles: Role | list[Role],
     ) -> bool:
@@ -91,38 +89,33 @@ class AuthManager:
         assert all(
             search_role.scope == RoleScope.TOURNAMENT for search_role in search_roles
         )
-        client: Client = Client(request, tournament.event)
-        computer: Computer = tournament.event.computers_by_id[client.computer.id]
         for (
             computer_role,
             computer_permission,
-        ) in computer.permissions_by_role.items():
+        ) in self.active_computer.permissions_by_role.items():
             for search_role in search_roles:
                 if (
                     search_role == computer_role
                     or search_role in computer_role.sub_roles
                 ):
-                    if cls._tournament_matches_permission(
+                    if self._tournament_matches_permission(
                         tournament, computer_permission
                     ):
                         return True
-        account: Account = tournament.event.accounts_by_id[client.account.id]
         for (
             account_role,
             account_permission,
-        ) in account.permissions_by_role.items():
+        ) in self.active_account.permissions_by_role.items():
             for search_role in search_roles:
                 if search_role == account_role or search_role in account_role.sub_roles:
-                    if cls._tournament_matches_permission(
+                    if self._tournament_matches_permission(
                         tournament, account_permission
                     ):
                         return True
         return False
 
-    @staticmethod
     def _has_event_role(
-        request: HTMXRequest,
-        event: Event,
+        self,
         search_roles: Role | list[Role],
     ) -> bool:
         """Returns True if the client has one of the given *search_roles* for the given event, False otherwise."""
@@ -131,31 +124,27 @@ class AuthManager:
                 search_roles,
             ]
         assert all(search_role.scope == RoleScope.EVENT for search_role in search_roles)
-        client: Client = Client(request, event)
-        computer: Computer = event.computers_by_id[client.computer.id]
         for (
             computer_role,
             computer_permission,
-        ) in computer.permissions_by_role.items():
+        ) in self.active_computer.permissions_by_role.items():
             for search_role in search_roles:
                 if (
                     search_role == computer_role
                     or search_role in computer_role.sub_roles
                 ):
                     return True
-        account: Account = event.accounts_by_id[client.account.id]
         for (
             account_role,
             account_permission,
-        ) in account.permissions_by_role.items():
+        ) in self.active_account.permissions_by_role.items():
             for search_role in search_roles:
                 if search_role == account_role or search_role in account_role.sub_roles:
                     return True
         return False
 
-    @staticmethod
     def _has_application_role(
-        request: HTMXRequest,
+        self,
         search_roles: Role | list[Role],
     ) -> bool:
         """Returns True if the client has one of the given *search_roles* for the application, False otherwise."""
@@ -164,30 +153,26 @@ class AuthManager:
                 search_roles,
             ]
         assert all(role.scope == RoleScope.APPLICATION for role in search_roles)
-        return Client(request).computer.localhost
+        return self.active_computer.localhost
 
-    @staticmethod
-    def get_permissions_by_role(
-        request: HTMXRequest,
-        event: Event | None,
+    @property
+    def permissions_by_role(
+        self,
     ) -> dict[Role, str | None]:
         """Returns all the permissions by role, granted or inherited as a computer or an account."""
-        client: Client = Client(request, event)
-        computer: Computer = event.computers_by_id[client.computer.id]
         computer_permissions_by_role: dict[Role, str | None] = {}
         for (
             computer_role,
             computer_permission,
-        ) in computer.permissions_by_role.items():
+        ) in self.active_computer.permissions_by_role.items():
             computer_permissions_by_role[computer_role] = computer_permission
             for sub_role in computer_role.sub_roles:
                 computer_permissions_by_role[sub_role] = computer_permission
-        account: Account = event.accounts_by_id[client.account.id]
         account_permissions_by_role: dict[Role, str | None] = {}
         for (
             account_role,
             account_permission,
-        ) in account.permissions_by_role.items():
+        ) in self.active_account.permissions_by_role.items():
             account_permissions_by_role[account_role] = account_permission
             for sub_role in account_role.sub_roles:
                 account_permissions_by_role[sub_role] = account_permission
@@ -204,6 +189,8 @@ class AuthManager:
                         # allowed for all the tournaments
                         permissions_by_role[role] = None
                     else:
+                        assert computer_permissions_by_role[role] is not None
+                        assert account_permissions_by_role[role] is not None
                         permissions_by_role[role] = ','.join(
                             set(computer_permissions_by_role[role].split(','))
                             | set(account_permissions_by_role[role].split(','))
@@ -220,236 +207,175 @@ class AuthManager:
                     pass
         return permissions_by_role
 
-    @classmethod
-    def update_application_settings(
-        cls,
-        request: HTMXRequest,
+    @property
+    def can_view_basic_application_settings(
+        self,
     ) -> bool:
-        return cls._has_application_role(
-            request,
-            Role.ADMINISTRATOR,
-        )
+        return self._has_application_role(Role.ADMINISTRATOR)
 
-    @classmethod
-    def manage_administrators(
-        cls,
-        request: HTMXRequest,
+    @property
+    def can_view_all_application_settings(
+        self,
     ) -> bool:
-        return cls._has_application_role(
-            request,
-            Role.ADMINISTRATOR,
-        )
+        return self._has_application_role(Role.ADMINISTRATOR)
 
-    @classmethod
-    def add_event(
-        cls,
-        request: HTMXRequest,
+    @property
+    def can_update_application_settings(
+        self,
     ) -> bool:
-        return cls._has_application_role(
-            request,
-            Role.ADMINISTRATOR,
-        )
+        return self._has_application_role(Role.ADMINISTRATOR)
 
-    @classmethod
-    def delete_event(
-        cls,
-        request: HTMXRequest,
-        _: Event,
+    @property
+    def can_manage_administrators(
+        self,
     ) -> bool:
-        return cls._has_application_role(
-            request,
-            Role.ADMINISTRATOR,
-        )
+        return self._has_application_role(Role.ADMINISTRATOR)
 
-    @classmethod
-    def rename_event(
-        cls,
-        request: HTMXRequest,
-        _: Event,
+    @property
+    def can_add_event(
+        self,
     ) -> bool:
-        return cls._has_application_role(
-            request,
-            Role.ADMINISTRATOR,
-        )
+        return self._has_application_role(Role.ADMINISTRATOR)
 
-    @classmethod
-    def edit_event(
-        cls,
-        request: HTMXRequest,
-        event: Event,
+    @property
+    def can_delete_event(
+        self,
     ) -> bool:
-        return cls._has_event_role(
-            request,
-            event,
+        return self._has_application_role(Role.ADMINISTRATOR)
+
+    @property
+    def can_rename_event(
+        self,
+    ) -> bool:
+        return self._has_application_role(Role.ADMINISTRATOR)
+
+    @property
+    def can_edit_event(
+        self,
+    ) -> bool:
+        return self._has_event_role(
             [
                 Role.ORGANIZER,
                 Role.CHIEF_ARBITER,
             ],
         )
 
-    @classmethod
-    def manage_organizers(
-        cls,
-        request: HTMXRequest,
-        _: Event,
+    @property
+    def can_manage_organizers(
+        self,
     ) -> bool:
-        return cls._has_application_role(
-            request,
-            Role.ADMINISTRATOR,
-        )
+        return self._has_application_role(Role.ADMINISTRATOR)
 
-    @classmethod
-    def manage_chief_arbiters(
-        cls,
-        request: HTMXRequest,
-        event: Event,
+    @property
+    def can_manage_chief_arbiters(
+        self,
     ) -> bool:
-        return cls._has_event_role(
-            request,
-            event,
+        return self._has_event_role(
             Role.ORGANIZER,
         )
 
-    @classmethod
-    def manage_deputy_chief_arbiters(
-        cls,
-        request: HTMXRequest,
-        event: Event,
+    @property
+    def can_manage_deputy_chief_arbiters(
+        self,
     ) -> bool:
-        return cls._has_event_role(
-            request,
-            event,
+        return self._has_event_role(
             Role.CHIEF_ARBITER,
         )
 
-    @classmethod
-    def add_tournament(
-        cls,
-        request: HTMXRequest,
-        event: Event,
+    @property
+    def can_add_tournament(
+        self,
     ) -> bool:
-        return cls._has_event_role(
-            request,
-            event,
+        return self._has_event_role(
             Role.CHIEF_ARBITER,
         )
 
-    @classmethod
-    def edit_tournament(
-        cls,
-        request: HTMXRequest,
+    def can_edit_tournament(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.CHIEF_ARBITER,
         )
 
-    @classmethod
-    def delete_tournament(
-        cls,
-        request: HTMXRequest,
+    def can_delete_tournament(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.CHIEF_ARBITER,
         )
 
-    @classmethod
-    def open_close_check_in(
-        cls,
-        request: HTMXRequest,
+    def can_open_close_check_in(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def use_pairing_engine(
-        cls,
-        request: HTMXRequest,
+    def can_use_pairing_engine(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.PAIRINGS_OFFICER,
         )
 
-    @classmethod
-    def manually_pair_players(
-        cls,
-        request: HTMXRequest,
+    def can_manually_pair_players(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.PAIRINGS_OFFICER,
         )
 
-    @classmethod
-    def view_draft_pairings(
-        cls,
-        request: HTMXRequest,
+    def can_view_draft_pairings(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.PAIRINGS_OFFICER,
         )
 
-    @classmethod
-    def publish_pairings(
-        cls,
-        request: HTMXRequest,
+    def can_publish_pairings(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def view_draft_rankings(
-        cls,
-        request: HTMXRequest,
+    def can_view_draft_rankings(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def publish_rankings(
-        cls,
-        request: HTMXRequest,
+    def can_publish_rankings(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def manage_displays(
-        cls,
-        request: HTMXRequest,
+    def can_manage_displays(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             [
                 Role.ORGANIZER,
@@ -457,98 +383,74 @@ class AuthManager:
             ],
         )
 
-    @classmethod
-    def add_player(
-        cls,
-        request: HTMXRequest,
+    def can_add_player(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def edit_player(
-        cls,
-        request: HTMXRequest,
+    def can_edit_player(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def delete_player(
-        cls,
-        request: HTMXRequest,
+    def can_delete_player(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def check_in_player(
-        cls,
-        request: HTMXRequest,
+    def can_check_in_player(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.CHECK_IN_OFFICER,
         )
 
-    @classmethod
-    def enter_result(
-        cls,
-        request: HTMXRequest,
+    def can_enter_result(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.RESULTS_OFFICER,
         )
 
-    @classmethod
-    def change_result(
-        cls,
-        request: HTMXRequest,
+    def can_change_result(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.RESULTS_OFFICER,
         )
 
-    @classmethod
-    def use_special_result(
-        cls,
-        request: HTMXRequest,
+    def can_use_special_result(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    @classmethod
-    def view_private_displays(
-        cls,
-        request: HTMXRequest,
+    def can_view_private_displays(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             [
                 Role.DISPLAY_MANAGER,
@@ -558,14 +460,14 @@ class AuthManager:
             ],
         )
 
-    @classmethod
-    def view_public_displays(
-        cls,
-        request: HTMXRequest,
+    def can_view_public_displays(
+        self,
         tournament: Tournament,
     ) -> bool:
-        return cls._has_tournament_role(
-            request,
+        return self._has_tournament_role(
             tournament,
             Role.SPECTATOR,
         )
+
+    def __repr__(self) -> str:
+        return f'{self.__class__}(account={self.account}, computer={self.computer}, host={self.host})'

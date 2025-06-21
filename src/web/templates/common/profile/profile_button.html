@@ -1,0 +1,41 @@
+<div class="sidebar-divider my-3"></div>
+{% with nav_title=_('Profile') %}
+    <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_title, 'right') }}>
+        <button
+            class="nav-link text-start me-1 position-relative align-items-center"
+            hx-get="{{
+                url_for('profile-modal', event_uniq_id=admin_event.uniq_id)
+                if admin_event else
+                url_for('profile-modal')
+            }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {% if admin_event %}
+                <div class="d-block">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="pe-2 expanded-only {% if client.account.anonymous %}fst-italic{% else %}fw-bold{% endif %}">
+                        {% if client.account.anonymous %}
+                            {{ _('Anonymous') }}
+                        {% else %}
+                            {{ client.account.username }}
+                        {% endif %}
+                    </span>
+                </div>
+            {% endif %}
+            <div class="d-block">
+                <i class="bi bi-laptop"></i>
+                <span class="pe-2 expanded-only {% if client.computer.localhost %}fst-italic{% else %}fw-bold{% endif %}">
+                    {% if client.computer.localhost %}
+                        {{ _('Sharly Chess server') }}
+                    {% else %}
+                        {{ client.host }}
+                    {% endif %}
+                </span>
+            </div>
+        </button>
+    </span>
+{% endwith %}

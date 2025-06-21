@@ -239,6 +239,10 @@ msgstr ""
 msgid "Account creation"
 msgstr ""
 
+#, python-format
+msgid "Account: %(username)s"
+msgstr ""
+
 msgid "Accounts ({num})"
 msgstr ""
 
@@ -380,6 +384,9 @@ msgstr ""
 msgid "An unexpected error occurred."
 msgstr ""
 
+msgid "Anonymous"
+msgstr ""
+
 msgid "Any comment on the player (comments are visible only by the arbiters)."
 msgstr ""
 
@@ -402,6 +409,9 @@ msgid "Are you sure you wish to proceed?"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
+msgstr ""
+
+msgid "Ask your administrator for the username to use."
 msgstr ""
 
 msgid "Assign a screen to the controller."
@@ -822,6 +832,10 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
+#, python-format
+msgid "Client: %(host)s"
+msgstr ""
+
 msgid "Close"
 msgstr ""
 
@@ -920,6 +934,9 @@ msgid "Computers ({num})"
 msgstr ""
 
 msgid "Configuration"
+msgstr ""
+
+msgid "Connect"
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -1291,6 +1308,9 @@ msgid "Directory:"
 msgstr ""
 
 msgid "Disabled"
+msgstr ""
+
+msgid "Disconnect"
 msgstr ""
 
 msgid "Display"
@@ -1759,6 +1779,9 @@ msgid "Enter here the tournament ID"
 msgstr ""
 
 msgid "Enter the event ID to confirm its deletion:"
+msgstr ""
+
+msgid "Enter the password associated with the username."
 msgstr ""
 
 msgid "Enter the result"
@@ -2451,6 +2474,9 @@ msgid "Invalid response from the FFE website."
 msgstr ""
 
 msgid "Invalid time [{time_str}]."
+msgstr ""
+
+msgid "Invalid username."
 msgstr ""
 
 msgid "Invalid value [{value}]."
@@ -3296,6 +3322,9 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+msgid "Password does not match."
+msgstr ""
+
 msgid "Password to enter results"
 msgstr ""
 
@@ -3659,6 +3688,9 @@ msgid "Prizes of categories with prize sharing can only be monetary."
 msgstr ""
 
 msgid "Proceed"
+msgstr ""
+
+msgid "Profile"
 msgstr ""
 
 msgid "Progressive"
@@ -4119,6 +4151,9 @@ msgid "Sharly Chess offers a powerful and flexible prize management system to ha
 msgstr ""
 
 msgid "Sharly Chess project"
+msgstr ""
+
+msgid "Sharly Chess server"
 msgstr ""
 
 msgid "Sharly Chess settings"
@@ -5337,6 +5372,9 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
+msgid "Username:"
+msgstr ""
+
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr ""
 
@@ -5513,6 +5551,25 @@ msgid "Yes"
 msgstr ""
 
 msgid "Yesterday"
+msgstr ""
+
+#, python-format
+msgid "You are authenticated as \"%(username)s\" but the account is disabled (you get the same permissions as an anonymous user)."
+msgstr ""
+
+#, python-format
+msgid "You are connected on an unknown client (%(host)s)."
+msgstr ""
+
+#, python-format
+msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown computer)."
+msgstr ""
+
+#, python-format
+msgid "You are connected on client (%(host)s)."
+msgstr ""
+
+msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr ""
 
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."

@@ -110,6 +110,9 @@ class Computer(AuthEntity):
             assert self.stored_computer.ip is not None
             return host == self.stored_computer.ip
 
+    def __repr__(self) -> str:
+        return f'{self.__class__}(id={self.id}, ip={self.ip})'
+
 
 # computers are stored at event-level, this provides event-free
 # instances that can be used when no events are available (welcome page, ...)
@@ -179,6 +182,9 @@ class Account(AuthEntity):
             return False
         else:
             return self.id == account.id
+
+    def __repr__(self) -> str:
+        return f'{self.__class__}(id={self.id}, username={self.username})'
 
 
 # Accounts are stored at event-level, this provides an event-free

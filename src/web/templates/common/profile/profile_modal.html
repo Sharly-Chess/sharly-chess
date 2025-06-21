@@ -1,0 +1,162 @@
+{% import '../macros.j2' as macros with context %}
+{% import '../../admin/common/macros.j2' as admin_macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-profile-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _("Profile")}}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if admin_event %}
+                {% if client.account.anonymous %}
+                    <h4>
+                        {{ _('Not authenticated') }}
+                    </h4>
+                    <form
+                        id="modal-form"
+                        hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.text_input(
+                                    name='username',
+                                    label=_('Username:'),
+                                    placeholder=_('E.g.: john'),
+                                    help_text=_('Ask your administrator for the username to use.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.password_input(
+                                    name='password',
+                                    label=_('Password:'),
+                                    help_text=_('Enter the password associated with the username.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <button
+                                    type="submit"
+                                    form="modal-form"
+                                    class="text-nowrap white btn btn-primary"
+                                >
+                                    <i class="bi-person-check-fill pe-1"></i>
+                                    {{ _('Connect') }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <h4>
+                        {{ _('Account: %(username)s', username=client.account.username) }}
+                    </h4>
+                    {% if not client.account.active %}
+                        {{ _(
+                            'You are authenticated as "%(username)s" but the account is disabled (you get the same permissions as an anonymous user).',
+                            client.account.username
+                        ) }}
+                    {% endif %}
+                    <form
+                        id="modal-form"
+                        hx-post="{{ url_for('profile-logout', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <button
+                                    type="submit"
+                                    form="modal-form"
+                                    class="text-nowrap white btn btn-primary"
+                                >
+                                    <i class="bi-person-fill-x pe-1"></i>
+                                    {{ _('Disconnect') }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            {% endif %}
+            <h4>
+                {% if client.computer.localhost %}
+                    {{ _('Client: %(host)s', host=_('Sharly Chess server')) }}
+                {% else %}
+                    {{ _('Client: %(host)s', host=client.host) }}
+                {% endif %}
+            </h4>
+            <div class="row">
+                <div class="col-12">
+                    {% if client.computer.localhost %}
+                        {{ _('You are connected on the Sharly Chess server and have full administration privileges.') }}
+                    {% elif client.computer.unknown %}
+                        {{ _(
+                                'You are connected on an unknown client (%(host)s).',
+                                host=client.host
+                        ) }}
+                    {% else %}
+                        {% if client.computer.active %}
+                            {{ _(
+                                'You are connected on client (%(host)s).',
+                                host=client.computer.ip
+                            ) }}
+                        {% else %}
+                            {{ _(
+                                'You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown computer).',
+                                host=client.computer.ip
+                            ) }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <h4>
+                {{ _('Permissions') }}
+            </h4>
+            <table
+                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+            >
+                <thead>
+                    <th class="text-start">
+                        {{ _('Role') }}
+                    </th>
+                    <th class="text-start">
+                        {{ _('Scope') }}
+                    </th>
+                </thead>
+                <tbody>
+                    {% for role, permission in client.permissions_by_role.items() %}
+                        <tr>
+                            <td>
+                                {{ role.name }}
+                            </td>
+                            <td>
+                                {% if role.has_tournament_scope %}
+                                    {% if permission %}
+                                        {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission) }}
+                                    {% else %}
+                                        {{ _('All the tournaments') }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ role.scope.name }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap d-inline-flex gap-2 align-items-center"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill lh-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

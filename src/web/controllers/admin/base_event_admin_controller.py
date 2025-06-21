@@ -8,6 +8,7 @@ from litestar.response import Template
 
 from common.exception import SharlyChessException
 from common.i18n import _
+from data.auth.client import Client
 from data.event import Event
 from data.loader import EventLoader
 from plugins.manager import plugin_manager
@@ -41,6 +42,11 @@ class BaseEventAdminWebContext(AdminWebContext):
             except SharlyChessException as pwe:
                 self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
+
+    @property
+    def client(self) -> Client:
+        """Returns the client (account and computer) of the request."""
+        return Client(self.request, self.admin_event)
 
     def get_admin_event(self) -> Event:
         assert self.admin_event is not None
