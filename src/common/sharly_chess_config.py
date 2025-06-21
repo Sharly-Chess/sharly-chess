@@ -6,6 +6,7 @@ from typing import overload, ClassVar
 
 import jinja2
 import litestar
+import pycountry
 import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
@@ -45,7 +46,7 @@ class SharlyChessConfig(metaclass=Singleton):
         cls._stored_config = cls.load_stored_config()
 
     @staticmethod
-    def get_user_locale() -> str | None:
+    def _get_system_user_locale() -> str | None:
         """Returns the locale used by the user at system-level,
         if known by the i18n stuff (otherwise returns None)."""
         if sys.platform == 'win32':  # pragma: py-not-win32
@@ -57,25 +58,39 @@ class SharlyChessConfig(metaclass=Singleton):
                 windll.GetUserDefaultUILanguage()
             ]
             logger.info('User locale: %s', system_user_locale)
-            locale: str = system_user_locale[:2]
-            if locale in locales:
-                return locale
-            logger.warning('Unknown locale: %s', locale)
+            return system_user_locale
+        # TODO add other OS
         return None
+
+    @staticmethod
+    def _get_user_locale(system_user_locale: str | None) -> str:
+        """Returns the locale to set in Sharly Chess."""
+        if system_user_locale is not None:
+            user_locale: str = system_user_locale[:2]
+            if user_locale in locales:
+                return user_locale
+            logger.warning(
+                'Unknown locale: %s (%s by default)', user_locale, DEFAULT_LOCALE
+            )
+        return DEFAULT_LOCALE
+
+    @staticmethod
+    def _get_locale_federation(system_user_locale: str) -> str:
+        if system_user_locale is not None:
+            country_code = system_user_locale.split('_')[-1].upper()
+            country = pycountry.countries.get(alpha_2=country_code)
+            if country and country.alpha_3 in SharlyChessConfig.federations:
+                return country.alpha_3
+        return SharlyChessConfig.default_federation
 
     @classmethod
     def load_stored_config(cls) -> StoredConfig:
         with ConfigDatabase() as config_database:
             stored_config: StoredConfig = config_database.load_stored_config()
-        # TODO Remove this code when all the engine dialogs have moved to the web UI
-        # If the locale is not set ask for it before other things like version recovery,
-        # offline databases download, ...
         if not stored_config.locale:
-            user_locale: str | None = cls.get_user_locale()
-            if user_locale is not None:
-                stored_config.locale = user_locale
-            else:
-                stored_config.locale = locales[0]
+            system_user_locale: str | None = cls._get_system_user_locale()
+            stored_config.locale = cls._get_user_locale(system_user_locale)
+            stored_config.federation = cls._get_locale_federation(system_user_locale)
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
@@ -87,7 +102,6 @@ class SharlyChessConfig(metaclass=Singleton):
             console_show_level=stored_config.console_show_level,
         )
         enable_experimental_features(stored_config.experimental)
-        # TODO (up to here)
         return stored_config
 
     @property
