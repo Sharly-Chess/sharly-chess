@@ -111,7 +111,7 @@ class Computer(AuthEntity):
             return host == self.stored_computer.ip
 
     def __repr__(self) -> str:
-        return f'{self.__class__}(id={self.id}, ip={self.ip})'
+        return f'Computer(id={self.id}, ip={self.ip})'
 
 
 # computers are stored at event-level, this provides event-free
@@ -184,7 +184,7 @@ class Account(AuthEntity):
             return self.id == account.id
 
     def __repr__(self) -> str:
-        return f'{self.__class__}(id={self.id}, username={self.username})'
+        return f'Account(id={self.id}, username={self.username})'
 
 
 # Accounts are stored at event-level, this provides an event-free

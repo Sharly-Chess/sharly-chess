@@ -14,7 +14,7 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            {% if admin_event %}
+            {% if admin_event and not client.computer.localhost %}
                 <div class="d-block">
                     <i class="bi bi-person-circle"></i>
                     <span class="pe-2 expanded-only {% if client.account.anonymous %}fst-italic{% else %}fw-bold{% endif %}">

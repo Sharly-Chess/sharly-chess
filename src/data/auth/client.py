@@ -1,5 +1,6 @@
 import fnmatch
 from contextlib import suppress
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from litestar_htmx import HTMXRequest
@@ -197,10 +198,15 @@ class Client:
                         permissions_by_role[role] = None
                     else:
                         assert computer_permissions_by_role[role] is not None
+                        computer_permission_parts: set[str] = set(
+                            computer_permissions_by_role[role].split(',')
+                        )
                         assert account_permissions_by_role[role] is not None
+                        account_permission_parts: set[str] = set(
+                            account_permissions_by_role[role].split(',')
+                        )
                         permissions_by_role[role] = ','.join(
-                            set(computer_permissions_by_role[role].split(','))
-                            | set(account_permissions_by_role[role].split(','))
+                            computer_permission_parts | account_permission_parts
                         )
                 else:
                     permissions_by_role[role] = computer_permissions_by_role[role]
@@ -309,30 +315,91 @@ class Client:
             ],
         )
 
-    @property
-    def can_manage_organizers(
+    @cached_property
+    def role_management(
         self,
-    ) -> bool:
-        """Returns true if the client can ."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+    ) -> dict[Role, bool]:
+        """Returns a dict of bool indicating if the client can manage the given role or not."""
+        return {
+            Role.ADMINISTRATOR: False,
+            Role.ORGANIZER: self._has_application_role(
+                Role.ADMINISTRATOR,
+            ),
+            Role.DISPLAY_MANAGER: self._has_event_role(
+                Role.ORGANIZER,
+            ),
+            Role.CHIEF_ARBITER: self._has_event_role(
+                Role.ORGANIZER,
+            ),
+            Role.DEPUTY_CHIEF_ARBITER: self._has_event_role(
+                Role.CHIEF_ARBITER,
+            ),
+            Role.PAIRINGS_OFFICER: self._has_event_role(
+                Role.DEPUTY_CHIEF_ARBITER,
+            ),
+            Role.SECTOR_ARBITER: self._has_event_role(
+                Role.DEPUTY_CHIEF_ARBITER,
+            ),
+            Role.CHECK_IN_OFFICER: self._has_event_role(
+                Role.DEPUTY_CHIEF_ARBITER,
+            ),
+            Role.RESULTS_OFFICER: self._has_event_role(
+                Role.DEPUTY_CHIEF_ARBITER,
+            ),
+            Role.SPECTATOR: self._has_event_role(
+                [
+                    Role.DISPLAY_MANAGER,
+                    Role.DEPUTY_CHIEF_ARBITER,
+                ],
+            ),
+        }
 
     @property
-    def can_manage_chief_arbiters(
+    def can_manage_accounts(
         self,
     ) -> bool:
-        """Returns true if the client can ."""
+        """Returns true if the client can manage (add/update/delete) accounts."""
         return self._has_event_role(
-            Role.ORGANIZER,
+            [
+                Role.DISPLAY_MANAGER,
+                Role.DEPUTY_CHIEF_ARBITER,
+            ]
         )
 
+    def can_manage_account(
+        self,
+        account: Account,
+    ) -> bool:
+        """Returns true if the client can manage (update/delete)
+        the given account (the client must manage all the roles of the account)."""
+        return all(self.role_management[role] for role in account.permissions_by_role)
+
     @property
-    def can_manage_deputy_chief_arbiters(
+    def can_manage_computers(
         self,
     ) -> bool:
-        """Returns true if the client can ."""
+        """Returns true if the client can manage (add/update/delete) accounts."""
         return self._has_event_role(
-            Role.CHIEF_ARBITER,
+            [
+                Role.DISPLAY_MANAGER,
+                Role.DEPUTY_CHIEF_ARBITER,
+            ]
         )
+
+    def can_manage_computer(
+        self,
+        computer: Computer,
+    ) -> bool:
+        """Returns true if the client can manage (update/delete)
+        the given account (the client must manage all the roles of the account)."""
+        return all(self.role_management[role] for role in computer.permissions_by_role)
+
+    @property
+    def can_manage_roles(
+        self,
+    ) -> bool:
+        """Returns true if the client can manage at least one role."""
+        return any(self.role_management)
 
     @property
     def can_add_tournament(
@@ -343,7 +410,7 @@ class Client:
             Role.CHIEF_ARBITER,
         )
 
-    def can_edit_tournament(
+    def update_tournament(
         self,
         tournament: Tournament,
     ) -> bool:

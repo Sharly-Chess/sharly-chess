@@ -158,10 +158,15 @@ class AccountAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        client_can_manage_accounts: dict[int, bool] = {
+            account.id: web_context.client.can_manage_account(account)
+            for account in web_context.admin_event.accounts_by_id.values()
+        }
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
             'admin_event_tab': 'admin-event-accounts-tab',
+            'client_can_manage_accounts': client_can_manage_accounts,
         }
 
         match modal:

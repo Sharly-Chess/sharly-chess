@@ -408,6 +408,9 @@ msgstr ""
 msgid "Archived event"
 msgstr ""
 
+msgid "Archived events"
+msgstr ""
+
 msgid "Are you sure you wish to proceed?"
 msgstr ""
 
@@ -1113,6 +1116,9 @@ msgstr ""
 msgid "Current ({num})"
 msgstr ""
 
+msgid "Current events"
+msgstr ""
+
 msgid "Current events ({num})"
 msgstr ""
 
@@ -1127,9 +1133,6 @@ msgid "Currently displaying rotator [{uniq_id}]"
 msgstr ""
 
 msgid "Currently displaying screen [{uniq_id}]"
-msgstr ""
-
-msgid "Customization"
 msgstr ""
 
 msgid "DOUBLE"
@@ -1218,6 +1221,9 @@ msgid "Delay:"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+msgid "Delete the Computer."
 msgstr ""
 
 msgid "Delete the account."
@@ -2318,6 +2324,9 @@ msgstr ""
 msgid "IP address:"
 msgstr ""
 
+msgid "Identification"
+msgstr ""
+
 msgid "Identity"
 msgstr ""
 
@@ -2947,9 +2956,6 @@ msgstr ""
 msgid "No password set for the results entry"
 msgstr ""
 
-msgid "No permissions"
-msgstr ""
-
 msgid "No phone defined."
 msgstr ""
 
@@ -3329,6 +3335,9 @@ msgid "Parings by player"
 msgstr ""
 
 msgid "Passed ({num})"
+msgstr ""
+
+msgid "Passed events"
 msgstr ""
 
 msgid "Passed events ({num})"
@@ -4719,12 +4728,6 @@ msgstr ""
 msgid "The price the player pays to register."
 msgstr ""
 
-msgid "The properties and the permissions of this account can not be changed."
-msgstr ""
-
-msgid "The properties and the permissions of this computer can not be changed."
-msgstr ""
-
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr ""
 
@@ -4841,6 +4844,9 @@ msgstr ""
 msgid "This account can not be duplicated."
 msgstr ""
 
+msgid "This account can not be updated."
+msgstr ""
+
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
@@ -4848,6 +4854,9 @@ msgid "This computer can not be deleted."
 msgstr ""
 
 msgid "This computer can not be duplicated."
+msgstr ""
+
+msgid "This computer can not be updated."
 msgstr ""
 
 msgid "This display controller is private (not visible by the spectators)."
@@ -5342,6 +5351,9 @@ msgstr ""
 msgid "Upcoming ({num})"
 msgstr ""
 
+msgid "Upcoming events"
+msgstr ""
+
 msgid "Upcoming events ({num})"
 msgstr ""
 
@@ -5613,6 +5625,27 @@ msgstr ""
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr ""
 
+msgid "You are not allowed to delete this account."
+msgstr ""
+
+msgid "You are not allowed to delete this computer."
+msgstr ""
+
+msgid "You are not allowed to duplicate this account."
+msgstr ""
+
+msgid "You are not allowed to duplicate this computer."
+msgstr ""
+
+msgid "You are not allowed to grant/revoke this permission."
+msgstr ""
+
+msgid "You are not allowed to update this account."
+msgstr ""
+
+msgid "You are not allowed to update this computer."
+msgstr ""
+
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr ""
 
@@ -5854,4 +5887,16 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Customization"
+#~ msgstr ""
+
+#~ msgid "No permissions"
+#~ msgstr ""
+
+#~ msgid "The properties and the permissions of this account can not be changed."
+#~ msgstr ""
+
+#~ msgid "The properties and the permissions of this computer can not be changed."
+#~ msgstr ""
 

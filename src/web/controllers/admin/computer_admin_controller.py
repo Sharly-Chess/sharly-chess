@@ -87,35 +87,44 @@ class ComputerAdminController(BaseEventAdminController):
         ]:
             pass
         else:
-            ip = WebContext.form_data_to_str(data, field := 'ip')
-            if not ip:
-                errors[field] = _('Please enter the IP address.')
-            elif matches := re.match(
-                r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$',
-                ip,
+            if web_context.admin_computer and (
+                web_context.admin_computer.unknown
+                or web_context.admin_computer.localhost
             ):
-                ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
-                data[field] = ip
-                match action:
-                    case 'create' | 'clone':
-                        if ip in web_context.admin_event.computers_by_ip:
-                            errors[field] = _('Computer [{ip}] already set.').format(
-                                ip=ip
-                            )
-                    case 'update':
-                        assert web_context.admin_computer is not None
-                        if (
-                            ip != web_context.admin_computer.ip
-                            and ip in web_context.admin_event.computers_by_ip
-                        ):
-                            errors[field] = _('Computer [{ip}] already set.').format(
-                                ip=ip
-                            )
-                    case _:
-                        raise ValueError(f'action=[{action}]')
+                ip = web_context.admin_computer.ip
+                active = web_context.admin_computer.active
             else:
-                errors[field] = _('The IP address [{ip}] is not valid.').format(ip=ip)
-            active = WebContext.form_data_to_bool(data, 'active')
+                ip = WebContext.form_data_to_str(data, field := 'ip')
+                if not ip:
+                    errors[field] = _('Please enter the IP address.')
+                elif matches := re.match(
+                    r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$',
+                    ip,
+                ):
+                    ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
+                    data[field] = ip
+                    match action:
+                        case 'create' | 'clone':
+                            if ip in web_context.admin_event.computers_by_ip:
+                                errors[field] = _(
+                                    'Computer [{ip}] already set.'
+                                ).format(ip=ip)
+                        case 'update':
+                            assert web_context.admin_computer is not None
+                            if (
+                                ip != web_context.admin_computer.ip
+                                and ip in web_context.admin_event.computers_by_ip
+                            ):
+                                errors[field] = _(
+                                    'Computer [{ip}] already set.'
+                                ).format(ip=ip)
+                        case _:
+                            raise ValueError(f'action=[{action}]')
+                else:
+                    errors[field] = _('The IP address [{ip}] is not valid.').format(
+                        ip=ip
+                    )
+                active = WebContext.form_data_to_bool(data, 'active')
             for role_id in Role.values():
                 if WebContext.form_data_to_bool(data, f'role_{role_id}'):
                     permissions[role_id] = WebContext.form_data_to_str(
@@ -152,10 +161,15 @@ class ComputerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        client_can_manage_computers: dict[int, bool] = {
+            computer.id: web_context.client.can_manage_computer(computer)
+            for computer in web_context.admin_event.computers_by_id.values()
+        }
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
             'admin_event_tab': 'admin-event-computers-tab',
+            'client_can_manage_computers': client_can_manage_computers,
         }
 
         match modal:
@@ -361,12 +375,6 @@ class ComputerAdminController(BaseEventAdminController):
                         _("Unknown computers' access has been updated.")
                         if web_context.admin_computer.unknown
                         else _('Computer [{ip}] has been updated.').format(
-                            ip=stored_computer.ip
-                        ),
-                    )
-                    Message.success(
-                        request,
-                        _('Computer [{ip}] has been updated.').format(
                             ip=stored_computer.ip
                         ),
                     )

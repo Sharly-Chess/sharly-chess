@@ -9,7 +9,7 @@
             </h2>
         </div>
         <div class="modal-body">
-            {% if admin_event %}
+            {% if admin_event and not client.computer.localhost %}
                 {% if client.account.anonymous %}
                     <h4>
                         {{ _('Not authenticated') }}

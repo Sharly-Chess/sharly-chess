@@ -231,8 +231,8 @@ class StoredAccess(ABC):
     permissions: dict[int, str | None]
 
 
-LOCALHOST_ID: int = -2
-ANY_COMPUTER_ID: int = -1
+LOCALHOST_ID: int = 1
+ANY_COMPUTER_ID: int = 2
 
 
 @dataclass
@@ -264,7 +264,7 @@ unknown_stored_computer: StoredComputer = StoredComputer(
 )
 
 
-ANONYMOUS_ID: int = -1
+ANONYMOUS_ID: int = 1
 
 
 @dataclass

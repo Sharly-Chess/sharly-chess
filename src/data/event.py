@@ -44,6 +44,7 @@ from database.sqlite.event.event_store import (
     ANY_COMPUTER_ID,
 )
 
+
 logger: Logger = get_logger()
 
 event_last_load_date_by_uniq_id: dict[str, float] = {}
@@ -890,6 +891,13 @@ class Event:
 
     @cached_property
     def accounts_sorted_by_username(self) -> list[Account]:
+        return sorted(
+            self.accounts_by_username.values(),
+            key=lambda account: (
+                account.anonymous,
+                account.username,
+            ),
+        )
         return sorted(
             self.accounts_by_id.values(), key=lambda account: account.username or ''
         )

@@ -408,6 +408,9 @@ msgstr "Archivés ({num})"
 msgid "Archived event"
 msgstr "Évènement archivé"
 
+msgid "Archived events"
+msgstr "Évènements archivés"
+
 msgid "Are you sure you wish to proceed?"
 msgstr "Êtes vous sûr de vouloir continuer ?"
 
@@ -1113,6 +1116,9 @@ msgstr "Grille américaine avant la première ronde"
 msgid "Current ({num})"
 msgstr "En cours ({num})"
 
+msgid "Current events"
+msgstr "Évènements en cours"
+
 msgid "Current events ({num})"
 msgstr "Évènements en cours ({num})"
 
@@ -1128,9 +1134,6 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
-
-msgid "Customization"
-msgstr "Personnalisation"
 
 msgid "DOUBLE"
 msgstr "DOUBLE"
@@ -1219,6 +1222,9 @@ msgstr "Délai :"
 
 msgid "Delete"
 msgstr "Supprimer"
+
+msgid "Delete the Computer."
+msgstr "Supprimer l'ordinateur."
 
 msgid "Delete the account."
 msgstr "Supprimer le compte."
@@ -2318,6 +2324,9 @@ msgstr "Adresse IP"
 msgid "IP address:"
 msgstr "Adresse IP :"
 
+msgid "Identification"
+msgstr "Identification"
+
 msgid "Identity"
 msgstr "Identité"
 
@@ -2947,9 +2956,6 @@ msgstr "Pas de mot de passe demandé"
 msgid "No password set for the results entry"
 msgstr "Aucun mot de passe pour la saisie des résultats"
 
-msgid "No permissions"
-msgstr "Aucune permission"
-
 msgid "No phone defined."
 msgstr "Téléphone non défini."
 
@@ -3330,6 +3336,9 @@ msgstr "Appariements par ordre alphabétique"
 
 msgid "Passed ({num})"
 msgstr "Passés ({num})"
+
+msgid "Passed events"
+msgstr "Évènements passés"
 
 msgid "Passed events ({num})"
 msgstr "Évènements passés ({num})"
@@ -4719,12 +4728,6 @@ msgstr "Le montant déjà payé."
 msgid "The price the player pays to register."
 msgstr "Le montant de l'inscription du·de la joueur·euse."
 
-msgid "The properties and the permissions of this account can not be changed."
-msgstr "Les propriétés et les permissions de ce compte ne peuvent pas être modifiées."
-
-msgid "The properties and the permissions of this computer can not be changed."
-msgstr "Les propriétés et les permissions de cet ordinateur ne peuvent pas être modifiées."
-
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."
 
@@ -4841,6 +4844,9 @@ msgstr "Ce compte ne peut pas être supprimé."
 msgid "This account can not be duplicated."
 msgstr "Ce compte ne peut pas être dupliqué."
 
+msgid "This account can not be updated."
+msgstr "Ce compte ne peut pas être supprimé."
+
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
 
@@ -4849,6 +4855,9 @@ msgstr "Cet ordinateur ne peut pas être supprimé."
 
 msgid "This computer can not be duplicated."
 msgstr "Cet ordinateur ne peut pas être dupliqué."
+
+msgid "This computer can not be updated."
+msgstr "Cet ordinateur ne peut pas être modifié."
 
 msgid "This display controller is private (not visible by the spectators)."
 msgstr "Ce pilote d'afficheurs est privé (non visible des spectateur·ices)."
@@ -5342,6 +5351,9 @@ msgstr "Victoire non comptabilisé pour le classement Elo"
 msgid "Upcoming ({num})"
 msgstr "À venir ({num})"
 
+msgid "Upcoming events"
+msgstr "Évènements à venir"
+
 msgid "Upcoming events ({num})"
 msgstr "Évènements à venir ({num})"
 
@@ -5613,6 +5625,27 @@ msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilè
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
+msgid "You are not allowed to delete this account."
+msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
+
+msgid "You are not allowed to delete this computer."
+msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
+
+msgid "You are not allowed to duplicate this account."
+msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
+
+msgid "You are not allowed to duplicate this computer."
+msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
+
+msgid "You are not allowed to grant/revoke this permission."
+msgstr "Vous n'êtes pas autorisé·e à accorder/retirer cette permission."
+
+msgid "You are not allowed to update this account."
+msgstr "Vous n'êtes pas autorisé·e à modifier ce compte."
+
+msgid "You are not allowed to update this computer."
+msgstr "Vous n'êtes pas autorisé·e à modifier cet ordinateur."
+
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."
 
@@ -5854,4 +5887,16 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Customization"
+#~ msgstr "Personnalisation"
+
+#~ msgid "No permissions"
+#~ msgstr "Aucune permission"
+
+#~ msgid "The properties and the permissions of this account can not be changed."
+#~ msgstr "Les propriétés et les permissions de ce compte ne peuvent pas être modifiées."
+
+#~ msgid "The properties and the permissions of this computer can not be changed."
+#~ msgstr "Les propriétés et les permissions de cet ordinateur ne peuvent pas être modifiées."
 

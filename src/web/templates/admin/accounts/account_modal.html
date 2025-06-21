@@ -45,7 +45,7 @@
                             {% include '/common/alert.html' %}
                         {% endwith %}
                     {% endif %}
-                    {% if not admin_account.anonymous %}
+                    {% if action in ['create', 'clone', ] or (admin_account.edit_properties and client_can_manage_accounts[admin_account.id]) %}
                         <h4>
                             {{ _('Authentication') }}
                         </h4>
@@ -81,9 +81,11 @@
                             </div>
                         </div>
                     {% endif %}
-                    {% with table_id='account-table' %}
-                        {% include '../common/modal/access_permissions_table.html' %}
-                    {% endwith %}
+                    {% if action in ['create', 'clone', ] or (admin_account.edit_permissions and client_can_manage_accounts[admin_account.id]) %}
+                        {% with table_id='account-table' %}
+                            {% include '../common/modal/access_permissions_table.html' %}
+                        {% endwith %}
+                    {% endif %}
                 {% endif %}
             </form>
         </div>

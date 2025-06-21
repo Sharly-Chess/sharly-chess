@@ -20,34 +20,52 @@
         </thead>
         <tbody id="{{ table_id }}-body">
             {% for role in roles %}
+                {% set manage=client.role_management[role] %}
                 <tr>
-                    <th scope="row" class="text-nowrap text-start">
+                    <th scope="row" class="text-nowrap text-start {% if not manage %}text-secondary{% endif %}">
                         <span
                             {{ macros.tooltip_attributes('info', role.tooltip, 'right') }}
                         >
                             {{ role.name }}
                         </span>
                     </th>
-                    <td class="text-nowrap text-center">
-                        {{ admin_macros.switch_input(
-                            name='role_' ~ role.value,
-                            label='',
-                            help_text='',
-                            placeholder='',
-                            info='',
-                            data=data, errors=errors,
-                            disabled=role.has_application_scope
-                        ) }}
-                    </td>
-                    <td class="text-nowrap text-start">
-                        {% if role.has_tournament_scope %}
-                            {{ admin_macros.text_input(
-                                name='permission_' ~ role.value,
+                    <td class="text-nowrap text-center {% if not manage %}text-secondary{% endif %}">
+                        {% set name='role_' ~ role.value %}
+                        <span
+                            {% if not manage %}
+                                {{ macros.tooltip_attributes('info', _('You are not allowed to grant/revoke this permission.'), 'top') }}
+                            {% endif %}
+                        >
+                            {{ admin_macros.switch_input(
+                                name=name,
                                 label='',
-                                placeholder=_('Tournament unique IDs'),
                                 help_text='',
-                                data=data, errors=errors
+                                placeholder='',
+                                info='',
+                                data=data, errors=errors,
+                                disabled=not manage
                             ) }}
+                        </span>
+                        {% if not manage %}
+                            <input type="hidden" name="{{ name }}" value="{{ data[name] }}" />
+                        {% endif %}
+                    </td>
+                    <td class="text-nowrap text-start {% if not manage %}text-secondary{% endif %}">
+                        {% set name='permission_' ~ role.value %}
+                        {% if role.has_tournament_scope %}
+                            {% if manage %}
+                                {{ admin_macros.text_input(
+                                    name=name,
+                                    label='',
+                                    placeholder=_('Tournament unique IDs'),
+                                    help_text='',
+                                    data=data, errors=errors,
+                                    disabled=not manage
+                                ) }}
+                            {% else %}
+                                <input type="hidden" name="{{ name }}" value="{{ data[name] }}" />
+                                {{ data[name] }}
+                            {% endif %}
                         {% else %}
                             {{ role.scope.name }}
                         {% endif %}

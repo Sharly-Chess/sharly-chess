@@ -107,7 +107,7 @@ class BaseEventAdminController(BaseAdminController):
                 'icon_class': 'bi-sign-stop',
             },
         }
-        nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {}
+        nav_tabs: dict[str, dict[str, str | dict[str, str | dict[str, str]]]] = {}
         if web_context.client.can_view_event_basic_config:
             nav_tabs |= {
                 'admin-event-config-tab': {
@@ -177,25 +177,31 @@ class BaseEventAdminController(BaseAdminController):
                     },
                 },
             },
-            'admin-event-access': {
+        }
+        if (
+            web_context.client.can_manage_accounts
+            or web_context.client.can_manage_computers
+        ):
+            nav_tab: dict[str, str | dict[str, str | dict[str, str]]] = {
                 'title': _('Access'),
                 'icon_class': 'bi-key',
-                'submenu': {
-                    'admin-event-accounts-tab': {
-                        'title': _('Accounts ({num})').format(
-                            num=len(admin_event.accounts_by_id) or '-'
-                        ),
-                        'template': 'accounts/tab.html',
-                    },
-                    'admin-event-computers-tab': {
-                        'title': _('Computers ({num})').format(
-                            num=len(admin_event.computers_by_id) or '-'
-                        ),
-                        'template': 'computers/tab.html',
-                    },
-                },
-            },
-        }
+                'submenu': {},
+            }
+            if web_context.client.can_manage_accounts:
+                nav_tab['submenu']['admin-event-accounts-tab'] = {
+                    'title': _('Accounts ({num})').format(
+                        num=len(admin_event.accounts_by_id) or '-'
+                    ),
+                    'template': 'accounts/tab.html',
+                }
+            if web_context.client.can_manage_accounts:
+                nav_tab['submenu']['admin-event-computers-tab'] = {
+                    'title': _('Computers ({num})').format(
+                        num=len(admin_event.computers_by_id) or '-'
+                    ),
+                    'template': 'computers/tab.html',
+                }
+            nav_tabs['admin-event-access'] = nav_tab
 
         template_context: dict[str, Any] = web_context.template_context | {
             'messages': Message.messages(web_context.request),
