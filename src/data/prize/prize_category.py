@@ -120,6 +120,10 @@ class PrizeCategory:
         ]
 
     @property
+    def sorted_players(self) -> list[Player]:
+        return sorted(self.players, key=lambda player: player.rank)
+
+    @property
     def criteria_string(self) -> str:
         return ', '.join(criterion.name for criterion in self.criteria)
 

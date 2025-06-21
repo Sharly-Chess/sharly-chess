@@ -391,6 +391,7 @@ class Result(IntEnum):
             Result.HALF_POINT_BYE,
             Result.FULL_POINT_BYE,
             Result.PAIRING_ALLOCATED_BYE,
+            Result.REST_GAME,
         )
 
     @classmethod
@@ -469,11 +470,11 @@ class TournamentRating(IntEnum):
     def print_view_header(self) -> str:
         match self:
             case TournamentRating.STANDARD:
-                return _('Elo *** STD ELO FOR PRINT VIEW')
+                return _('Elo *** STD ELO FOR TABLE HEADER')
             case TournamentRating.RAPID:
-                return _('Rapid *** RAPID ELO FOR PRINT VIEW')
+                return _('Rapid *** RAPID ELO FOR TABLE HEADER')
             case TournamentRating.BLITZ:
-                return _('Blitz *** BLITZ ELO FOR PRINT VIEW')
+                return _('Blitz *** BLITZ ELO FOR TABLE HEADER')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

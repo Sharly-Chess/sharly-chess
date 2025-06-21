@@ -551,7 +551,7 @@ msgstr "Image et couleur de fond"
 msgid "Background image:"
 msgstr "Image de fond :"
 
-msgid "Bd. *** BOARD NUMBER FOR PRINT VIEW"
+msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
 
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
@@ -578,7 +578,7 @@ msgstr "Victoires Noirs"
 msgid "Blitz"
 msgstr "Blitz"
 
-msgid "Blitz *** BLITZ ELO FOR PRINT VIEW"
+msgid "Blitz *** BLITZ ELO FOR TABLE HEADER"
 msgstr "Blitz"
 
 msgid "Blitz rating"
@@ -696,7 +696,7 @@ msgstr "Candidat Maître"
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
-msgid "Cat *** CATEGORY FOR PRINT VIEW"
+msgid "Cat *** CATEGORY FOR TABLE HEADER"
 msgstr "Cat."
 
 msgid "Category"
@@ -862,7 +862,7 @@ msgstr "Club"
 msgid "Club *** CLUB FOR PLAYERS COLUMNS"
 msgstr "Club"
 
-msgid "Club *** CLUB FOR PRINT VIEW"
+msgid "Club *** CLUB FOR TABLE HEADER"
 msgstr "Club"
 
 msgid "Club:"
@@ -908,7 +908,7 @@ msgstr "Commentaire"
 msgid "Comment:"
 msgstr "Commentaire :"
 
-msgid "Comments *** COMMENTS FOR PRINT VIEW"
+msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Commentaires"
 
 #, python-format
@@ -971,6 +971,9 @@ msgstr "Niveau de log sur la console : {console_log_level}"
 
 msgid "Console logs"
 msgstr "Logs de la console"
+
+msgid "Consult the players and the prize assignment of this category."
+msgstr "Consulter les joueur·euses et l'attribution des prix de la catégorie."
 
 msgid "Contact and registration"
 msgstr "Contact et inscription"
@@ -1097,6 +1100,9 @@ msgstr "Grille américaine %f-%l"
 
 msgid "Crosstable after round #{round}"
 msgstr "Grille américaine après la ronde {round}"
+
+msgid "Crosstable before the first round"
+msgstr "Grille américaine avant la première ronde"
 
 msgid "Current ({num})"
 msgstr "En cours ({num})"
@@ -1339,6 +1345,9 @@ msgstr "Le pilote d'afficheurs [{uniq_id}] existe déjà."
 
 msgid "Display controller creation"
 msgstr "Création d'un pilote d'afficheurs"
+
+msgid "Display controllers"
+msgstr "Pilotes d'afficheurs"
 
 msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheurs ({num})"
@@ -1730,7 +1739,7 @@ msgstr "Édition de l'accès des ordinateurs inconnus"
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
-msgid "Elo *** STD ELO FOR PRINT VIEW"
+msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
 msgid "Elo step (handicap):"
@@ -2007,7 +2016,7 @@ msgstr "Famille [{family_uniq_id}] : {text}"
 msgid "Family [{uniq_id}] already exists."
 msgstr "La famille [{uniq_id}] existe déjà."
 
-msgid "Fed *** FEDERATION FOR PRINT VIEW"
+msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Féd."
 
 msgid "Fed."
@@ -2184,7 +2193,7 @@ msgstr "Parties gagnées"
 msgid "Games won with Black"
 msgstr "Nombre de parties gagnées avec les Noirs"
 
-msgid "Gen *** GENDER FOR PRINT VIEW"
+msgid "Gen *** GENDER FOR TABLE HEADER"
 msgstr "Gen."
 
 msgid "Gender"
@@ -2539,7 +2548,7 @@ msgstr "Présentation"
 msgid "League"
 msgstr "Ligue"
 
-msgid "League *** LEAGUE FOR PRINT VIEW"
+msgid "League *** LEAGUE FOR TABLE HEADER"
 msgstr "Ligue"
 
 msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
@@ -2771,7 +2780,7 @@ msgstr "Nom"
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr "Nom"
 
-msgid "Name *** NAME FOR PRINT VIEW"
+msgid "Name *** NAME FOR TABLE HEADER"
 msgstr "Nom"
 
 msgid "Name:"
@@ -2790,7 +2799,7 @@ msgstr "National"
 msgid "Navigation"
 msgstr "Navigation"
 
-msgid "Nb. *** NB FOR PRINT VIEW"
+msgid "Nb. *** NB FOR TABLE HEADER"
 msgstr "N°"
 
 msgid "Nb. final rounds without byes:"
@@ -3430,6 +3439,10 @@ msgstr "Joueur·euses de %(first)d à %(last)d"
 msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
+#, python-format
+msgid "Players of category [%(category)s]"
+msgstr "Joueur·euses de la catégorie [%(category)s]"
+
 msgid "Players screen creation"
 msgstr "Création d'un écran d'appariements par ordre alphabétique"
 
@@ -3626,7 +3639,7 @@ msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas 
 msgid "Private event"
 msgstr "Évènement privé"
 
-msgid "Prize *** PRIZE FOR PRINT VIEW"
+msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
 
 #, python-format
@@ -3638,6 +3651,9 @@ msgstr "Attribution des prix"
 
 msgid "Prize assignment after round #{round}"
 msgstr "Attribution des prix après la ronde n°{round}"
+
+msgid "Prize assignment before the first round"
+msgstr "Attribution des prix avant la première ronde"
 
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
@@ -3726,7 +3742,7 @@ msgstr "Propriétés (saisie des résultats)"
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
 
-msgid "Pts *** POINTS FOR TABULAR DISPLAY"
+msgid "Pts *** POINTS FOR TABLE HEADER"
 msgstr "Pts"
 
 msgid "Public display controller"
@@ -3751,7 +3767,7 @@ msgid "Quit"
 msgstr "Quitter"
 
 #, python-format
-msgid "R %(round)d *** ROUND FOR PRINT VIEW"
+msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
 
 msgid "Random"
@@ -3780,8 +3796,15 @@ msgstr "Classement %f-%l"
 msgid "Ranking ({num})"
 msgstr "Classement ({num})"
 
+#, python-format
+msgid "Ranking after round #%(round)d"
+msgstr "Classement après la ronde %(round)d"
+
 msgid "Ranking after round #{round}"
 msgstr "Classement après la ronde {round}"
+
+msgid "Ranking before the first round"
+msgstr "Classement avant la première ronde"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
@@ -3798,7 +3821,7 @@ msgstr "Les écrans d'affichage de classement présentent les joueur·euses par 
 msgid "Rapid"
 msgstr "Rapide"
 
-msgid "Rapid *** RAPID ELO FOR PRINT VIEW"
+msgid "Rapid *** RAPID ELO FOR TABLE HEADER"
 msgstr "Rapide"
 
 msgid "Rapid rating"
@@ -3882,7 +3905,7 @@ msgstr "La requête à la base de données a échoué."
 msgid "Request to the database failed: {error}."
 msgstr "La requête à la base de données a échoué : {error}."
 
-msgid "Res. ** RESULT FOR PRINT VIEW"
+msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
 msgid "Result"
@@ -3921,10 +3944,10 @@ msgstr "Retourner à la page d'accueil"
 msgid "Return to tournament"
 msgstr "Retour au tournoi"
 
-msgid "Rk. *** RANK FOR PRINT VIEW"
+msgid "Rk. *** RANK FOR TABLE HEADER"
 msgstr "Pl."
 
-msgid "Rk. O. *** RANK OVERALL FOR PRINT VIEW"
+msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
 msgstr "Pl. Gén."
 
 msgid "Rnd.Boa"
@@ -3960,6 +3983,9 @@ msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusie
 
 msgid "Rotator creation"
 msgstr "Création d'un écran rotatif"
+
+msgid "Rotators"
+msgstr "Écrans rotatifs"
 
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
@@ -4200,6 +4226,9 @@ msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier le
 
 msgid "Side group"
 msgstr "Autre"
+
+msgid "Single Screens"
+msgstr "Écrans simples"
 
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
@@ -5110,6 +5139,9 @@ msgstr "Tournoi : %(tournament_name)s"
 
 msgid "Tournament: not set"
 msgstr "Tournoi : non défini"
+
+msgid "Tournaments"
+msgstr "Tournois"
 
 msgid "Tournaments ({num})"
 msgstr "Tournois ({num})"

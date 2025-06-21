@@ -8,8 +8,8 @@
     <table class="board-table">
         <thead>
             <tr class="board-header">
-                <th class="board-number">{{ _('Bd. *** BOARD NUMBER FOR PRINT VIEW') }}</th>
-                <th class="points">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                <th class="board-number">{{ _('Bd. *** BOARD NUMBER FOR TABLE HEADER') }}</th>
+                <th class="points">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
                 {% if document.tournament.print_real_points %}
                     <th class="points">&nbsp;</th>
                 {% endif %}
@@ -17,7 +17,7 @@
                 <th class="rating"></th>
                 <th class="result">
                     {% if show_result %}
-                        {{ _('Res. ** RESULT FOR PRINT VIEW') }}
+                        {{ _('Res. ** RESULT FOR TABLE HEADER') }}
                     {% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
                 </th>
                 <th class="player">{{ _('Black') }}</th>
@@ -25,7 +25,7 @@
                 {% if document.tournament.print_real_points %}
                     <th class="points">&nbsp;</th>
                 {% endif %}
-                <th class="points">{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                <th class="points">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
             </tr>
         </thead>
         <tbody>

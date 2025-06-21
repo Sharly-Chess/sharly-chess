@@ -1,0 +1,142 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="max-width: 90%;"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Players of category [%(category)s]', category=admin_prize_category.name) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4>
+                {% if admin_tournament.max_ranking_round == 0 %}
+                    {{ _('Ranking before the first round') }}
+                {% else %}
+                    {{ _('Ranking after round #%(round)d', round=admin_tournament.max_ranking_round) }}
+                {% endif %}
+            </h4>
+            <table
+                class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+            >
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            {{ _('Rk. *** RANK FOR TABLE HEADER') }}
+                        </th>
+                        {% if not admin_prize_category.is_main %}
+                            <th scope="col">
+                                {{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}
+                            </th>
+                        {% endif %}
+                        <th scope="col">
+                            {{ _('Name') }}
+                        </th>
+                        <th scope="col">
+                            {{ admin_tournament.rating.print_view_header }}
+                        </th>
+                        <th scope="col">
+                            {{ _('Cat *** CATEGORY FOR TABLE HEADER') }}
+                        </th>
+                        <th scope="col">
+                            {{ _('Gen *** GENDER FOR TABLE HEADER') }}
+                        </th>
+                        <th scope="col">
+                            {{ _('Fed *** FEDERATION FOR TABLE HEADER') }}
+                        </th>
+                        <th scope="col">
+                            {{ _('Club') }}
+                        </th>
+                        <th scope="col">
+                            {{ _('Pts *** POINTS FOR TABLE HEADER') }}
+                        </th>
+                         <th scope="col">
+                            {{ _('Prize *** PRIZE FOR TABLE HEADER') }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in admin_prize_category.sorted_players %}
+                        {% set assigned_prize = assigned_prizes_by_player_id.get(player.id, none) %}
+                        {% set assigned_prize_category = assigned_prize.prize.prize_category if assigned_prize else none %}
+                        {% set has_category_prize = assigned_prize_category.id == admin_prize_category.id %}
+                        {% set prize_class = (
+                            '' if not assigned_prize
+                            else 'text-success fw-bold'
+                            if has_category_prize
+                            else 'text-secondary'
+                        ) %}
+
+                        <tr>
+                            <td class="fw-bold {{ prize_class }}">
+                                {{ ordinal_integer(loop.index)|safe }}
+                            </td>
+                            {% if not admin_prize_category.is_main %}
+                                <td class="{{ prize_class }}">
+                                    ({{ ordinal_integer(player.rank)|safe }})
+                                </td>
+                            {% endif %}
+                            <td class="text-nowrap {{ prize_class }}">
+                                {{ player.full_name }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {{ player.rating_str }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {{ player.category.short_name }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {{ player.gender.short_name }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {{ player.federation.name }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {{ player.club.name }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {{ player.points_str }}
+                            </td>
+                            <td class="{{ prize_class }}">
+                                {% if assigned_prize %}
+                                    {% set prize_str = (
+                                        format_prize_value(assigned_prize.value)
+                                        if assigned_prize.prize.is_monetary
+                                        else assigned_prize.prize.description
+                                    ) %}
+                                    {% if has_category_prize %}
+                                        {{ prize_str }}
+                                    {% else %}
+                                        {{ prize_str }} ({{ ordinal_integer(assigned_prize.place_index + 1)|safe }} {{ assigned_prize_category.name }})
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if assigned_prize and has_category_prize and assigned_prize.warning %}
+                            <tr>
+                                <td
+                                    colspan="12"
+                                    class="text-danger text-center"
+                                >
+                                    {{ assigned_prize.warning }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

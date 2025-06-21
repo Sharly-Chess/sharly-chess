@@ -1,7 +1,7 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ macros.doc_icon('prizes', 'fs-4') }}
+    {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
     {% if admin_prize_group %}
         {{ macros.refresh_listener(
             hx_get=url_for(
@@ -117,22 +117,24 @@
                 {% endif %}
             >
                 <form
-                    hx-post="{{ url_for(
-                        'admin-prize-group-create',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    {% if not admin_tournament %}
-                        disabled
+                    {% if admin_tournament %}
+                        hx-post="{{ url_for(
+                            'admin-prize-group-create',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        preload
                     {% endif %}
                 >
                     <button
                         class="btn btn-primary text-nowrap"
                         type="submit"
                         hx-indicator="#please-wait"
+                        {% if not admin_tournament %}
+                            disabled
+                        {% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
                         {{ _('Create a prize group') }}

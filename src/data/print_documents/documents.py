@@ -222,6 +222,8 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument, ABC):
 
     @property
     def title(self) -> str:
+        if self.ranking_round == 0:
+            return _('Ranking before the first round')
         return _('Ranking after round #{round}').format(round=self.ranking_round)
 
     @override
@@ -241,6 +243,8 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
 
     @property
     def title(self) -> str:
+        if self.ranking_round == 0:
+            return _('Crosstable before the first round')
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @override
@@ -492,6 +496,8 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         after_round = self.tournament.max_ranking_round
         if after_round == self.tournament.rounds:
             return self.name
+        if after_round == 0:
+            return _('Prize assignment before the first round')
         return _('Prize assignment after round #{round}').format(round=after_round)
 
     @property
