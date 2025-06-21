@@ -123,7 +123,14 @@ class Client:
             search_roles = [
                 search_roles,
             ]
-        assert all(search_role.scope == RoleScope.EVENT for search_role in search_roles)
+        assert all(
+            search_role.scope
+            in [
+                RoleScope.EVENT,
+                RoleScope.TOURNAMENT,
+            ]
+            for search_role in search_roles
+        )
         for (
             computer_role,
             computer_permission,
@@ -233,8 +240,6 @@ class Client:
         self,
     ) -> bool:
         """Returns true if the client can add an event."""
-        print(f'client={self}')
-        print(f'can_add_event => {self._has_application_role(Role.ADMINISTRATOR)}')
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
@@ -255,25 +260,52 @@ class Client:
     def can_delete_event(
         self,
     ) -> bool:
-        """Returns true if the client can ."""
+        """Returns true if the client can delete the event."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_rename_event(
         self,
     ) -> bool:
-        """Returns true if the client can ."""
+        """Returns true if the client can rename the event (change the URLs)."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
-    def can_edit_event(
+    def can_update_event(
         self,
     ) -> bool:
-        """Returns true if the client can ."""
+        """Returns true if the client can update the event."""
         return self._has_event_role(
             [
                 Role.ORGANIZER,
                 Role.CHIEF_ARBITER,
+            ],
+        )
+
+    @property
+    def can_view_event_complete_config(
+        self,
+    ) -> bool:
+        """Returns true if the client can the event complete config."""
+        return self._has_event_role(
+            [
+                Role.ORGANIZER,
+                Role.DEPUTY_CHIEF_ARBITER,
+            ],
+        )
+
+    @property
+    def can_view_event_basic_config(
+        self,
+    ) -> bool:
+        """Returns true if the client can the basic event config."""
+        return self._has_event_role(
+            [
+                Role.ORGANIZER,
+                Role.SECTOR_ARBITER,
+                Role.PAIRINGS_OFFICER,
+                Role.RESULTS_OFFICER,
+                Role.CHECK_IN_OFFICER,
             ],
         )
 

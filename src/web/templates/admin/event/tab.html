@@ -2,193 +2,204 @@
     <div id="top-nav-content">
         {{ admin_macros.admin_title(_('Configuration'), 'events') }}
         <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
-            <button
-                class="btn btn-outline-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-pencil-fill pe-1"></i>
-                {{ _('Edit') }}
-            </button>
-            <button
-                class="btn btn-outline-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-copy pe-1"></i>
-                {{ _('Duplicate') }}
-            </button>
-            <button
-                class="btn btn-outline-danger text-nowrap ms-1"
-                hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-trash-fill pe-1"></i>
-                {{ _('Delete') }}
-            </button>
+            {% if client.can_update_event %}
+                <button
+                    class="btn btn-outline-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-pencil-fill pe-1"></i>
+                    {{ _('Edit') }}
+                </button>
+            {% endif %}
+            {% if client.can_add_event %}
+                <button
+                    class="btn btn-outline-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-copy pe-1"></i>
+                    {{ _('Duplicate') }}
+                </button>
+            {% endif %}
+            {% if client.can_delete_event %}
+                <button
+                    class="btn btn-outline-danger text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-trash-fill pe-1"></i>
+                    {{ _('Delete') }}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>
 
-<div class="p-3">
-    <table class="table w-auto bg-light mx-auto justify-content-center">
-        <thead class="position-sticky top-0 z-2">
-            <tr>
-                <th scope="col" class="text-nowrap" colspan="2">{{ _('Customization') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Unique ID') }}</th>
-                <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Date') }}</th>
-                <td class="">{{ admin_event.formatted_start_date_time }} - {{ admin_event.formatted_stop_date_time }}</td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Federation') }}</th>
-                <td class="">
-                    <span>
-                        <img
-                            class="player-federation-flag ms-1 ps-1 pe-1"
-                            src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
-                        />
-                        {{ admin_event.federation }}
-                        -
-                        {{ sharly_chess_config.federations[admin_event.federation] }}
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
-                <td class="">
-                    {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
-                    {{ _('Public event') if admin_event.public else _('Private event') }}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Default directory of the Papi files') }}</th>
-                <td class="">
-                    {{ admin_event.path }}
-                    {% if not admin_event.stored_event.path %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Prize currency') }}</th>
-                <td>
-                    {{ admin_event.prize_currency }}
-                    {% if not admin_event.stored_event.prize_currency %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Location') }}</th>
-                <td>
-                    {% if admin_event.location %}
-                        {{ admin_event.location }}
-                    {% else %}
-                        <span class="fst-italic">
-                            {{ _('Undefined') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Background image and colour') }}</th>
-                <td class="text-nowrap">
-                    <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Password to enter results') }}</th>
-                <td class="text-nowrap">
-                    {% if admin_event.update_password %}
-                        ********
-                    {% else %}
-                        <span class="fst-italic">
-                            {{ _('No password required') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Maximum number of illegal moves') }}</th>
-                <td class="text-nowrap">
-                    {% if admin_event.record_illegal_moves %}
-                        {{ admin_event.record_illegal_moves }}
-                    {% else %}
-                            {{ _('No recording') }}
-                    {% endif %}
-                    {% if admin_event.stored_event.record_illegal_moves is none %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Rules') }}</th>
-                <td class="text-nowrap">
-                    {% if admin_event.rules %}
-                        {{ admin_event.rules }}
-                    {% else %}
-                        <span class="fst-italic">
-                            {{ _('No rules file set') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Alert message') }}</th>
-                <td class="">
-                    {% if admin_event.message_text %}
-                        {{ admin_event.message_text }}
-                    {% else %}
-                        <span class="fst-italic">
-                            {{ _('No alert message') }}
-                        </span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
-                <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
-            </tr>
-
-            {% for row in plugin_event_info_rows %}
-                {% include row %}
-            {% endfor %}
-
-            {% for message in admin_event.messages %}
+{% if client.can_view_event_basic_config %}
+    <div class="p-3">
+        <table class="table w-auto bg-light mx-auto justify-content-center">
+            <tbody>
+                {% if client.can_view_event_complete_config %}
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Unique ID') }}</th>
+                        <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
+                    </tr>
+                {%endif %}
                 <tr>
-                    <td scope="row" colspan="2" class="text-nowrap {{ logging_levels[message.level].class }}">
-                        <i class="{{ logging_levels[message.level].icon_class }}"></i>
-                        {{ logging_levels[message.level].name }}
-                        {{ message.formatted_text }}
+                    <th scope="row" class="text-nowrap">{{ _('Date') }}</th>
+                    <td class="">{{ admin_event.formatted_start_date_time }} - {{ admin_event.formatted_stop_date_time }}</td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-nowrap">{{ _('Federation') }}</th>
+                    <td class="">
+                        <span>
+                            <img
+                                class="player-federation-flag ms-1 ps-1 pe-1"
+                                src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
+                            />
+                            {{ admin_event.federation }}
+                            -
+                            {{ sharly_chess_config.federations[admin_event.federation] }}
+                        </span>
                     </td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+                {% if client.can_view_event_complete_config %}
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Visibility') }}</th>
+                        <td class="">
+                            {{ macros.event_visibility_icon(admin_event, 'pe-1') }}
+                            {{ _('Public event') if admin_event.public else _('Private event') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Default directory of the Papi files') }}</th>
+                        <td class="">
+                            {{ admin_event.path }}
+                            {% if not admin_event.stored_event.path %}
+                                <span class="fst-italic">
+                                    {{ _('(by default)') }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row" class="text-nowrap">{{ _('Prize currency') }}</th>
+                    <td>
+                        {{ admin_event.prize_currency }}
+                        {% if not admin_event.stored_event.prize_currency %}
+                            <span class="fst-italic">
+                                {{ _('(by default)') }}
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-nowrap">{{ _('Location') }}</th>
+                    <td>
+                        {% if admin_event.location %}
+                            {{ admin_event.location }}
+                        {% else %}
+                            <span class="fst-italic">
+                                {{ _('Undefined') }}
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-nowrap">{{ _('Background image and colour') }}</th>
+                    <td class="text-nowrap">
+                        <div style="width: 160px; height: 90px; background-image: url('{{ admin_event.background_url }}'); background-color: {{ admin_event.background_color }}; background-repeat: no-repeat; background-size: contain; background-position: center center;">
+                        </div>
+                    </td>
+                </tr>
+                {% if client.can_view_event_complete_config %}
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Password to enter results') }}</th>
+                        <td class="text-nowrap">
+                            {% if admin_event.update_password %}
+                                ********
+                            {% else %}
+                                <span class="fst-italic">
+                                    {{ _('No password required') }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Maximum number of illegal moves') }}</th>
+                        <td class="text-nowrap">
+                            {% if admin_event.record_illegal_moves %}
+                                {{ admin_event.record_illegal_moves }}
+                            {% else %}
+                                    {{ _('No recording') }}
+                            {% endif %}
+                            {% if admin_event.stored_event.record_illegal_moves is none %}
+                                <span class="fst-italic">
+                                    {{ _('(by default)') }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Rules') }}</th>
+                        <td class="text-nowrap">
+                            {% if admin_event.rules %}
+                                {{ admin_event.rules }}
+                            {% else %}
+                                <span class="fst-italic">
+                                    {{ _('No rules file set') }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Alert message') }}</th>
+                        <td class="">
+                            {% if admin_event.message_text %}
+                                {{ admin_event.message_text }}
+                            {% else %}
+                                <span class="fst-italic">
+                                    {{ _('No alert message') }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Last update') }}</th>
+                        <td class="text-nowrap">{{ admin_event.last_update_str }}</td>
+                    </tr>
+                {% endif %}
+
+                {% for row in plugin_event_info_rows %}
+                    {% include row %}
+                {% endfor %}
+
+                {% if client.can_view_event_complete_config %}
+                    {% for message in admin_event.messages %}
+                        <tr>
+                            <td scope="row" colspan="2" class="text-nowrap {{ logging_levels[message.level].class }}">
+                                <i class="{{ logging_levels[message.level].icon_class }}"></i>
+                                {{ logging_levels[message.level].name }}
+                                {{ message.formatted_text }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}

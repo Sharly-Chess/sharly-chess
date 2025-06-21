@@ -107,12 +107,16 @@ class BaseEventAdminController(BaseAdminController):
                 'icon_class': 'bi-sign-stop',
             },
         }
-        nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {
-            'admin-event-config-tab': {
-                'title': _('Configuration'),
-                'template': 'event/tab.html',
-                'icon_class': 'bi-gear-fill',
-            },
+        nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {}
+        if web_context.client.can_view_event_basic_config:
+            nav_tabs |= {
+                'admin-event-config-tab': {
+                    'title': _('Configuration'),
+                    'template': 'event/tab.html',
+                    'icon_class': 'bi-gear-fill',
+                },
+            }
+        nav_tabs |= {
             'admin-event-tournaments-tab': {
                 'title': _('Tournaments ({num})').format(
                     num=len(admin_event.tournaments_by_id) or '-'

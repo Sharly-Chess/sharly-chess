@@ -62,15 +62,19 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: world-championship'),
-                                help_text=_('The Unique ID, used for data storage and export.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                        {% if client.can_rename_event %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.text_input(
+                                    name='uniq_id',
+                                    label=_('ID (unique):'),
+                                    placeholder=_('E.g.: world-championship'),
+                                    help_text=_('The Unique ID, used for data storage and export.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% else %}
+                            <input type="hidden" name="uniq_id" value="{{ data['uniq_id'] }}" />
+                        {% endif %}
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
                                 name='name',

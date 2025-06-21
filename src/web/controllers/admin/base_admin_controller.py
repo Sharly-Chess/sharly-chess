@@ -309,7 +309,7 @@ class BaseAdminController(BaseController):
     def _admin_validate_event_update_data(
         cls,
         action: str,
-        request: HTMXRequest,
+        web_context: WebContext,
         admin_event: Event | None,
         data: dict[str, str] | None = None,
     ) -> StoredEvent:
@@ -325,34 +325,40 @@ class BaseAdminController(BaseController):
             elif uniq_id != admin_event.uniq_id:
                 errors[field] = _('event ID does not match.')
         else:
-            if not uniq_id:
-                errors[field] = _('Please enter the event ID.')
-            elif not EventLoader.id_regex.match(uniq_id):
-                errors[field] = _(
-                    'Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore.'
-                )
-                data[field] = re.sub(r'[^a-zA-Z0-9_\-]', '_', uniq_id)
+            if web_context.client.can_rename_event:
+                if not uniq_id:
+                    errors[field] = _('Please enter the event ID.')
+                elif not EventLoader.id_regex.match(uniq_id):
+                    errors[field] = _(
+                        'Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore.'
+                    )
+                    data[field] = re.sub(r'[^a-zA-Z0-9_\-]', '_', uniq_id)
+                else:
+                    event_uniq_ids: list[str] = EventLoader.get(
+                        request=web_context.request
+                    ).event_uniq_ids
+                    match action:
+                        case 'clone' | 'create':
+                            if uniq_id in event_uniq_ids:
+                                errors[field] = _(
+                                    'Event [{uniq_id}] already exists.'
+                                ).format(uniq_id=uniq_id)
+                        case 'update':
+                            if admin_event is None:
+                                raise RuntimeError(f'{admin_event=} for [{action=}]')
+                            if (
+                                uniq_id != admin_event.uniq_id
+                                and uniq_id in event_uniq_ids
+                            ):
+                                errors[field] = _(
+                                    'Event [{uniq_id}] already exists.'
+                                ).format(uniq_id=uniq_id)
+                        case _:
+                            raise ValueError(f'action=[{action}]')
             else:
-                event_uniq_ids: list[str] = EventLoader.get(
-                    request=request
-                ).event_uniq_ids
-                match action:
-                    case 'clone' | 'create':
-                        if uniq_id in event_uniq_ids:
-                            errors[field] = _(
-                                'Event [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case 'update':
-                        if admin_event is None:
-                            raise RuntimeError(f'{admin_event=} for [{action=}]')
-                        if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
-                            errors[field] = _(
-                                'Event [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-        name: str | None = None
-        federation: str | None = None
+                uniq_id = admin_event.uniq_id
+        name: str | None
+        federation: str | None
         start: float | None = None
         stop: float | None = None
         public: bool | None = None

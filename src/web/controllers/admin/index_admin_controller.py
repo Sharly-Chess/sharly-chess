@@ -361,7 +361,7 @@ class IndexAdminController(BaseAdminController):
                         action, web_context.request, None
                     )
                     stored_event: StoredEvent = cls._admin_validate_event_update_data(
-                        action, web_context.request, None, data
+                        action, web_context, None, data
                     )
                     errors = stored_event.errors
                 if errors is None:
@@ -489,7 +489,7 @@ class IndexAdminController(BaseAdminController):
         if web_context.error:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'create', request, None, data
+            'create', web_context, None, data
         )
         if stored_event.errors:
             return self._admin_render(
