@@ -58,7 +58,7 @@ body[data-bs-theme="light"] #main-wrapper {
     font-size: 1.25rem;
 }
 
-.sidebar i {
+.sidebar button > i {
     padding-right: 0.25rem;
 }
 
@@ -66,11 +66,11 @@ body[data-bs-theme="light"] #main-wrapper {
     width: 100%;
 }
 
-.sidebar i.indented {
+.sidebar button > i.indented {
     padding-left: 0.75rem;
 }
 
-.compact-sidebar .sidebar i, .compact-sidebar .sidebar i.indented {
+.compact-sidebar .sidebar button > i, .compact-sidebar .sidebar button > i.indented {
     font-size: 1rem;
     padding-left: 0;
     padding-right: 0;
@@ -150,7 +150,7 @@ body[data-bs-theme="dark"] #sidebar-expander {
     top: 0;
     min-width: calc(var(--vw, 100vw) - var(--side-bar-width));
     z-index: 4;
-    background-color: rgba(var(--bs-body-bg-rgb), 0.9);
+    background-color: rgba(var(--bs-body-bg-rgb), 1);
     padding: 12px 0;
 }
 

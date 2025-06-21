@@ -1,8 +1,6 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
-        <div>
-            {{ macros.doc_icon('pairings', 'fs-4') }}
-        </div>
+        {{ admin_macros.admin_title(_('Pairings'), 'pairings') }}
         <div class="flex-grow-1"></div>
         {% if admin_tournament %}
             {% include '/admin/pairings/round_controls.html' %}
@@ -182,7 +180,7 @@
                     >
                         <tr>
                             <th>{{ _('Board') }}</th>
-                            <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
                             {% if admin_tournament.print_real_points %}
                                 <th>&nbsp;</th>
                             {% endif %}
@@ -192,7 +190,7 @@
                             {% if admin_tournament.print_real_points %}
                                 <th>&nbsp;</th>
                             {% endif %}
-                            <th>{{ _('Pts *** POINTS FOR TABULAR DISPLAY') }}</th>
+                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -366,5 +364,9 @@
         });
     </script>
 {% else %}
-    {{ _('No pairings.') }}
+    <div class="mx-auto" style="max-width: 500px;">
+        <h5 class="mt-2 my-5 text-center">
+            {{ _('No pairings.') }}
+        </h5>
+    </div>
 {% endif%}

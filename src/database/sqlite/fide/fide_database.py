@@ -7,6 +7,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Iterator, Any, Callable, override
 
+from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
@@ -49,6 +50,11 @@ class FideDatabase(LocalSourceDatabase):
     @staticmethod
     def static_name() -> str:
         return 'FIDE'
+
+    @property
+    def min_recovery_version(self) -> Version:
+        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/713
+        return Version('2.7.8')
 
     @property
     def _schema_file_path(self) -> Path:
