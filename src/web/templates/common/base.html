@@ -284,7 +284,7 @@
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
-            {% if admin_auth %}
+            {% if client.can_update_application_settings %}
                 {% if request.url.path != '/admin/config' %}
                     {% set redirect_url = '/admin/config' %}
                 {% endif %}

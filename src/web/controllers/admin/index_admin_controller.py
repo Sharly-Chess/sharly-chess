@@ -195,16 +195,19 @@ class IndexAdminController(BaseAdminController):
                 'empty_str': _('No archived events.'),
                 'icon_class': 'bi-archive indented',
             },
-            'config': {
-                'divider': True,
-                'title': _('Settings'),
-                'template': 'index/config_tab.html',
-                'icon_class': 'bi-gear',
-                'disabled': False,
-            },
         }
-        if sharly_chess_config.force_edit:
-            web_context.admin_tab = 'config'
+        if web_context.client.can_view_application_settings:
+            nav_tabs |= {
+                'config': {
+                    'divider': True,
+                    'title': _('Settings'),
+                    'template': 'index/config_tab.html',
+                    'icon_class': 'bi-gear',
+                    'disabled': False,
+                },
+            }
+            if sharly_chess_config.force_edit:
+                web_context.admin_tab = 'config'
         if not modal and (
             not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
         ):

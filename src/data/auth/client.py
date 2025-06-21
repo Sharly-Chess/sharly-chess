@@ -208,51 +208,54 @@ class Client:
         return permissions_by_role
 
     @property
-    def can_view_basic_application_settings(
+    def can_view_application_settings(
         self,
     ) -> bool:
-        return self._has_application_role(Role.ADMINISTRATOR)
-
-    @property
-    def can_view_all_application_settings(
-        self,
-    ) -> bool:
+        """Returns true if the client can view the applications settings."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_update_application_settings(
         self,
     ) -> bool:
+        """Returns true if the client can update the application settings."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
-    def can_manage_administrators(
+    def can_view_private_events(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_add_event(
         self,
     ) -> bool:
+        """Returns true if the client can add an event."""
+        print(f'client={self}')
+        print(f'can_add_event => {self._has_application_role(Role.ADMINISTRATOR)}')
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_delete_event(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_rename_event(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_edit_event(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_event_role(
             [
                 Role.ORGANIZER,
@@ -264,12 +267,14 @@ class Client:
     def can_manage_organizers(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_application_role(Role.ADMINISTRATOR)
 
     @property
     def can_manage_chief_arbiters(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_event_role(
             Role.ORGANIZER,
         )
@@ -278,6 +283,7 @@ class Client:
     def can_manage_deputy_chief_arbiters(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_event_role(
             Role.CHIEF_ARBITER,
         )
@@ -286,6 +292,7 @@ class Client:
     def can_add_tournament(
         self,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_event_role(
             Role.CHIEF_ARBITER,
         )
@@ -294,6 +301,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.CHIEF_ARBITER,
@@ -303,6 +311,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.CHIEF_ARBITER,
@@ -312,6 +321,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -321,6 +331,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.PAIRINGS_OFFICER,
@@ -330,6 +341,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.PAIRINGS_OFFICER,
@@ -339,6 +351,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.PAIRINGS_OFFICER,
@@ -348,6 +361,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -357,6 +371,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -366,6 +381,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -375,6 +391,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             [
@@ -387,6 +404,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -396,6 +414,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -405,6 +424,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -414,6 +434,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.CHECK_IN_OFFICER,
@@ -423,6 +444,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.RESULTS_OFFICER,
@@ -432,6 +454,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.RESULTS_OFFICER,
@@ -441,6 +464,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.DEPUTY_CHIEF_ARBITER,
@@ -450,6 +474,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             [
@@ -464,6 +489,7 @@ class Client:
         self,
         tournament: Tournament,
     ) -> bool:
+        """Returns true if the client can ."""
         return self._has_tournament_role(
             tournament,
             Role.SPECTATOR,
