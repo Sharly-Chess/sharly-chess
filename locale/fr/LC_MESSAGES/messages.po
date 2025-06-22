@@ -3678,7 +3678,7 @@ msgid "Relative performances for round"
 msgstr "Performances relatives pour la ronde"
 
 msgid "Relative performances for round #{round}"
-msgstr "Performances relatives – ronde #{round}"
+msgstr "Performances relatives – Ronde #{round}"
 
 msgid "Reload the page"
 msgstr "Recharger la page"

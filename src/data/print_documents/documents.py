@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property, partial
 import itertools
-from typing import Any, Tuple, override
+from typing import Any, override
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -281,12 +281,12 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
         return '/admin/print/round_performance.html'
 
     @property
-    def ordered_players(self) -> list[Tuple[Player, Player, Result, float]]:
+    def ordered_players(self) -> list[tuple[Player, Player, Result, float]]:
         assert self.tournament is not None
         ranking_round = self.ranking_round
         if not ranking_round:
             return []
-        results: list[Tuple[Player, Player, Result, float]] = []
+        results: list[tuple[Player, Player, Result, float]] = []
         for player in self.tournament.players:
             pairing = player.pairings[ranking_round]
             if pairing.opponent_id and pairing.played:
@@ -310,9 +310,19 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
     def validate_options(self):
         super().validate_options()
         ranking_round = self._get_option(RoundPrintOption)
-        if ranking_round.value is None:
-            return
         assert self.tournament is not None
+        if ranking_round.value is None:
+            if self.tournament.max_ranking_round < 1:
+                raise OptionError(
+                    _('This round is not valid (the tournament has not yet started).'),
+                    ranking_round,
+                )
+            return
+        if ranking_round.value < 1:
+            raise OptionError(
+                _('This round is not valid (the tournament has not yet started).'),
+                ranking_round,
+            )
         if ranking_round.value > self.tournament.rounds:
             raise OptionError(
                 _(
