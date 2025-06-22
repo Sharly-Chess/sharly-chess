@@ -89,9 +89,8 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _get_federation_options(default_federation: str | None):
-        federation_options: dict[str, str] = {}
         if default_federation:
-            federation_options = {
+            return {
                 default_federation: _('By default - {option}').format(
                     option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
                 ),
@@ -101,11 +100,10 @@ class BaseAdminController(BaseController):
                 if federation_id != default_federation
             }
         else:
-            federation_options = {
+            return {
                 federation_id: f'{federation_id} - {federation_name}'
                 for federation_id, federation_name in SharlyChessConfig.federations.items()
             }
-        return federation_options
 
     @staticmethod
     def _get_record_illegal_moves_options(

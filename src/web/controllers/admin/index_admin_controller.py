@@ -18,7 +18,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import (
     _,
-    DEFAULT_LOCALE,
     locales,
 )
 from common.i18n.utils import (
@@ -335,11 +334,8 @@ class IndexAdminController(BaseAdminController):
                     ]
                 )
                 locale_options: dict[str, str] = {
-                    '': '-',
-                } | {locale: locale_localized_name(locale) for locale in locales}
-                locale_options[''] = _('By default - {option}').format(
-                    option=locale_options[DEFAULT_LOCALE]
-                )
+                    locale: locale_localized_name(locale) for locale in locales
+                }
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_event_form_fields_template() or []
                 )
@@ -381,10 +377,7 @@ class IndexAdminController(BaseAdminController):
                         data['background_image']
                     ),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(
-                        sharly_chess_config.stored_config.federation
-                        or SharlyChessConfig.default_federation
-                    ),
+                    'federation_options': cls._get_federation_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,
