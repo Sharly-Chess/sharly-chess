@@ -377,7 +377,9 @@ class IndexAdminController(BaseAdminController):
                         data['background_image']
                     ),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(),
+                    'federation_options': cls._get_federation_options(
+                        default_federation=None
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,

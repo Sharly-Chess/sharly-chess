@@ -1,0 +1,50 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'players.css' %}
+{% endblock %}
+
+{% block content %}
+    <table class="player-table">
+        <thead>
+            <tr class="player-header">
+                <th class="rank">
+                    {{ _('Rk. *** RANK FOR PRINT VIEW') }}
+                </th>
+                <th class="title">&nbsp;</th>
+                <th class="name">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                <th class="rating">
+                    {{ tournament.rating.print_view_header }}
+                </th>
+                <th class="result">{{ _('Res. ** RESULT FOR PRINT VIEW') }}</th>
+                <th class="title">&nbsp;</th>
+                <th class="name text-start">{{ _('Name *** NAME FOR PRINT VIEW') }}</th>
+                <th class="rating">
+                    {{ tournament.rating.print_view_header }}
+                </th>
+                <th class="perf">
+                    {{ _('Performance *** PERF FOR TABULAR DISPLAY') }}</th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for (player, opponent, result, performance) in performances %}
+                {% with row_class='even' if loop.index is even else 'odd' %}
+                    <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
+                        <td class="rank">
+                            {{ loop.index }}
+                        </td>
+                        <td class="title">{{ player.title.short_name }}</td>
+                        <td class="name">{{ player.full_name }}</td>
+                        <td class="rating">{{ player.rating_str }}</td>
+                        <td class="result">{{ result }}</td>
+                        <td class="title">{{ opponent.title.short_name }}</td>
+                        <td class="name">{{ opponent.full_name }}</td>
+                        <td class="rating">{{ opponent.rating_str }}</td>
+                        <td class="perf">{{ performance }}</td
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
