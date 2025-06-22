@@ -116,21 +116,27 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-gear-fill',
                 },
             }
+        if web_context.client.can_view_tournaments:
+            nav_tabs |= {
+                'admin-event-tournaments-tab': {
+                    'title': _('Tournaments ({num})').format(
+                        num=len(admin_event.tournaments_by_id) or '-'
+                    ),
+                    'template': 'tournaments/tab.html',
+                    'icon_class': 'bi-diagram-3-fill',
+                },
+            }
+        if web_context.client.can_view_players:
+            nav_tabs |= {
+                'admin-event-players-tab': {
+                    'title': _('Players ({num})').format(
+                        num=admin_event.player_count or '-'
+                    ),
+                    'template': 'players/tab.html',
+                    'icon_class': 'bi-people-fill',
+                },
+            }
         nav_tabs |= {
-            'admin-event-tournaments-tab': {
-                'title': _('Tournaments ({num})').format(
-                    num=len(admin_event.tournaments_by_id) or '-'
-                ),
-                'template': 'tournaments/tab.html',
-                'icon_class': 'bi-diagram-3-fill',
-            },
-            'admin-event-players-tab': {
-                'title': _('Players ({num})').format(
-                    num=admin_event.player_count or '-'
-                ),
-                'template': 'players/tab.html',
-                'icon_class': 'bi-people-fill',
-            },
             'admin-event-pairings-tab': {
                 'title': _('Pairings'),
                 'template': 'pairings/tab.html',

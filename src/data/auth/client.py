@@ -402,32 +402,46 @@ class Client:
         return any(self.role_management)
 
     @property
+    def can_view_tournaments(
+        self,
+    ) -> bool:
+        """Returns true if the client can access the Tournaments tab and view the tournament cards."""
+        return self._has_event_role(
+            Role.DEPUTY_CHIEF_ARBITER,
+        )
+
+    @property
     def can_add_tournament(
         self,
     ) -> bool:
-        """Returns true if the client can ."""
+        """Returns true if the client can add a tournament to the event."""
         return self._has_event_role(
             Role.CHIEF_ARBITER,
         )
 
-    def update_tournament(
+    def can_update_tournament(
         self,
-        tournament: Tournament,
     ) -> bool:
-        """Returns true if the client can ."""
-        return self._has_tournament_role(
-            tournament,
-            Role.CHIEF_ARBITER,
+        """Returns true if the client can update a tournament of the event."""
+        return self._has_event_role(
+            Role.DEPUTY_CHIEF_ARBITER,
         )
 
     def can_delete_tournament(
         self,
-        tournament: Tournament,
     ) -> bool:
-        """Returns true if the client can ."""
-        return self._has_tournament_role(
-            tournament,
+        """Returns true if the client can delete a tournament of the event."""
+        return self._has_event_role(
             Role.CHIEF_ARBITER,
+        )
+
+    @property
+    def can_view_players(
+        self,
+    ) -> bool:
+        """Returns true if the client can access the Players tab."""
+        return self._has_event_role(
+            Role.DEPUTY_CHIEF_ARBITER,
         )
 
     def can_open_close_check_in(
