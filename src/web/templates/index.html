@@ -73,20 +73,6 @@
                     </tbody>
                 </table>
                 <div
-                    {{ macros.tooltip_attributes('info', _('Click here to access the public screens of the events.'), 'right') }}
-                >
-                    <button
-                        hx-get="{{ url_for('user') }}"
-                        preload
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        hx-push-url="true"
-                        class="btn btn-outline-primary btn-lg p-4 w-100"
-                    >
-                        {{ _('Events (public access)') }}
-                    </button>
-                </div>
-                <div
                     {% if admin_auth %}
                         {{ macros.tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
                     {% else %}
@@ -105,7 +91,21 @@
                             disabled
                         {% endif %}
                     >
-                        {{ _('Arbiter interface (private access)') }}
+                        {{ _('Arbiter interface') }}
+                    </button>
+                </div>
+                <div
+                    {{ macros.tooltip_attributes('info', _('Click here to access the screens that you have created.'), 'right') }}
+                >
+                    <button
+                        hx-get="{{ url_for('user') }}"
+                        preload
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        hx-push-url="true"
+                        class="btn btn-outline-primary btn-lg p-1 w-100"
+                    >
+                        {{ _('Your Screens') }}
                     </button>
                 </div>
             </div>

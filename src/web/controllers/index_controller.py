@@ -38,6 +38,9 @@ class IndexController(BaseController):
         self.set_locale(request, locale)
         web_context: WebContext = WebContext(request)
 
+        if not web_context.admin_auth:
+            return Redirect(request.app.route_reverse('user'))
+
         return HTMXTemplate(
             template_name='index.html',
             context=web_context.template_context

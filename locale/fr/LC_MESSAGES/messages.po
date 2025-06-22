@@ -349,8 +349,8 @@ msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne 
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
 
-msgid "Arbiter interface (private access)"
-msgstr "Arbitrage (accès privé)"
+msgid "Arbiter interface"
+msgstr "Arbitrage"
 
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
@@ -758,8 +758,8 @@ msgstr "Veuillez choisir votre langue"
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
-msgid "Click here to access the public screens of the events."
-msgstr "Cliquez ici pour accéder aux évènements publics des évènements."
+msgid "Click here to access the screens that you have created."
+msgstr "Cliquez ici pour accéder aux écrans que vous avez créés."
 
 msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
@@ -1676,9 +1676,6 @@ msgstr "Évènement : {event_name}"
 
 msgid "Events"
 msgstr "Évènements"
-
-msgid "Events (public access)"
-msgstr "Évènements (accès public)"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -5308,6 +5305,9 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
 
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
+
+msgid "Your Screens"
+msgstr "Vos écrans"
 
 msgid "Your choice (by default {default}): "
 msgstr "Votre choix, par défaut [{default}] :"
