@@ -402,7 +402,7 @@ class Client:
         return any(self.role_management)
 
     @property
-    def can_view_tournaments(
+    def can_view_tournaments_tab(
         self,
     ) -> bool:
         """Returns true if the client can access the Tournaments tab and view the tournament cards."""
@@ -436,7 +436,7 @@ class Client:
         )
 
     @property
-    def can_view_players(
+    def can_view_players_tab(
         self,
     ) -> bool:
         """Returns true if the client can access the Players tab."""

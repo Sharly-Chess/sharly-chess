@@ -116,7 +116,7 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-gear-fill',
                 },
             }
-        if web_context.client.can_view_tournaments:
+        if web_context.client.can_view_tournaments_tab:
             nav_tabs |= {
                 'admin-event-tournaments-tab': {
                     'title': _('Tournaments ({num})').format(
@@ -126,7 +126,7 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-diagram-3-fill',
                 },
             }
-        if web_context.client.can_view_players:
+        if web_context.client.can_view_players_tab:
             nav_tabs |= {
                 'admin-event-players-tab': {
                     'title': _('Players ({num})').format(

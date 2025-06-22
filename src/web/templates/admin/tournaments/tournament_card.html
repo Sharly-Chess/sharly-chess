@@ -50,10 +50,11 @@
 {% endblock %}
 
 {% block card_text %}
+x
     {% for block in tournament_card_blocks %}
         {% include block %}
     {% endfor %}
-
+x
     <div class="d-flex flex-column gap-1">
         <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
             {% if tournament.rules %}
