@@ -314,15 +314,10 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
         if ranking_round.value is None:
             if self.tournament.max_ranking_round < 1:
                 raise OptionError(
-                    _('This round is not valid (the tournament has not yet started).'),
+                    _('The tournament has not yet started.'),
                     ranking_round,
                 )
             return
-        if ranking_round.value < 1:
-            raise OptionError(
-                _('This round is not valid (the tournament has not yet started).'),
-                ranking_round,
-            )
         if ranking_round.value > self.tournament.rounds:
             raise OptionError(
                 _(

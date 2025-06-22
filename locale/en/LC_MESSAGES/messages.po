@@ -3171,7 +3171,7 @@ msgid "Performance"
 msgstr ""
 
 msgid "Performance *** PERF FOR TABULAR DISPLAY"
-msgstr "Perf."
+msgstr "Rel. Perf."
 
 msgid "Personal"
 msgstr ""
@@ -3702,8 +3702,8 @@ msgstr ""
 msgid "Request to the database failed: {error}."
 msgstr ""
 
-msgid "Res. ** RESULT FOR TABLE HEADER"
-msgstr ""
+msgid "Res. ** RESULT FOR PRINT VIEW"
+msgstr "Res."
 
 msgid "Result"
 msgstr ""
@@ -4548,10 +4548,10 @@ msgstr ""
 msgid "The timer displayed on the screens of the family."
 msgstr ""
 
-msgid "The tournament is finished."
+msgid "The tournament has not yet started."
 msgstr ""
 
-msgid "The tournament is not started yet."
+msgid "The tournament is finished."
 msgstr ""
 
 msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."

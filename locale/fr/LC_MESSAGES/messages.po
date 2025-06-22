@@ -3171,7 +3171,7 @@ msgid "Performance"
 msgstr "Performance"
 
 msgid "Performance *** PERF FOR TABULAR DISPLAY"
-msgstr "Perf."
+msgstr "Perf. rel."
 
 msgid "Personal"
 msgstr "Personnel"
@@ -4548,11 +4548,11 @@ msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 msgid "The timer displayed on the screens of the family."
 msgstr "Le chronomètre affiché sur les écrans de la famille."
 
+msgid "The tournament has not yet started."
+msgstr "e tournoi n'est pas encore commencé."
+
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
-
-msgid "The tournament is not started yet."
-msgstr "Le tournoi n'est pas encore commencé."
 
 msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
 msgstr "Le tournoi des écrans de la famille, obligatoire (contrairement aux écrans basiques, un seul tournoi peut être affiché sur les écrans de famille)."
@@ -5508,4 +5508,3 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
