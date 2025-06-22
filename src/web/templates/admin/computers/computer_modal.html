@@ -45,7 +45,7 @@
                             {% include '/common/alert.html' %}
                         {% endwith %}
                     {% endif %}
-                    {% if action in ['create', 'clone', ] or (admin_computer.edit_properties and client_can_manage_computers[admin_computer.id]) %}
+                    {% if action in ['create', 'clone', ] or (admin_computer.edit_properties and client.can_manage_computer_by_computer_id[admin_computer.id]) %}
                         <h4>
                             {{ _('Identification') }}
                         </h4>
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                     {% endif %}
-                    {% if action in ['create', 'clone', ] or ( admin_computer.edit_permissions and client_can_manage_computers[admin_computer.id]) %}
+                    {% if action in ['create', 'clone', ] or ( admin_computer.edit_permissions and client.can_manage_computer_by_computer_id[admin_computer.id]) %}
                         {% with table_id='computer-table' %}
                             {% include '../common/modal/access_permissions_table.html' %}
                         {% endwith %}

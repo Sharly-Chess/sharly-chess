@@ -133,6 +133,7 @@ class Role(IntEnum):
                 return [
                     Role.ADMINISTRATOR,
                     Role.ORGANIZER,
+                    Role.DISPLAY_MANAGER,
                     Role.CHIEF_ARBITER,
                     Role.DEPUTY_CHIEF_ARBITER,
                     Role.PAIRINGS_OFFICER,

@@ -202,7 +202,7 @@
 
 {% block card_buttons_right %}
     <span
-        {% if client.can_update_tournament %}
+        {% if client.can_update_tournaments %}
             {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}
         {% else %}
             {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
@@ -216,7 +216,7 @@
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
-            {% if not client.can_update_tournament %}
+            {% if not client.can_update_tournaments %}
                 disabled
             {% endif %}
         >
@@ -246,21 +246,21 @@
         </button>
     </span>
     <span
-        {% if client.can_delete_tournament %}
+        {% if client.can_delete_tournaments %}
             {{ macros.tooltip_attributes('info', _('Delete the tournament.'), 'top') }}
         {% else %}
             {{ macros.tooltip_attributes('warning', _('You are not allowed to delete the tournament.'), 'top') }}
         {% endif %}
     >
         <button
-            class="btn btn-sm {% if client.can_delete_tournament %}btn-outline-danger{% else %}btn-outline-primary{% endif %} text-nowrap"
+            class="btn btn-sm {% if client.can_delete_tournaments %}btn-outline-danger{% else %}btn-outline-primary{% endif %} text-nowrap"
             hx-get="{{ url_for('admin-tournament-modal', action='delete', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
-            {% if not client.can_delete_tournament %}
+            {% if not client.can_delete_tournaments %}
                 disabled
             {% endif %}
         >

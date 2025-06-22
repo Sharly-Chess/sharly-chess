@@ -73,7 +73,7 @@
                         </td>
                     {% endif %}
                     <td class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        {% set client_can_manage_computer=client_can_manage_computers[computer.id] %}
+                        {% set client_can_manage_computer=client.can_manage_computer_by_computer_id[computer.id] %}
                         {% set computer_can_be_updated=computer.edit_properties or computer.edit_permissions %}
                         <span
                                 {% if not computer_can_be_updated %}

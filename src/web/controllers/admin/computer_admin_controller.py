@@ -161,15 +161,10 @@ class ComputerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        client_can_manage_computers: dict[int, bool] = {
-            computer.id: web_context.client.can_manage_computer(computer)
-            for computer in web_context.admin_event.computers_by_id.values()
-        }
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
             'admin_event_tab': 'admin-event-computers-tab',
-            'client_can_manage_computers': client_can_manage_computers,
         }
 
         match modal:

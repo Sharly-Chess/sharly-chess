@@ -5,61 +5,70 @@
     {% endif %}
 >
     <td class="text-nowrap text-start w-1 ps-2">
-        <span class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
-                <i class="bi-three-dots"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-start players-player-actions p-0" >
-                <li
-                    class="dropdown-item btn text-start"
-                    hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    hx-trigger="click, keyup[key=='Enter']"
-                    tabindex="0"
-                    {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
-                >
-                    <i class="bi-pencil-fill pe-1"></i>
-                    {{ _('Edit') }}
-                </li>
-                <li
-                    class="dropdown-item btn text-start"
-                    hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    hx-trigger="click, keyup[key=='Enter']"
-                    tabindex="0"
-                    {{ macros.tooltip_attributes('info', _('Edit the player\'s tournament record.'), 'left') }}
-                >
-                    <i class="bi-0-square"></i><i class="bi-1-square-fill"></i>
-                    {{ _('Record') }}
-                </li>
-                {% if not player.has_real_pairings %}
-                    <li
-                        class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
-                        hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                        hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                        hx-trigger="click, keyup[key=='Enter']"
-                        tabindex="0"
-                        {{ macros.tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
-                    >
-                        <i class="bi-trash-fill pe-1"></i>
-                        {{ _('Delete') }}
-                    </li>
-                {% endif %}
-            </ul>
-        </span>
+        {% set can_update = client.can_update_players_history_by_tournament_id[player.tournament.id] %}
+        {% set can_update_history=client.can_update_players_history_by_tournament_id[player.tournament.id] %}
+        {% set can_delete=client.can_delete_players and not player.has_real_pairings %}
+        {% if can_update or can_update_history or can_delete %}
+            <span class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
+                    <i class="bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-start players-player-actions p-0" >
+                    {% if can_update %}
+                        <li
+                            class="dropdown-item btn text-start"
+                            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            hx-trigger="click, keyup[key=='Enter']"
+                            tabindex="0"
+                            {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'left') }}
+                        >
+                            <i class="bi-pencil-fill pe-1"></i>
+                            {{ _('Edit') }}
+                        </li>
+                    {% endif %}
+                    {% if can_update_history %}
+                        <li
+                            class="dropdown-item btn text-start"
+                            hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            hx-trigger="click, keyup[key=='Enter']"
+                            tabindex="0"
+                            {{ macros.tooltip_attributes('info', _('Edit the player\'s tournament record.'), 'left') }}
+                        >
+                            <i class="bi-0-square"></i><i class="bi-1-square-fill"></i>
+                            {{ _('Record') }}
+                        </li>
+                    {% endif %}
+                    {% if can_delete %}
+                        <li
+                            class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"
+                            hx-get="{{ url_for('admin-player-modal', action='delete', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                            hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            hx-trigger="click, keyup[key=='Enter']"
+                            tabindex="0"
+                            {{ macros.tooltip_attributes('info', _('Remove the player from the event.'), 'left') }}
+                        >
+                            <i class="bi-trash-fill pe-1"></i>
+                            {{ _('Delete') }}
+                        </li>
+                    {% endif %}
+                </ul>
+            </span>
+        {% endif %}
     </td>
     <th scope="row" class="text-nowrap text-end w-1 index">
         {{ index }}
@@ -78,6 +87,7 @@
     {{ admin_macros.extra_admin_column_cell("check-in", player, admin_players_extra_columns)}}
     {% if 'check_in' in admin_players_filter_columns %}
         <td class="text-nowrap text-center">
+            {% set can_check_in=client.can_check_in_players_by_tournament_id[player.tournament_id] %}
             <i
                 {% if player.tournament.finished %}
                     class="bi-ban text-secondary"
@@ -92,20 +102,30 @@
                     class="bi-ban text-secondary"
                     {{ macros.tooltip_attributes('warning', _('Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s].', last_name=player.last_name, first_name=player.first_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
                 {% else %}
-                    {% if player.check_in %}
-                        class="bi-check-circle-fill text-success cursor-pointer"
-                        {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
-                        hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                    {% if can_check_in %}
+                        {% if player.check_in %}
+                            class="bi-check-circle-fill text-success cursor-pointer"
+                            {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                            hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                        {% else %}
+                            class="bi-circle-fill text-warning cursor-pointer"
+                            {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                            hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                        {% endif %}
+                        hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                        hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML,#players-table-empty-row:outerHTML"
+                        hx-indicator="#please-wait"
                     {% else %}
-                        class="bi-circle-fill text-warning cursor-pointer"
+                        {% if player.check_in %}
+                        class="bi-check-circle-fill text-success"
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to check-out the player.'), 'right') }}
+                    {% else %}
+                        class="bi-circle-fill text-warning"
                         {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                        hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                     {% endif %}
-                    hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                    hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML,#players-table-empty-row:outerHTML"
-                    hx-indicator="#please-wait"
                 {% endif %}
             ></i>
+            {% endif %}
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}
