@@ -142,7 +142,7 @@
                         {% if nav_tab.icon_class %}
                             <i class="{{ nav_tab.icon_class }}"></i>
                         {% endif %}
-                        <span class="expanded-only">{{ nav_tab.title }}</span>
+                        <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
                     </button>
                 </span>
             {% endwith %}
