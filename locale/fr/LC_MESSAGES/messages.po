@@ -101,6 +101,9 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
 msgstr[1] "(%(num)d écrans)"
 
+msgid "(See QR code)"
+msgstr "(voir le code QR)"
+
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -5508,3 +5511,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
