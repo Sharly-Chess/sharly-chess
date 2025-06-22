@@ -3678,7 +3678,7 @@ msgid "Relative performances for round"
 msgstr "Performances relatives pour la ronde"
 
 msgid "Relative performances for round #{round}"
-msgstr "Performances relatives – Ronde #{round}"
+msgstr "Performances relatives – Ronde n°{round}"
 
 msgid "Reload the page"
 msgstr "Recharger la page"
@@ -4549,7 +4549,7 @@ msgid "The timer displayed on the screens of the family."
 msgstr "Le chronomètre affiché sur les écrans de la famille."
 
 msgid "The tournament has not yet started."
-msgstr "e tournoi n'est pas encore commencé."
+msgstr "Le tournoi n'est pas encore commencé."
 
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
