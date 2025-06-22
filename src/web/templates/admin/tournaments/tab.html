@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block top_right_nav %}
-    {% if client.can_view_tournaments %}
+    {% if client.can_view_tournaments_tab %}
         {% with id='admin-tournaments-show-details', name='admin_tournaments_show_details', show=admin_tournaments_show_details %}
             <div
                 class="form-check form-switch d-inline-block pe-3 mt-2"
@@ -45,7 +45,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% if client.can_view_tournaments %}
+    {% if client.can_view_tournaments_tab %}
         <div class="row">
             {% if admin_event.tournaments_by_uniq_id %}
                 {% for tournament in admin_event.tournaments_by_uniq_id.values() %}

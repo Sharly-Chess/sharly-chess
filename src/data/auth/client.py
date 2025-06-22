@@ -419,6 +419,7 @@ class Client:
             Role.CHIEF_ARBITER,
         )
 
+    @property
     def can_update_tournament(
         self,
     ) -> bool:
@@ -427,12 +428,43 @@ class Client:
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
+    @property
     def can_delete_tournament(
         self,
     ) -> bool:
         """Returns true if the client can delete a tournament of the event."""
         return self._has_event_role(
             Role.CHIEF_ARBITER,
+        )
+
+    @property
+    def can_publish_results(
+        self,
+    ) -> bool:
+        """Returns true if the client can publish the results of tournaments (e.g.: to an external website)."""
+        return self._has_event_role(
+            Role.DEPUTY_CHIEF_ARBITER,
+        )
+
+    @property
+    def can_publish_rules(
+        self,
+    ) -> bool:
+        """Returns true if the client can publish the rules or tournaments (e.g.: to an external website)."""
+        return self._has_event_role(
+            Role.DEPUTY_CHIEF_ARBITER,
+        )
+
+    @property
+    def can_download_fees(
+        self,
+    ) -> bool:
+        """Returns true if the client can download the fees of tournaments (e.g.: from an external website)."""
+        return self._has_event_role(
+            [
+                Role.ORGANIZER,
+                Role.DEPUTY_CHIEF_ARBITER,
+            ]
         )
 
     @property
@@ -537,13 +569,11 @@ class Client:
             Role.DEPUTY_CHIEF_ARBITER,
         )
 
-    def can_edit_player(
+    def can_update_players(
         self,
-        tournament: Tournament,
     ) -> bool:
-        """Returns true if the client can ."""
-        return self._has_tournament_role(
-            tournament,
+        """Returns true if the client can update the players (including with local or remote databases)."""
+        return self._has_event_role(
             Role.DEPUTY_CHIEF_ARBITER,
         )
 

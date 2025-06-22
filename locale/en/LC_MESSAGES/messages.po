@@ -2795,6 +2795,9 @@ msgstr "Name"
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr "Name"
 
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Name"
+
 msgid "Name *** NAME FOR TABLE HEADER"
 msgstr "Name"
 
@@ -2954,6 +2957,9 @@ msgid "No password required"
 msgstr ""
 
 msgid "No password set for the results entry"
+msgstr ""
+
+msgid "No permissions"
 msgstr ""
 
 msgid "No phone defined."
@@ -3382,11 +3388,11 @@ msgstr ""
 msgid "Performance"
 msgstr ""
 
-msgid "Permissions"
-msgstr ""
-
 msgid "Performance *** PERF FOR TABULAR DISPLAY"
 msgstr "Rel. Perf."
+
+msgid "Permissions"
+msgstr ""
 
 msgid "Personal"
 msgstr ""
@@ -3929,6 +3935,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR PRINT VIEW"
 msgstr "Res."
 
+msgid "Res. ** RESULT FOR TABLE HEADER"
+msgstr ""
+
 msgid "Result"
 msgstr ""
 
@@ -3964,6 +3973,9 @@ msgstr ""
 
 msgid "Return to tournament"
 msgstr ""
+
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rk."
 
 msgid "Rk. *** RANK FOR TABLE HEADER"
 msgstr "Rk."
@@ -5631,10 +5643,19 @@ msgstr ""
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr ""
 
+msgid "You are not allowed to create tournaments."
+msgstr ""
+
+msgid "You are not allowed to delete the tournament."
+msgstr ""
+
 msgid "You are not allowed to delete this account."
 msgstr ""
 
 msgid "You are not allowed to delete this computer."
+msgstr ""
+
+msgid "You are not allowed to download fees."
 msgstr ""
 
 msgid "You are not allowed to duplicate this account."
@@ -5644,6 +5665,15 @@ msgid "You are not allowed to duplicate this computer."
 msgstr ""
 
 msgid "You are not allowed to grant/revoke this permission."
+msgstr ""
+
+msgid "You are not allowed to publish results."
+msgstr ""
+
+msgid "You are not allowed to publish rules."
+msgstr ""
+
+msgid "You are not allowed to update the tournament."
 msgstr ""
 
 msgid "You are not allowed to update this account."
@@ -5893,3 +5923,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+

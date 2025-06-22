@@ -2795,6 +2795,9 @@ msgstr "Nom"
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
 msgstr "Nom"
 
+msgid "Name *** NAME FOR PRINT VIEW"
+msgstr "Nom"
+
 msgid "Name *** NAME FOR TABLE HEADER"
 msgstr "Nom"
 
@@ -2955,6 +2958,9 @@ msgstr "Pas de mot de passe demandé"
 
 msgid "No password set for the results entry"
 msgstr "Aucun mot de passe pour la saisie des résultats"
+
+msgid "No permissions"
+msgstr "Aucune permission"
 
 msgid "No phone defined."
 msgstr "Téléphone non défini."
@@ -3926,8 +3932,11 @@ msgstr "La requête à la base de données a échoué."
 msgid "Request to the database failed: {error}."
 msgstr "La requête à la base de données a échoué : {error}."
 
+msgid "Res. ** RESULT FOR PRINT VIEW"
+msgstr "Rés."
+
 msgid "Res. ** RESULT FOR TABLE HEADER"
-msgstr "Res."
+msgstr "Rés."
 
 msgid "Result"
 msgstr "Résultat"
@@ -3964,6 +3973,9 @@ msgstr "Retourner à la page d'accueil"
 
 msgid "Return to tournament"
 msgstr "Retour au tournoi"
+
+msgid "Rk. *** RANK FOR PRINT VIEW"
+msgstr "Rg."
 
 msgid "Rk. *** RANK FOR TABLE HEADER"
 msgstr "Pl."
@@ -5631,11 +5643,20 @@ msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilè
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
+msgid "You are not allowed to create tournaments."
+msgstr "Vous n'êtes pas autorisé·e à créer des tournois."
+
+msgid "You are not allowed to delete the tournament."
+msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
+
 msgid "You are not allowed to delete this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
 
 msgid "You are not allowed to delete this computer."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
+
+msgid "You are not allowed to download fees."
+msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."
 
 msgid "You are not allowed to duplicate this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
@@ -5645,6 +5666,15 @@ msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
 
 msgid "You are not allowed to grant/revoke this permission."
 msgstr "Vous n'êtes pas autorisé·e à accorder/retirer cette permission."
+
+msgid "You are not allowed to publish results."
+msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
+
+msgid "You are not allowed to publish rules."
+msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
+
+msgid "You are not allowed to update the tournament."
+msgstr "Vous n'êtes pas autorisé·e à modifier le tournoi."
 
 msgid "You are not allowed to update this account."
 msgstr "Vous n'êtes pas autorisé·e à modifier ce compte."
@@ -5893,3 +5923,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
