@@ -349,7 +349,7 @@ msgstr ""
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
-msgid "Arbiter interface (private access)"
+msgid "Arbiter interface"
 msgstr ""
 
 msgid "Archived ({num})"
@@ -758,7 +758,7 @@ msgstr ""
 msgid "Clear all the filters."
 msgstr ""
 
-msgid "Click here to access the public screens of the events."
+msgid "Click here to access the screens that you have created."
 msgstr ""
 
 msgid "Click to check-in the player."
@@ -1675,9 +1675,6 @@ msgid "Event: {event_name}"
 msgstr ""
 
 msgid "Events"
-msgstr ""
-
-msgid "Events (public access)"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -5309,6 +5306,9 @@ msgstr ""
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr ""
 
+msgid "Your Screens"
+msgstr ""
+
 msgid "Your choice (by default {default}): "
 msgstr ""
 
@@ -5508,4 +5508,3 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
