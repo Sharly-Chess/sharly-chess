@@ -127,24 +127,32 @@
                     </th>
                 </thead>
                 <tbody>
-                    {% for role, permission in client.permissions_by_role.items() %}
-                        <tr>
-                            <td>
-                                {{ role.name }}
-                            </td>
-                            <td>
-                                {% if role.has_tournament_scope %}
-                                    {% if permission %}
-                                        {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission) }}
+                    {% if client.permissions_by_role %}
+                        {% for role, permission in client.permissions_by_role.items() %}
+                            <tr>
+                                <td>
+                                    {{ role.name }}
+                                </td>
+                                <td>
+                                    {% if role.has_tournament_scope %}
+                                        {% if permission %}
+                                            {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission) }}
+                                        {% else %}
+                                            {{ _('All the tournaments') }}
+                                        {% endif %}
                                     {% else %}
-                                        {{ _('All the tournaments') }}
+                                        {{ role.scope.name }}
                                     {% endif %}
-                                {% else %}
-                                    {{ role.scope.name }}
-                                {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="2">
+                                {{ _('No permissions') }}
                             </td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
