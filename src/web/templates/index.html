@@ -64,7 +64,10 @@
                             </th>
                             <td>
                                 {% if sharly_chess_config.lan_url %}
-                                    <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
+                                    <div class="d-flex gap-1 flex-column">
+                                        <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
+                                        <img src="/tmp/sharly_qr.png" alt="Sharly Chess QR code" class="pb-2" style="width: 100px" />
+                                    </div>
                                 {% else %}
                                     <span class="fst-italic">-</span>
                                 {% endif %}
