@@ -15,9 +15,11 @@
 .player-table .club { text-align: left; }
 .player-table .rank,
 .player-table .title,
-.player-table .rating { text-align: right; }
+.player-table .rating,
+.player-table .perf { text-align: right; }
 .player-table .category,
 .player-table .federation,
 .player-table .round,
 .player-table .points,
+.player-table .result,
 .player-table .tie-break { text-align: center; }
