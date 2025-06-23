@@ -253,18 +253,18 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
         return True
 
 
-class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
+class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
     @staticmethod
     def static_name() -> str:
-        return _('Relative performances for round')
+        return _('Round performance indicators')
 
     @staticmethod
     def static_id() -> str:
-        return 'round-relative-performances'
+        return 'round-performance-indicators'
 
     @property
     def title(self) -> str:
-        return _('Relative performances for round #{round}').format(
+        return _('Performance indicators for round #{round}').format(
             round=self.ranking_round
         )
 
@@ -291,15 +291,11 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
             pairing = player.pairings[ranking_round]
             if pairing.opponent_id and pairing.played:
                 opponent = self.tournament.players_by_id[pairing.opponent_id]
-                max_score = Result.GAIN.points(self.tournament.point_values)
-                fractional_score = round(
-                    pairing.result.points(self.tournament.point_values) / max_score, 2
+                expected_score = 1 / (
+                    1 + 10 ** ((opponent.rating - player.rating) / 400)
                 )
-                bonus = StaticUtils.performance_bonus(fractional_score)
-                tpr_for_round = StaticUtils.round_ranking(opponent.rating + bonus)
-                results.append(
-                    (player, opponent, pairing.result, tpr_for_round - player.rating)
-                )
+                rating_change = 20 * (pairing.result.points() - expected_score)
+                results.append((player, opponent, pairing.result, rating_change))
         return sorted(results, key=lambda p: -p[3])
 
     @staticmethod
@@ -337,7 +333,7 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         return {
             'tournament': self.tournament,
-            'performances': self.ordered_players,
+            'scores': self.ordered_players,
         }
 
 

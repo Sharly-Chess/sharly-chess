@@ -3170,8 +3170,8 @@ msgstr ""
 msgid "Performance"
 msgstr ""
 
-msgid "Performance *** PERF FOR TABULAR DISPLAY"
-msgstr "Rel. Perf."
+msgid "Performance indicators for round #{round}"
+msgstr ""
 
 msgid "Personal"
 msgstr ""
@@ -3674,12 +3674,6 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
-msgid "Relative performances for round"
-msgstr ""
-
-msgid "Relative performances for round #{round}"
-msgstr ""
-
 msgid "Reload the page"
 msgstr ""
 
@@ -3816,6 +3810,9 @@ msgstr ""
 msgid "Round numbers must be positive integers."
 msgstr ""
 
+msgid "Round performance indicators"
+msgstr ""
+
 msgid "Round skipped"
 msgstr ""
 
@@ -3870,6 +3867,9 @@ msgstr ""
 
 msgid "Score"
 msgstr ""
+
+msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
+msgstr "Score"
 
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
@@ -5511,3 +5511,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
