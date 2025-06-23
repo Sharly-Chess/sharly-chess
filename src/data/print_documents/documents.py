@@ -291,15 +291,11 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
             pairing = player.pairings[ranking_round]
             if pairing.opponent_id and pairing.played:
                 opponent = self.tournament.players_by_id[pairing.opponent_id]
-                perf = opponent.rating - player.rating
-                match pairing.result:
-                    case Result.GAIN:
-                        perf = opponent.rating + 400
-                    case Result.LOSS:
-                        perf = opponent.rating - 400
-                    case Result.DRAW:
-                        perf = opponent.rating
-                results.append((player, opponent, pairing.result, perf - player.rating))
+                expected_score = 1 / (
+                    1 + 10 ** ((opponent.rating - player.rating) / 400)
+                )
+                rating_change = 20 * (pairing.result.points() - expected_score)
+                results.append((player, opponent, pairing.result, rating_change))
         return sorted(results, key=lambda p: -p[3])
 
     @staticmethod
@@ -337,7 +333,7 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         return {
             'tournament': self.tournament,
-            'performances': self.ordered_players,
+            'deltas': self.ordered_players,
         }
 
 

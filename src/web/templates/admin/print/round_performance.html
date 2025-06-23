@@ -28,7 +28,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for (player, opponent, result, performance) in performances %}
+            {% for (player, opponent, result, delta) in deltas %}
                 {% with row_class='even' if loop.index is even else 'odd' %}
                     <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
                         <td class="rank">
@@ -41,7 +41,7 @@
                         <td class="title">{{ opponent.title.short_name }}</td>
                         <td class="name">{{ opponent.full_name }}</td>
                         <td class="rating">{{ opponent.rating_str }}</td>
-                        <td class="perf">{{ performance }}</td
+                        <td class="perf">{{"%+.2f" % delta }}</td
                     </tr>
                 {% endwith %}
             {% endfor %}
