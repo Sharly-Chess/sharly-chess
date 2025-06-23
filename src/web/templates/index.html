@@ -43,62 +43,37 @@
                         </ul>
                     </div>
                 </div>
-                <table class="table table-responsive table-sm border-black w-auto bg-light">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col" colspan="2">{{ _('Web access') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">
-                                {{ _('From the Sharly Chess server') }}
-                            </th>
-                            <td>
-                                <a href="{{ sharly_chess_config.local_url }}" target="_blank">{{ sharly_chess_config.local_url }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                {{ _('From the local network (LAN/WAN)') }}
-                            </th>
-                            <td>
-                                {% if sharly_chess_config.lan_url %}
-                                    <div class="d-flex gap-2 justify-content-between">
-                                        <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
-                                        <a
-                                            href=""
-                                            role="button"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target="#collapseExample"
-                                            aria-expanded="false"
-                                            aria-controls="collapseExample"
-                                        >
-                                            {{ _('(See QR code)') }}
-                                        </a>
-                                    </div>
-                                    <div class="collapse text-center" id="collapseExample">
-                                        <img
-                                                src="{{ url_for('qrcode-lan-url') }}?time={{ now }}"
-                                                alt="{{ _('Sharly Chess server URL') }}"
-                                                class="py-2"
-                                                style="width: 100px"
-                                                {{ macros.tooltip_attributes('info', _('Connect to the Sharly Chess server by scanning this QR code (and click below to get a printable version to easily connect your devices).'), 'left') }}
-                                        />
-                                        <br/>
-                                        <a
-                                                href="{{ url_for('qrcode-lan-url') }}?logo=&time={{ now }}"
-                                                target="_blank"
-                                        />({{ _('printable version') }})</a>
-                                    </div>
-                                {% else %}
-                                    <span class="fst-italic">-</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                {% if sharly_chess_config.lan_url %}
+                    <h4 class="text-center mt-4">
+                        {{ _('Connect your devices to the Sharly Chess server:') }}
+                        <br/>
+                        <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
+                        (<a
+                            href=""
+                            role="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#qr_code"
+                            aria-expanded="false"
+                            aria-controls="qr_code"
+                        >{{ _('QR code') }}</a>)
+                    </h4>
+                    <div class="collapse text-center" id="qr_code">
+                        <img
+                                src="{{ url_for('qrcode-lan-url') }}?time={{ now }}"
+                                alt="{{ _('Sharly Chess server URL') }}"
+                                class="py-2"
+                                style="width: 100px"
+                                {{ macros.tooltip_attributes('info', _('Connect your devices to the Sharly Chess server by scanning this QR code (and click below to get a printable version).'), 'right') }}
+                        />
+                        <br/>
+                        <a
+                                href="{{ url_for('qrcode-lan-url') }}?logo=&time={{ now }}"
+                                target="_blank"
+                        />({{ _('printable version') }})</a>
+                    </div>
+                {% endif %}
                 <div
+                    class="mt-4"
                     {% if admin_auth %}
                         {{ macros.tooltip_attributes('info', _('The arbiter interface allows the management of the events.'), 'right') }}
                     {% else %}
@@ -121,6 +96,7 @@
                     </button>
                 </div>
                 <div
+                    class="mt-2"
                     {{ macros.tooltip_attributes('info', _('Click here to access the screens that you have created.'), 'right') }}
                 >
                     <button

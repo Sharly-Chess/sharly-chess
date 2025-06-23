@@ -101,9 +101,6 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "(See QR code)"
-msgstr ""
-
 msgid "(by default)"
 msgstr ""
 
@@ -846,6 +843,12 @@ msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Comments"
 
 msgid "Configuration"
+msgstr ""
+
+msgid "Connect your devices to the Sharly Chess server by scanning this QR code (and click below to get a printable version)."
+msgstr ""
+
+msgid "Connect your devices to the Sharly Chess server:"
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -1993,12 +1996,6 @@ msgstr ""
 msgid "Frequency: {frequency}"
 msgstr ""
 
-msgid "From the Sharly Chess server"
-msgstr ""
-
-msgid "From the local network (LAN/WAN)"
-msgstr ""
-
 msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
@@ -2328,9 +2325,6 @@ msgid "Koya"
 msgstr ""
 
 msgid "Koya system"
-msgstr ""
-
-msgid "LAN/WAN URL: {lan_url}"
 msgstr ""
 
 msgid "Language"
@@ -3554,6 +3548,9 @@ msgstr ""
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
+msgid "QR code"
+msgstr ""
+
 msgid "Quit"
 msgstr ""
 
@@ -3962,6 +3959,9 @@ msgid "Sharly Chess offers a powerful and flexible prize management system to ha
 msgstr ""
 
 msgid "Sharly Chess project"
+msgstr ""
+
+msgid "Sharly Chess server URL"
 msgstr ""
 
 msgid "Sharly Chess settings"
@@ -5189,9 +5189,6 @@ msgstr ""
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr ""
 
-msgid "Web access"
-msgstr ""
-
 msgid "Web server not started yet ({ex}), waiting…"
 msgstr ""
 
@@ -5399,6 +5396,9 @@ msgstr ""
 msgid "players on {parts} screens"
 msgstr ""
 
+msgid "printable version"
+msgstr ""
+
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
@@ -5511,3 +5511,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
