@@ -46,7 +46,7 @@ class Prize:
         if not self.value and not self.is_monetary:
             return self.description
         currency_value = StaticUtils.currency_value_str(self.value, currency)
-        if not self.is_monetary:
+        if self.is_monetary:
             return currency_value
         value_str = _('value: {currency_value}').format(currency_value=currency_value)
         return f'{self.description} ({value_str})'

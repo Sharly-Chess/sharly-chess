@@ -628,6 +628,11 @@ class TournamentAdminController(BaseEventAdminController):
                     'previous_tournament': (
                         web_context.admin_tournament if action == 'create' else None
                     ),
+                    'add_other_active': (
+                        SessionHandler.get_session_admin_tournament_add_other_active(
+                            request
+                        )
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -808,6 +813,11 @@ class TournamentAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        add_other = 'add_other' in data
+        if action == 'create':
+            SessionHandler.set_session_admin_tournament_add_other_active(
+                request, add_other
+            )
         stored_tournament: StoredTournament = (
             self._admin_validate_tournament_update_data(action, web_context, data)
         )
@@ -917,7 +927,7 @@ class TournamentAdminController(BaseEventAdminController):
                 ).update_papi_database_from_stored_tournament()
             event_database.commit()
         event_loader.clear_cache(event_uniq_id)
-        if 'add_other' in data:
+        if add_other:
             return self._admin_event_tournaments_render(
                 request,
                 event_uniq_id=event_uniq_id,

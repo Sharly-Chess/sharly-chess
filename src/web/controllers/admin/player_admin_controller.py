@@ -838,6 +838,11 @@ class PlayerAdminController(BaseEventAdminController):
                         if action == 'create' and old_player_id
                         else None
                     ),
+                    'add_other_active': (
+                        SessionHandler.get_session_admin_player_add_other_active(
+                            request
+                        )
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -1144,6 +1149,9 @@ class PlayerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        add_other = 'add_other' in data
+        if action == 'create':
+            SessionHandler.set_session_admin_player_add_other_active(request, add_other)
         player: Player = self._admin_validate_player_update_data(
             action, web_context, data
         )
@@ -1237,7 +1245,7 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament.id, player_papi_id
                 )
                 self.set_players_search_results(request, event_uniq_id)
-                if 'add_other' in data:
+                if add_other:
                     return self._admin_event_players_render(
                         request,
                         event_uniq_id=event_uniq_id,
