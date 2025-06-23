@@ -78,7 +78,18 @@
                                         </a>
                                     </div>
                                     <div class="collapse text-center" id="collapseExample">
-                                        <img src="{{ url_for('qrcode-lan-url') }}" alt="Sharly Chess QR code" class="py-2" style="width: 200px" />
+                                        <img
+                                                src="{{ url_for('qrcode-lan-url') }}?time={{ now }}"
+                                                alt="{{ _('Sharly Chess server URL') }}"
+                                                class="py-2"
+                                                style="width: 100px"
+                                                {{ macros.tooltip_attributes('info', _('Connect to the Sharly Chess server by scanning this QR code (and click below to get a printable version to easily connect your devices).'), 'left') }}
+                                        />
+                                        <br/>
+                                        <a
+                                                href="{{ url_for('qrcode-lan-url') }}?logo=&time={{ now }}"
+                                                target="_blank"
+                                        />({{ _('printable version') }})</a>
                                     </div>
                                 {% else %}
                                     <span class="fst-italic">-</span>
