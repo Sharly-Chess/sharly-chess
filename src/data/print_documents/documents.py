@@ -291,15 +291,15 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
             pairing = player.pairings[ranking_round]
             if pairing.opponent_id and pairing.played:
                 opponent = self.tournament.players_by_id[pairing.opponent_id]
-                max_score = Result.GAIN.points(self.tournament.point_values)
-                fractional_score = round(
-                    pairing.result.points(self.tournament.point_values) / max_score, 2
-                )
-                bonus = StaticUtils.performance_bonus(fractional_score)
-                tpr_for_round = StaticUtils.round_ranking(opponent.rating + bonus)
-                results.append(
-                    (player, opponent, pairing.result, tpr_for_round - player.rating)
-                )
+                perf = opponent.rating - player.rating
+                match pairing.result:
+                    case Result.GAIN:
+                        perf = opponent.rating + 400
+                    case Result.LOSS:
+                        perf = opponent.rating - 400
+                    case Result.DRAW:
+                        perf = opponent.rating
+                results.append((player, opponent, pairing.result, perf - player.rating))
         return sorted(results, key=lambda p: -p[3])
 
     @staticmethod
