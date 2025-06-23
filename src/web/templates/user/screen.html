@@ -22,29 +22,6 @@
                 {% endif %}
             </script>
         {% endif %}
-        {% if not rotator and not display_controller %}
-            {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
-            {% if menu_screens %}
-                <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
-                    {% for entry in menu_screens %}
-                        {% if entry.menu_label is not none %}
-                            <a
-                                class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
-                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
-                                preload
-                                hx-target="body"
-                                hx-push-url="true"
-                                hx-indicator="#please-wait"
-                            >{{ entry.menu_label }}</a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endif %}
-        {% if screen.timer %}
-            <!-- timer.html -->
-            {% include 'screen/timer.html' %}
-        {% endif %}
         {% if display_controller %}
             <div
                 class="refresher display-controller-refresher"
@@ -96,6 +73,34 @@
 {% endblock %}
 
 {% block content %}
+    {% if not rotator and not display_controller %}
+        {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
+        <div id="top-nav-wrapper">
+            <div id="top-nav-content">
+                {% if menu_screens %}
+                    <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
+                        {% for entry in menu_screens %}
+                            {% if entry.menu_label is not none %}
+                                <a
+                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
+                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
+                                    preload
+                                    hx-target="body"
+                                    hx-push-url="true"
+                                    hx-indicator="#please-wait"
+                                >{{ entry.menu_label }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if screen.timer %}
+                    <!-- timer.html -->
+                {% include 'screen/timer.html' %}
+            {% endif %}
+        </div>
+    {% endif %}
     <div
         id="user-screen-content"
         class="content user-content user-screen-content"

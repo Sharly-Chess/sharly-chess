@@ -101,6 +101,9 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "(See QR code)"
+msgstr ""
+
 msgid "(by default)"
 msgstr ""
 
@@ -3929,7 +3932,7 @@ msgstr ""
 msgid "Request to the database failed: {error}."
 msgstr ""
 
-msgid "Res. ** RESULT FOR PRINT VIEW"
+msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
 msgid "Res. ** RESULT FOR TABLE HEADER"

@@ -2,7 +2,7 @@
 
 {% block content %}
     <div id="home-content" class="content home-content mt-5">
-        <div style="max-width: 500px; margin: auto;">
+        <div style="max-width: 550px; margin: auto;">
             <div class="d-grid gap-2 col-auto mx-auto">
                 <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
                 <div
@@ -64,7 +64,22 @@
                             </th>
                             <td>
                                 {% if sharly_chess_config.lan_url %}
-                                    <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
+                                    <div class="d-flex gap-2 justify-content-between">
+                                        <a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>
+                                        <a
+                                            href=""
+                                            role="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapseExample"
+                                            aria-expanded="false"
+                                            aria-controls="collapseExample"
+                                        >
+                                            {{ _('(See QR code)') }}
+                                        </a>
+                                    </div>
+                                    <div class="collapse" id="collapseExample">
+                                        <img src="/tmp/sharly_qr.png" alt="Sharly Chess QR code" class="py-2" style="width: 100px" />
+                                    </div>
                                 {% else %}
                                     <span class="fst-italic">-</span>
                                 {% endif %}
