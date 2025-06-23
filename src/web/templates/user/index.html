@@ -1,18 +1,20 @@
 {% extends 'common/base.html' %}
 
 {% block user_header_back_button %}
-    <button
-        class="btn btn-link link-dark fs-3 fw-bold px-1 py-0"
-        hx-get="{{ url_for('index') }}"
-        preload
-        hx-target="body"
-        hx-push-url="true"
-        hx-trigger="click, keyup[key=='Escape'] from:body"
-        hx-indicator="#please-wait"
-        {{ macros.tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
-    >
-        <i class="bi-house-fill"></i>
-    </button>
+    {% if admin_auth %}
+        <button
+            class="btn btn-link link-dark fs-3 fw-bold px-1 py-0"
+            hx-get="{{ url_for('index') }}"
+            preload
+            hx-target="body"
+            hx-push-url="true"
+            hx-trigger="click, keyup[key=='Escape'] from:body"
+            hx-indicator="#please-wait"
+            {{ macros.tooltip_attributes('info', _('Go back to the home page.'), 'top') }}
+        >
+            <i class="bi-house-fill"></i>
+        </button>
+    {% endif %}
 {% endblock user_header_back_button %}
 
 {% block user_header_refresher %}

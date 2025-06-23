@@ -101,9 +101,6 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
 msgstr[1] "(%(num)d écrans)"
 
-msgid "(See QR code)"
-msgstr "(voir le code QR)"
-
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -847,6 +844,12 @@ msgstr "Commentaires"
 
 msgid "Configuration"
 msgstr "Configuration"
+
+msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgstr "Connectez vos appareils (ordinateurs, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
+
+msgid "Connect your devices to the Sharly Chess server:"
+msgstr "Connectez vos appareils au serveur Sharly Chess :"
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
@@ -1993,12 +1996,6 @@ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche d
 msgid "Frequency: {frequency}"
 msgstr "Fréquence : {frequency}"
 
-msgid "From the Sharly Chess server"
-msgstr "Depuis le serveur Sharly Chess"
-
-msgid "From the local network (LAN/WAN)"
-msgstr "Depuis le réseau local (LAN/WAN)"
-
 msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre ordinateur principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
@@ -2329,9 +2326,6 @@ msgstr "Koya"
 
 msgid "Koya system"
 msgstr "Système Koya"
-
-msgid "LAN/WAN URL: {lan_url}"
-msgstr "URL LAN/WAN : {lan_url}"
 
 msgid "Language"
 msgstr "Langue"
@@ -3554,6 +3548,9 @@ msgstr "Écran public"
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
+msgid "QR code"
+msgstr "code QR"
+
 msgid "Quit"
 msgstr "Quitter"
 
@@ -3963,6 +3960,9 @@ msgstr "Sharly Chess propose un système de gestion des prix puissant et flexibl
 
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
+
+msgid "Sharly Chess server URL"
+msgstr "URL du serveur Sharly Chess"
 
 msgid "Sharly Chess settings"
 msgstr "Configuration de Sharly Chess"
@@ -5189,9 +5189,6 @@ msgstr "Attention : la suppression d'un évènement est définitive !"
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
 
-msgid "Web access"
-msgstr "Accès web"
-
 msgid "Web server not started yet ({ex}), waiting…"
 msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter…"
 
@@ -5398,6 +5395,9 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 
 msgid "players on {parts} screens"
 msgstr "joueur·euses sur {parts} écrans"
+
+msgid "printable version"
+msgstr "version imprimable"
 
 msgid "ranking from #{first} to #{last}"
 msgstr "classement de {first} à {last}"
