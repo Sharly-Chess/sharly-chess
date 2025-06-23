@@ -42,6 +42,7 @@ from web.controllers.admin.tournament_admin_controller import TournamentAdminCon
 from web.controllers.admin.account_admin_controller import AccountAdminController
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
+from web.controllers.qrcode_controller import QRCodeController
 from web.controllers.search.fide_search_controller import FideSearchController
 from web.controllers.user.event_user_controller import EventUserController
 from web.controllers.user.index_user_controller import IndexUserController
@@ -90,6 +91,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     PlayerAdminController,
     DisplayControllerAdminController,
     FideSearchController,
+    QRCodeController,
     AccountAdminController,
     ComputerAdminController,
     ProfileController,
