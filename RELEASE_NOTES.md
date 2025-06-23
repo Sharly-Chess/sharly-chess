@@ -9,6 +9,8 @@ English version below
 
 ## Interface web
 
+- Ajout d'un QR code sur la page d'accueil pour faciliter la connexion des clients (2.8.0)
+
 ### Gestion des joueur·euses
 
 - Ajout du genre sur les impressions des joueur·euses (2.8.0)
@@ -39,6 +41,8 @@ English version below
 - Recover the players database files when upgrading (2.8.0)
 
 ## Web interface
+
+- Added a QR code to ease the connection of devices (2.8.0)
 
 # Players management
 
