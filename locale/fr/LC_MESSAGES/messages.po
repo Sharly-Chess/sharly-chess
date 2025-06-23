@@ -845,11 +845,11 @@ msgstr "Commentaires"
 msgid "Configuration"
 msgstr "Configuration"
 
-msgid "Connect your devices to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
-msgstr "Connectez vis clients au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
+msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgstr "Connectez vos appareils (ordinateurs, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
 
 msgid "Connect your devices to the Sharly Chess server:"
-msgstr "Connectez vos clients au serveur Sharly Chess :"
+msgstr "Connectez vos appareils au serveur Sharly Chess :"
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"

@@ -845,7 +845,7 @@ msgstr "Comments"
 msgid "Configuration"
 msgstr ""
 
-msgid "Connect your devices to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
 msgstr ""
 
 msgid "Connect your devices to the Sharly Chess server:"
