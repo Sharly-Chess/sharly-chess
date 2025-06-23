@@ -1,372 +1,385 @@
-<div id="top-nav-wrapper">
-    <div id="top-nav-content">
-        {{ admin_macros.admin_title(_('Pairings'), 'pairings') }}
-        <div class="flex-grow-1"></div>
-        {% if admin_tournament %}
-            {% include '/admin/pairings/round_controls.html' %}
-        {% endif %}
-    </div>
-</div>
-
-{% if admin_tournament %}
-    <div
-        hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
-        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
-    <div
-        hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
-        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}""
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
-    {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
-
-    {{ macros.refresh_listener(
-        hx_get=url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
-        hx_include="[name='round']"
-    ) }}
-
-    <div class="container-fluid">
-        <div class="pt-1 pb-1 row">
-            {% if has_unpaired %}
-                <div class="col-12 col-lg-3"></div>
+{% if client.can_view_players_tab %}
+    <div id="top-nav-wrapper">
+        <div id="top-nav-content">
+            {{ admin_macros.admin_title(_('Pairings'), 'pairings') }}
+            <div class="flex-grow-1"></div>
+            {% if admin_tournament %}
+                {% include '/admin/pairings/round_controls.html' %}
             {% endif %}
-            <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} d-flex gap-2 align-items-end">
-                <div class="flex-grow-1">
-                    {% if safety_mode != 'SAFE' %}
-                        <i
-                            class="text-danger bi bi-exclamation-triangle-fill fs-4"
-                            {{ macros.tooltip_attributes('warning', _('You are in an unsafe editing mode. Change the round to exit this mode.'), 'right') }}
-                        ></i>
-                    {% endif %}
-                </div>
-                <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
-                    {% if admin_tournament.check_in_open %}
-                        <button
-                            class="btn btn-outline-primary text-nowrap"
-                            hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                            hx-trigger="click"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            preload
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                            {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
-                        >
-                            {{ _('Close check in') }}
-                        </button>
-                    {% endif %}
-                    {% include admin_tournament.pairing_system.pairing_buttons_template %}
-                    {% if admin_boards %}
-                        {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
-                            <div class="btn-group">
-                                <button
-                                    class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
-                                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                    hx-vals='{"{{ name }}": false }'
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ _('All') }}
-                                </button>
-                                <button
-                                    class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
-                                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                    hx-vals='{"{{ name }}": true }'
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ _('In play') }}
-                                </button>
-                            </div>
-                        {% endwith %}
+        </div>
+    </div>
 
-                        <div class="d-flex flex-column">
-                            <div style="font-size: 0.8rem;">
-                                {{ _('Keyboard shortcuts:') }}
-                                <i
-                                    class="bi-info-circle-fill ps-1"
-                                    {{ macros.tooltip_attributes(
-                                        '',
-                                        '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
-                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
-                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
-                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
-                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
-                                            '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
-                                        '</div>',
-                                        'top',
-                                    ) }}
-                                ></i>
-                            </div>
-                            {% with action='RESULT_UPDATE' %}
+    {% if admin_tournament %}
+        <div
+            hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
+            hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+        <div
+            hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
+            hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}""
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+        {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
+
+        {{ macros.refresh_listener(
+            hx_get=url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
+            hx_include="[name='round']"
+        ) }}
+
+        <div class="container-fluid">
+            <div class="pt-1 pb-1 row">
+                {% if has_unpaired %}
+                    <div class="col-12 col-lg-3"></div>
+                {% endif %}
+                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} d-flex gap-2 align-items-end">
+                    <div class="flex-grow-1">
+                        {% if safety_mode != 'SAFE' %}
+                            <i
+                                class="text-danger bi bi-exclamation-triangle-fill fs-4"
+                                {{ macros.tooltip_attributes('warning', _('You are in an unsafe editing mode. Change the round to exit this mode.'), 'right') }}
+                            ></i>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
+                        {% if admin_tournament.check_in_open %}
+                            <span
+                                {% if client.can_open_close_check_in %}
+                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+                                {% else %}
+                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to open/close check-in.'), 'top') }}
+                                {% endif %}
+                            >
+                                <button
+                                    class="btn btn-outline-primary text-nowrap"
+                                    {% if not client.can_open_close_check_in %}
+                                        disabled
+                                    {% else %}
+                                        hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                                        hx-trigger="click"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        preload
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-wrapper"
+                                    {% endif %}
+                                >
+                                    {{ _('Close check in') }}
+                                </button>
+                            </span>
+                        {% endif %}
+                        {% include admin_tournament.pairing_system.pairing_buttons_template %}
+                        {% if admin_boards %}
+                            {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
                                 <div class="btn-group">
-                                    <span
-                                        {{ macros.tooltip_attributes(
-                                            'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
-                                        ) }}
-                                    >
-                                        <button
-                                            id="overwrite-mode"
-                                            {% if action in allowed_actions %}
-                                                class="btn btn-outline-primary active"
-                                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                                            {% else %}
-                                                class="btn btn-outline-primary"
-                                                hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
-                                                hx-trigger="click"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                                hx-indicator="#please-wait"
-                                                hx-target="body"
-                                                preload
-                                            {% endif %}
-                                        >
-                                            {{ _('Overwrite') }}
-                                        </button>
-                                    </span>
                                     <button
-                                        id="highlight-mode"
-                                        class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
-                                        hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            _(
-                                                'Highlights the row if the new result is different '
-                                                'when using the keyboard shortcuts '
-                                                '(useful when re-entering all the results for verification).'
-                                            ),
-                                            'top'
-                                        ) }}
+                                        class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
+                                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                                        hx-vals='{"{{ name }}": false }'
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
                                     >
-                                        {{ _('Highlight') }}
+                                        {{ _('All') }}
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
+                                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                                        hx-vals='{"{{ name }}": true }'
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        {{ _('In play') }}
                                     </button>
                                 </div>
                             {% endwith %}
-                        </div>
-                    {% endif %}
+
+                            <div class="d-flex flex-column">
+                                <div style="font-size: 0.8rem;">
+                                    {{ _('Keyboard shortcuts:') }}
+                                    <i
+                                        class="bi-info-circle-fill ps-1"
+                                        {{ macros.tooltip_attributes(
+                                            '',
+                                            '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
+                                            '</div>',
+                                            'top',
+                                        ) }}
+                                    ></i>
+                                </div>
+                                {% with action='RESULT_UPDATE' %}
+                                    <div class="btn-group">
+                                        <span
+                                            {{ macros.tooltip_attributes(
+                                                'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
+                                            ) }}
+                                        >
+                                            <button
+                                                id="overwrite-mode"
+                                                {% if action in allowed_actions %}
+                                                    class="btn btn-outline-primary active"
+                                                    hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
+                                                {% else %}
+                                                    class="btn btn-outline-primary"
+                                                    hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                                                    hx-trigger="click"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modal-wrapper"
+                                                    hx-indicator="#please-wait"
+                                                    hx-target="body"
+                                                    preload
+                                                {% endif %}
+                                            >
+                                                {{ _('Overwrite') }}
+                                            </button>
+                                        </span>
+                                        <button
+                                            id="highlight-mode"
+                                            class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
+                                            hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
+                                            {{ macros.tooltip_attributes(
+                                                'info',
+                                                _(
+                                                    'Highlights the row if the new result is different '
+                                                    'when using the keyboard shortcuts '
+                                                    '(useful when re-entering all the results for verification).'
+                                                ),
+                                                'top'
+                                            ) }}
+                                        >
+                                            {{ _('Highlight') }}
+                                        </button>
+                                    </div>
+                                {% endwith %}
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
-            {% if has_unpaired %}
-                <div class="col-12 col-lg-3 mb-3">
-                    {% if admin_unpaired|length > 0 %}
-                        {% with title=_('Unpaired'), unpaired=admin_unpaired %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
-                    {% endif %}
-
-                    {% if admin_bye_players|length > 0 %}
-                        {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
-                    {% endif %}
-                </div>
-            {% endif %}
-
-            <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} mb-3">
-                <table
-                    id="pairings-table"
-                    class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
-                >
-                    <thead
-                        id="players-table-header"
-                        class="position-sticky z-2"
-                        style="top: var(--header-height);"
-                    >
-                        <tr>
-                            <th>{{ _('Board') }}</th>
-                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                            {% if admin_tournament.print_real_points %}
-                                <th>&nbsp;</th>
-                            {% endif %}
-                            <th>{{ _('White') }}</th>
-                            <th class="text-center">{{ _('Result') }}</th>
-                            <th>{{ _('Black') }}</th>
-                            {% if admin_tournament.print_real_points %}
-                                <th>&nbsp;</th>
-                            {% endif %}
-                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for board in admin_filtered_boards %}
-                            {% with wp=board.white_player, bp=board.black_player %}
-                                {% include '/admin/pairings/pairing_row.html' %}
+                {% if has_unpaired %}
+                    <div class="col-12 col-lg-3 mb-3">
+                        {% if admin_unpaired|length > 0 %}
+                            {% with title=_('Unpaired'), unpaired=admin_unpaired %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        {% endif %}
+
+                        {% if admin_bye_players|length > 0 %}
+                            {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} mb-3">
+                    <table
+                        id="pairings-table"
+                        class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+                    >
+                        <thead
+                            id="players-table-header"
+                            class="position-sticky z-2"
+                            style="top: var(--header-height);"
+                        >
+                            <tr>
+                                <th>{{ _('Board') }}</th>
+                                <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+                                {% if admin_tournament.print_real_points %}
+                                    <th>&nbsp;</th>
+                                {% endif %}
+                                <th>{{ _('White') }}</th>
+                                <th class="text-center">{{ _('Result') }}</th>
+                                <th>{{ _('Black') }}</th>
+                                {% if admin_tournament.print_real_points %}
+                                    <th>&nbsp;</th>
+                                {% endif %}
+                                <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for board in admin_filtered_boards %}
+                                {% with wp=board.white_player, bp=board.black_player %}
+                                    {% include '/admin/pairings/pairing_row.html' %}
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-    <script>
-        var pairing_board_id = null;
-        var keyQueue = [];
-        var requestInFlight = false;
+        <script>
+            var pairing_board_id = null;
+            var keyQueue = [];
+            var requestInFlight = false;
 
-        function scrollToTargetAdjusted(element) {
-            const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
-            const tableHeaderHeight = $('#players-table-header').height();
-            const scrollTop = $(window).scrollTop();
-            const rect = element.getBoundingClientRect();
-            const elementTop = rect.top + scrollTop;
-            const elementBottom = rect.bottom + scrollTop;
-            const viewportTop = scrollTop + headerHeight + tableHeaderHeight;
-            const viewportBottom = scrollTop + $(window).height();
+            function scrollToTargetAdjusted(element) {
+                const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
+                const tableHeaderHeight = $('#players-table-header').height();
+                const scrollTop = $(window).scrollTop();
+                const rect = element.getBoundingClientRect();
+                const elementTop = rect.top + scrollTop;
+                const elementBottom = rect.bottom + scrollTop;
+                const viewportTop = scrollTop + headerHeight + tableHeaderHeight;
+                const viewportBottom = scrollTop + $(window).height();
 
-            // Test if the element is fully visible on the screen
-            if (elementTop < viewportTop) {
-                window.scrollTo({
-                    top: elementTop - headerHeight - tableHeaderHeight,
-                    behavior: "smooth"
-                });
-            } else if (elementBottom > (viewportBottom)) {
-                element.scrollIntoView({ behavior: "smooth", block: "end" });
+                // Test if the element is fully visible on the screen
+                if (elementTop < viewportTop) {
+                    window.scrollTo({
+                        top: elementTop - headerHeight - tableHeaderHeight,
+                        behavior: "smooth"
+                    });
+                } else if (elementBottom > (viewportBottom)) {
+                    element.scrollIntoView({ behavior: "smooth", block: "end" });
+                }
             }
-        }
 
-        function highlightBoard(board_id, with_warning) {
-            $("tr.highlight").removeClass("highlight");
-            $("tr.highlight-warning").removeClass("highlight-warning");
-            if (board_id) {
-                $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
-                $(`[data-board-id="${board_id}"]`).removeClass("text-secondary");
-                pairing_board_id = board_id;
-                scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
-            } else {
-                pairing_board_id = null;
-            }
-        }
-
-        function rowClickHandler(e) {
-            var $this = $(this);
-            highlightBoard($this.parent().data("board-id"), false);
-        };
-
-        function hasErrorRow() {
-            return $("tr.highlight-warning").length > 0
-        }
-
-        function processNextKey() {
-            if (requestInFlight || keyQueue.length === 0 || hasErrorRow()) return;
-
-            requestInFlight = true;
-            const { code, pairing_board_id: board_id } = keyQueue.shift();
-
-            htmx.ajax('PUT',
-                "{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}",
-                {
-                    target: "body",
-                    swap: "outerHTML",
-                    values: {
-                        key: code,
-                        board_id: board_id || 0,
-                        validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
-                    },
-                },
-            );
-        }
-
-        function handleShortCutKey(code) {
-            if (hasErrorRow()) {
-                // If there is a warning, do not process the key
-                keyQueue = [];
+            function highlightBoard(board_id, with_warning) {
                 $("tr.highlight").removeClass("highlight");
-                return;
-            }
-            keyQueue.push({ code, pairing_board_id });
-            $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
-            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
-            if (nextBoardId) {
-                highlightBoard(nextBoardId, false);
-            }
-            processNextKey();
-        }
-
-        function keydownHandler(e) {
-            if ($('#pairings-table').length === 0) {
-                // The event listener is active, but the page has changed
-                return;
+                $("tr.highlight-warning").removeClass("highlight-warning");
+                if (board_id) {
+                    $(`[data-board-id="${board_id}"]`).addClass("highlight" + (with_warning ? " highlight-warning" : ""));
+                    $(`[data-board-id="${board_id}"]`).removeClass("text-secondary");
+                    pairing_board_id = board_id;
+                    scrollToTargetAdjusted($(`[data-board-id="${board_id}"]`)[0]);
+                } else {
+                    pairing_board_id = null;
+                }
             }
 
-            if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
-                e.preventDefault();
+            function rowClickHandler(e) {
+                var $this = $(this);
+                highlightBoard($this.parent().data("board-id"), false);
+            };
 
-                var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
-                if (!$row.length) {
+            function hasErrorRow() {
+                return $("tr.highlight-warning").length > 0
+            }
+
+            function processNextKey() {
+                if (requestInFlight || keyQueue.length === 0 || hasErrorRow()) return;
+
+                requestInFlight = true;
+                const { code, pairing_board_id: board_id } = keyQueue.shift();
+
+                htmx.ajax('PUT',
+                    "{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}",
+                    {
+                        target: "body",
+                        swap: "outerHTML",
+                        values: {
+                            key: code,
+                            board_id: board_id || 0,
+                            validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
+                        },
+                    },
+                );
+            }
+
+            function handleShortCutKey(code) {
+                if (hasErrorRow()) {
+                    // If there is a warning, do not process the key
+                    keyQueue = [];
+                    $("tr.highlight").removeClass("highlight");
                     return;
                 }
-                var $next_row = $row.next();
-                var $prev_row = $row.prev();
+                keyQueue.push({ code, pairing_board_id });
+                $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
+                nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
+                if (nextBoardId) {
+                    highlightBoard(nextBoardId, false);
+                }
+                processNextKey();
+            }
 
-                // Highlight the next/previous row
-                if (e.key === "ArrowUp" && $prev_row.length) {
-                    highlightBoard($prev_row.data("board-id"), false);
-                } else if (e.key === "ArrowDown" && $next_row.length) {
-                    highlightBoard($next_row.data("board-id"), false);
+            function keydownHandler(e) {
+                if ($('#pairings-table').length === 0) {
+                    // The event listener is active, but the page has changed
+                    return;
+                }
+
+                if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
+                    e.preventDefault();
+
+                    var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
+                    if (!$row.length) {
+                        return;
+                    }
+                    var $next_row = $row.next();
+                    var $prev_row = $row.prev();
+
+                    // Highlight the next/previous row
+                    if (e.key === "ArrowUp" && $prev_row.length) {
+                        highlightBoard($prev_row.data("board-id"), false);
+                    } else if (e.key === "ArrowDown" && $next_row.length) {
+                        highlightBoard($next_row.data("board-id"), false);
+                    }
+                }
+
+                if (!pairing_board_id || hasErrorRow()) return;
+
+                const code = event.code;
+                const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
+                if (validCodes.includes(code)) {
+                    event.preventDefault();
+                    handleShortCutKey(code);
+                }
+            };
+
+            function highlightBoardWithError(board_id) {
+                highlightBoard(board_id, true);
+
+                // Remove the text-secondary class from all rows that were queued
+                while (keyQueue.length > 0) {
+                    const { pairing_board_id: board_id } = keyQueue.shift();
+                    $('#pairing-row-' + board_id + ' td').removeClass('text-secondary')
                 }
             }
 
-            if (!pairing_board_id || hasErrorRow()) return;
+            function afterSwapHandler(e) {
+                $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
 
-            const code = event.code;
-            const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
-            if (validCodes.includes(code)) {
-                event.preventDefault();
-                handleShortCutKey(code);
+                // If we've swapped a row element, process the next key
+                if (e.detail.elt?.dataset?.boardId) {
+                    requestInFlight = false;
+                    processNextKey();
+                }
             }
-        };
 
-        function highlightBoardWithError(board_id) {
-            highlightBoard(board_id, true);
-
-            // Remove the text-secondary class from all rows that were queued
-            while (keyQueue.length > 0) {
-                const { pairing_board_id: board_id } = keyQueue.shift();
-                $('#pairing-row-' + board_id + ' td').removeClass('text-secondary')
+            function beforeSwapHandler(e) {
+                $("tr.pairing-row > td").off("click.pairings");
             }
-        }
 
-        function afterSwapHandler(e) {
-            $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
+            $(document).ready(function() {
+                $(document).off("keydown.pairings");
+                $(document).off("click.pairings");
+                $(document).off("htmx:beforeSwap.pairings");
+                $(document).off("htmx:afterSwap.pairings");
+                $(document).off("highlight_board_with_warning.pairings");
 
-            // If we've swapped a row element, process the next key
-            if (e.detail.elt?.dataset?.boardId) {
-                requestInFlight = false;
-                processNextKey();
-            }
-        }
-
-        function beforeSwapHandler(e) {
-            $("tr.pairing-row > td").off("click.pairings");
-        }
-
-        $(document).ready(function() {
-            $(document).off("keydown.pairings");
-            $(document).off("click.pairings");
-            $(document).off("htmx:beforeSwap.pairings");
-            $(document).off("htmx:afterSwap.pairings");
-            $(document).off("highlight_board_with_warning.pairings");
-
-            $(document).on("keydown.pairings", keydownHandler);
-            $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
-            $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
-            $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
-            $(document).on("highlight_board_with_warning.pairings", function(e) {
-                highlight
-                BoardWithError(e.detail.board_id);
+                $(document).on("keydown.pairings", keydownHandler);
+                $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
+                $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
+                $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
+                $(document).on("highlight_board_with_warning.pairings", function(e) {
+                    highlight
+                    BoardWithError(e.detail.board_id);
+                });
             });
-        });
-    </script>
-{% else %}
-    <div class="mx-auto" style="max-width: 500px;">
-        <h5 class="mt-2 my-5 text-center">
-            {{ _('No pairings.') }}
-        </h5>
-    </div>
-{% endif%}
+        </script>
+    {% else %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="mt-2 my-5 text-center">
+                {{ _('No pairings.') }}
+            </h5>
+        </div>
+    {% endif %}
+{% endif %}

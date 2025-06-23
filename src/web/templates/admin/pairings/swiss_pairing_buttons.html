@@ -8,28 +8,30 @@
     {% with action='FULL_PAIRING' %}
         {% if action in existing_actions %}
             <div
-                {{ macros.tooltip_attributes(
-                    'info',
-                    pairings_generation_disabled_message
-                    or _('Generate pairings for this round.'),
-                    'top',
-                ) }}
+                {% if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] %}
+                    {{ macros.tooltip_attributes('warning', _('You are not allowed to generate the pairings.'), 'top') }}
+                {% elif pairings_generation_disabled_message %}
+                    {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
+                {% else %}
+                    {{ macros.tooltip_attributes('info', _('Generate pairings for this round.'), 'top') }}
+                {% endif %}
             >
                 <button
                     class="btn btn-outline-primary text-nowrap"
-                    {% if admin_round != 1 %}
-                        hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    {% else %}
-                        hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                        hx-trigger="click"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% endif %}
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {% if pairings_generation_disabled_message %}
+                    {% if not client.client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] or pairings_generation_disabled_message %}
                         disabled
+                    {% else %}
+                        {% if admin_round != 1 %}
+                            hx-post="{{ url_for('admin-generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        {% else %}
+                            hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                            hx-trigger="click"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        {% endif %}
+                        hx-target="body"
+                        hx-indicator="#please-wait"
                     {% endif %}
                 >
                     <i class="bi-shuffle pe-1"></i>
@@ -41,16 +43,18 @@
     {% with action='FULL_UNPAIRING' %}
         {% if action in existing_actions %}
             {% set allowed=not admin_tournament.round_has_result(admin_round) %}
-            <div {{ macros.tooltip_attributes(
-                    'info',
-                    _('Unpair all the boards of this round.')
-                    if allowed else
-                    _('Unpairing all the boards of this round is not allowed because the round has results.'),
-                    'top') }}
+            <div
+                {% if not client.can_unpair_round_by_tournament_id[admin_tournament.id] %}
+                    {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}
+                {% elif allowed %}
+                    {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}
+                {% else %}
+                    {{ macros.tooltip_attributes('warning', _('Unpairing all the boards of this round is not possible because the round has results.'), 'top') }}
+                {% endif %}
             >
                 <button
                     class="btn btn-outline-primary text-nowrap"
-                    {% if not allowed %}
+                    {% if not client.can_unpair_round_by_tournament_id[admin_tournament.id] or not allowed %}
                         disabled
                     {% else %}
                         {% if action in allowed_actions %}

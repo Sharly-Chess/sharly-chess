@@ -670,7 +670,7 @@ msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
 msgid "Byes *** Players with byes"
-msgstr "Byes"
+msgstr ""
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -949,6 +949,9 @@ msgid "Configuration"
 msgstr ""
 
 msgid "Connect"
+msgstr ""
+
+msgid "Connect to the Sharly Chess server by scanning this QR code (and click below to get a printable version to easily connect your devices)."
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -2524,9 +2527,6 @@ msgstr ""
 msgid "Koya system"
 msgstr ""
 
-msgid "LAN/WAN URL: {lan_url}"
-msgstr ""
-
 msgid "Language"
 msgstr ""
 
@@ -2793,9 +2793,6 @@ msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
 msgstr "Name"
 
 msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Name"
-
-msgid "Name *** NAME FOR PRINT VIEW"
 msgstr "Name"
 
 msgid "Name *** NAME FOR TABLE HEADER"
@@ -3935,9 +3932,6 @@ msgstr ""
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
-msgid "Res. ** RESULT FOR TABLE HEADER"
-msgstr ""
-
 msgid "Result"
 msgstr ""
 
@@ -3973,9 +3967,6 @@ msgstr ""
 
 msgid "Return to tournament"
 msgstr ""
-
-msgid "Rk. *** RANK FOR PRINT VIEW"
-msgstr "Rk."
 
 msgid "Rk. *** RANK FOR TABLE HEADER"
 msgstr "Rk."
@@ -4213,6 +4204,9 @@ msgid "Sharly Chess project"
 msgstr ""
 
 msgid "Sharly Chess server"
+msgstr ""
+
+msgid "Sharly Chess server URL"
 msgstr ""
 
 msgid "Sharly Chess settings"
@@ -5320,7 +5314,7 @@ msgstr ""
 msgid "Unpair all the boards of this round."
 msgstr ""
 
-msgid "Unpair all the rounds the tournament."
+msgid "Unpair all the rounds of the tournament."
 msgstr ""
 
 #, python-format
@@ -5354,7 +5348,7 @@ msgstr ""
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr ""
 
-msgid "Unpairing all the boards of this round is not allowed because the round has results."
+msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr ""
 
 msgid "Unrated Draw"
@@ -5643,6 +5637,15 @@ msgstr ""
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr ""
 
+msgid "You are not allowed to add players to the event."
+msgstr ""
+
+msgid "You are not allowed to check-in the player."
+msgstr ""
+
+msgid "You are not allowed to check-out the player."
+msgstr ""
+
 msgid "You are not allowed to create tournaments."
 msgstr ""
 
@@ -5664,13 +5667,28 @@ msgstr ""
 msgid "You are not allowed to duplicate this computer."
 msgstr ""
 
+msgid "You are not allowed to generate the pairings."
+msgstr ""
+
 msgid "You are not allowed to grant/revoke this permission."
+msgstr ""
+
+msgid "You are not allowed to open/close check-in."
 msgstr ""
 
 msgid "You are not allowed to publish results."
 msgstr ""
 
 msgid "You are not allowed to publish rules."
+msgstr ""
+
+msgid "You are not allowed to set the current round."
+msgstr ""
+
+msgid "You are not allowed to unpair boards."
+msgstr ""
+
+msgid "You are not allowed to update the players' information from an external data source."
 msgstr ""
 
 msgid "You are not allowed to update the tournament."
@@ -5808,6 +5826,9 @@ msgstr ""
 msgid "players on {parts} screens"
 msgstr ""
 
+msgid "printable version"
+msgstr ""
+
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
@@ -5926,3 +5947,64 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "LAN/WAN URL: {lan_url}"
+#~ msgstr ""
+
+#~ msgid "Name *** NAME FOR PRINT VIEW"
+#~ msgstr "Name"
+
+#~ msgid "Rk. *** RANK FOR PRINT VIEW"
+#~ msgstr "Rk."
+
+#~ msgid "All"
+#~ msgstr ""
+
+#~ msgid "Black wins"
+#~ msgstr ""
+
+#~ msgid "Board"
+#~ msgstr ""
+
+#~ msgid "Byes *** Players with byes"
+#~ msgstr "Byes"
+
+#~ msgid "Close check in"
+#~ msgstr ""
+
+#~ msgid "Highlight"
+#~ msgstr ""
+
+#~ msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
+#~ msgstr ""
+
+#~ msgid "In play"
+#~ msgstr ""
+
+#~ msgid "Keyboard shortcuts:"
+#~ msgstr ""
+
+#~ msgid "Navigation"
+#~ msgstr ""
+
+#~ msgid "No pairings."
+#~ msgstr ""
+
+#~ msgid "No result"
+#~ msgstr ""
+
+#~ msgid "Overwrite"
+#~ msgstr ""
+
+#~ msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
+#~ msgstr ""
+
+#~ msgid "Unpaired"
+#~ msgstr ""
+
+#~ msgid "White wins"
+#~ msgstr ""
+
+#~ msgid "You are in an unsafe editing mode. Change the round to exit this mode."
+#~ msgstr ""
+

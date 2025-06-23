@@ -143,6 +143,9 @@
                                                             {% if data[name] == '8' %}
                                                                 selected
                                                             {% endif %}
+                                                            {% if not client.can_set_half_point_bye_by_tournament_id[player.tournament.id] %}
+                                                                disabled
+                                                            {% endif %}
                                                     >
                                                         {{ _('Half-Point Bye') }}
                                                     </option>
@@ -151,6 +154,9 @@
                                                             class="text-danger"
                                                             {% if data[name] == '10' %}
                                                                 selected
+                                                            {% endif %}
+                                                            {% if not client.can_set_full_point_bye_by_tournament_id[player.tournament.id] %}
+                                                                disabled
                                                             {% endif %}
                                                     >
                                                         {{ _('Full-Point Bye (deprecated)') }}

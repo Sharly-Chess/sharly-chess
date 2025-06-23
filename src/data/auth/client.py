@@ -403,6 +403,7 @@ class Client:
     ) -> dict[int, bool]:
         """Returns true if the client can manage (update/delete)
         the given account (the client must manage all the roles of the account)."""
+        assert self.event is not None
         return {
             account.id: all(
                 self.role_management[role] for role in account.permissions_by_role
@@ -428,6 +429,7 @@ class Client:
     ) -> dict[int, bool]:
         """Returns true if the client can manage (update/delete)
         the given computer (the client must manage all the roles of the computer)."""
+        assert self.event is not None
         return {
             computer.id: all(
                 self.role_management[role] for role in computer.permissions_by_role
@@ -553,8 +555,14 @@ class Client:
         self,
     ) -> dict[int, bool]:
         """Returns a dict indicating if the client can
-        update the players' history (byes) of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(Role.CHECK_IN_OFFICER)
+        update the players' history (byes) of the tournaments.
+        See also can_set_xxx_point_bye_by_tournament_id()."""
+        return self._allowed_for_roles_by_tournament_id(
+            [
+                Role.CHECK_IN_OFFICER,
+                Role.PAIRINGS_OFFICER,
+            ],
+        )
 
     @property
     def can_delete_players(
@@ -600,6 +608,7 @@ class Client:
             [
                 Role.SECTOR_ARBITER,
                 Role.PAIRINGS_OFFICER,
+                Role.SPECTATOR,
             ],
         )
 
@@ -621,6 +630,72 @@ class Client:
         use manually pair players of the tournaments."""
         return self._allowed_for_roles_by_tournament_id(
             Role.PAIRINGS_OFFICER,
+        )
+
+    @property
+    def can_unpair_round_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        unpair all the boards of a round for the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            Role.PAIRINGS_OFFICER,
+        )
+
+    @property
+    def can_unpair_board_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        (manually) unpair boards for the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            Role.PAIRINGS_OFFICER,
+        )
+
+    @property
+    def can_set_current_round_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        unpair all the boards for the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            Role.PAIRINGS_OFFICER,
+        )
+
+    @property
+    def can_set_zero_point_bye_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        set HPB to players of the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            [
+                Role.PAIRINGS_OFFICER,
+            ],
+        )
+
+    @property
+    def can_set_half_point_bye_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        set HPB to players of the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            [
+                Role.PAIRINGS_OFFICER,
+            ],
+        )
+
+    @property
+    def can_set_full_point_bye_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        set FPB to players of the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            [
+                Role.DEPUTY_CHIEF_ARBITER,
+            ],
         )
 
     @property

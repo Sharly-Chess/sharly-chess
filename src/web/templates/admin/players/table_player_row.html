@@ -5,7 +5,7 @@
     {% endif %}
 >
     <td class="text-nowrap text-start w-1 ps-2">
-        {% set can_update = client.can_update_players_history_by_tournament_id[player.tournament.id] %}
+        {% set can_update = client.can_update_players %}
         {% set can_update_history=client.can_update_players_history_by_tournament_id[player.tournament.id] %}
         {% set can_delete=client.can_delete_players and not player.has_real_pairings %}
         {% if can_update or can_update_history or can_delete %}
@@ -117,15 +117,15 @@
                         hx-indicator="#please-wait"
                     {% else %}
                         {% if player.check_in %}
-                        class="bi-check-circle-fill text-success"
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to check-out the player.'), 'right') }}
-                    {% else %}
-                        class="bi-circle-fill text-warning"
-                        {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                            class="bi-check-circle-fill text-success"
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to check-out the player.'), 'right') }}
+                        {% else %}
+                            class="bi-circle-fill text-warning"
+                            {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             ></i>
-            {% endif %}
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}

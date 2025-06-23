@@ -16,6 +16,7 @@
         </tr>
     </thead>
     <tbody>
+        {% set can_check_in=client.can_check_in_players_by_tournament_id[tournament_id] %}
         {% for player in unpaired %}
             {% with pairing=player.pairings[admin_round], class="bye" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
                 <tr id="player-{{ player.id }}" class="player-row" data-player-id="{{ player.id }}">
@@ -23,18 +24,29 @@
                         <div class="d-flex align-items-center gap-2">
                         {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round >= admin_tournament.current_round) %}
                             <i
-                                {% if player.check_in %}
-                                    class="bi-check-circle-fill text-success cursor-pointer"
-                                    {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
-                                    hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=0) }}"
+                                {% if can_check_in %}
+                                    {% if player.check_in %}
+                                        class="bi-check-circle-fill text-success cursor-pointer"
+                                        {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
+                                        hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=0) }}"
+                                    {% else %}
+                                        class="bi-circle-fill text-warning cursor-pointer"
+                                        {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
+                                        hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
+                                    {% endif %}
+                                    hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
                                 {% else %}
-                                    class="bi-circle-fill text-warning cursor-pointer"
-                                    {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                                    hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
+                                    disabled
+                                    {% if player.check_in %}
+                                        class="bi-check-circle-fill text-success"
+                                        {{ macros.tooltip_attributes('info', _('You are not allowed to check-out the player.'), 'right') }}
+                                    {% else %}
+                                        class="bi-circle-fill text-warning"
+                                        {{ macros.tooltip_attributes('info', _('You are not allowed to check-in the player.'), 'right') }}
+                                    {% endif %}
                                 {% endif %}
-                                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
                             ></i>
                         {% endif %}
                             <span>{{ player.full_name }}</span>
@@ -51,7 +63,7 @@
                                 {% elif pairing and pairing.full_point_bye %}
                                    {{ macros.tooltip_attributes('info', _('Full-Point Bye (deprecated)'), 'right') }}
                                 {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Pair'), 'right') }}
+                                    {{ macros.tooltip_attributes('info', _('Not paired'), 'right') }}
                                 {% endif %}
                             >
                                 <button

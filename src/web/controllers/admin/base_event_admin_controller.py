@@ -136,12 +136,15 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-people-fill',
                 },
             }
+        if web_context.client.can_view_pairings_tab:
+            nav_tabs |= {
+                'admin-event-pairings-tab': {
+                    'title': _('Pairings'),
+                    'template': 'pairings/tab.html',
+                    'icon_class': 'bi-arrow-left-right',
+                },
+            }
         nav_tabs |= {
-            'admin-event-pairings-tab': {
-                'title': _('Pairings'),
-                'template': 'pairings/tab.html',
-                'icon_class': 'bi-arrow-left-right',
-            },
             'admin-event-prizes-tab': {
                 'title': _('Prizes'),
                 'template': 'prizes/tab.html',
