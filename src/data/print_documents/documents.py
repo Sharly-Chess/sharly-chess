@@ -253,18 +253,18 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
         return True
 
 
-class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
+class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
     @staticmethod
     def static_name() -> str:
-        return _('Relative performances for round')
+        return _('Round performance indicators')
 
     @staticmethod
     def static_id() -> str:
-        return 'round-relative-performances'
+        return 'round-performance-indicators'
 
     @property
     def title(self) -> str:
-        return _('Relative performances for round #{round}').format(
+        return _('Performance indicators for round #{round}').format(
             round=self.ranking_round
         )
 
@@ -333,7 +333,7 @@ class PlayerRoundRelativePerformancePrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         return {
             'tournament': self.tournament,
-            'deltas': self.ordered_players,
+            'scores': self.ordered_players,
         }
 
 

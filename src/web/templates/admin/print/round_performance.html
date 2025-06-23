@@ -23,12 +23,12 @@
                     {{ tournament.rating.print_view_header }}
                 </th>
                 <th class="perf">
-                    {{ _('Performance *** PERF FOR TABULAR DISPLAY') }}</th>
+                    {{ _('Score *** PERF IND. FOR TABULAR DISPLAY') }}</th>
                 </th>
             </tr>
         </thead>
         <tbody>
-            {% for (player, opponent, result, delta) in deltas %}
+            {% for (player, opponent, result, score) in scores %}
                 {% with row_class='even' if loop.index is even else 'odd' %}
                     <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
                         <td class="rank">
@@ -41,7 +41,7 @@
                         <td class="title">{{ opponent.title.short_name }}</td>
                         <td class="name">{{ opponent.full_name }}</td>
                         <td class="rating">{{ opponent.rating_str }}</td>
-                        <td class="perf">{{"%+.2f" % delta }}</td
+                        <td class="perf">{{"%+.2f" % score }}</td
                     </tr>
                 {% endwith %}
             {% endfor %}
