@@ -38,7 +38,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import WebContext
 from web.messages import Message
-
+from web.session import SessionHandler
 
 logger = get_logger()
 
@@ -435,7 +435,10 @@ class PrizeAdminController(BaseEventAdminController):
 
     @staticmethod
     def _prize_category_modal_context(
-        data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
+        request: HTMXRequest,
+        data: dict[str, str],
+        action: FormAction,
+        errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         prize_sharing_options = PrizeSharingManager.options()
         prize_sharing_options.pop(NoPrizeSharing.static_id())
@@ -443,6 +446,11 @@ class PrizeAdminController(BaseEventAdminController):
             'modal': 'prize_category',
             'action': action,
             'prize_sharing_options': prize_sharing_options,
+            'add_other_active': (
+                SessionHandler.get_session_admin_prize_category_add_other_active(
+                    request
+                )
+            ),
             'data': data,
             'errors': errors or {},
         }
@@ -482,10 +490,16 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        add_other = 'add_other' in data
+        SessionHandler.set_session_admin_prize_category_add_other_active(
+            request, add_other
+        )
         if errors := self._validate_prize_category_form_data(data):
             return self._admin_event_prizes_render(
                 web_context,
-                self._prize_category_modal_context(data, FormAction.CREATE, errors),
+                self._prize_category_modal_context(
+                    request, data, FormAction.CREATE, errors
+                ),
             )
         prize_group = web_context.get_admin_prize_group()
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
@@ -508,10 +522,11 @@ class PrizeAdminController(BaseEventAdminController):
                 index=len(prize_group.categories),
             )
         )
-        if 'add_other' in data:
+
+        if add_other:
             data = self._prize_category_default_form_data(prize_group.tournament)
             template_context = self._prize_category_modal_context(
-                data, FormAction.CREATE, errors
+                request, data, FormAction.CREATE, errors
             ) | {'previous_category': prize_category}
         else:
             template_context = {}
@@ -551,7 +566,9 @@ class PrizeAdminController(BaseEventAdminController):
         if errors := self._validate_prize_category_form_data(data, prize_category):
             return self._admin_event_prizes_render(
                 web_context,
-                self._prize_category_modal_context(data, FormAction.UPDATE, errors),
+                self._prize_category_modal_context(
+                    request, data, FormAction.UPDATE, errors
+                ),
             )
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         stored_category = prize_category.stored_prize_category
@@ -701,7 +718,7 @@ class PrizeAdminController(BaseEventAdminController):
         )
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_category_modal_context(data, FormAction.CREATE),
+            self._prize_category_modal_context(request, data, FormAction.CREATE),
         )
 
     @get(
@@ -738,7 +755,7 @@ class PrizeAdminController(BaseEventAdminController):
             data['prize_sharing'] = prize_category.prize_sharing.id
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_category_modal_context(data, FormAction.UPDATE),
+            self._prize_category_modal_context(request, data, FormAction.UPDATE),
         )
 
     @get(
@@ -800,7 +817,10 @@ class PrizeAdminController(BaseEventAdminController):
 
     @staticmethod
     def _prize_criterion_form_modal_context(
-        data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
+        request: HTMXRequest,
+        data: dict[str, str],
+        action: FormAction,
+        errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
@@ -818,6 +838,11 @@ class PrizeAdminController(BaseEventAdminController):
                 for player_filter in PlayerFilterManager.objects()
             }
             | {'': []},
+            'add_other_active': (
+                SessionHandler.get_session_admin_prize_criterion_add_other_active(
+                    request
+                )
+            ),
             'data': default_data | data,
             'errors': errors or {},
         }
@@ -846,12 +871,16 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        add_other = 'add_other' in data
+        SessionHandler.set_session_admin_prize_criterion_add_other_active(
+            request, add_other
+        )
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_prize_criterion_form_data(flat_data):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_criterion_form_modal_context(
-                    flat_data, FormAction.CREATE, errors
+                    request, flat_data, FormAction.CREATE, errors
                 ),
             )
         prize_category = web_context.get_admin_prize_category()
@@ -864,9 +893,9 @@ class PrizeAdminController(BaseEventAdminController):
                 options={option.id: option.value for option in player_filter.options},
             )
         )
-        if 'add_other' in data:
+        if add_other:
             template_context = self._prize_criterion_form_modal_context(
-                {}, FormAction.CREATE, errors
+                request, {}, FormAction.CREATE, errors
             ) | {'previous_criterion': criterion}
         else:
             template_context = {'modal': 'prize_criteria'}
@@ -908,7 +937,7 @@ class PrizeAdminController(BaseEventAdminController):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_criterion_form_modal_context(
-                    flat_data, FormAction.UPDATE, errors
+                    request, flat_data, FormAction.UPDATE, errors
                 ),
             )
         player_filter = self.player_filter_from_data(flat_data)
@@ -994,7 +1023,7 @@ class PrizeAdminController(BaseEventAdminController):
         )
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_criterion_form_modal_context({}, FormAction.CREATE),
+            self._prize_criterion_form_modal_context(request, {}, FormAction.CREATE),
         )
 
     @get(
@@ -1031,7 +1060,7 @@ class PrizeAdminController(BaseEventAdminController):
         }
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_criterion_form_modal_context(data, FormAction.UPDATE),
+            self._prize_criterion_form_modal_context(request, data, FormAction.UPDATE),
         )
 
     # -------------------------------------------------------------------------
@@ -1071,7 +1100,10 @@ class PrizeAdminController(BaseEventAdminController):
 
     @staticmethod
     def _prize_form_modal_context(
-        data: dict[str, str], action: FormAction, errors: dict[str, str] | None = None
+        request: HTMXRequest,
+        data: dict[str, str],
+        action: FormAction,
+        errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         default_data = {
             'value': WebContext.value_to_form_data(0.0),
@@ -1080,6 +1112,9 @@ class PrizeAdminController(BaseEventAdminController):
         }
         return {
             'modal': 'prize_form',
+            'add_other_active': (
+                SessionHandler.get_session_admin_prize_add_other_active(request)
+            ),
             'action': action,
             'data': default_data | (data or {}),
             'errors': errors or {},
@@ -1109,11 +1144,15 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        add_other = 'add_other' in data
+        SessionHandler.set_session_admin_prize_add_other_active(request, add_other)
         prize_category = web_context.get_admin_prize_category()
         if errors := self._validate_prize_form_data(data, prize_category):
             return self._admin_event_prizes_render(
                 web_context,
-                self._prize_form_modal_context(data, FormAction.CREATE, errors),
+                self._prize_form_modal_context(
+                    request, data, FormAction.CREATE, errors
+                ),
             )
         value = web_context.form_data_to_float(data, 'value') or 0.0
         prize = prize_category.add_prize(
@@ -1125,9 +1164,9 @@ class PrizeAdminController(BaseEventAdminController):
                 description=WebContext.form_data_to_str(data, 'description') or '',
             )
         )
-        if 'add_other' in data:
+        if add_other:
             template_context = self._prize_form_modal_context(
-                {}, FormAction.CREATE, errors
+                request, {}, FormAction.CREATE, errors
             ) | {'previous_prize': prize}
         else:
             template_context = {'modal': 'prizes'}
@@ -1168,7 +1207,9 @@ class PrizeAdminController(BaseEventAdminController):
         if errors := self._validate_prize_form_data(data, prize_category):
             return self._admin_event_prizes_render(
                 web_context,
-                self._prize_form_modal_context(data, FormAction.UPDATE, errors),
+                self._prize_form_modal_context(
+                    request, data, FormAction.UPDATE, errors
+                ),
             )
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
@@ -1258,7 +1299,7 @@ class PrizeAdminController(BaseEventAdminController):
         )
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_form_modal_context({}, FormAction.CREATE),
+            self._prize_form_modal_context(request, {}, FormAction.CREATE),
         )
 
     @get(
@@ -1296,5 +1337,5 @@ class PrizeAdminController(BaseEventAdminController):
         }
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_form_modal_context(data, FormAction.UPDATE),
+            self._prize_form_modal_context(request, data, FormAction.UPDATE),
         )
