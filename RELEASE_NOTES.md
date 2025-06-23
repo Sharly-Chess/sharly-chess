@@ -9,7 +9,7 @@ English version below
 
 ## Interface web
 
-- Ajout d'un QR code sur la page d'accueil pour faciliter la connexion des clients (2.8.0)
+- Simplification de la page d'accueil et ajout d'un QR code pour faciliter la connexion des clients (2.8.0)
 
 ### Gestion des joueur·euses
 
@@ -42,7 +42,7 @@ English version below
 
 ## Web interface
 
-- Added a QR code to ease the connection of devices (2.8.0)
+- Simplified the home page and added a QR code to ease the connection of devices (2.8.0)
 
 # Players management
 

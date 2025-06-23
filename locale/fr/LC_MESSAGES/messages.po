@@ -101,9 +101,6 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
 msgstr[1] "(%(num)d écrans)"
 
-msgid "(See QR code)"
-msgstr "(voir le code QR)"
-
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -364,7 +361,7 @@ msgid "Alert message:"
 msgstr "Message d'alerte :"
 
 msgid "All"
-msgstr ""
+msgstr "Tous"
 
 msgid "All Events"
 msgstr "Évènements"
@@ -582,7 +579,7 @@ msgid "Black games"
 msgstr "Parties Noirs"
 
 msgid "Black wins"
-msgstr ""
+msgstr "Victoires avec les Noirs"
 
 msgid "Blitz"
 msgstr "Blitz"
@@ -597,7 +594,7 @@ msgid "Blitz:"
 msgstr "Blitz :"
 
 msgid "Board"
-msgstr ""
+msgstr "Éch."
 
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
@@ -670,7 +667,7 @@ msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
 msgid "Byes *** Players with byes"
-msgstr ""
+msgstr "Forfaits et absences"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -848,8 +845,8 @@ msgstr "Client : %(host)s"
 msgid "Close"
 msgstr "Fermer"
 
-msgid "Close check in"
-msgstr ""
+msgid "Close check-in"
+msgstr "Fermer le pointage"
 
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
@@ -951,8 +948,11 @@ msgstr "Configuration"
 msgid "Connect"
 msgstr "Connexion"
 
-msgid "Connect to the Sharly Chess server by scanning this QR code (and click below to get a printable version to easily connect your devices)."
-msgstr "Connectez vous au serveur Sharly Chess en scannant ce code QR (et cliquez ci-dessous pour obtenir une version imprimable pour faciliter la connexion de vos clients)."
+msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgstr "Connectez vos appareils (ordinateurs, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
+
+msgid "Connect your devices to the Sharly Chess server:"
+msgstr "Connectez vos appareils au serveur Sharly Chess :"
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
@@ -2178,12 +2178,6 @@ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche d
 msgid "Frequency: {frequency}"
 msgstr "Fréquence : {frequency}"
 
-msgid "From the Sharly Chess server"
-msgstr "Depuis le serveur Sharly Chess"
-
-msgid "From the local network (LAN/WAN)"
-msgstr "Depuis le réseau local (LAN/WAN)"
-
 msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre ordinateur principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
@@ -2283,10 +2277,10 @@ msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
 
 msgid "Highlight"
-msgstr ""
+msgstr "Surbrillance"
 
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
-msgstr ""
+msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
 
 msgid "Home page"
 msgstr "Accueil"
@@ -2369,7 +2363,7 @@ msgid "Impossible to set a round number lower than the last round with pairings 
 msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ronde appariée (ronde n°{round})."
 
 msgid "In play"
-msgstr ""
+msgstr "En jeu"
 
 msgid "In-tournament"
 msgstr "Dans le tournoi"
@@ -2516,7 +2510,7 @@ msgid "Kashdan"
 msgstr "Kashdan"
 
 msgid "Keyboard shortcuts:"
-msgstr ""
+msgstr "Raccourcis clavier :"
 
 msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
@@ -2812,7 +2806,7 @@ msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
 msgid "Navigation"
-msgstr ""
+msgstr "Navigation"
 
 msgid "Nb. *** NB FOR TABLE HEADER"
 msgstr "N°"
@@ -2945,7 +2939,7 @@ msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
 msgid "No pairings."
-msgstr ""
+msgstr "Aucun appariement."
 
 msgid "No passed events."
 msgstr "Aucun évènement passé."
@@ -2993,7 +2987,7 @@ msgid "No recording"
 msgstr "Pas d'enregistrement"
 
 msgid "No result"
-msgstr ""
+msgstr "Pas de résultat"
 
 msgid "No results."
 msgstr "Aucun résultat."
@@ -3075,6 +3069,9 @@ msgstr "Aucune connection à internet"
 
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
+
+msgid "Not paired"
+msgstr "Non-apparié·e"
 
 msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
 msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], un écran vide sera utilisé."
@@ -3215,10 +3212,10 @@ msgid "Over 65"
 msgstr "Plus de 65"
 
 msgid "Overwrite"
-msgstr ""
+msgstr "Remplacement"
 
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
-msgstr ""
+msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 
 msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
 msgstr "Du"
@@ -3385,8 +3382,8 @@ msgstr "Performance ELO parfaite"
 msgid "Performance"
 msgstr "Performance"
 
-msgid "Performance *** PERF FOR TABULAR DISPLAY"
-msgstr "Perf. rel."
+msgid "Performance indicators for round #{round}"
+msgstr "Indicateurs de performance pour la ronde n°{round}"
 
 msgid "Permissions"
 msgstr "Permissions"
@@ -3781,6 +3778,9 @@ msgstr "Écran public"
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
+msgid "QR code"
+msgstr "code QR"
+
 msgid "Quit"
 msgstr "Quitter"
 
@@ -3900,12 +3900,6 @@ msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
-
-msgid "Relative performances for round"
-msgstr "Performances relatives pour la ronde"
-
-msgid "Relative performances for round #{round}"
-msgstr "Performances relatives – Ronde n°{round}"
 
 msgid "Reload the page"
 msgstr "Recharger la page"
@@ -4049,6 +4043,9 @@ msgstr "Numéro de ronde ou texte :"
 msgid "Round numbers must be positive integers."
 msgstr "Les numéros de ronde doivent être des entiers positifs."
 
+msgid "Round performance indicators"
+msgstr "Indicateurs de performance pour la ronde"
+
 msgid "Round skipped"
 msgstr "Absent·e"
 
@@ -4105,6 +4102,9 @@ msgid "Scope"
 msgstr "Périmètre"
 
 msgid "Score"
+msgstr "Score"
+
+msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
@@ -5325,7 +5325,7 @@ msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
 msgid "Unpaired"
-msgstr ""
+msgstr "Non-apparié·es"
 
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"
@@ -5528,9 +5528,6 @@ msgstr "Attention : la suppression d'un évènement est définitive !"
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
 
-msgid "Web access"
-msgstr "Accès web"
-
 msgid "Web server not started yet ({ex}), waiting…"
 msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter…"
 
@@ -5571,7 +5568,7 @@ msgid "White"
 msgstr "Blancs"
 
 msgid "White wins"
-msgstr ""
+msgstr "Victoire Blancs"
 
 msgid "Win"
 msgstr "Victoire"
@@ -5635,16 +5632,16 @@ msgid "You are connected on the Sharly Chess server and have full administration
 msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilèges complets d'administration."
 
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
-msgstr ""
+msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
 msgid "You are not allowed to add players to the event."
 msgstr "Vous n'êtes pas autorisé·e à ajouter des joueur·euses à l'évènement."
 
 msgid "You are not allowed to check-in the player."
-msgstr ""
+msgstr "Vous n'êtes pas autorisé·e à pointer les joueur·euses."
 
 msgid "You are not allowed to check-out the player."
-msgstr "Vous n'êtes pas autorisé·e à pointer les joueur·euses."
+msgstr "Vous n'êtes pas autorisé·e à dépointer les joueur·euses."
 
 msgid "You are not allowed to create tournaments."
 msgstr "Vous n'êtes pas autorisé·e à créer des tournois."
@@ -5668,13 +5665,16 @@ msgid "You are not allowed to duplicate this computer."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
 
 msgid "You are not allowed to generate the pairings."
-msgstr ""
+msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 
 msgid "You are not allowed to grant/revoke this permission."
 msgstr "Vous n'êtes pas autorisé·e à accorder/retirer cette permission."
 
 msgid "You are not allowed to open/close check-in."
 msgstr "Vous n'êtes pas autorisé·e à ouvrir/fermer le pointage."
+
+msgid "You are not allowed to pair players."
+msgstr "Vous n'êtes pas autorisé·e à apparier les joueur·euses."
 
 msgid "You are not allowed to publish results."
 msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
@@ -5683,10 +5683,16 @@ msgid "You are not allowed to publish rules."
 msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
 
 msgid "You are not allowed to set the current round."
-msgstr ""
+msgstr "Vous n'êtes pas autorisé·e à positionner la ronde courante."
 
-msgid "You are not allowed to unpair boards."
-msgstr ""
+msgid "You are not allowed to set/unset Half-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à allouer des demi-points joker."
+
+msgid "You are not allowed to set/unset Zero-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à enregistrer des absences."
+
+msgid "You are not allowed to unpair rounds."
+msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
 
 msgid "You are not allowed to update the players' information from an external data source."
 msgstr "Vous n'êtes pas autorisé·e à modifier les informations de joueur·euses à partir d'une sources de données externe."
@@ -5947,67 +5953,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "LAN/WAN URL: {lan_url}"
-#~ msgstr "URL LAN/WAN : {lan_url}"
-
-#~ msgid "Name *** NAME FOR PRINT VIEW"
-#~ msgstr "Nom"
-
-#~ msgid "Res. ** RESULT FOR PRINT VIEW"
-#~ msgstr "Rés."
-
-#~ msgid "Rk. *** RANK FOR PRINT VIEW"
-#~ msgstr "Rg."
-
-#~ msgid "All"
-#~ msgstr "Tous"
-
-#~ msgid "Black wins"
-#~ msgstr "Victoires Noirs"
-
-#~ msgid "Board"
-#~ msgstr "Éch."
-
-#~ msgid "Byes *** Players with byes"
-#~ msgstr "Absences et points joker"
-
-#~ msgid "Close check in"
-#~ msgstr "Fermer le pointage"
-
-#~ msgid "Highlight"
-#~ msgstr "Surbrillance"
-
-#~ msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
-#~ msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
-
-#~ msgid "In play"
-#~ msgstr "En jeu"
-
-#~ msgid "Keyboard shortcuts:"
-#~ msgstr "Raccourcis clavier :"
-
-#~ msgid "Navigation"
-#~ msgstr "Navigation"
-
-#~ msgid "No pairings."
-#~ msgstr "Aucun appariement."
-
-#~ msgid "No result"
-#~ msgstr "Pas de résultat"
-
-#~ msgid "Overwrite"
-#~ msgstr "Remplacement"
-
-#~ msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
-#~ msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
-
-#~ msgid "Unpaired"
-#~ msgstr "Non-apparié·es"
-
-#~ msgid "White wins"
-#~ msgstr "Victoire Blancs"
-
-#~ msgid "You are in an unsafe editing mode. Change the round to exit this mode."
-#~ msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
