@@ -3697,7 +3697,7 @@ msgid "Request to the database failed: {error}."
 msgstr "La requête à la base de données a échoué : {error}."
 
 msgid "Res. ** RESULT FOR TABLE HEADER"
-msgstr "Res."
+msgstr "Rés."
 
 msgid "Result"
 msgstr "Résultat"
