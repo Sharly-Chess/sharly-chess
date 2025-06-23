@@ -454,7 +454,7 @@
                         'add_screens': _('Create with default screens'),
                         'add_other': _('Create and add another')
                     },
-                    active_option='create'
+                    active_option='add_other' if add_other_active else 'create'
                 ) }}
             {% else %}
                 <button

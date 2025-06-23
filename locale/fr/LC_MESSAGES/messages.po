@@ -3164,8 +3164,8 @@ msgstr "Performance ELO parfaite"
 msgid "Performance"
 msgstr "Performance"
 
-msgid "Performance *** PERF FOR TABULAR DISPLAY"
-msgstr "Perf. rel."
+msgid "Performance indicators for round #{round}"
+msgstr "Indicateurs de performance pour la ronde n°{round}"
 
 msgid "Personal"
 msgstr "Personnel"
@@ -3671,12 +3671,6 @@ msgstr "Actualiser"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
-msgid "Relative performances for round"
-msgstr "Performances relatives pour la ronde"
-
-msgid "Relative performances for round #{round}"
-msgstr "Performances relatives – Ronde n°{round}"
-
 msgid "Reload the page"
 msgstr "Recharger la page"
 
@@ -3700,7 +3694,7 @@ msgid "Request to the database failed: {error}."
 msgstr "La requête à la base de données a échoué : {error}."
 
 msgid "Res. ** RESULT FOR TABLE HEADER"
-msgstr "Res."
+msgstr "Rés."
 
 msgid "Result"
 msgstr "Résultat"
@@ -3813,6 +3807,9 @@ msgstr "Numéro de ronde ou texte :"
 msgid "Round numbers must be positive integers."
 msgstr "Les numéros de ronde doivent être des entiers positifs."
 
+msgid "Round performance indicators"
+msgstr "Indicateurs de performance pour la ronde"
+
 msgid "Round skipped"
 msgstr "Absent·e"
 
@@ -3866,6 +3863,9 @@ msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
 
 msgid "Score"
+msgstr "Score"
+
+msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
