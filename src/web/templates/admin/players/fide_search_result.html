@@ -1,0 +1,13 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<img
+    class="player-federation-flag pe-1"
+    src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+/>
+{{ player.fide_id }}
+<span class="fw-bold">
+    {{ player.full_name }}
+</span>
+{{ player.year_of_birth }}
+{{ player.category }}
+{{ player.ratings_str }}

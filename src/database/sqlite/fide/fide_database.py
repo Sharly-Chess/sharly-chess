@@ -251,8 +251,8 @@ class FideDatabase(LocalSourceDatabase):
     def search_player(
         self,
         string: str,
-        limit: int = 0,  # no limit set if no param or null param passed
-    ) -> Iterator[Player]:
+        limit: int | None = None,
+    ) -> list[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
@@ -288,11 +288,8 @@ class FideDatabase(LocalSourceDatabase):
             params += [
                 limit,
             ]
-        self.execute(
-            query,
-            tuple(params),
-        )
-        return (self._get_player_from_row(row) for row in self.fetchall())
+        self.execute(query, tuple(params))
+        return [self._get_player_from_row(row) for row in self.fetchall()]
 
     def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))

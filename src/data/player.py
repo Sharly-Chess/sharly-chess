@@ -282,11 +282,13 @@ class Player(TournamentPlayer):
 
     @cached_property
     def category(self) -> PlayerCategory:
-        assert self.tournament is not None
+        if self.tournament:
+            tournament_start = self.tournament.start_datetime
+            tournament_end = self.tournament.stop_datetime
+        else:
+            tournament_start, tournament_end = None, None
         return PlayerCategory.from_year_of_birth(
-            self.year_of_birth,
-            self.tournament.start_datetime,
-            self.tournament.stop_datetime,
+            self.year_of_birth, tournament_start, tournament_end
         )
 
     @property
@@ -309,6 +311,15 @@ class Player(TournamentPlayer):
     @property
     def point_values(self) -> dict[Result, float] | None:
         return self.tournament.point_values if self.tournament else None
+
+    @property
+    def ratings_str(self) -> str:
+        return '/'.join(
+            [
+                str(self.get_rating(tournament_rating))
+                for tournament_rating in TournamentRating
+            ]
+        )
 
     def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
         return self.ratings.get(

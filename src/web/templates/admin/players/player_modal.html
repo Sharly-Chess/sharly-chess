@@ -48,28 +48,63 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            <span class="dropdown">
-                                {{ admin_macros.text_input(
-                                    name='search_fide',
-                                    label=_('FIDE database:'),
-                                    help_text=_('Search the FIDE database for names, FIDE ID, federation…')
-                                        if fide_search_available else
-                                        _('The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases.'),
-                                    placeholder=_('E.g.: john doe'),
-                                    disabled=not fide_search_available,
-                                    hx_get=url_for('search-fide', event_uniq_id=admin_event.uniq_id) if fide_search_available else '',
-                                    hx_trigger='keyup changed delay:0.2s',
-                                    hx_target='#fide-search-results',
-                                    with_indicator=true,
-                                    dropdown_id='fide-search-results' if fide_search_available else ''
-                                ) }}
-                            </span>
+                            {{ admin_macros.select_input(
+                                name='data_source',
+                                label=_('%(string)s:', string=_('Data source')),
+                                help_text=_('The data source to search players in.'),
+                                select_options=data_source_options,
+                                data=data, errors=errors
+                            ) }}
+                            <script>
+                                $('#data-source').change(function () {
+                                    $('.search-container').css('display', 'none');
+                                    $('#' + $(this).val() + '-search-container').css('display', 'block')
+                                });
+                            </script>
                         </div>
-                        {% for search_template in plugin_search_templates %}
-                            <div class="col-12 col-md-6 mb-">
-                                {% include search_template %}
-                            </div>
-                        {% endfor %}
+                        <div class="col-12 col-md-6 mb-3">
+                            {% for data_source in data_sources %}
+                                {% set results_id = data_source.id ~ '-search-results' %}
+                                <span
+                                    id="{{ data_source.id }}-search-container"
+                                    class="search-container dropdown"
+                                    {% if not data_source.is_available %}
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _(
+                                                'This data source in unavailable '
+                                                '(for more details: Menu > Data sources).'
+                                            ),
+                                            'top'
+                                        ) }}
+                                    {% endif %}
+                                    {% if data_source.id != data['data_source'] %}
+                                        style="display: none"
+                                    {% endif %}
+                                >
+                                    {{ admin_macros.text_input(
+                                        name=data_source.search_element_name,
+                                        label=_('%(string)s:', string=data_source.name),
+                                        help_text=_('Search by: %(fields)s', fields=', '.join(data_source.search_fields)),
+                                        placeholder=_('E.g.: john doe'),
+                                        disabled=not data_source.is_available,
+                                        hx_get=url_for(
+                                            'admin-search-player',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            data_source_id=data_source.id,
+                                        ),
+                                        hx_trigger='keyup changed delay:400ms',
+                                        hx_target='#' ~ results_id,
+                                        hx_on_before_request='$("#' ~ results_id ~ '").show();',
+                                        hx_on_after_request='$("#' ~ results_id ~ '").show();',
+                                        hx_sync='this:replace',
+                                        with_indicator=true,
+                                        dropdown_id=results_id if data_source.is_available else '',
+                                        dropdown_item=_('Searching…'),
+                                    ) }}
+                                </span>
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endif %}
 

@@ -15,12 +15,13 @@ from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
 
 from common import unicode_normalize
+from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
-from data.input_output import PlayerUpdater, PlayerUpdaterManager
-from data.input_output.player_updaters import PlayerComparator
+from data.input_output.data_source import PlayerComparator, DataSource
+from data.input_output.managers import DataSourceManager
 from data.pairing import Pairing
 from data.player import Player, Federation, Club, PlayerRating
 from data.tournament import Tournament
@@ -32,7 +33,6 @@ from utils.enum import (
     PlayerTitle,
     Result,
 )
-from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraAdminColumn
@@ -53,8 +53,6 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         request: HTMXRequest,
         event_uniq_id: str,
         player_id: int | None = None,
-        player: Player | None = None,
-        player_from_plugin: Player | None = None,
         tournament_id: int | None = None,
         data: Annotated[
             dict[str, str],
@@ -75,11 +73,6 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Player [{player_id}] not found.')
                 return
-        elif player:
-            self.admin_player = player
-        elif player_from_plugin:
-            # A player has been returned via a plugin search
-            self.admin_player = player_from_plugin
 
         if tournament_id:
             try:
@@ -489,8 +482,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None = None,
         old_player_id: int | None = None,
         deleted_player_id: int | None = None,
-        player: Player | None = None,
-        player_from_plugin: Player | None = None,
+        search_player: Player | None = None,
         tournament_id: int | None = None,
         page: int | None = None,
         data: dict[str, str] | None = None,
@@ -500,8 +492,6 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player=player,
-            player_from_plugin=player_from_plugin,
             tournament_id=tournament_id,
             data=data,
         )
@@ -644,7 +634,7 @@ class PlayerAdminController(BaseEventAdminController):
                 web_context.request
             ),
             'admin_players_extra_columns': extra_columns,
-            'player_updater_options': PlayerUpdaterManager.options(),
+            'data_sources': DataSourceManager.objects(),
             'player_addable_tournaments': admin_event.player_addable_tournaments,
         } | {
             key: value
@@ -681,23 +671,23 @@ class PlayerAdminController(BaseEventAdminController):
                     paid: float = 0.0
                     fixed: int | None = None
                     plugin_data = {}
-                    if admin_player:
-                        first_name = admin_player.first_name
-                        last_name = admin_player.last_name
-                        gender = admin_player.gender
-                        date_of_birth = admin_player.date_of_birth
-                        ratings = admin_player.ratings
-                        title = admin_player.title
-                        federation = admin_player.federation
-                        club = admin_player.club
-                        fide_id = admin_player.fide_id or None
-                        mail = admin_player.mail
-                        phone = admin_player.phone
-                        comment = admin_player.comment
-                        owed = admin_player.owed or 0.0
-                        paid = admin_player.paid or 0.0
-                        fixed = admin_player.fixed
-                        plugin_data = admin_player.plugin_data or {}
+                    if search_player:
+                        first_name = search_player.first_name
+                        last_name = search_player.last_name
+                        gender = search_player.gender
+                        date_of_birth = search_player.date_of_birth
+                        ratings = search_player.ratings
+                        title = search_player.title
+                        federation = search_player.federation
+                        club = search_player.club
+                        fide_id = search_player.fide_id or None
+                        mail = search_player.mail
+                        phone = search_player.phone
+                        comment = search_player.comment
+                        owed = search_player.owed or 0.0
+                        paid = search_player.paid or 0.0
+                        fixed = search_player.fixed
+                        plugin_data = search_player.plugin_data or {}
                     match action:
                         case 'update' | 'delete':
                             assert admin_player is not None
@@ -755,6 +745,9 @@ class PlayerAdminController(BaseEventAdminController):
                             'owed': WebContext.value_to_form_data(owed),
                             'paid': WebContext.value_to_form_data(paid),
                             'fixed': WebContext.value_to_form_data(fixed or None),
+                            'data_source': SessionHandler.get_session_admin_players_active_data_source(
+                                request
+                            ),
                         }
                         | {
                             f'rating_{tr.value}': WebContext.value_to_form_data(
@@ -787,9 +780,6 @@ class PlayerAdminController(BaseEventAdminController):
                     for tournament in tournaments
                 }
 
-                plugin_search_templates = (
-                    plugin_manager.hook.get_player_search_template() or []
-                )
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_player_form_fields_template() or []
                 )
@@ -830,8 +820,7 @@ class PlayerAdminController(BaseEventAdminController):
                     },
                     'federation_options': federation_options,
                     'tournament_options': tournament_options,
-                    'fide_search_available': FideDatabase().exists(),
-                    'plugin_search_templates': plugin_search_templates,
+                    'data_source_options': DataSourceManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'previous_player': (
                         admin_event.players_by_id.get(old_player_id, None)
@@ -1060,27 +1049,54 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/player-modal/create-from-fide/{event_uniq_id:str}/{player_fide_id:int}',
-        name='admin-player-create-from-fide-modal',
+        path=(
+            '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
+            '{data_source_id:str}/{player_source_id:str}'
+        ),
+        name='admin-player-modal-create-from-search',
         cache=1,
     )
-    async def htmx_admin_player_create_from_fide_modal(
+    async def htmx_admin_player_modal_create_from_search(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        player_fide_id: int,
+        data_source_id: str,
+        player_source_id: str,
     ) -> Template | ClientRedirect:
-        # player_fide_id is set when is a player is to be imported from the FIDE database
-        if (fide_database := FideDatabase()).exists():
-            with fide_database:
-                fide_player = fide_database.get_player_by_fide_id(player_fide_id)
-        await plugin_manager.ahook.augment_player_after_search(player=fide_player)
+        try:
+            data_source = DataSourceManager.get_object(data_source_id)
+        except KeyError:
+            return self.redirect_error(
+                request, f'Unknown data source [{data_source_id}].'
+            )
+        errors: dict[str, str] = {}
+        source_player: Player | None = None
+        if not data_source.is_available:
+            return self.redirect_error(
+                request, f'Data source [{data_source_id}] is not available.'
+            )
+        try:
+            source_player = await data_source.fetch_player(player_source_id)
+            if not source_player:
+                return self.redirect_error(
+                    request,
+                    (
+                        f'Player [{player_source_id}] unexpectedly '
+                        f'not found in data source [{data_source_id}]'
+                    ),
+                )
+        except SharlyChessException:
+            errors[data_source.search_element_name] = _(
+                'Connection to the data source [{data_source}] failed. '
+                'Consult the logs for more details.'
+            ).format(data_source=data_source_id)
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
             modal='player',
             action='create',
-            player=fide_player,
+            search_player=source_player,
+            errors=errors,
         )
 
     @get(
@@ -1138,9 +1154,6 @@ class PlayerAdminController(BaseEventAdminController):
                     request,
                     event_uniq_id=event_uniq_id,
                     player_id=player_id,
-                    player=None,
-                    player_from_plugin=None,
-                    tournament_id=None,
                     data=data,
                 )
             case _:
@@ -1162,8 +1175,6 @@ class PlayerAdminController(BaseEventAdminController):
                 modal='player',
                 action=action,
                 player_id=player_id,
-                player=None,
-                player_from_plugin=None,
                 data=data,
                 errors=player.errors,
             )
@@ -1306,8 +1317,6 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player=None,
-            player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -1539,8 +1548,6 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player=None,
-            player_from_plugin=None,
             tournament_id=None,
             data=data,
         )
@@ -1596,9 +1603,6 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            player_id=None,
-            player=None,
-            player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -1631,10 +1635,6 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             modal='close_check_in',
-            action=None,
-            player_id=None,
-            player=None,
-            player_from_plugin=None,
             tournament_id=tournament_id,
         )
 
@@ -1653,9 +1653,6 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            player_id=None,
-            player=None,
-            player_from_plugin=None,
             tournament_id=tournament_id,
             data=data,
         )
@@ -1758,9 +1755,6 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
-            player=None,
-            player_from_plugin=None,
-            tournament_id=None,
             data=data,
         )
         if web_context.error:
@@ -1822,7 +1816,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/players-update/{event_uniq_id:str}/{player_updater_id:str}',
+        path='/admin/players-update/{event_uniq_id:str}/{data_source_id:str}',
         name='admin-event-players-update',
     )
     async def htmx_admin_update_event_players(
@@ -1833,7 +1827,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-        player_updater_id: str,
+        data_source_id: str,
         tournament_id: int | None = None,
     ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
@@ -1844,34 +1838,33 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         try:
-            player_updater: PlayerUpdater = PlayerUpdaterManager.get_object(
-                player_updater_id
-            )
+            data_source = DataSourceManager.get_object(data_source_id)
         except KeyError:
             return self.redirect_error(
-                request, f'Unknown data source [{player_updater_id}].'
+                request, f'Unknown data source [{data_source_id}].'
             )
-        plugin_updater_field_ids: list[str] = [
-            field.id for field in player_updater.fields()
+        player_updater_field_ids: list[str] = [
+            field.id for field in data_source.player_updater_fields
         ]
         field_ids: list[str] = [
             field_id
             for field_id in data['field_ids']
-            if field_id in plugin_updater_field_ids
+            if field_id in player_updater_field_ids
         ]
         players: list[Player] = [
             web_context.admin_event.players_by_id[player_id]
             for player_id in map(int, (id_ for id_ in data['player_ids'] if id_))
         ]
-        player_matches = await player_updater.get_player_matches(
+        player_matches = await data_source.get_player_matches(
             players, field_ids, diff_only=True
         )
         if player_matches is None:
             Message.error(
                 request,
-                _('Could not connect to data source [{player_updater_name}].').format(
-                    player_updater_name=player_updater.name
-                ),
+                _(
+                    'Connection to the data source [{data_source}] failed. '
+                    'Consult the logs for more details.'
+                ).format(data_source=data_source.name),
             )
         else:
             for match in player_matches:
@@ -1905,14 +1898,14 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @get(
-        path='/admin/event-players-diff-modal/{event_uniq_id:str}/{player_updater_id:str}',
+        path='/admin/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
         name='admin-event-players-diff-modal',
     )
     async def htmx_admin_event_players_diff_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        player_updater_id: str,
+        data_source_id: str,
         tournament_id: int | None = None,
     ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
@@ -1923,15 +1916,13 @@ class PlayerAdminController(BaseEventAdminController):
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         try:
-            player_updater: PlayerUpdater = PlayerUpdaterManager.get_object(
-                player_updater_id
-            )
+            data_source: DataSource = DataSourceManager.get_object(data_source_id)
         except KeyError:
             # should never happen, not translated
             return self.redirect_error(
-                request, f'Unknown data source [{player_updater_id}].'
+                request, f'Unknown data source [{data_source_id}].'
             )
-        field_ids: list[str] = [field.id for field in player_updater.fields()]
+        field_ids: list[str] = [field.id for field in data_source.player_updater_fields]
         players = (
             web_context.admin_tournament.players_by_name_with_unpaired
             if web_context.admin_tournament
@@ -1939,15 +1930,15 @@ class PlayerAdminController(BaseEventAdminController):
         )
         player_matches: (
             list[PlayerComparator] | None
-        ) = await player_updater.get_player_matches(players, field_ids, diff_only=False)
+        ) = await data_source.get_player_matches(players, field_ids, diff_only=False)
         template_context: dict[str, Any] = self._get_admin_event_render_context(
             web_context
         )
         if player_matches is None:
             Message.error(
                 request,
-                _('Could not connect to data source [{player_updater_name}].').format(
-                    player_updater_name=player_updater.name
+                _('Could not connect to data source [{data_source}].').format(
+                    data_source=data_source.name
                 ),
             )
             return self._admin_event_players_render(
@@ -1965,7 +1956,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         template_context |= {
             'modal': 'players_diff',
-            'player_updater': player_updater,
+            'data_source': data_source,
             'field_ids': field_ids,
             'player_matches': player_matches,
             'update_enabled': any(
@@ -1996,7 +1987,7 @@ class PlayerAdminController(BaseEventAdminController):
         path='/admin/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
         name='admin-players-needs-refresh-message',
     )
-    async def htmx_admin_pairings_refresh_message(
+    async def htmx_admin_players_refresh_message(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -2010,5 +2001,45 @@ class PlayerAdminController(BaseEventAdminController):
                 ),
                 'event_uniq_id': event_uniq_id,
                 'reason': reason,
+            },
+        )
+
+    @get(
+        path='/admin/search-player/{event_uniq_id:str}/{data_source_id:str}',
+        name='admin-search-player',
+    )
+    async def htmx_admin_search_player(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        data_source_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        try:
+            data_source = DataSourceManager.get_object(data_source_id)
+        except KeyError:
+            return self.redirect_error(
+                request, f'Unknown data source [{data_source_id}].'
+            )
+        search = request.query_params.get(data_source.search_element_name)
+        players: list[Player] | None = None
+        if search:
+            players = await data_source.search_player(search, DataSource.SEARCH_LIMIT)
+            SessionHandler.set_session_admin_players_active_data_source(
+                request, data_source.id
+            )
+        template_context = self._get_admin_event_render_context(web_context)
+        return HTMXTemplate(
+            template_name='admin/players/search_results.html',
+            context=template_context
+            | {
+                'search_results': players,
+                'data_source': data_source,
             },
         )

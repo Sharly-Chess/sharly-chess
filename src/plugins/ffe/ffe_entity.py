@@ -1,16 +1,20 @@
+from abc import ABC, abstractmethod
 from collections import Counter
 from collections.abc import Callable
 from functools import partial, cached_property
 from types import UnionType
 from typing import override, Any
 
+from common import unicode_normalize
 from common.exception import SharlyChessException
 from common.i18n import _
-from data.input_output.player_updaters import (
+from data.input_output.data_source import (
     FidePlayerComparator,
     PlayerComparator,
-    PlayerUpdater,
+    DataSource,
     PlayerUpdaterField,
+    LocalDataSource,
+    OnlineDataSource,
 )
 from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
@@ -22,6 +26,7 @@ from data.prize.player_filter_options import (
 )
 from data.prize.player_filters import PlayerFilter
 from data.tournament import Tournament
+from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -58,35 +63,33 @@ class FfePlayerComparator(FidePlayerComparator):
                 self.player.plugin_data[PLUGIN_NAME][field_id] = match
 
 
-class FfePlayerUpdater(PlayerUpdater):
-    @staticmethod
-    def static_name() -> str:
-        return _('FFE database')
-
-    @staticmethod
-    def static_id() -> str:
-        return f'{PLUGIN_NAME}-ffe'
-
-    @override
-    def fields(self) -> list[PlayerUpdaterField]:
+class _FfeDataSource(ABC):
+    @property
+    def _player_updater_fields(self) -> list[PlayerUpdaterField]:
         return (
-            self._ratings_fields()
-            + self._identity_fields()
-            + self._federation_fields()
-            + self._club_fields()
-            + self._fide_fields()
+            PlayerUpdaterField.ratings_fields()
+            + PlayerUpdaterField.identity_fields()
+            + PlayerUpdaterField.federation_fields()
+            + PlayerUpdaterField.club_fields()
+            + PlayerUpdaterField.fide_fields()
         ) + [
             PlayerUpdaterField(_('League'), 'league'),
             PlayerUpdaterField(_('FFE licence number'), 'ffe_licence_number'),
             PlayerUpdaterField(_('FFE Licence'), 'ffe_licence'),
         ]
 
+    @abstractmethod
+    async def player_matches_from_licence_number(
+        self, ffe_licence_numbers: list[str]
+    ) -> list[Player] | None:
+        """Fetch player matches in the data source from their licence numbers.
+        Return None if it fails."""
+
     @staticmethod
-    def _get_ffe_licence_number(player) -> str | None:
+    def _get_ffe_licence_number(player: Player) -> str | None:
         return get_data(player.plugin_data, 'ffe_licence_number')
 
-    @override
-    async def get_player_matches(
+    async def _get_player_matches(
         self,
         players: list[Player],
         field_ids: list[str],
@@ -94,33 +97,14 @@ class FfePlayerUpdater(PlayerUpdater):
     ) -> list[PlayerComparator] | None:
         ffe_licence_numbers: list[str] = []
         for player in players:
-            if ffe_licence_number := self._get_ffe_licence_number(player):
-                ffe_licence_numbers.append(ffe_licence_number)
-        match_players: list[Player]
-        try:
-            async with FFESqlServer() as server:
-                match_players = [
-                    player
-                    async for player in await server.get_players_by_ffe_licence_number(
-                        ffe_licence_numbers
-                    )
-                ]
-        except SharlyChessException:
-            database = FfeDatabase()
-            if database.exists():
-                assert database.updated_at is not None
-                self.warning_message = _(
-                    'Warning: connection to the online FFE database failed, '
-                    'local database was used. Some data might be outdated '
-                    '(last update on {date})'
-                ).format(date=database.updated_at.strftime('%d-%m-%Y'))
-                with database:
-                    match_players = database.get_players_by_ffe_licence_number(
-                        ffe_licence_numbers
-                    )
-            else:
-                return None
-        return self._create_player_comparators(
+            if licence_number := self._get_ffe_licence_number(player):
+                ffe_licence_numbers.append(licence_number)
+        match_players = await self.player_matches_from_licence_number(
+            ffe_licence_numbers
+        )
+        if match_players is None:
+            return None
+        return DataSource.create_player_comparators(
             players,
             match_players,
             lambda p1, p2: (
@@ -131,6 +115,134 @@ class FfePlayerUpdater(PlayerUpdater):
             diff_only,
             FfePlayerComparator,
         )
+
+    @property
+    def _search_fields(self) -> list[str]:
+        return [_('Name'), _('FFE ID'), _('FIDE ID')]
+
+    @property
+    def _player_search_result_template(self) -> str:
+        return '/ffe_search_result.html'
+
+    @staticmethod
+    def _get_player_source_id(player: Player) -> str:
+        return str(get_data(player.plugin_data, 'ffe_id'))
+
+
+class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-local'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('FFE database (local)')
+
+    @property
+    def local_database_type(self) -> type[LocalSourceDatabase]:
+        return FfeDatabase
+
+    @property
+    def player_updater_fields(self) -> list[PlayerUpdaterField]:
+        return self._player_updater_fields
+
+    async def get_player_matches(
+        self,
+        players: list[Player],
+        field_ids: list[str],
+        diff_only: bool,
+    ) -> list[PlayerComparator] | None:
+        return await self._get_player_matches(players, field_ids, diff_only)
+
+    async def player_matches_from_licence_number(
+        self, ffe_licence_numbers: list[str]
+    ) -> list[Player] | None:
+        database = FfeDatabase()
+        if not database.exists():
+            return None
+        with database:
+            return database.get_players_by_ffe_licence_number(ffe_licence_numbers)
+
+    @property
+    def search_fields(self) -> list[str]:
+        return self._search_fields
+
+    @property
+    def player_search_result_template(self) -> str:
+        return self._player_search_result_template
+
+    def get_player_source_id(self, player: Player) -> str:
+        return self._get_player_source_id(player)
+
+    async def get_player_by_source_id(self, player_source_id: str) -> Player | None:
+        if not player_source_id.isdigit():
+            return None
+        with FfeDatabase() as database:
+            return database.get_player_by_ffe_id(int(player_source_id))
+
+
+class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-online'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('FFE database (online)')
+
+    @classmethod
+    async def check_connection(cls) -> bool:
+        try:
+            async with FFESqlServer():
+                return True
+        except SharlyChessException:
+            return False
+
+    @property
+    def player_updater_fields(self) -> list[PlayerUpdaterField]:
+        return self._player_updater_fields
+
+    async def get_player_matches(
+        self,
+        players: list[Player],
+        field_ids: list[str],
+        diff_only: bool,
+    ) -> list[PlayerComparator] | None:
+        return await self._get_player_matches(players, field_ids, diff_only)
+
+    async def player_matches_from_licence_number(
+        self, ffe_licence_numbers: list[str]
+    ) -> list[Player] | None:
+        try:
+            async with FFESqlServer() as server:
+                return await server.get_players_by_ffe_licence_number(
+                    ffe_licence_numbers
+                )
+        except SharlyChessException:
+            return None
+
+    @property
+    def search_fields(self) -> list[str]:
+        return self._search_fields
+
+    @property
+    def player_search_result_template(self) -> str:
+        return self._player_search_result_template
+
+    def get_player_source_id(self, player: Player) -> str:
+        return self._get_player_source_id(player)
+
+    async def get_player_by_source_id(self, player_source_id: str) -> Player | None:
+        if not player_source_id.isdigit():
+            return None
+        async with FFESqlServer() as ffe_sql_server:
+            return await ffe_sql_server.get_player_by_ffe_id(int(player_source_id))
+
+    async def search_player(
+        self, string: str, limit: int | None = None
+    ) -> list[Player]:
+        async with FFESqlServer() as ffe_sql_server:
+            return await ffe_sql_server.search_player(unicode_normalize(string), limit)
 
 
 class LeaguePlayerSplitter(PlayerSplitter):

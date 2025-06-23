@@ -28,8 +28,7 @@ from common.logger import (
 )
 from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
-from database.sqlite.fide.fide_database import FideDatabase
-from plugins.manager import plugin_manager
+from data.input_output import DataSourceManager
 from web.settings import (
     route_handlers,
     template_config,
@@ -93,10 +92,8 @@ class ServerEngine(Engine):
             )
         )
 
-        FideDatabase().check()
-
-        # Give plugins an opportunity to initialise themselves
-        plugin_manager.hook.on_init()
+        for data_source in DataSourceManager.objects():
+            data_source.on_init()
 
         for port in sharly_chess_config.web_ports:
             if self.__port_in_use(port):

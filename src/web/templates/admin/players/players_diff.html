@@ -1,16 +1,28 @@
-{% for player_updater_id, player_updater_name in player_updater_options.items() %}
+{% for data_source in data_sources %}
     <li
-        class="dropdown-item text-start cursor-pointer"
-        hx-get="{{ url_for('admin-event-players-diff-modal', event_uniq_id=admin_event.uniq_id, player_updater_id=player_updater_id) }}"
-        {% if tournament %}
-            hx-vals='{"tournament_id": "{{ tournament.id }}"}'
+        {% if data_source.is_available %}
+            class="dropdown-item text-start cursor-pointer"
+            hx-get="{{ url_for('admin-event-players-diff-modal', event_uniq_id=admin_event.uniq_id, data_source_id=data_source.id) }}"
+            {% if tournament %}
+                hx-vals='{"tournament_id": "{{ tournament.id }}"}'
+            {% endif %}
+            hx-target="body"
+            hx-indicator="#please-wait"
+            preload
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        {% else %}
+            class="dropdown-item text-start text-secondary"
+            {{ macros.tooltip_attributes(
+                'info',
+                _(
+                    'This data source in unavailable '
+                    '(for more details: Menu > Data sources).'
+                ),
+                'top'
+            ) }}
         {% endif %}
-        hx-target="body"
-        hx-indicator="#please-wait"
-        preload
-        data-bs-toggle="modal"
-        data-bs-target="#modal-wrapper"
     >
-        {{ player_updater_name }}
+        {{ data_source.name }}
     </li>
 {% endfor %}

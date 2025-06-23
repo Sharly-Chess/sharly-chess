@@ -19,7 +19,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.event import Event
 from data.input_output import (
-    PlayerUpdaterManager,
+    DataSourceManager,
     TournamentExporter,
     TournamentExporterManager,
 )
@@ -410,7 +410,7 @@ class TournamentAdminController(BaseEventAdminController):
                     web_context.request
                 )
             ),
-            'player_updater_options': PlayerUpdaterManager.options(),
+            'data_sources': DataSourceManager.objects(),
         } | tournament_card_block_data
 
         match modal:

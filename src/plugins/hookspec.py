@@ -17,7 +17,7 @@ from plugins.utils import (
 )
 
 if TYPE_CHECKING:
-    from data.input_output import PlayerUpdater
+    from data.input_output import DataSource
     from data.pairings.variations import SwissVariation
     from data.player import Player
     from data.print_documents import PrintDocument, PlayerSplitter
@@ -52,10 +52,6 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_init(self):
-        """Provide any initialisation"""
-
-    @hookspec
     def get_event_migration_manager(
         self, event_database: 'EventDatabase'
     ) -> 'PluginMigrationManager':
@@ -79,10 +75,14 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def insert_local_source_database_types(
-        self, database_types: list[type['LocalSourceDatabase']]
+    def insert_data_sources(self, data_sources: list[type['DataSource']]):
+        """Provide extra data sources."""
+
+    @hookspec
+    def insert_local_source_databases(
+        self, databases: list[type['LocalSourceDatabase']]
     ):
-        """Provide extra local database sources."""
+        """Provide extra local source databases."""
 
     # ---------------------------------------------------------------------------------
     # Players
@@ -109,10 +109,6 @@ class AppHookSpecs:
         """Provide additional template context for rendering in PlayerAdminController"""
 
     @hookspec
-    def get_player_search_template(self) -> str:
-        """Provide a path to a player search template"""
-
-    @hookspec
     def get_player_form_fields_template(self) -> str:
         """Provide a path to a template containing additional player form fields"""
 
@@ -133,7 +129,9 @@ class AppHookSpecs:
         """Validate the additional player form fields and returns plugin data"""
 
     @hookspec
-    async def augment_player_after_search(self, player: 'Player'):
+    async def augment_player_after_search(
+        self, player: 'Player', data_source: 'DataSource'
+    ):
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec
@@ -169,10 +167,6 @@ class AppHookSpecs:
     @hookspec
     def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
         """Provide extra columns for the player download datasheets"""
-
-    @hookspec
-    def insert_player_updater_types(self, updater_types: list[type['PlayerUpdater']]):
-        """Provide extra player updaters."""
 
     @hookspec
     def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
