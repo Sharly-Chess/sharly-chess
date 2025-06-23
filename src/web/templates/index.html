@@ -77,8 +77,8 @@
                                             {{ _('(See QR code)') }}
                                         </a>
                                     </div>
-                                    <div class="collapse" id="collapseExample">
-                                        <img src="/tmp/sharly_qr.png" alt="Sharly Chess QR code" class="py-2" style="width: 100px" />
+                                    <div class="collapse text-center" id="collapseExample">
+                                        <img src="{{ url_for('qrcode-lan-url') }}" alt="Sharly Chess QR code" class="py-2" style="width: 200px" />
                                     </div>
                                 {% else %}
                                     <span class="fst-italic">-</span>

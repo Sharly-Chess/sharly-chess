@@ -3,19 +3,16 @@ import platform
 import signal
 import socket
 from pathlib import Path
-import qrcode
 import sys
 from threading import Thread
 from time import sleep
 from types import FrameType
 from webbrowser import open
 
-from common import TMP_DIR
 import pyodbc  # type: ignore
 import requests
 import uvicorn
 from litestar import Litestar
-from litestar.static_files import StaticFilesConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
 
@@ -101,9 +98,6 @@ class ServerEngine(Engine):
         # Give plugins an opportunity to initialise themselves
         plugin_manager.hook.on_init()
 
-        tmp_directory = TMP_DIR / 'static'
-        tmp_directory.mkdir(parents=True, exist_ok=True)
-
         for port in sharly_chess_config.web_ports:
             if self.__port_in_use(port):
                 print_interactive_warning(
@@ -128,20 +122,6 @@ class ServerEngine(Engine):
         print_interactive_info(
             _('Local URL: {local_url}').format(local_url=sharly_chess_config.local_url)
         )
-        if sharly_chess_config.lan_url:
-            print_interactive_info(
-                _('LAN/WAN URL: {lan_url}').format(lan_url=sharly_chess_config.lan_url)
-            )
-
-            qr = qrcode.QRCode(
-                error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=4, border=0
-            )
-
-            qr.add_data(sharly_chess_config.lan_url)
-            qr.make(fit=True)
-
-            img = qr.make_image(fill_color='black', back_color='white')
-            img.save(tmp_directory / 'sharly_qr.png')
 
         if sharly_chess_config.launch_browser:
             Thread(target=launch_browser, args=(sharly_chess_config.local_url,)).start()
@@ -162,9 +142,6 @@ class ServerEngine(Engine):
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
-            static_files_config=[
-                StaticFilesConfig(path='tmp', directories=[tmp_directory], name='tmp')
-            ],
             plugins=[channels_plugin],
         )
 
