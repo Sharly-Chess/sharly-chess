@@ -134,7 +134,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -148,10 +148,6 @@ class ProfileController(BaseController):
             web_context.admin_event,
             None,
         )
-        # Clear the modal contents, and send an event
-        return HTMXTemplate(
-            template_name='common/empty_modal.html',
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='receive',
+        return Redirect(
+            admin_event_url(request, event_uniq_id=web_context.admin_event.uniq_id)
         )

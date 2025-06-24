@@ -104,6 +104,9 @@ msgstr[1] ""
 msgid "(by default)"
 msgstr ""
 
+msgid "(inherited)"
+msgstr ""
+
 msgid "(no screens)"
 msgstr ""
 
@@ -5664,6 +5667,9 @@ msgstr ""
 msgid "You are not allowed to duplicate this computer."
 msgstr ""
 
+msgid "You are not allowed to enter results."
+msgstr ""
+
 msgid "You are not allowed to generate the pairings."
 msgstr ""
 
@@ -5692,6 +5698,9 @@ msgid "You are not allowed to set/unset Zero-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to unpair rounds."
+msgstr ""
+
+msgid "You are not allowed to update results."
 msgstr ""
 
 msgid "You are not allowed to update the players' information from an external data source."

@@ -129,26 +129,31 @@
                 <tbody>
                     {% if client.permissions_by_role %}
                         {% for role, permission in client.permissions_by_role.items() %}
-                            <tr>
-                                <td>
-                                    {{ role.name }}
-                                </td>
-                                <td>
-                                    {% if role.has_tournament_scope %}
-                                        {% if permission %}
-                                            {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission) }}
-                                        {% else %}
-                                            {{ _('All the tournaments') }}
+                            {% if admin_event or role.scope == 1 %}
+                                <tr>
+                                    <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
+                                        {{ role.name }}
+                                        {% if permission.inherited %}
+                                            {{ _('(inherited)') }}
                                         {% endif %}
-                                    {% else %}
-                                        {{ role.scope.name }}
-                                    {% endif %}
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
+                                        {% if role.has_tournament_scope %}
+                                            {% if permission.tournament_uniq_ids %}
+                                                {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission.tournament_uniq_ids) }}
+                                            {% else %}
+                                                {{ _('All the tournaments') }}
+                                            {% endif %}
+                                        {% else %}
+                                            {{ role.scope.name }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="2">
+                            <td colspan="2 text-secondary">
                                 {{ _('No permissions') }}
                             </td>
                         </tr>

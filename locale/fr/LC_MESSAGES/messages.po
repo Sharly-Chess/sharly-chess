@@ -104,6 +104,9 @@ msgstr[1] "(%(num)d écrans)"
 msgid "(by default)"
 msgstr "(par défaut)"
 
+msgid "(inherited)"
+msgstr "(hérité)"
+
 msgid "(no screens)"
 msgstr "(aucun écran)"
 
@@ -5664,6 +5667,9 @@ msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
 msgid "You are not allowed to duplicate this computer."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
 
+msgid "You are not allowed to enter results."
+msgstr "Vous n'êtes pas autorisé·e à entrer des résultats."
+
 msgid "You are not allowed to generate the pairings."
 msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 
@@ -5693,6 +5699,9 @@ msgstr "Vous n'êtes pas autorisé·e à enregistrer des absences."
 
 msgid "You are not allowed to unpair rounds."
 msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
+
+msgid "You are not allowed to update results."
+msgstr "Vous n'êtes pas autorisé·e à modifier les résultats."
 
 msgid "You are not allowed to update the players' information from an external data source."
 msgstr "Vous n'êtes pas autorisé·e à modifier les informations de joueur·euses à partir d'une sources de données externe."

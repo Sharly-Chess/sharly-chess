@@ -131,7 +131,6 @@ class Role(IntEnum):
         match self:
             case Role.ADMINISTRATOR:
                 return [
-                    Role.ADMINISTRATOR,
                     Role.ORGANIZER,
                     Role.DISPLAY_MANAGER,
                     Role.CHIEF_ARBITER,
@@ -174,6 +173,8 @@ class Role(IntEnum):
                 ]
             case Role.SECTOR_ARBITER:
                 return [
+                    Role.CHECK_IN_OFFICER,
+                    Role.RESULTS_OFFICER,
                     Role.SPECTATOR,
                 ]
             case Role.CHECK_IN_OFFICER:

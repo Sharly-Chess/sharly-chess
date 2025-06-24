@@ -126,6 +126,15 @@
                                                         {% if data[name] == '0' %}
                                                             selected
                                                         {% endif %}
+                                                        {% if
+                                                            (not client.can_set_half_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                            or
+                                                            (half_point_bye and not client.can_set_half_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                            or
+                                                            (full_point_bye and not client.can_set_full_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                        %}
+                                                            disabled
+                                                        {% endif %}
                                                 >
                                                     {{ _('Present') }}
                                                 </option>
@@ -133,6 +142,15 @@
                                                         value="7"
                                                         {% if data[name] == '7' %}
                                                             selected
+                                                        {% endif %}
+                                                        {% if
+                                                            (not client.can_set_half_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                            or
+                                                            (half_point_bye and not client.can_set_half_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                            or
+                                                            (full_point_bye and not client.can_set_full_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                        %}
+                                                            disabled
                                                         {% endif %}
                                                 >
                                                     {{ _('Absent') }}
@@ -143,7 +161,11 @@
                                                             {% if data[name] == '8' %}
                                                                 selected
                                                             {% endif %}
-                                                            {% if not client.can_set_half_point_bye_by_tournament_id[player.tournament.id] %}
+                                                            {% if
+                                                                (not client.can_set_half_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                                or
+                                                                (full_point_bye and not client.can_set_full_point_bye_by_tournament_id[admin_player.tournament.id])
+                                                            %}
                                                                 disabled
                                                             {% endif %}
                                                     >
@@ -155,7 +177,7 @@
                                                             {% if data[name] == '10' %}
                                                                 selected
                                                             {% endif %}
-                                                            {% if not client.can_set_full_point_bye_by_tournament_id[player.tournament.id] %}
+                                                            {% if not client.can_set_full_point_bye_by_tournament_id[admin_player.tournament.id] %}
                                                                 disabled
                                                             {% endif %}
                                                     >

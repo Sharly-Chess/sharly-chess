@@ -14,23 +14,35 @@
     {% endif %}
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
     <td class="text-center" style="width: 3rem;">
-        {% if client.can_enter_results_by_tournament_id[] %}
-        <button
-            class="btn btn-sm btn-outline-primary"
-            style="width: 3rem;"
-            hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
-            hx-trigger="click"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            {% if 'MANUAL_UNPAIRING' not in existing_actions and board.exempt %}
-                disabled
+        <span
+            {% if not client.can_enter_results_by_tournament_id[admin_tournament.id] %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
+                {% set allowed=false %}
+            {% elif board.result_str and not client.can_update_results_by_tournament_id[admin_tournament.id] %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update results.'), 'top') }}
+                {% set allowed=false %}
+            {% else %}
+                {% set allowed=true %}
             {% endif %}
         >
-            {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
-        </button>
+            <button
+                class="btn btn-sm btn-outline-primary"
+                style="width: 3rem;"
+                {% if not_allowed or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                    disabled
+                {% else %}
+                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                    hx-trigger="click"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            >
+                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
+            </button>
+        </span>
     </td>
     {% if bp %}
         <td>{{ bp.full_name }} ({{ bp.rating_str }})</td>

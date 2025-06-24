@@ -1,5 +1,6 @@
 import fnmatch
 from contextlib import suppress
+from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING
 
@@ -18,6 +19,14 @@ from web.session import SessionHandler
 
 if TYPE_CHECKING:
     from data.event import Event
+
+
+@dataclass
+class Permission:
+    # None if the permission applies to all the tournaments, or a list of patterns
+    tournament_uniq_ids: str | None = None
+    # False if explicitly granted, True if inherited
+    inherited: bool = False
 
 
 class Client:
@@ -47,6 +56,7 @@ class Client:
     def _find_computer(
         self,
     ) -> Computer:
+        """Returns a Computer object that corresponds to the host of the request."""
         if Computer.host_is_localhost(self.host):
             return localhost_computer
         if self.event is None:
@@ -58,6 +68,7 @@ class Client:
     def _find_account(
         self,
     ) -> Account:
+        """Returns an Account object that corresponds to the session."""
         if self.event is None:
             return anonymous_account
         return SessionHandler.get_account(self.request, self.event)
@@ -67,60 +78,90 @@ class Client:
     # ---------------------------------------------------------------------------------
 
     @cached_property
-    def _permissions_by_role_dict(
+    def permissions_by_role(
         self,
-    ) -> dict[Role, str | None]:
+    ) -> dict[Role, Permission]:
         """Returns all the permissions by role, granted or inherited as a computer or an account."""
-        computer_permissions_by_role: dict[Role, str | None] = {}
+        computer_permissions_by_role: dict[Role, Permission] = {}
         for (
             computer_role,
             computer_permission,
         ) in self.active_computer.permissions_by_role.items():
-            computer_permissions_by_role[computer_role] = computer_permission
+            computer_permissions_by_role[computer_role] = Permission(
+                tournament_uniq_ids=computer_permission,
+            )
             for sub_role in computer_role.sub_roles:
-                computer_permissions_by_role[sub_role] = computer_permission
-        account_permissions_by_role: dict[Role, str | None] = {}
+                computer_permissions_by_role[sub_role] = Permission(
+                    tournament_uniq_ids=computer_permission,
+                    inherited=True,
+                )
+        account_permissions_by_role: dict[Role, Permission] = {}
         for (
             account_role,
             account_permission,
         ) in self.active_account.permissions_by_role.items():
-            account_permissions_by_role[account_role] = account_permission
+            account_permissions_by_role[account_role] = Permission(
+                tournament_uniq_ids=account_permission,
+            )
             for sub_role in account_role.sub_roles:
-                account_permissions_by_role[sub_role] = account_permission
-        permissions_by_role: dict[Role, str | None] = {}
+                account_permissions_by_role[sub_role] = Permission(
+                    tournament_uniq_ids=account_permission,
+                    inherited=True,
+                )
+        permissions_by_role: dict[Role, Permission] = {}
         for role in Role.roles():
-            if role in computer_permissions_by_role:
-                # computer allowed
-                if role in account_permissions_by_role:
-                    # account also allowed
-                    if (
-                        computer_permissions_by_role[role] is None
-                        or account_permissions_by_role[role] is None
-                    ):
-                        # allowed for all the tournaments
-                        permissions_by_role[role] = None
-                    else:
-                        assert computer_permissions_by_role[role] is not None
-                        computer_permission_parts: set[str] = set(
-                            computer_permissions_by_role[role].split(',')
-                        )
-                        assert account_permissions_by_role[role] is not None
-                        account_permission_parts: set[str] = set(
-                            account_permissions_by_role[role].split(',')
-                        )
-                        permissions_by_role[role] = ','.join(
-                            computer_permission_parts | account_permission_parts
-                        )
+            if (
+                role in computer_permissions_by_role
+                and role in account_permissions_by_role
+            ):
+                # computer and account both allowed
+                if (
+                    computer_permissions_by_role[role].tournament_uniq_ids is None
+                    or account_permissions_by_role[role].tournament_uniq_ids is None
+                ):
+                    # allowed for all the tournaments
+                    tournament_uniq_ids = None
                 else:
-                    permissions_by_role[role] = computer_permissions_by_role[role]
+                    assert (
+                        computer_permissions_by_role[role].tournament_uniq_ids
+                        is not None
+                    )
+                    computer_permission_parts: set[str] = set(
+                        computer_permissions_by_role[role].tournament_uniq_ids.split(
+                            ','
+                        )
+                    )
+                    assert (
+                        account_permissions_by_role[role].tournament_uniq_ids
+                        is not None
+                    )
+                    account_permission_parts: set[str] = set(
+                        account_permissions_by_role[role].tournament_uniq_ids.split(',')
+                    )
+                    tournament_uniq_ids: str = ','.join(
+                        computer_permission_parts | account_permission_parts
+                    )
+                permissions_by_role[role] = Permission(
+                    tournament_uniq_ids=tournament_uniq_ids,
+                    inherited=computer_permissions_by_role[role].inherited
+                    and account_permissions_by_role[role].inherited,
+                )
+            elif role in computer_permissions_by_role:
+                permissions_by_role[role] = Permission(
+                    tournament_uniq_ids=computer_permissions_by_role[
+                        role
+                    ].tournament_uniq_ids,
+                    inherited=computer_permissions_by_role[role].inherited,
+                )
+            elif role in account_permissions_by_role:
+                permissions_by_role[role] = Permission(
+                    tournament_uniq_ids=account_permissions_by_role[
+                        role
+                    ].tournament_uniq_ids,
+                    inherited=account_permissions_by_role[role].inherited,
+                )
             else:
-                # computer not allowed
-                if role in account_permissions_by_role:
-                    # account allowed
-                    permissions_by_role[role] = account_permissions_by_role[role]
-                else:
-                    # account not allowed
-                    pass
+                continue
         return permissions_by_role
 
     # ---------------------------------------------------------------------------------
@@ -148,7 +189,7 @@ class Client:
         self,
     ) -> dict[Role, bool]:
         """Returns a dict of bool indicating if the client has a role for the event (at least for one tournament)."""
-        return {role: role in self._permissions_by_role_dict for role in Role.roles()}
+        return {role: role in self.permissions_by_role for role in Role.roles()}
 
     def _has_event_role(
         self,
@@ -168,15 +209,15 @@ class Client:
     @staticmethod
     def _tournament_matches_permission(
         tournament: Tournament,
-        permission: str | None,
+        permission: Permission,
     ) -> bool:
-        if permission is None:
+        if permission.tournament_uniq_ids is None:
             return True
-        for permission_part in permission.split(','):
-            if '*' in permission_part:
-                if fnmatch.fnmatch(tournament.uniq_id, permission_part):
+        for part in permission.tournament_uniq_ids.split(','):
+            if '*' in part:
+                if fnmatch.fnmatch(tournament.uniq_id, part):
                     return True
-            elif tournament.uniq_id == permission_part:
+            elif tournament.uniq_id == part:
                 return True
         return False
 
@@ -190,9 +231,9 @@ class Client:
         return {
             role: {
                 tournament.id: self._tournament_matches_permission(
-                    tournament, self._permissions_by_role_dict[role]
+                    tournament, self.permissions_by_role[role]
                 )
-                if role in self._permissions_by_role_dict
+                if role in self.permissions_by_role
                 else False
                 for tournament in self.event.tournaments_by_id.values()
             }
@@ -204,7 +245,7 @@ class Client:
         tournament: Tournament,
         search_roles: Role | list[Role],
     ) -> bool:
-        """Returns True if the client has ont of the given *search_roles* for the given tournament, False otherwise."""
+        """Returns True if the client has one of the given *search_roles* for the given tournament, False otherwise."""
         if isinstance(search_roles, Role):
             search_roles = [
                 search_roles,
@@ -608,7 +649,6 @@ class Client:
             [
                 Role.SECTOR_ARBITER,
                 Role.PAIRINGS_OFFICER,
-                Role.SPECTATOR,
             ],
         )
 
@@ -648,6 +688,16 @@ class Client:
     ) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         (manually) unpair boards for the tournaments."""
+        return self._allowed_for_roles_by_tournament_id(
+            Role.PAIRINGS_OFFICER,
+        )
+
+    @property
+    def can_permute_board_by_tournament_id(
+        self,
+    ) -> dict[int, bool]:
+        """Returns a dict indicating if the client can
+        permute paired players for the tournaments."""
         return self._allowed_for_roles_by_tournament_id(
             Role.PAIRINGS_OFFICER,
         )
@@ -816,4 +866,4 @@ class Client:
         )
 
     def __repr__(self) -> str:
-        return f'{self.__class__}(account={self.account}, computer={self.computer}, host={self.host})'
+        return f'{self.__class__}(account={self.account}, computer={self.computer}, host={self.host}, permissions={self.permissions_by_role})'
