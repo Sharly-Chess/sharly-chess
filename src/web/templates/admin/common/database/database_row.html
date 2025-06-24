@@ -10,13 +10,21 @@
         ) }}
     </td>
     <td>
-        {{ admin_macros.select_input(
-            name=database.id ~ '_outdate_action',
-            label=None,
-            help_text=None,
-            select_options=outdate_action_options,
-            data=data, errors=errors
-        ) }}
+        <span
+            id="{{ database.id }}-outdate-action-container"
+            {% if data[database.id ~ '_outdate_delay'] == 'disabled' %}
+                class="invisible"
+            {% endif %}
+        >
+            {{ admin_macros.select_input(
+                name=database.id ~ '_outdate_action',
+                label=None,
+                help_text=None,
+                select_options=outdate_action_options,
+                data=data, errors=errors
+            ) }}
+        </span>
+
     </td>
     <td id="{{ database.id }}-updated-at" class="text-center"></td>
     <td class="text-end">
@@ -30,19 +38,13 @@
         </div>
     </td>
     <script>
-        function rowUpdater() {
-            var delayElement = $('#{{database.id}}-outdate-delay');
-            function doHide() {
-                var actionElement = $('#{{database.id}}-outdate-action');
-                if ($(delayElement).val() === 'disabled') {
-                    actionElement.addClass('invisible')
-                } else {
-                    actionElement.removeClass('invisible')
-                }
+        $('#{{ database.id }}-outdate-delay').change(function () {
+            const outdateAction = $('#{{ database.id }}-outdate-action-container');
+            if ($(this).val() === 'disabled') {
+                outdateAction.addClass('invisible');
+            } else {
+                outdateAction.removeClass('invisible');
             }
-            $(delayElement).click(doHide);
-            doHide();
-        };
-        rowUpdater();
+        });
     </script>
 </tr>

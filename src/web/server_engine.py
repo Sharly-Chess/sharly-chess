@@ -7,6 +7,7 @@ import sys
 from threading import Thread
 from time import sleep
 from types import FrameType
+from typing import ClassVar
 from webbrowser import open
 
 import pyodbc  # type: ignore
@@ -28,14 +29,14 @@ from common.logger import (
 )
 from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
-from database.sqlite.fide.fide_database import FideDatabase
-from plugins.manager import plugin_manager
+from data.input_output import DataSourceManager
 from web.settings import (
     route_handlers,
     template_config,
     middlewares,
     stores,
     exception_handlers,
+    listeners,
 )
 from web.channels import channels_plugin
 
@@ -70,6 +71,8 @@ def launch_browser(url: str):
 
 
 class ServerEngine(Engine):
+    app: ClassVar[Litestar | None] = None
+
     def __init__(self, debug: bool = False):
         super().__init__()
         self.debug = debug
@@ -93,10 +96,8 @@ class ServerEngine(Engine):
             )
         )
 
-        FideDatabase().check()
-
-        # Give plugins an opportunity to initialise themselves
-        plugin_manager.hook.on_init()
+        for data_source in DataSourceManager.objects():
+            data_source.on_app_init()
 
         for port in sharly_chess_config.web_ports:
             if self.__port_in_use(port):
@@ -143,7 +144,9 @@ class ServerEngine(Engine):
             stores=stores,
             pdb_on_exception=self.debug,
             plugins=[channels_plugin],
+            listeners=listeners,
         )
+        self.__class__.app = app
 
         config = uvicorn.Config(
             app=app,

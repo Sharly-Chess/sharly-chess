@@ -9,16 +9,26 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
-                    {{ _('Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)', tournament_uniq_id=admin_tournament.uniq_id, player_updater_name=player_updater.name) }}
+                    {{ _('Players update for tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
                 {% else %}
-                    {{ _('Update the players (data source: %(player_updater_name)s)', player_updater_name=player_updater.name) }}
+                    {{ _('Players update') }}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
+            <h4>
+                {{ _('Data source: %(data_source)s', data_source=data_source.name) }}
+            </h4>
+            {% with message, is_warning = data_source.players_update_message %}
+                {% if message %}
+                    <h6 class="{% if is_warning %}text-danger{% endif %}">
+                        {{ message }}
+                    </h6>
+                {% endif %}
+            {% endwith %}
             <form
                 id="modal-form"
-                hx-patch="{{ url_for('admin-event-players-update', event_uniq_id=admin_event.uniq_id, player_updater_id=player_updater.id) }}"
+                hx-patch="{{ url_for('admin-event-players-update', event_uniq_id=admin_event.uniq_id, data_source_id=data_source.id) }}"
                 {% if admin_tournament %}
                     hx-vals='{"tournament_id": "{{ admin_tournament.id }}"}'
                 {% endif %}
@@ -28,11 +38,6 @@
                 {# these inputs are always checked with an empty value (ignored) to be sure to get list parameters. #}
                 <input type="hidden" name="player_ids" value="" />
                 <input type="hidden" name="field_ids" value="" />
-                {% if player_updater.warning_message %}
-                    <div class="text-warning mb-3">
-                        <b>{{ player_updater.warning_message }}</b>
-                    </div>
-                {% endif %}
                 <div class="row">
                     <div class="col-6">
                         <p>

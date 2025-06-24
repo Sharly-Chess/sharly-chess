@@ -1,0 +1,21 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<img
+    class="player-federation-flag pe-1"
+    src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+/>
+{% if player.plugin_data.ffe.ffe_licence_number %}
+    {{ player.plugin_data.ffe.ffe_licence_number }}
+{% else %}
+    -
+{% endif %}
+<span class="fw-bold">
+    {{ player.full_name }}
+</span>
+{{ player.ratings_str }}
+{% if player.plugin_data.ffe.league %}
+    - {{ player.plugin_data.ffe.league }}
+{% endif %}
+{% if player.club.name %}
+    - {{ player.club }}
+{% endif %}
