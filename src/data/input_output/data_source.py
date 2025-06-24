@@ -5,7 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cached_property
 from logging import Logger
-from typing import override
+from typing import override, ClassVar
 
 from common import format_timestamp_date_time
 from common.i18n import _
@@ -195,8 +195,7 @@ class DataSource(IdentifiableEntity, ABC):
     def is_available(self) -> bool:
         """Determines if the data source is available."""
 
-    @abstractmethod
-    def on_init(self):
+    def on_app_init(self):
         """Function to execute at the start of the server to initialize the data source."""
 
     # --------------------------------------------------------------------------
@@ -207,6 +206,12 @@ class DataSource(IdentifiableEntity, ABC):
     @abstractmethod
     def player_updater_fields(self) -> list[PlayerUpdaterField]:
         """Returns the player fields that can be updated by the data source."""
+
+    @property
+    def players_update_message(self) -> tuple[str, bool]:
+        """Message displayed on the players update modal.
+        If the bool is set to True, show the message as a warning."""
+        return '', False
 
     @abstractmethod
     async def get_player_matches(
@@ -326,10 +331,23 @@ class LocalDataSource(DataSource, ABC):
         """The type of the local database used for this source."""
 
     @property
+    def players_update_message(self) -> tuple[str, bool]:
+        database = self.local_database_type()
+        message = (
+            _('Last update: {updated_at} (outdated)')
+            if database.is_outdated
+            else _('Last update: {updated_at}')
+        )
+        return (
+            message.format(updated_at=database.updated_at_str),
+            database.is_outdated,
+        )
+
+    @property
     def is_available(self) -> bool:
         return self.local_database_type.file_path().exists()
 
-    def on_init(self):
+    def on_app_init(self):
         self.local_database_type().check()
 
     async def search_player(
@@ -340,8 +358,8 @@ class LocalDataSource(DataSource, ABC):
 
 
 class OnlineDataSource(DataSource, ABC):
-    _connection_status: bool | None = None
-    _connection_last_checked_at: float | None = None
+    connection_status: ClassVar[bool | None] = None
+    _connection_last_checked_at: ClassVar[float | None] = None
 
     @classmethod
     @abstractmethod
@@ -349,19 +367,19 @@ class OnlineDataSource(DataSource, ABC):
         """Check the connection to the data source.
         If it fails, log the error."""
 
-    def on_init(self):
+    def on_app_init(self):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.reload_connection_status())
 
     @classmethod
     async def reload_connection_status(cls):
         cls._connection_last_checked_at = time.time()
-        cls._connection_status = await cls.check_connection()
+        if NetworkMonitor.connected():
+            cls.connection_status = await cls.check_connection()
 
     @property
     def is_available(self) -> bool:
-        assert self._connection_status is not None
-        return NetworkMonitor.connected() and self._connection_status
+        return NetworkMonitor.connected() and bool(self.connection_status)
 
     @property
     def connection_last_checked_at_str(self) -> str:

@@ -19,6 +19,13 @@
             <h4>
                 {{ _('Data source: %(data_source)s', data_source=data_source.name) }}
             </h4>
+            {% with message, is_warning = data_source.players_update_message %}
+                {% if message %}
+                    <h6 class="{% if is_warning %}text-danger{% endif %}">
+                        {{ message }}
+                    </h6>
+                {% endif %}
+            {% endwith %}
             <form
                 id="modal-form"
                 hx-patch="{{ url_for('admin-event-players-update', event_uniq_id=admin_event.uniq_id, data_source_id=data_source.id) }}"

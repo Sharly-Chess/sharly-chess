@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
+from litestar.events import listener
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
@@ -22,6 +23,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
+from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager
 from web.controllers.admin.display_controller_admin_controller import (
@@ -101,6 +103,16 @@ exception_handlers = {
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
 }
+
+
+@listener('connected')
+async def load_first_online_data_sources_connection_status():
+    for data_source in OnlineDataSourceManager.objects():
+        if data_source.connection_status is None:
+            await data_source.reload_connection_status()
+
+
+listeners = [load_first_online_data_sources_connection_status]
 
 
 class FileSystemLoaderWithRelativePath(FileSystemLoader):
