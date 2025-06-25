@@ -5319,8 +5319,8 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
 msgid "You must create a tournament before creating a screen family."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écrans."
 
-msgid "You must create a tournament before creating screens."
-msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
+msgid "You must create a tournament before creating these screens."
+msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
