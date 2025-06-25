@@ -18,7 +18,9 @@
                 class="form-check-input"
                 type="checkbox"
                 id="{{ id }}"
-                {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+                {% if show %}checked{% endif %}
+            />
+            <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
     <span

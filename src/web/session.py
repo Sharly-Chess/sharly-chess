@@ -511,3 +511,13 @@ class SessionHandler:
         return request.session.get(
             cls.ADMIN_PRIZE_CRITERION_ADD_OTHER_ACTIVE_KEY, False
         )
+
+    ADMIN_PRIZES_SHOW_DETAILS_KEY: str = 'admin_prizes_show_details'
+
+    @classmethod
+    def set_session_admin_prizes_show_details(cls, request: HTMXRequest, b: bool):
+        request.session[cls.ADMIN_PRIZES_SHOW_DETAILS_KEY] = b
+
+    @classmethod
+    def get_session_admin_prizes_show_details(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_PRIZES_SHOW_DETAILS_KEY, False)

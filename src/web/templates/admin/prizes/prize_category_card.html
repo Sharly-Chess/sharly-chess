@@ -82,21 +82,23 @@
                 {% endif %}
             </div>
         </div>
-         <div class="d-flex gap-2">
-            <div>{{ _('%(string)s:', string=_('Prizes')) }}</div>
-            <div class='d-flex flex-column gap-0'>
-                {% for prize in prize_category.sorted_prizes %}
-                    <div>
-                        {{ ordinal_integer(loop.index)|safe }}&nbsp;-&nbsp;
-                        {% if prize.is_monetary %}
-                            {{ format_prize_value(value=prize.value) }}
-                        {% else %}
-                            {{ prize.description }}
-                        {% endif %}
-                    </div>
-                {% endfor %}
+        {% if admin_prizes_show_details %}
+            <div class="d-flex gap-2">
+                <div>{{ _('%(string)s:', string=_('Prizes')) }}</div>
+                <div class='d-flex flex-column gap-0'>
+                    {% for prize in prize_category.sorted_prizes %}
+                        <div>
+                            {{ ordinal_integer(loop.index)|safe }}&nbsp;-&nbsp;
+                            {% if prize.is_monetary %}
+                                {{ format_prize_value(value=prize.value) }}
+                            {% else %}
+                                {{ prize.description }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        {% endif %}
         <div class="d-flex gap-2">
             <div>{{ _('%(string)s:', string=_('Total prize value')) }}</div>
             <div>{{ prize_category.format_total_prize_value(prize_currency) }}</div>
