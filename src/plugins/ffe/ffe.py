@@ -14,8 +14,8 @@ from packaging.version import Version
 
 from common.exception import SharlyChessException
 from common.i18n import _
-from common.network import NetworkMonitor
-from data.input_output import PlayerUpdater
+from data.input_output import DataSource
+from data.input_output.data_source import FideDataSource
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument
@@ -23,6 +23,8 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
+from database.sqlite.fide.fide_database import FideDatabase
+from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -31,18 +33,17 @@ from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
-    FfePlayerUpdater,
+    FfeLocalDataSource,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
     FfeLeaguePlayerFilter,
     FfeLeaguesFilterOption,
+    FfeOnlineDataSource,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
-from plugins.ffe.ffe_search_controller import FfeSearchController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
@@ -124,10 +125,6 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_init(self):
-        FfeDatabase().check()
-
-    @hookimpl
     def get_event_migration_manager(
         self, event_database: EventDatabase
     ) -> PluginMigrationManager:
@@ -136,7 +133,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_controllers(self) -> Iterable[type[BaseController]]:
         return [
-            FfeSearchController,
             FfeAdminEventController,
             FfeAdminTournamentController,
         ]
@@ -144,8 +140,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_search_available': FfeDatabase().exists()
-            or NetworkMonitor.connected(),
             'ffe_leagues': self.FFE_LEAGUES,
             'ffe_auth_valid': '',
             'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
@@ -156,10 +150,18 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_local_source_database_types(
-        self, database_types: list[type[LocalSourceDatabase]]
-    ):
-        database_types.append(FfeDatabase)
+    def insert_data_sources(self, data_sources: list[type[DataSource]]):
+        local: type[DataSource] = FfeLocalDataSource
+        online: type[DataSource] = FfeOnlineDataSource
+        fide: type[DataSource] = FideDataSource
+        PluginUtils.insert_on_equals(data_sources, online, fide, False)
+        PluginUtils.insert_on_equals(data_sources, local, fide, False)
+
+    @hookimpl
+    def insert_local_source_databases(self, databases: list[type[LocalSourceDatabase]]):
+        ffe: type[LocalSourceDatabase] = FfeDatabase
+        fide: type[LocalSourceDatabase] = FideDatabase
+        PluginUtils.insert_on_equals(databases, ffe, fide, False)
 
     # ---------------------------------------------------------------------------------
     # Players
@@ -260,10 +262,6 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    def get_player_search_template(self) -> str:
-        return '/ffe_search.html'
-
-    @hookimpl
     def get_player_form_fields_template(self) -> str:
         return '/ffe_player_form_fields.html'
 
@@ -360,7 +358,14 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    async def augment_player_after_search(self, player: Player):
+    async def augment_player_after_search(
+        self, player: Player, data_source: DataSource
+    ):
+        if data_source.id in (
+            FfeOnlineDataSource.static_id(),
+            FfeLocalDataSource.static_id(),
+        ):
+            return
         # Try to get more information by requesting the FFE SQL server
         if not player.fide_id:
             return
@@ -581,10 +586,6 @@ class FfePlugin(Plugin):
                 cell_template='/ffe_players_update/league_cell.html',
             ),
         ]
-
-    @hookimpl
-    def insert_player_updater_types(self, updater_types: list[type[PlayerUpdater]]):
-        updater_types.append(FfePlayerUpdater)
 
     # ---------------------------------------------------------------------------------
     # Events

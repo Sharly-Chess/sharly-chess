@@ -733,6 +733,9 @@ msgstr "Changer le joueur de tournoi."
 msgid "Character [{char}] is not allowed."
 msgstr "La caractère [{char}] n'est pas autorisé."
 
+msgid "Check connection"
+msgstr "Vérifier la connexion"
+
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
 
@@ -960,8 +963,17 @@ msgstr "Connectez vos appareils au serveur Sharly Chess :"
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
+msgid "Connection established"
+msgstr "Connexion établie"
+
+msgid "Connection failed"
+msgstr "Connexion échouée"
+
 msgid "Connection to the ChessEvent platform"
 msgstr "Connexion à la plateforme ChessEvent"
+
+msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
+msgstr "Connexion à la source de données [{data_source}] échouée. Consulter les logs pour plus de détails."
 
 msgid "Connection to the database failed."
 msgstr "La connexion à la base a échoué."
@@ -1002,8 +1014,8 @@ msgstr "Continuer"
 msgid "Continuously"
 msgstr "En continu"
 
-msgid "Could not connect to data source [{player_updater_name}]."
-msgstr "Connexion impossible à la source de données [{player_updater_name}]."
+msgid "Could not connect to data source [{data_source}]."
+msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
 msgid "Could not download [{url}], error code [{code}]."
 msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
@@ -1165,8 +1177,15 @@ msgstr "Les données pour le tournoi [{tournament_uniq_id}] n'ont pas pu être d
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
 
+msgid "Data source"
+msgstr "Source de données"
+
+#, python-format
+msgid "Data source: %(data_source)s"
+msgstr "Source de données : %(data_source)s"
+
 msgid "Data sources"
-msgstr "Sources données"
+msgstr "Sources de données"
 
 msgid "Database"
 msgstr "Base de données"
@@ -1913,6 +1932,9 @@ msgstr "FFE"
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
+msgid "FFE ID"
+msgstr "Identifiant FFE"
+
 msgid "FFE Licence"
 msgstr "Licence FFE"
 
@@ -1929,11 +1951,11 @@ msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tourno
 msgid "FFE certification number: %(ffe_id)d"
 msgstr "Homologation FFE : %(ffe_id)d"
 
-msgid "FFE database"
-msgstr "Base de données FFE"
+msgid "FFE database (local)"
+msgstr "Base de données FFE (locale)"
 
-msgid "FFE database:"
-msgstr "Base de données FFE :"
+msgid "FFE database (online)"
+msgstr "Base de données FFE (en ligne)"
 
 msgid "FFE licence A (competition)"
 msgstr "Licence FFE A (compétition)"
@@ -1991,9 +2013,6 @@ msgstr "Titre FIDE :"
 
 msgid "FIDE database"
 msgstr "Base de données FIDE"
-
-msgid "FIDE database:"
-msgstr "Base de données FIDE :"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
@@ -2536,6 +2555,9 @@ msgstr "Langue :"
 msgid "Last board:"
 msgstr "Dernier échiquier :"
 
+msgid "Last check"
+msgstr "Dernière vérification"
+
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
 
@@ -2547,6 +2569,12 @@ msgstr "Derniers résultats ({num})"
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
+
+msgid "Last update: {updated_at}"
+msgstr "Dernière mise à jour : {updated_at}"
+
+msgid "Last update: {updated_at} (outdated)"
+msgstr "Dernière mise à jour : {updated_at} (dépassée)"
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
@@ -2599,11 +2627,11 @@ msgstr "Liens vers cet écran :"
 msgid "List of players"
 msgstr "Liste des participant·es"
 
-msgid "Local Source Databases"
-msgstr "Bases de données locales de sources"
-
 msgid "Local URL: {local_url}"
 msgstr "URL locale : {local_url}"
+
+msgid "Local databases"
+msgstr "Bases de données locales"
 
 msgid "Local source databases settings have been updated."
 msgstr "les paramètres des bases de données locales ont été mis à jour."
@@ -2929,12 +2957,6 @@ msgstr "Aucun horaire."
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
 
-msgid "No internet connection and no local database."
-msgstr "Aucune base de données locale et aucune connexion à internet."
-
-msgid "No local database."
-msgstr "Aucune base de donnée locale."
-
 msgid "No mail defined."
 msgstr "Mél non défini."
 
@@ -2961,12 +2983,6 @@ msgstr "Aucune permission"
 
 msgid "No phone defined."
 msgstr "Téléphone non défini."
-
-msgid "No players found in {seconds:.2f} seconds."
-msgstr "Aucun·e joueur·euse trouvé·e in {seconds:.2f} seconds."
-
-msgid "No players found."
-msgstr "Aucun·e joueur·euse trouvé·e."
 
 msgid "No players matching the criteria."
 msgstr "Aucun·e joueur·euse correspondant aux critères."
@@ -3140,6 +3156,9 @@ msgstr "Un unique évènement trouvé, tapez Entrée (Q pour quitter) : "
 
 msgid "Ongoing"
 msgstr "En cours"
+
+msgid "Online sources"
+msgstr "Sources en ligne"
 
 msgid "Only arbiters can see private events."
 msgstr "Seul·es les arbitres peuvent voir les évènements privés."
@@ -3475,6 +3494,13 @@ msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique
 
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
+
+msgid "Players update"
+msgstr "Mise à jour des joueur·euses"
+
+#, python-format
+msgid "Players update for tournament [%(tournament_uniq_id)s]"
+msgstr "Mise à jour des joueur·euses du tournoi [%(tournament_uniq_id)s]"
 
 msgid "Players' opponent: displayed"
 msgstr "Adversaires des joueur·euses : affichée·es"
@@ -4160,11 +4186,9 @@ msgstr "Écrans : %(num)d"
 msgid "Search"
 msgstr "Recherche"
 
-msgid "Search the FFE database for names, FFE ID…"
-msgstr "Rechercher dans la base de données FFE par nom, identifiant FFE…"
-
-msgid "Search the FIDE database for names, FIDE ID, federation…"
-msgstr "Rechercher dans la base de données FIDE par nom, identifiant FIDE, fédération…"
+#, python-format
+msgid "Search by: %(fields)s"
+msgstr "Rechercher par : %(fields)s"
 
 msgid "Searching…"
 msgstr "Recherche en cours…"
@@ -4314,6 +4338,9 @@ msgstr "Trier les joueur·euses par année de naissance (plus âgé·es en premi
 msgid "Sort the players by year of birth (youngest first)."
 msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en premier)."
 
+msgid "Source"
+msgstr "Source"
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
@@ -4379,9 +4406,6 @@ msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tourname
 
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
-
-msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
-msgstr "La base de données FIDE n’est pas installée. Cliquez sur l'icône « base de données » à droite de la barre de navigation pour installer les bases."
 
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
@@ -4472,6 +4496,9 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
+
+msgid "The data source to search players in."
+msgstr "La source de données dans laquelle rechercher des joueur·euses."
 
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
@@ -4876,6 +4903,9 @@ msgstr "Cet ordinateur ne peut pas être dupliqué."
 
 msgid "This computer can not be updated."
 msgstr "Cet ordinateur ne peut pas être modifié."
+
+msgid "This data source in unavailable (for more details: Menu > Data sources)."
+msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
 
 msgid "This display controller is private (not visible by the spectators)."
 msgstr "Ce pilote d'afficheurs est privé (non visible des spectateur·ices)."
@@ -5381,14 +5411,6 @@ msgstr "Mettre à jour"
 msgid "Update players"
 msgstr "Mettre à jour les joueur·euses"
 
-#, python-format
-msgid "Update the players (data source: %(player_updater_name)s)"
-msgstr "Mettre à jour les joueur·euses (source de données : %(player_updater_name)s)"
-
-#, python-format
-msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)"
-msgstr "Mettre à jour les joueur·euses du tournoi [%(tournament_uniq_id)s] (source de données : %(player_updater_name)s)"
-
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
 
@@ -5484,9 +5506,6 @@ msgstr "Message d'avertissement"
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
-
-msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
-msgstr "Attention: connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
 
 msgid "Warning: deleting a prize category is permanent!"
 msgstr "Attention : la suppression d'une catégorie est définitive !"
@@ -5944,16 +5963,6 @@ msgid_plural "{num} illegal moves max"
 msgstr[0] "Maximum {num} coup illégal"
 msgstr[1] "Maximum {num} coups illégaux"
 
-msgid "{num} player found in {seconds:.2f} seconds."
-msgid_plural "{num} players found in {seconds:.2f} seconds."
-msgstr[0] "{num} joueur·euse trouvé·e en {seconds:.2f} secondes."
-msgstr[1] "{num} joueur·euses trouvé·es en {seconds:.2f} secondes."
-
-msgid "{num} player found."
-msgid_plural "{num} players found."
-msgstr[0] "{num} joueur·euse trouvé·e."
-msgstr[1] "{num} joueur·euses trouvé·es."
-
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."
 
@@ -5968,4 +5977,10 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "This display controller is private (not visible by the users)."
+#~ msgstr "Ce pilote d'afficheurs est privé (non visible des utilisateur·ices)."
+
+#~ msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+#~ msgstr "Attention : connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
 

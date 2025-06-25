@@ -2,10 +2,73 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _("Local Source Databases")}}<span style="font-size: 70%">{{ macros.doc_icon('players-databases', 'ms-2') }}</span>
+                {{ _('Data sources') }}
+                <span style="font-size: 70%">{{ macros.doc_icon('players-databases', 'ms-2') }}</span>
             </h2>
         </div>
         <div class="modal-body">
+            {% if online_data_sources %}
+                <h4>{{ _('Online sources') }}</h4>
+                <table
+                    class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+                >
+                    <thead>
+                        <tr>
+                            <th>
+                                {{ _('Source') }}
+                            </th>
+                            <th class="text-center">
+                                {{ _('Status') }}
+                            </th>
+                            <th class="text-center">
+                                {{ _('Last check') }}
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data_source in online_data_sources %}
+                            <tr>
+                                <th>{{ data_source.name }}</th>
+                                {% if data_source.is_available %}
+                                    <td class="text-center text-success">
+                                        {{ _('Connection established') }}
+                                    </td>
+                                {% else %}
+                                    <td class="text-center text-danger">
+                                        {% if network_connected %}
+                                            {{ _('Connection failed') }}
+                                        {% else %}
+                                            {{ _('No internet connection') }}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                <td class="text-center">
+                                    {{ data_source.connection_last_checked_at_str }}
+                                </td>
+                                <td class="text-end">
+                                    <form
+                                        hx-post="{{ url_for(
+                                            'admin-online-data-source-check',
+                                            data_source_id=data_source.id,
+                                        ) }}"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-outline-primary"
+                                        >
+                                            <i class="bi-arrow-clockwise pe-1"></i>
+                                            {{ _('Check connection') }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            <h4>{{ _('Local databases') }}</h4>
             <form
                 id="modal-form"
                 hx-patch="{{ url_for('admin-database-options-update') }}"
@@ -16,19 +79,21 @@
                     class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
                 >
                     <thead>
-                        <th>
-                            {{ _('Database') }}
-                        </th>
-                        <th class="text-center">
-                            {{ _('Action delay') }}
-                        </th>
-                        <th class="text-center">
-                            {{ _('Action') }}
-                        </th>
-                        <th class="text-center">
-                            {{ _('Last update') }}
-                        </th>
-                        <th></th>
+                        <tr>
+                            <th>
+                                {{ _('Database') }}
+                            </th>
+                            <th class="text-center">
+                                {{ _('Action delay') }}
+                            </th>
+                            <th class="text-center">
+                                {{ _('Action') }}
+                            </th>
+                            <th class="text-center">
+                                {{ _('Last update') }}
+                            </th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for database in databases %}

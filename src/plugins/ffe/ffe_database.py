@@ -5,7 +5,7 @@ from contextlib import suppress
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from typing import Iterator, Any, override
+from typing import Any, override
 
 from packaging.version import Version
 from requests import Response, get
@@ -249,11 +249,7 @@ class FfeDatabase(LocalSourceDatabase):
             },
         )
 
-    def search_player(
-        self,
-        string: str,
-        limit: int = 0,  # no limit set if no param or null param passed
-    ) -> Iterator[Player]:
+    def search_player(self, string: str, limit: int | None = None) -> list[Player]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
@@ -294,7 +290,7 @@ class FfeDatabase(LocalSourceDatabase):
             query,
             tuple(params),
         )
-        return (self.get_player_from_row(row) for row in self.fetchall())
+        return [self.get_player_from_row(row) for row in self.fetchall()]
 
     def _get_player_by_id(
         self,

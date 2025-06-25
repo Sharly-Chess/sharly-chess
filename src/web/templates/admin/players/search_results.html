@@ -1,0 +1,27 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% if search_results is not none %}
+    {% if search_results %}
+        {% for player in search_results %}
+            <li class="dropdown-item text-nowrap btn"
+                hx-get="{{ url_for(
+                    'admin-player-modal-create-from-search',
+                    event_uniq_id=admin_event.uniq_id,
+                    data_source_id=data_source.id,
+                    player_source_id=data_source.get_player_source_id(player),
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% include data_source.player_search_result_template %}
+            </li>
+        {% endfor %}
+    {% else %}
+        <li class="dropdown-item text-nowrap">
+            <span class="fst-italic">{{ _('No results.') }}</span>
+        </li>
+    {% endif %}
+    <script>
+        $('#{{ data_source.id }}-search-results').show();
+    </script>
+{% endif %}

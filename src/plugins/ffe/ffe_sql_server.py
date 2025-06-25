@@ -1,4 +1,3 @@
-from collections.abc import AsyncIterator
 from contextlib import suppress
 from logging import Logger
 from pathlib import Path
@@ -21,9 +20,7 @@ logger: Logger = get_logger()
 class FFESqlServer(SqlServer):
     CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         super().__init__(self.CREDENTIALS_FILE, timeout=3)
         if not NetworkMonitor.connected():
             error: str = _('Not connected to internet')
@@ -148,6 +145,7 @@ class FFESqlServer(SqlServer):
 
     @staticmethod
     def string_matches_ffe_licence_number(string: str) -> str | None:
+        # TODO: fix magic number
         return (
             string
             if string.isalnum()
@@ -170,15 +168,12 @@ class FFESqlServer(SqlServer):
         return f"'{fide_id}'"
 
     async def search_player(
-        self,
-        string: str,
-        limit: int = 0,  # no limit set if no param or null param passed
-    ) -> AsyncIterator[Player]:
+        self, string: str, limit: int | None = None
+    ) -> list[Player]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
         # licence number, so that it skips a more complex request
         string = string.upper().strip()
-        # TODO: fix magic number
         if ffe_licence_number := self.string_matches_ffe_licence_number(string):
             return await self.get_players_by_ffe_licence_number(
                 [
@@ -242,7 +237,7 @@ class FFESqlServer(SqlServer):
             query,
             tuple(params),
         )
-        return (self._get_player_from_row(row) async for row in self.fetchall())
+        return [self._get_player_from_row(row) async for row in self.fetchall()]
 
     async def _get_player_by_condition(
         self,
@@ -284,7 +279,7 @@ class FFESqlServer(SqlServer):
         self,
         field: str,
         player_ids: list[str] | list[int],
-    ) -> AsyncIterator[Player]:
+    ) -> list[Player]:
         query_array = ', '.join('?' for _ in player_ids)
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
@@ -292,12 +287,12 @@ class FFESqlServer(SqlServer):
             f'WHERE {field} IN ({query_array})'
         )
         await self.execute(query, tuple(player_ids))
-        return (self._get_player_from_row(row) async for row in self.fetchall())
+        return [self._get_player_from_row(row) async for row in self.fetchall()]
 
     async def get_players_by_ffe_licence_number(
         self,
         player_ffe_licence_numbers: list[str],
-    ) -> AsyncIterator[Player]:
+    ) -> list[Player]:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
@@ -305,12 +300,12 @@ class FFESqlServer(SqlServer):
             f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
-        return (self._get_player_from_row(row) async for row in self.fetchall())
+        return [self._get_player_from_row(row) async for row in self.fetchall()]
 
     async def get_players_by_fide_id(
         self,
         player_fide_ids: list[int],
-    ) -> AsyncIterator[Player]:
+    ) -> list[Player]:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
@@ -328,4 +323,4 @@ class FFESqlServer(SqlServer):
                 for player_fide_id in player_fide_ids
             ),
         )
-        return (self._get_player_from_row(row) async for row in self.fetchall())
+        return [self._get_player_from_row(row) async for row in self.fetchall()]

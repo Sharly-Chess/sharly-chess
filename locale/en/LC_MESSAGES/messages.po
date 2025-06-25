@@ -733,6 +733,9 @@ msgstr ""
 msgid "Character [{char}] is not allowed."
 msgstr ""
 
+msgid "Check connection"
+msgstr ""
+
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr ""
 
@@ -960,7 +963,16 @@ msgstr ""
 msgid "Connection French Chess Federation"
 msgstr ""
 
+msgid "Connection established"
+msgstr ""
+
+msgid "Connection failed"
+msgstr ""
+
 msgid "Connection to the ChessEvent platform"
+msgstr ""
+
+msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr ""
 
 msgid "Connection to the database failed."
@@ -1002,7 +1014,7 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
-msgid "Could not connect to data source [{player_updater_name}]."
+msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
 msgid "Could not download [{url}], error code [{code}]."
@@ -1163,6 +1175,13 @@ msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding
 msgstr ""
 
 msgid "Data is already displayed on the FFE website."
+msgstr ""
+
+msgid "Data source"
+msgstr ""
+
+#, python-format
+msgid "Data source: %(data_source)s"
 msgstr ""
 
 msgid "Data sources"
@@ -1913,6 +1932,9 @@ msgstr "FFE"
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
 
+msgid "FFE ID"
+msgstr ""
+
 msgid "FFE Licence"
 msgstr ""
 
@@ -1929,10 +1951,10 @@ msgstr ""
 msgid "FFE certification number: %(ffe_id)d"
 msgstr ""
 
-msgid "FFE database"
+msgid "FFE database (local)"
 msgstr ""
 
-msgid "FFE database:"
+msgid "FFE database (online)"
 msgstr ""
 
 msgid "FFE licence A (competition)"
@@ -1990,9 +2012,6 @@ msgid "FIDE Title:"
 msgstr ""
 
 msgid "FIDE database"
-msgstr ""
-
-msgid "FIDE database:"
 msgstr ""
 
 msgid "FM *** SHORT NAME FOR Fide Master"
@@ -2536,6 +2555,9 @@ msgstr ""
 msgid "Last board:"
 msgstr ""
 
+msgid "Last check"
+msgstr ""
+
 msgid "Last player:"
 msgstr ""
 
@@ -2546,6 +2568,12 @@ msgid "Last results ({num})"
 msgstr ""
 
 msgid "Last update"
+msgstr ""
+
+msgid "Last update: {updated_at}"
+msgstr ""
+
+msgid "Last update: {updated_at} (outdated)"
 msgstr ""
 
 msgid "Last upload"
@@ -2599,10 +2627,10 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
-msgid "Local Source Databases"
+msgid "Local URL: {local_url}"
 msgstr ""
 
-msgid "Local URL: {local_url}"
+msgid "Local databases"
 msgstr ""
 
 msgid "Local source databases settings have been updated."
@@ -2929,12 +2957,6 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
-msgid "No internet connection and no local database."
-msgstr ""
-
-msgid "No local database."
-msgstr ""
-
 msgid "No mail defined."
 msgstr ""
 
@@ -2960,12 +2982,6 @@ msgid "No permissions"
 msgstr ""
 
 msgid "No phone defined."
-msgstr ""
-
-msgid "No players found in {seconds:.2f} seconds."
-msgstr ""
-
-msgid "No players found."
 msgstr ""
 
 msgid "No players matching the criteria."
@@ -3139,6 +3155,9 @@ msgid "One event found, press Enter (Q to quit): "
 msgstr ""
 
 msgid "Ongoing"
+msgstr ""
+
+msgid "Online sources"
 msgstr ""
 
 msgid "Only arbiters can see private events."
@@ -3474,6 +3493,13 @@ msgid "Players screen family creation"
 msgstr ""
 
 msgid "Players screens show pairings by alphabetical order."
+msgstr ""
+
+msgid "Players update"
+msgstr ""
+
+#, python-format
+msgid "Players update for tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
 msgid "Players' opponent: displayed"
@@ -4160,10 +4186,8 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-msgid "Search the FFE database for names, FFE ID…"
-msgstr ""
-
-msgid "Search the FIDE database for names, FIDE ID, federation…"
+#, python-format
+msgid "Search by: %(fields)s"
 msgstr ""
 
 msgid "Searching…"
@@ -4314,6 +4338,9 @@ msgstr ""
 msgid "Sort the players by year of birth (youngest first)."
 msgstr ""
 
+msgid "Source"
+msgstr ""
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -4378,9 +4405,6 @@ msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq
 msgstr ""
 
 msgid "The FFE ID is a positive integer."
-msgstr ""
-
-msgid "The FIDE database is not installed. Use the database button on the right of the navigation bar to install databases."
 msgstr ""
 
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
@@ -4471,6 +4495,9 @@ msgid "The crosstable shows all the results of the players, while the club is pr
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr ""
+
+msgid "The data source to search players in."
 msgstr ""
 
 msgid "The date of the first hour is not defined (mandatory)."
@@ -4875,6 +4902,9 @@ msgid "This computer can not be duplicated."
 msgstr ""
 
 msgid "This computer can not be updated."
+msgstr ""
+
+msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr ""
 
 msgid "This display controller is private (not visible by the spectators)."
@@ -5381,14 +5411,6 @@ msgstr ""
 msgid "Update players"
 msgstr ""
 
-#, python-format
-msgid "Update the players (data source: %(player_updater_name)s)"
-msgstr ""
-
-#, python-format
-msgid "Update the players of tournament [%(tournament_uniq_id)s] (data source: %(player_updater_name)s)"
-msgstr ""
-
 msgid "Update the players' information from an external data source."
 msgstr ""
 
@@ -5483,9 +5505,6 @@ msgid "Warning message"
 msgstr ""
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-msgstr ""
-
-msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
 msgstr ""
 
 msgid "Warning: deleting a prize category is permanent!"
@@ -5944,16 +5963,6 @@ msgid_plural "{num} illegal moves max"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "{num} player found in {seconds:.2f} seconds."
-msgid_plural "{num} players found in {seconds:.2f} seconds."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{num} player found."
-msgid_plural "{num} players found."
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
 
@@ -5968,4 +5977,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
+#~ msgstr ""
 

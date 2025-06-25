@@ -6,6 +6,7 @@ from litestar.plugins.htmx import HTMXRequest
 
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.entities import Account
+from data.input_output import DataSourceManager
 from data.player import Federation, Club
 from data.safety_mode import SafetyMode
 from utils.enum import PlayerGender, PlayerCategory
@@ -416,6 +417,21 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> int | None:
         return request.session.get(cls.ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY, None)
+
+    ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY: str = 'admin_players_active_data_source'
+
+    @classmethod
+    def set_session_admin_players_active_data_source(
+        cls, request: HTMXRequest, data_source_id: str
+    ):
+        request.session[cls.ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY] = data_source_id
+
+    @classmethod
+    def get_session_admin_players_active_data_source(cls, request: HTMXRequest) -> str:
+        return request.session.get(
+            cls.ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY,
+            DataSourceManager.entity_types()[0].static_id(),
+        )
 
     ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'
 

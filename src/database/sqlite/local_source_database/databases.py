@@ -14,6 +14,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from data.player import Player
 from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
@@ -98,6 +99,15 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     @abstractmethod
     def _create_indexes(self):
         """Create the indexes for the databases."""
+
+    @abstractmethod
+    def search_player(
+        self,
+        string: str,
+        limit: int | None = None,
+    ) -> list[Player]:
+        """Search a player in the database.
+        Returns maximum *limit* results (no limit if *limit* is None)."""
 
     @property
     def outdate_delay(self) -> OutdatedDelay:

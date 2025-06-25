@@ -5,6 +5,8 @@ from typing import Annotated, Any
 
 from common import format_timestamp_date, format_timestamp_time
 from common.logger import get_logging_config, get_logger
+from common.network import NetworkMonitor
+from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
 from database.access.access_database import access_driver, odbc_drivers
@@ -400,6 +402,8 @@ class IndexAdminController(BaseAdminController):
                         }
                 context |= {
                     'databases': databases,
+                    'online_data_sources': OnlineDataSourceManager.objects(),
+                    'network_connected': NetworkMonitor.connected(),
                     'outdate_delay_options': OutdatedDelayManager.options(),
                     'outdate_action_options': OutdatedActionManager.options(),
                     'modal': modal,
@@ -741,9 +745,34 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         database_id: str,
     ) -> Template | ClientRedirect:
-        database = LocalSourceDatabaseManager.get_object(database_id)
-        database.delete()
+        try:
+            database = LocalSourceDatabaseManager.get_object(database_id)
+            database.delete()
+        except KeyError:
+            return self.redirect_error(request, f'Unknown database [{database_id}].')
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             context={'database': database},
+        )
+
+    @post(
+        path='/admin/online-data-source/check/{data_source_id:str}',
+        name='admin-online-data-source-check',
+    )
+    async def htmx_admin_data_source_check(
+        self,
+        request: HTMXRequest,
+        data_source_id: str,
+    ) -> Template | ClientRedirect:
+        try:
+            data_source = OnlineDataSourceManager.get_object(data_source_id)
+            await data_source.reload_connection_status()
+        except KeyError:
+            return self.redirect_error(
+                request, f'Unknown data source [{data_source_id}].'
+            )
+        return self._admin_render(
+            request,
+            admin_tab=None,
+            modal='database',
         )

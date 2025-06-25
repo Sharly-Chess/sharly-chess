@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
+from litestar.events import listener
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
@@ -22,6 +23,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
+from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager
 from web.controllers.admin.computer_admin_controller import ComputerAdminController
@@ -43,7 +45,6 @@ from web.controllers.admin.account_admin_controller import AccountAdminControlle
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
-from web.controllers.search.fide_search_controller import FideSearchController
 from web.controllers.user.event_user_controller import EventUserController
 from web.controllers.user.index_user_controller import IndexUserController
 from web.controllers.user.screen_user_controller import ScreenUserController
@@ -90,7 +91,6 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     RotatorAdminController,
     PlayerAdminController,
     DisplayControllerAdminController,
-    FideSearchController,
     QRCodeController,
     AccountAdminController,
     ComputerAdminController,
@@ -109,6 +109,16 @@ exception_handlers = {
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
 }
+
+
+@listener('connected')
+async def load_first_online_data_sources_connection_status():
+    for data_source in OnlineDataSourceManager.objects():
+        if data_source.connection_status is None:
+            await data_source.reload_connection_status()
+
+
+listeners = [load_first_online_data_sources_connection_status]
 
 
 class FileSystemLoaderWithRelativePath(FileSystemLoader):

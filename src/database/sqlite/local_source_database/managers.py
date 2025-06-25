@@ -11,11 +11,9 @@ class LocalSourceDatabaseManager(EntityManager[LocalSourceDatabase]):
     def entity_types() -> list[type[LocalSourceDatabase]]:
         from database.sqlite.fide.fide_database import FideDatabase
 
-        database_types: list[type[LocalSourceDatabase]] = [FideDatabase]
-        plugin_manager.hook.insert_local_source_database_types(
-            database_types=database_types
-        )
-        return database_types
+        databases: list[type[LocalSourceDatabase]] = [FideDatabase]
+        plugin_manager.hook.insert_local_source_databases(databases=databases)
+        return databases
 
 
 class OutdatedDelayManager(EntityManager[OutdatedDelay]):

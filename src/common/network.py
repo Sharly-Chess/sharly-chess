@@ -34,6 +34,8 @@ class NetworkMonitor:
 
     @classmethod
     def _test_for_internet_connection(cls):
+        from web.server_engine import ServerEngine
+
         # https://www.iana.org/domains/root/servers
         root_dns_servers: list[str] = [
             '198.41.0.4',
@@ -57,10 +59,13 @@ class NetworkMonitor:
         if any(cls._test_dns_server(server) for server in selected_servers):
             if not cls.connected_status:
                 logger.info(_('Internet connection established'))
+                if ServerEngine.app:
+                    ServerEngine.app.emit('connected')
             cls.connected_status = True
         else:
             if cls.connected_status:
                 logger.info(_('Internet connection lost'))
+                # NOTE(Molrn) 'disconnected' event not emitted as an event without listeners raises
             cls.connected_status = False
 
     # ---------------------------------------------------------------------------------
