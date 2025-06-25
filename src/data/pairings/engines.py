@@ -167,7 +167,7 @@ class BbpPairings(PairingEngine):
         trf_tournament = tournament.to_trf(
             TrfType.TRF_BX,
             after_round=round_ - 1,
-            next_round_pairings_as_bye=partial_pairings,
+            next_round_pairings_as_zpb=partial_pairings,
         )
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(trf_file, trf_tournament)
@@ -203,6 +203,7 @@ class BbpPairings(PairingEngine):
     ) -> list[Board]:
         boards: list[Board] = []
         file.readline()  # table_count
+        has_pab = tournament.round_has_pab(round_)
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_starting_rank[white_trf_id]
@@ -213,18 +214,17 @@ class BbpPairings(PairingEngine):
                         black_player=tournament.players_by_starting_rank[black_trf_id],
                     )
                 )
-            else:
-                pairing = white_player.pairings[round_]
-                if pairing.next_round_bye or (
-                    partial_pairings and pairing.opponent_id is None
-                ):
-                    continue
+            elif not (
+                white_player.pairings[round_].next_round_bye
+                or (partial_pairings and has_pab)
+            ):
                 boards.append(
                     Board(
                         white_player=white_player,
                         result=Result.PAIRING_ALLOCATED_BYE,
                     )
                 )
+                has_pab = True
         return boards
 
 

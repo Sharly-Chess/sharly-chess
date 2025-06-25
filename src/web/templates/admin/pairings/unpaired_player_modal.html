@@ -90,9 +90,17 @@
                                 {% endif %}
                             >
                                 {% if exempt_player %}
-                                    {{ _('Pair as BLACK vs %(player)s', player=exempt_player.first_name ~ ' ' ~ exempt_player.last_name) }}
+                                    {{ _('Pair as BLACK') }}
+                                    <div>
+                                        {{ _('vs %(player)s', player=exempt_player.full_name) }}
+                                    </div>
                                     <div class="text-danger italic" style="font-size: 0.9rem;">
-                                        {{ _('This will cause the table numbers to be reordered.') }}
+                                        {% set round_played_against = player.round_played_against(exempt_player.id) %}
+                                        {% if round_played_against %}
+                                            {{ _('Encounter already happened at round #%(round)d', round=round_played_against) }}
+                                        {% else %}
+                                            {{ _('This will cause the table numbers to be reordered.') }}
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     {{ _('Pair as WHITE') }}

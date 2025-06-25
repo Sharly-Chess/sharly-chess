@@ -805,7 +805,7 @@ class Tournament:
         self,
         trf_type: TrfType,
         after_round: int | None = None,
-        next_round_pairings_as_bye: bool = False,
+        next_round_pairings_as_zpb: bool = False,
     ) -> TrfTournament:
         if after_round is None:
             after_round = self.rounds
@@ -822,7 +822,7 @@ class Tournament:
                     self._player_id_to_trf_id,
                     after_round=after_round,
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
-                    next_round_pairings_as_bye=next_round_pairings_as_bye,
+                    next_round_pairings_as_zpb=next_round_pairings_as_zpb,
                 )
                 for player in self.players_by_starting_rank.values()
             ],

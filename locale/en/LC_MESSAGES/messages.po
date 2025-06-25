@@ -848,6 +848,12 @@ msgstr "Comments"
 msgid "Complementary pairings"
 msgstr ""
 
+msgid "Complementary pairings generated."
+msgstr ""
+
+msgid "Complementary pairings successfully generated!"
+msgstr ""
+
 msgid "Configuration"
 msgstr ""
 
@@ -1522,6 +1528,10 @@ msgstr ""
 msgid "EXEMPT"
 msgstr ""
 
+#, python-format
+msgid "EXEMPT (already received at round #%(round)d)"
+msgstr ""
+
 msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
@@ -1631,6 +1641,10 @@ msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
 msgid "Enabled"
+msgstr ""
+
+#, python-format
+msgid "Encounter already happened at round #%(round)d"
 msgstr ""
 
 msgid "End round"
@@ -2058,6 +2072,9 @@ msgid "Gender:"
 msgstr ""
 
 msgid "General"
+msgstr ""
+
+msgid "Generate complementary pairings"
 msgstr ""
 
 msgid "Generate pairings for all the rounds of the tournament."
@@ -3042,6 +3059,9 @@ msgstr "Owed/paid"
 msgid "Owed:"
 msgstr ""
 
+msgid "PAB is already assigned"
+msgstr ""
+
 msgid "PERMUTE WHITE/BLACK"
 msgstr ""
 
@@ -3057,8 +3077,7 @@ msgstr ""
 msgid "Pair"
 msgstr ""
 
-#, python-format
-msgid "Pair as BLACK vs %(player)s"
+msgid "Pair as BLACK"
 msgstr ""
 
 msgid "Pair as WHITE"
@@ -3123,6 +3142,9 @@ msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgstr ""
+
+msgid "Pairings successfully generated!"
 msgstr ""
 
 #, python-format
@@ -5400,6 +5422,9 @@ msgstr ""
 msgid "no background image"
 msgstr ""
 
+msgid "player already received a PAB in a previous round"
+msgstr ""
+
 msgid "players from #{first} to #{last}"
 msgstr ""
 
@@ -5460,6 +5485,9 @@ msgstr ""
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
+msgid "some already played each other"
+msgstr ""
+
 msgid "the whole ranking"
 msgstr ""
 
@@ -5482,6 +5510,10 @@ msgid "value: {currency_value}"
 msgstr ""
 
 msgid "vs"
+msgstr ""
+
+#, python-format
+msgid "vs %(player)s"
 msgstr ""
 
 msgid "yes"
@@ -5514,6 +5546,11 @@ msgstr[1] ""
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
+
+msgid "{players} player remain unpaired"
+msgid_plural "{players} players remain unpaired"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""

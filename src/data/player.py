@@ -350,7 +350,7 @@ class Player(TournamentPlayer):
         *,
         after_round: int,
         include_next_round_bye: bool,
-        next_round_pairings_as_bye: bool,
+        next_round_pairings_as_zpb: bool,
     ) -> TrfPlayer:
         games: list[TrfGame] = []
         for round_nb, pairing in self.pairings.items():
@@ -360,7 +360,7 @@ class Player(TournamentPlayer):
             elif round_nb == after_round + 1:
                 if include_next_round_bye and pairing.next_round_bye:
                     games.append(trf_game)
-                elif next_round_pairings_as_bye and pairing.opponent_id:
+                elif next_round_pairings_as_zpb and not pairing.not_paired:
                     games.append(
                         Pairing(result=Result.ZERO_POINT_BYE).to_trf(
                             round_nb, player_id_to_trf_id
@@ -426,6 +426,29 @@ class Player(TournamentPlayer):
             if pairing.opponent_id is not None or pairing.exempt:
                 return True
         return False
+
+    @property
+    def first_pab_round(self) -> int | None:
+        return next(
+            (
+                round_
+                for round_, pairing in self.pairings.items()
+                if pairing.result == Result.PAIRING_ALLOCATED_BYE
+            ),
+            None,
+        )
+
+    def round_played_against(self, opponent_id: int) -> int | None:
+        """Get the round at which the player has played against the player *opponent_id*.
+        Return None if they have not played against each other."""
+        return next(
+            (
+                round_
+                for round_, pairing in self.pairings.items()
+                if pairing.opponent_id == opponent_id
+            ),
+            None,
+        )
 
     @cached_property
     def can_check_in_out(self) -> bool:

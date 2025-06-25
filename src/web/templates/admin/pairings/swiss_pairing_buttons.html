@@ -46,7 +46,8 @@
             </button>
         </div>
     {% endif %}
-    {% if 'PARTIAL_PAIRING' in existing_actions and admin_tournament.is_round_partially_paired(admin_round) %}
+    {% set action = 'PARTIAL_PAIRING' %}
+    {% if action in existing_actions and admin_tournament.is_round_partially_paired(admin_round) %}
         <div
             {{ macros.tooltip_attributes(
                 'info',
@@ -57,12 +58,26 @@
         >
             <button
                 class="btn btn-outline-primary text-nowrap"
-                hx-post="{{ url_for(
-                    'admin-generate-round-partial-pairings',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    round=admin_round
-                ) }}"
+                {% if action in allowed_actions %}
+                    hx-post="{{ url_for(
+                        'admin-generate-round-partial-pairings',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                    ) }}"
+                {% else %}
+                    hx-get="{{ url_for(
+                        'admin-pairings-safety-mode-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        action=action,
+                    ) }}"
+                    hx-trigger="click"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
                 {% if pairings_generation_disabled_message %}
@@ -90,9 +105,20 @@
                     disabled
                 {% else %}
                     {% if action in allowed_actions %}
-                        hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                        hx-post="{{ url_for(
+                            'admin-pairings-unpair',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
                     {% else %}
-                        hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+                        hx-get="{{ url_for(
+                            'admin-pairings-safety-mode-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            action=action
+                        ) }}"
                         hx-trigger="click"
                         preload
                         data-bs-toggle="modal"

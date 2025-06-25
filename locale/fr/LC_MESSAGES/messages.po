@@ -848,6 +848,12 @@ msgstr "Commentaires"
 msgid "Complementary pairings"
 msgstr "Appariements complémentaires"
 
+msgid "Complementary pairings generated."
+msgstr "Appariements complémentaires générés."
+
+msgid "Complementary pairings successfully generated!"
+msgstr "Appariements complémentaires générés avec succès !"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -1520,7 +1526,11 @@ msgid "E.g.: world-championship"
 msgstr "Exemple : championnat-du-monde"
 
 msgid "EXEMPT"
-msgstr "EXEMPT"
+msgstr "EXEMPT·E"
+
+#, python-format
+msgid "EXEMPT (already received at round #%(round)d)"
+msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
 
 msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
@@ -1632,6 +1642,10 @@ msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes
 
 msgid "Enabled"
 msgstr "Activé"
+
+#, python-format
+msgid "Encounter already happened at round #%(round)d"
+msgstr "La rencontre a déjà eu lieu à la ronde n°%(round)d"
 
 msgid "End round"
 msgstr "Terminer la ronde"
@@ -2059,6 +2073,9 @@ msgstr "Genre :"
 
 msgid "General"
 msgstr "Général"
+
+msgid "Generate complementary pairings"
+msgstr "Générer les appariements complémentaires"
 
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
@@ -3042,6 +3059,9 @@ msgstr "Du/payé"
 msgid "Owed:"
 msgstr "Dû :"
 
+msgid "PAB is already assigned"
+msgstr "il y a déjà un·e joueur·euse exempt·e"
+
 msgid "PERMUTE WHITE/BLACK"
 msgstr "PERMUTER BLANCS/NOIRS"
 
@@ -3057,9 +3077,8 @@ msgstr "Payé :"
 msgid "Pair"
 msgstr "Apparier"
 
-#, python-format
-msgid "Pair as BLACK vs %(player)s"
-msgstr "Apparier avec les NOIRS contre %(player)s"
+msgid "Pair as BLACK"
+msgstr "Apparier avec les NOIRS"
 
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
@@ -3124,6 +3143,9 @@ msgstr "Les appariements de la ronde {round} ont été générés pour le tourno
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
+
+msgid "Pairings successfully generated!"
+msgstr "Appariements générés avec succès !"
 
 #, python-format
 msgid "Pairings: %(pairing_variation)s"
@@ -5400,6 +5422,9 @@ msgstr "non"
 msgid "no background image"
 msgstr "pas d'image de fond"
 
+msgid "player already received a PAB in a previous round"
+msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
+
 msgid "players from #{first} to #{last}"
 msgstr "joueur·euses du n°{first} au n°{last}"
 
@@ -5460,6 +5485,9 @@ msgstr "écrans de {number} joueur·euses du n°{first} à la fin"
 msgid "screens of {number} players from start to #{last}"
 msgstr "écrans de {number} joueur·euses du début au n°{last}"
 
+msgid "some already played each other"
+msgstr "certain·es se sont déjà rencontré·es"
+
 msgid "the whole ranking"
 msgstr "classement complet"
 
@@ -5483,6 +5511,10 @@ msgstr "valeur : {currency_value}"
 
 msgid "vs"
 msgstr "contre"
+
+#, python-format
+msgid "vs %(player)s"
+msgstr "contre %(player)s"
 
 msgid "yes"
 msgstr "oui"
@@ -5514,6 +5546,11 @@ msgstr[1] "Maximum {num} coups illégaux"
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."
+
+msgid "{players} player remain unpaired"
+msgid_plural "{players} players remain unpaired"
+msgstr[0] "{players} joueur·euse reste non-apparié·e"
+msgstr[1] "{players} joueur·euses restent non-apparié·es"
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
