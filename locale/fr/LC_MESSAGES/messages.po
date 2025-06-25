@@ -845,6 +845,9 @@ msgstr "Commentaire :"
 msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Commentaires"
 
+msgid "Complementary pairings"
+msgstr "Appariements complémentaires"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -3060,6 +3063,9 @@ msgstr "Apparier avec les NOIRS contre %(player)s"
 
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
+
+msgid "Pair the unpaired players with each other."
+msgstr "Apparier les joueur·euses non-apparié·es ensembles."
 
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"

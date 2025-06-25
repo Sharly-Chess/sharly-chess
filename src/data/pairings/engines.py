@@ -25,7 +25,12 @@ logger = get_logger()
 
 class PairingEngine(ABC):
     @abstractmethod
-    def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
+    def _generate_boards(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> list[Board]:
         """Generate a list of boards matching all the pairings of tournament
         *tournament* at round *at_round*.
         Bye players should not be taken into account.
@@ -35,7 +40,12 @@ class PairingEngine(ABC):
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
         """Returns an explanation message if the player count is invalid, or None if it is."""
 
-    def generate_pairings(self, tournament: 'Tournament', round_: int):
+    def generate_pairings(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ):
         """Generate the pairings of the round *round_* for tournament *tournament*.
         Generated pairings are stored in the player pairings and in the Papi DB."""
         if self.pairings_generation_disabled_message(tournament, round_):
@@ -43,7 +53,7 @@ class PairingEngine(ABC):
                 f'Pairings generation not allowed for round {round_} '
                 f'of tournament [{tournament.uniq_id}].'
             )
-        boards = self._generate_boards(tournament, round_)
+        boards = self._generate_boards(tournament, round_, partial_pairings)
         for board in boards:
             white_player = board.white_player
             black_player = board.black_player
@@ -144,15 +154,23 @@ class BbpPairings(PairingEngine):
             )
         return None
 
-    def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
+    def _generate_boards(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> list[Board]:
         pairings_dir = TMP_DIR / 'pairings'
         pairings_dir.mkdir(exist_ok=True)
         trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
         pairings_file_path = pairings_dir / f'{tournament.uniq_id}-pairings.txt'
+        trf_tournament = tournament.to_trf(
+            TrfType.TRF_BX,
+            after_round=round_ - 1,
+            next_round_pairings_as_bye=partial_pairings,
+        )
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
-            trf.dump(
-                trf_file, tournament.to_trf(TrfType.TRF_BX, after_round=round_ - 1)
-            )
+            trf.dump(trf_file, trf_tournament)
         result = subprocess.run(
             [
                 self.executable_path,
@@ -171,11 +189,17 @@ class BbpPairings(PairingEngine):
                 f'stdout: {result.stdout}\nstderr: {result.stderr}'
             )
         with open(pairings_file_path, encoding='utf-8') as pairing_file:
-            return self._boards_from_file(pairing_file, tournament, round_)
+            return self._boards_from_file(
+                pairing_file, tournament, round_, partial_pairings
+            )
 
     @classmethod
     def _boards_from_file(
-        cls, file: TextIO, tournament: 'Tournament', round_: int
+        cls,
+        file: TextIO,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool,
     ) -> list[Board]:
         boards: list[Board] = []
         file.readline()  # table_count
@@ -189,7 +213,12 @@ class BbpPairings(PairingEngine):
                         black_player=tournament.players_by_starting_rank[black_trf_id],
                     )
                 )
-            elif not white_player.pairings[round_].next_round_bye:
+            else:
+                pairing = white_player.pairings[round_]
+                if pairing.next_round_bye or (
+                    partial_pairings and pairing.opponent_id is None
+                ):
+                    continue
                 boards.append(
                     Board(
                         white_player=white_player,
@@ -279,7 +308,12 @@ class BergerPairingEngine(RoundRobinPairingEngine):
             return tournament.players_by_id[player_id]
         return None
 
-    def _generate_boards(self, tournament: 'Tournament', round_: int) -> list[Board]:
+    def _generate_boards(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> list[Board]:
         boards: list[Board] = []
         player_by_pairing_number = {
             pairing_number: tournament.players_by_id[player_id]

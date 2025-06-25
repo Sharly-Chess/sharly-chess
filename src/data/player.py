@@ -5,6 +5,7 @@ from datetime import date
 from functools import total_ordering, cached_property
 from typing import TYPE_CHECKING, Any, Self, Callable, SupportsFloat, Optional
 from trf import Player as TrfPlayer
+from trf.Player import Game as TrfGame
 
 from common.i18n import _
 from data.pairing import Pairing
@@ -349,8 +350,23 @@ class Player(TournamentPlayer):
         *,
         after_round: int,
         include_next_round_bye: bool,
+        next_round_pairings_as_bye: bool,
     ) -> TrfPlayer:
-        assert self.id is not None
+        games: list[TrfGame] = []
+        for round_nb, pairing in self.pairings.items():
+            trf_game = pairing.to_trf(round_nb, player_id_to_trf_id)
+            if round_nb <= after_round:
+                games.append(trf_game)
+            elif round_nb == after_round + 1:
+                if include_next_round_bye and pairing.next_round_bye:
+                    games.append(trf_game)
+                elif next_round_pairings_as_bye and pairing.opponent_id:
+                    games.append(
+                        Pairing(result=Result.ZERO_POINT_BYE).to_trf(
+                            round_nb, player_id_to_trf_id
+                        )
+                    )
+
         return TrfPlayer(
             startrank=player_id_to_trf_id(self.id),
             name=f'{self.last_name}, {self.first_name}',
@@ -359,21 +375,12 @@ class Player(TournamentPlayer):
             rating=self.rating,
             fed=self.federation.name,
             id=self.fide_id,
-            birthdate=self.date_of_birth.strftime('%Y/%m/%d')
-            if self.date_of_birth
-            else '',
+            birthdate=(
+                self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else ''
+            ),
             points=self.points_after(after_round),
             rank=self.rank,
-            games=[
-                result.to_trf(round_nb, player_id_to_trf_id)
-                for round_nb, result in self.pairings.items()
-                if round_nb <= after_round
-                or (
-                    include_next_round_bye
-                    and round_nb == after_round + 1
-                    and result.next_round_bye
-                )
-            ],
+            games=games,
         )
 
     @property

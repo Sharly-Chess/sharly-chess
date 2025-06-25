@@ -845,6 +845,9 @@ msgstr ""
 msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Comments"
 
+msgid "Complementary pairings"
+msgstr ""
+
 msgid "Configuration"
 msgstr ""
 
@@ -3059,6 +3062,9 @@ msgid "Pair as BLACK vs %(player)s"
 msgstr ""
 
 msgid "Pair as WHITE"
+msgstr ""
+
+msgid "Pair the unpaired players with each other."
 msgstr ""
 
 msgid "Pair tournament"

@@ -841,6 +841,63 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
         )
 
+    def _generate_round_pairings(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round_,
+            board_id=None,
+            player_id=None,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        action = (
+            PairingAction.PARTIAL_PAIRING
+            if partial_pairings
+            else PairingAction.FULL_PAIRING
+        )
+        if not tournament.pairing_system.permission_handler.validate_action(
+            action, web_context.round_status, web_context.safety_mode
+        ):
+            return self._admin_event_pairings_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                tournament_id=tournament_id,
+                round_=round_,
+                modal='safety-mode',
+                protected_action=action,
+            )
+        if not tournament.are_pairing_settings_valid:
+            tournament.set_default_pairing_settings()
+        tournament.pairing_variation.engine.generate_pairings(
+            tournament, round_, partial_pairings
+        )
+        Message.success(
+            request,
+            _(
+                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
+            ).format(round=round_, tournament_uniq_id=tournament.uniq_id),
+        )
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round_,
+            board_id=None,
+            trigger_event=None,
+        )
+
     @post(
         path='/admin/pairings/generate/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-generate-round-pairings',
@@ -852,52 +909,23 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
     ) -> Template | ClientRedirect:
-        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            round_=round,
-            board_id=None,
-            player_id=None,
-            data=None,
+        return self._generate_round_pairings(
+            request, event_uniq_id, tournament_id, round
         )
-        if web_context.error:
-            return web_context.error
-        tournament = web_context.admin_tournament
-        assert tournament is not None
-        if not tournament.pairing_system.permission_handler.validate_action(
-            PairingAction.FULL_PAIRING,
-            web_context.round_status,
-            web_context.safety_mode,
-        ):
-            return self._admin_event_pairings_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                tournament_id=tournament_id,
-                round_=round,
-                modal='safety-mode',
-                protected_action=PairingAction.FULL_PAIRING,
-            )
-        if not tournament.are_pairing_settings_valid:
-            tournament.set_default_pairing_settings()
-        tournament.pairing_variation.engine.generate_pairings(
-            tournament, web_context.admin_round
-        )
-        Message.success(
-            request,
-            _(
-                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
-            ).format(
-                round=web_context.admin_round, tournament_uniq_id=tournament.uniq_id
-            ),
-        )
-        return self._admin_event_pairings_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            round_=web_context.admin_round,
-            board_id=None,
-            trigger_event=None,
+
+    @post(
+        path='/admin/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-generate-round-partial-pairings',
+    )
+    async def admin_generate_round_partial_pairings(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        return self._generate_round_pairings(
+            request, event_uniq_id, tournament_id, round, True
         )
 
     @post(
