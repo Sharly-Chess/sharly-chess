@@ -46,22 +46,12 @@
     {% endwith %}
     <span
         class="dropdown-end"
-        {% if not admin_event.tournaments_by_id %}
-            {{ macros.tooltip_attributes(
-                'info',
-                _('You must create a tournament before creating screens.'),
-                'left'
-            ) }}
-        {% endif %}
     >
         <button
             class="btn btn-primary dropdown-toggle mx-auto"
             type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-            {% if not admin_event.tournaments_by_id %}
-                disabled
-            {% endif %}
         >
             <i class="bi-plus-square pe-1"></i>
             {{ _('Create a screen') }}
@@ -75,21 +65,35 @@
                 'ranking': { 'title': _('Ranking'), 'icon_class': 'bi-trophy', 'tooltip_text': _('Add a screen to display the ranking.'), },
                 'image': { 'title': _('Image'), 'icon_class': 'bi-image', 'tooltip_text': _('Add a screen to display an image.'), },
             }.items() %}
-                <li
-                    class="dropdown-item text-start cursor-pointer"
-                    hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    hx-trigger="click, keyup[key=='Enter']"
-                    tabindex="0
-                    {{ macros.tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
+                {% set enabled=admin_event.tournaments_by_id or screen_type in ['image', 'results'] %}
+                <span
+                    {% if enabled %}
+                        {{ macros.tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('You must create a tournament before creating these screens.'), 'left') }}
+                    {% endif %}
                 >
-                    <i class="{{ screen_data['icon_class'] }}"></i>
-                    {{ screen_data['title'] }}
-                </li>
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            {% if enabled %}
+                                hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                preload
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                hx-trigger="click, keyup[key=='Enter']"
+                                tabindex="0"
+                            {% else %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="{{ screen_data['icon_class'] }}"></i>
+                            {{ screen_data['title'] }}
+                        </button>
+                    </li>
+                </span>
             {% endfor %}
         </ul>
     </span>

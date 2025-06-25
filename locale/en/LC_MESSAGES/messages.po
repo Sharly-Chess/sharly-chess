@@ -5319,7 +5319,7 @@ msgstr ""
 msgid "You must create a tournament before creating a screen family."
 msgstr ""
 
-msgid "You must create a tournament before creating screens."
+msgid "You must create a tournament before creating these screens."
 msgstr ""
 
 msgid "You must enter the tournament certification number and password in each tournament's settings."
