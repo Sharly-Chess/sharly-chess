@@ -2370,6 +2370,12 @@ msgstr "Derniers résultats ({num})"
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
+msgid "Last update: {updated_at}"
+msgstr "Dernière mise à jour : {updated_at}"
+
+msgid "Last update: {updated_at} (outdated)"
+msgstr "Dernière mise à jour : {updated_at} (dépassée)"
+
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
