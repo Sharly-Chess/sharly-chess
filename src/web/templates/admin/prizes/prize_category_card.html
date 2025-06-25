@@ -96,6 +96,11 @@
                             {% endif %}
                         </div>
                     {% endfor %}
+                    {% if prize_category.sorted_prizes|length == 0 %}
+                        <div class="text-secondary">
+                            <i>{{ _('No prizes defined.') }}</i>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
