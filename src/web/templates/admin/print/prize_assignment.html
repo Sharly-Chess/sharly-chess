@@ -52,7 +52,7 @@
                             <div class="cell"></div>
                         {% endif %}
                         <div class="cell prize">
-                            {% if prize.is_monetary %}
+                            {% if assigned_prize.prize.is_monetary %}
                                 {{ format_prize_value(assigned_prize.value) }}
                             {% else %}
                                 {{ prize.description }}
