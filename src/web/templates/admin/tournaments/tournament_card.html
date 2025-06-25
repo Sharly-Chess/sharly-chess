@@ -115,15 +115,15 @@
         </button>
         <ul class="dropdown-menu">
             <li class="dropdown-submenu">
-                <button class="dropdown-item d-flex justify-content-between">
-                    <span
-                        {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
-                    >
+                <span
+                    {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                >
+                    <button class="dropdown-item d-flex justify-content-between">
                         <span><i class="bi-arrow-repeat pe-1"></i>
                         {{ _('Update players') }}</span>
                         <i class="ps-3 bi bi-caret-right-fill"></i>
-                    </span>
-                </button>
+                    </button>
+                </span>
                 <ul class="dropdown-menu">
                     {% include '/admin/players/players_diff.html' %}
                 </ul>
