@@ -84,11 +84,14 @@
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
                     hx-trigger="click, keyup[key=='Enter']"
-                    tabindex="0
-                    {{ macros.tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
+                    tabindex="0"
                 >
-                    <i class="{{ screen_data['icon_class'] }}"></i>
-                    {{ screen_data['title'] }}
+                    <span
+                        {{ macros.tooltip_attributes('info', screen_data.tooltip_text, 'left') }}
+                    >
+                        <i class="{{ screen_data['icon_class'] }}"></i>
+                        {{ screen_data['title'] }}
+                    </span>
                 </li>
             {% endfor %}
         </ul>
