@@ -124,12 +124,12 @@ class Client:
                     tournament_uniq_ids = None
                 else:
                     computer_permission_parts: set[str] = set(
-                        computer_permissions_by_role[role].tournament_uniq_ids.split(
+                        computer_permissions_by_role[role].tournament_uniq_ids.split(  # type: ignore
                             ','
                         )
                     )
                     account_permission_parts: set[str] = set(
-                        account_permissions_by_role[role].tournament_uniq_ids.split(',')
+                        account_permissions_by_role[role].tournament_uniq_ids.split(',')  # type: ignore
                     )
                     tournament_uniq_ids = ','.join(
                         computer_permission_parts | account_permission_parts

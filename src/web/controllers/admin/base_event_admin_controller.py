@@ -107,7 +107,7 @@ class BaseEventAdminController(BaseAdminController):
                 'icon_class': 'bi-sign-stop',
             },
         }
-        nav_tabs: dict[str, dict[str, str | dict[str, str | dict[str, str]]]] = {}
+        nav_tabs: dict[str, dict[str, Any]] = {}
         if web_context.client.can_view_event_basic_config:
             nav_tabs |= {
                 'admin-event-config-tab': {
@@ -194,7 +194,7 @@ class BaseEventAdminController(BaseAdminController):
             web_context.client.can_manage_accounts
             or web_context.client.can_manage_computers
         ):
-            nav_tab: dict[str, str | dict[str, str | dict[str, str]]] = {
+            nav_tab: dict[str, Any] = {
                 'title': _('Access'),
                 'icon_class': 'bi-key',
                 'submenu': {},

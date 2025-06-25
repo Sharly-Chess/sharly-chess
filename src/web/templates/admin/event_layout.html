@@ -150,20 +150,22 @@
     {% endfor %}
 
     {{ admin_macros.extra_admin_nav_item("print", extra_admin_nav_items)}}
-    <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Print'), 'right') }}>
-        <button
-            class="btn nav-link text-start"
-            hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi bi-printer-fill"></i>
-            <span class="expanded-only">{{ _('Print') }}</span>
-        </button>
-    </span>
+    {% if client.can_print %}
+        <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Print'), 'right') }}>
+            <button
+                class="btn nav-link text-start"
+                hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi bi-printer-fill"></i>
+                <span class="expanded-only">{{ _('Print') }}</span>
+            </button>
+        </span>
+    {% endif %}
     {{ admin_macros.extra_admin_nav_item("database", extra_admin_nav_items)}}
     {% include '/admin/common/database/database_button.html' %}
     {% include '/common/profile/profile_button.html' %}
