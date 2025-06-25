@@ -1109,6 +1109,17 @@ class ScreenType(StrEnum):
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
 
+    @property
+    def families_allowed(self) -> bool:
+        """Returns True if the screen type can be used for families, False otherwise."""
+        match self:
+            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING:
+                return True
+            case self.RESULTS | self.IMAGE:
+                return False
+            case _:
+                raise ValueError(f'Invalid screen type: {self}')
+
 
 class NeedsUpload(Enum):
     YES = 0

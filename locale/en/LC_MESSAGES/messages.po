@@ -315,6 +315,9 @@ msgstr ""
 msgid "Add a screen to display the pairings by alphabetical order."
 msgstr ""
 
+msgid "Add a screen to display the pairings by board number."
+msgstr ""
+
 msgid "Add a screen to display the pairings by board."
 msgstr ""
 
@@ -2367,6 +2370,9 @@ msgstr ""
 msgid "Image screen creation"
 msgstr ""
 
+msgid "Image screens"
+msgstr ""
+
 msgid "Image screens show an image (local or remote)."
 msgstr ""
 
@@ -2565,6 +2571,9 @@ msgid "Last results"
 msgstr ""
 
 msgid "Last results ({num})"
+msgstr ""
+
+msgid "Last results screens"
 msgstr ""
 
 msgid "Last update"
@@ -3331,6 +3340,12 @@ msgstr ""
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
+msgid "Pairings screens by boards number"
+msgstr ""
+
+msgid "Pairings screens by player"
+msgstr ""
+
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr ""
 
@@ -3863,6 +3878,9 @@ msgid "Ranking screen creation"
 msgstr ""
 
 msgid "Ranking screen family creation"
+msgstr ""
+
+msgid "Ranking screens"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."

@@ -315,6 +315,9 @@ msgstr "Ajouter un écran d'affichage des derniers résultats."
 msgid "Add a screen to display the pairings by alphabetical order."
 msgstr "Ajouter un écran d'affichage des appariements par ordre alphabétique."
 
+msgid "Add a screen to display the pairings by board number."
+msgstr "Ajouter un écran d'affichage des appariements par numéro d'échiquier."
+
 msgid "Add a screen to display the pairings by board."
 msgstr "Ajouter un écran d'affichage des appariements par échiquier."
 
@@ -2367,6 +2370,9 @@ msgstr "Image ({num})"
 msgid "Image screen creation"
 msgstr "Création d'un écran d'image"
 
+msgid "Image screens"
+msgstr "Écrans d'image"
+
 msgid "Image screens show an image (local or remote)."
 msgstr "Les écrans d'image affichent une image (locale ou distante)."
 
@@ -2566,6 +2572,9 @@ msgstr "Derniers résultats"
 
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
+
+msgid "Last results screens"
+msgstr "Écrans des derniers résultats"
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
@@ -3331,6 +3340,12 @@ msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de jo
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
+msgid "Pairings screens by boards number"
+msgstr "Écrans d'appariements par numéro d'échiquier"
+
+msgid "Pairings screens by player"
+msgstr "Écrans d'appariements par ordre alphabétique"
+
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
 
@@ -3864,6 +3879,9 @@ msgstr "Creation d'un écran de classement"
 
 msgid "Ranking screen family creation"
 msgstr "Création d'une famille d'écrans de classement"
+
+msgid "Ranking screens"
+msgstr "Écrans de classement"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
