@@ -1041,6 +1041,9 @@ msgstr ""
 msgid "Create a prize group"
 msgstr ""
 
+msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+msgstr ""
+
 msgid "Create a rotator"
 msgstr ""
 
@@ -5674,6 +5677,9 @@ msgid "You are not allowed to generate the pairings."
 msgstr ""
 
 msgid "You are not allowed to grant/revoke this permission."
+msgstr ""
+
+msgid "You are not allowed to manage prizes."
 msgstr ""
 
 msgid "You are not allowed to open/close check-in."

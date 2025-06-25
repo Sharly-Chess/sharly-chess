@@ -1041,6 +1041,9 @@ msgstr "Créer une famille d’écrans pour commencer."
 msgid "Create a prize group"
 msgstr "Créer un groupe de prix"
 
+msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+msgstr "Créer un groupe de prix dans lequel vous pourrez ensuite créer des catégories, puis des prix."
+
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
 
@@ -5675,6 +5678,9 @@ msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 
 msgid "You are not allowed to grant/revoke this permission."
 msgstr "Vous n'êtes pas autorisé·e à accorder/retirer cette permission."
+
+msgid "You are not allowed to manage prizes."
+msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
 msgid "You are not allowed to open/close check-in."
 msgstr "Vous n'êtes pas autorisé·e à ouvrir/fermer le pointage."

@@ -115,6 +115,7 @@ class Client:
                 and role in account_permissions_by_role
             ):
                 # computer and account both allowed
+                tournament_uniq_ids: str | None
                 if (
                     computer_permissions_by_role[role].tournament_uniq_ids is None
                     or account_permissions_by_role[role].tournament_uniq_ids is None
@@ -122,23 +123,15 @@ class Client:
                     # allowed for all the tournaments
                     tournament_uniq_ids = None
                 else:
-                    assert (
-                        computer_permissions_by_role[role].tournament_uniq_ids
-                        is not None
-                    )
                     computer_permission_parts: set[str] = set(
                         computer_permissions_by_role[role].tournament_uniq_ids.split(
                             ','
                         )
                     )
-                    assert (
-                        account_permissions_by_role[role].tournament_uniq_ids
-                        is not None
-                    )
                     account_permission_parts: set[str] = set(
                         account_permissions_by_role[role].tournament_uniq_ids.split(',')
                     )
-                    tournament_uniq_ids: str = ','.join(
+                    tournament_uniq_ids = ','.join(
                         computer_permission_parts | account_permission_parts
                     )
                 permissions_by_role[role] = Permission(
@@ -228,6 +221,7 @@ class Client:
         """Returns a dict of dict of bool indicating if the client
         has a role for the tournaments (key is the tournament id).
         usage: __allowed_for_tournament_by_role_dict[role][tournament.id]"""
+        assert self.event is not None
         return {
             role: {
                 tournament.id: self._tournament_matches_permission(
@@ -867,3 +861,48 @@ class Client:
 
     def __repr__(self) -> str:
         return f'{self.__class__}(account={self.account}, computer={self.computer}, host={self.host}, permissions={self.permissions_by_role})'
+
+    # ---------------------------------------------------------------------------------
+    # Prizes
+    # ---------------------------------------------------------------------------------
+
+    @property
+    def can_view_prizes_tab(
+        self,
+    ) -> bool:
+        """Returns true if the client can access the Prizes tab."""
+        return self._has_event_role(
+            [
+                Role.DEPUTY_CHIEF_ARBITER,
+            ],
+        )
+
+    @property
+    def can_manage_prizes(
+        self,
+    ) -> bool:
+        """Returns a dict indicating if the client can
+        manage the prizes."""
+        return self._has_event_role(
+            [
+                Role.DEPUTY_CHIEF_ARBITER,
+            ],
+        )
+
+    # ---------------------------------------------------------------------------------
+    # Print
+    # ---------------------------------------------------------------------------------
+
+    # TODO Printing privileges should be granted to other roles
+    #  on a per-tournament basis but this needs an important
+    #  work on the print modal.
+    @property
+    def can_print(
+        self,
+    ) -> bool:
+        """Returns true if the client can access the Prizes tab."""
+        return self._has_event_role(
+            [
+                Role.DEPUTY_CHIEF_ARBITER,
+            ],
+        )

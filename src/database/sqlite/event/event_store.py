@@ -228,6 +228,9 @@ class StoredAccess(ABC):
     edit_properties: bool
     edit_permissions: bool
     active: bool
+    # The keys of *permissions are Role values,
+    # and the values are strings made of tournament
+    # unique IDs' patterns (None for all the tournaments).
     permissions: dict[int, str | None]
 
 

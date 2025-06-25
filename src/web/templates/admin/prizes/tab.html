@@ -1,221 +1,234 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
-    {% if admin_prize_group %}
-        {{ macros.refresh_listener(
-            hx_get=url_for(
-                'admin-event-prizes-tab',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-                prize_group_id=admin_prize_group.id,
-            ),
-        ) }}
-    {% elif admin_tournament %}
-        {{ macros.refresh_listener(
-            hx_get=url_for(
-                'admin-event-prizes-tab',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-            )
-        ) }}
+    {% if client.can_view_prizes_tab %}
+        {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
+        {% if admin_prize_group %}
+            {{ macros.refresh_listener(
+                hx_get=url_for(
+                    'admin-event-prizes-tab',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                ),
+            ) }}
+        {% elif admin_tournament %}
+            {{ macros.refresh_listener(
+                hx_get=url_for(
+                    'admin-event-prizes-tab',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                )
+            ) }}
+        {% endif %}
     {% endif %}
 {% endblock %}
 
 {% block right_buttons_classes %}d-flex gap-4 align-items-end{% endblock %}
 
 {% block top_right_nav %}
-    <span
-        {{ macros.tooltip_attributes(
-            'info',
-            _('Add a prize category to the prize group.')
-            if admin_prize_group else
-            _('You must create a prize group before creating a prize category.'),
-            'top')
-        }}
-    >
-        <button
-            class="btn btn-primary text-nowrap ms-1"
-            {% if admin_prize_group %}
-                hx-get="{{ url_for(
-                    'admin-prize-category-create-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
+    {% if client.can_view_prizes_tab %}
+        <span
+            {% if not client.can_manage_prizes %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+            {% elif not admin_prize_group %}
+                {{ macros.tooltip_attributes('info', _('You must create a prize group before creating a prize category.'), 'bottom') }}
             {% else %}
-                disabled
+                {{ macros.tooltip_attributes('info', _('Add a prize category to the prize group.'), 'bottom') }}
             {% endif %}
         >
-            <i class="bi-plus-square pe-1"></i>
-            {{ _('Create a category') }}
-        </button>
-    </span>
-    {% if admin_prize_group %}
-        <div class="d-flex flex-column">
-            <div style="font-size: 0.8rem;">
-                {{ _('%(string)s:', string=_('Prize groups')) }}
-            </div>
-            <div class="d-flex align-items-end">
-                <select
-                    name="prize_group_id"
-                    class="form-select prize-group-controls"
-                    style="width: fit-content;"
-                    hx-trigger="change"
+            <button
+                class="btn btn-primary text-nowrap ms-1"
+                {% if not admin_prize_group or not client.can_manage_prizes %}
+                    disabled
+                {% else %}
                     hx-get="{{ url_for(
-                        'admin-event-prizes-tab',
+                        'admin-prize-category-create-modal',
                         event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id
                     ) }}"
                     hx-target="body"
-                    hx-replace-url="true"
                     hx-indicator="#please-wait"
-                >
-                    {% for value, text in prize_group_options.items() %}
-                        <option value="{{ value }}" {% if value == admin_prize_group.id|string %}selected{%endif %}>
-                            {{ text }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('Manage the prize groups of the tournament.'), 'top'
-                    ) }}
-                >
-                    <button
-                        class="btn text-primary"
-                        hx-get="{{ url_for(
-                            'admin-prize-groups-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-gear-fill"></i>
-                    </button>
-                </span>
-            </div>
-        </div>
-    {% else %}
-        <span>
-            <span
-                {% if not admin_tournament %}
-                    {{ macros.tooltip_attributes(
-                        'info',
-                        _('You must create a tournament before creating a prize group.'),
-                        'left'
-                    ) }}
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
                 {% endif %}
             >
-                <form
-                    {% if admin_tournament %}
-                        hx-post="{{ url_for(
-                            'admin-prize-group-create',
+                <i class="bi-plus-square pe-1"></i>
+                {{ _('Create a category') }}
+            </button>
+        </span>
+        {% if admin_prize_group %}
+            <div class="d-flex flex-column">
+                <div style="font-size: 0.8rem;">
+                    {{ _('%(string)s:', string=_('Prize groups')) }}
+                </div>
+                <div class="d-flex align-items-end">
+                    <select
+                        name="prize_group_id"
+                        class="form-select prize-group-controls"
+                        style="width: fit-content;"
+                        hx-trigger="change"
+                        hx-get="{{ url_for(
+                            'admin-event-prizes-tab',
                             event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
+                            tournament_id=admin_tournament.id
                         ) }}"
                         hx-target="body"
+                        hx-replace-url="true"
                         hx-indicator="#please-wait"
-                        preload
-                    {% endif %}
-                >
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        type="submit"
-                        hx-indicator="#please-wait"
-                        {% if not admin_tournament %}
-                            disabled
+                    >
+                        {% for value, text in prize_group_options.items() %}
+                            <option value="{{ value }}" {% if value == admin_prize_group.id|string %}selected{%endif %}>
+                                {{ text }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <span
+                        {% if not client.can_manage_prizes %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+                        {% else %}
+                            {{ macros.tooltip_attributes('info', _('Manage the prize groups of the tournament.'), 'bottom') }}
                         {% endif %}
                     >
-                        <i class="bi-plus-square pe-1"></i>
-                        {{ _('Create a prize group') }}
-                    </button>
-                </form>
+                        <button
+                            class="btn text-primary"
+                            {% if not client.can_manage_prizes %}
+                                disabled
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-prize-groups-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                preload
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            {% endif %}
+                        >
+                            <i class="bi-gear-fill"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        {% else %}
+            <span>
+                <span
+                    {% if not client.can_manage_prizes %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+                    {% elif not admin_tournament %}
+                        {{ macros.tooltip_attributes('info', _('You must create a tournament before creating a prize group.'), 'bottom') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Create a prize group in which you will then be able to create categories, and then prizes.'), 'bottom') }}
+                    {% endif %}
+                >
+                    <form
+                        {% if admin_tournament and client.can_manage_prizes %}
+                            hx-post="{{ url_for(
+                                'admin-prize-group-create',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-primary text-nowrap"
+                            {% if not admin_tournament or not client.can_manage_prizes %}
+                                disabled
+                            {% else %}
+                                type="submit"
+                                hx-indicator="#please-wait"
+                            {% endif %}
+                        >
+                            <i class="bi-plus-square pe-1"></i>
+                            {{ _('Create a prize group') }}
+                        </button>
+                    </form>
+                </span>
             </span>
-        </span>
-    {% endif %}
-    {% if tournament_options|length > 1 %}
-        <select
-            name="tournament_id"
-            class="form-select"
-            style="width: fit-content;"
-            hx-trigger="change"
-            hx-get="{{ url_for('admin-event-prizes-tab', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-replace-url="true"
-            hx-indicator="#please-wait"
-        >
-            {% for value, text in tournament_options.items() %}
-                <option value="{{ value }}" {% if value == admin_tournament.id|string %}selected{%endif %}>
-                    {{ text }}
-                </option>
-            {% endfor %}
-        </select>
+        {% endif %}
+        {% if tournament_options|length > 1 %}
+            <select
+                name="tournament_id"
+                class="form-select"
+                style="width: fit-content;"
+                hx-trigger="change"
+                hx-get="{{ url_for('admin-event-prizes-tab', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-replace-url="true"
+                hx-indicator="#please-wait"
+            >
+                {% for value, text in tournament_options.items() %}
+                    <option value="{{ value }}" {% if value == admin_tournament.id|string %}selected{%endif %}>
+                        {{ text }}
+                    </option>
+                {% endfor %}
+            </select>
+        {% endif %}
     {% endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
-    <form
-        {% if admin_prize_group and admin_prize_group.categories %}
-            hx-patch="{{ url_for(
-                'admin-prizes-reorder-categories',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-                prize_group_id=admin_prize_group.id,
-            ) }}"
-            hx-target="body"
-            hx-trigger="end"
-        {% endif %}
-    >
-        <div
-            class="row {% if admin_prize_group and admin_prize_group.categories %}sortable{% endif %}"
-        >
-            {% if not admin_prize_group %}
-                <div class="mx-auto" style="max-width: 500px;">
-                    <h5 class="mt-2 my-5 text-center">
-                        {{ _('No Prize Group') }}
-                    </h5>
-                    <p>
-                        {{ _('Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures.') }}
-                    </p>
-                    <p>
-                        {{ _('Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups.') }}
-                    </p>
-                    <p>
-                        {{ _('Create a Prize Group now to get started.') }}
-                    </p>
-                </div>
-            {% elif not admin_prize_group.categories %}
-                <div class="mx-auto" style="max-width: 500px;">
-                    <h5 class="mt-2 my-5 text-center">
-                        {{ _('No Prize Category') }}
-                    </h5>
-                    <p>
-                        {{ _('Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal).') }}
-                    </p>
-                    <p>
-                        {{ _('One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system.') }}
-                    </p>
-                    <p>
-                        {{ _('Create a Prize Category now to continue.') }}
-                    </p>
-                </div>
-            {% else %}
-                {% for prize_category in admin_prize_group.sorted_categories %}
-                    {% with grid_class="non-sortable" if prize_category.is_main else '' %}
-                        {% include 'prize_category_card.html' %}
-                    {% endwith %}
-                {% endfor %}
+    {% if client.can_view_prizes_tab %}
+        <form
+            {% if admin_prize_group and admin_prize_group.categories %}
+                hx-patch="{{ url_for(
+                    'admin-prizes-reorder-categories',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                ) }}"
+                hx-target="body"
+                hx-trigger="end"
             {% endif %}
-        </div>
-    </form>
+        >
+            <div
+                class="row {% if admin_prize_group and admin_prize_group.categories %}sortable{% endif %}"
+            >
+                {% if not admin_prize_group %}
+                    <div class="mx-auto" style="max-width: 500px;">
+                        <h5 class="mt-2 my-5 text-center">
+                            {{ _('No Prize Group') }}
+                        </h5>
+                        <p>
+                            {{ _('Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures.') }}
+                        </p>
+                        <p>
+                            {{ _('Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups.') }}
+                        </p>
+                        <p>
+                            {{ _('Create a Prize Group now to get started.') }}
+                        </p>
+                    </div>
+                {% elif not admin_prize_group.categories %}
+                    <div class="mx-auto" style="max-width: 500px;">
+                        <h5 class="mt-2 my-5 text-center">
+                            {{ _('No Prize Category') }}
+                        </h5>
+                        <p>
+                            {{ _('Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal).') }}
+                        </p>
+                        <p>
+                            {{ _('One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system.') }}
+                        </p>
+                        <p>
+                            {{ _('Create a Prize Category now to continue.') }}
+                        </p>
+                    </div>
+                {% else %}
+                    {% for prize_category in admin_prize_group.sorted_categories %}
+                        {% with grid_class="non-sortable" if prize_category.is_main else '' %}
+                            {% include 'prize_category_card.html' %}
+                        {% endwith %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </form>
+    {% endif %}
 {% endblock %}

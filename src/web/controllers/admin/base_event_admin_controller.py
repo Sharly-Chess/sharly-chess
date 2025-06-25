@@ -144,12 +144,15 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-arrow-left-right',
                 },
             }
+        if web_context.client.can_view_prizes_tab:
+            nav_tabs |= {
+                'admin-event-prizes-tab': {
+                    'title': _('Prizes'),
+                    'template': 'prizes/tab.html',
+                    'icon_class': 'bi-trophy-fill',
+                },
+            }
         nav_tabs |= {
-            'admin-event-prizes-tab': {
-                'title': _('Prizes'),
-                'template': 'prizes/tab.html',
-                'icon_class': 'bi-trophy-fill',
-            },
             'admin-event-views': {
                 'title': _('Screens'),
                 'icon_class': 'bi-display-fill',
