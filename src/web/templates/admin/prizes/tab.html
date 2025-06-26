@@ -27,10 +27,10 @@
 {% block top_right_nav %}
     <div class="d-flex align-items-center">
         {% if admin_prize_group %}
-            {% with id='admin-prizes-show-details', name='admin_prizes_show_details', show=admin_prizes_show_details %}
+            {% with id='admin-prizes-show-details', name='show_details', show=show_details %}
                 <div
                     class="form-check form-switch d-inline-block pe-3 mt-2"
-                    {{ macros.tooltip_attributes('info', _('Enable/disable the details of tournaments on the cards below.'), 'top') }}
+                    {{ macros.tooltip_attributes('info', _('Enable/disable the details of prizes on the cards below.'), 'top') }}
                 >
                     <input
                         hx-get="{{ url_for('admin-event-prizes-tab', event_uniq_id=admin_event.uniq_id) }}"

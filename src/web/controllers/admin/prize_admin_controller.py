@@ -147,7 +147,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'prize_currency': prize_currency,
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
-            'admin_prizes_show_details': self.show_details,
+            'show_details': self.show_details,
         }
 
     def get_admin_tournament(self) -> Tournament:
@@ -207,12 +207,10 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         prize_group_id: int | None,
-        admin_prizes_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template | ClientRedirect:
-        if admin_prizes_show_details is not None:
-            SessionHandler.set_session_admin_prizes_show_details(
-                request, admin_prizes_show_details
-            )
+        if show_details is not None:
+            SessionHandler.set_session_admin_prizes_show_details(request, show_details)
         web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
         if web_context.error:
             return web_context.error

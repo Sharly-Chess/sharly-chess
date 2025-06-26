@@ -82,7 +82,7 @@
                 {% endif %}
             </div>
         </div>
-        {% if admin_prizes_show_details %}
+        {% if show_details %}
             <div class="d-flex gap-2">
                 <div>{{ _('%(string)s:', string=_('Prizes')) }}</div>
                 <div class='d-flex flex-column gap-0'>
@@ -98,7 +98,7 @@
                     {% endfor %}
                     {% if prize_category.sorted_prizes|length == 0 %}
                         <div class="text-secondary">
-                            <i>{{ _('No prizes defined.') }}</i>
+                            <i>{{ _('No prizes defined') }}</i>
                         </div>
                     {% endif %}
                 </div>

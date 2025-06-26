@@ -1628,6 +1628,9 @@ msgstr ""
 msgid "Enable/disable the details of events on the cards below."
 msgstr ""
 
+msgid "Enable/disable the details of prizes on the cards below."
+msgstr ""
+
 msgid "Enable/disable the details of the rotators on the cards below."
 msgstr ""
 
@@ -2814,6 +2817,9 @@ msgid "No players."
 msgstr ""
 
 msgid "No prize groups."
+msgstr ""
+
+msgid "No prizes defined"
 msgstr ""
 
 msgid "No prizes defined."
