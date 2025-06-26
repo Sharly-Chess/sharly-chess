@@ -57,6 +57,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d prize successfully created!"
+msgid_plural "%(num)d prizes successfully created!"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
 
@@ -398,6 +404,9 @@ msgid "At least one league is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one value is expected."
 msgstr ""
 
 #, python-format
@@ -2453,6 +2462,9 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
+msgid "List of values of the prizes to create. Values can be floats and have to be positive."
+msgstr ""
+
 msgid "Local URL: {local_url}"
 msgstr ""
 
@@ -3492,10 +3504,6 @@ msgstr ""
 
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
-
-#, python-format
-msgid "Prize [%(prize)s] successfully created!"
-msgstr ""
 
 msgid "Prize assignment"
 msgstr ""
@@ -4644,6 +4652,9 @@ msgstr ""
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
+msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
 msgid "The variation of the pairing system."
 msgstr ""
 
@@ -5174,6 +5185,9 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
+msgid "Values"
+msgstr ""
+
 msgid "Variation"
 msgstr ""
 
@@ -5380,6 +5394,12 @@ msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
 msgid "[{path}] is not a directory."
+msgstr ""
+
+msgid "[{value}] is not a positive value."
+msgstr ""
+
+msgid "[{value}] is not a valid value format."
 msgstr ""
 
 msgid "all the boards"

@@ -57,6 +57,12 @@ msgstr[0] "%(num)d prix"
 msgstr[1] "%(num)d prix"
 
 #, python-format
+msgid "%(num)d prize successfully created!"
+msgid_plural "%(num)d prizes successfully created!"
+msgstr[0] "%(num)d prix créé avec succès !"
+msgstr[1] "%(num)d prix créés avec succès !"
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
 
@@ -399,6 +405,9 @@ msgstr "Au moins une ligue est attendue."
 
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
+
+msgid "At least one value is expected."
+msgstr "Au moins une valeur est attendue."
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
@@ -2453,6 +2462,9 @@ msgstr "Liens vers cet écran :"
 msgid "List of players"
 msgstr "Liste des participant·es"
 
+msgid "List of values of the prizes to create. Values can be floats and have to be positive."
+msgstr "Liste de valeur des prix à créer. Les valeurs peuvent être décimales et doivent être positives."
+
 msgid "Local URL: {local_url}"
 msgstr "URL locale : {local_url}"
 
@@ -3493,10 +3505,6 @@ msgstr "Évènement privé"
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
 
-#, python-format
-msgid "Prize [%(prize)s] successfully created!"
-msgstr "Prix [%(prize)s] créé avec succès !"
-
 msgid "Prize assignment"
 msgstr "Attribution des prix"
 
@@ -3519,7 +3527,7 @@ msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
 
 msgid "Prize creation"
-msgstr "Création d'un prix"
+msgstr "Création de prix"
 
 msgid "Prize criterion creation"
 msgstr "Création d'un critère"
@@ -4642,7 +4650,10 @@ msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
-msgstr "La valeur doit être suprieure au seuil de partage de la catégorie ({threshold})."
+msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
+
+msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
+msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégorie ({threshold})."
 
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
@@ -5174,6 +5185,9 @@ msgstr "Utiliser les couleurs peut permettre de trouver facilement les informati
 msgid "Value"
 msgstr "Valeur"
 
+msgid "Values"
+msgstr "Valeurs"
+
 msgid "Variation"
 msgstr "Variante"
 
@@ -5381,6 +5395,12 @@ msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnal
 
 msgid "[{path}] is not a directory."
 msgstr "[{path}] n'est pas un répertoire."
+
+msgid "[{value}] is not a positive value."
+msgstr "[{value}] n'est pas une valeur positive."
+
+msgid "[{value}] is not a valid value format."
+msgstr "[{value}] n'est pas un format de valeur valide."
 
 msgid "all the boards"
 msgstr "tous les échiquiers"

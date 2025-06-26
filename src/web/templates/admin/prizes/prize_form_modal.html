@@ -17,10 +17,11 @@
                 {{ _('%(string)s:', string=_('Category')) }}
                 {{ admin_prize_category.name }}
             </h4>
-            {% if previous_prize %}
-                {% with type='success', message=_(
-                    'Prize [%(prize)s] successfully created!',
-                    prize=previous_prize.name(prize_currency)
+            {% if previous_prize_count %}
+                {% with type='success', message=ngettext(
+                    '%(num)d prize successfully created!',
+                    '%(num)d prizes successfully created!',
+                    previous_prize_count,
                 ) %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
@@ -50,13 +51,23 @@
                 {% endif %}
             >
                 <div class="row mb-3">
-                    {{ admin_macros.number_input(
-                        name='value',
-                        label=_('%(string)s:', string=_('Value')),
-                        help_text='',
-                        step=0.01,
-                        data=data, errors=errors
-                    ) }}
+                    {% if action == 'create' %}
+                        {{ admin_macros.text_input(
+                            name='values',
+                            label=_('%(string)s:', string=_('Values')),
+                            placeholder=_('E.g.: %(string)s', string='1000 500,5 333.33'),
+                            help_text=_('List of values of the prizes to create. Values can be floats and have to be positive.'),
+                            data=data, errors=errors
+                        ) }}
+                    {% else %}
+                        {{ admin_macros.number_input(
+                            name='value',
+                            label=_('%(string)s:', string=_('Value')),
+                            help_text='',
+                            step=0.01,
+                            data=data, errors=errors
+                        ) }}
+                    {% endif %}
                 </div>
                 <div class="d-flex mb-3">
                     <span
