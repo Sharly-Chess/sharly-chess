@@ -21,6 +21,7 @@ from data.board import Board
 from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
+from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.screen import Screen
 from data.tie_breaks import (
@@ -438,15 +439,22 @@ class Tournament:
         return sorted(
             self.prize_groups,
             key=lambda group: (
-                not group.has_main_category,
+                group.main_category is None,
                 -len(group.categories),
                 group.id,
             ),
         )
 
     @property
-    def has_main_prize_category(self) -> bool:
-        return any(prize_group.has_main_category for prize_group in self.prize_groups)
+    def main_prize_category(self) -> PrizeCategory | None:
+        return next(
+            (
+                prize_group.main_category
+                for prize_group in self.prize_groups
+                if prize_group.main_category
+            ),
+            None,
+        )
 
     def _get_prize_groups_by_id(self) -> dict[int, PrizeGroup]:
         prize_groups_by_id = {}

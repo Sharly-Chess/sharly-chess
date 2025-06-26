@@ -42,6 +42,10 @@ class Prize:
     def description(self) -> str:
         return self.stored_prize.description
 
+    @property
+    def currency(self) -> str:
+        return self.prize_category.prize_group.tournament.event.prize_currency
+
     def name(self, currency: str) -> str:
         if not self.value and not self.is_monetary:
             return self.description

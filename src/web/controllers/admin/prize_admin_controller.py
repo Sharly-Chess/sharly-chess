@@ -467,7 +467,7 @@ class PrizeAdminController(BaseEventAdminController):
         return {
             'name': '',
             'is_main': WebContext.value_to_form_data(
-                not tournament.has_main_prize_category
+                tournament.main_prize_category is None
             ),
             'share_prizes': WebContext.value_to_form_data(False),
             'sharing_threshold': '',
@@ -508,27 +508,31 @@ class PrizeAdminController(BaseEventAdminController):
                     request, data, FormAction.CREATE, errors
                 ),
             )
+        current_main_category = web_context.get_admin_tournament().main_prize_category
         prize_group = web_context.get_admin_prize_group()
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
-        prize_category = prize_group.add_category(
-            StoredPrizeCategory(
-                id=None,
-                prize_group_id=prize_group.id,
-                name=WebContext.form_data_to_str(data, 'name') or '',
-                is_main=WebContext.form_data_to_bool(data, 'is_main'),
-                sharing_threshold=(
-                    WebContext.form_data_to_float(data, 'sharing_threshold')
-                    if share_prizes
-                    else None
-                ),
-                prize_sharing=(
-                    data['prize_sharing']
-                    if share_prizes
-                    else NoPrizeSharing.static_id()
-                ),
-                index=len(prize_group.categories),
-            )
+        stored_category = StoredPrizeCategory(
+            id=None,
+            prize_group_id=prize_group.id,
+            name=WebContext.form_data_to_str(data, 'name') or '',
+            is_main=WebContext.form_data_to_bool(data, 'is_main'),
+            sharing_threshold=(
+                WebContext.form_data_to_float(data, 'sharing_threshold')
+                if share_prizes
+                else None
+            ),
+            prize_sharing=(
+                data['prize_sharing'] if share_prizes else NoPrizeSharing.static_id()
+            ),
+            index=len(prize_group.categories),
         )
+        if current_main_category and stored_category.is_main:
+            current_stored_category = current_main_category.stored_prize_category
+            current_stored_category.is_main = False
+            current_stored_category.prize_sharing = NoPrizeSharing().id
+            current_stored_category.sharing_threshold = None
+            current_main_category.update()
+        prize_category = prize_group.add_category(stored_category)
 
         if add_other:
             data = self._prize_category_default_form_data(prize_group.tournament)
@@ -577,6 +581,8 @@ class PrizeAdminController(BaseEventAdminController):
                     request, data, FormAction.UPDATE, errors
                 ),
             )
+        current_main_category = web_context.get_admin_tournament().main_prize_category
+        was_main = prize_category.is_main
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         stored_category = prize_category.stored_prize_category
         stored_category.name = WebContext.form_data_to_str(data, 'name') or ''
@@ -590,6 +596,17 @@ class PrizeAdminController(BaseEventAdminController):
             else None
         )
         prize_category.update()
+        if not was_main and prize_category.is_main:
+            criteria_ids = list(prize_category.criteria_by_id.keys())
+            for criterion_id in criteria_ids:
+                prize_category.delete_criterion(criterion_id)
+            if current_main_category:
+                current_stored_category = current_main_category.stored_prize_category
+                current_stored_category.is_main = False
+                current_stored_category.prize_sharing = NoPrizeSharing().id
+                current_stored_category.sharing_threshold = None
+                current_main_category.update()
+            prize_category.prize_group.reorder_categories()
         Message.success(
             request,
             _('Prize category [{prize_category}] successfully updated.').format(

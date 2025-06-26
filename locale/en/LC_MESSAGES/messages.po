@@ -1160,6 +1160,9 @@ msgstr ""
 msgid "Delete the tournament."
 msgstr ""
 
+msgid "Deletes all the criteria of this category."
+msgstr ""
+
 #, python-format
 msgid "Deleting prize category [%(prize_category)s]"
 msgstr ""
@@ -3747,6 +3750,14 @@ msgstr ""
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
+#, python-format
+msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
+msgstr ""
+
+#, python-format
+msgid "Replaces category [%(category)s]."
+msgstr ""
+
 msgid "Request to the database failed."
 msgstr ""
 
@@ -4332,9 +4343,6 @@ msgstr ""
 msgid "The mail addresses."
 msgstr ""
 
-msgid "The main category can't have criteria."
-msgstr ""
-
 msgid "The main category is open to all the players."
 msgstr ""
 
@@ -4640,9 +4648,6 @@ msgid "The variation of the pairing system."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
-msgstr ""
-
-msgid "There can only be one main category per tournament."
 msgstr ""
 
 msgid "There can only be one main category."

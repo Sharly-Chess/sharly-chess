@@ -55,11 +55,17 @@ class PrizeGroup:
 
     @property
     def sorted_categories(self) -> list[PrizeCategory]:
-        return sorted(self.categories, key=lambda category: category.index)
+        return sorted(
+            self.categories,
+            key=lambda category: (not category.is_main, category.index),
+        )
 
     @property
-    def has_main_category(self) -> bool:
-        return any(category.is_main for category in self.categories)
+    def main_category(self) -> PrizeCategory | None:
+        return next(
+            (category for category in self.categories if category.is_main),
+            None,
+        )
 
     def get_event_database(self) -> EventDatabase:
         return EventDatabase(self.tournament.event.uniq_id, True)
@@ -302,20 +308,25 @@ class PrizeGroup:
                         prize_with_same_place
                         and next_prize.value < prize_with_same_place.value
                     ):
+                        currency = next_prize.currency
                         warning = _(
-                            "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
+                            '{player.first_name} {player.last_name} had won '
+                            '{previous_value} in the main group but was then '
+                            'given a prize of {next_value} in the category '
+                            "'{cat_name}' instead. By leaving the main group, "
+                            'the prize share for the place they were in is now '
+                            'worth {new_share}.'
                         ).format(
                             player=player,
                             previous_value=StaticUtils.currency_value_str(
-                                current.value, next_prize.prize_category.currency
+                                current.value, currency
                             ),
                             next_value=StaticUtils.currency_value_str(
-                                next_prize.value, next_prize.prize_category.currency
+                                next_prize.value, currency
                             ),
                             cat_name=next_prize.prize_category.name,
                             new_share=StaticUtils.currency_value_str(
-                                prize_with_same_place.value,
-                                next_prize.prize_category.currency,
+                                prize_with_same_place.value, currency
                             ),
                         )
                 else:
