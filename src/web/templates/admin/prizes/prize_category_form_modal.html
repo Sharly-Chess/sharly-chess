@@ -43,8 +43,9 @@
                 hx-indicator="#please-wait"
             >
                 {% set other_main_category=(
-                    admin_tournament.has_main_prize_category and
-                    (not admin_prize_category or not admin_prize_category.is_main)
+                    admin_tournament.main_prize_category if not (
+                        admin_prize_category and admin_prize_category.is_main
+                    ) else None
                 ) %}
                 {% set has_criteria=admin_prize_category and admin_prize_category.criteria %}
                 <div class="row mb-3">
@@ -61,10 +62,15 @@
                         class="fit-content"
                         {% if other_main_category or has_criteria %}
                             {{ macros.tooltip_attributes(
-                                'info',
-                                _('There can only be one main category per tournament.')
-                                if other_main_category else
-                                _('The main category can\'t have criteria.'),
+                                'warning',
+                                _('Replaces category [%(category)s].', category=other_main_category.name)
+                                if not has_criteria else
+                                _('Deletes all the criteria of this category.')
+                                if not other_main_category else
+                                _(
+                                    'Replaces category [%(category)s] and deletes all the criteria of this category.',
+                                    category=other_main_category.name
+                                ),
                                 'top'
                             ) }}
                         {% endif %}
@@ -74,7 +80,6 @@
                             label='',
                             placeholder=_('Define as main category'),
                             help_text='',
-                            disabled=other_main_category or has_criteria,
                             data=data, errors=errors
                         ) }}
                     </span>

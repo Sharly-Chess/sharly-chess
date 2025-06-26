@@ -1160,6 +1160,9 @@ msgstr "Supprimer le chronomètre."
 msgid "Delete the tournament."
 msgstr "Supprimer le tournoi"
 
+msgid "Deletes all the criteria of this category."
+msgstr "Supprime tous les critères de cette catégorie."
+
 #, python-format
 msgid "Deleting prize category [%(prize_category)s]"
 msgstr "Suppression de la catégorie [%(prize_category)s]"
@@ -3747,6 +3750,14 @@ msgstr "Le renommage de la base de données a échoué : {ex}"
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
 
+#, python-format
+msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
+msgstr "Remplace la catégorie [%(category)s] et supprime tous les critères de cette catégorie."
+
+#, python-format
+msgid "Replaces category [%(category)s]."
+msgstr "Remplace la catégorie [%(category)s]."
+
 msgid "Request to the database failed."
 msgstr "La requête à la base de données a échoué."
 
@@ -4332,9 +4343,6 @@ msgstr "Le lieu du tournoi."
 msgid "The mail addresses."
 msgstr "Les adresses mél."
 
-msgid "The main category can't have criteria."
-msgstr "La catégorie générale ne peut pas avoir de critères."
-
 msgid "The main category is open to all the players."
 msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 
@@ -4641,9 +4649,6 @@ msgstr "La variante du système d'appariements."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
-
-msgid "There can only be one main category per tournament."
-msgstr "Il ne peut y avoir qu'une catégorie générale par tournoi."
 
 msgid "There can only be one main category."
 msgstr "Il ne peut y avoir qu'une seule catégorie générale."
