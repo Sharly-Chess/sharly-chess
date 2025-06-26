@@ -125,7 +125,7 @@ class PrizeGroup:
         main_category = next(
             (category for category in self.categories if category.is_main), None
         )
-        main_prizes = list(main_category.prizes) if main_category else []
+        main_prizes = list(main_category.sorted_prizes) if main_category else []
 
         def calculate_main_category_prizes(
             sorted_players: list[Player],

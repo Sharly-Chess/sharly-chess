@@ -1628,6 +1628,9 @@ msgstr "Mél :"
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
 
+msgid "Enable/disable the details of prizes on the cards below."
+msgstr "Activer/désactiver l'affichage des détails des prix sur les cartes ci-dessous"
+
 msgid "Enable/disable the details of the rotators on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des écrans rotatifs sur les cartes ci-dessous."
 
@@ -2815,6 +2818,9 @@ msgstr "Aucun·e joueur·euse."
 
 msgid "No prize groups."
 msgstr "Aucun groupe de prix."
+
+msgid "No prizes defined"
+msgstr "Aucun prix défini"
 
 msgid "No prizes defined."
 msgstr "Aucun prix défini."
