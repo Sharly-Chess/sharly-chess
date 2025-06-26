@@ -56,7 +56,7 @@
                             name='values',
                             label=_('%(string)s:', string=_('Values')),
                             placeholder=_('E.g.: %(string)s', string='1000 500,5 333.33'),
-                            help_text=_('List of values of the prizes to create. Values can be floats and have to be positive.'),
+                            help_text=_('Space-separated list of numbers. One prize is created per value in the list.'),
                             data=data, errors=errors
                         ) }}
                     {% else %}

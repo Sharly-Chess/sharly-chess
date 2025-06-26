@@ -2462,9 +2462,6 @@ msgstr "Liens vers cet écran :"
 msgid "List of players"
 msgstr "Liste des participant·es"
 
-msgid "List of values of the prizes to create. Values can be floats and have to be positive."
-msgstr "Liste de valeur des prix à créer. Les valeurs peuvent être décimales et doivent être positives."
-
 msgid "Local URL: {local_url}"
 msgstr "URL locale : {local_url}"
 
@@ -4142,6 +4139,9 @@ msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en prem
 
 msgid "Source"
 msgstr "Source"
+
+msgid "Space-separated list of numbers. One prize is created per value in the list."
+msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."

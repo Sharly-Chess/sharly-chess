@@ -2462,9 +2462,6 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
-msgid "List of values of the prizes to create. Values can be floats and have to be positive."
-msgstr ""
-
 msgid "Local URL: {local_url}"
 msgstr ""
 
@@ -4141,6 +4138,9 @@ msgid "Sort the players by year of birth (youngest first)."
 msgstr ""
 
 msgid "Source"
+msgstr ""
+
+msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr ""
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
