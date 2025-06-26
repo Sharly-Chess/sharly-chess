@@ -90,6 +90,16 @@
                 >
                     {{ _('Unpair round #%(round)d', round=admin_round) }}
                 </button>
+            {% elif action == 'PARTIAL_PAIRING' %}
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-post="{{ url_for('admin-generate-round-partial-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-shuffle pe-1"></i>
+                    {{ _('Generate complementary pairings') }}
+                </button>
             {% else %}
                 <button
                     class="btn btn-primary text-nowrap"
