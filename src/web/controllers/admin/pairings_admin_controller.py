@@ -11,7 +11,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.board import Board
 from data.event import Event
@@ -865,39 +865,103 @@ class PairingsAdminController(BaseEventAdminController):
             return web_context.error
         tournament = web_context.admin_tournament
         assert tournament is not None
+        round_ = web_context.admin_round
+        action = PairingAction.FULL_PAIRING
         if not tournament.pairing_system.permission_handler.validate_action(
-            PairingAction.FULL_PAIRING,
-            web_context.round_status,
-            web_context.safety_mode,
+            action, web_context.round_status, web_context.safety_mode
         ):
             return self._admin_event_pairings_render(
                 request,
                 event_uniq_id=event_uniq_id,
                 tournament_id=tournament_id,
-                round_=round,
+                round_=round_,
                 modal='safety-mode',
-                protected_action=PairingAction.FULL_PAIRING,
+                protected_action=action,
             )
         if not tournament.are_pairing_settings_valid:
             tournament.set_default_pairing_settings()
-        tournament.pairing_variation.engine.generate_pairings(
-            tournament, web_context.admin_round
-        )
-        Message.success(
-            request,
-            _(
-                'Pairings of round {round} generated for tournament [{tournament_uniq_id}].'
-            ).format(
-                round=web_context.admin_round, tournament_uniq_id=tournament.uniq_id
-            ),
-        )
+        tournament.pairing_variation.engine.generate_pairings(tournament, round_)
+        Message.success(request, _('Pairings successfully generated!'))
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            round_=web_context.admin_round,
+            round_=round_,
+        )
+
+    @post(
+        path='/admin/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-generate-round-partial-pairings',
+    )
+    async def admin_generate_round_partial_pairings(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
             board_id=None,
-            trigger_event=None,
+            player_id=None,
+            data=None,
+        )
+        if web_context.error:
+            return web_context.error
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+        round_ = web_context.admin_round
+        action = PairingAction.PARTIAL_PAIRING
+        round_status = web_context.round_status
+        permission_handler = tournament.pairing_system.permission_handler
+        if not permission_handler.validate_action(
+            action, round_status, web_context.safety_mode
+        ):
+            SessionHandler.set_session_admin_pairings_safety_mode(
+                request, permission_handler.required_mode(round_status, action)
+            )
+        if not tournament.are_pairing_settings_valid:
+            tournament.set_default_pairing_settings()
+        tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
+        unpaired_count = sum(
+            player.pairings[round_].not_paired for player in tournament.players
+        )
+        if unpaired_count:
+            if unpaired_count == 1:
+                reason = (
+                    _('PAB is already assigned')
+                    if tournament.round_has_pab(round_)
+                    else _('player already received a PAB in a previous round')
+                )
+            else:
+                reason = _('some already played each other')
+            Message.warning(
+                request,
+                ' '.join(
+                    [
+                        _('Complementary pairings generated.'),
+                        ngettext(
+                            '{players} player remain unpaired',
+                            '{players} players remain unpaired',
+                            unpaired_count,
+                        ).format(players=unpaired_count),
+                        f'({reason}).',
+                    ]
+                ),
+            )
+        else:
+            Message.success(
+                request,
+                _('Complementary pairings successfully generated!'),
+            )
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round_,
         )
 
     @post(

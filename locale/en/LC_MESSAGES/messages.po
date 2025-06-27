@@ -57,6 +57,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d prize successfully created!"
+msgid_plural "%(num)d prizes successfully created!"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
 
@@ -457,6 +463,9 @@ msgid "At least one league is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one value is expected."
 msgstr ""
 
 #, python-format
@@ -923,6 +932,15 @@ msgstr ""
 msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Comments"
 
+msgid "Complementary pairings"
+msgstr ""
+
+msgid "Complementary pairings generated."
+msgstr ""
+
+msgid "Complementary pairings successfully generated!"
+msgstr ""
+
 #, python-format
 msgid "Computer [%(ip)s] has been created."
 msgstr ""
@@ -1273,6 +1291,9 @@ msgid "Delete the timer."
 msgstr ""
 
 msgid "Delete the tournament."
+msgstr ""
+
+msgid "Deletes all the criteria of this category."
 msgstr ""
 
 #, python-format
@@ -1672,6 +1693,10 @@ msgstr ""
 msgid "EXEMPT"
 msgstr ""
 
+#, python-format
+msgid "EXEMPT (already received at round #%(round)d)"
+msgstr ""
+
 msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
@@ -1794,6 +1819,9 @@ msgstr ""
 msgid "Enable/disable the details of events on the cards below."
 msgstr ""
 
+msgid "Enable/disable the details of prizes on the cards below."
+msgstr ""
+
 msgid "Enable/disable the details of the rotators on the cards below."
 msgstr ""
 
@@ -1804,6 +1832,10 @@ msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
 msgid "Enabled"
+msgstr ""
+
+#, python-format
+msgid "Encounter already happened at round #%(round)d"
 msgstr ""
 
 msgid "End round"
@@ -2234,6 +2266,9 @@ msgid "Gender:"
 msgstr ""
 
 msgid "General"
+msgstr ""
+
+msgid "Generate complementary pairings"
 msgstr ""
 
 msgid "Generate pairings for all the rounds of the tournament."
@@ -2993,6 +3028,9 @@ msgstr ""
 msgid "No prize groups."
 msgstr ""
 
+msgid "No prizes defined"
+msgstr ""
+
 msgid "No prizes defined."
 msgstr ""
 
@@ -3245,6 +3283,9 @@ msgstr "Owed/paid"
 msgid "Owed:"
 msgstr ""
 
+msgid "PAB is already assigned"
+msgstr ""
+
 msgid "PERMUTE WHITE/BLACK"
 msgstr ""
 
@@ -3260,11 +3301,13 @@ msgstr ""
 msgid "Pair"
 msgstr ""
 
-#, python-format
-msgid "Pair as BLACK vs %(player)s"
+msgid "Pair as BLACK"
 msgstr ""
 
 msgid "Pair as WHITE"
+msgstr ""
+
+msgid "Pair the unpaired players with each other."
 msgstr ""
 
 msgid "Pair tournament"
@@ -3332,6 +3375,9 @@ msgid "Pairings screens by player ({num})"
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgstr ""
+
+msgid "Pairings successfully generated!"
 msgstr ""
 
 #, python-format
@@ -3689,10 +3735,6 @@ msgstr ""
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
-#, python-format
-msgid "Prize [%(prize)s] successfully created!"
-msgstr ""
-
 msgid "Prize assignment"
 msgstr ""
 
@@ -3950,6 +3992,14 @@ msgstr ""
 
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
+msgstr ""
+
+#, python-format
+msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
+msgstr ""
+
+#, python-format
+msgid "Replaces category [%(category)s]."
 msgstr ""
 
 msgid "Request to the database failed."
@@ -4317,6 +4367,9 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
+msgid "Space-separated list of numbers. One prize is created per value in the list."
+msgstr ""
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -4535,9 +4588,6 @@ msgid "The location of the tournament."
 msgstr ""
 
 msgid "The mail addresses."
-msgstr ""
-
-msgid "The main category can't have criteria."
 msgstr ""
 
 msgid "The main category is open to all the players."
@@ -4844,13 +4894,13 @@ msgstr ""
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
+msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
 msgid "The variation of the pairing system."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
-msgstr ""
-
-msgid "There can only be one main category per tournament."
 msgstr ""
 
 msgid "There can only be one main category."
@@ -5447,6 +5497,9 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
+msgid "Values"
+msgstr ""
+
 msgid "Variation"
 msgstr ""
 
@@ -5764,6 +5817,12 @@ msgstr ""
 msgid "[{path}] is not a directory."
 msgstr ""
 
+msgid "[{value}] is not a positive value."
+msgstr ""
+
+msgid "[{value}] is not a valid value format."
+msgstr ""
+
 msgid "all the boards"
 msgstr ""
 
@@ -5813,6 +5872,9 @@ msgid "no"
 msgstr ""
 
 msgid "no background image"
+msgstr ""
+
+msgid "player already received a PAB in a previous round"
 msgstr ""
 
 msgid "players from #{first} to #{last}"
@@ -5878,6 +5940,9 @@ msgstr ""
 msgid "server"
 msgstr ""
 
+msgid "some already played each other"
+msgstr ""
+
 msgid "the whole ranking"
 msgstr ""
 
@@ -5899,10 +5964,14 @@ msgstr ""
 msgid "unknown"
 msgstr ""
 
-msgid "value: {currency_value}"
+msgid "value: {value}"
 msgstr ""
 
 msgid "vs"
+msgstr ""
+
+#, python-format
+msgid "vs %(player)s"
 msgstr ""
 
 msgid "yes"
@@ -5935,6 +6004,11 @@ msgstr[1] ""
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
+
+msgid "{players} player remain unpaired"
+msgid_plural "{players} players remain unpaired"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""

@@ -199,6 +199,7 @@ with_indicator: display a loading indicator, optional
     with_indicator=false,
     dropdown_id='',
     dropdown_item='',
+    dropdown_classes='',
     select_options={},
     multiple_select=false,
     number_min='',
@@ -416,7 +417,7 @@ with_indicator: display a loading indicator, optional
                 ></i>
             {% endif %}
             {% if dropdown_id %}
-                <ul id="{{ dropdown_id }}" class="dropdown-menu p-0">
+                <ul id="{{ dropdown_id }}" class="dropdown-menu p-0 mt-1 {{ dropdown_classes }}">
                     {% if dropdown_item %}
                         <li class="dropdown-item no-hover text-nowrap">
                             <span class="fst-italic">{{ dropdown_item }}</span>
@@ -466,6 +467,7 @@ with_indicator: display a loading indicator, optional
     with_indicator=false,
     dropdown_id='',
     dropdown_item='',
+    dropdown_classes='',
     hx_get='',
     hx_post='',
     hx_trigger='',
@@ -495,6 +497,7 @@ with_indicator: display a loading indicator, optional
         with_indicator=with_indicator,
         dropdown_id=dropdown_id,
         dropdown_item=dropdown_item,
+        dropdown_classes=dropdown_classes,
         hx_get=hx_get,
         hx_post=hx_post,
         hx_trigger=hx_trigger,

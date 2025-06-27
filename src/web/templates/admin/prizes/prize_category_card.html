@@ -68,23 +68,46 @@
 
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
-        <div class="text-start">
-            {{ _('%(string)s:', string=_('Criteria')) }}&nbsp;
-            {% if prize_category.is_main %}
-                {{ _('All the players') }}
-            {% elif prize_category.criteria %}
-                {{ prize_category.criteria_string }}
-            {% else %}
-                <span class="text-secondary">
-                    <i>{{ _('Undefined **** PLURAL') }}</i>
-                </span>
-            {% endif %}
+        <div class="d-flex gap-2">
+            <div>{{ _('%(string)s:', string=_('Criteria')) }}</div>
+            <div>
+                {% if prize_category.is_main %}
+                    {{ _('All the players') }}
+                {% elif prize_category.criteria %}
+                    {{ prize_category.criteria_string }}
+                {% else %}
+                    <span class="text-secondary">
+                        <i>{{ _('Undefined **** PLURAL') }}</i>
+                    </span>
+                {% endif %}
+            </div>
         </div>
-        <div class="text-start">
-            {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
-            {{ prize_category.format_total_prize_value(prize_currency) }}
+        {% if show_details %}
+            <div class="d-flex gap-2">
+                <div>{{ _('%(string)s:', string=_('Prizes')) }}</div>
+                <div class='d-flex flex-column gap-0'>
+                    {% for prize in prize_category.sorted_prizes %}
+                        <div>
+                            {{ ordinal_integer(loop.index)|safe }}&nbsp;-&nbsp;
+                            {% if prize.is_monetary %}
+                                {{ format_prize_value(value=prize.value) }}
+                            {% else %}
+                                {{ prize.description }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if prize_category.sorted_prizes|length == 0 %}
+                        <div class="text-secondary">
+                            <i>{{ _('No prizes defined') }}</i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="d-flex gap-2">
+            <div>{{ _('%(string)s:', string=_('Total prize value')) }}</div>
+            <div>{{ prize_category.format_total_prize_value(prize_currency) }}</div>
         </div>
-        <div class="text-start">{{ prize_category.format_shared_prizes(prize_currency) }}</div>
     </div>
 {% endblock %}
 

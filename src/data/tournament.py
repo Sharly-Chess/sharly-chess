@@ -21,6 +21,7 @@ from data.board import Board
 from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
+from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.screen import Screen
 from data.tie_breaks import (
@@ -438,15 +439,22 @@ class Tournament:
         return sorted(
             self.prize_groups,
             key=lambda group: (
-                not group.has_main_category,
+                group.main_category is None,
                 -len(group.categories),
                 group.id,
             ),
         )
 
     @property
-    def has_main_prize_category(self) -> bool:
-        return any(prize_group.has_main_category for prize_group in self.prize_groups)
+    def main_prize_category(self) -> PrizeCategory | None:
+        return next(
+            (
+                prize_group.main_category
+                for prize_group in self.prize_groups
+                if prize_group.main_category
+            ),
+            None,
+        )
 
     def _get_prize_groups_by_id(self) -> dict[int, PrizeGroup]:
         prize_groups_by_id = {}
@@ -775,6 +783,9 @@ class Tournament:
             for player in self.players
         )
 
+    def is_round_partially_paired(self, round_: int) -> bool:
+        return self.round_has_pairings(round_) and not self.is_round_paired(round_)
+
     def round_has_result(self, round_: int) -> bool:
         return any(
             player.pairings[round_].result != Result.NO_RESULT
@@ -799,7 +810,10 @@ class Tournament:
         return 1 <= round_ <= self.rounds
 
     def to_trf(
-        self, trf_type: TrfType, after_round: int | None = None
+        self,
+        trf_type: TrfType,
+        after_round: int | None = None,
+        next_round_pairings_as_zpb: bool = False,
     ) -> TrfTournament:
         if after_round is None:
             after_round = self.rounds
@@ -816,6 +830,7 @@ class Tournament:
                     self._player_id_to_trf_id,
                     after_round=after_round,
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
+                    next_round_pairings_as_zpb=next_round_pairings_as_zpb,
                 )
                 for player in self.players_by_starting_rank.values()
             ],
@@ -1396,6 +1411,7 @@ class Tournament:
     def update_round_pairings(self, round_nb: int):
         """Updates the pairings of all players for a round."""
         with self.papi_write_database as papi_database:
+            papi_database.remove_exempt_pairing(round_nb)
             for player in self.players:
                 if round_nb in player.pairings:
                     papi_database.update_player_pairing(

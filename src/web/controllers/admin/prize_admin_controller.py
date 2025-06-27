@@ -61,6 +61,9 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         self.admin_prize_category: PrizeCategory | None = None
         self.admin_prize_criterion: PrizeCriterion | None = None
         self.admin_prize: Prize | None = None
+        self.show_details = SessionHandler.get_session_admin_prizes_show_details(
+            request
+        )
         if not self.admin_event:
             return
 
@@ -144,6 +147,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'prize_currency': prize_currency,
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
+            'show_details': self.show_details,
         }
 
     def get_admin_tournament(self) -> Tournament:
@@ -203,7 +207,10 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         prize_group_id: int | None,
+        show_details: bool | None,
     ) -> Template | ClientRedirect:
+        if show_details is not None:
+            SessionHandler.set_session_admin_prizes_show_details(request, show_details)
         web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
         if web_context.error:
             return web_context.error
@@ -460,7 +467,7 @@ class PrizeAdminController(BaseEventAdminController):
         return {
             'name': '',
             'is_main': WebContext.value_to_form_data(
-                not tournament.has_main_prize_category
+                tournament.main_prize_category is None
             ),
             'share_prizes': WebContext.value_to_form_data(False),
             'sharing_threshold': '',
@@ -501,27 +508,31 @@ class PrizeAdminController(BaseEventAdminController):
                     request, data, FormAction.CREATE, errors
                 ),
             )
+        current_main_category = web_context.get_admin_tournament().main_prize_category
         prize_group = web_context.get_admin_prize_group()
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
-        prize_category = prize_group.add_category(
-            StoredPrizeCategory(
-                id=None,
-                prize_group_id=prize_group.id,
-                name=WebContext.form_data_to_str(data, 'name') or '',
-                is_main=WebContext.form_data_to_bool(data, 'is_main'),
-                sharing_threshold=(
-                    WebContext.form_data_to_float(data, 'sharing_threshold')
-                    if share_prizes
-                    else None
-                ),
-                prize_sharing=(
-                    data['prize_sharing']
-                    if share_prizes
-                    else NoPrizeSharing.static_id()
-                ),
-                index=len(prize_group.categories),
-            )
+        stored_category = StoredPrizeCategory(
+            id=None,
+            prize_group_id=prize_group.id,
+            name=WebContext.form_data_to_str(data, 'name') or '',
+            is_main=WebContext.form_data_to_bool(data, 'is_main'),
+            sharing_threshold=(
+                WebContext.form_data_to_float(data, 'sharing_threshold')
+                if share_prizes
+                else None
+            ),
+            prize_sharing=(
+                data['prize_sharing'] if share_prizes else NoPrizeSharing.static_id()
+            ),
+            index=len(prize_group.categories),
         )
+        if current_main_category and stored_category.is_main:
+            current_stored_category = current_main_category.stored_prize_category
+            current_stored_category.is_main = False
+            current_stored_category.prize_sharing = NoPrizeSharing().id
+            current_stored_category.sharing_threshold = None
+            current_main_category.update()
+        prize_category = prize_group.add_category(stored_category)
 
         if add_other:
             data = self._prize_category_default_form_data(prize_group.tournament)
@@ -570,6 +581,8 @@ class PrizeAdminController(BaseEventAdminController):
                     request, data, FormAction.UPDATE, errors
                 ),
             )
+        current_main_category = web_context.get_admin_tournament().main_prize_category
+        was_main = prize_category.is_main
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         stored_category = prize_category.stored_prize_category
         stored_category.name = WebContext.form_data_to_str(data, 'name') or ''
@@ -583,6 +596,17 @@ class PrizeAdminController(BaseEventAdminController):
             else None
         )
         prize_category.update()
+        if not was_main and prize_category.is_main:
+            criteria_ids = list(prize_category.criteria_by_id.keys())
+            for criterion_id in criteria_ids:
+                prize_category.delete_criterion(criterion_id)
+            if current_main_category:
+                current_stored_category = current_main_category.stored_prize_category
+                current_stored_category.is_main = False
+                current_stored_category.prize_sharing = NoPrizeSharing().id
+                current_stored_category.sharing_threshold = None
+                current_main_category.update()
+            prize_category.prize_group.reorder_categories()
         Message.success(
             request,
             _('Prize category [{prize_category}] successfully updated.').format(
@@ -1069,25 +1093,58 @@ class PrizeAdminController(BaseEventAdminController):
 
     @staticmethod
     def _validate_prize_form_data(
-        data: dict[str, str], prize_category: PrizeCategory
+        data: dict[str, str], prize_category: PrizeCategory, action: FormAction
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
-        field = 'value'
         threshold = prize_category.sharing_threshold
-        try:
-            WebContext.form_data_to_float(data, field, 0, threshold or 0)
-        except ValueError:
-            errors[field] = (
-                _(
-                    'The value has to be higher than the sharing '
-                    'threshold of the category ({threshold}).'
-                ).format(
-                    threshold=int(threshold) if threshold.is_integer() else threshold
+        if action == FormAction.CREATE:
+            field = 'values'
+            str_values = WebContext.form_data_to_str(data, field) or ''
+            for value in str_values.split(' '):
+                if not value:
+                    continue
+                try:
+                    float_value = float(value.replace(',', '.'))
+                except ValueError:
+                    errors[field] = _('[{value}] is not a valid value format.').format(
+                        value=value
+                    )
+                    break
+                if float_value < 0:
+                    errors[field] = _('[{value}] is not a positive value.').format(
+                        value=value
+                    )
+                    break
+                if threshold and float_value < threshold:
+                    errors[field] = _(
+                        'The values have to be higher than the sharing '
+                        'threshold of the category ({threshold}).'
+                    ).format(
+                        threshold=int(threshold)
+                        if threshold.is_integer()
+                        else threshold
+                    )
+                    break
+            if not str_values and threshold:
+                errors[field] = _('At least one value is expected.')
+        else:
+            field = 'value'
+            try:
+                WebContext.form_data_to_float(data, field, 0, threshold or 0)
+            except ValueError:
+                errors[field] = (
+                    _(
+                        'The value has to be higher than the sharing '
+                        'threshold of the category ({threshold}).'
+                    ).format(
+                        threshold=int(threshold)
+                        if threshold.is_integer()
+                        else threshold
+                    )
+                    if threshold
+                    else _('A positive value is expected.')
                 )
-                if threshold
-                else _('A positive value is expected.')
-            )
         field = 'description'
         description = WebContext.form_data_to_str(data, field) or ''
         if is_monetary and description:
@@ -1106,6 +1163,7 @@ class PrizeAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         default_data = {
+            'values': '',
             'value': WebContext.value_to_form_data(0.0),
             'is_monetary': WebContext.value_to_form_data(True),
             'description': '',
@@ -1147,27 +1205,36 @@ class PrizeAdminController(BaseEventAdminController):
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_prize_add_other_active(request, add_other)
         prize_category = web_context.get_admin_prize_category()
-        if errors := self._validate_prize_form_data(data, prize_category):
+
+        if errors := self._validate_prize_form_data(
+            data, prize_category, FormAction.CREATE
+        ):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_form_modal_context(
                     request, data, FormAction.CREATE, errors
                 ),
             )
-        value = web_context.form_data_to_float(data, 'value') or 0.0
-        prize = prize_category.add_prize(
-            StoredPrize(
-                id=None,
-                prize_category_id=prize_category.id,
-                value=value,
-                is_monetary=WebContext.form_data_to_bool(data, 'is_monetary'),
-                description=WebContext.form_data_to_str(data, 'description') or '',
+        is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
+        description = WebContext.form_data_to_str(data, 'description') or ''
+        str_values = WebContext.form_data_to_str(data, 'values') or '0'
+        values = [
+            float(value.replace(',', '.')) for value in str_values.split(' ') if value
+        ]
+        for value in values:
+            prize_category.add_prize(
+                StoredPrize(
+                    id=None,
+                    prize_category_id=prize_category.id,
+                    value=value,
+                    is_monetary=is_monetary,
+                    description=description,
+                )
             )
-        )
         if add_other:
             template_context = self._prize_form_modal_context(
                 request, {}, FormAction.CREATE, errors
-            ) | {'previous_prize': prize}
+            ) | {'previous_prize_count': len(values)}
         else:
             template_context = {'modal': 'prizes'}
         return self._admin_event_prizes_render(web_context, template_context)
@@ -1204,7 +1271,9 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         prize_category = web_context.get_admin_prize_category()
-        if errors := self._validate_prize_form_data(data, prize_category):
+        if errors := self._validate_prize_form_data(
+            data, prize_category, FormAction.UPDATE
+        ):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_form_modal_context(

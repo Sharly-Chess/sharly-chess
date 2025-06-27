@@ -52,7 +52,16 @@
         <td class="text-center">{{ bp.vpoints_str }}</td>
 
     {% else %}
-        <td>{{ _('EXEMPT') }}</td>
+        {% set first_pab_round = wp.first_pab_round %}
+        <td>
+            {% if first_pab_round and first_pab_round < admin_round %}
+                <span class="text-danger">
+                    {{ _('EXEMPT (already received at round #%(round)d)', round=first_pab_round) }}
+                </span>
+            {% else %}
+                {{ _('EXEMPT') }}
+            {% endif %}
+        </td>
         <td></td>
         {% if admin_tournament.print_real_points %}<td></td>{% endif %}
     {% endif %}

@@ -44,7 +44,7 @@ class ChessEventPlugin(Plugin):
     @override
     @property
     def default_is_enabled(self) -> bool:
-        return True
+        return False
 
     @override
     @property
