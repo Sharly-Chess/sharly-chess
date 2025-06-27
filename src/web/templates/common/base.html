@@ -253,6 +253,11 @@
                     }
                 }
 
+                function errorBeep() {
+                    var snd = new Audio("/static/sounds/error-beep.wav");
+                    snd.play();
+                }
+
                 function init_sidebar() {
                     const body = $("body");
                     if (body) {

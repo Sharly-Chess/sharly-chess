@@ -205,14 +205,7 @@ class SessionHandler:
         return set(
             request.session.get(
                 cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-                [
-                    'boards',
-                    'input',
-                    'players',
-                    'results',
-                    'ranking',
-                    'image',
-                ],
+                [],
             )
         )
 

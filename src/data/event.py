@@ -400,6 +400,90 @@ class Event:
             or SharlyChessConfig.default_message_background_color
         )
 
+    @cached_property
+    def basic_screens_by_id(self) -> dict[int, Screen]:
+        if self.errors:
+            return {}
+        screens_by_id: dict[int, Screen] = {
+            stored_screen.id: Screen(self, stored_screen=stored_screen)
+            for stored_screen in self.stored_event.stored_screens
+            if stored_screen.id is not None
+        }
+        return screens_by_id
+
+    @cached_property
+    def basic_screens_by_uniq_id(self) -> dict[str, Screen]:
+        return {screen.uniq_id: screen for screen in self.basic_screens_by_id.values()}
+
+    @property
+    def basic_screens_by_screen_type_by_id(
+        self,
+    ) -> defaultdict[ScreenType, list[Screen]]:
+        basic_screens_by_screen_type_by_id: defaultdict[
+            ScreenType, dict[int, Screen]
+        ] = defaultdict(dict[int, Screen])
+        for screen in self.basic_screens_by_id.values():
+            basic_screens_by_screen_type_by_id[screen.type][screen.id] = screen
+        return basic_screens_by_screen_type_by_id
+
+    @property
+    def basic_screens_by_screen_type_sorted_by_uniq_id(
+        self,
+    ) -> defaultdict[ScreenType, list[Screen]]:
+        basic_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
+            ScreenType, list[Screen]
+        ] = defaultdict(list[Screen])
+        for screen_type in self.basic_screens_by_screen_type_by_id:
+            basic_screens_by_screen_type_sorted_by_uniq_id[screen_type] = sorted(
+                self.basic_screens_by_id.values(), key=lambda screen: screen.uniq_id
+            )
+        return basic_screens_by_screen_type_sorted_by_uniq_id
+
+    def get_unused_screen_uniq_id(
+        self,
+        screen_type: ScreenType | None = None,
+        base_uniq_id: str | None = None,
+    ) -> str:
+        """Returns the first unused screen uniq_id looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
+        screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
+        screen_uniq_id = base_uniq_id
+        if screen_uniq_id is None:
+            if screen_type is None:
+                raise ValueError('Either screen_type or base_uniq_id must be provided.')
+            screen_uniq_id = _('{screen_type}-screen').format(
+                screen_type=screen_type.value
+            )
+
+        return self._get_unused_item_uniq_id(
+            screen_uniq_id,
+            self.basic_screens_by_uniq_id,
+        )
+
+    def get_unused_screen_name(
+        self,
+        screen_type: ScreenType,
+        base_name: str | None = None,
+    ) -> str:
+        """Returns the first unused screen name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)...
+        screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
+        return self._get_unused_item_name(
+            base_name or screen_type.name,
+            [
+                str(screen.name)
+                for screen in self.basic_screens_by_id.values()
+                if screen.name is not None
+            ],
+        )
+
+    @property
+    def screens_by_uniq_id(self) -> dict[str, Screen]:
+        screens_by_uniq_id: dict[str, Screen] = copy.copy(self.basic_screens_by_uniq_id)
+        for family in self.families_by_id.values():
+            screens_by_uniq_id |= family.screens_by_uniq_id
+        return screens_by_uniq_id
+
     @property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
         return sorted(
@@ -407,7 +491,7 @@ class Event:
         )
 
     @property
-    def screens_of_type_sorted_by_uniq_id(
+    def screens_by_screen_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
         screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = (
@@ -418,67 +502,19 @@ class Event:
         return screens_of_type_sorted_by_uniq_id
 
     @property
-    def input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
-
-    @property
-    def boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
-
-    @property
-    def players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-
-    @property
-    def results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
-
-    @property
-    def ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
-
-    @property
-    def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
-
-    @property
     def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return [screen for screen in self.screens_by_uniq_id.values() if screen.public]
 
     @property
-    def public_screens_of_type_sorted_by_uniq_id(
+    def public_screens_by_screen_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
-        public_screens_of_type_sorted_by_uniq_id: defaultdict[
+        public_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
             ScreenType, list[Screen]
         ] = defaultdict(list[Screen])
         for screen in self.public_screens_sorted_by_uniq_id:
-            public_screens_of_type_sorted_by_uniq_id[screen.type].append(screen)
-        return public_screens_of_type_sorted_by_uniq_id
-
-    @property
-    def public_input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
-
-    @property
-    def public_boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
-
-    @property
-    def public_players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-
-    @property
-    def public_results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
-
-    @property
-    def public_ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
-
-    @property
-    def public_image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            public_screens_by_screen_type_sorted_by_uniq_id[screen.type].append(screen)
+        return public_screens_by_screen_type_sorted_by_uniq_id
 
     @cached_property
     def rotators_sorted_by_uniq_id(self) -> list[Rotator]:
@@ -646,59 +682,6 @@ class Event:
         )
 
     @cached_property
-    def basic_screens_by_id(self) -> dict[int, Screen]:
-        if self.errors:
-            return {}
-        screens_by_id: dict[int, Screen] = {
-            stored_screen.id: Screen(self, stored_screen=stored_screen)
-            for stored_screen in self.stored_event.stored_screens
-            if stored_screen.id is not None
-        }
-        return screens_by_id
-
-    @cached_property
-    def basic_screens_by_uniq_id(self) -> dict[str, Screen]:
-        return {screen.uniq_id: screen for screen in self.basic_screens_by_id.values()}
-
-    def get_unused_screen_uniq_id(
-        self,
-        screen_type: ScreenType | None = None,
-        base_uniq_id: str | None = None,
-    ) -> str:
-        """Returns the first unused screen uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
-        screen_type is used when the given ID is empty to set an ID that corresponds to the screen type."""
-        screen_uniq_id = base_uniq_id
-        if screen_uniq_id is None:
-            if screen_type is None:
-                raise ValueError('Either screen_type or base_uniq_id must be provided.')
-            screen_uniq_id = _('{screen_type}-screen').format(
-                screen_type=screen_type.value
-            )
-
-        return self._get_unused_item_uniq_id(
-            screen_uniq_id,
-            self.basic_screens_by_uniq_id,
-        )
-
-    def get_unused_screen_name(
-        self,
-        screen_type: ScreenType,
-        base_name: str | None = None,
-    ) -> str:
-        """Returns the first unused screen name looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)...
-        screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
-        return self._get_unused_item_name(
-            base_name or screen_type.name,
-            [
-                str(screen.name)
-                for screen in self.basic_screens_by_id.values()
-                if screen.name is not None
-            ],
-        )
-
-    @cached_property
     def families_by_id(self) -> dict[int, Family]:
         if self.errors:
             return {}
@@ -745,13 +728,6 @@ class Event:
             base_name or family_type.name,
             [screen.name for screen in self.families_by_id.values()],
         )
-
-    @property
-    def screens_by_uniq_id(self) -> dict[str, Screen]:
-        screens_by_uniq_id: dict[str, Screen] = copy.copy(self.basic_screens_by_uniq_id)
-        for family in self.families_by_id.values():
-            screens_by_uniq_id |= family.screens_by_uniq_id
-        return screens_by_uniq_id
 
     @property
     def family_screens_by_uniq_id(self) -> dict[str, Screen]:

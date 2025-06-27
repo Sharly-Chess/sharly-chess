@@ -35,7 +35,7 @@
                 <div class="dropend compact-only w-100">
                     <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
                         <button
-                            class="nav-link text-start{{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                            class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
                             type="button"
                             data-bs-toggle="dropdown"
                             {% if nav_tab.disabled %}
@@ -51,8 +51,8 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu">
-                            {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
-                                {% if sub_nav.separator %}
+                            {% for sub_nav_id, sub_nav_tab in nav_tab.submenu.items() %}
+                                {% if sub_nav_tab.separator %}
                                     <li class="dropdown-divider"></li>
                                 {% endif %}
                                 <li>
@@ -64,14 +64,14 @@
                                         hx-push-url="true"
                                         type="button"
                                         hx-indicator="#please-wait"
-                                        {% if sub_nav.disabled %}
+                                        {% if sub_nav_tab.disabled %}
                                             disabled
                                         {% endif %}
                                     >
                                         {% if nav_tab.icon_class %}
-                                            <i class="{{ sub_nav.icon_class }} pe-1"></i>
+                                            <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
                                         {% endif %}
-                                        {{ sub_nav.title }}
+                                        {{ sub_nav_tab.title }}
                                     </button>
                                 </li>
                             {% endfor %}

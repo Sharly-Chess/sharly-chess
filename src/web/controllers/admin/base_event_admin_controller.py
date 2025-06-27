@@ -152,44 +152,47 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-trophy-fill',
                 },
             }
-        nav_tabs |= {
-            'admin-event-views': {
-                'title': _('Screens'),
-                'icon_class': 'bi-display-fill',
-                'submenu': {
-                    'admin-event-screens-tab': {
-                        'title': _('Single Screens ({num})').format(
-                            num=len(admin_event.basic_screens_by_id) or '-'
-                        ),
-                        'template': 'screens/tab.html',
-                    },
-                    'admin-event-families-tab': {
-                        'title': _('Families ({num})').format(
-                            num=len(admin_event.families_by_id) or '-'
-                        ),
-                        'template': 'families/tab.html',
-                    },
-                    'admin-event-rotators-tab': {
-                        'title': _('Rotators ({num})').format(
-                            num=len(admin_event.rotators_by_id) or '-'
-                        ),
-                        'template': 'rotators/tab.html',
-                    },
-                    'admin-event-timers-tab': {
-                        'title': _('Timers ({num})').format(
-                            num=len(admin_event.timers_by_id) or '-'
-                        ),
-                        'template': 'timers/tab.html',
-                    },
-                    'admin-event-display-controllers-tab': {
-                        'title': _('Display controllers ({num})').format(
-                            num=len(admin_event.display_controllers_by_id) or '-'
-                        ),
-                        'template': 'display_controllers/tab.html',
+        if web_context.client.can_manage_screens:
+            nav_tabs |= {
+                'admin-event-views': {
+                    'title': _('Screens'),
+                    'icon_class': 'bi-display-fill',
+                    'submenu': {
+                        'admin-event-screens-tab': {
+                            'title': _('Single Screens ({num})').format(
+                                num=len(admin_event.basic_screens_by_id) or '-'
+                            ),
+                            'template': 'screens/tab.html',
+                        },
+                        'admin-event-families-tab': {
+                            'title': _('Families ({num})').format(
+                                num=len(admin_event.families_by_id) or '-'
+                            ),
+                            'template': 'families/tab.html',
+                        },
+                        'admin-event-rotators-tab': {
+                            'title': _('Rotators ({num})').format(
+                                num=len(admin_event.rotators_by_id) or '-'
+                            ),
+                            'template': 'rotators/tab.html',
+                        },
+                        'admin-event-timers-tab': {
+                            'title': _('Timers ({num})').format(
+                                num=len(admin_event.timers_by_id) or '-'
+                            ),
+                            'template': 'timers/tab.html',
+                        },
+                        'admin-event-display-controllers-tab': {
+                            'title': _('Display controllers ({num})').format(
+                                num=len(admin_event.display_controllers_by_id) or '-'
+                            ),
+                            'template': 'display_controllers/tab.html',
+                        },
                     },
                 },
-            },
-        }
+            }
+        elif web_context.client.can_view_public_screens:
+            pass  # TODO Add 'user' screens
         if (
             web_context.client.can_manage_accounts
             or web_context.client.can_manage_computers

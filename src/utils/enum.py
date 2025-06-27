@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from enum import Enum, StrEnum, IntEnum
+from typing import Self
 
 from common.i18n import _
 
@@ -1069,6 +1070,10 @@ class ScreenType(StrEnum):
     RESULTS = 'results'
     RANKING = 'ranking'
     IMAGE = 'image'
+
+    @classmethod
+    def screen_types(cls) -> tuple[Self, ...]:
+        return tuple(cls)
 
     @property
     def name(self) -> str:

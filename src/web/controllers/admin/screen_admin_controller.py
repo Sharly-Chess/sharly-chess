@@ -450,18 +450,89 @@ class ScreenAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+        admin_screens_show_family_screens: bool = (
+            SessionHandler.get_session_admin_screens_show_family_screens(
+                web_context.request
+            )
+        )
+        screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+        if not web_context.client.can_manage_screens:
+            screens_by_screen_type_sorted_by_uniq_id = {}
+        elif admin_screens_show_family_screens:
+            screens_by_screen_type_sorted_by_uniq_id = (
+                web_context.admin_event.screens_by_screen_type_sorted_by_uniq_id
+            )
+        else:
+            screens_by_screen_type_sorted_by_uniq_id = (
+                web_context.admin_event.basic_screens_by_screen_type_sorted_by_uniq_id
+            )
+        admin_screen_types_data = {
+            ScreenType.INPUT: {
+                'title': _('Results entry ({num})'),
+                'create_title': _('Results entry'),
+                'create_tooltip': _('Add a screen to enter results.'),
+                'toggle_tooltip': _('Add a screen to enter results.'),
+                'url_name': 'admin-event-input-screens-tab',
+            },
+            ScreenType.BOARDS: {
+                'title': _('Pairings by boards number ({num})'),
+                'create_title': _('Pairings by board'),
+                'create_tooltip': _(
+                    'Add a screen to display the pairings by board number.'
+                ),
+                'url_name': 'admin-event-boards-screens-tab',
+            },
+            ScreenType.PLAYERS: {
+                'title': _('Pairings screens by player ({num})'),
+                'create_title': _('Pairings by player'),
+                'create_tooltip': _(
+                    'Add a screen to display the pairings by alphabetical order.'
+                ),
+                'url_name': 'admin-event-boards-screens-tab',
+            },
+            ScreenType.RESULTS: {
+                'title': _('Last results screens ({num})'),
+                'create_title': _('Last results'),
+                'create_tooltip': _('Add a screen to display the last results.'),
+                'url_name': 'admin-event-results-screens-tab',
+            },
+            ScreenType.RANKING: {
+                'title': _('Ranking screens ({num})'),
+                'create_title': _('Ranking'),
+                'create_tooltip': _('Add a screen to display the ranking.'),
+                'url_name': 'admin-event-ranking-screens-tab',
+            },
+            ScreenType.IMAGE: {
+                'title': _('Image screens ({num})'),
+                'create_title': _('Image'),
+                'create_tooltip': _('Add a screen to display an image.'),
+                'url_name': 'admin-event-image-screens-tab',
+            },
+        }
+        for screen_type in ScreenType.screen_types():
+            admin_screen_types_data[screen_type]['screens'] = (
+                screens_by_screen_type_sorted_by_uniq_id[screen_type]
+            )
+            admin_screen_types_data[screen_type]['title'] = admin_screen_types_data[
+                screen_type
+            ]['title'].format(
+                num=len(admin_screen_types_data[screen_type]['screens']) or '-'
+            )
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
             'admin_event_tab': 'admin-event-screens-tab',
-            'admin_screens_show_family_screens': SessionHandler.get_session_admin_screens_show_family_screens(
-                web_context.request
-            ),
+            'admin_screen_types_data': admin_screen_types_data,
+            'admin_screens_show_family_screens': admin_screens_show_family_screens,
             'admin_screens_show_details': SessionHandler.get_session_admin_screens_show_details(
                 web_context.request
             ),
             'admin_screens_screen_types': SessionHandler.get_session_admin_screens_screen_types(
                 web_context.request
+            ),
+            'admin_screens_count': sum(
+                len(admin_screen_types_data[screen_type])
+                for screen_type in admin_screen_types_data
             ),
         }
 

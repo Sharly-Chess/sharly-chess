@@ -336,6 +336,7 @@
 
             function highlightBoardWithError(board_id) {
                 highlightBoard(board_id, true);
+                errorBeep();
 
                 // Remove the text-secondary class from all rows that were queued
                 while (keyQueue.length > 0) {
@@ -370,8 +371,7 @@
                 $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
                 $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
                 $(document).on("highlight_board_with_warning.pairings", function(e) {
-                    highlight
-                    BoardWithError(e.detail.board_id);
+                highlightBoardWithError(e.detail.board_id);
                 });
             });
         </script>

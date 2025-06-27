@@ -88,34 +88,70 @@ class EventUserController(BaseUserController):
         rotators: list[Rotator]
         display_controllers: list[DisplayController]
         if web_context.admin_auth:
-            input_screens = web_context.user_event.input_screens_sorted_by_uniq_id
-            boards_screens = web_context.user_event.boards_screens_sorted_by_uniq_id
-            players_screens = web_context.user_event.players_screens_sorted_by_uniq_id
-            results_screens = web_context.user_event.results_screens_sorted_by_uniq_id
-            ranking_screens = web_context.user_event.ranking_screens_sorted_by_uniq_id
-            image_screens = web_context.user_event.image_screens_sorted_by_uniq_id
+            input_screens = (
+                web_context.user_event.screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.INPUT
+                ]
+            )
+            boards_screens = (
+                web_context.user_event.screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.BOARDS
+                ]
+            )
+            players_screens = (
+                web_context.user_event.screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.PLAYERS
+                ]
+            )
+            results_screens = (
+                web_context.user_event.screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.RESULTS
+                ]
+            )
+            ranking_screens = (
+                web_context.user_event.screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.RANKING
+                ]
+            )
+            image_screens = (
+                web_context.user_event.screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.IMAGE
+                ]
+            )
             rotators = web_context.user_event.rotators_sorted_by_uniq_id
             display_controllers = (
                 web_context.user_event.display_controllers_sorted_by_uniq_id
             )
         else:
             input_screens = (
-                web_context.user_event.public_input_screens_sorted_by_uniq_id
+                web_context.user_event.public_screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.INPUT
+                ]
             )
             boards_screens = (
-                web_context.user_event.public_boards_screens_sorted_by_uniq_id
+                web_context.user_event.public_screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.BOARDS
+                ]
             )
             players_screens = (
-                web_context.user_event.public_players_screens_sorted_by_uniq_id
+                web_context.user_event.public_screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.PLAYERS
+                ]
             )
             results_screens = (
-                web_context.user_event.public_results_screens_sorted_by_uniq_id
+                web_context.user_event.public_screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.RESULTS
+                ]
             )
             ranking_screens = (
-                web_context.user_event.public_ranking_screens_sorted_by_uniq_id
+                web_context.user_event.public_screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.RANKING
+                ]
             )
             image_screens = (
-                web_context.user_event.public_image_screens_sorted_by_uniq_id
+                web_context.user_event.public_screens_by_screen_type_sorted_by_uniq_id[
+                    ScreenType.IMAGE
+                ]
             )
             rotators = web_context.user_event.public_rotators_sorted_by_uniq_id
             display_controllers = (

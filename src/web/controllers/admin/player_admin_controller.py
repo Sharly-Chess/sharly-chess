@@ -703,8 +703,6 @@ class PlayerAdminController(BaseEventAdminController):
                                 tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[
                                     0
                                 ].id
-                            else:
-                                tournament_id = None
                         case _:
                             raise ValueError(f'action=[{action}]')
 
@@ -1049,10 +1047,12 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path=(
+        path=[
             '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
-            '{data_source_id:str}/{player_source_id:str}'
-        ),
+            '{data_source_id:str}/{player_source_id:str}',
+            '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
+            '/{data_source_id:str}/{player_source_id:str}/{tournament_id:str}',
+        ],
         name='admin-player-modal-create-from-search',
         cache=1,
     )
@@ -1062,6 +1062,7 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         data_source_id: str,
         player_source_id: str,
+        tournament_id: str | None,
     ) -> Template | ClientRedirect:
         try:
             data_source = DataSourceManager.get_object(data_source_id)
@@ -1096,6 +1097,7 @@ class PlayerAdminController(BaseEventAdminController):
             modal='player',
             action='create',
             search_player=source_player,
+            tournament_id=int(tournament_id) if tournament_id else None,
             errors=errors,
         )
 
@@ -1263,6 +1265,7 @@ class PlayerAdminController(BaseEventAdminController):
                         modal='player',
                         action='create',
                         old_player_id=player_id,
+                        tournament_id=tournament.id,
                     )
                 return self._admin_event_players_render(
                     request, event_uniq_id=event_uniq_id

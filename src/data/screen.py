@@ -353,9 +353,13 @@ class Screen:
                     continue
                 if menu_part == '@boards':
                     part_menu_screens = (
-                        self.event.boards_screens_sorted_by_uniq_id
+                        self.event.screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.BOARDS
+                        ]
                         if admin
-                        else self.event.public_boards_screens_sorted_by_uniq_id
+                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.BOARDS
+                        ]
                     )
                     if not part_menu_screens:
                         self.event.add_warning(
@@ -368,9 +372,13 @@ class Screen:
                     continue
                 if menu_part == '@input':
                     part_menu_screens = (
-                        self.event.input_screens_sorted_by_uniq_id
+                        self.event.screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.INPUT
+                        ]
                         if admin
-                        else self.event.public_input_screens_sorted_by_uniq_id
+                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.INPUT
+                        ]
                     )
                     if not part_menu_screens:
                         self.event.add_warning(
@@ -383,9 +391,13 @@ class Screen:
                     continue
                 if menu_part == '@players':
                     part_menu_screens = (
-                        self.event.players_screens_sorted_by_uniq_id
+                        self.event.screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.PLAYERS
+                        ]
                         if admin
-                        else self.event.public_players_screens_sorted_by_uniq_id
+                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.PLAYERS
+                        ]
                     )
                     if not part_menu_screens:
                         self.event.add_warning(
@@ -398,9 +410,13 @@ class Screen:
                     continue
                 if menu_part == '@results':
                     part_menu_screens = (
-                        self.event.results_screens_sorted_by_uniq_id
+                        self.event.screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.RESULTS
+                        ]
                         if admin
-                        else self.event.public_results_screens_sorted_by_uniq_id
+                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.RESULTS
+                        ]
                     )
                     if not part_menu_screens:
                         self.event.add_warning(
@@ -413,9 +429,13 @@ class Screen:
                     continue
                 if menu_part == '@ranking':
                     part_menu_screens = (
-                        self.event.ranking_screens_sorted_by_uniq_id
+                        self.event.screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.RANKING
+                        ]
                         if admin
-                        else self.event.public_ranking_screens_sorted_by_uniq_id
+                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            ScreenType.RANKING
+                        ]
                     )
                     if not part_menu_screens:
                         self.event.add_warning(

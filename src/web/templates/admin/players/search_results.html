@@ -10,6 +10,7 @@
                     data_source_id=data_source.id,
                     player_source_id=data_source.get_player_source_id(player),
                 ) }}"
+                hx-vals='js:{tournament_id: $("#tournament-id").val()}'
                 hx-target="body"
                 hx-indicator="#please-wait"
             >

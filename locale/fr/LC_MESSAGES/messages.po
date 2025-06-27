@@ -316,16 +316,13 @@ msgid "Add a screen to display the pairings by alphabetical order."
 msgstr "Ajouter un écran d'affichage des appariements par ordre alphabétique."
 
 msgid "Add a screen to display the pairings by board number."
-msgstr "Ajouter un écran d'affichage des appariements par numéro d'échiquier."
-
-msgid "Add a screen to display the pairings by board."
 msgstr "Ajouter un écran d'affichage des appariements par échiquier."
 
 msgid "Add a screen to display the ranking."
 msgstr "Ajouter un écran d'affichage du classement."
 
-msgid "Add a screen to enter the results."
-msgstr "Ajouter un écran de saisie des résultats."
+msgid "Add a screen to enter results."
+msgstr "Ajouter un écran d'entrée des résultats."
 
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
@@ -1065,14 +1062,8 @@ msgstr "Créer un écran rotatif"
 msgid "Create a rotator now to get started."
 msgstr "Créer un écran rotatif pour commencer."
 
-msgid "Create a screen"
-msgstr "Créer un écran"
-
 msgid "Create a screen family"
 msgstr "Créer une famille d'écrans"
-
-msgid "Create a screen now to get started."
-msgstr "Créer un écran pour commencer."
 
 msgid "Create a timer"
 msgstr "Créer un chronomètre"
@@ -1809,9 +1800,6 @@ msgstr "Activer/désactiver l'affichage des détails des écrans rotatifs sur le
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des familles d'écrans sur les cartes ci-dessous."
 
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des écrans sur les cartes ci-dessous."
-
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
 
@@ -2370,8 +2358,8 @@ msgstr "Image ({num})"
 msgid "Image screen creation"
 msgstr "Création d'un écran d'image"
 
-msgid "Image screens"
-msgstr "Écrans d'image"
+msgid "Image screens ({num})"
+msgstr "Écrans images ({num})"
 
 msgid "Image screens show an image (local or remote)."
 msgstr "Les écrans d'image affichent une image (locale ou distante)."
@@ -2428,9 +2416,6 @@ msgstr "Message d'information"
 
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
-
-msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
-msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
@@ -2573,8 +2558,8 @@ msgstr "Derniers résultats"
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
 
-msgid "Last results screens"
-msgstr "Écrans des derniers résultats"
+msgid "Last results screens ({num})"
+msgstr "Écrans des résultats ({num})"
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
@@ -3316,6 +3301,9 @@ msgstr "Appariements par échiquier"
 msgid "Pairings by board ({num})"
 msgstr "Appariements par échiquier ({num})"
 
+msgid "Pairings by boards number ({num})"
+msgstr "Appariements par échiquier ({num})"
+
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
@@ -3340,11 +3328,8 @@ msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de jo
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
 
-msgid "Pairings screens by boards number"
-msgstr "Écrans d'appariements par numéro d'échiquier"
-
-msgid "Pairings screens by player"
-msgstr "Écrans d'appariements par ordre alphabétique"
+msgid "Pairings screens by player ({num})"
+msgstr "Appariements par joueur·euse ({num})"
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
@@ -3880,8 +3865,8 @@ msgstr "Creation d'un écran de classement"
 msgid "Ranking screen family creation"
 msgstr "Création d'une famille d'écrans de classement"
 
-msgid "Ranking screens"
-msgstr "Écrans de classement"
+msgid "Ranking screens ({num})"
+msgstr "Écrans de classement ({num})"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
@@ -4191,9 +4176,6 @@ msgstr "Familles d'écrans : %(num)d"
 msgid "Screens"
 msgstr "Écrans"
 
-msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
-
 msgid "Screens:"
 msgstr "Écrans :"
 
@@ -4275,35 +4257,11 @@ msgstr "Afficher le niveau de log"
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
 
-msgid "Show/hide the boards screens."
-msgstr "Afficher/cacher les écrans d'affichage des échiquiers."
-
-msgid "Show/hide the image screens."
-msgstr "Afficher/cacher les écrans d'image."
-
-msgid "Show/hide the input screens."
-msgstr "Afficher/cacher les écrans de saisie des résultats."
-
-msgid "Show/hide the players screens."
-msgstr "Afficher/cacher les écrans d'affichage des appariements."
-
-msgid "Show/hide the ranking screens."
-msgstr "Afficher/cacher les écrans de classement."
-
-msgid "Show/hide the results screens."
-msgstr "Afficher/cacher les écrans d'affichage des résultats."
-
-msgid "Show/hide the screens created from screen families."
-msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
-
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
 msgid "Side group"
 msgstr "Autre"
-
-msgid "Single Screens"
-msgstr "Écrans simples"
 
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
@@ -5773,9 +5731,6 @@ msgstr "Vous pouvez désactiver temporairement les ordinateurs en décochant cet
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
-msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
-msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
-
 msgid "You must create a prize group before creating a prize category."
 msgstr "Vous devez créer un groupe de prix avant de créer une catégorie de prix."
 
@@ -5787,9 +5742,6 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
 
 msgid "You must create a tournament before creating a screen family."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écrans."
-
-msgid "You must create a tournament before creating screens."
-msgstr "Vous devez créer un tournoi avant de pouvoir créer des écrans."
 
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
@@ -5995,10 +5947,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "This display controller is private (not visible by the users)."
-#~ msgstr "Ce pilote d'afficheurs est privé (non visible des utilisateur·ices)."
-
-#~ msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
-#~ msgstr "Attention : connexion à la base FFE en ligne échouée, utilisation de la base locale. Certaines données peuvent être obselètes (mise à jour le {date})"
 

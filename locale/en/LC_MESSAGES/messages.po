@@ -318,13 +318,10 @@ msgstr ""
 msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
-msgid "Add a screen to display the pairings by board."
-msgstr ""
-
 msgid "Add a screen to display the ranking."
 msgstr ""
 
-msgid "Add a screen to enter the results."
+msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -1065,13 +1062,7 @@ msgstr ""
 msgid "Create a rotator now to get started."
 msgstr ""
 
-msgid "Create a screen"
-msgstr ""
-
 msgid "Create a screen family"
-msgstr ""
-
-msgid "Create a screen now to get started."
 msgstr ""
 
 msgid "Create a timer"
@@ -1809,9 +1800,6 @@ msgstr ""
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr ""
 
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr ""
-
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
@@ -2370,7 +2358,7 @@ msgstr ""
 msgid "Image screen creation"
 msgstr ""
 
-msgid "Image screens"
+msgid "Image screens ({num})"
 msgstr ""
 
 msgid "Image screens show an image (local or remote)."
@@ -2427,9 +2415,6 @@ msgid "Information message"
 msgstr ""
 
 msgid "Initial time (optional, seconds):"
-msgstr ""
-
-msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
 msgstr ""
 
 msgid "Input screen creation"
@@ -2573,7 +2558,7 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
-msgid "Last results screens"
+msgid "Last results screens ({num})"
 msgstr ""
 
 msgid "Last update"
@@ -3316,6 +3301,9 @@ msgstr ""
 msgid "Pairings by board ({num})"
 msgstr ""
 
+msgid "Pairings by boards number ({num})"
+msgstr ""
+
 msgid "Pairings by player"
 msgstr ""
 
@@ -3340,10 +3328,7 @@ msgstr ""
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Pairings screens by boards number"
-msgstr ""
-
-msgid "Pairings screens by player"
+msgid "Pairings screens by player ({num})"
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
@@ -3880,7 +3865,7 @@ msgstr ""
 msgid "Ranking screen family creation"
 msgstr ""
 
-msgid "Ranking screens"
+msgid "Ranking screens ({num})"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
@@ -4191,9 +4176,6 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
-msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr ""
-
 msgid "Screens:"
 msgstr ""
 
@@ -4275,34 +4257,10 @@ msgstr ""
 msgid "Show warnings"
 msgstr ""
 
-msgid "Show/hide the boards screens."
-msgstr ""
-
-msgid "Show/hide the image screens."
-msgstr ""
-
-msgid "Show/hide the input screens."
-msgstr ""
-
-msgid "Show/hide the players screens."
-msgstr ""
-
-msgid "Show/hide the ranking screens."
-msgstr ""
-
-msgid "Show/hide the results screens."
-msgstr ""
-
-msgid "Show/hide the screens created from screen families."
-msgstr ""
-
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr ""
 
 msgid "Side group"
-msgstr ""
-
-msgid "Single Screens"
 msgstr ""
 
 msgid "Single Screens ({num})"
@@ -5773,9 +5731,6 @@ msgstr ""
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
-msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
-msgstr ""
-
 msgid "You must create a prize group before creating a prize category."
 msgstr ""
 
@@ -5786,9 +5741,6 @@ msgid "You must create a tournament before creating a prize group."
 msgstr ""
 
 msgid "You must create a tournament before creating a screen family."
-msgstr ""
-
-msgid "You must create a tournament before creating screens."
 msgstr ""
 
 msgid "You must enter the tournament certification number and password in each tournament's settings."
@@ -5995,7 +5947,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Warning: connection to the online FFE database failed, local database was used. Some data might be outdated (last update on {date})"
-#~ msgstr ""
 
