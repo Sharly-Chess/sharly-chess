@@ -5537,8 +5537,8 @@ msgstr "tournoi"
 msgid "tournament ID does not match."
 msgstr "L'identifiant du tournoi ne correspond pas."
 
-msgid "value: {currency_value}"
-msgstr "valeur : {currency_value}"
+msgid "value: {value}"
+msgstr "valeur : {value}"
 
 msgid "vs"
 msgstr "contre"

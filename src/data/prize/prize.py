@@ -49,10 +49,11 @@ class Prize:
     def name(self, currency: str) -> str:
         if not self.value and not self.is_monetary:
             return self.description
-        currency_value = StaticUtils.currency_value_str(self.value, currency)
         if self.is_monetary:
-            return currency_value
-        value_str = _('value: {currency_value}').format(currency_value=currency_value)
+            return StaticUtils.currency_value_str(self.value, currency)
+        value_str = _('value: {value}').format(
+            value=StaticUtils.localized_number(self.value)
+        )
         return f'{self.description} ({value_str})'
 
     def get_event_database(self) -> EventDatabase:
