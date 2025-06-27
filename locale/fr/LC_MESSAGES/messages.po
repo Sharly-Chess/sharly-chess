@@ -932,9 +932,6 @@ msgstr "Commentaire :"
 msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Commentaires"
 
-msgid "Complementary pairings"
-msgstr "Appariements complémentaires"
-
 msgid "Complementary pairings generated."
 msgstr "Appariements complémentaires générés."
 
@@ -1080,8 +1077,14 @@ msgstr "Créer un écran rotatif"
 msgid "Create a rotator now to get started."
 msgstr "Créer un écran rotatif pour commencer."
 
+msgid "Create a screen"
+msgstr "Créer un écran"
+
 msgid "Create a screen family"
 msgstr "Créer une famille d'écrans"
+
+msgid "Create a screen now to get started."
+msgstr "Créer un écran pour commencer"
 
 msgid "Create a timer"
 msgstr "Créer un chronomètre"
@@ -1828,6 +1831,9 @@ msgstr "Activer/désactiver l'affichage des détails des écrans rotatifs sur le
 msgid "Enable/disable the details of the screen families on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des familles d'écrans sur les cartes ci-dessous."
 
+msgid "Enable/disable the details of the screens on the cards below."
+msgstr "Activer/désactiver l'affichage des détails des écrans sur les cartes ci-dessous."
+
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
 
@@ -2274,9 +2280,6 @@ msgstr "Générer les appariements complémentaires"
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
-msgid "Generate pairings for this round."
-msgstr "Générer les appariements pour cette ronde."
-
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
 
@@ -2451,6 +2454,9 @@ msgstr "Message d'information"
 
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
+
+msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
@@ -3306,9 +3312,6 @@ msgstr "Apparier avec les NOIRS"
 
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
-
-msgid "Pair the unpaired players with each other."
-msgstr "Apparier les joueur·euses non-apparié·es ensembles."
 
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
@@ -4226,6 +4229,9 @@ msgstr "Familles d'écrans : %(num)d"
 msgid "Screens"
 msgstr "Écrans"
 
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
+
 msgid "Screens:"
 msgstr "Écrans :"
 
@@ -4307,11 +4313,17 @@ msgstr "Afficher le niveau de log"
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
 
+msgid "Show/hide the screens created from screen families."
+msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
+
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
 msgid "Side group"
 msgstr "Autre"
+
+msgid "Single Screens"
+msgstr "Écrans simples"
 
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
@@ -5370,12 +5382,6 @@ msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
 
-msgid "Unpair"
-msgstr "Désapparier"
-
-msgid "Unpair all the boards of this round."
-msgstr "Désapparier tous les échiquiers de cette ronde."
-
 msgid "Unpair all the rounds of the tournament."
 msgstr "Désapparier toutes les rondes du tournoi."
 
@@ -5409,9 +5415,6 @@ msgstr "Non apparié·es : caché·es"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
-
-msgid "Unpairing all the boards of this round is not possible because the round has results."
-msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
@@ -5784,6 +5787,9 @@ msgstr "Vous pouvez désactiver temporairement les ordinateurs en décochant cet
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
+msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
+msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
+
 msgid "You must create a prize group before creating a prize category."
 msgstr "Vous devez créer un groupe de prix avant de créer une catégorie de prix."
 
@@ -5795,6 +5801,9 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
 
 msgid "You must create a tournament before creating a screen family."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écrans."
+
+msgid "You must create a tournament before creating these screens."
+msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
@@ -5964,9 +5973,6 @@ msgstr "L'identifiant du tournoi ne correspond pas."
 msgid "unknown"
 msgstr "inconnu"
 
-msgid "value: {currency_value}"
-msgstr "valeur : {currency_value}"
-
 msgid "value: {value}"
 msgstr "valeur : {value}"
 
@@ -6024,4 +6030,25 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+msgid "Complementary pairings"
+msgstr "Appariements complémentaires"
+
+msgid "Generate pairings for this round."
+msgstr "Générer les appariements pour cette ronde."
+
+msgid "Pair the unpaired players with each other."
+msgstr "Apparier les joueur·euses non-apparié·es ensembles."
+
+msgid "Unpair"
+msgstr "Désapparier"
+
+msgid "Unpair all the boards of this round."
+msgstr "Désapparier tous les échiquiers de cette ronde."
+
+msgid "Unpairing all the boards of this round is not possible because the round has results."
+msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
+
+msgid "value: {currency_value}"
+msgstr "valeur : {currency_value}"
 

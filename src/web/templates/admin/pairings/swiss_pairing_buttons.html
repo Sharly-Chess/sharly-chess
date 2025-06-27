@@ -17,7 +17,7 @@
         >
             <button
                 class="btn btn-outline-primary text-nowrap"
-                {% if if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] or pairings_generation_disabled_message %}
+                {% if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] or pairings_generation_disabled_message %}
                     disabled
                 {% else %}
                     {% if admin_round != 1 %}
@@ -92,6 +92,7 @@
                 {{ _('Complementary pairings') }}
             </button>
         </div>
+    {% endif %}
     {% set action='FULL_UNPAIRING' %}
     {% if action in existing_actions %}
         {% set allowed=not admin_tournament.round_has_result(admin_round) %}
