@@ -11,27 +11,88 @@
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-column align-items-center justify-content-center gap-4">
+                    {% set action = 'BYE_UPDATE' %}
                     {% if not pairing.zero_point_bye %}
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='ZPB'
+                        ) %}
                         <button
                             class="btn btn-outline-primary w-100"
-                            hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='ZPB') }}"
+                            {% if action in allowed_actions %}
+                                hx-patch="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PATCH',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >
                             {{ _('Zero-Point Bye') }}
                         </button>
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='LEAVE'
+                        ) %}
                         <button
                             class="btn btn-outline-primary w-100"
-                            hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='LEAVE') }}"
+                            {% if action in allowed_actions %}
+                                hx-patch="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PATCH',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >
                             {{ _('Withdraw from tournament') }}
                         </button>
                     {% else %}
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='RETURN'
+                        ) %}
                         <button
                             class="btn btn-outline-primary w-100"
-                            hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='RETURN') }}"
+                            {% if action in allowed_actions %}
+                                hx-patch="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PATCH',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >
@@ -43,9 +104,29 @@
                         </button>
                     {% endif %}
                     {% if pairing.half_point_bye %}
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='RETURN'
+                        ) %}
                         <button
                             class="btn btn-outline-primary w-100"
-                            hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='RETURN') }}"
+                            {% if action in allowed_actions %}
+                                hx-patch="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PATCH',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >
@@ -60,12 +141,32 @@
                                 {{ macros.tooltip_attributes('info', _('Bye limit (%(limit)d) is already reached for this tournament.', limit=player.tournament.max_byes), 'top') }}
                             {% endif %}
                         >
+                            {% set action_route = url_for(
+                                'admin-pairings-set-participation',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=admin_round,
+                                player_id=player.id,
+                                action='HPB'
+                            ) %}
                             <button
                                 class="btn btn-outline-primary w-100"
+                                {% if action in allowed_actions %}
+                                    hx-patch="{{ action_route }}"
+                                {% else %}
+                                    hx-get="{{ url_for(
+                                        'admin-pairings-safety-mode-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=admin_round,
+                                        action=action,
+                                        redirect_method='PATCH',
+                                        redirect_route=action_route,
+                                    ) }}"
+                                {% endif %}
                                 {% if no_bye_possible or not hpb_possible %}
                                     disabled
                                 {% endif %}
-                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='HPB') }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             >
@@ -73,7 +174,16 @@
                             </button>
                         </span>
                     {% endif %}
-                    {% if 'MANUAL_PAIRING' in existing_actions %}
+                    {% set action = 'MANUAL_PAIRING' %}
+                    {% set action_route = url_for(
+                        'admin-pairings-set-participation',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        player_id=player.id,
+                        action='PAIR'
+                    ) %}
+                    {% if action in existing_actions %}
                         <span
                             class="w-100"
                             {% if admin_tournament.check_in_open %}
@@ -82,7 +192,19 @@
                         >
                             <button
                                 class="btn btn-outline-primary w-100 {% if exempt_player %}d-flex flex-column align-items-center gap-1{% endif %}"
-                                hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='PAIR') }}"
+                                {% if action in allowed_actions %}
+                                    hx-patch="{{ action_route }}"
+                                {% else %}
+                                    hx-get="{{ url_for(
+                                        'admin-pairings-safety-mode-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=admin_round,
+                                        action=action,
+                                        redirect_method='PATCH',
+                                        redirect_route=action_route,
+                                    ) }}"
+                                {% endif %}
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 {% if admin_tournament.check_in_open %}

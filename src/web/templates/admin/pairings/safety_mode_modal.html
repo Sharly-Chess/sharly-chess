@@ -81,40 +81,24 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            {% if action == 'FULL_UNPAIRING' %}
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-post="{{ url_for('admin-pairings-unpair', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    {{ _('Unpair round #%(round)d', round=admin_round) }}
-                </button>
-            {% elif action == 'PARTIAL_PAIRING' %}
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-post="{{ url_for('admin-generate-round-partial-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi-shuffle pe-1"></i>
-                    {{ _('Generate complementary pairings') }}
-                </button>
-            {% else %}
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-post="{{ url_for('admin-pairings-update-safety-mode', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, mode=required_mode) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                        <i class="bi-check-circle-fill pe-1"></i>
-                        {% if required_mode == 'FIDE_INCOMPATIBLE' %}
-                            {{ _('Allow') }}
-                        {% else %}
-                            {{ _('Proceed') }}
-                        {% endif %}
-                </button>
-            {% endif %}
+            <button
+                class="btn btn-primary text-nowrap"
+                {% if redirect_method == 'POST' %}
+                    hx-post="{{ redirect_route }}"
+                {% elif redirect_method == 'PATCH' %}
+                    hx-patch="{{ redirect_route }}"
+                {% elif redirect_method == 'PUT' %}
+                    hx-put="{{ redirect_route }}"
+                {% elif redirect_method == 'DELETE' %}
+                    hx-delete="{{ redirect_route }}"
+                {% endif %}
+                hx-vals='{"mode": "{{ required_mode }}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-check-circle-fill pe-1"></i>
+                {{ _('Proceed') }}
+            </button>
         </div>
     </div>
 </div>
