@@ -11,26 +11,24 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% if screen_type.families_allowed %}
-            {% with id='admin-screens-show-family-screens', name='admin_screens_show_family_screens', show=admin_screens_show_family_screens %}
-                <div
-                    class="form-check form-switch d-inline-block pe-2"
-                    {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
-                >
-                    <input
-                        hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        class="form-check-input"
-                        type="checkbox"
-                        id="{{ id }}"
-                        {% if show %}checked{% endif %}
-                    />
-                    <label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
-                </div>
-            {% endwith %}
-        {% endif %}
+        {% with id='admin-screens-show-family-screens', name='admin_screens_show_family_screens', show=admin_screens_show_family_screens %}
+            <div
+                class="form-check form-switch d-inline-block pe-2"
+                {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
+            >
+                <input
+                    hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="form-check-input"
+                    type="checkbox"
+                    id="{{ id }}"
+                    {% if show %}checked{% endif %}
+                />
+                <label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
+            </div>
+        {% endwith %}
         {% with id='admin-screens-show-details', name='admin_screens_show_details', show=admin_screens_show_details %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
