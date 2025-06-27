@@ -3,8 +3,8 @@ from database.sqlite.migration import BaseMigration
 
 class Migration(BaseMigration):
     def forward(self):
-        self.database.execute('ALTER TABLE `tourament` RENAME TO `tournament_copy`')
-        self.database.execute('ALTER TABLE `tourament_copy` RENAME TO `tournament`')
+        self.database.execute('ALTER TABLE `tournament` RENAME TO `tournament_copy`')
+        self.database.execute('ALTER TABLE `tournament_copy` RENAME TO `tournament`')
 
     def backward(self):
         # NOTE(Amaras): The database is in a saner state after the migration, which does not
