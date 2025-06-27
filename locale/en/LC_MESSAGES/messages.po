@@ -57,6 +57,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d prize successfully created!"
+msgid_plural "%(num)d prizes successfully created!"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
 
@@ -398,6 +404,9 @@ msgid "At least one league is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one value is expected."
 msgstr ""
 
 #, python-format
@@ -3493,10 +3502,6 @@ msgstr ""
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
-#, python-format
-msgid "Prize [%(prize)s] successfully created!"
-msgstr ""
-
 msgid "Prize assignment"
 msgstr ""
 
@@ -4135,6 +4140,9 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
+msgid "Space-separated list of numbers. One prize is created per value in the list."
+msgstr ""
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -4642,6 +4650,9 @@ msgid "The type of rating to use for the tournament."
 msgstr ""
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
+msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
 msgid "The variation of the pairing system."
@@ -5174,6 +5185,9 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
+msgid "Values"
+msgstr ""
+
 msgid "Variation"
 msgstr ""
 
@@ -5382,6 +5396,12 @@ msgstr ""
 msgid "[{path}] is not a directory."
 msgstr ""
 
+msgid "[{value}] is not a positive value."
+msgstr ""
+
+msgid "[{value}] is not a valid value format."
+msgstr ""
+
 msgid "all the boards"
 msgstr ""
 
@@ -5517,7 +5537,7 @@ msgstr ""
 msgid "tournament ID does not match."
 msgstr ""
 
-msgid "value: {currency_value}"
+msgid "value: {value}"
 msgstr ""
 
 msgid "vs"
