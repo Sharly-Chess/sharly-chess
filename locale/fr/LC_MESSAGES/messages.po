@@ -343,9 +343,6 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
-msgid "An error occurred."
-msgstr "Une erreur est survenue."
-
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -363,9 +360,6 @@ msgstr "Archivés ({num})"
 
 msgid "Archived event"
 msgstr "Évènement archivé"
-
-msgid "Are you sure you wish to proceed?"
-msgstr "Êtes vous sûr de vouloir continuer ?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -602,6 +596,9 @@ msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
+
+msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
+msgstr "En effectuant cette opération, vous activez un mode non-sécurisé pour cette ronde, autorisant ainsi d'autres opérations non-sécurisées."
 
 msgid "By player"
 msgstr "Par ordre alpha."
@@ -1299,12 +1296,6 @@ msgstr "Ronde affichée : %(round)d"
 
 msgid "Do not assign zero-point byes"
 msgstr "Ne pas marquer forfait"
-
-msgid "Do you want to allow manual pairings for this round?"
-msgstr "Voulez vous autoriser les appariements manuels pour cette ronde ?"
-
-msgid "Do you want to allow the pairings to be edited for this round?"
-msgstr "Voulez vous autoriser l'édition des appariements pour cette ronde ?"
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
 msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ? "
@@ -2088,9 +2079,6 @@ msgstr "Genre :"
 
 msgid "General"
 msgstr "Général"
-
-msgid "Generate complementary pairings"
-msgstr "Générer les appariements complémentaires"
 
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
@@ -3156,14 +3144,11 @@ msgstr "La génération d'appariements n'est pas autorisée si une ronde passée
 msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de joueur·euses que de rondes."
 
-msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
-msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
-
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
 
-msgid "Pairings successfully generated!"
-msgstr "Appariements générés avec succès !"
+msgid "Pairings successfully generated."
+msgstr "Appariements générés avec succès."
 
 #, python-format
 msgid "Pairings: %(pairing_variation)s"
@@ -5076,10 +5061,6 @@ msgstr "Désapparier tous les échiquiers de cette ronde."
 msgid "Unpair all the rounds the tournament."
 msgstr "Désapparier toutes les rondes du tournoi."
 
-#, python-format
-msgid "Unpair round #%(round)d"
-msgstr "Désapparier la ronde n°%(round)d"
-
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
@@ -5104,8 +5085,8 @@ msgstr "Non apparié·es : affiché·es"
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
 
-msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
-msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
+msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
+msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
 
 msgid "Unpairing all the boards of this round is not allowed because the round has results."
 msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
