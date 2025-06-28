@@ -185,10 +185,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 if not permission_handler.validate_action(
                     action, self.round_status, self.safety_mode
                 ):
-                    SessionHandler.set_session_admin_pairings_safety_mode(
-                        request,
-                        permission_handler.required_mode(self.round_status, action),
+                    required_mode = permission_handler.required_mode(
+                        self.round_status, action
                     )
+                    SessionHandler.set_session_admin_pairings_safety_mode(
+                        request, required_mode
+                    )
+                    self.safety_mode = required_mode
                     self.requires_refresh = True
             except SharlyChessException:
                 self._redirect_error(
@@ -775,7 +778,7 @@ class PairingsAdminController(BaseEventAdminController):
         if not tournament.are_pairing_settings_valid:
             tournament.set_default_pairing_settings()
         tournament.pairing_variation.engine.generate_pairings(tournament, round_)
-        Message.success(request, _('Pairings successfully generated!'))
+        Message.success(request, _('Pairings successfully generated.'))
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1161,7 +1164,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament.pairing_variation.engine.generate_pairings(
             tournament, web_context.admin_round
         )
-        Message.success(request, _('Pairings successfully generated!'))
+        Message.success(request, _('Pairings successfully generated.'))
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

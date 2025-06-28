@@ -15,8 +15,7 @@
                 <p>
                     {{ _(
                         'Unpairing a published round can be very inconvenient for players. '
-                        'Additionally, you will lose all data associated with this round, '
-                        'including results and manual adjustments.'
+                        'Additionally, you will lose any manual adjustments.'
                     ) }}
                 </p>
                 <p>
@@ -33,9 +32,6 @@
                         'pairing manually is strongly discouraged.'
                     ) }}
                 </p>
-                <h6>
-                    {{ _('Do you want to allow manual pairings for this round?') }}
-                </h6>
             {% else %}
                 <h6>
                     {{
@@ -53,9 +49,6 @@
                             'and solely for the computation of the FIDE ratings.'
                         ) }}
                     </p>
-                    <h6>
-                        {{ _('Do you want to allow the pairings to be edited for this round?') }}
-                    </h6>
                 {% elif required_mode == 'UNSAFE' %}
                     <p>
                         {% if round_status == 'PREVIOUS' %}
@@ -70,11 +63,14 @@
                             ) }}
                         {% endif %}
                     </p>
-                    <h6>
-                        {{ _('Are you sure you wish to proceed?') }}
-                    </h6>
                 {% endif %}
             {% endif %}
+            <p>
+                {{ _(
+                    'By executing this operation, you are enabling an unsafe mode '
+                    'for this round, allowing other unsafe operations.'
+                ) }}
+            </p>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
