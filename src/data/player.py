@@ -126,7 +126,9 @@ class TournamentPlayer:
     @property
     def full_name(self) -> str:
         if self.first_name:
-            return f'{self.last_name} {self.first_name}'
+            return _('{first_name} {last_name}').format(
+                first_name=self.first_name, last_name=self.last_name
+            )
         return self.last_name
 
     @property
