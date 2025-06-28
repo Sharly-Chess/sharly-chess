@@ -1,78 +1,90 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Rotators'), 'screens-rotators') }}
+    {{ admin_macros.admin_title(
+        _('Rotators'),
+        'screens-rotators' if client.can_manage_screens else ''
+    ) }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
 {% endblock %}
 
 {% block top_right_nav %}
-    {% with id='show-details-on-rotator-list', name='admin_rotators_show_details', show=admin_rotators_show_details %}
-        <div
-            class="form-check form-switch d-inline-block pe-2"
-            {{ macros.tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
+    {% if client.can_manage_screens %}
+        {% with id='show-details-on-rotator-list', name='admin_rotators_show_details', show=admin_rotators_show_details %}
+            <div
+                class="form-check form-switch d-inline-block pe-2"
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details of the rotators on the cards below.'), 'top') }}
+            >
+                <input
+                    hx-get="{{ url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="form-check-input"
+                    type="checkbox"
+                    id="{{ id }}"
+                    {% if show %}checked{% endif %}
+                />
+                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+            </div>
+        {% endwith %}
+        <span
+            {{ macros.tooltip_attributes(
+                'info',
+                _('Add a rotator to the event.')
+                if admin_event.screens_by_uniq_id else
+                _('You must create a screen or a family of screens before creating a rotator.'),
+                'top')
+            }}
         >
-            <input
-                hx-get="{{ url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+            <button
+                class="btn btn-primary text-nowrap ms-1"
+                hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                class="form-check-input"
-                type="checkbox"
-                id="{{ id }}"
-                {% if show %}checked{% endif %}
-            />
-            <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-        </div>
-    {% endwith %}
-    <span
-        {{ macros.tooltip_attributes(
-            'info',
-            _('Add a rotator to the event.')
-            if admin_event.screens_by_uniq_id else
-            _('You must create a screen or a family of screens before creating a rotator.'),
-            'top')
-        }}
-    >
-        <button
-            class="btn btn-primary text-nowrap ms-1"
-            hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            {% if not admin_event.screens_by_uniq_id %}
-                disabled
-            {% endif %}
-        >
-            <i class="bi-plus-square-fill pe-1"></i>
-            {{ _('Create a rotator') }}
-        </button>
-    </span>
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {% if not admin_event.screens_by_uniq_id %}
+                    disabled
+                {% endif %}
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
+                {{ _('Create a rotator') }}
+            </button>
+        </span>
+    {% endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
     <div class="row">
-        {% if admin_event.rotators_by_uniq_id %}
-            {% for rotator in admin_event.rotators_by_uniq_id.values() %}
-                {% include 'rotator_card.html' %}
+        {% if admin_rotators %}
+            {% for rotator in admin_rotators %}
+                {% with
+                    card_url='' if client.can_manage_screens else url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id, rotator_screen_index=0),
+                    card_class='border-danger' if rotator.private else ''
+                %}
+                    {% include 'rotator_card.html' %}
+                {% endwith %}
             {% endfor %}
         {% else %}
             <div class="mx-auto" style="max-width: 500px;">
                 <h5 class="mt-2 my-5 text-center">
                     {{ _('No rotators') }}
                 </h5>
-                <p>
-                    {{ _('Too much information to display on a single projector?') }}
-                </p>
-                <p>
-                    {{ _('Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event.') }}
-                </p>
-                <p>
-                    {{ _('Create a rotator now to get started.') }}
-                </p>
+                {% if client.can_manage_screens %}
+                    <p>
+                        {{ _('Too much information to display on a single projector?') }}
+                    </p>
+                    <p>
+                        {{ _('Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event.') }}
+                    </p>
+                    <p>
+                        {{ _('Create a rotator now to get started.') }}
+                    </p>
+                {% endif %}
             </div>
         {% endif %}
     </div>

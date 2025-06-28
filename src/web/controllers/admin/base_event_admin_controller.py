@@ -9,10 +9,14 @@ from litestar.response import Template
 from common.exception import SharlyChessException
 from common.i18n import _
 from data.auth.client import Client
+from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
+from data.rotator import Rotator
+from data.screen import Screen
 from plugins.manager import plugin_manager
 from plugins.utils import PluginNavBarItem
+from utils.enum import ScreenType
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -192,7 +196,107 @@ class BaseEventAdminController(BaseAdminController):
                 },
             }
         elif web_context.client.can_view_public_screens:
-            pass  # TODO Add 'user' screens
+            screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+            rotators: list[Rotator]
+            display_controllers: list[DisplayController]
+            if web_context.client.can_view_private_screens:
+                screens_by_screen_type_sorted_by_uniq_id = (
+                    admin_event.screens_by_screen_type_sorted_by_uniq_id
+                )
+                rotators = admin_event.rotators_sorted_by_uniq_id
+                display_controllers = admin_event.display_controllers_sorted_by_uniq_id
+            else:
+                screens_by_screen_type_sorted_by_uniq_id = (
+                    admin_event.public_screens_by_screen_type_sorted_by_uniq_id
+                )
+                rotators = admin_event.public_rotators_sorted_by_uniq_id
+                display_controllers = (
+                    admin_event.public_display_controllers_sorted_by_uniq_id
+                )
+            if (
+                screens := False
+                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
+            ):
+                nav_tabs |= {
+                    'user-event-input-screens-tab': {
+                        'title': _('Results entry ({num})').format(
+                            num=len(screens) or '-'
+                        ),
+                        'template': 'screens/user_tab.html',
+                    },
+                }
+            if (
+                screens := False
+                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
+            ):
+                nav_tabs |= {
+                    'user-event-boards-screens-tab': {
+                        'title': _('Pairings by board ({num})').format(
+                            num=len(screens) or '-'
+                        ),
+                        'template': 'screens/user_tab.html',
+                    },
+                }
+            if (
+                screens := False
+                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]
+            ):
+                nav_tabs |= {
+                    'user-event-players-screens-tab': {
+                        'title': _('Pairings by player ({num})').format(
+                            num=len(screens) or '-'
+                        ),
+                        'template': 'screens/user_tab.html',
+                    },
+                }
+            if (
+                screens := False
+                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.RESULTS]
+            ):
+                nav_tabs |= {
+                    'user-event-results-screens-tab': {
+                        'title': _('Last results ({num})').format(
+                            num=len(screens) or '-'
+                        ),
+                        'template': 'screens/user_tab.html',
+                    },
+                }
+            if (
+                screens := False
+                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.RANKING]
+            ):
+                nav_tabs |= {
+                    'user-event-ranking-screens-tab': {
+                        'title': _('Ranking ({num})').format(num=len(screens) or '-'),
+                        'template': 'screens/user_tab.html',
+                    },
+                }
+            if (
+                screens := False
+                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            ):
+                nav_tabs |= {
+                    'user-event-image-screens-tab': {
+                        'title': _('Image ({num})').format(num=len(screens) or '-'),
+                        'template': 'screens/user_tab.html',
+                    },
+                }
+            nav_tabs |= {
+                'admin-event-rotators-tab': {
+                    'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
+                    'template': 'rotators/tab.html',
+                    'disabled': not rotators,
+                },
+            }
+            nav_tabs |= {
+                'admin-event-display-controllers-tab': {
+                    'title': _('Display controllers ({num})').format(
+                        num=len(display_controllers) or '-'
+                    ),
+                    'template': 'display_controllers/tab.html',
+                    'disabled': not display_controllers,
+                },
+            }
         if (
             web_context.client.can_manage_accounts
             or web_context.client.can_manage_computers

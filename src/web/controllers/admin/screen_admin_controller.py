@@ -471,8 +471,6 @@ class ScreenAdminController(BaseEventAdminController):
                 'title': _('Results entry ({num})'),
                 'create_title': _('Results entry'),
                 'create_tooltip': _('Add a screen to enter results.'),
-                'toggle_tooltip': _('Add a screen to enter results.'),
-                'url_name': 'admin-event-input-screens-tab',
             },
             ScreenType.BOARDS: {
                 'title': _('Pairings by boards number ({num})'),
@@ -480,7 +478,6 @@ class ScreenAdminController(BaseEventAdminController):
                 'create_tooltip': _(
                     'Add a screen to display the pairings by board number.'
                 ),
-                'url_name': 'admin-event-boards-screens-tab',
             },
             ScreenType.PLAYERS: {
                 'title': _('Pairings screens by player ({num})'),
@@ -488,25 +485,21 @@ class ScreenAdminController(BaseEventAdminController):
                 'create_tooltip': _(
                     'Add a screen to display the pairings by alphabetical order.'
                 ),
-                'url_name': 'admin-event-boards-screens-tab',
             },
             ScreenType.RESULTS: {
                 'title': _('Last results screens ({num})'),
                 'create_title': _('Last results'),
                 'create_tooltip': _('Add a screen to display the last results.'),
-                'url_name': 'admin-event-results-screens-tab',
             },
             ScreenType.RANKING: {
                 'title': _('Ranking screens ({num})'),
                 'create_title': _('Ranking'),
                 'create_tooltip': _('Add a screen to display the ranking.'),
-                'url_name': 'admin-event-ranking-screens-tab',
             },
             ScreenType.IMAGE: {
                 'title': _('Image screens ({num})'),
                 'create_title': _('Image'),
                 'create_tooltip': _('Add a screen to display an image.'),
-                'url_name': 'admin-event-image-screens-tab',
             },
         }
         for screen_type in ScreenType.screen_types():

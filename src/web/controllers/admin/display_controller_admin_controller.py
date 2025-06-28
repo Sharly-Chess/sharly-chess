@@ -196,11 +196,24 @@ class DisplayControllerAdminController(BaseEventAdminController):
             ),
         )
 
+        admin_display_controllers_sorted_by_uniq_id: list[DisplayController]
+        if web_context.client.can_view_private_screens:
+            admin_display_controllers_sorted_by_uniq_id = (
+                web_context.admin_event.display_controllers_sorted_by_uniq_id
+            )
+        elif web_context.client.can_view_public_screens:
+            admin_display_controllers_sorted_by_uniq_id = (
+                web_context.admin_event.public_display_controllers_sorted_by_uniq_id
+            )
+        else:
+            admin_display_controllers_sorted_by_uniq_id = []
+
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context
         ) | {
             'admin_event_tab': 'admin-event-display-controllers-tab',
             'sorted_screens': sorted_screens,
+            'admin_display_controllers': admin_display_controllers_sorted_by_uniq_id,
         }
 
         match modal:

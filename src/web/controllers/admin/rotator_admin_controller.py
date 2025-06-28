@@ -176,6 +176,18 @@ class RotatorAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
+
+        admin_rotators_sorted_by_uniq_id: list[Rotator]
+        if web_context.client.can_view_private_screens:
+            admin_rotators_sorted_by_uniq_id = (
+                web_context.admin_event.rotators_sorted_by_uniq_id
+            )
+        elif web_context.client.can_view_public_screens:
+            admin_rotators_sorted_by_uniq_id = (
+                web_context.admin_event.public_rotators_sorted_by_uniq_id
+            )
+        else:
+            admin_rotators_sorted_by_uniq_id = []
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
@@ -183,6 +195,7 @@ class RotatorAdminController(BaseEventAdminController):
             'admin_rotators_show_details': SessionHandler.get_session_admin_rotators_show_details(
                 web_context.request
             ),
+            'admin_rotators': admin_rotators_sorted_by_uniq_id,
         }
 
         match modal:

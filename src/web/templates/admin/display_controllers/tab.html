@@ -1,62 +1,77 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Display controllers'), 'screens-display-controllers') }}
+    {{ admin_macros.admin_title(
+        _('Display controllers'),
+        'screens-display-controllers' if client.can_manage_screens else ''
+    ) }}
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-display-controllers-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
 {% endblock %}
 
 {% block top_right_nav %}
-    <span
-        {{ macros.tooltip_attributes(
-            'info',
-            _('Add a display controller to the event.'),
-            'top')
-        }}
-    >
-        <button
-            class="btn btn-primary text-nowrap ms-1"
-            hx-get="{{ url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
+    {% if client.can_manage_screens %}
+        <span
+            {{ macros.tooltip_attributes(
+                'info',
+                _('Add a display controller to the event.'),
+                'top')
+            }}
         >
-            <i class="bi-plus-square-fill pe-1"></i>
-            {{ _('Create a display controller') }}
-        </button>
-    </span>
+            <button
+                class="btn btn-primary text-nowrap ms-1"
+                hx-get="{{ url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
+                {{ _('Create a display controller') }}
+            </button>
+        </span>
+    {% endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
     <div class="row">
-        {% if admin_event.display_controllers_sorted_by_uniq_id %}
-            {% for display_controller in admin_event.display_controllers_sorted_by_uniq_id %}
-                {% include 'display_controller_card.html' %}
+        {% if admin_display_controllers %}
+            {% for display_controller in admin_display_controllers %}
+                {% with
+                    card_url=
+                        ''
+                        if client.can_manage_screens or not display_controller.assigned_object else
+                        url_for('user-display-controller', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
+                    card_class='border-danger' if display_controller.private else ''
+                %}
+                    {% include 'display_controller_card.html' %}
+                {% endwith %}
             {% endfor %}
         {% else %}
            <div class="mx-auto" style="max-width: 500px;">
                 <h5 class="mt-2 my-5 text-center">
                     {{ _('No display controllers') }}
                 </h5>
-                <p>
-                    {{ _('Display controllers allow you to control screens at your event from your main computer.') }}
-                </p>
-                <p>
-                    {{ _('Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator.') }}
-                </p>
-                <p>
-                    {{ _('From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:') }}
-                    <i class="bi bi-box-arrow-in-right ps-2"></i>
-                </p>
-                <p>
-                    {{ _('Any number of devices can be controlled by the same display controller.') }}
-                </p>
-                <p>
-                    {{ _('Create a display controller now to get started.') }}
-                </p>
+                {% if client.can_manage_screens %}
+                    <p>
+                        {{ _('Display controllers allow you to control screens at your event from your main computer.') }}
+                    </p>
+                    <p>
+                        {{ _('Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator.') }}
+                    </p>
+                    <p>
+                        {{ _('From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:') }}
+                        <i class="bi bi-box-arrow-in-right ps-2"></i>
+                    </p>
+                    <p>
+                        {{ _('Any number of devices can be controlled by the same display controller.') }}
+                    </p>
+                    <p>
+                        {{ _('Create a display controller now to get started.') }}
+                    </p>
+               {% endif %}
             </div>
         {% endif %}
     </div>
