@@ -16,7 +16,7 @@
         </tr>
     </thead>
     <tbody>
-        {% set can_check_in=client.can_check_in_players_by_tournament_id[tournament_id] %}
+        {% set can_check_in=client.can_check_in_players_by_tournament_id[admin_tournament.id] %}
         {% for player in unpaired %}
             {% with pairing=player.pairings[admin_round], class="bye" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
                 <tr id="player-{{ player.id }}" class="player-row" data-player-id="{{ player.id }}">

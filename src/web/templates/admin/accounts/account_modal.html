@@ -37,14 +37,6 @@
                         {{ _('Warning: the deletion of an account is permanent!') }}
                     </h4>
                 {% else %}
-                    {% if previous_account %}
-                        {% with type='success', auto_remove=true, message=_(
-                            'Account [%(username)s] has been created.',
-                            username=previous_account.username
-                        )  %}
-                            {% include '/common/alert.html' %}
-                        {% endwith %}
-                    {% endif %}
                     {% if action in ['create', 'clone', ] or (admin_account.edit_properties and client.can_manage_account_by_account_id[admin_account.id]) %}
                         <h4>
                             {{ _('Authentication') }}
@@ -114,12 +106,10 @@
     </div>
 </div>
 
-{% if previous_account %}
-    <script>
-        // We need to reload the page when the modal is hidden, because accounts were added.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
+<script>
+    // We need to reload the page when the modal is hidden, because the profile may have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

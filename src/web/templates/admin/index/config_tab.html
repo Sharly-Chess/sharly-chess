@@ -3,6 +3,9 @@
         <div>
             {{ admin_macros.admin_title(_('Settings')) }}
         </div>
+        {{ macros.refresh_listener(
+            hx_get=url_for('admin-tab', admin_tab=admin_tab),
+        ) }}
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% if client.can_update_application_settings %}

@@ -4,9 +4,47 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-profile-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _("Profile")}}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
-            </h2>
+            <div class="row w-100">
+                <div class="col-6">
+                    <h2 class="modal-title">
+                        {{ _("Profile")}}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
+                    </h2>
+                </div>
+                <div class="dropdown col-6 text-end">
+                    <i class="bi-translate pe-1"></i>
+                    <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img
+                            src="{{locale_infos[locale].flag_url}}"
+                            alt="{{locale_infos[locale].name}}"
+                            class="locale-flag"
+                        />
+                        {{ locale_infos[locale].name }}
+                    </button>
+                    <ul class="dropdown-menu locale">
+                        {% for l, l_info in locale_infos.items() %}
+                            {% if l != locale %}
+                                <li
+                                    class="dropdown-item text-start cursor-pointer"
+                                    hx-get="{{ url_for('profile-modal') }}"
+                                    hx-vals='{"locale": "{{ l }}"}'
+                                    preload
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    hx-trigger="click, keyup[key=='Enter']"
+                                    tabindex="0"
+                                >
+                                    <img
+                                        src="{{l_info.flag_url}}"
+                                        alt="{{l_info.name}}"
+                                        class="locale-flag"
+                                    />
+                                    {{ l_info.name }}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
         <div class="modal-body">
             {% if admin_event and not client.computer.localhost %}
@@ -173,3 +211,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because profile and language may have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

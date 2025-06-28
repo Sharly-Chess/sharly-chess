@@ -36,6 +36,12 @@
                     {% endif %}
                 </span>
             </div>
+            <div class="d-block">
+                <i class="bi bi-translate"></i>
+                <span class="pe-2 expanded-only {% if client.computer.localhost %}fst-italic{% else %}fw-bold{% endif %}">
+                    {{ locale_infos[locale].name }}
+                </span>
+            </div>
         </button>
     </span>
 {% endwith %}

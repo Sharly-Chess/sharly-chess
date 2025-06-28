@@ -1,6 +1,9 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
         {{ admin_macros.admin_title(_('Configuration'), 'events') }}
+        {{ macros.refresh_listener(
+            hx_get=url_for('admin-event-config-tab', event_uniq_id=admin_event.uniq_id),
+        ) }}
         <div class="d-flex flex-grow-1 gap-1 ms-auto justify-content-end">
             {% if client.can_update_event %}
                 <button

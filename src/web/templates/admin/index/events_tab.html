@@ -4,6 +4,9 @@
     <div>
         {{ admin_macros.admin_title(nav_tab.page_title) }}
     </div>
+    {{ macros.refresh_listener(
+        hx_get=url_for('admin-tab', admin_tab=admin_tab),
+    ) }}
 {% endblock %}
 
 {% block top_right_nav %}

@@ -4,7 +4,7 @@ from litestar import post, get
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
+from litestar.response import Template
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
@@ -12,7 +12,6 @@ from data.auth.entities import Account
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 from web.controllers.base_controller import WebContext, BaseController
 from web.session import SessionHandler
-from web.urls import admin_event_url
 
 
 class ProfileWebContext(BaseEventAdminWebContext):
@@ -54,6 +53,7 @@ class ProfileController(BaseController):
         self,
         request: HTMXRequest,
         event_uniq_id: str | None,
+        locale: str | None = None,
     ) -> Template | ClientRedirect:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
@@ -62,6 +62,9 @@ class ProfileController(BaseController):
         )
         if web_context.error:
             return web_context.error
+
+        self.set_locale(request, locale)
+
         return self._render_profile_modal(web_context)
 
     @post(
@@ -76,7 +79,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template | ClientRedirect:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -112,14 +115,10 @@ class ProfileController(BaseController):
                     data[field] = ''
             except KeyError:
                 errors['username'] = _('Invalid username.')
-        if errors:
-            return self._render_profile_modal(
-                web_context,
-                data=data,
-                errors=errors,
-            )
-        return Redirect(
-            admin_event_url(request, event_uniq_id=web_context.admin_event.uniq_id)
+        return self._render_profile_modal(
+            web_context,
+            data=data,
+            errors=errors,
         )
 
     @post(
@@ -134,7 +133,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template | ClientRedirect:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -148,6 +147,7 @@ class ProfileController(BaseController):
             web_context.admin_event,
             None,
         )
-        return Redirect(
-            admin_event_url(request, event_uniq_id=web_context.admin_event.uniq_id)
+        return self._render_profile_modal(
+            web_context,
+            data=data,
         )

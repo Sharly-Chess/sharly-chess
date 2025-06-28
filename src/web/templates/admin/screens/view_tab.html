@@ -3,6 +3,9 @@
 {% block top_left_nav %}
     {% if client.can_view_public_screens %}
         {{ admin_macros.admin_title(admin_screen_type_data.title) }}
+        {{ macros.refresh_listener(
+            hx_get=url_for('admin-event-' ~ screen_type ~ '-screens-tab', event_uniq_id=admin_event.uniq_id),
+        ) }}
     {% endif %}
 {% endblock %}
 
