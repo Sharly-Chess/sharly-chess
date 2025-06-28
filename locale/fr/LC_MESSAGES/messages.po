@@ -932,6 +932,9 @@ msgstr "Commentaire :"
 msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Commentaires"
 
+msgid "Complementary pairings"
+msgstr "Appariements complémentaires"
+
 msgid "Complementary pairings generated."
 msgstr "Appariements complémentaires générés."
 
@@ -2280,6 +2283,9 @@ msgstr "Générer les appariements complémentaires"
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
+msgid "Generate pairings for this round."
+msgstr "Générer les appariements pour cette ronde."
+
 msgid "Go back to the events page."
 msgstr "Revenir à la page des évènements."
 
@@ -2395,9 +2401,6 @@ msgstr "Image ({num})"
 
 msgid "Image screen creation"
 msgstr "Création d'un écran d'image"
-
-msgid "Image screens ({num})"
-msgstr "Écrans images ({num})"
 
 msgid "Image screens show an image (local or remote)."
 msgstr "Les écrans d'image affichent une image (locale ou distante)."
@@ -2598,9 +2601,6 @@ msgstr "Derniers résultats"
 
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
-
-msgid "Last results screens ({num})"
-msgstr "Écrans des résultats ({num})"
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
@@ -3313,6 +3313,9 @@ msgstr "Apparier avec les NOIRS"
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
 
+msgid "Pair the unpaired players with each other."
+msgstr "Apparier les joueur·euses non-apparié·es ensembles."
+
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
 
@@ -3373,9 +3376,6 @@ msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de jo
 
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
-
-msgid "Pairings screens by player ({num})"
-msgstr "Appariements par joueur·euse ({num})"
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
@@ -3909,9 +3909,6 @@ msgstr "Creation d'un écran de classement"
 
 msgid "Ranking screen family creation"
 msgstr "Création d'une famille d'écrans de classement"
-
-msgid "Ranking screens ({num})"
-msgstr "Écrans de classement ({num})"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
@@ -5382,6 +5379,12 @@ msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
 
+msgid "Unpair"
+msgstr "Désapparier"
+
+msgid "Unpair all the boards of this round."
+msgstr "Désapparier tous les échiquiers de cette ronde."
+
 msgid "Unpair all the rounds of the tournament."
 msgstr "Désapparier toutes les rondes du tournoi."
 
@@ -5415,6 +5418,9 @@ msgstr "Non apparié·es : caché·es"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
+
+msgid "Unpairing all the boards of this round is not possible because the round has results."
+msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
@@ -5724,6 +5730,9 @@ msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
 msgid "You are not allowed to enter results."
 msgstr "Vous n'êtes pas autorisé·e à entrer des résultats."
 
+msgid "You are not allowed to generate complementary pairings."
+msgstr "Vous n'êtes pas autorisé·e à générer les appariements complémentaires."
+
 msgid "You are not allowed to generate the pairings."
 msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 
@@ -6031,24 +6040,6 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-msgid "Complementary pairings"
-msgstr "Appariements complémentaires"
-
-msgid "Generate pairings for this round."
-msgstr "Générer les appariements pour cette ronde."
-
-msgid "Pair the unpaired players with each other."
-msgstr "Apparier les joueur·euses non-apparié·es ensembles."
-
-msgid "Unpair"
-msgstr "Désapparier"
-
-msgid "Unpair all the boards of this round."
-msgstr "Désapparier tous les échiquiers de cette ronde."
-
-msgid "Unpairing all the boards of this round is not possible because the round has results."
-msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
-
-msgid "value: {currency_value}"
-msgstr "valeur : {currency_value}"
+#~ msgid "Pairing by board ({num})"
+#~ msgstr ""
 

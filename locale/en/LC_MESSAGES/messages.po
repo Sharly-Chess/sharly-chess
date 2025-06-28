@@ -2402,9 +2402,6 @@ msgstr ""
 msgid "Image screen creation"
 msgstr ""
 
-msgid "Image screens ({num})"
-msgstr ""
-
 msgid "Image screens show an image (local or remote)."
 msgstr ""
 
@@ -2603,9 +2600,6 @@ msgid "Last results"
 msgstr ""
 
 msgid "Last results ({num})"
-msgstr ""
-
-msgid "Last results screens ({num})"
 msgstr ""
 
 msgid "Last update"
@@ -3383,9 +3377,6 @@ msgstr ""
 msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
 msgstr ""
 
-msgid "Pairings screens by player ({num})"
-msgstr ""
-
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr ""
 
@@ -3917,9 +3908,6 @@ msgid "Ranking screen creation"
 msgstr ""
 
 msgid "Ranking screen family creation"
-msgstr ""
-
-msgid "Ranking screens ({num})"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
@@ -6052,21 +6040,6 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "Complementary pairings"
-#~ msgstr ""
-
-#~ msgid "Generate pairings for this round."
-#~ msgstr ""
-
-#~ msgid "Pair the unpaired players with each other."
-#~ msgstr ""
-
-#~ msgid "Unpair"
-#~ msgstr ""
-
-#~ msgid "Unpair all the boards of this round."
-#~ msgstr ""
-
-#~ msgid "Unpairing all the boards of this round is not possible because the round has results."
+#~ msgid "Pairing by board number ({num})"
 #~ msgstr ""
 

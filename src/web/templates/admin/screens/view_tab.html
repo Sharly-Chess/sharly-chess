@@ -1,0 +1,33 @@
+{% extends '../../common/admin_cards_container.html' %}
+
+{% block top_left_nav %}
+    {% if client.can_view_public_screens %}
+        {{ admin_macros.admin_title(admin_screen_type_data.title) }}
+    {% endif %}
+{% endblock %}
+
+{% block top_right_nav %}
+{% endblock %}
+
+{% block cards_container_cards %}
+    {% if not admin_screen_type_data.screens %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="mt-2 my-5 text-center">
+                {{ _('No screens') }}
+            </h5>
+        </div>
+    {% else %}
+        <div class="row mb-5">
+            {% for screen in admin_screen_type_data.screens %}
+                {% with
+                    card_url=url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id),
+                    card_class='border-danger' if screen.private else '',
+                    card_background_url=screen.background_url,
+                    card_background_color=screen.background_color
+                %}
+                    {% include 'screen_card.html' %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

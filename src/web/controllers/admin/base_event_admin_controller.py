@@ -213,74 +213,59 @@ class BaseEventAdminController(BaseAdminController):
                 display_controllers = (
                     admin_event.public_display_controllers_sorted_by_uniq_id
                 )
-            if (
-                screens := False
-                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
-            ):
-                nav_tabs |= {
-                    'user-event-input-screens-tab': {
-                        'title': _('Results entry ({num})').format(
-                            num=len(screens) or '-'
-                        ),
-                        'template': 'screens/user_tab.html',
-                    },
-                }
-            if (
-                screens := False
-                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
-            ):
-                nav_tabs |= {
-                    'user-event-boards-screens-tab': {
-                        'title': _('Pairings by board ({num})').format(
-                            num=len(screens) or '-'
-                        ),
-                        'template': 'screens/user_tab.html',
-                    },
-                }
-            if (
-                screens := False
-                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-            ):
-                nav_tabs |= {
-                    'user-event-players-screens-tab': {
-                        'title': _('Pairings by player ({num})').format(
-                            num=len(screens) or '-'
-                        ),
-                        'template': 'screens/user_tab.html',
-                    },
-                }
-            if (
-                screens := False
-                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.RESULTS]
-            ):
-                nav_tabs |= {
-                    'user-event-results-screens-tab': {
-                        'title': _('Last results ({num})').format(
-                            num=len(screens) or '-'
-                        ),
-                        'template': 'screens/user_tab.html',
-                    },
-                }
-            if (
-                screens := False
-                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.RANKING]
-            ):
-                nav_tabs |= {
-                    'user-event-ranking-screens-tab': {
-                        'title': _('Ranking ({num})').format(num=len(screens) or '-'),
-                        'template': 'screens/user_tab.html',
-                    },
-                }
-            if (
-                screens := False
-                and screens_by_screen_type_sorted_by_uniq_id[ScreenType.IMAGE]
-            ):
-                nav_tabs |= {
-                    'user-event-image-screens-tab': {
-                        'title': _('Image ({num})').format(num=len(screens) or '-'),
-                        'template': 'screens/user_tab.html',
-                    },
-                }
+            screens: list[Screen]
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
+            nav_tabs |= {
+                'admin-event-input-screens-tab': {
+                    'title': _('Results entry ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
+            nav_tabs |= {
+                'admin-event-boards-screens-tab': {
+                    'title': _('Pairings by board ({num})').format(
+                        num=len(screens) or '-'
+                    ),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]
+            nav_tabs |= {
+                'admin-event-players-screens-tab': {
+                    'title': _('Pairings by player ({num})').format(
+                        num=len(screens) or '-'
+                    ),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RESULTS]
+            nav_tabs |= {
+                'admin-event-results-screens-tab': {
+                    'title': _('Last results ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RANKING]
+            nav_tabs |= {
+                'admin-event-ranking-screens-tab': {
+                    'title': _('Ranking ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            nav_tabs |= {
+                'admin-event-image-screens-tab': {
+                    'title': _('Image ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                },
+            }
             nav_tabs |= {
                 'admin-event-rotators-tab': {
                     'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
