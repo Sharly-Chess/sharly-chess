@@ -30,7 +30,7 @@
                                 <tbody>
                                 {% for board in boards %}
                                     {% with wp=board.white_player, bp=board.black_player %}
-                                    {% set screen.type == 'input' and editable=client.can_update_results_by_tournament_id[tournament.id] or (not board.result_str and client.can_enter_results_by_tournament_id[tournament.id]) %}
+                                    {% set editable=screen.type == 'input' and client.can_update_results_by_tournament_id[tournament.id] or (not board.result_str and client.can_enter_results_by_tournament_id[tournament.id]) %}
                                     <tr
                                         id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
                                         class="
