@@ -11,6 +11,7 @@ from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.client import Client
 from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
@@ -53,6 +54,11 @@ class EventUserWebContext(UserWebContext):
             self._redirect_error(f'Access denied for event [{event_uniq_id}].')
         except SharlyChessException as pwe:
             self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}.')
+
+    @property
+    def client(self) -> Client:
+        """Returns the client (account and computer) of the request."""
+        return Client(self.request, self.user_event)
 
     def check_user_tab(self):
         pass

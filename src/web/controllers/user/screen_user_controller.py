@@ -1,14 +1,10 @@
 from contextlib import suppress
-from typing import Annotated
 
-from litestar import head, post, get
+from litestar import head, get
 from litestar.plugins.htmx import HTMXRequest, Reswap, ClientRedirect
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 
-from common.i18n import _
 from data.screen_set import ScreenSet
 from data.tournament import Tournament
 from utils.enum import ScreenType
@@ -17,74 +13,10 @@ from web.controllers.user.base_screen_user_controller import (
     BasicScreenOrFamilyUserWebContext,
     DisplayControllerUserWebContext,
     RotatorUserWebContext,
-    ScreenUserWebContext,
 )
-from web.messages import Message
-from web.session import SessionHandler
-
-
-class LoginUserWebContext(ScreenUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        screen_uniq_id: str | None,
-    ):
-        super().__init__(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=screen_uniq_id,
-            screen_needed=True,
-        )
-        field = 'password'
-        self.password: str = self._form_data_to_str(field, None) or ''
-        if self.password is None:
-            self._redirect_error('Missing password.')
 
 
 class ScreenUserController(BaseScreenUserController):
-    @post(
-        path='/user/login/{event_uniq_id:str}/{screen_uniq_id:str}',
-        name='user-login',
-    )
-    async def htmx_user_login(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        screen_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        web_context: LoginUserWebContext = LoginUserWebContext(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=screen_uniq_id,
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.user_event is None:
-            raise RuntimeError('user_event not defined')
-        if data['password'] == web_context.user_event.update_password:
-            Message.success(request, _('Authentication successful!'))
-            SessionHandler.store_password(
-                request, web_context.user_event, web_context.password
-            )
-            return self._user_screen_render(web_context)
-        if data['password'] == '':
-            Message.warning(request, _('Please enter the password.'))
-        else:
-            Message.error(request, _('Incorrect password.'))
-            SessionHandler.store_password(request, web_context.user_event, None)
-        return self.render_messages(request)
-
     @staticmethod
     def _user_screen_set_refresh_needed(
         screen_set: ScreenSet,

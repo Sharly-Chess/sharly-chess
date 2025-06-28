@@ -40,21 +40,6 @@ class SessionHandler:
         except KeyError:
             return event.anonymous_account
 
-    AUTH_SESSION_KEY: str = 'auth'
-
-    @classmethod
-    def store_password(cls, request: HTMXRequest, event: 'Event', password: str | None):
-        if cls.AUTH_SESSION_KEY not in request.session:
-            request.session[cls.AUTH_SESSION_KEY] = {}
-        request.session[cls.AUTH_SESSION_KEY][event.uniq_id] = password
-
-    @classmethod
-    def get_stored_password(cls, request: HTMXRequest, event: 'Event') -> str | None:
-        try:
-            return request.session[cls.AUTH_SESSION_KEY][event.uniq_id]
-        except KeyError:
-            return None
-
     LAST_RESULT_UPDATED_SESSION_KEY: str = 'last_result_updated'
 
     @classmethod

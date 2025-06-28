@@ -6,7 +6,6 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 
-from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
@@ -104,29 +103,6 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             self.user_event_tab = 'display_controllers'
 
     @property
-    def login_needed(self) -> bool:
-        assert self.user_event is not None
-        if self.screen is not None:
-            if self.screen.type != ScreenType.INPUT:
-                return False
-        if not self.user_event.update_password:
-            return False
-        session_password: str | None = SessionHandler.get_stored_password(
-            self.request, self.user_event
-        )
-        logger.debug('session_password=%s', '*' * (8 if session_password else 0))
-        if session_password is None:
-            Message.error(
-                self.request, _('Access denied, please authenticate to enter results.')
-            )
-            return True
-        if session_password != self.user_event.update_password:
-            Message.error(self.request, _('Incorrect password.'))
-            SessionHandler.store_password(self.request, self.user_event, None)
-            return True
-        return False
-
-    @property
     def background_image(self) -> str | None:
         return self.screen.background_image if self.screen else None
 
@@ -145,7 +121,6 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             'rotator_screen_index': self.rotator_screen_index,
             'screen': self.screen,
             'display_controller': self.display_controller,
-            'login_needed': self.login_needed,
         }
 
 

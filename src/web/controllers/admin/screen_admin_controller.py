@@ -538,7 +538,6 @@ class ScreenAdminController(BaseEventAdminController):
                     for screen_type in admin_screen_types_data
                 ),
             }
-
         else:
             # 'user' view
             if web_context.screen_type is None:

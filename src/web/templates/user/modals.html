@@ -1,50 +1,11 @@
 {% import '/common/macros.j2' as macros with context %}
 
-{% if login_needed %}
-    <div class="modal-dialog d-block">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="login-modal-label">{{ _('Please enter the password to enter results:') }}</h2>
-            </div>
-            <div class="modal-body">
-                <form
-                    hx-post="{{ url_for('user-login', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
-                    hx-target="body"
-                >
-                    <div class="mb-3">
-                        <label for="event-uniq-id" class="form-label">{{ _('Event') }}</label>
-                        <input type="text" class="form-control" id="event-uniq-id" aria-describedby="event-uniq-id-help" value="{{ user_event.uniq_id }}" disabled />
-                        <div id="event-uniq-id-help" class="form-text">{{ _('A password is required to enter results for the event %(event_uniq_id)s.', event_uniq_id=user_event.uniq_id) }}</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="event-password" class="form-label">{{ _('Password') }}</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="event-password" aria-describedby="event-password-help" name="password">
-                            <i
-                                    id="toggle-password"
-                                    class="bi-eye-slash-fill ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% else %}is-valid{% endif %}" ></i>
-                        </div>
-                        <div id="event-password-help" class="form-text">{{ _('Please ask the organizer to get the password.') }}</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Connexion</button>
-                </form>
-                <script>
-                    $('#toggle-password').on('click', function(event) {
-                        event.preventDefault();
-                        hide = $('#event-password').attr("type") == 'text'
-                        $('#event-password').attr('type', hide ? 'password' : 'text');
-                        $('#toggle-password').addClass(hide ? 'bi-eye-slash-fill' : 'bi-eye-fill');
-                        $('#toggle-password').removeClass(hide ? 'bi-eye-fill' : 'bi-eye-slash-fill');
-                    });
-                </script>
-            </div>
-        </div>
-    </div>
-    <script>
-        $('#event-password').focus();
-    </script>
-{% elif screen.type == 'input' %}
-    {% if board %}
+{% if screen.type == 'input' %}
+    {% if
+        board
+        and not board.exempt
+        and client.can_enter_results_by_tournament_id[board.white_player.tournament.id]
+    %}
         {% with wp=board.white_player, bp=board.black_player %}
             <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
                 <div class="modal-content bg-secondary-subtle">
@@ -55,24 +16,36 @@
                         <div class="row d-flex align-items-center justify-content-center">
                             <button
                                 class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=3) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
+                                {% if board.result and not client.can_update_results_by_tournament_id[wp.tournament.id] %}
+                                    disabled
+                                {% else %}
+                                    hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=3) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
                             >{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</button>
                             <button
                                 class="result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=2) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
+                                {% if board.result and not client.can_update_results_by_tournament_id[wp.tournament.id] %}
+                                    disabled
+                                {% else %}
+                                    hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=2) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
                             >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
                             <button
                                 class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
+                                {% if board.result and not client.can_update_results_by_tournament_id[wp.tournament.id] %}
+                                    disabled
+                                {% else %}
+                                    hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
                             >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</button>
                         </div>
-                        {% if admin_auth %}
+                        {% if client.can_set_special_results_by_tournament_id[wp.tournament.id] %}
                             <div class="row d-flex align-items-center justify-content-center mt-3">
                                 <button
                                     class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
@@ -96,13 +69,17 @@
                         {% endif %}
                     </div>
                     <div class="modal-footer row d-flex align-items-center justify-content-center">
-                        {% if admin_auth and board.result_str %}
+                        {% if client.can_update_results_by_tournament_id[wp.tournament.id] and board.result_str %}
                             <button
-                                hx-trigger="click"
                                 class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                hx-delete="{{ url_for('user-delete-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
+                                {% if board.result_str %}
+                                    disabled
+                                {% else %}
+                                    hx-trigger="click"
+                                    hx-delete="{{ url_for('user-delete-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
                             >{{ _('CLEAR THE RESULT') }}</button>
                         {% endif %}
                         <button
@@ -116,7 +93,11 @@
                 </div>
             </div>
         {% endwith %}
-    {% elif player %}
+    {% elif
+        player
+        and
+        client.can_check_in_players_by_tournament_id[player.tournament.id]
+    %}
         <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
             <div class="modal-content bg-secondary-subtle">
                 <div class="modal-header">

@@ -435,7 +435,8 @@ class Event:
         ] = defaultdict(list[Screen])
         for screen_type in self.basic_screens_by_screen_type_by_id:
             basic_screens_by_screen_type_sorted_by_uniq_id[screen_type] = sorted(
-                self.basic_screens_by_id.values(), key=lambda screen: screen.uniq_id
+                self.basic_screens_by_screen_type_by_id[screen_type].values(),
+                key=lambda screen: screen.uniq_id,
             )
         return basic_screens_by_screen_type_sorted_by_uniq_id
 
