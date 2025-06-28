@@ -15,6 +15,7 @@ from data.auth.entities import (
 )
 from data.auth.roles import Role, RoleScope
 from data.tournament import Tournament
+from database.sqlite.event.event_store import ANY_COMPUTER_ID
 from web.session import SessionHandler
 
 if TYPE_CHECKING:
@@ -63,7 +64,7 @@ class Client:
             return unknown_computer
         with suppress(KeyError):
             return self.event.computers_by_ip[self.host]
-        return unknown_computer
+        return self.event.computers_by_id[ANY_COMPUTER_ID]
 
     def _find_account(
         self,
