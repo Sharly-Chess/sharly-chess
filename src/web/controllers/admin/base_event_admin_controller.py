@@ -214,15 +214,6 @@ class BaseEventAdminController(BaseAdminController):
                     admin_event.public_display_controllers_sorted_by_uniq_id
                 )
             screens: list[Screen]
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
-            nav_tabs |= {
-                'admin-event-input-screens-tab': {
-                    'title': _('Results entry ({num})').format(num=len(screens) or '-'),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': ScreenType.INPUT.icon_str,
-                },
-            }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
             nav_tabs |= {
                 'admin-event-boards-screens-tab': {
@@ -232,6 +223,15 @@ class BaseEventAdminController(BaseAdminController):
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
                     'icon_class': ScreenType.BOARDS.icon_str,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
+            nav_tabs |= {
+                'admin-event-input-screens-tab': {
+                    'title': _('Results entry ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.INPUT.icon_str,
                 },
             }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]

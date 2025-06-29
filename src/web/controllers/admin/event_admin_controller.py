@@ -15,6 +15,7 @@ from pyexcel_ods3 import save_data
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.display_controller import DisplayController
 from data.loader import EventLoader
 from data.player import Player
 from data.print_documents import (
@@ -23,8 +24,10 @@ from data.print_documents import (
     PrintDocumentOptionManager,
 )
 from data.print_documents.documents import PlayerListPrintDocument
+from data.rotator import Rotator
+from data.screen import Screen
 from plugins.ffe.utils import FFEUtils
-from utils.enum import TournamentRating
+from utils.enum import TournamentRating, ScreenType
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -207,10 +210,64 @@ class EventAdminController(BaseEventAdminController):
             return Redirect(
                 admin_event_tournaments_url(request, web_context.admin_event.uniq_id)
             )
+
+        # search for screens
+        if web_context.client.can_view_public_screens:
+            screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+            if web_context.client.can_view_private_screens:
+                screens_by_screen_type_sorted_by_uniq_id = (
+                    web_context.admin_event.screens_by_screen_type_sorted_by_uniq_id
+                )
+            else:
+                screens_by_screen_type_sorted_by_uniq_id = web_context.admin_event.public_screens_by_screen_type_sorted_by_uniq_id
+            print(f'{ScreenType.screen_types()=}')
+            for screen_type in ScreenType.screen_types():
+                print(f'{screen_type=}')
+                if screens_by_screen_type_sorted_by_uniq_id[screen_type]:
+                    return Redirect(
+                        path=request.app.route_reverse(
+                            f'admin-event-{screen_type.value}-screens-tab',
+                            event_uniq_id=event_uniq_id,
+                        )
+                    )
+        # search for rotators
+        if web_context.client.can_view_public_screens:
+            rotators: list[Rotator]
+            if web_context.client.can_view_private_screens:
+                rotators = web_context.admin_event.rotators_sorted_by_uniq_id
+            else:
+                rotators = web_context.admin_event.public_rotators_sorted_by_uniq_id
+            if rotators:
+                return Redirect(
+                    path=request.app.route_reverse(
+                        'admin-event-rotators-tab', event_uniq_id=event_uniq_id
+                    )
+                )
+        # search for display controllers
+        if web_context.client.can_view_public_screens:
+            display_controllers: list[DisplayController]
+            if web_context.client.can_view_private_screens:
+                display_controllers = (
+                    web_context.admin_event.display_controllers_sorted_by_uniq_id
+                )
+            else:
+                display_controllers = (
+                    web_context.admin_event.public_display_controllers_sorted_by_uniq_id
+                )
+            if display_controllers:
+                return Redirect(
+                    path=request.app.route_reverse(
+                        'admin-event-displayer_controllers-tab',
+                        event_uniq_id=event_uniq_id,
+                    )
+                )
+
         if web_context.client.can_view_event_basic_config:
             return Redirect(
                 admin_event_config_url(request, web_context.admin_event.uniq_id)
             )
+
+        # default display with no tab selected
         return self._admin_event_render(
             self._get_admin_event_render_context(web_context)
         )
