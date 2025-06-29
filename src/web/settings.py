@@ -45,14 +45,11 @@ from web.controllers.admin.account_admin_controller import AccountAdminControlle
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
-from web.controllers.user.event_user_controller import EventUserController
-from web.controllers.user.index_user_controller import IndexUserController
 from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.tournament_user_controller import (
     CheckInUserController,
     IllegalMoveUserController,
     ResultUserController,
-    DownloadUserController,
 )
 
 
@@ -73,13 +70,10 @@ static_files_router: Router = create_static_files_router(
 route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
     BackgroundController,
-    IndexUserController,
-    EventUserController,
     ScreenUserController,
     ResultUserController,
     CheckInUserController,
     IllegalMoveUserController,
-    DownloadUserController,
     IndexAdminController,
     EventAdminController,
     TournamentAdminController,
