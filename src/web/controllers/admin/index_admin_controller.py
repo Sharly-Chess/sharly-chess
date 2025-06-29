@@ -171,7 +171,7 @@ class IndexAdminController(BaseAdminController):
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
-                'icon_class': 'bi-house-door-fill',
+                'icon_class': 'bi-qr-code',
                 'disabled': False,
                 'experimental_features_warning': True,
             },
