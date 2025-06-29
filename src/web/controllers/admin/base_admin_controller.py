@@ -44,6 +44,7 @@ class AdminWebContext(WebContext):
     def check_admin_tab(self):
         if self.admin_tab not in [
             None,
+            'home',
             'config',
             'passed_events',
             'current_events',
@@ -314,16 +315,22 @@ class BaseAdminController(BaseController):
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, field := 'uniq_id')
+        uniq_id: str | None
         if action == 'delete':
             if admin_event is None:
                 raise RuntimeError(f'{admin_event=} for [{action=}]')
+            uniq_id = WebContext.form_data_to_str(data, field := 'uniq_id')
             if not uniq_id:
                 errors[field] = _('Please enter the event ID.')
             elif uniq_id != admin_event.uniq_id:
                 errors[field] = _('event ID does not match.')
         else:
-            if web_context.client.can_rename_event:
+            if action == 'update' and not web_context.client.can_rename_event:
+                if admin_event is None:
+                    raise RuntimeError(f'{admin_event=} for [{action=}]')
+                uniq_id = admin_event.uniq_id
+            else:
+                uniq_id = WebContext.form_data_to_str(data, field := 'uniq_id')
                 if not uniq_id:
                     errors[field] = _('Please enter the event ID.')
                 elif not EventLoader.id_regex.match(uniq_id):
@@ -353,8 +360,6 @@ class BaseAdminController(BaseController):
                                 ).format(uniq_id=uniq_id)
                         case _:
                             raise ValueError(f'action=[{action}]')
-            else:
-                uniq_id = admin_event.uniq_id
         name: str | None
         federation: str | None
         start: float | None = None

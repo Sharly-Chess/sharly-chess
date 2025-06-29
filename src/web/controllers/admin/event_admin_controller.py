@@ -187,22 +187,32 @@ class EventAdminController(BaseEventAdminController):
             for tournament in web_context.admin_event.tournaments_by_uniq_id.values()
             if tournament.started
         ]
-        if len(started_tournaments) > 0:
+        if len(started_tournaments) > 0 and web_context.client.can_view_pairings_tab:
             return Redirect(
                 admin_event_pairings_url(
                     request, web_context.admin_event.uniq_id, started_tournaments[0].id
                 )
             )
-        if web_context.admin_event.player_count:
+        if (
+            web_context.admin_event.player_count
+            and web_context.client.can_view_players_tab
+        ):
             return Redirect(
                 admin_event_players_url(request, web_context.admin_event.uniq_id)
             )
-        if web_context.admin_event.tournaments_by_uniq_id:
+        if (
+            web_context.admin_event.tournaments_by_uniq_id
+            and web_context.client.can_view_tournaments_tab
+        ):
             return Redirect(
                 admin_event_tournaments_url(request, web_context.admin_event.uniq_id)
             )
-        return Redirect(
-            admin_event_config_url(request, web_context.admin_event.uniq_id)
+        if web_context.client.can_view_event_basic_config:
+            return Redirect(
+                admin_event_config_url(request, web_context.admin_event.uniq_id)
+            )
+        return self._admin_event_render(
+            self._get_admin_event_render_context(web_context)
         )
 
     @get(

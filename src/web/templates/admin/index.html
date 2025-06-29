@@ -1,21 +1,6 @@
 {% extends 'common/base.html' %}
 
 {% block admin_header_back_button %}
-    <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
-        <button
-            class="btn px-0 py-0 d-flex align-items-center gap-2"
-            hx-get="{{ url_for('index') }}"
-            preload
-            hx-target="body"
-            hx-push-url="true"
-            hx-indicator="#please-wait"
-            hx-swap="transition:true"
-        >
-            <i class="bi-arrow-left-circle-fill"></i>
-            <span class="expanded-only">{{ _('Home page') }}</span>
-        </button>
-        {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
-    </div>
 {% endblock admin_header_back_button %}
 
 {% block admin_nav %}
@@ -27,9 +12,10 @@
             <h4 class="ps-3 mb-2 fs-5 mt-3">{{ nav_tab.section_title }}</h4>
         {% endif %}
         {% with active=(admin_tab == nav_id) %}
-             <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+        <div class="d-flex w-100 justify-content-between align-items-center">
+             <span class="d-flex sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
                 <button
-                    class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                    class="nav-link d-flex text-start justify-content-between {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                     id="nav-{{ nav_id }}-tab"
                     hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
                     preload
@@ -42,12 +28,20 @@
                         disabled
                     {% endif %}
                 >
-                    {% if nav_tab.icon_class %}
-                         <i class="{{ nav_tab.icon_class }} pe-1"></i>
+                    <span>
+                        {% if nav_tab.icon_class %}
+                            <i class="{{ nav_tab.icon_class }} pe-1"></i>
+                        {% endif %}
+                        <span class="expanded-only">
+                            {{ nav_tab.title }}
+                        </span>
+                    </span>
+                    {% if nav_tab.experimental_features_warning %}
+                        {{ macros.experimental_warning(EXPERIMENTAL_FEATURES) }}
                     {% endif %}
-                    <span class="expanded-only">{{ nav_tab.title }}</span>
                 </button>
             </span>
+        </div>
         {% endwith %}
     {% endfor %}
     {% include '/admin/common/database/database_button.html' %}

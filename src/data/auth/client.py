@@ -370,9 +370,6 @@ class Client:
             [
                 Role.ORGANIZER,
                 Role.SECTOR_ARBITER,
-                Role.PAIRINGS_OFFICER,
-                Role.RESULTS_OFFICER,
-                Role.CHECK_IN_OFFICER,
             ],
         )
 

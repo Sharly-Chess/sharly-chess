@@ -1,0 +1,78 @@
+<div id="top-nav-wrapper">
+    <div id="top-nav-content">
+        {{ macros.refresh_listener(
+            hx_get=url_for('admin-tab', admin_tab=admin_tab),
+        ) }}
+        <div class="flex-grow-1"></div>
+    </div>
+</div>
+
+<div id="home-content" class="content home-content mt-5">
+    <div style="max-width: 600px; margin: auto;">
+        <div class="d-grid gap-2 col-auto mx-auto">
+            <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
+            <div class="dropdown text-center my-3">
+                <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi-translate pe-1"></i>
+                    {{ _('Language') }}
+                </button>
+                <ul class="dropdown-menu locale">
+                    {% for l, l_info in locale_infos.items() %}
+                        <li
+                            class="
+                                dropdown-item
+                                text-start
+                                {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                                "
+                            {% if l != locale %}
+                                hx-get="{{ url_for('index') }}"
+                                hx-vals='{"locale": "{{ l }}"}'
+                                preload
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                hx-trigger="click, keyup[key=='Enter']"
+                                tabindex="0"
+                            {% endif %}
+                            {{ macros.tooltip_attributes('info', l_info.name, 'right') }}
+                        >
+                            <img
+                                src="{{l_info.flag_url}}"
+                                alt="{{l_info.name}}"
+                                class="locale-flag"
+                            />
+                            {{ l_info.name }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h4 class="text-center my-3">
+                {% if client.computer.localhost %}
+                    {{ _('You are on the Sharly Chess server.') }}
+                {% else %}
+                    {{ _('You are connected to the Sharly Chess server.') }}
+                {% endif %}
+            </h4>
+            {% if sharly_chess_config.lan_url %}
+                <h4 class="text-center mt-3">
+                    {{ _('Connect other devices!') }}
+                </h4>
+                <div class="text-center">
+                    <img
+                            src="{{ url_for('qrcode-lan-url') }}?time={{ now }}"
+                            alt="{{ _('Sharly Chess server URL') }}"
+                            class="py-2"
+                            style="width: 150px"
+                            {{ macros.tooltip_attributes('info', _('Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
+                    />
+                    <br/>
+                    {{ sharly_chess_config.lan_url }}
+                    <br/>
+                    <a
+                            href="{{ url_for('qrcode-lan-url') }}?logo=&time={{ now }}"
+                            target="_blank"
+                    />({{ _('printable version') }})</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

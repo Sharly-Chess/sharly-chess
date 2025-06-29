@@ -1,14 +1,11 @@
 from contextlib import suppress
-from io import BytesIO
-from pathlib import Path
 from typing import Annotated, Any
-from zipfile import ZipInfo, ZipFile
 
-from litestar import patch, delete, put, Response, get
+from litestar import patch, delete, put, get
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, File
+from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar.channels import ChannelsPlugin
 
@@ -20,8 +17,6 @@ from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import BaseController
-from web.controllers.user.event_user_controller import EventUserWebContext
-from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.base_screen_user_controller import (
     ScreenUserWebContext,
     BaseScreenUserController,
@@ -514,72 +509,4 @@ class ResultUserController(BaseInputUserController):
             round_=round,
             board_id=board_id,
             result=None,
-        )
-
-
-class DownloadUserController(BaseUserController):
-    @get(
-        path='/user/download-tournaments/{event_uniq_id:str}',
-        name='user-download-tournaments',
-    )
-    async def htmx_user_download_event_tournaments(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Response[bytes] | ClientRedirect:
-        web_context: EventUserWebContext = EventUserWebContext(
-            request, data=None, event_uniq_id=event_uniq_id, user_event_tab=None
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.user_event is None:
-            raise RuntimeError('user_event not defined')
-        tournament_files: list[Path] = [
-            tournament.file
-            for tournament in web_context.user_event.tournaments_by_id.values()
-            if tournament.file_exists
-        ]
-        if not tournament_files:
-            return BaseController.redirect_error(
-                request, f'No Papi file for event [{web_context.user_event.uniq_id}].'
-            )
-        archive = BytesIO()
-        with ZipFile(archive, 'w') as zip_archive:
-            for tournament_file in tournament_files:
-                zip_entry: ZipInfo = ZipInfo(tournament_file.name)
-                with open(tournament_file, 'rb') as tournament_handler:
-                    zip_archive.writestr(zip_entry, tournament_handler.read())
-        return Response(
-            content=bytes(archive.getbuffer()), media_type='application/zip'
-        )
-
-    @get(
-        path='/user/download-tournament/{event_uniq_id:str}/{tournament_id:str}',
-        name='user-download-tournament',
-    )
-    async def htmx_user_download_tournament(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> File | ClientRedirect:
-        web_context: TournamentUserWebContext = TournamentUserWebContext(
-            request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=None,
-            screen_needed=False,
-            tournament_id=tournament_id,
-            tournament_started=None,
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.tournament is None:
-            raise RuntimeError('tournament not defined')
-        if not web_context.tournament.file_exists:
-            return BaseController.redirect_error(
-                request, f'Papi file [{web_context.tournament.file}] not found.'
-            )
-        return File(
-            path=web_context.tournament.file, filename=web_context.tournament.file.name
         )

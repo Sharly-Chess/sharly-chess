@@ -168,6 +168,13 @@ class IndexAdminController(BaseAdminController):
             'coming', public_only=public_only
         )
         nav_tabs: dict[str, dict[str, Any]] = {
+            'home': {
+                'title': _('Home'),
+                'template': 'index/home_tab.html',
+                'icon_class': 'bi-house-door-fill',
+                'disabled': False,
+                'experimental_features_warning': True,
+            },
             'current_events': {
                 'section_title': _('Events'),
                 'title': _('Current ({num})').format(num=len(current_events) or '-'),

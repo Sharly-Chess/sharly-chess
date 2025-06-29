@@ -298,6 +298,10 @@
                     {% set redirect_url = '/wait' %}
                 {% endif %}
             {% endif %}
+        {% else %}
+            {% if request.url.path == '/' %}
+                {% set redirect_url = '/admin/home' %}
+            {% endif %}
         {% endif %}
         {% if redirect_url %}
             <p>{{ _('Please wait…') }}</p>

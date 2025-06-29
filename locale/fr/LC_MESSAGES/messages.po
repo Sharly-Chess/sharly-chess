@@ -180,10 +180,6 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
-#, python-format
-msgid "A password is required to enter results for the event %(event_uniq_id)s."
-msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement %(event_uniq_id)s."
-
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
@@ -211,9 +207,6 @@ msgstr "Accès"
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
 
-msgid "Access denied, please authenticate to enter results."
-msgstr "Accès refusé, veuillez vous authentifier pour entrer des résultats."
-
 msgid "Access driver (found)"
 msgstr "Pilote Access (présent)"
 
@@ -228,10 +221,6 @@ msgstr "Accès depuis le réseau local (LAN/WAN)"
 
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
-
-#, python-format
-msgid "Account [%(username)s] has been created."
-msgstr "Le compte [%(username)s] a été créé."
 
 msgid "Account [{username}] already exists."
 msgstr "Le compte [{username}] existe déjà."
@@ -482,9 +471,6 @@ msgstr "Erreur d'authentification (code : [{code}]) for [{user_id}] ([{chesseve
 
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
-
-msgid "Authentication successful!"
-msgstr "Authentification réussie !"
 
 msgid "Auto upload to FFE enabled"
 msgstr "Envoi automatique vers la FFE activé"
@@ -941,10 +927,6 @@ msgstr "Appariements complémentaires générés."
 msgid "Complementary pairings successfully generated!"
 msgstr "Appariements complémentaires générés avec succès !"
 
-#, python-format
-msgid "Computer [%(ip)s] has been created."
-msgstr "L'ordinateur [%(ip)s] a été ajouté."
-
 msgid "Computer [{ip}] already set."
 msgstr "Ordinateur [{ip}] déjà défini."
 
@@ -971,6 +953,9 @@ msgstr "Configuration"
 
 msgid "Connect"
 msgstr "Connexion"
+
+msgid "Connect other devices!"
+msgstr "Connectez d'autres appareils !"
 
 msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
 msgstr "Connectez vos appareils (ordinateurs, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
@@ -2342,7 +2327,7 @@ msgstr "Surbrillance"
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
 
-msgid "Home page"
+msgid "Home"
 msgstr "Accueil"
 
 msgid "Hort system"
@@ -2442,9 +2427,6 @@ msgstr "Inclure les joueur·euses de ces types de classement."
 
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
-
-msgid "Incorrect password."
-msgstr "Mot de passe incorrect."
 
 msgid "Incorrect path [{path}]."
 msgstr "Chemin incorrect [{path}]."
@@ -3417,9 +3399,6 @@ msgstr "Évènements passés"
 msgid "Passed events ({num})"
 msgstr "Évènements passés ({num})"
 
-msgid "Password"
-msgstr "Mot de passe"
-
 msgid "Password does not match."
 msgstr "Le mot de passe n'est pas correct."
 
@@ -3564,9 +3543,6 @@ msgstr "En cours"
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
 
-msgid "Please ask the organizer to get the password."
-msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
-
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -3629,12 +3605,6 @@ msgstr "Veuillez entrer le nom de l'évènement."
 
 msgid "Please enter the number of the release to recover [{default_choice}: {default_version}]: "
 msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}] : "
-
-msgid "Please enter the password to enter results:"
-msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
-
-msgid "Please enter the password."
-msgstr "Veuillez entrer le mot de passe."
 
 msgid "Please enter the rotator ID."
 msgstr "Veuillez entrer l'identifiant de l'écran rotatif."
@@ -5694,6 +5664,9 @@ msgstr "Vous êtes connecté·e sur le client « %(host)s »."
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilèges complets d'administration."
 
+msgid "You are connected to the Sharly Chess server."
+msgstr "Vous êtes connecté·e au serveur Sharly Chess."
+
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
@@ -5780,6 +5753,9 @@ msgstr "Vous n'êtes pas autorisé·e à modifier ce compte."
 
 msgid "You are not allowed to update this computer."
 msgstr "Vous n'êtes pas autorisé·e à modifier cet ordinateur."
+
+msgid "You are on the Sharly Chess server."
+msgstr "Vous êtes sur le serveur Sharly Chess."
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."
@@ -6039,7 +6015,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Pairing by board ({num})"
-#~ msgstr ""
 
