@@ -25,10 +25,6 @@ msgid "%(count)d players unpaired"
 msgstr "%(count)d joueur·euses non-apparié·es"
 
 #, python-format
-msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
-msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
-
-#, python-format
 msgid "%(first_name)s %(last_name)s - Round %(num)s"
 msgstr "%(last_name)s %(first_name)s - Ronde %(num)s"
 
@@ -219,9 +215,6 @@ msgstr "Accès depuis le serveur Sharly Chess"
 msgid "Access from the local network (LAN/WAN)"
 msgstr "Accès depuis le réseau local (LAN/WAN)"
 
-msgid "Access to the arbiter interface is not allowed from this client."
-msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
-
 msgid "Account [{username}] already exists."
 msgstr "Le compte [{username}] existe déjà."
 
@@ -396,9 +389,6 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 
 msgid "Application"
 msgstr "Application"
-
-msgid "Arbiter interface"
-msgstr "Arbitrage"
 
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
@@ -830,9 +820,6 @@ msgstr "Veuillez choisir votre langue"
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
-msgid "Click here to access the screens that you have created."
-msgstr "Cliquez ici pour accéder aux écrans que vous avez créés."
-
 msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
@@ -959,9 +946,6 @@ msgstr "Connectez d'autres appareils !"
 
 msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
 msgstr "Connectez vos appareils (ordinateurs, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
-
-msgid "Connect your devices to the Sharly Chess server:"
-msgstr "Connectez vos appareils au serveur Sharly Chess :"
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
@@ -1145,9 +1129,6 @@ msgstr "En cours ({num})"
 
 msgid "Current events"
 msgstr "Évènements en cours"
-
-msgid "Current events ({num})"
-msgstr "Évènements en cours ({num})"
 
 msgid "Current round"
 msgstr "Ronde en cours"
@@ -2271,12 +2252,6 @@ msgstr "Générer les appariements pour toutes les rondes du tournoi."
 msgid "Generate pairings for this round."
 msgstr "Générer les appariements pour cette ronde."
 
-msgid "Go back to the events page."
-msgstr "Revenir à la page des évènements."
-
-msgid "Go back to the home page."
-msgstr "Revenir à la page d'accueil."
-
 msgid "Go to the display controller."
 msgstr "Aller au pilote d'écran."
 
@@ -2389,9 +2364,6 @@ msgstr "Création d'un écran d'image"
 
 msgid "Image screens show an image (local or remote)."
 msgstr "Les écrans d'image affichent une image (locale ou distante)."
-
-msgid "Image:"
-msgstr "Image :"
 
 #, python-format
 msgid "Image: %(image)s"
@@ -2740,13 +2712,6 @@ msgstr "Nombre maximum de résultats affichés :"
 msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr "Nombre maximum de résultats passé à [{results_limit}] pour tenir sur [{columns}] colonnes."
 
-#, python-format
-msgid "Maximum number of results: %(num)d"
-msgstr "Nombre maximum de résultats : %(num)d"
-
-msgid "Maximum number of results: unlimited"
-msgstr "Nombre maximum de résultats : illimité"
-
 msgid "Maximum rating"
 msgstr "Elo maximum"
 
@@ -2762,9 +2727,6 @@ msgstr "Bu. médian"
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
 
-msgid "Menu label:"
-msgstr "Étiquette de menu :"
-
 msgid "Menu link label:"
 msgstr "Étiquette de menu :"
 
@@ -2774,9 +2736,6 @@ msgstr "Étiquette de menu : %(menu_label)s"
 
 msgid "Menu link label: none"
 msgstr "Étiquette de menu : aucune"
-
-msgid "Menu:"
-msgstr "Menu :"
 
 #, python-format
 msgid "Menu: %(menu)s"
@@ -2962,9 +2921,6 @@ msgstr "Aucun répertoire défini pour le fichier Papi, par défaut [{path}]."
 msgid "No display controllers"
 msgstr "Aucun pilote d'afficheurs"
 
-msgid "No display controllers."
-msgstr "Aucun pilote d'afficheurs."
-
 msgid "No events found."
 msgstr "Aucun évènement trouvé."
 
@@ -3037,9 +2993,6 @@ msgstr "Aucun résultat."
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
 
-msgid "No rotators."
-msgstr "Aucun écran rotatif."
-
 msgid "No rules file set"
 msgstr "Règlement non défini"
 
@@ -3050,9 +3003,6 @@ msgid "No screen families."
 msgstr "Aucune famille d'écrans."
 
 msgid "No screen neither family to rotate."
-msgstr "Aucun écran ni famille à afficher."
-
-msgid "No screen nor family to rotate."
 msgstr "Aucun écran ni famille à afficher."
 
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
@@ -3330,16 +3280,13 @@ msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
 msgid "Pairings by board ({num})"
-msgstr "Appariements par échiquier ({num})"
-
-msgid "Pairings by boards number ({num})"
-msgstr "Appariements par échiquier ({num})"
+msgstr "App. par échiquier ({num})"
 
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
 msgid "Pairings by player ({num})"
-msgstr "Appariements par ordre alphabétique ({num})"
+msgstr "App. par ordre alpha. ({num})"
 
 msgid "Pairings disabled while check-in is open."
 msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
@@ -3395,9 +3342,6 @@ msgstr "Passés ({num})"
 
 msgid "Passed events"
 msgstr "Évènements passés"
-
-msgid "Passed events ({num})"
-msgstr "Évènements passés ({num})"
 
 msgid "Password does not match."
 msgstr "Le mot de passe n'est pas correct."
@@ -3824,9 +3768,6 @@ msgstr "Écran public"
 
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
-
-msgid "QR code"
-msgstr "code QR"
 
 msgid "Quit"
 msgstr "Quitter"
@@ -4480,9 +4421,6 @@ msgstr "L'identifiant unique, utilisé pour référencer le chronomètre'."
 
 msgid "The Unique ID, used to reference the tournament."
 msgstr "L'identifiant unique, utilisé pour référencer le tournoi."
-
-msgid "The arbiter interface allows the management of the events."
-msgstr "L'interface d'arbitrage permet la gestion des évènements."
 
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
@@ -5374,12 +5312,6 @@ msgstr "Non appariée"
 msgid "Unpaired *** MALE"
 msgstr "Non apparié"
 
-msgid "Unpaired players: displayed"
-msgstr "Joueur·euses non apparié·es : affiché·es"
-
-msgid "Unpaired players: hidden"
-msgstr "Joueur·euses non apparié·es : caché·es"
-
 msgid "Unpaired: displayed"
 msgstr "Non apparié·es : affiché·es"
 
@@ -5406,9 +5338,6 @@ msgstr "À venir ({num})"
 
 msgid "Upcoming events"
 msgstr "Évènements à venir"
-
-msgid "Upcoming events ({num})"
-msgstr "Évènements à venir ({num})"
 
 msgid "Update"
 msgstr "Mettre à jour"
@@ -5793,9 +5722,6 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
 
-msgid "Your Screens"
-msgstr "Vos écrans"
-
 msgid "Your choice (by default {default}): "
 msgstr "Votre choix, par défaut [{default}] :"
 
@@ -6015,4 +5941,76 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+#~ msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
+
+#~ msgid "Access to the arbiter interface is not allowed from this client."
+#~ msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
+
+#~ msgid "Arbiter interface"
+#~ msgstr "Arbitrage"
+
+#~ msgid "Click here to access the screens that you have created."
+#~ msgstr "Cliquez ici pour accéder aux écrans que vous avez créés."
+
+#~ msgid "Connect your devices to the Sharly Chess server:"
+#~ msgstr "Connectez vos appareils au serveur Sharly Chess :"
+
+#~ msgid "Current events ({num})"
+#~ msgstr "Évènements en cours ({num})"
+
+#~ msgid "Go back to the events page."
+#~ msgstr "Revenir à la page des évènements."
+
+#~ msgid "Go back to the home page."
+#~ msgstr "Revenir à la page d'accueil."
+
+#~ msgid "Image:"
+#~ msgstr "Image :"
+
+#~ msgid "Maximum number of results: %(num)d"
+#~ msgstr "Nombre maximum de résultats : %(num)d"
+
+#~ msgid "Maximum number of results: unlimited"
+#~ msgstr "Nombre maximum de résultats : illimité"
+
+#~ msgid "Menu label:"
+#~ msgstr "Étiquette de menu :"
+
+#~ msgid "Menu:"
+#~ msgstr "Menu :"
+
+#~ msgid "No display controllers."
+#~ msgstr "Aucun pilote d'afficheurs."
+
+#~ msgid "No rotators."
+#~ msgstr "Aucun écran rotatif."
+
+#~ msgid "No screen nor family to rotate."
+#~ msgstr "Aucun écran ni famille à afficher."
+
+#~ msgid "Pairings by boards number ({num})"
+#~ msgstr "Appariements par échiquier ({num})"
+
+#~ msgid "Passed events ({num})"
+#~ msgstr "Évènements passés ({num})"
+
+#~ msgid "QR code"
+#~ msgstr "code QR"
+
+#~ msgid "The arbiter interface allows the management of the events."
+#~ msgstr "L'interface d'arbitrage permet la gestion des évènements."
+
+#~ msgid "Unpaired players: displayed"
+#~ msgstr "Joueur·euses non apparié·es : affiché·es"
+
+#~ msgid "Unpaired players: hidden"
+#~ msgstr "Joueur·euses non apparié·es : caché·es"
+
+#~ msgid "Upcoming events ({num})"
+#~ msgstr "Évènements à venir ({num})"
+
+#~ msgid "Your Screens"
+#~ msgstr "Vos écrans"
 

@@ -465,7 +465,7 @@ class ScreenAdminController(BaseEventAdminController):
                 'create_tooltip': _('Add a screen to enter results.'),
             },
             ScreenType.BOARDS: {
-                'title': _('Pairings by boards number ({num})'),
+                'title': _('Pairings by board ({num})'),
                 'create_title': _('Pairings by board'),
                 'create_tooltip': _(
                     'Add a screen to display the pairings by board number.'

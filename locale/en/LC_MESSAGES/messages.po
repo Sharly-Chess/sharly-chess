@@ -25,10 +25,6 @@ msgid "%(count)d players unpaired"
 msgstr ""
 
 #, python-format
-msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
-msgstr ""
-
-#, python-format
 msgid "%(first_name)s %(last_name)s - Round %(num)s"
 msgstr ""
 
@@ -219,9 +215,6 @@ msgstr ""
 msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
-msgid "Access to the arbiter interface is not allowed from this client."
-msgstr ""
-
 msgid "Account [{username}] already exists."
 msgstr ""
 
@@ -395,9 +388,6 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
-msgstr ""
-
-msgid "Arbiter interface"
 msgstr ""
 
 msgid "Archived ({num})"
@@ -830,9 +820,6 @@ msgstr ""
 msgid "Clear all the filters."
 msgstr ""
 
-msgid "Click here to access the screens that you have created."
-msgstr ""
-
 msgid "Click to check-in the player."
 msgstr ""
 
@@ -958,9 +945,6 @@ msgid "Connect other devices!"
 msgstr ""
 
 msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
-msgstr ""
-
-msgid "Connect your devices to the Sharly Chess server:"
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -1144,9 +1128,6 @@ msgid "Current ({num})"
 msgstr ""
 
 msgid "Current events"
-msgstr ""
-
-msgid "Current events ({num})"
 msgstr ""
 
 msgid "Current round"
@@ -2271,12 +2252,6 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
-msgid "Go back to the events page."
-msgstr ""
-
-msgid "Go back to the home page."
-msgstr ""
-
 msgid "Go to the display controller."
 msgstr ""
 
@@ -2388,9 +2363,6 @@ msgid "Image screen creation"
 msgstr ""
 
 msgid "Image screens show an image (local or remote)."
-msgstr ""
-
-msgid "Image:"
 msgstr ""
 
 #, python-format
@@ -2740,13 +2712,6 @@ msgstr ""
 msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
-#, python-format
-msgid "Maximum number of results: %(num)d"
-msgstr ""
-
-msgid "Maximum number of results: unlimited"
-msgstr ""
-
 msgid "Maximum rating"
 msgstr ""
 
@@ -2762,9 +2727,6 @@ msgstr "Me. Buchholz"
 msgid "Median Buchholz"
 msgstr ""
 
-msgid "Menu label:"
-msgstr ""
-
 msgid "Menu link label:"
 msgstr ""
 
@@ -2773,9 +2735,6 @@ msgid "Menu link label: %(menu_label)s"
 msgstr ""
 
 msgid "Menu link label: none"
-msgstr ""
-
-msgid "Menu:"
 msgstr ""
 
 #, python-format
@@ -2962,9 +2921,6 @@ msgstr ""
 msgid "No display controllers"
 msgstr ""
 
-msgid "No display controllers."
-msgstr ""
-
 msgid "No events found."
 msgstr ""
 
@@ -3037,9 +2993,6 @@ msgstr ""
 msgid "No rotators"
 msgstr ""
 
-msgid "No rotators."
-msgstr ""
-
 msgid "No rules file set"
 msgstr ""
 
@@ -3050,9 +3003,6 @@ msgid "No screen families."
 msgstr ""
 
 msgid "No screen neither family to rotate."
-msgstr ""
-
-msgid "No screen nor family to rotate."
 msgstr ""
 
 msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
@@ -3332,9 +3282,6 @@ msgstr ""
 msgid "Pairings by board ({num})"
 msgstr ""
 
-msgid "Pairings by boards number ({num})"
-msgstr ""
-
 msgid "Pairings by player"
 msgstr ""
 
@@ -3394,9 +3341,6 @@ msgid "Passed ({num})"
 msgstr ""
 
 msgid "Passed events"
-msgstr ""
-
-msgid "Passed events ({num})"
 msgstr ""
 
 msgid "Password does not match."
@@ -3824,9 +3768,6 @@ msgstr ""
 
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
-
-msgid "QR code"
-msgstr ""
 
 msgid "Quit"
 msgstr ""
@@ -4479,9 +4420,6 @@ msgid "The Unique ID, used to reference the timer."
 msgstr ""
 
 msgid "The Unique ID, used to reference the tournament."
-msgstr ""
-
-msgid "The arbiter interface allows the management of the events."
 msgstr ""
 
 msgid "The background colour is used when the image does not fill the whole screen."
@@ -5374,12 +5312,6 @@ msgstr "Unpaired"
 msgid "Unpaired *** MALE"
 msgstr "Unpaired"
 
-msgid "Unpaired players: displayed"
-msgstr ""
-
-msgid "Unpaired players: hidden"
-msgstr ""
-
 msgid "Unpaired: displayed"
 msgstr ""
 
@@ -5405,9 +5337,6 @@ msgid "Upcoming ({num})"
 msgstr ""
 
 msgid "Upcoming events"
-msgstr ""
-
-msgid "Upcoming events ({num})"
 msgstr ""
 
 msgid "Update"
@@ -5793,9 +5722,6 @@ msgstr ""
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr ""
 
-msgid "Your Screens"
-msgstr ""
-
 msgid "Your choice (by default {default}): "
 msgstr ""
 
@@ -6015,4 +5941,76 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
+#~ msgstr ""
+
+#~ msgid "Access to the arbiter interface is not allowed from this client."
+#~ msgstr ""
+
+#~ msgid "Arbiter interface"
+#~ msgstr ""
+
+#~ msgid "Click here to access the screens that you have created."
+#~ msgstr ""
+
+#~ msgid "Connect your devices to the Sharly Chess server:"
+#~ msgstr ""
+
+#~ msgid "Current events ({num})"
+#~ msgstr ""
+
+#~ msgid "Go back to the events page."
+#~ msgstr ""
+
+#~ msgid "Go back to the home page."
+#~ msgstr ""
+
+#~ msgid "Image:"
+#~ msgstr ""
+
+#~ msgid "Maximum number of results: %(num)d"
+#~ msgstr ""
+
+#~ msgid "Maximum number of results: unlimited"
+#~ msgstr ""
+
+#~ msgid "Menu label:"
+#~ msgstr ""
+
+#~ msgid "Menu:"
+#~ msgstr ""
+
+#~ msgid "No display controllers."
+#~ msgstr ""
+
+#~ msgid "No rotators."
+#~ msgstr ""
+
+#~ msgid "No screen nor family to rotate."
+#~ msgstr ""
+
+#~ msgid "Pairings by boards number ({num})"
+#~ msgstr ""
+
+#~ msgid "Passed events ({num})"
+#~ msgstr ""
+
+#~ msgid "QR code"
+#~ msgstr ""
+
+#~ msgid "The arbiter interface allows the management of the events."
+#~ msgstr ""
+
+#~ msgid "Unpaired players: displayed"
+#~ msgstr ""
+
+#~ msgid "Unpaired players: hidden"
+#~ msgstr ""
+
+#~ msgid "Upcoming events ({num})"
+#~ msgstr ""
+
+#~ msgid "Your Screens"
+#~ msgstr ""
 
