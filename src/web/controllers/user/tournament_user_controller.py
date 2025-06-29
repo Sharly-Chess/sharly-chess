@@ -421,7 +421,9 @@ class ResultUserController(BaseInputUserController):
                 request, f'Invalid round number [{round_}].'
             )
         if result is None:
-            if not board_web_context.admin_auth:
+            if not board_web_context.client.can_update_results_by_tournament_id[
+                board_web_context.tournament.id
+            ]:
                 return BaseController.redirect_error(
                     request, 'Result deletion is not allowed.'
                 )
@@ -430,7 +432,9 @@ class ResultUserController(BaseInputUserController):
         else:
             if result not in (
                 Result.admin_imputable_results()
-                if board_web_context.admin_auth
+                if board_web_context.client.can_set_special_results_by_tournament_id[
+                    board_web_context.tournament.id
+                ]
                 else Result.user_imputable_results()
             ):
                 return BaseController.redirect_error(

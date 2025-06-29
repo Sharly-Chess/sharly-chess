@@ -13,6 +13,7 @@ from litestar.response import ServerSentEventMessage, ServerSentEvent
 from common.i18n import _
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
+from web.urls import admin_url
 
 
 class IndexController(BaseController):
@@ -36,15 +37,8 @@ class IndexController(BaseController):
         locale: str | None,
     ) -> Template | Redirect:
         self.set_locale(request, locale)
-        web_context: WebContext = WebContext(request)
 
-        return HTMXTemplate(
-            template_name='index.html',
-            context=web_context.template_context
-            | {
-                'messages': Message.messages(request),
-            },
-        )
+        return Redirect(path=admin_url(request))
 
     @get(
         path='/wait',

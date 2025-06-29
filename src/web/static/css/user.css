@@ -68,10 +68,10 @@
 .input-screen .board-row.result-set:hover {
     background-color: #ffffcc;
 }
-.input-screen .board-row.admin.result-not-set:hover {
+.input-screen .board-row.special-results-allowed.result-not-set:hover {
     background-color: #ffc500;
 }
-.input-screen .board-row.admin.result-set:hover {
+.input-screen .board-row.special-results-allowed.result-set:hover {
     background-color: #fff2cd;
 }
 .time-control-modified .minutes,

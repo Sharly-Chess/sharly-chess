@@ -77,7 +77,7 @@
 
 {% block content %}
     {% if not rotator and not display_controller %}
-        {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
+        {% set menu_screens = screen.admin_menu_screens if client.can_view_private_screens else screen.public_menu_screens %}
         <div id="top-nav-wrapper">
             <div id="top-nav-content">
                 {% if menu_screens %}

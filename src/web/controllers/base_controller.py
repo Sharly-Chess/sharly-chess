@@ -343,20 +343,6 @@ class WebContext:
         self.error = BaseController.redirect_error(self.request, errors)
 
     @property
-    def admin_auth(self) -> bool:
-        """
-        A method that tell if the client is authorized to view admin pages.
-        At this time, local requests (from the server) are allowed, adding an auth mechanism to allow access from other
-        clients is planned.
-        :return: True if the client is allowed to view admin pages.
-        """
-        # NOTE(Amaras): see https://docs.litestar.dev/2/usage/security/index.html
-        # for security considerations in Litestar
-        if self.request.client and self.request.client.host == '127.0.0.1':
-            return True
-        return False
-
-    @property
     def template_context(self) -> dict[str, Any]:
         """
         This method is used by all controllers to get the parameters to pass the template for rendering.
@@ -380,7 +366,6 @@ class WebContext:
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'sharly_chess_config': sharly_chess_config,
-            'admin_auth': self.admin_auth,
             'background_info': self.background_info,
             'theme': self.theme,
             'locale_infos': locale_infos,

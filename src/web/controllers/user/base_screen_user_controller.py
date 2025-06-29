@@ -55,7 +55,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             except KeyError:
                 self._redirect_error(f'Screen [{screen_uniq_id}] not found.')
                 return
-            if not self.screen.public and not self.admin_auth:
+            if not self.screen.public and not self.client.can_view_private_events:
                 self._redirect_error(
                     f'Access denied for screen [{self.screen.uniq_id}].'
                 )
@@ -69,7 +69,7 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             except KeyError:
                 self._redirect_error(f'Rotator [{rotator_id}] not found.')
                 return
-            if not self.rotator.public and not self.admin_auth:
+            if not self.rotator.public and not self.client.can_view_private_screens:
                 self._redirect_error(
                     f'Access denied for rotator [{self.rotator.uniq_id}].'
                 )

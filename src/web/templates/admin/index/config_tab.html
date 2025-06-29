@@ -14,7 +14,7 @@
                         id="admin-config-edit-button"
                         class="btn btn-outline-primary text-nowrap ms-1"
                         hx-get="{{ url_for('admin-config-modal') }}"
-                        hx-trigger="click{% if admin_auth and sharly_chess_config.force_edit %}, load{% endif %}"
+                        hx-trigger="click{% if client.can_update_application_settings and sharly_chess_config.force_edit %}, load{% endif %}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         preload

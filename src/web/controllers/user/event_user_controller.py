@@ -35,7 +35,7 @@ class EventUserWebContext(UserWebContext):
             self.user_event = EventLoader.get(request=self.request).load_event(
                 event_uniq_id
             )
-            if self.user_event.public or self.admin_auth:
+            if self.user_event.public or self.client.can_view_private_events:
                 self.user_event_tab = user_event_tab
                 return
             self._redirect_error(f'Access denied for event [{event_uniq_id}].')
