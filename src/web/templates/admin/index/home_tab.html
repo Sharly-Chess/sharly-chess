@@ -12,19 +12,24 @@
         <div class="d-grid gap-2 col-auto mx-auto">
             <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
             <div class="dropdown text-center my-3">
+                <i class="bi-translate pe-1"></i>
                 <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi-translate pe-1"></i>
-                    {{ _('Language') }}
+                    <img
+                        src="{{locale_infos[locale].flag_url}}"
+                        alt="{{locale_infos[locale].name}}"
+                        class="locale-flag"
+                    />
+                    {{ locale_infos[locale].name }}
                 </button>
                 <ul class="dropdown-menu locale">
                     {% for l, l_info in locale_infos.items() %}
-                        <li
-                            class="
-                                dropdown-item
-                                text-start
-                                {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
-                                "
-                            {% if l != locale %}
+                        {% if l != locale %}
+                            <li
+                                class="
+                                    dropdown-item
+                                    text-start
+                                    {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                                    "
                                 hx-get="{{ url_for('index') }}"
                                 hx-vals='{"locale": "{{ l }}"}'
                                 preload
@@ -32,16 +37,15 @@
                                 hx-indicator="#please-wait"
                                 hx-trigger="click, keyup[key=='Enter']"
                                 tabindex="0"
-                            {% endif %}
-                            {{ macros.tooltip_attributes('info', l_info.name, 'right') }}
-                        >
-                            <img
-                                src="{{l_info.flag_url}}"
-                                alt="{{l_info.name}}"
-                                class="locale-flag"
-                            />
-                            {{ l_info.name }}
-                        </li>
+                            >
+                                <img
+                                    src="{{l_info.flag_url}}"
+                                    alt="{{l_info.name}}"
+                                    class="locale-flag"
+                                />
+                                {{ l_info.name }}
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>
