@@ -639,14 +639,13 @@ class Tournament:
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
                 ):
-                    for screen_set in screen.screen_sets_sorted_by_order:
-                        if screen_set.tournament.id == self.id:
-                            dependent_screens.append(screen)
-                case ScreenType.RESULTS:
-                    if (
-                        not screen.results_tournament_ids
-                        or self.id in screen.results_tournament_ids
+                    if all(
+                        screen_set.tournament.id == self.id
+                        for screen_set in screen.screen_sets_by_id.values()
                     ):
+                        dependent_screens.append(screen)
+                case ScreenType.RESULTS:
+                    if screen.results_tournament_ids == [self.id]:
                         dependent_screens.append(screen)
                 case ScreenType.IMAGE:
                     pass
@@ -654,6 +653,33 @@ class Tournament:
                     raise ValueError(f'{screen.type=}')
 
         return dependent_screens
+
+    @property
+    def related_screens(self) -> list[Screen]:
+        related_screens = []
+        for screen in self.event.basic_screens_by_id.values():
+            match screen.type:
+                case (
+                    ScreenType.INPUT
+                    | ScreenType.BOARDS
+                    | ScreenType.PLAYERS
+                    | ScreenType.RANKING
+                ):
+                    for screen_set in screen.screen_sets_sorted_by_order:
+                        if screen_set.tournament.id == self.id:
+                            related_screens.append(screen)
+                case ScreenType.RESULTS:
+                    if (
+                        not screen.results_tournament_ids
+                        or self.id in screen.results_tournament_ids
+                    ):
+                        related_screens.append(screen)
+                case ScreenType.IMAGE:
+                    pass
+                case _:
+                    raise ValueError(f'{screen.type=}')
+
+        return related_screens
 
     @cached_property
     def print_real_points(self) -> bool:
@@ -759,7 +785,7 @@ class Tournament:
                 del self.__dict__[property_name]
         self._players_by_rank = None
         self._boards = None
-        for screen in self.dependent_screens:
+        for screen in self.related_screens:
             screen.clear_cache_for_tournament(self.id)
         for family in self.dependent_families:
             family.clear_cache()
