@@ -1277,10 +1277,9 @@ class PlayerAdminController(BaseEventAdminController):
                     Message.error(
                         request,
                         _(
-                            'Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}].'
+                            'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
                         ).format(
-                            last_name=player.last_name,
-                            first_name=player.first_name,
+                            player=player.full_name,
                             tournament_uniq_id=tournament.uniq_id,
                         ),
                     )
@@ -1358,12 +1357,11 @@ class PlayerAdminController(BaseEventAdminController):
             Message.success(
                 request,
                 _(
-                    'Player [{first_name} {last_name}] has been moved '
+                    'Player [{player}] has been moved '
                     'from tournament [{src_tournament_uniq_id}] '
                     'to tournament [{dst_tournament_uniq_id}].'
                 ).format(
-                    last_name=admin_player.last_name,
-                    first_name=admin_player.first_name,
+                    player=admin_player.full_name,
                     src_tournament_uniq_id=src_tournament.uniq_id,
                     dst_tournament_uniq_id=dst_tournament.uniq_id,
                 ),
@@ -1388,10 +1386,9 @@ class PlayerAdminController(BaseEventAdminController):
         if player.has_real_pairings:
             raise ValueError(
                 _(
-                    'Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
                 ).format(
-                    last_name=player.last_name,
-                    first_name=player.first_name,
+                    player=player.full_name,
                     tournament_uniq_id=src_tournament.uniq_id,
                 ),
             )

@@ -29,7 +29,7 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr ""
 
 #, python-format
-msgid "%(first_name)s %(last_name)s - Round %(num)s"
+msgid "%(player)s - Round %(num)s"
 msgstr ""
 
 #, python-format
@@ -1189,7 +1189,7 @@ msgid "Deletion of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Deletion of player [%(first_name)s %(last_name)s]"
+msgid "Deletion of player [%(player)s]"
 msgstr ""
 
 #, python-format
@@ -1593,7 +1593,7 @@ msgid "Editing of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of player [%(first_name)s %(last_name)s]"
+msgid "Editing of player [%(player)s]"
 msgstr ""
 
 #, python-format
@@ -3240,17 +3240,17 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 #, python-format
 msgid "Player [%(player)s] has been created."
 msgstr ""
 
-msgid "Player [{first_name} {last_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr ""
 
-msgid "Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgid "Player [{player}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Player creation"

@@ -7,7 +7,7 @@
     <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog modal-dialog-centered pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('%(first_name)s %(last_name)s - Round %(num)s', first_name=player.first_name, last_name=player.last_name, num=admin_round) }}</div>
+                <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=player.full_name, num=admin_round) }}</div>
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-column align-items-center justify-content-center gap-4">
