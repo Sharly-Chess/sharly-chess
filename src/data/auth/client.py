@@ -394,7 +394,10 @@ class Client:
                 Role.ORGANIZER,
             ),
             Role.DEPUTY_CHIEF_ARBITER: self._has_event_role(
-                Role.CHIEF_ARBITER,
+                [
+                    Role.ORGANIZER,
+                    Role.CHIEF_ARBITER,
+                ],
             ),
             Role.PAIRINGS_OFFICER: self._has_event_role(
                 Role.DEPUTY_CHIEF_ARBITER,
