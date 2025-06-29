@@ -220,6 +220,7 @@ class BaseEventAdminController(BaseAdminController):
                     'title': _('Results entry ({num})').format(num=len(screens) or '-'),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
+                    'icon_class': ScreenType.INPUT.icon_str,
                 },
             }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
@@ -230,6 +231,7 @@ class BaseEventAdminController(BaseAdminController):
                     ),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
+                    'icon_class': ScreenType.BOARDS.icon_str,
                 },
             }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]
@@ -240,6 +242,7 @@ class BaseEventAdminController(BaseAdminController):
                     ),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
+                    'icon_class': ScreenType.PLAYERS.icon_str,
                 },
             }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RESULTS]
@@ -248,6 +251,7 @@ class BaseEventAdminController(BaseAdminController):
                     'title': _('Last results ({num})').format(num=len(screens) or '-'),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
+                    'icon_class': ScreenType.RESULTS.icon_str,
                 },
             }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RANKING]
@@ -256,6 +260,7 @@ class BaseEventAdminController(BaseAdminController):
                     'title': _('Ranking ({num})').format(num=len(screens) or '-'),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
+                    'icon_class': ScreenType.RANKING.icon_str,
                 },
             }
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.IMAGE]
@@ -264,6 +269,7 @@ class BaseEventAdminController(BaseAdminController):
                     'title': _('Image ({num})').format(num=len(screens) or '-'),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
+                    'icon_class': ScreenType.IMAGE.icon_str,
                 },
             }
             nav_tabs |= {
@@ -271,6 +277,7 @@ class BaseEventAdminController(BaseAdminController):
                     'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
                     'template': 'rotators/tab.html',
                     'disabled': not rotators,
+                    'icon_class': 'bi-repeat',
                 },
             }
             nav_tabs |= {
@@ -280,6 +287,7 @@ class BaseEventAdminController(BaseAdminController):
                     ),
                     'template': 'display_controllers/tab.html',
                     'disabled': not display_controllers,
+                    'icon_class': 'bi-box-arrow-in-right',
                 },
             }
         if (
