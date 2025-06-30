@@ -22,6 +22,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.entities import Computer, Account
+from data.auth.mode import Mode
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -201,6 +202,12 @@ class Event:
         if plugin := plugin_manager.hook.get_default_prize_currency():
             return plugin
         return SharlyChessConfig.default_prize_currency
+
+    @property
+    def mode(self) -> Mode:
+        if self.stored_event.mode is not None:
+            return Mode(self.stored_event.mode)
+        return SharlyChessConfig.mode
 
     @property
     def formatted_start_date_time(self) -> str:

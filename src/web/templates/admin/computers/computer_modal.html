@@ -34,7 +34,7 @@
             >
                 {% if action == 'delete' %}
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of an computer is permanent!') }}
+                        {{ _('Warning: the deletion of a computer is permanent!') }}
                     </h4>
                 {% else %}
                     {% if action in ['create', 'clone', ] or (admin_computer.edit_properties and client.can_manage_computer_by_computer_id[admin_computer.id]) %}

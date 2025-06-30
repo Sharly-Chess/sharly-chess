@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.mode import Mode
 from data.auth.roles import Role
 
 
@@ -312,6 +313,7 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
+    mode: int = Mode.STAND_ALONE.value
     last_update: float = 0.0
 
     # Plugins can add their own tournament data

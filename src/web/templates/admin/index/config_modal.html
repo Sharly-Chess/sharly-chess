@@ -17,13 +17,19 @@
                 hx-indicator="#please-wait"
             >
                 {% if sharly_chess_config.force_edit %}
-                    <h4>
+                    <h4 class="text-warning">
                         {{ _('Please validate the global configuration of the application.') }}
                     </h4>
                 {% endif %}
+                {% with
+                    title=_('Default execution mode for new events'),
+                    text=_('The mode below is used by default when creating new events (it can be changed at any time).'),
+                    name='default_mode'
+                %}
+                    {% include '../common/modal/mode.html' %}
+                {% endwith %}
                 <h4>
                     {{ _('General') }}
-
                 </h4>
                 <div class="d-flex flex-column gap-2">
                     {{ admin_macros.switch_input(

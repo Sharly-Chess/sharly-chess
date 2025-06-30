@@ -16,6 +16,7 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.mode import Mode
 from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
@@ -38,6 +39,9 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredComputer,
     StoredAccount,
+    LOCALHOST_ID,
+    ANY_COMPUTER_ID,
+    ANONYMOUS_ID,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -219,6 +223,7 @@ class EventDatabase(MigrationDatabase):
                         'rotators',
                         'timer_colors',
                         'timer_delays',
+                        'mode',
                     ],
                     empty_allowed=False,
                 )
@@ -293,6 +298,7 @@ class EventDatabase(MigrationDatabase):
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
+                        mode=event_dict.get('mode', SharlyChessConfig().default_mode),
                     )
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
@@ -968,6 +974,7 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
+            mode=row['mode'],
             last_update=row['last_update'],
         )
         plugin_manager.hook.augment_event_after_db_fetch(
@@ -1005,9 +1012,13 @@ class EventDatabase(MigrationDatabase):
         metadata.last_tournament_update = self.get_all_tournaments_last_update()
         return metadata
 
-    def update_stored_event(self, stored_event: StoredEvent):
+    def update_stored_event(
+        self,
+        stored_event: StoredEvent,
+        reset_permissions: bool = False,
+    ):
         """Updates the event database with the information in the provided
-        `stored_event`."""
+        `stored_event` and reset the permissions if wanted."""
 
         per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(
             stored_event=stored_event
@@ -1037,6 +1048,7 @@ class EventDatabase(MigrationDatabase):
                     'message_color',
                     'message_background_color',
                     'prize_currency',
+                    'mode',
                 ],
             )
             | {
@@ -1055,6 +1067,43 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
+
+        if reset_permissions:
+            mode: Mode = Mode(stored_event.mode)
+            # delete all the computers but the predefined ones
+            self.execute(
+                'DELETE FROM `computer` WHERE `id` NOT IN (?, ?)',
+                (
+                    LOCALHOST_ID,
+                    ANY_COMPUTER_ID,
+                ),
+            )
+            # Set the permissions that correspond to the mode
+            active, roles = mode.unknown_computer_reset_roles
+            self.execute(
+                'UPDATE `computer` SET `active` = ?, `permissions` = ? WHERE id = ?',
+                (
+                    active,
+                    self.dump_to_json_database_permissions(
+                        {role.value: None for role in roles}
+                    ),
+                    ANY_COMPUTER_ID,
+                ),
+            )
+            # Delete all the accounts but the predefined ones
+            self.execute('DELETE FROM `account` WHERE `id` <> ?', (ANONYMOUS_ID,))
+            # Set the permissions that correspond to the mode
+            active, roles = mode.anonymous_account_reset_roles
+            self.execute(
+                'UPDATE `account` SET `active` = ?, `permissions` = ? WHERE id = ?',
+                (
+                    active,
+                    self.dump_to_json_database_permissions(
+                        {role.value: None for role in roles}
+                    ),
+                    ANONYMOUS_ID,
+                ),
+            )
 
     # ---------------------------------------------------------------------------------
     # StoredTimerHour
@@ -2959,6 +3008,7 @@ class EventDatabase(MigrationDatabase):
             stored_computer.ip,
             self.dump_to_json_database_permissions(stored_computer.permissions),
         ]
+        fetched_stored_computer: StoredComputer | None
         if stored_computer.id is None:
             protected_fields: list[str] = [f'`{f}`' for f in fields]
             self.execute(
@@ -2968,9 +3018,7 @@ class EventDatabase(MigrationDatabase):
             computer_id: int | None = self._last_inserted_id()
             if computer_id is None:
                 raise RuntimeError('Computer insertion failed')
-            fetched_stored_computer: StoredComputer = self.get_stored_computer(
-                computer_id=computer_id
-            )
+            fetched_stored_computer = self.get_stored_computer(computer_id=computer_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_computer.id]
@@ -2978,7 +3026,7 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `computer` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_computer: StoredComputer = self.get_stored_computer(
+            fetched_stored_computer = self.get_stored_computer(
                 computer_id=stored_computer.id
             )
         if fetched_stored_computer is None:
@@ -3001,7 +3049,7 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_computer(stored_computer)
 
     def delete_stored_computer(self, computer_id: int):
-        self.execute('DELETE FROM `computer` WHERE `id` = ?;', (computer_id,))
+        self.execute('DELETE FROM `computer` WHERE `id` = ?', (computer_id,))
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------
@@ -3056,18 +3104,17 @@ class EventDatabase(MigrationDatabase):
             stored_account.password,
             self.dump_to_json_database_permissions(stored_account.permissions),
         ]
+        fetched_stored_account: StoredAccount | None
         if stored_account.id is None:
             protected_fields: list[str] = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `account`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            account_id: int = self._last_inserted_id()
+            account_id: int | None = self._last_inserted_id()
             if account_id is None:
                 raise RuntimeError('Account insertion failed')
-            fetched_stored_account: StoredAccount = self.get_stored_account(
-                account_id=account_id
-            )
+            fetched_stored_account = self.get_stored_account(account_id=account_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
             params += [stored_account.id]
@@ -3075,7 +3122,7 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `account` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_account: StoredAccount = self.get_stored_account(
+            fetched_stored_account = self.get_stored_account(
                 account_id=stored_account.id
             )
         if fetched_stored_account is None:

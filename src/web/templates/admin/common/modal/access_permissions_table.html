@@ -20,7 +20,7 @@
         </thead>
         <tbody id="{{ table_id }}-body">
             {% for role in roles %}
-                {% set manage=client.role_management[role] %}
+                {% set manage=admin_event.mode.custom and client.role_management[role] %}
                 <tr>
                     <th scope="row" class="text-nowrap text-start {% if not manage %}text-secondary{% endif %}">
                         <span
@@ -32,7 +32,9 @@
                     <td class="text-nowrap text-center {% if not manage %}text-secondary{% endif %}">
                         {% set name='role_' ~ role.value %}
                         <span
-                            {% if not manage %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not manage %}
                                 {{ macros.tooltip_attributes('info', _('You are not allowed to grant/revoke this permission.'), 'top') }}
                             {% endif %}
                         >

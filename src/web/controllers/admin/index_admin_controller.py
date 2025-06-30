@@ -6,6 +6,7 @@ from typing import Annotated, Any
 from common import format_timestamp_date, format_timestamp_time
 from common.logger import get_logging_config, get_logger
 from common.network import NetworkMonitor
+from data.auth.mode import Mode
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
@@ -101,6 +102,9 @@ class IndexAdminController(BaseAdminController):
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
+        default_mode: int = (
+            WebContext.form_data_to_int(data, 'default_mode') or Mode.STAND_ALONE.value
+        )
         return StoredConfig(
             force_edit=False,
             console_log_level=console_log_level,
@@ -111,6 +115,7 @@ class IndexAdminController(BaseAdminController):
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
+            default_mode=default_mode,
             errors=errors,
         )
 
@@ -315,6 +320,9 @@ class IndexAdminController(BaseAdminController):
                         'locale': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.locale
                         ),
+                        'default_mode': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.default_mode
+                        ),
                     }
                     for plugin in plugin_manager.all_plugins:
                         data[plugin.form_key] = WebContext.value_to_form_data(
@@ -508,7 +516,7 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str = stored_event.uniq_id
         EventDatabase(uniq_id).create()
         with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event)
+            event_database.update_stored_event(stored_event, reset_permissions=False)
             event_database.commit()
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)

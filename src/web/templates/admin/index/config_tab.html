@@ -46,7 +46,7 @@
     </div>
 </div>
 
-{% if client.can_update_application_settings %}
+{% if client.can_view_application_settings %}
     <table class="table table-sm table-hover w-auto bg-light mx-auto justify-content-center">
         <thead
             class="table-dark"
@@ -60,6 +60,16 @@
             <tr class="{{ row_cycler(True) }}">
                 <th scope="row" class="text-nowrap">{{ _('Port') }}</th>
                 <td>{{ sharly_chess_config.web_port }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="text-nowrap">{{ _('Default execution mode for new events') }}</th>
+                <td>
+                    <span
+                        {{ macros.tooltip_attributes('info', sharly_chess_config.default_mode.help, 'top') }}
+                    >
+                        {{ sharly_chess_config.default_mode.long_text }}
+                    </span>
+                </td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('Access from the Sharly Chess server') }}</th>

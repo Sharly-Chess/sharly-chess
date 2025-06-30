@@ -1143,6 +1143,9 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
+msgid "Customize the permissions (advanced feature)"
+msgstr "Personnaliser les permissions (fonctionnalité avancée)"
+
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
@@ -1207,6 +1210,9 @@ msgstr "Répertoire par défaut des fichiers Papi"
 msgid "Default directory of the Papi files:"
 msgstr "Répertoire par défaut des fichiers Papi :"
 
+msgid "Default execution mode for new events"
+msgstr "Mode d'exécution par défaut pour les nouveaux évènements"
+
 msgid "Default federation"
 msgstr "Fédération par défaut"
 
@@ -1246,9 +1252,6 @@ msgstr "Supprimer le compte."
 
 msgid "Delete the category."
 msgstr "Supprimer la catégorie."
-
-msgid "Delete the computer."
-msgstr "Supprimer l'ordinateur."
 
 msgid "Delete the display controller."
 msgstr "Supprimer le pilote d'afficheurs."
@@ -1887,6 +1890,9 @@ msgstr "Évènement : {event_name}"
 
 msgid "Events"
 msgstr "Évènements"
+
+msgid "Execution mode"
+msgstr "Mode d'exécution"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -2534,9 +2540,6 @@ msgstr "Koya"
 
 msgid "Koya system"
 msgstr "Système Koya"
-
-msgid "Language"
-msgstr "Langue"
 
 msgid "Language:"
 msgstr "Langue :"
@@ -3191,6 +3194,18 @@ msgstr "Organisation"
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
 
+msgid "Other devices connected to your network can display screens (pairings, results, rankings...), they are not allowed to do anything else."
+msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans (appariements, résultats, classements...), ils ne peuvent rien faire d'autre."
+
+msgid "Other devices connected to your network can display screens and check-in players."
+msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans et pointer les joueur·euses."
+
+msgid "Other devices connected to your network can display screens and enter results."
+msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans et entrer les résultats."
+
+msgid "Other devices connected to your network can display screens, check-in players and enter results."
+msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans, pointer les joueur·euses et entrer les résultats."
+
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
 
@@ -3384,6 +3399,9 @@ msgstr "Indicateurs de performance pour la ronde n°{round}"
 
 msgid "Permissions"
 msgstr "Permissions"
+
+msgid "Permissions can not be customized in the current execution mode."
+msgstr "Les permissions ne peuvent pas être personnalisées dans le mode d'exécution en cours."
 
 msgid "Personal"
 msgstr "Personnel"
@@ -3588,6 +3606,9 @@ msgstr "Veuillez entrer une date et une heure valides."
 
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
+
+msgid "Please select the execution mode for the event."
+msgstr "Veuillez sélectionner le mode d'exécution pour cet évènement."
 
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
@@ -4290,6 +4311,9 @@ msgstr "Source"
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
 
+msgid "Specify below the mode used to run the event (read carefully to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!)."
+msgstr "Indiquez  ci-dessous le mode utilisé pour exécuter l'événement (lisez attentivement pour comprendre ce qu'implique chaque mode, et ne soyez pas timide pour profiter de toute la puissance de Sharly Chess !)."
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
@@ -4550,6 +4574,9 @@ msgstr "La temps minimal, quelle que soit la différence de classement entre les
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
+
+msgid "The mode below is used by default when creating new events (it can be changed at any time)."
+msgstr "Le mode ci-dessous est utilisé par défaut à la création de nouveaux évènements (il peut être modifié à n'importe quel moment)."
 
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
@@ -5387,6 +5414,24 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
+msgid "Use Sharly Chess as a stand-alone application"
+msgstr "Utiliser Sharly Chess comme une application autonome"
+
+msgid "Use connected devices to display screens"
+msgstr "Utiliser des appareils connectés pour afficher des écrans"
+
+msgid "Use connected devices to display screens and check-in players"
+msgstr "Utiliser des appareils connectés pour afficher des écrans et pointer les joueur·euses"
+
+msgid "Use connected devices to display screens and enter results"
+msgstr "Utiliser des appareils connectés pour afficher des écrans et entrer des résultats"
+
+msgid "Use connected devices to display screens, check-in players and enter results"
+msgstr "Utiliser des appareils connectés pour afficher des écrans, pointer les joueur·euses et entrer des résultats"
+
+msgid "Use connected devices to…"
+msgstr "Utiliser des appareils connectés pour…"
+
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
@@ -5457,6 +5502,9 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
+msgid "Warning: the deletion of a computer is permanent!"
+msgstr "Attention : la suppression d'un ordinateur est définitive !"
+
 msgid "Warning: the deletion of a display controller is permanent!"
 msgstr "Attention : la suppression d'un pilote d'afficheurs est définitive !"
 
@@ -5480,9 +5528,6 @@ msgstr "Attention : la suppression d'un tournoi est définitive !"
 
 msgid "Warning: the deletion of an account is permanent!"
 msgstr "Attention : la suppression d'un compte est définitive !"
-
-msgid "Warning: the deletion of an computer is permanent!"
-msgstr "Attention : la suppression d'un ordinateur est définitive !"
 
 msgid "Warning: the deletion of an event is permanent!"
 msgstr "Attention : la suppression d'un évènement est définitive !"
@@ -5686,6 +5731,9 @@ msgstr "Vous n'êtes pas autorisé·e à modifier cet ordinateur."
 msgid "You are on the Sharly Chess server."
 msgstr "Vous êtes sur le serveur Sharly Chess."
 
+msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!)."
+msgstr "Vous êtes la seule personne à gérer votre évènement, sur le serveur Sharly Chess; les autres appareils ne sont pas autorisés à se connecter à votre ordinateur (en particulier, vous devrez partager un affichage aux utilisateur·ices pour montrer les appariements, les résultats, les classements... ou les imprimer !)."
+
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."
 
@@ -5697,6 +5745,9 @@ msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette c
 
 msgid "You can temporarily invalidate computers by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les ordinateurs en décochant cette case."
+
+msgid "You decide which computers and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers..."
+msgstr "Vous décidez les ordinateurs et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes... Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans..."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
@@ -5942,75 +5993,15 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
-#~ msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
+msgid "…display screens"
+msgstr "…afficher des écrans"
 
-#~ msgid "Access to the arbiter interface is not allowed from this client."
-#~ msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
+msgid "…display screens and check-in players"
+msgstr "…afficher des écrans et pointer les joueur·euses"
 
-#~ msgid "Arbiter interface"
-#~ msgstr "Arbitrage"
+msgid "…display screens and enter results"
+msgstr "…afficher des écrans et entrer des résultats"
 
-#~ msgid "Click here to access the screens that you have created."
-#~ msgstr "Cliquez ici pour accéder aux écrans que vous avez créés."
-
-#~ msgid "Connect your devices to the Sharly Chess server:"
-#~ msgstr "Connectez vos appareils au serveur Sharly Chess :"
-
-#~ msgid "Current events ({num})"
-#~ msgstr "Évènements en cours ({num})"
-
-#~ msgid "Go back to the events page."
-#~ msgstr "Revenir à la page des évènements."
-
-#~ msgid "Go back to the home page."
-#~ msgstr "Revenir à la page d'accueil."
-
-#~ msgid "Image:"
-#~ msgstr "Image :"
-
-#~ msgid "Maximum number of results: %(num)d"
-#~ msgstr "Nombre maximum de résultats : %(num)d"
-
-#~ msgid "Maximum number of results: unlimited"
-#~ msgstr "Nombre maximum de résultats : illimité"
-
-#~ msgid "Menu label:"
-#~ msgstr "Étiquette de menu :"
-
-#~ msgid "Menu:"
-#~ msgstr "Menu :"
-
-#~ msgid "No display controllers."
-#~ msgstr "Aucun pilote d'afficheurs."
-
-#~ msgid "No rotators."
-#~ msgstr "Aucun écran rotatif."
-
-#~ msgid "No screen nor family to rotate."
-#~ msgstr "Aucun écran ni famille à afficher."
-
-#~ msgid "Pairings by boards number ({num})"
-#~ msgstr "Appariements par échiquier ({num})"
-
-#~ msgid "Passed events ({num})"
-#~ msgstr "Évènements passés ({num})"
-
-#~ msgid "QR code"
-#~ msgstr "code QR"
-
-#~ msgid "The arbiter interface allows the management of the events."
-#~ msgstr "L'interface d'arbitrage permet la gestion des évènements."
-
-#~ msgid "Unpaired players: displayed"
-#~ msgstr "Joueur·euses non apparié·es : affiché·es"
-
-#~ msgid "Unpaired players: hidden"
-#~ msgstr "Joueur·euses non apparié·es : caché·es"
-
-#~ msgid "Upcoming events ({num})"
-#~ msgstr "Évènements à venir ({num})"
-
-#~ msgid "Your Screens"
-#~ msgstr "Vos écrans"
+msgid "…display screens, check-in players and enter results"
+msgstr "…afficher des écrans, pointer les joueur·euses et entrer des résultats"
 

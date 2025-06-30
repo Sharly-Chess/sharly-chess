@@ -174,6 +174,7 @@ select_options: a dict[str, str], keys are the select values and values are the 
 number_min: the minimum value for numbers
 number_max: the maximum value for numbers
 number_step: the step value for numbers
+radio_value: the value of radio buttons
 disabled: if set to true, the field will be disabled
 hx_get: the hx-get attribute of the input, optional
 hx_target: the hx-target attribute of the input, optional
@@ -205,6 +206,7 @@ with_indicator: display a loading indicator, optional
     number_min='',
     number_max='',
     number_step='',
+    radio_value='',
     info='',
     disabled=false,
     hx_get='',
@@ -314,6 +316,20 @@ with_indicator: display a loading indicator, optional
                         value="on"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[name] == 'on' %}checked{% endif %}
+                        {% if disabled %}
+                            disabled
+                        {% endif %}
+                    />
+                    {{ placeholder }}
+                {% elif input_type == 'radio' %}
+                    <input
+                        id="{{ id }}"
+                        name="{{ name }}"
+                        type="radio"
+                        class="form-check-input"
+                        value="{{ radio_value }}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        {% if data[name] == radio_value %}checked{% endif %}
                         {% if disabled %}
                             disabled
                         {% endif %}
@@ -682,7 +698,8 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     placeholder='NO PLACEHOLDER',
     help_text='NO HELP TEXT',
-    info='',    data={},
+    info='',
+    data={},
     errors={},
     error=false,
     disabled=false
@@ -698,6 +715,33 @@ with_indicator: display a loading indicator, optional
         errors=errors,
         error=error,
         disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro radio_input(
+    name,
+    label='NO LABEL',
+    placeholder='NO PLACEHOLDER',
+    help_text='NO HELP TEXT',
+    info='',
+    data={},
+    errors={},
+    error=false,
+    disabled=false,
+    value=''
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='radio',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        info=info,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+        radio_value=value,
     ) }}
 {% endmacro %}
 

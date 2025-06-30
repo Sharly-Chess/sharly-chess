@@ -25,6 +25,7 @@ from common.i18n import (
 )
 from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
+from data.auth.mode import Mode
 from data.player import Federation
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
@@ -75,7 +76,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return DEFAULT_LOCALE
 
     @staticmethod
-    def _get_locale_federation(system_user_locale: str) -> str:
+    def _get_locale_federation(system_user_locale: str | None) -> str:
         if system_user_locale is not None:
             country_code = system_user_locale.split('_')[-1].upper()
             country = pycountry.countries.get(alpha_2=country_code)
@@ -150,6 +151,10 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
+
+    @property
+    def default_mode(self) -> Mode:
+        return Mode(self.stored_config.default_mode)
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

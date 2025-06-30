@@ -1,3 +1,4 @@
+from data.auth.mode import Mode
 from database.sqlite.event.event_store import (
     anonymous_stored_account,
     localhost_stored_computer,
@@ -9,7 +10,6 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 
 class Migration(BaseMigration):
     def forward(self):
-        self.backward()
         self.database.execute(
             'CREATE TABLE `computer` ('
             '    `id` INTEGER NOT NULL,'
@@ -67,7 +67,11 @@ class Migration(BaseMigration):
                     ),
                 ),
             )
+        self.database.execute(
+            f'ALTER TABLE `info` ADD `mode` INTEGER NOT NULL DEFAULT {Mode.STAND_ALONE.value}',
+        )
 
     def backward(self):
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `mode`')
         self.database.execute('DROP TABLE IF EXISTS `account`')
         self.database.execute('DROP TABLE IF EXISTS `computer`')

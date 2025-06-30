@@ -7,17 +7,18 @@
 > [!NOTE]
 > :information_source: Table `info` contains only one line.
 
-| Field                | Type      | Constraint | Description                                                                                                                  |
-|----------------------|-----------|------------|------------------------------------------------------------------------------------------------------------------------------|
-| `force_edit`         | `INTEGER` | NOT NULL   | Boolean:<br/>- `1`: Editing the configuration is mandatory;<br/>- `0`: Editing the configuration is possible but optional    |
-| `console_log_level`  | `INTEGER` |            | The console logging level                                                                                                    |
-| `console_color`      | `INTEGER` |            | Boolean:<br/>- `1`: Use colors on the console (default);<br/>- `0`: Do not use colors on the console                         |
-| `console_show_date`  | `INTEGER` |            | Boolean:<br/>- `1`: Show the date and time on the console;<br/>- `0`: Do not show the date and time on the console (default) |
-| `console_show_level` | `INTEGER` |            | Boolean:<br/>- `1`: Show the logging level on the console;<br/>- `0`: Do not show the logging level on the console (default) |
-| `launch_browser`     | `INTEGER` |            | Boolean:<br/>- `1`: A browser is automatically opened (default);<br/>- `0`: No browser is opened                             |
-| `federation`         | `TEXT`    |            | The default federation code for events                                                                                       |
-| `locale`             | `TEXT`    |            | The default language used for users                                                                                          |
-| `experimental`       | `INTEGER` |            | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
+| Field                | Type      | Constraint           | Description                                                                                                                  |
+|----------------------|-----------|----------------------|------------------------------------------------------------------------------------------------------------------------------|
+| `force_edit`         | `INTEGER` | NOT NULL             | Boolean:<br/>- `1`: Editing the configuration is mandatory;<br/>- `0`: Editing the configuration is possible but optional    |
+| `console_log_level`  | `INTEGER` |                      | The console logging level                                                                                                    |
+| `console_color`      | `INTEGER` |                      | Boolean:<br/>- `1`: Use colors on the console (default);<br/>- `0`: Do not use colors on the console                         |
+| `console_show_date`  | `INTEGER` |                      | Boolean:<br/>- `1`: Show the date and time on the console;<br/>- `0`: Do not show the date and time on the console (default) |
+| `console_show_level` | `INTEGER` |                      | Boolean:<br/>- `1`: Show the logging level on the console;<br/>- `0`: Do not show the logging level on the console (default) |
+| `launch_browser`     | `INTEGER` |                      | Boolean:<br/>- `1`: A browser is automatically opened (default);<br/>- `0`: No browser is opened                             |
+| `federation`         | `TEXT`    |                      | The default federation code for events                                                                                       |
+| `locale`             | `TEXT`    |                      | The default language used for users                                                                                          |
+| `experimental`       | `INTEGER` |                      | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
+| `default_mode`       | `INTEGER` | NOT NULL DEFAULT `0` | An integer that indicates the mode used by default for new events (see class `Mode`)                                         |
 
 ### `local_source_database` (local player databases)
 
@@ -76,6 +77,7 @@
 | `chessevent_user_id`       | `TEXT`    |                           | chessevent | The default login ID for the _ChessEvent_ platform                                                                                                                                                                       |
 | `chessevent_password`      | `TEXT`    |                           | chessevent | The default password for the _ChessEvent_ platform                                                                                                                                                                       |
 | `chessevent_event_id`      | `TEXT`    |                           | chessevent | The default login ID for the _ChessEvent_ event on the platform                                                                                                                                                          |
+| `mode`                     | `INTEGER` |                           |            | An integer that indicates the mode used to run the event (see class `Mode`)                                                                                                                                              |
 
 ### `metadata` (event metadata)
 

@@ -7,16 +7,24 @@
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% if client.can_manage_accounts %}
                 <span
-                    {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
+                    {% if not admin_event.mode.custom %}
+                        {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
+                    {% endif %}
                 >
                     <button
                         class="btn btn-primary text-nowrap ms-1"
-                        hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        {% if admin_event.mode.custom %}
+                            hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        {% else %}
+                            disabled
+                        {% endif %}
                     >
                         <i class="bi-plus-square-fill pe-1"></i>
                         {{ _('Create an account') }}
@@ -80,16 +88,18 @@
                         {% set client_can_manage_account=client.can_manage_account_by_account_id[account.id] %}
                         {% set account_can_be_updated=account.edit_properties or account.edit_permissions %}
                         <span
-                                {% if not account_can_be_updated %}
-                                    {{ macros.tooltip_attributes('warning', _('This account can not be updated.'), 'top') }}
-                                {% elif not client_can_manage_account %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to update this account.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the account.'), 'top') }}
-                                {% endif %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not account_can_be_updated %}
+                                {{ macros.tooltip_attributes('warning', _('This account can not be updated.'), 'top') }}
+                            {% elif not client_can_manage_account %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to update this account.'), 'top') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the account.'), 'top') }}
+                            {% endif %}
                         >
                             <button
-                                {% if account_can_be_updated and client_can_manage_account %}
+                                {% if admin_event.mode.custom and account_can_be_updated and client_can_manage_account %}
                                     class="btn btn-sm btn-outline-primary"
                                     hx-get="{{ url_for('admin-account-modal', action='update', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                     hx-target="body"
@@ -106,16 +116,18 @@
                         </span>
                         {% set account_can_be_cloned=account.edit_properties %}
                         <span
-                                {% if not account_can_be_cloned %}
-                                    {{ macros.tooltip_attributes('warning', _('This account can not be duplicated.'), 'top') }}
-                                {% elif not client_can_manage_account %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this account.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Duplicate the account.'), 'top') }}
-                                {% endif %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not account_can_be_cloned %}
+                                {{ macros.tooltip_attributes('warning', _('This account can not be duplicated.'), 'top') }}
+                            {% elif not client_can_manage_account %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this account.'), 'top') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Duplicate the account.'), 'top') }}
+                            {% endif %}
                         >
                             <button
-                                {% if account_can_be_cloned and client_can_manage_account %}
+                                {% if admin_event.mode.custom and account_can_be_cloned and client_can_manage_account %}
                                     class="btn btn-sm btn-outline-primary"
                                     hx-get="{{ url_for('admin-account-modal', action='clone', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                     hx-target="body"
@@ -132,16 +144,18 @@
                         </span>
                         {% set account_can_be_deleted=account.edit_properties %}
                         <span
-                                {% if not account_can_be_deleted %}
-                                    {{ macros.tooltip_attributes('warning', _('This account can not be deleted.'), 'top') }}
-                                {% elif not client_can_manage_account %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this account.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Delete the account.'), 'top') }}
-                                {% endif %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not account_can_be_deleted %}
+                                {{ macros.tooltip_attributes('warning', _('This account can not be deleted.'), 'top') }}
+                            {% elif not client_can_manage_account %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this account.'), 'top') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Delete the account.'), 'top') }}
+                            {% endif %}
                         >
                             <button
-                                {% if account_can_be_cloned and client_can_manage_account %}
+                                {% if admin_event.mode.custom and account_can_be_cloned and client_can_manage_account %}
                                     class="btn btn-sm btn-outline-danger"
                                     hx-get="{{ url_for('admin-account-modal', action='delete', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                     hx-target="body"

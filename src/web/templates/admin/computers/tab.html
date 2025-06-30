@@ -7,16 +7,24 @@
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% if client.can_manage_computers %}
                 <span
-                    {{ macros.tooltip_attributes('info', _('Add a computer to the event.'), 'top') }}
+                    {% if not admin_event.mode.custom %}
+                        {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Add a computer to the event.'), 'top') }}
+                    {% endif %}
                 >
                     <button
                         class="btn btn-primary text-nowrap ms-1"
-                        hx-get="{{ url_for('admin-computer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        preload
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        {% if admin_event.mode.custom %}
+                            hx-get="{{ url_for('admin-computer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            preload
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        {% else %}
+                            disabled
+                        {% endif %}
                     >
                         <i class="bi-plus-square-fill pe-1"></i>
                         {{ _('Create a computer') }}
@@ -76,16 +84,18 @@
                         {% set client_can_manage_computer=client.can_manage_computer_by_computer_id[computer.id] %}
                         {% set computer_can_be_updated=computer.edit_properties or computer.edit_permissions %}
                         <span
-                                {% if not computer_can_be_updated %}
-                                    {{ macros.tooltip_attributes('warning', _('This computer can not be updated.'), 'top') }}
-                                {% elif not client_can_manage_computer %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to update this computer.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the computer.'), 'top') }}
-                                {% endif %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not computer_can_be_updated %}
+                                {{ macros.tooltip_attributes('warning', _('This computer can not be updated.'), 'top') }}
+                            {% elif not client_can_manage_computer %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to update this computer.'), 'top') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the computer.'), 'top') }}
+                            {% endif %}
                         >
                             <button
-                                {% if computer_can_be_updated and client_can_manage_computer %}
+                                {% if admin_event.mode.custom and computer_can_be_updated and client_can_manage_computer %}
                                     class="btn btn-sm btn-outline-primary"
                                     hx-get="{{ url_for('admin-computer-modal', action='update', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
                                     hx-target="body"
@@ -102,16 +112,18 @@
                         </span>
                         {% set computer_can_be_cloned=computer.edit_properties %}
                         <span
-                                {% if not computer_can_be_cloned %}
-                                    {{ macros.tooltip_attributes('warning', _('This computer can not be duplicated.'), 'top') }}
-                                {% elif not client_can_manage_computer %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this computer.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Duplicate the computer.'), 'top') }}
-                                {% endif %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not computer_can_be_cloned %}
+                                {{ macros.tooltip_attributes('warning', _('This computer can not be duplicated.'), 'top') }}
+                            {% elif not client_can_manage_computer %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this computer.'), 'top') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Duplicate the computer.'), 'top') }}
+                            {% endif %}
                         >
                             <button
-                                {% if computer_can_be_cloned and client_can_manage_computer %}
+                                {% if admin_event.mode.custom and computer_can_be_cloned and client_can_manage_computer %}
                                     class="btn btn-sm btn-outline-primary"
                                     hx-get="{{ url_for('admin-computer-modal', action='clone', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
                                     hx-target="body"
@@ -128,25 +140,18 @@
                         </span>
                         {% set computer_can_be_deleted=computer.edit_properties %}
                         <span
-                                {% if not computer_can_be_deleted %}
-                                    {{ macros.tooltip_attributes('warning', _('This computer can not be deleted.'), 'top') }}
-                                {% elif not client_can_manage_computer %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this computer.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('info', _('Delete the Computer.'), 'top') }}
-                                {% endif %}
-                        >
-                        <span
-                                {% if computer.edit_properties %}
-                                    {{ macros.tooltip_attributes('info', _('Delete the computer.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('warning', _('This computer can not be deleted.'), 'top') }}
-                                {% endif %}
+                            {% if not admin_event.mode.custom %}
+                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
+                            {% elif not computer_can_be_deleted %}
+                                {{ macros.tooltip_attributes('warning', _('This computer can not be deleted.'), 'top') }}
+                            {% elif not client_can_manage_computer %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this computer.'), 'top') }}
+                            {% else %}
+                                {{ macros.tooltip_attributes('info', _('Delete the Computer.'), 'top') }}
+                            {% endif %}
                         >
                             <button
-                                {% if not computer.edit_properties %}
-                                    disabled
-                                {% else %}
+                                {% if admin_event.mode.custom and computer_can_be_deleted and client_can_manage_computer %}
                                     class="btn btn-sm btn-outline-danger"
                                     hx-get="{{ url_for('admin-computer-modal', action='delete', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
                                     hx-target="body"
@@ -154,6 +159,8 @@
                                     preload
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-wrapper"
+                                {% else %}
+                                    disabled
                                 {% endif %}
                             >
                                 <i class="bi-trash-fill"></i>

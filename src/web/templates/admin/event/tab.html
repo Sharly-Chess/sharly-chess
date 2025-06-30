@@ -62,6 +62,16 @@
                     </tr>
                 {%endif %}
                 <tr>
+                    <th scope="row" class="text-nowrap">{{ _('Execution mode') }}</th>
+                    <td>
+                        <span
+                            {{ macros.tooltip_attributes('info', admin_event.mode.help, 'top') }}
+                        >
+                            {{ admin_event.mode.long_text }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row" class="text-nowrap">{{ _('Date') }}</th>
                     <td class="">{{ admin_event.formatted_start_date_time }} - {{ admin_event.formatted_stop_date_time }}</td>
                 </tr>

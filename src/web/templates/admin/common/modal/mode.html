@@ -1,0 +1,49 @@
+<h4>
+    {{ title }}
+</h4>
+<div class="row">
+    <div class="col-12">
+        {{ text }}
+    </div>
+    <div class="col-12">
+        {% set mode=modes[0] %}
+        {{ admin_macros.radio_input(
+            name=name,
+            value=mode.value|string,
+            label='',
+            placeholder=mode.short_text,
+            help_text=mode.help,
+            info='',
+            data=data,
+            errors=errors
+        ) }}
+        <div>
+            {{ _('Use connected devices to…') }}
+        </div>
+        <div class="ms-5">
+            {% for mode in modes[1:-1]%}
+                {{ admin_macros.radio_input(
+                    name=name,
+                    value=mode.value|string,
+                    label='',
+                    placeholder=mode.short_text,
+                    help_text=mode.help,
+                    info='',
+                    data=data,
+                    errors=errors
+                ) }}
+            {% endfor %}
+        </div>
+        {% set mode=modes[-1] %}
+        {{ admin_macros.radio_input(
+            name=name,
+            value=mode.value|string,
+            label='',
+            placeholder=mode.short_text,
+            help_text=mode.help,
+            info='',
+            data=data,
+            errors=errors
+        ) }}
+    </div>
+</div>

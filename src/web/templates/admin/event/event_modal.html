@@ -40,6 +40,13 @@
                         data=data, errors=errors
                     ) }}
                 {% else %}
+                    {% with
+                        title=_('Execution mode'),
+                        text=_('Specify below the mode used to run the event (read carefully to understand what each mode entails, and don\'t be shy about taking advantage of the full power of Sharly Chess!).'),
+                        name='mode'
+                    %}
+                        {% include '../common/modal/mode.html' %}
+                    {% endwith %}
                     <h4>
                         {{ _('Properties') }}
                     </h4>
