@@ -29,6 +29,10 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr ""
 
 #, python-format
+msgid "%(player)s - Round %(num)s"
+msgstr ""
+
+#, python-format
 msgid "%(lib)s version"
 msgstr ""
 
@@ -57,10 +61,6 @@ msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
 msgstr[0] ""
 msgstr[1] ""
-
-#, python-format
-msgid "%(player)s - Round %(num)s"
-msgstr ""
 
 #, python-format
 msgid "%(set_name)s (check-in)"
@@ -3240,11 +3240,11 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] has been created."
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(player)s] has been created."
 msgstr ""
 
 msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."

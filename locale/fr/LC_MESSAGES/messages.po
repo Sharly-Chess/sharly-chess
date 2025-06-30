@@ -29,6 +29,10 @@ msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
 msgstr "%(family_uniq_id)s %(family_name)s (%(screens_number)d écrans)"
 
 #, python-format
+msgid "%(player)s - Round %(num)s"
+msgstr "%(player)s - Ronde %(num)s"
+
+#, python-format
 msgid "%(lib)s version"
 msgstr "Version de %(lib)s"
 
@@ -57,10 +61,6 @@ msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
 msgstr[0] "%(num)d prix créé avec succès !"
 msgstr[1] "%(num)d prix créés avec succès !"
-
-#, python-format
-msgid "%(player)s - Round %(num)s"
-msgstr "%(player)s - Ronde %(num)s"
 
 #, python-format
 msgid "%(set_name)s (check-in)"
@@ -3240,12 +3240,12 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(player)s] has been created."
-msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
-
-#, python-format
 msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
+
+#, python-format
+msgid "Player [%(player)s] has been created."
+msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
 
 msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."

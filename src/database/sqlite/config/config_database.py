@@ -1,4 +1,3 @@
-import logging
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -84,17 +83,15 @@ class ConfigDatabase(MigrationDatabase):
         """Convert a row to a StoredConfig record."""
         return StoredConfig(
             force_edit=self.load_bool_from_database_field(row['force_edit']),
-            console_log_level=row.get('console_log_level', logging.INFO),
-            console_color=self.load_bool_from_database_field(
-                row.get('console_color', 1)
-            ),
+            console_log_level=row['console_log_level'],
+            console_color=self.load_bool_from_database_field(row['console_color']),
             console_show_date=self.load_bool_from_database_field(
-                row.get('console_show_date', 0)
+                row['console_show_date']
             ),
             console_show_level=self.load_bool_from_database_field(
-                row.get('console_show_level', 0)
+                row['console_show_level']
             ),
-            experimental=self.load_bool_from_database_field(row.get('experimental', 0)),
+            experimental=self.load_bool_from_database_field(row['experimental']),
             federation=row['federation'],
             launch_browser=self.load_bool_from_database_field(row['launch_browser']),
             locale=row['locale'],
