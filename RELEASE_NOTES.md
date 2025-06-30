@@ -9,9 +9,9 @@ English version below
 
 ## Interface web
 
-- Passage d'une barre de navigation horizontale à une barre verticale (2.8.0)
+- Passage d'une barre de navigation horizontale à une barre latérale (2.8.0)
 - Simplification de la page d'accueil et ajout d'un QR code pour faciliter la connexion des clients (2.8.0)
-- Ajout de boutons 'Créer et ajouter à nouveau' pour réduire nombre de clicks lors de la création d'objets (2.8.0)
+- Ajout de boutons « Créer et ajouter à nouveau » pour réduire nombre de clics lors de la création d'objets (2.8.0)
 
 ### Gestion des joueur·euses
 
@@ -34,6 +34,14 @@ English version below
 ### Gestion des prix
 
 - Ajout de l'onglet Prix avec la définition et le calcul des prix (2.8.0)
+
+### Impression de documents
+
+- Nouveaux documents (2.8.0)
+  - Pointage des joueur·euses
+  - Indicateurs de performance pour la ronde
+  - Liste des prix
+  - Attribution des prix
 
 ---
 
@@ -72,3 +80,11 @@ English version below
 ### Prizes management
 
 - Added the Prizes tab with the definition and calculation of prizes (2.8.0)
+
+### Print documents
+
+- New documents (2.8.0)
+  - Player check-in list
+  - Round performance indicators
+  - Prize list
+  - Prize assignment
