@@ -36,7 +36,7 @@
                                         class="
                                             board-row
                                             {% if editable %}editable{% endif %}
-                                            {% if client.can_set_specials_results_by_tournament_id[tournament] %}special-results-allowed{% endif %}
+                                            {% if client.can_set_special_results_by_tournament_id[tournament] %}special-results-allowed{% endif %}
                                             {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
                                             {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
                                         >
