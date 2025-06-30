@@ -1131,23 +1131,9 @@ class TournamentAdminController(BaseEventAdminController):
         return HTMXTemplate(
             template_name='admin/tournaments/random_player_modal.html',
             context={
-                'player_name': _('{first_name} {last_name}').format(
-                    first_name=random_player.first_name
-                    if random_player.first_name
-                    else '',
-                    last_name=random_player.last_name
-                    if random_player.last_name
-                    else '',
-                )
-                if random_player
-                else None,
+                'player_name': random_player.full_name if random_player else None,
                 'random_player': random_player,
-                'opponent_name': _('{first_name} {last_name}').format(
-                    first_name=opponent.first_name if opponent.first_name else '',
-                    last_name=opponent.last_name if opponent.last_name else '',
-                )
-                if opponent
-                else None,
+                'opponent_name': opponent.full_name if opponent else None,
                 'tournament': admin_tournament,
                 'board': board,
             },

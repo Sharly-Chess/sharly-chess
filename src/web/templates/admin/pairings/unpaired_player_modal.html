@@ -7,11 +7,20 @@
     <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog modal-dialog-centered pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('%(first_name)s %(last_name)s - Round %(num)s', first_name=player.first_name, last_name=player.last_name, num=admin_round) }}</div>
+                <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=player.full_name, num=admin_round) }}</div>
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-column align-items-center justify-content-center gap-4">
+                    {% set action = 'BYE_UPDATE' %}
                     {% if not pairing.zero_point_bye %}
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='ZPB'
+                        ) %}
                         <span
                             {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
@@ -22,7 +31,19 @@
                                 {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
                                     disabled
                                 {% else %}
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='ZPB') }}"
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
@@ -30,6 +51,14 @@
                                 {{ _('Zero-Point Bye') }}
                             </button>
                         </span>
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='LEAVE'
+                        ) %}
                         <span
                             {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
@@ -40,7 +69,19 @@
                                 {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
                                     disabled
                                 {% else %}
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='LEAVE') }}"
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
@@ -49,6 +90,14 @@
                             </button>
                         </span>
                     {% else %}
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='RETURN'
+                        ) %}
                         <span
                             {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
@@ -59,7 +108,19 @@
                                 {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
                                     disabled
                                 {% else %}
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='RETURN') }}"
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
@@ -73,6 +134,14 @@
                         </span>
                     {% endif %}
                     {% if pairing.half_point_bye %}
+                        {% set action_route = url_for(
+                            'admin-pairings-set-participation',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            player_id=player.id,
+                            action='RETURN'
+                        ) %}
                         <span
                             {% if not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id] %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Half-Point Byes.'), 'right') }}
@@ -83,13 +152,26 @@
                                 {% if not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id] %}
                                     disabled
                                 {% else %}
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='RETURN') }}"
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
                             >
                                 {{ _('Cancel Half-Point Bye') }}
                             </button>
+                        </span>
                     {% else %}
                         <span
                             class="w-100"
@@ -101,21 +183,54 @@
                                 {{ macros.tooltip_attributes('info', _('Bye limit (%(limit)d) is already reached for this tournament.', limit=player.tournament.max_byes), 'top') }}
                             {% endif %}
                         >
+                            {% set action_route = url_for(
+                                'admin-pairings-set-participation',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=admin_round,
+                                player_id=player.id,
+                                action='HPB'
+                            ) %}
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id] or no_bye_possible or not hpb_possible %}
+                                {% if
+                                    not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id]
+                                    or
+                                    no_bye_possible
+                                    or
+                                    not hpb_possible
+                                %}
                                     disabled
                                 {% else %}
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='HPB') }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
                                 {% endif %}
                             >
                                 {{ _('Half-Point Bye') }}
                             </button>
                         </span>
                     {% endif %}
-                    {% if 'MANUAL_PAIRING' in existing_actions %}
+                    {% set action = 'MANUAL_PAIRING' %}
+                    {% set action_route = url_for(
+                        'admin-pairings-set-participation',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        player_id=player.id,
+                        action='PAIR'
+                    ) %}
+                    {% if action in existing_actions %}
                         <span
                             class="w-100"
                             {% if not client.can_manually_pair_players_by_tournament_id[admin_tournament.id] %}
@@ -129,7 +244,19 @@
                                 {% if not client.can_manually_pair_players_by_tournament_id[admin_tournament.id] or admin_tournament.check_in_open %}
                                     disabled
                                 {% else %}
-                                    hx-patch="{{ url_for('admin-set-participation', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id, action='PAIR') }}"
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}

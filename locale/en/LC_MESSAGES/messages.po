@@ -25,7 +25,7 @@ msgid "%(count)d players unpaired"
 msgstr ""
 
 #, python-format
-msgid "%(first_name)s %(last_name)s - Round %(num)s"
+msgid "%(player)s - Round %(num)s"
 msgstr ""
 
 #, python-format
@@ -372,9 +372,6 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
-msgid "An error occurred."
-msgstr ""
-
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -645,6 +642,9 @@ msgstr ""
 
 #, python-format
 msgid "By default: %(minutes)d minutes"
+msgstr ""
+
+msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
 msgstr ""
 
 msgid "By player"
@@ -1299,7 +1299,7 @@ msgid "Deletion of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Deletion of player [%(first_name)s %(last_name)s]"
+msgid "Deletion of player [%(player)s]"
 msgstr ""
 
 #, python-format
@@ -1414,12 +1414,6 @@ msgid "Displayed round: %(round)d"
 msgstr ""
 
 msgid "Do not assign zero-point byes"
-msgstr ""
-
-msgid "Do you want to allow manual pairings for this round?"
-msgstr ""
-
-msgid "Do you want to allow the pairings to be edited for this round?"
 msgstr ""
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
@@ -1744,7 +1738,7 @@ msgid "Editing of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of player [%(first_name)s %(last_name)s]"
+msgid "Editing of player [%(player)s]"
 msgstr ""
 
 #, python-format
@@ -2247,9 +2241,6 @@ msgid "Gender:"
 msgstr ""
 
 msgid "General"
-msgstr ""
-
-msgid "Generate complementary pairings"
 msgstr ""
 
 msgid "Generate pairings for all the rounds of the tournament."
@@ -3318,13 +3309,10 @@ msgstr ""
 msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr ""
 
-msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
-msgstr ""
-
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr ""
 
-msgid "Pairings successfully generated!"
+msgid "Pairings successfully generated."
 msgstr ""
 
 #, python-format
@@ -3426,17 +3414,17 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 #, python-format
 msgid "Player [%(player)s] has been created."
 msgstr ""
 
-msgid "Player [{first_name} {last_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr ""
 
-msgid "Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}]."
+msgid "Player [{player}] has pairings in tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Player creation"
@@ -5323,10 +5311,6 @@ msgstr ""
 msgid "Unpair all the rounds of the tournament."
 msgstr ""
 
-#, python-format
-msgid "Unpair round #%(round)d"
-msgstr ""
-
 msgid "Unpair tournament"
 msgstr ""
 
@@ -5345,7 +5329,7 @@ msgstr ""
 msgid "Unpaired: hidden"
 msgstr ""
 
-msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
+msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr ""
 
 msgid "Unpairing all the boards of this round is not possible because the round has results."

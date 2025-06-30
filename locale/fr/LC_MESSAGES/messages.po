@@ -25,8 +25,8 @@ msgid "%(count)d players unpaired"
 msgstr "%(count)d joueur·euses non-apparié·es"
 
 #, python-format
-msgid "%(first_name)s %(last_name)s - Round %(num)s"
-msgstr "%(last_name)s %(first_name)s - Ronde %(num)s"
+msgid "%(player)s - Round %(num)s"
+msgstr "%(player)s - Ronde %(num)s"
 
 #, python-format
 msgid "%(lib)s version"
@@ -372,9 +372,6 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
-msgid "An error occurred."
-msgstr "Une erreur est survenue."
-
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -646,6 +643,9 @@ msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
+
+msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
+msgstr "En effectuant cette opération, vous activez un mode non-sécurisé pour cette ronde, autorisant ainsi d'autres opérations non-sécurisées."
 
 msgid "By player"
 msgstr "Par ordre alpha."
@@ -1299,8 +1299,8 @@ msgid "Deletion of event [%(event_uniq_id)s]"
 msgstr "Suppression de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Deletion of player [%(first_name)s %(last_name)s]"
-msgstr "Suppression du·de la joueur·euse [%(last_name)s %(first_name)s]"
+msgid "Deletion of player [%(player)s]"
+msgstr "Suppression du·de la joueur·euse [%(player)s]"
 
 #, python-format
 msgid "Deletion of rotator [%(rotator_uniq_id)s]"
@@ -1415,12 +1415,6 @@ msgstr "Ronde affichée : %(round)d"
 
 msgid "Do not assign zero-point byes"
 msgstr "Ne pas marquer forfait"
-
-msgid "Do you want to allow manual pairings for this round?"
-msgstr "Voulez vous autoriser les appariements manuels pour cette ronde ?"
-
-msgid "Do you want to allow the pairings to be edited for this round?"
-msgstr "Voulez vous autoriser l'édition des appariements pour cette ronde ?"
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
 msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ? "
@@ -1744,8 +1738,8 @@ msgid "Editing of event [%(event_uniq_id)s]"
 msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
-msgid "Editing of player [%(first_name)s %(last_name)s]"
-msgstr "Édition du·de la joueur·euse [%(last_name)s %(first_name)s]"
+msgid "Editing of player [%(player)s]"
+msgstr "Édition du·de la joueur·euse [%(player)s]"
 
 #, python-format
 msgid "Editing of rotator [%(rotator_uniq_id)s]"
@@ -2248,9 +2242,6 @@ msgstr "Genre :"
 
 msgid "General"
 msgstr "Général"
-
-msgid "Generate complementary pairings"
-msgstr "Générer les appariements complémentaires"
 
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
@@ -3318,14 +3309,11 @@ msgstr "La génération d'appariements n'est pas autorisée si une ronde passée
 msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de joueur·euses que de rondes."
 
-msgid "Pairings of round {round} generated for tournament [{tournament_uniq_id}]."
-msgstr "Les appariements de la ronde {round} ont été générés pour le tournoi [{tournament_uniq_id}]."
-
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
 
-msgid "Pairings successfully generated!"
-msgstr "Appariements générés avec succès !"
+msgid "Pairings successfully generated."
+msgstr "Appariements générés avec succès."
 
 #, python-format
 msgid "Pairings: %(pairing_variation)s"
@@ -3426,18 +3414,18 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(first_name)s %(last_name)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
-msgstr "Le·la joueur·euse [%(last_name)s %(first_name)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
 #, python-format
 msgid "Player [%(player)s] has been created."
 msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
 
-msgid "Player [{first_name} {last_name}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
-msgstr "Le·la joueur·euse [{last_name} {first_name}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
+msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
 
-msgid "Player [{first_name} {last_name}] has pairings in tournament [{tournament_uniq_id}]."
-msgstr "Le·la joueur·euse [{last_name} {first_name}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
+msgid "Player [{player}] has pairings in tournament [{tournament_uniq_id}]."
+msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament_uniq_id}]."
 
 msgid "Player creation"
 msgstr "Création d'un·e joueur·euse"
@@ -5323,10 +5311,6 @@ msgstr "Désapparier tous les échiquiers de cette ronde."
 msgid "Unpair all the rounds of the tournament."
 msgstr "Désapparier toutes les rondes du tournoi."
 
-#, python-format
-msgid "Unpair round #%(round)d"
-msgstr "Désapparier la ronde n°%(round)d"
-
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
@@ -5345,8 +5329,8 @@ msgstr "Non apparié·es : affiché·es"
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
 
-msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose all data associated with this round, including results and manual adjustments."
-msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez toutes les données associées à cette ronde, y compris les résultats saisis et les ajustements manuels."
+msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
+msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
 
 msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."

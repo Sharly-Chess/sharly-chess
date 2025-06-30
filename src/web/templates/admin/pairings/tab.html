@@ -56,17 +56,14 @@
                             >
                                 <button
                                     class="btn btn-outline-primary text-nowrap"
-                                    {% if not client.can_open_close_check_in %}
-                                        disabled
-                                    {% else %}
-                                        hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                                        hx-trigger="click"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        preload
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-wrapper"
-                                    {% endif %}
+                                    hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                                    hx-trigger="click"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    preload
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
                                 >
                                     {{ _('Close check-in') }}
                                 </button>
@@ -74,7 +71,7 @@
                         {% endif %}
                         {% include admin_tournament.pairing_system.pairing_buttons_template %}
                         {% if admin_boards %}
-                            {% with name='admin_pairings_show_without_results', wo_results=admin_pairings_show_without_results %}
+                            {% with name='show_without_results', wo_results=admin_pairings_show_without_results %}
                                 <div class="btn-group">
                                     <button
                                         class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
@@ -115,50 +112,62 @@
                                         ) }}
                                     ></i>
                                 </div>
-                                {% with action='RESULT_UPDATE' %}
-                                    <div class="btn-group">
-                                        <span
-                                            {{ macros.tooltip_attributes(
-                                                'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
-                                            ) }}
-                                        >
-                                            <button
-                                                id="overwrite-mode"
-                                                {% if action in allowed_actions %}
-                                                    class="btn btn-outline-primary active"
-                                                    hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                                                {% else %}
-                                                    class="btn btn-outline-primary"
-                                                    hx-get="{{ url_for('admin-pairings-safety-mode-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
-                                                    hx-trigger="click"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modal-wrapper"
-                                                    hx-indicator="#please-wait"
-                                                    hx-target="body"
-                                                    preload
-                                                {% endif %}
-                                            >
-                                                {{ _('Overwrite') }}
-                                            </button>
-                                        </span>
+                                {% set action = 'RESULT_UPDATE' %}
+                                <div class="btn-group">
+                                    <span
+                                        {{ macros.tooltip_attributes(
+                                            'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
+                                        ) }}
+                                    >
                                         <button
-                                            id="highlight-mode"
-                                            class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
-                                            hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                                            {{ macros.tooltip_attributes(
-                                                'info',
-                                                _(
-                                                    'Highlights the row if the new result is different '
-                                                    'when using the keyboard shortcuts '
-                                                    '(useful when re-entering all the results for verification).'
-                                                ),
-                                                'top'
-                                            ) }}
+                                            id="overwrite-mode"
+                                            {% if action in allowed_actions %}
+                                                class="btn btn-outline-primary active"
+                                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
+                                            {% else %}
+                                                class="btn btn-outline-primary"
+                                                hx-get="{{ url_for(
+                                                    'admin-pairings-safety-mode-modal',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=admin_tournament.id,
+                                                    round=admin_round,
+                                                    action=action,
+                                                    redirect_method='POST',
+                                                    redirect_route=url_for(
+                                                        'admin-pairings-update-safety-mode',
+                                                        event_uniq_id=admin_event.uniq_id,
+                                                        tournament_id=admin_tournament.id,
+                                                        round=admin_round,
+                                                    ),
+                                                ) }}"
+                                                hx-trigger="click"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-wrapper"
+                                                hx-indicator="#please-wait"
+                                                hx-target="body"
+                                                preload
+                                            {% endif %}
                                         >
-                                            {{ _('Highlight') }}
+                                            {{ _('Overwrite') }}
                                         </button>
-                                    </div>
-                                {% endwith %}
+                                    </span>
+                                    <button
+                                        id="highlight-mode"
+                                        class="btn btn-outline-primary {% if action not in allowed_actions %}active{% endif %}"
+                                        hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _(
+                                                'Highlights the row if the new result is different '
+                                                'when using the keyboard shortcuts '
+                                                '(useful when re-entering all the results for verification).'
+                                            ),
+                                            'top'
+                                        ) }}
+                                    >
+                                        {{ _('Highlight') }}
+                                    </button>
+                                </div>
                             </div>
                         {% endif %}
                     </div>
@@ -270,19 +279,24 @@
                 requestInFlight = true;
                 const { code, pairing_board_id: board_id } = keyQueue.shift();
 
-                htmx.ajax('PUT',
-                    "{{ url_for('admin-event-set-result-hotkey', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}",
-                    {
-                        target: "body",
-                        swap: "outerHTML",
-                        values: {
-                            key: code,
-                            board_id: board_id || 0,
-                            validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
-                        },
+            htmx.ajax('PUT',
+                "{{ url_for(
+                    'admin-pairings-set-result-hotkey',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round
+                ) }}",
+                {
+                    target: "body",
+                    swap: "outerHTML",
+                    values: {
+                        key: code,
+                        board_id: board_id || 0,
+                        validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
                     },
-                );
-            }
+                },
+            );
+        }
 
             function handleShortCutKey(code) {
                 if (hasErrorRow()) {
