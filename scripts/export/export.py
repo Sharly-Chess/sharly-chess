@@ -139,6 +139,7 @@ def build_exe():
         lib_dir / 'htmx' / 'morphdom-swap.js',
         lib_dir / 'polyglot' / 'polyglot.js',
     ]
+    files += [file for file in Path(lib_dir, 'select2').glob('**/*') if file.is_file()]
     sql_dir: Path = SOURCE_DIR / 'database' / 'sql'
     files += [
         sql_dir / 'create_fide.sql',
