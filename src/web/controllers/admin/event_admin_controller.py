@@ -221,9 +221,7 @@ class EventAdminController(BaseEventAdminController):
                 )
             else:
                 screens_by_screen_type_sorted_by_uniq_id = web_context.admin_event.public_screens_by_screen_type_sorted_by_uniq_id
-            print(f'{ScreenType.screen_types()=}')
             for screen_type in ScreenType.screen_types():
-                print(f'{screen_type=}')
                 if screens_by_screen_type_sorted_by_uniq_id[screen_type]:
                     return Redirect(
                         path=request.app.route_reverse(
