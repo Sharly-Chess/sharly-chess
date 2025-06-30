@@ -141,18 +141,6 @@
                 </tr>
                 {% if client.can_view_event_complete_config %}
                     <tr>
-                        <th scope="row" class="text-nowrap">{{ _('Password to enter results') }}</th>
-                        <td class="text-nowrap">
-                            {% if admin_event.update_password %}
-                                ********
-                            {% else %}
-                                <span class="fst-italic">
-                                    {{ _('No password required') }}
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
                         <th scope="row" class="text-nowrap">{{ _('Maximum number of illegal moves') }}</th>
                         <td class="text-nowrap">
                             {% if admin_event.record_illegal_moves %}

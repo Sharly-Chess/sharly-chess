@@ -334,7 +334,13 @@ with_indicator: display a loading indicator, optional
                             disabled
                         {% endif %}
                     />
-                    {{ placeholder }}
+                        {{ placeholder }}
+                        {% if info %}
+                            <i
+                                class="bi bi-info-circle-fill"
+                                {{ macros.tooltip_attributes('info', info, 'top') }}
+                            ></i>
+                        {% endif %}
                 {% else %}
                     {% if disabled %}
                         <input
@@ -426,7 +432,7 @@ with_indicator: display a loading indicator, optional
                     {% endif %}
                 {% endif %}
             </div>
-            {% if info %}
+            {% if info and input_type != 'radio' %}
                 <i
                     class="bi bi-info-circle-fill"
                     {{ macros.tooltip_attributes('info', info, 'top') }}

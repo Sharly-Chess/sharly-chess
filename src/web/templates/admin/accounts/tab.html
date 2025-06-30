@@ -186,12 +186,18 @@
     </table>
 
     <div class="text-center mt-4">
-        <i class="bi-exclamation-triangle-fill text-danger fs-4"></i>
-        <br/>
-        {{ _('Warning: by default, only people on your Sharly Chess server can access the application.') }}
-        <br/>
-        {{ _('Creating accounts allows you to grant permissions to people on other clients,') }}
-        <br/>
-        {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!') }}
+        {% if admin_event.mode.custom %}
+            <i class="bi-exclamation-triangle-fill text-danger fs-4"></i>
+            <br/>
+            {{ _('Warning: by default, only people on your Sharly Chess server can access the application.') }}
+            <br/>
+            {{ _('Creating accounts allows you to grant permissions to people on other clients,') }}
+            <br/>
+            {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!') }}
+        {% else %}
+            <i class="bi-exclamation-triangle-fill text-warning fs-4"></i>
+            <br/>
+            {{ _('Permissions can not be customized in the current execution mode.') }}
+        {% endif %}
     </div>
 {% endif %}

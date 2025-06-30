@@ -213,7 +213,6 @@ class EventDatabase(MigrationDatabase):
                         'background_image',
                         'background_color',
                         'public',
-                        'update_password',
                         'record_illegal_moves',
                         'rules',
                         'tournaments',
@@ -290,7 +289,6 @@ class EventDatabase(MigrationDatabase):
                         ),
                         background_image=event_dict.get('background_image', None),
                         background_color=event_dict.get('background_color', None),
-                        update_password=event_dict.get('update_password', None),
                         record_illegal_moves=event_dict.get(
                             'record_illegal_moves', None
                         ),
@@ -961,7 +959,6 @@ class EventDatabase(MigrationDatabase):
             ),
             background_image=row['background_image'],
             background_color=row['background_color'],
-            update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
             timer_colors=self.set_dict_int_keys(
@@ -1041,7 +1038,6 @@ class EventDatabase(MigrationDatabase):
                     'hide_background_image',
                     'background_image',
                     'background_color',
-                    'update_password',
                     'record_illegal_moves',
                     'rules',
                     'message_text',

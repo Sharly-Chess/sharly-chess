@@ -4,7 +4,6 @@ start: "2024-10-19 00:00"
 stop: "2024-10-25 23:59"
 background_image: "FRA/BRE/35/F35046.png"
 background_color: "#d8d8d8"
-update_password: "mot_de_passe"
 record_illegal_moves: 0
 timers:
   principal:

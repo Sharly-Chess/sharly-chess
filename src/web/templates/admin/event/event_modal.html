@@ -148,15 +148,6 @@
                     </h4>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.password_input(
-                                name='update_password',
-                                label=_('Password to enter results:'),
-                                placeholder=_('E.g.: my_password'),
-                                help_text=_('The password required on input screens to enter results (optional).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.select_input(
                                 name='record_illegal_moves',
                                 label=_('Illegal moves recording:'),

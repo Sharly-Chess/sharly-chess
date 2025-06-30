@@ -341,13 +341,6 @@ class Event:
         return background_color
 
     @cached_property
-    def update_password(self) -> str | None:
-        update_password: str | None = self.stored_event.update_password
-        if not update_password:
-            self.add_debug(_('No password set for the results entry'))
-        return update_password
-
-    @cached_property
     def record_illegal_moves(self) -> int:
         record_illegal_moves: int = (
             SharlyChessConfig.default_record_illegal_moves_number

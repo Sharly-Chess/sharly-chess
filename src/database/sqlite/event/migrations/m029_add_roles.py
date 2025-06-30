@@ -70,8 +70,12 @@ class Migration(BaseMigration):
         self.database.execute(
             f'ALTER TABLE `info` ADD `mode` INTEGER NOT NULL DEFAULT {Mode.STAND_ALONE.value}',
         )
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 
     def backward(self):
+        self.database.execute(
+            'ALTER TABLE `info` ADD `update_password` TEXT',
+        )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `mode`')
         self.database.execute('DROP TABLE IF EXISTS `account`')
         self.database.execute('DROP TABLE IF EXISTS `computer`')

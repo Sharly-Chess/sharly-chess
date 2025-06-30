@@ -203,4 +203,10 @@
             {% endwith %}
         {% endif %}
     {% endfor %}
+    {# Add a listener here to refresh the page when after login when no tab #}
+    {% if not nav_tabs %}
+        {{ macros.refresh_listener(
+            hx_get=url_for('admin-event', event_uniq_id=admin_event.uniq_id),
+        ) }}
+    {% endif %}
 {% endblock admin_content %}

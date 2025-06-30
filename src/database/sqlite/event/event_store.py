@@ -304,7 +304,6 @@ class BaseStoredEvent:
     hide_background_image: bool = SharlyChessConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None
-    update_password: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
     timer_colors: dict[int, str | None] | None = None
