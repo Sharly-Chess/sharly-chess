@@ -6,7 +6,7 @@ from typing import Annotated, Any
 from common import format_timestamp_date, format_timestamp_time
 from common.logger import get_logging_config, get_logger
 from common.network import NetworkMonitor
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
@@ -103,7 +103,8 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
         default_mode: int = (
-            WebContext.form_data_to_int(data, 'default_mode') or Mode.STAND_ALONE.value
+            WebContext.form_data_to_int(data, 'default_mode')
+            or ExecMode.STAND_ALONE.value
         )
         return StoredConfig(
             force_edit=False,

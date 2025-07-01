@@ -47,7 +47,7 @@
             </div>
         </div>
         <div class="modal-body">
-            {% if admin_event and not client.computer.localhost %}
+            {% if admin_event and not client.device.localhost %}
                 {% if client.account.anonymous %}
                     <h4>
                         {{ _('Not authenticated') }}
@@ -120,7 +120,7 @@
                 {% endif %}
             {% endif %}
             <h4>
-                {% if client.computer.localhost %}
+                {% if client.device.localhost %}
                     {{ _('Client: %(host)s', host=_('Sharly Chess server')) }}
                 {% else %}
                     {{ _('Client: %(host)s', host=client.host) }}
@@ -128,23 +128,23 @@
             </h4>
             <div class="row">
                 <div class="col-12">
-                    {% if client.computer.localhost %}
+                    {% if client.device.localhost %}
                         {{ _('You are connected on the Sharly Chess server and have full administration privileges.') }}
-                    {% elif client.computer.unknown %}
+                    {% elif client.device.unknown %}
                         {{ _(
                                 'You are connected on an unknown client (%(host)s).',
                                 host=client.host
                         ) }}
                     {% else %}
-                        {% if client.computer.active %}
+                        {% if client.device.active %}
                             {{ _(
                                 'You are connected on client (%(host)s).',
-                                host=client.computer.ip
+                                host=client.device.ip
                             ) }}
                         {% else %}
                             {{ _(
-                                'You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown computer).',
-                                host=client.computer.ip
+                                'You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown device).',
+                                host=client.device.ip
                             ) }}
                         {% endif %}
                     {% endif %}

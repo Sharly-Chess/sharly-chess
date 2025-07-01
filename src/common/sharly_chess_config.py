@@ -25,7 +25,7 @@ from common.i18n import (
 )
 from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from data.player import Federation
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
@@ -153,8 +153,8 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.locale or DEFAULT_LOCALE
 
     @property
-    def default_mode(self) -> Mode:
-        return Mode(self.stored_config.default_mode)
+    def default_exec_mode(self) -> ExecMode:
+        return ExecMode(self.stored_config.default_mode)
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

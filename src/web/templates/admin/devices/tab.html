@@ -1,22 +1,22 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
         <div>
-            {{ admin_macros.admin_title(_('Computers'), 'computers') }}
+            {{ admin_macros.admin_title(_('Devices'), 'devices') }}
         </div>
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-2 ms-auto align-items-center">
-            {% if client.can_manage_computers %}
+            {% if client.can_manage_devices %}
                 <span
                     {% if not admin_event.mode.custom %}
                         {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
                     {% else %}
-                        {{ macros.tooltip_attributes('info', _('Add a computer to the event.'), 'top') }}
+                        {{ macros.tooltip_attributes('info', _('Add a device to the event.'), 'top') }}
                     {% endif %}
                 >
                     <button
                         class="btn btn-primary text-nowrap ms-1"
                         {% if admin_event.mode.custom %}
-                            hx-get="{{ url_for('admin-computer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-get="{{ url_for('admin-device-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
                             preload
@@ -27,7 +27,7 @@
                         {% endif %}
                     >
                         <i class="bi-plus-square-fill pe-1"></i>
-                        {{ _('Create a computer') }}
+                        {{ _('Add a device') }}
                     </button>
                 </span>
             {% endif %}
@@ -35,7 +35,7 @@
     </div>
 </div>
 
-{% if client.can_manage_computers %}
+{% if client.can_manage_devices %}
     <table class="table table-hover w-auto mx-auto justify-content-center mb-4">
         <thead
             class="table-dark"
@@ -49,17 +49,17 @@
             </tr>
         </thead>
         <tbody>
-            {% for computer in admin_event.computers_sorted_by_ip %}
-                {% set roles=computer.permissions_by_role.keys() | list %}
+            {% for device in admin_event.devices_sorted_by_ip %}
+                {% set roles=device.permissions_by_role.keys() | list %}
                 <tr class="">
-                    <th scope="row" class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        <span class="{% if computer.localhost or computer.unknown %}fst-italic{% endif %}">
-                            {{ computer.ip }}
+                    <th scope="row" class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                        <span class="{% if device.localhost or device.unknown %}fst-italic{% endif %}">
+                            {{ device.ip }}
                         </span>
                     </th>
-                    <td class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        <span class="{% if computer.unknown or computer.server %}fst-italic{% endif %}">
-                            {% if computer.active %}
+                    <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                        <span class="{% if device.unknown or device.server %}fst-italic{% endif %}">
+                            {% if device.active %}
                                 {{ _('Enabled') }}
                             {% else %}
                                 {{ _('Disabled') }}
@@ -68,36 +68,36 @@
                     </td>
                     {% if roles %}
                         {% for role in roles[:1] %}
-                            {% with entity=computer %}
+                            {% with entity=device %}
                                 {% include '../common/access/tab_role_permission_cells.html' %}
                             {% endwith %}
                         {% endfor %}
                     {% else %}
-                        <td class="{% if not computer.active %}text-secondary{% endif %}">
+                        <td class="{% if not device.active %}text-secondary{% endif %}">
                             <span class="fst-italic">-</span>
                         </td>
-                        <td class="{% if not computer.active %}text-secondary{% endif %}">
+                        <td class="{% if not device.active %}text-secondary{% endif %}">
                             <span class="fst-italic">-</span>
                         </td>
                     {% endif %}
-                    <td class="text-nowrap {% if not computer.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        {% set client_can_manage_computer=client.can_manage_computer_by_computer_id[computer.id] %}
-                        {% set computer_can_be_updated=computer.edit_properties or computer.edit_permissions %}
+                    <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                        {% set client_can_manage_device=client.can_manage_device_by_device_id[device.id] %}
+                        {% set device_can_be_updated=device.edit_properties or device.edit_permissions %}
                         <span
                             {% if not admin_event.mode.custom %}
                                 {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                            {% elif not computer_can_be_updated %}
-                                {{ macros.tooltip_attributes('warning', _('This computer can not be updated.'), 'top') }}
-                            {% elif not client_can_manage_computer %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to update this computer.'), 'top') }}
+                            {% elif not device_can_be_updated %}
+                                {{ macros.tooltip_attributes('warning', _('This device can not be updated.'), 'top') }}
+                            {% elif not client_can_manage_device %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to update this device.'), 'top') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the computer.'), 'top') }}
+                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the device.'), 'top') }}
                             {% endif %}
                         >
                             <button
-                                {% if admin_event.mode.custom and computer_can_be_updated and client_can_manage_computer %}
+                                {% if admin_event.mode.custom and device_can_be_updated and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-computer-modal', action='update', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
+                                    hx-get="{{ url_for('admin-device-modal', action='update', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -110,22 +110,22 @@
                                 <i class="bi-pencil-fill"></i>
                             </button>
                         </span>
-                        {% set computer_can_be_cloned=computer.edit_properties %}
+                        {% set device_can_be_cloned=device.edit_properties %}
                         <span
                             {% if not admin_event.mode.custom %}
                                 {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                            {% elif not computer_can_be_cloned %}
-                                {{ macros.tooltip_attributes('warning', _('This computer can not be duplicated.'), 'top') }}
-                            {% elif not client_can_manage_computer %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this computer.'), 'top') }}
+                            {% elif not device_can_be_cloned %}
+                                {{ macros.tooltip_attributes('warning', _('This device can not be duplicated.'), 'top') }}
+                            {% elif not client_can_manage_device %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this device.'), 'top') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('info', _('Duplicate the computer.'), 'top') }}
+                                {{ macros.tooltip_attributes('info', _('Duplicate the device.'), 'top') }}
                             {% endif %}
                         >
                             <button
-                                {% if admin_event.mode.custom and computer_can_be_cloned and client_can_manage_computer %}
+                                {% if admin_event.mode.custom and device_can_be_cloned and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-computer-modal', action='clone', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
+                                    hx-get="{{ url_for('admin-device-modal', action='clone', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -138,22 +138,22 @@
                                 <i class="bi-copy"></i>
                             </button>
                         </span>
-                        {% set computer_can_be_deleted=computer.edit_properties %}
+                        {% set device_can_be_deleted=device.edit_properties %}
                         <span
                             {% if not admin_event.mode.custom %}
                                 {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                            {% elif not computer_can_be_deleted %}
-                                {{ macros.tooltip_attributes('warning', _('This computer can not be deleted.'), 'top') }}
-                            {% elif not client_can_manage_computer %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this computer.'), 'top') }}
+                            {% elif not device_can_be_deleted %}
+                                {{ macros.tooltip_attributes('warning', _('This device can not be deleted.'), 'top') }}
+                            {% elif not client_can_manage_device %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this device.'), 'top') }}
                             {% else %}
-                                {{ macros.tooltip_attributes('info', _('Delete the Computer.'), 'top') }}
+                                {{ macros.tooltip_attributes('info', _('Delete the device.'), 'top') }}
                             {% endif %}
                         >
                             <button
-                                {% if admin_event.mode.custom and computer_can_be_deleted and client_can_manage_computer %}
+                                {% if admin_event.mode.custom and device_can_be_deleted and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-danger"
-                                    hx-get="{{ url_for('admin-computer-modal', action='delete', event_uniq_id=admin_event.uniq_id, computer_id=computer.id) }}"
+                                    hx-get="{{ url_for('admin-device-modal', action='delete', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -172,7 +172,7 @@
                     {% for role in roles[1:] %}
                         <tr class="">
                             {% for role in roles[1:] %}
-                                {% with entity=computer %}
+                                {% with entity=device %}
                                     {% include '../common/access/tab_role_permission_cells.html' %}
                                 {% endwith %}
                             {% endfor %}
@@ -189,9 +189,9 @@
             <br/>
             {{ _('Warning: by default, only people on your Sharly Chess server can access the application.') }}
             <br/>
-            {{ _('Creating computers allows you to grant permissions to people on other clients,') }}
+            {{ _('Adding devices allows you to grant permissions to people on other clients,') }}
             <br/>
-            {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED COMPUTERS!') }}
+            {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED DEVICES!') }}
         {% else %}
             <i class="bi-exclamation-triangle-fill text-warning fs-4"></i>
             <br/>

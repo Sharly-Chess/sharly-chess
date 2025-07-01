@@ -1,11 +1,11 @@
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
-            f'ALTER TABLE `info` ADD `default_mode` INTEGER NOT NULL DEFAULT {Mode.STAND_ALONE.value}'
+            f'ALTER TABLE `info` ADD `default_mode` INTEGER NOT NULL DEFAULT {ExecMode.STAND_ALONE.value}'
         )
         self.database.execute('UPDATE `info` SET `force_edit` = 1')
 

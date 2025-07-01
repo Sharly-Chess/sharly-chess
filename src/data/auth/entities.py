@@ -3,14 +3,14 @@ from typing import Self
 
 from common.i18n import _
 from database.sqlite.event.event_store import (
-    StoredComputer,
+    StoredDevice,
     StoredAccount,
     LOCALHOST_ID,
-    ANY_COMPUTER_ID,
+    ANY_DEVICE_ID,
     ANONYMOUS_ID,
     anonymous_stored_account,
-    localhost_stored_computer,
-    unknown_stored_computer,
+    localhost_stored_device,
+    unknown_stored_device,
 )
 from data.auth.roles import Role
 
@@ -28,8 +28,8 @@ class AuthEntity(ABC):
         }
 
 
-class Computer(AuthEntity):
-    """A data wrapper around a stored computer, made of an IP specification."""
+class Device(AuthEntity):
+    """A data wrapper around a stored device, made of an IP specification."""
 
     LOCALHOST_IP: str = '127.0.0.1'
     LOCALHOST_NAME: str = 'localhost'
@@ -37,31 +37,31 @@ class Computer(AuthEntity):
 
     def __init__(
         self,
-        stored_computer: StoredComputer,
+        stored_device: StoredDevice,
     ):
-        self.stored_computer: StoredComputer = stored_computer
-        super().__init__(self.stored_computer.permissions)
+        self.stored_device: StoredDevice = stored_device
+        super().__init__(self.stored_device.permissions)
 
     @property
     def id(self) -> int:
-        """Returns the computer ID."""
-        assert self.stored_computer.id is not None
-        return self.stored_computer.id
+        """Returns the device ID."""
+        assert self.stored_device.id is not None
+        return self.stored_device.id
 
     @property
     def edit_properties(self) -> bool:
-        """Returns True the computer is locked (can not be updated or deleted)."""
-        return self.stored_computer.edit_properties
+        """Returns True the device is locked (can not be updated or deleted)."""
+        return self.stored_device.edit_properties
 
     @property
     def edit_permissions(self) -> bool:
-        """Returns True the permissions of the computer can be updated."""
-        return self.stored_computer.edit_permissions
+        """Returns True the permissions of the device can be updated."""
+        return self.stored_device.edit_permissions
 
     @property
     def active(self) -> bool:
-        """Returns the computer is active."""
-        return self.stored_computer.active
+        """Returns the device is active."""
+        return self.stored_device.active
 
     @classmethod
     def host_is_localhost(cls, host: str) -> bool:
@@ -73,17 +73,17 @@ class Computer(AuthEntity):
 
     @property
     def localhost(self) -> bool:
-        """Returns True the computer is the server itself."""
-        return self.stored_computer.id == LOCALHOST_ID
+        """Returns True the device is the server itself."""
+        return self.stored_device.id == LOCALHOST_ID
 
     @property
     def unknown(self) -> bool:
-        """Returns True the computer represent any client."""
-        return self.stored_computer.id == ANY_COMPUTER_ID
+        """Returns True the device represent any client."""
+        return self.stored_device.id == ANY_DEVICE_ID
 
     @property
     def ip(self) -> str:
-        """Returns the host address of the computer."""
+        """Returns the host address of the device."""
         if self.localhost:
             return '{ip} ({name})'.format(
                 ip=self.LOCALHOST_IP,
@@ -94,8 +94,8 @@ class Computer(AuthEntity):
                 ip=self.UNKNOWN_IP,
                 name=_('unknown'),
             )
-        assert self.stored_computer.ip is not None
-        return self.stored_computer.ip
+        assert self.stored_device.ip is not None
+        return self.stored_device.ip
 
     def matches(
         self,
@@ -107,17 +107,17 @@ class Computer(AuthEntity):
         elif self.unknown:
             return True
         else:
-            assert self.stored_computer.ip is not None
-            return host == self.stored_computer.ip
+            assert self.stored_device.ip is not None
+            return host == self.stored_device.ip
 
     def __repr__(self) -> str:
-        return f'Computer(id={self.id}, ip={self.ip})'
+        return f'Device(id={self.id}, ip={self.ip})'
 
 
-# computers are stored at event-level, this provides event-free
+# devices are stored at event-level, this provides event-free
 # instances that can be used when no events are available (welcome page, ...)
-localhost_computer: Computer = Computer(localhost_stored_computer)
-unknown_computer: Computer = Computer(unknown_stored_computer)
+localhost_device: Device = Device(localhost_stored_device)
+unknown_device: Device = Device(unknown_stored_device)
 
 
 class Account(AuthEntity):

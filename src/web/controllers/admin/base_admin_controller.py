@@ -13,7 +13,7 @@ from litestar.params import Body
 from common import REQUEST_TIMEOUT, format_timestamp_date
 from common.i18n import _, ngettext
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from data.event import Event
 from data.loader import EventLoader
 from utils.enum import Result, TournamentRating
@@ -81,7 +81,7 @@ class AdminWebContext(WebContext):
             super().template_context
             | {
                 'admin_tab': self.admin_tab,
-                'modes': Mode.modes(),
+                'modes': ExecMode.modes(),
             }
             | plugin_context
         )
@@ -385,7 +385,7 @@ class BaseAdminController(BaseController):
                 if mode is None:
                     errors[field] = _('Please select the execution mode for the event.')
                 else:
-                    mode = Mode(mode).value
+                    mode = ExecMode(mode).value
                 name = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
                     errors[field] = _('Please enter the name of the event.')
@@ -545,7 +545,7 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
-            mode=mode,
+            exec_mode=mode,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
@@ -711,7 +711,7 @@ class BaseAdminController(BaseController):
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
-                mode = stored_event.mode
+                mode = stored_event.exec_mode
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
                 public = False
@@ -719,7 +719,7 @@ class BaseAdminController(BaseController):
                 hide_background_image = (
                     sharly_chess_config.default_hide_background_image
                 )
-                mode = sharly_chess_config.default_mode
+                mode = sharly_chess_config.default_exec_mode
             case 'delete':
                 pass
             case _:

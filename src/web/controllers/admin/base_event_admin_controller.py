@@ -49,7 +49,7 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     @property
     def client(self) -> Client:
-        """Returns the client (account and computer) of the request."""
+        """Returns the client (account and device) of the request."""
         return Client(self.request, self.admin_event)
 
     def get_admin_event(self) -> Event:
@@ -292,7 +292,7 @@ class BaseEventAdminController(BaseAdminController):
             }
         if (
             web_context.client.can_manage_accounts
-            or web_context.client.can_manage_computers
+            or web_context.client.can_manage_devices
         ):
             nav_tab: dict[str, Any] = {
                 'title': _('Access'),
@@ -307,11 +307,11 @@ class BaseEventAdminController(BaseAdminController):
                     'template': 'accounts/tab.html',
                 }
             if web_context.client.can_manage_accounts:
-                nav_tab['submenu']['admin-event-computers-tab'] = {
-                    'title': _('Computers ({num})').format(
-                        num=len(admin_event.computers_by_id) or '-'
+                nav_tab['submenu']['admin-event-devices-tab'] = {
+                    'title': _('Devices ({num})').format(
+                        num=len(admin_event.devices_by_id) or '-'
                     ),
-                    'template': 'computers/tab.html',
+                    'template': 'devices/tab.html',
                 }
             nav_tabs['admin-event-access'] = nav_tab
 

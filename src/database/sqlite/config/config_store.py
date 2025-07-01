@@ -4,7 +4,7 @@ All the classes of this module are basic data classes stored in the config datab
 
 from dataclasses import dataclass, field
 
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 
 
 @dataclass
@@ -18,7 +18,7 @@ class StoredConfig:
     launch_browser: bool
     federation: str | None = None
     locale: str | None = None
-    default_mode: int = Mode.STAND_ALONE.value
+    default_mode: int = ExecMode.STAND_ALONE.value
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

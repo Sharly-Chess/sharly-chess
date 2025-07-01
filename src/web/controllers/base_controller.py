@@ -60,7 +60,7 @@ class WebContext:
 
     @property
     def client(self) -> Client:
-        """Returns the client (account and computer) of the request. This method may be overridden with an event parameter."""
+        """Returns the client (account and device) of the request. This method may be overridden with an event parameter."""
         return Client(self.request)
 
     @property

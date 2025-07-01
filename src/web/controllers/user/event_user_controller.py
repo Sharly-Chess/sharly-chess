@@ -44,7 +44,7 @@ class EventUserWebContext(UserWebContext):
 
     @property
     def client(self) -> Client:
-        """Returns the client (account and computer) of the request."""
+        """Returns the client (account and device) of the request."""
         return Client(self.request, self.user_event)
 
     def check_user_tab(self):

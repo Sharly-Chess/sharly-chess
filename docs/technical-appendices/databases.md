@@ -18,7 +18,7 @@
 | `federation`         | `TEXT`    |                      | The default federation code for events                                                                                       |
 | `locale`             | `TEXT`    |                      | The default language used for users                                                                                          |
 | `experimental`       | `INTEGER` |                      | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
-| `default_mode`       | `INTEGER` | NOT NULL DEFAULT `0` | An integer that indicates the mode used by default for new events (see class `Mode`)                                         |
+| `default_exec_mode`  | `INTEGER` | NOT NULL DEFAULT `0` | An integer that indicates the mode used by default for the events (see class `ExecMode`)                                     |
 
 ### `local_source_database` (local player databases)
 
@@ -76,7 +76,7 @@
 | `chessevent_user_id`       | `TEXT`    |                           | chessevent | The default login ID for the _ChessEvent_ platform                                                                                                                                                                       |
 | `chessevent_password`      | `TEXT`    |                           | chessevent | The default password for the _ChessEvent_ platform                                                                                                                                                                       |
 | `chessevent_event_id`      | `TEXT`    |                           | chessevent | The default login ID for the _ChessEvent_ event on the platform                                                                                                                                                          |
-| `mode`                     | `INTEGER` |                           |            | An integer that indicates the mode used to run the event (see class `Mode`)                                                                                                                                              |
+| `exec_mode`                | `INTEGER` |                           |            | An integer that indicates the mode used to execute the event (see class `ExecMode`)                                                                                                                                      |
 
 ### `metadata` (event metadata)
 

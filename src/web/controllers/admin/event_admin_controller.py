@@ -15,7 +15,7 @@ from pyexcel_ods3 import save_data
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from data.display_controller import DisplayController
 from data.loader import EventLoader
 from data.player import Player
@@ -361,7 +361,7 @@ class EventAdminController(BaseEventAdminController):
             case 'update':
                 if web_context.admin_event is None:
                     raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                previous_mode: Mode = web_context.admin_event.mode
+                previous_mode: ExecMode = web_context.admin_event.exec_mode
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -375,11 +375,11 @@ class EventAdminController(BaseEventAdminController):
                             _('Renaming the database failed: {ex}.').format(ex=ex),
                         )
                 with EventDatabase(uniq_id, write=True) as event_database:
-                    new_mode: Mode = Mode(stored_event.mode)
+                    new_mode: ExecMode = ExecMode(stored_event.exec_mode)
                     event_database.update_stored_event(
                         stored_event,
                         reset_permissions=new_mode != previous_mode
-                        and new_mode != Mode.CUSTOM,
+                        and new_mode != ExecMode.CUSTOM,
                     )
                     event_database.commit()
                 if rename:
@@ -404,16 +404,16 @@ class EventAdminController(BaseEventAdminController):
             case 'clone':
                 if web_context.admin_event is None:
                     raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                previous_mode: Mode = web_context.admin_event.mode
+                previous_mode: ExecMode = web_context.admin_event.exec_mode
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
                 )
                 with EventDatabase(uniq_id, write=True) as event_database:
-                    new_mode: Mode = Mode(stored_event.mode)
+                    new_mode: ExecMode = ExecMode(stored_event.exec_mode)
                     event_database.update_stored_event(
                         stored_event,
                         reset_permissions=new_mode != previous_mode
-                        and new_mode != Mode.CUSTOM,
+                        and new_mode != ExecMode.CUSTOM,
                     )
                     event_database.commit()
                 Message.success(

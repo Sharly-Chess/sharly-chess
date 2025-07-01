@@ -50,7 +50,7 @@
                 </ul>
             </div>
             <h4 class="text-center text-primary my-3">
-                {% if client.computer.localhost %}
+                {% if client.device.localhost %}
                     {{ _('You are on the Sharly Chess server.') }}
                 {% else %}
                     {{ _('You are connected to the Sharly Chess server.') }}
@@ -66,7 +66,7 @@
                             alt="{{ _('Sharly Chess server URL') }}"
                             class="py-2"
                             style="width: 150px"
-                            {{ macros.tooltip_attributes('info', _('Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
+                            {{ macros.tooltip_attributes('info', _('Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
                     />
                     <br/>
                     {{ sharly_chess_config.lan_url }}

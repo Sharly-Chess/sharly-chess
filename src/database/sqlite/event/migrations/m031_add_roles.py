@@ -1,8 +1,8 @@
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from database.sqlite.event.event_store import (
     anonymous_stored_account,
-    localhost_stored_computer,
-    unknown_stored_computer,
+    localhost_stored_device,
+    unknown_stored_device,
 )
 from database.sqlite.migration import BaseMigration
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -11,7 +11,7 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
-            'CREATE TABLE `computer` ('
+            'CREATE TABLE `device` ('
             '    `id` INTEGER NOT NULL,'
             '    `edit_properties` INTEGER NOT NULL DEFAULT 1,'
             '    `edit_permissions` INTEGER NOT NULL DEFAULT 1,'
@@ -22,21 +22,19 @@ class Migration(BaseMigration):
             '    UNIQUE(`ip`)'
             ')'
         )
-        for computer_data in (
-            localhost_stored_computer,
-            unknown_stored_computer,
+        for device_data in (
+            localhost_stored_device,
+            unknown_stored_device,
         ):
             self.database.execute(
-                'INSERT INTO `computer`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
+                'INSERT INTO `device`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
                 (
-                    computer_data.id,
-                    computer_data.edit_properties,
-                    computer_data.edit_permissions,
-                    computer_data.active,
-                    computer_data.ip,
-                    SQLiteDatabase.dump_to_json_database_field(
-                        computer_data.permissions
-                    ),
+                    device_data.id,
+                    device_data.edit_properties,
+                    device_data.edit_permissions,
+                    device_data.active,
+                    device_data.ip,
+                    SQLiteDatabase.dump_to_json_database_field(device_data.permissions),
                 ),
             )
         self.database.execute(
@@ -68,7 +66,7 @@ class Migration(BaseMigration):
                 ),
             )
         self.database.execute(
-            f'ALTER TABLE `info` ADD `mode` INTEGER NOT NULL DEFAULT {Mode.STAND_ALONE.value}',
+            f'ALTER TABLE `info` ADD `exec_mode` INTEGER NOT NULL DEFAULT {ExecMode.STAND_ALONE.value}',
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 
@@ -76,6 +74,6 @@ class Migration(BaseMigration):
         self.database.execute(
             'ALTER TABLE `info` ADD `update_password` TEXT',
         )
-        self.database.execute('ALTER TABLE `info` DROP COLUMN `mode`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `exec_mode`')
         self.database.execute('DROP TABLE IF EXISTS `account`')
-        self.database.execute('DROP TABLE IF EXISTS `computer`')
+        self.database.execute('DROP TABLE IF EXISTS `device`')

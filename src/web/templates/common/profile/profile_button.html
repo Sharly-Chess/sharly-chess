@@ -14,7 +14,7 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            {% if admin_event and not client.computer.localhost %}
+            {% if admin_event and not client.device.localhost %}
                 <div class="d-block">
                     <i class="bi bi-person-circle"></i>
                     <span class="pe-2 expanded-only {% if client.account.anonymous %}fst-italic{% else %}fw-bold{% endif %}">
@@ -28,8 +28,8 @@
             {% endif %}
             <div class="d-block">
                 <i class="bi bi-laptop"></i>
-                <span class="pe-2 expanded-only {% if client.computer.localhost %}fst-italic{% else %}fw-bold{% endif %}">
-                    {% if client.computer.localhost %}
+                <span class="pe-2 expanded-only {% if client.device.localhost %}fst-italic{% else %}fw-bold{% endif %}">
+                    {% if client.device.localhost %}
                         {{ _('Sharly Chess server') }}
                     {% else %}
                         {{ client.host }}
@@ -38,7 +38,7 @@
             </div>
             <div class="d-block">
                 <i class="bi bi-translate"></i>
-                <span class="pe-2 expanded-only {% if client.computer.localhost %}fst-italic{% else %}fw-bold{% endif %}">
+                <span class="pe-2 expanded-only {% if client.device.localhost %}fst-italic{% else %}fw-bold{% endif %}">
                     {{ locale_infos[locale].name }}
                 </span>
             </div>

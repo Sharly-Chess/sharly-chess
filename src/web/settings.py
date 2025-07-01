@@ -26,7 +26,7 @@ from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager
-from web.controllers.admin.computer_admin_controller import ComputerAdminController
+from web.controllers.admin.device_admin_controller import DeviceAdminController
 from web.controllers.admin.display_controller_admin_controller import (
     DisplayControllerAdminController,
 )
@@ -87,7 +87,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     DisplayControllerAdminController,
     QRCodeController,
     AccountAdminController,
-    ComputerAdminController,
+    DeviceAdminController,
     ProfileController,
     static_files_router,
     # Plugin controllers

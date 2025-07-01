@@ -7,15 +7,15 @@ from typing import TYPE_CHECKING
 from litestar_htmx import HTMXRequest
 
 from data.auth.entities import (
-    Computer,
+    Device,
     Account,
     anonymous_account,
-    unknown_computer,
-    localhost_computer,
+    unknown_device,
+    localhost_device,
 )
 from data.auth.roles import Role, RoleScope
 from data.tournament import Tournament
-from database.sqlite.event.event_store import ANY_COMPUTER_ID
+from database.sqlite.event.event_store import ANY_DEVICE_ID
 from web.session import SessionHandler
 
 if TYPE_CHECKING:
@@ -45,26 +45,26 @@ class Client:
             else None
         ) or '?'
         self.event: 'Event | None' = event
-        self.computer: Computer = self._find_computer()
-        self.active_computer: Computer = (
-            self.computer if self.computer.active else unknown_computer
+        self.device: Device = self._find_device()
+        self.active_device: Device = (
+            self.device if self.device.active else unknown_device
         )
         self.account: Account = self._find_account()
         self.active_account: Account = (
             self.account if self.account.active else anonymous_account
         )
 
-    def _find_computer(
+    def _find_device(
         self,
-    ) -> Computer:
-        """Returns a Computer object that corresponds to the host of the request."""
-        if Computer.host_is_localhost(self.host):
-            return localhost_computer
+    ) -> Device:
+        """Returns a Device object that corresponds to the host of the request."""
+        if Device.host_is_localhost(self.host):
+            return localhost_device
         if self.event is None:
-            return unknown_computer
+            return unknown_device
         with suppress(KeyError):
-            return self.event.computers_by_ip[self.host]
-        return self.event.computers_by_id[ANY_COMPUTER_ID]
+            return self.event.devices_by_ip[self.host]
+        return self.event.devices_by_id[ANY_DEVICE_ID]
 
     def _find_account(
         self,
@@ -82,18 +82,18 @@ class Client:
     def permissions_by_role(
         self,
     ) -> dict[Role, Permission]:
-        """Returns all the permissions by role, granted or inherited as a computer or an account."""
-        computer_permissions_by_role: dict[Role, Permission] = {}
+        """Returns all the permissions by role, granted or inherited as a device or an account."""
+        device_permissions_by_role: dict[Role, Permission] = {}
         for (
-            computer_role,
-            computer_permission,
-        ) in self.active_computer.permissions_by_role.items():
-            computer_permissions_by_role[computer_role] = Permission(
-                tournament_uniq_ids=computer_permission,
+            device_role,
+            device_permission,
+        ) in self.active_device.permissions_by_role.items():
+            device_permissions_by_role[device_role] = Permission(
+                tournament_uniq_ids=device_permission,
             )
-            for sub_role in computer_role.sub_roles:
-                computer_permissions_by_role[sub_role] = Permission(
-                    tournament_uniq_ids=computer_permission,
+            for sub_role in device_role.sub_roles:
+                device_permissions_by_role[sub_role] = Permission(
+                    tournament_uniq_ids=device_permission,
                     inherited=True,
                 )
         account_permissions_by_role: dict[Role, Permission] = {}
@@ -112,20 +112,20 @@ class Client:
         permissions_by_role: dict[Role, Permission] = {}
         for role in Role.roles():
             if (
-                role in computer_permissions_by_role
+                role in device_permissions_by_role
                 and role in account_permissions_by_role
             ):
-                # computer and account both allowed
+                # device and account both allowed
                 tournament_uniq_ids: str | None
                 if (
-                    computer_permissions_by_role[role].tournament_uniq_ids is None
+                    device_permissions_by_role[role].tournament_uniq_ids is None
                     or account_permissions_by_role[role].tournament_uniq_ids is None
                 ):
                     # allowed for all the tournaments
                     tournament_uniq_ids = None
                 else:
-                    computer_permission_parts: set[str] = set(
-                        computer_permissions_by_role[role].tournament_uniq_ids.split(  # type: ignore
+                    device_permission_parts: set[str] = set(
+                        device_permissions_by_role[role].tournament_uniq_ids.split(  # type: ignore
                             ','
                         )
                     )
@@ -133,19 +133,19 @@ class Client:
                         account_permissions_by_role[role].tournament_uniq_ids.split(',')  # type: ignore
                     )
                     tournament_uniq_ids = ','.join(
-                        computer_permission_parts | account_permission_parts
+                        device_permission_parts | account_permission_parts
                     )
                 permissions_by_role[role] = Permission(
                     tournament_uniq_ids=tournament_uniq_ids,
-                    inherited=computer_permissions_by_role[role].inherited
+                    inherited=device_permissions_by_role[role].inherited
                     and account_permissions_by_role[role].inherited,
                 )
-            elif role in computer_permissions_by_role:
+            elif role in device_permissions_by_role:
                 permissions_by_role[role] = Permission(
-                    tournament_uniq_ids=computer_permissions_by_role[
+                    tournament_uniq_ids=device_permissions_by_role[
                         role
                     ].tournament_uniq_ids,
-                    inherited=computer_permissions_by_role[role].inherited,
+                    inherited=device_permissions_by_role[role].inherited,
                 )
             elif role in account_permissions_by_role:
                 permissions_by_role[role] = Permission(
@@ -172,7 +172,7 @@ class Client:
                 search_roles,
             ]
         assert all(role.scope == RoleScope.APPLICATION for role in search_roles)
-        return self.active_computer.localhost
+        return self.active_device.localhost
 
     # ---------------------------------------------------------------------------------
     # Event scope
@@ -374,7 +374,7 @@ class Client:
         )
 
     # ---------------------------------------------------------------------------------
-    # Accounts and computers
+    # Accounts and devices
     # ---------------------------------------------------------------------------------
 
     @cached_property
@@ -448,7 +448,7 @@ class Client:
         }
 
     @property
-    def can_manage_computers(
+    def can_manage_devices(
         self,
     ) -> bool:
         """Returns true if the client can manage (add/update/delete) accounts."""
@@ -460,17 +460,17 @@ class Client:
         )
 
     @property
-    def can_manage_computer_by_computer_id(
+    def can_manage_device_by_device_id(
         self,
     ) -> dict[int, bool]:
         """Returns true if the client can manage (update/delete)
-        the given computer (the client must manage all the roles of the computer)."""
+        the given device (the client must manage all the roles of the device)."""
         assert self.event is not None
         return {
-            computer.id: all(
-                self.role_management[role] for role in computer.permissions_by_role
+            device.id: all(
+                self.role_management[role] for role in device.permissions_by_role
             )
-            for computer in self.event.computers_by_id.values()
+            for device in self.event.devices_by_id.values()
         }
 
     @property
@@ -859,7 +859,7 @@ class Client:
         )
 
     def __repr__(self) -> str:
-        return f'{self.__class__}(account={self.account}, computer={self.computer}, host={self.host}, permissions={self.permissions_by_role})'
+        return f'{self.__class__}(account={self.account}, device={self.device}, host={self.host}, permissions={self.permissions_by_role})'
 
     # ---------------------------------------------------------------------------------
     # Prizes

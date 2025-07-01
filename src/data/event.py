@@ -21,8 +21,8 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.entities import Computer, Account
-from data.auth.mode import Mode
+from data.auth.entities import Device, Account
+from data.auth.exec_mode import ExecMode
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -42,7 +42,7 @@ from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
     ANONYMOUS_ID,
-    ANY_COMPUTER_ID,
+    ANY_DEVICE_ID,
 )
 
 
@@ -204,10 +204,10 @@ class Event:
         return SharlyChessConfig.default_prize_currency
 
     @property
-    def mode(self) -> Mode:
-        if self.stored_event.mode is not None:
-            return Mode(self.stored_event.mode)
-        return SharlyChessConfig.mode
+    def exec_mode(self) -> ExecMode:
+        if self.stored_event.exec_mode is not None:
+            return ExecMode(self.stored_event.exec_mode)
+        return SharlyChessConfig.default_exec_mode
 
     @property
     def formatted_start_date_time(self) -> str:
@@ -822,34 +822,34 @@ class Event:
         )
 
     @cached_property
-    def computers_by_id(self) -> dict[int, Computer]:
+    def devices_by_id(self) -> dict[int, Device]:
         if self.errors:
             return {}
-        computers_by_id: dict[int, Computer] = {
-            stored_computer.id: Computer(stored_computer)
-            for stored_computer in self.stored_event.stored_computers
-            if stored_computer.id is not None
+        devices_by_id: dict[int, Device] = {
+            stored_device.id: Device(stored_device)
+            for stored_device in self.stored_event.stored_devices
+            if stored_device.id is not None
         }
-        return computers_by_id
+        return devices_by_id
 
     @cached_property
-    def computers_by_ip(self) -> dict[str, Computer]:
-        return {computer.ip: computer for computer in self.computers_by_id.values()}
+    def devices_by_ip(self) -> dict[str, Device]:
+        return {device.ip: device for device in self.devices_by_id.values()}
 
     @cached_property
-    def computers_sorted_by_ip(self) -> list[Computer]:
+    def devices_sorted_by_ip(self) -> list[Device]:
         return sorted(
-            self.computers_by_ip.values(),
-            key=lambda computer: (
-                not computer.localhost,
-                computer.unknown,
-                computer.ip,
+            self.devices_by_ip.values(),
+            key=lambda device: (
+                not device.localhost,
+                device.unknown,
+                device.ip,
             ),
         )
 
     @property
-    def unknown_computer(self) -> Computer:
-        return self.computers_by_id[ANY_COMPUTER_ID]
+    def unknown_device(self) -> Device:
+        return self.devices_by_id[ANY_DEVICE_ID]
 
     @cached_property
     def accounts_by_id(self) -> dict[int, Account]:

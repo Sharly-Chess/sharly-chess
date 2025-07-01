@@ -1,17 +1,17 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-computer-edit-modal">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-device-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action in ['create', 'clone', ] %}
-                    {{ _('Computer creation') }}
+                    {{ _('Device creation') }}
                 {% elif action == 'update' %}
-                    {% if admin_computer.unknown %}
-                        {{ _('Editing of unknown computers\' access') }}
+                    {% if admin_device.unknown %}
+                        {{ _('Editing of unknown devices\' access') }}
                     {% else %}
-                        {{ _('Editing of computer [%(ip)s]', ip=admin_computer.ip) }}
+                        {{ _('Editing of device [%(ip)s]', ip=admin_device.ip) }}
                     {% endif %}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of computer [%(ip)s]', username=admin_computer.username) }}
+                    {{ _('Deletion of device [%(ip)s]', username=admin_device.username) }}
                 {% else %}
                     ?
                 {% endif %}
@@ -21,11 +21,11 @@
             <form
                 id="modal-form"
                 {% if action in ['create', 'clone', ] %}
-                    hx-post="{{ url_for('admin-computer-create', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-post="{{ url_for('admin-device-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-computer-' ~ action, event_uniq_id=admin_event.uniq_id, computer_id=admin_computer.id) }}"
+                    hx-patch="{{ url_for('admin-device-' ~ action, event_uniq_id=admin_event.uniq_id, device_id=admin_device.id) }}"
                 {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-computer-' ~ action, event_uniq_id=admin_event.uniq_id, computer_id=admin_computer.id) }}"
+                    hx-delete="{{ url_for('admin-device-' ~ action, event_uniq_id=admin_event.uniq_id, device_id=admin_device.id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}
@@ -34,10 +34,10 @@
             >
                 {% if action == 'delete' %}
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a computer is permanent!') }}
+                        {{ _('Warning: the deletion of a device is permanent!') }}
                     </h4>
                 {% else %}
-                    {% if action in ['create', 'clone', ] or (admin_computer.edit_properties and client.can_manage_computer_by_computer_id[admin_computer.id]) %}
+                    {% if action in ['create', 'clone', ] or (admin_device.edit_properties and client.can_manage_device_by_device_id[admin_device.id]) %}
                         <h4>
                             {{ _('Identification') }}
                         </h4>
@@ -47,7 +47,7 @@
                                     name='ip',
                                     label=_('IP address:'),
                                     placeholder=_('E.g.: 192.168.1.43'),
-                                    help_text=_('The IP address, used tu identify the computer.'),
+                                    help_text=_('The IP address, used tu identify the device.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -56,17 +56,17 @@
                                     name='active',
                                     label='',
                                     help_text='',
-                                    placeholder=_('Enable this computer'),
+                                    placeholder=_('Enable this device'),
                                     info=_(
-                                        'You can temporarily invalidate computers by turning this switch off.'
+                                        'You can temporarily invalidate devices by turning this switch off.'
                                     ),
                                     data=data, errors=errors
                                 ) }}
                             </div>
                         </div>
                     {% endif %}
-                    {% if action in ['create', 'clone', ] or ( admin_computer.edit_permissions and client.can_manage_computer_by_computer_id[admin_computer.id]) %}
-                        {% with table_id='computer-table' %}
+                    {% if action in ['create', 'clone', ] or ( admin_device.edit_permissions and client.can_manage_device_by_device_id[admin_device.id]) %}
+                        {% with table_id='device-table' %}
                             {% include '../common/modal/access_permissions_table.html' %}
                         {% endwith %}
                     {% endif %}

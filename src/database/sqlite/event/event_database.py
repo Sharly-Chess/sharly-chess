@@ -16,7 +16,7 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
@@ -37,10 +37,10 @@ from database.sqlite.event.event_store import (
     StoredPrizeCategory,
     StoredPrizeCriterion,
     StoredPrize,
-    StoredComputer,
+    StoredDevice,
     StoredAccount,
     LOCALHOST_ID,
-    ANY_COMPUTER_ID,
+    ANY_DEVICE_ID,
     ANONYMOUS_ID,
 )
 from database.sqlite.event import migrations
@@ -296,7 +296,9 @@ class EventDatabase(MigrationDatabase):
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
-                        mode=event_dict.get('mode', SharlyChessConfig().default_mode),
+                        exec_mode=event_dict.get(
+                            'mode', SharlyChessConfig().default_exec_mode
+                        ),
                     )
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
@@ -992,7 +994,7 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
-        stored_event.stored_computers = list(self.load_stored_computers())
+        stored_event.stored_devices = list(self.load_stored_devices())
         stored_event.stored_accounts = list(self.load_stored_accounts())
         return stored_event
 
@@ -1065,37 +1067,38 @@ class EventDatabase(MigrationDatabase):
         )
 
         if reset_permissions:
-            mode: Mode = Mode(stored_event.mode)
-            # delete all the computers but the predefined ones
+            mode: ExecMode = ExecMode(stored_event.exec_mode)
+            # delete all the devices but the predefined ones
             self.execute(
-                'DELETE FROM `computer` WHERE `id` NOT IN (?, ?)',
+                'DELETE FROM `device` WHERE `id` NOT IN (?, ?)',
                 (
                     LOCALHOST_ID,
-                    ANY_COMPUTER_ID,
+                    ANY_DEVICE_ID,
                 ),
             )
             # Set the permissions that correspond to the mode
-            active, roles = mode.unknown_computer_reset_roles
             self.execute(
-                'UPDATE `computer` SET `active` = ?, `permissions` = ? WHERE id = ?',
+                'UPDATE `device` SET `active` = ?, `permissions` = ? WHERE id = ?',
                 (
-                    active,
+                    True,
                     self.dump_to_json_database_permissions(
-                        {role.value: None for role in roles}
+                        {role.value: None for role in mode.unknown_device_reset_roles}
                     ),
-                    ANY_COMPUTER_ID,
+                    ANY_DEVICE_ID,
                 ),
             )
             # Delete all the accounts but the predefined ones
             self.execute('DELETE FROM `account` WHERE `id` <> ?', (ANONYMOUS_ID,))
             # Set the permissions that correspond to the mode
-            active, roles = mode.anonymous_account_reset_roles
             self.execute(
                 'UPDATE `account` SET `active` = ?, `permissions` = ? WHERE id = ?',
                 (
-                    active,
+                    True,
                     self.dump_to_json_database_permissions(
-                        {role.value: None for role in roles}
+                        {
+                            role.value: None
+                            for role in mode.anonymous_account_reset_roles
+                        }
                     ),
                     ANONYMOUS_ID,
                 ),
@@ -2878,12 +2881,12 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))
 
     # ---------------------------------------------------------------------------------
-    # StoredComputer
+    # StoredDevice
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def _row_to_stored_computer(cls, row: dict[str, Any]) -> StoredComputer:
-        return StoredComputer(
+    def _row_to_stored_device(cls, row: dict[str, Any]) -> StoredDevice:
+        return StoredDevice(
             id=row['id'],
             active=cls.load_bool_from_database_field(row['active']),
             edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
@@ -2895,79 +2898,77 @@ class EventDatabase(MigrationDatabase):
             or {},
         )
 
-    def get_stored_computer(self, computer_id: int) -> StoredComputer | None:
+    def get_stored_device(self, device_id: int) -> StoredDevice | None:
         self.execute(
-            'SELECT * FROM `computer` WHERE `id` = ?',
-            (computer_id,),
+            'SELECT * FROM `device` WHERE `id` = ?',
+            (device_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
-            return self._row_to_stored_computer(row)
+            return self._row_to_stored_device(row)
         return None
 
-    def load_stored_computers(self) -> Iterator[StoredComputer]:
+    def load_stored_devices(self) -> Iterator[StoredDevice]:
         self.execute(
-            'SELECT * FROM `computer` ORDER BY `ip`',
+            'SELECT * FROM `device` ORDER BY `ip`',
             (),
         )
-        yield from map(self._row_to_stored_computer, self.fetchall())
+        yield from map(self._row_to_stored_device, self.fetchall())
 
-    def _write_stored_computer(
+    def _write_stored_device(
         self,
-        stored_computer: StoredComputer,
-    ) -> StoredComputer:
+        stored_device: StoredDevice,
+    ) -> StoredDevice:
         fields: list[str] = [
             'active',
             'ip',
             'permissions',
         ]
         params: list = [
-            stored_computer.active,
-            stored_computer.ip,
-            self.dump_to_json_database_permissions(stored_computer.permissions),
+            stored_device.active,
+            stored_device.ip,
+            self.dump_to_json_database_permissions(stored_device.permissions),
         ]
-        fetched_stored_computer: StoredComputer | None
-        if stored_computer.id is None:
+        fetched_stored_device: StoredDevice | None
+        if stored_device.id is None:
             protected_fields: list[str] = [f'`{f}`' for f in fields]
             self.execute(
-                f'INSERT INTO `computer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
+                f'INSERT INTO `device`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
                 tuple(params),
             )
-            computer_id: int | None = self._last_inserted_id()
-            if computer_id is None:
-                raise RuntimeError('Computer insertion failed')
-            fetched_stored_computer = self.get_stored_computer(computer_id=computer_id)
+            device_id: int | None = self._last_inserted_id()
+            if device_id is None:
+                raise RuntimeError('Device insertion failed')
+            fetched_stored_device = self.get_stored_device(device_id=device_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_computer.id]
+            params += [stored_device.id]
             self.execute(
-                f'UPDATE `computer` SET {", ".join(field_sets)} WHERE `id` = ?',
+                f'UPDATE `device` SET {", ".join(field_sets)} WHERE `id` = ?',
                 tuple(params),
             )
-            fetched_stored_computer = self.get_stored_computer(
-                computer_id=stored_computer.id
-            )
-        if fetched_stored_computer is None:
-            raise RuntimeError('Computer write failed')
+            fetched_stored_device = self.get_stored_device(device_id=stored_device.id)
+        if fetched_stored_device is None:
+            raise RuntimeError('Device write failed')
         self.set_last_update()
-        return fetched_stored_computer
+        return fetched_stored_device
 
-    def add_stored_computer(
+    def add_stored_device(
         self,
-        stored_computer: StoredComputer,
-    ) -> StoredComputer:
-        assert stored_computer.id is None, f'stored_computer.id={stored_computer.id}'
-        return self._write_stored_computer(stored_computer)
+        stored_device: StoredDevice,
+    ) -> StoredDevice:
+        assert stored_device.id is None, f'stored_device.id={stored_device.id}'
+        return self._write_stored_device(stored_device)
 
-    def update_stored_computer(
+    def update_stored_device(
         self,
-        stored_computer: StoredComputer,
-    ) -> StoredComputer:
-        assert stored_computer.id is not None
-        return self._write_stored_computer(stored_computer)
+        stored_device: StoredDevice,
+    ) -> StoredDevice:
+        assert stored_device.id is not None
+        return self._write_stored_device(stored_device)
 
-    def delete_stored_computer(self, computer_id: int):
-        self.execute('DELETE FROM `computer` WHERE `id` = ?', (computer_id,))
+    def delete_stored_device(self, device_id: int):
+        self.execute('DELETE FROM `device` WHERE `id` = ?', (device_id,))
         self.set_last_update()
 
     # ---------------------------------------------------------------------------------

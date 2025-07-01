@@ -15,7 +15,7 @@
 
 Three execution modes are possible:
 
-- **Stand-alone (by default)**: You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer.
+- **Stand-alone (by default)**: You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server.
 - **Standard**: Other devices connected to your network can display screens, check-in players and enter results.
 - **Custom**: authorizations for devices and users are based on roles.
 
@@ -24,7 +24,7 @@ The execution mode is set by default at application-level (for all the events) a
 ## Roles
 
 > [!IMPORTANT]
-> The roles are used only when the custom mode is used, they offer a powerful way to customize the authorizations granted to users and devices:
+> The roles are used only when the custom mode is selected, they offer a powerful way to customize the authorizations granted to accounts and devices:
 
 The roles in _Sharly Chess_ are:
 
@@ -65,11 +65,11 @@ Devices are defined on the web UI by their IP address.
 
 ### Examples
 
-| :unlock:/:lock: |     Computer      | Comment           |
+| :unlock:/:lock: |      Device       | Comment           |
 |:---------------:|:-----------------:|:------------------|
-|     :lock:      |    ``0.0.0.0``    | Any computer      |
+|     :lock:      |    ``0.0.0.0``    | Any device        |
 |     :lock:      |   ``127.0.0.1``   | The server itself |
-|                 | ``192.168.1.115`` | A local computer  |
+|                 | ``192.168.1.115`` | A local device    |
 
 ### Device roles
 
@@ -78,13 +78,13 @@ Devices can be given roles, without any other authentication.
 > [!IMPORTANT]
 > They must be trusted devices on a trusted network!
 
-| :unlock:/:lock: |     Computer      |        Comment         |   Administrator    | Organizer | Screen<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer |     Spectator      |
+| :unlock:/:lock: |      Device       |        Comment         |   Administrator    | Organizer | Screen<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer |     Spectator      |
 |:---------------:|:-----------------:|:----------------------:|:------------------:|:---------:|:------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:------------------:|:------------------:|
 |     :lock:      |   ``127.0.0.1``   | Server (Chief Arbiter) | :white_check_mark: |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
 |                 | ``192.168.1.100`` |  Deputy Chief Arbiter  |        :x:         |    :x:    |        :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
-|                 | ``192.168.1.115`` |   Check-in computer    |        :x:         |    :x:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  |        :x:         |        :ok:        |
-|                 | ``192.168.1.119`` |    Result computer     |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          | :white_check_mark: |        :ok:        |
-|                 |   ``0.0.0.0``     |    Display computer    |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         | :white_check_mark: |
+|                 | ``192.168.1.115`` |    Check-in device     |        :x:         |    :x:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  |        :x:         |        :ok:        |
+|                 | ``192.168.1.119`` |     Result device      |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          | :white_check_mark: |        :ok:        |
+|                 |    ``0.0.0.0``    |     Display device     |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         | :white_check_mark: |
 
 > [!NOTE]
 > Connections from the server automatically have the Administrator role (not configurable).
@@ -136,7 +136,7 @@ Accounts can be given roles, after they authenticate.
 | View the basic event config    |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:         |    :x:    |       :x:       |
 | **ROLES**                      |                 |           |                    |                   |                              |                      |                    |                      |                     |           |                 |
 | Manage Accounts                |      :ok:       |   :ok:    |        :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
-| Manage Computers               |      :ok:       |   :ok:    |        :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
+| Manage Devices                 |      :ok:       |   :ok:    |        :x:         |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
 | Update Organizers              |      :ok:       |    :x:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
 | Update Display Managers        |      :ok:       |   :ok:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
 | Update Chief Arbiters          |      :ok:       |   :ok:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |

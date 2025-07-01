@@ -25,10 +25,6 @@ msgid "%(count)d players unpaired"
 msgstr "%(count)d joueur·euses non-apparié·es"
 
 #, python-format
-msgid "%(player)s - Round %(num)s"
-msgstr "%(player)s - Ronde %(num)s"
-
-#, python-format
 msgid "%(lib)s version"
 msgstr "Version de %(lib)s"
 
@@ -57,6 +53,10 @@ msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
 msgstr[0] "%(num)d prix créé avec succès !"
 msgstr[1] "%(num)d prix créés avec succès !"
+
+#, python-format
+msgid "%(player)s - Round %(num)s"
+msgstr "%(player)s - Ronde %(num)s"
 
 #, python-format
 msgid "%(set_name)s (check-in)"
@@ -255,11 +255,14 @@ msgstr "Actions"
 msgid "Add"
 msgstr "Ajouter"
 
-msgid "Add a computer to the event."
-msgstr "Ajouter un ordinateur à l'évènement."
-
 msgid "Add a criterion to the list."
 msgstr "Ajouter un critère à la liste."
+
+msgid "Add a device"
+msgstr "Ajouter un appareil"
+
+msgid "Add a device to the event."
+msgstr "Ajouter un appareil à l'évènement."
 
 msgid "Add a display controller to the event."
 msgstr "Ajouter un pilote d'afficheurs."
@@ -336,6 +339,9 @@ msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si 
 msgid "Add player"
 msgstr "Ajouter"
 
+msgid "Adding devices allows you to grant permissions to people on other clients,"
+msgstr "La création d'appareils vous permet de donner des permissions à d'autres appareils,"
+
 msgid "Administrator"
 msgstr "Administration"
 
@@ -395,9 +401,6 @@ msgstr "Évènement archivé"
 
 msgid "Archived events"
 msgstr "Évènements archivés"
-
-msgid "Are you sure you wish to proceed?"
-msgstr "Êtes vous sûr de vouloir continuer ?"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -517,8 +520,8 @@ msgstr "Perf. parfaite moyenne"
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
 
-msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED COMPUTERS!"
-msgstr "NE DONNEZ LES RÔLES SENSIBLES QU'À DES ORDINATEURS DE CONFIANCE !"
+msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED DEVICES!"
+msgstr "NE DONNEZ LES RÔLES SENSIBLES QU'À DES APPAREILS DE CONFIANCE !"
 
 msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!"
 msgstr "NE DONNEZ LES RÔLES SENSIBLES QU'À DES PERSONNES DE CONFIANCE !"
@@ -914,27 +917,6 @@ msgstr "Appariements complémentaires générés."
 msgid "Complementary pairings successfully generated!"
 msgstr "Appariements complémentaires générés avec succès !"
 
-msgid "Computer [{ip}] already set."
-msgstr "Ordinateur [{ip}] déjà défini."
-
-msgid "Computer [{ip}] has been created."
-msgstr "L'ordinateur [{ip}] a été créé."
-
-msgid "Computer [{ip}] has been deleted."
-msgstr "L'rdinateur [{ip}] a été supprimé."
-
-msgid "Computer [{ip}] has been updated."
-msgstr "L'ordinateur [{ip}] a été mis à jour."
-
-msgid "Computer creation"
-msgstr "Création d'un ordinateur"
-
-msgid "Computers"
-msgstr "Ordinateurs"
-
-msgid "Computers ({num})"
-msgstr "Ordinateurs ({num})"
-
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -944,8 +926,8 @@ msgstr "Connexion"
 msgid "Connect other devices!"
 msgstr "Connectez d'autres appareils !"
 
-msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
-msgstr "Connectez vos appareils (ordinateurs, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
+msgid "Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgstr "Connectez vos appareils (portables, tablettes, smartphones) au serveur Sharly Chess en scannant ce QR code (cliquez ci-dessous pour une version imprimable)."
 
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
@@ -1025,9 +1007,6 @@ msgstr "Créez un groupe de prix pour commencer."
 msgid "Create a category"
 msgstr "Créer une catégorie"
 
-msgid "Create a computer"
-msgstr "Créer un ordinateur"
-
 msgid "Create a display controller"
 msgstr "Créer un pilote d'afficheurs"
 
@@ -1094,9 +1073,6 @@ msgstr "Créer avec les écrans par défaut"
 msgid "Creating accounts allows you to grant permissions to people on other clients,"
 msgstr "La création de comptes vous permet de donner des permissions à des personnes sur d'autres clients,"
 
-msgid "Creating computers allows you to grant permissions to people on other clients,"
-msgstr "La création d'ordinateurs vous permet de donner des permissions à d'autres ordinateurs,"
-
 msgid "Criteria"
 msgstr "Critères"
 
@@ -1143,8 +1119,8 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Customize the permissions (advanced feature)"
-msgstr "Personnaliser les permissions (fonctionnalité avancée)"
+msgid "Custom"
+msgstr "Personnalisation"
 
 msgid "DOUBLE"
 msgstr "DOUBLE"
@@ -1210,8 +1186,8 @@ msgstr "Répertoire par défaut des fichiers Papi"
 msgid "Default directory of the Papi files:"
 msgstr "Répertoire par défaut des fichiers Papi :"
 
-msgid "Default execution mode for new events"
-msgstr "Mode d'exécution par défaut pour les nouveaux évènements"
+msgid "Default execution mode"
+msgstr "Mode d'exécution par défaut"
 
 msgid "Default federation"
 msgstr "Fédération par défaut"
@@ -1244,14 +1220,14 @@ msgstr "Délai :"
 msgid "Delete"
 msgstr "Supprimer"
 
-msgid "Delete the Computer."
-msgstr "Supprimer l'ordinateur."
-
 msgid "Delete the account."
 msgstr "Supprimer le compte."
 
 msgid "Delete the category."
 msgstr "Supprimer la catégorie."
+
+msgid "Delete the device."
+msgstr "Supprimer l'appareil."
 
 msgid "Delete the display controller."
 msgstr "Supprimer le pilote d'afficheurs."
@@ -1287,8 +1263,8 @@ msgid "Deletion of account [%(username)s]"
 msgstr "Suppression du compte [%(username)s]"
 
 #, python-format
-msgid "Deletion of computer [%(ip)s]"
-msgstr "Suppression de l'ordinateur [%(ip)s]"
+msgid "Deletion of device [%(ip)s]"
+msgstr "Suppression de l'appareil [%(ip)s]"
 
 #, python-format
 msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
@@ -1336,6 +1312,27 @@ msgstr "Les descriptions ne peuvent être définies que pour les prix non-monét
 
 msgid "Details"
 msgstr "Détails"
+
+msgid "Device [{ip}] already set."
+msgstr "Appareil [{ip}] déjà défini."
+
+msgid "Device [{ip}] has been created."
+msgstr "L'appareil [{ip}] a été créé."
+
+msgid "Device [{ip}] has been deleted."
+msgstr "L'rdinateur [{ip}] a été supprimé."
+
+msgid "Device [{ip}] has been updated."
+msgstr "L'appareil [{ip}] a été mis à jour."
+
+msgid "Device creation"
+msgstr "Création d'un appareil"
+
+msgid "Devices"
+msgstr "Appareils"
+
+msgid "Devices ({num})"
+msgstr "Appareils ({num})"
 
 msgid "Direct encounter"
 msgstr "Rencontre directe"
@@ -1385,8 +1382,8 @@ msgstr "Pilotes d'afficheurs"
 msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheurs ({num})"
 
-msgid "Display controllers allow you to control screens at your event from your main computer."
-msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
+msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
+msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé en mode personnalisable)."
 
 msgid "Display manager"
 msgstr "Gestion de l'affichage"
@@ -1479,8 +1476,8 @@ msgstr "Dupliquer le compte."
 msgid "Duplicate the category and its criteria and prizes."
 msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
 
-msgid "Duplicate the computer."
-msgstr "Dupliquer l'ordinateur."
+msgid "Duplicate the device."
+msgstr "Dupliquer l'appareil."
 
 msgid "Duplicate the rotator."
 msgstr "Dupliquer l'écran rotatif."
@@ -1687,8 +1684,8 @@ msgstr "Modifier l'historique du·de la joueur·euse."
 msgid "Edit the properties and the permissions of the account."
 msgstr "Éditer les propriétés et les permissions du compte."
 
-msgid "Edit the properties and the permissions of the computer."
-msgstr "Éditer les propriétés et les permissions de l'ordinateur."
+msgid "Edit the properties and the permissions of the device."
+msgstr "Éditer les propriétés et les permissions de l'appareil."
 
 msgid "Edit the properties of the category."
 msgstr "Éditer les propriétés de la catégorie."
@@ -1722,12 +1719,12 @@ msgid "Editing of account [%(username)s]"
 msgstr "Édition du compte [%(username)s]"
 
 #, python-format
-msgid "Editing of computer [%(ip)s]"
-msgstr "Édition de l'ordinateur [%(ip)s]"
-
-#, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
+
+#, python-format
+msgid "Editing of device [%(ip)s]"
+msgstr "Édition de l'appareil [%(ip)s]"
 
 #, python-format
 msgid "Editing of display controller [%(display_controller_uniq_id)s]"
@@ -1764,8 +1761,8 @@ msgstr "Édition du tournoi [%(tournament_uniq_id)s]"
 msgid "Editing of unauthenticated access"
 msgstr "Édition de l'accès non-authentifié"
 
-msgid "Editing of unknown computers' access"
-msgstr "Édition de l'accès des ordinateurs inconnus"
+msgid "Editing of unknown devices' access"
+msgstr "Édition de l'accès des appareils inconnus"
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
@@ -1782,8 +1779,8 @@ msgstr "Mél :"
 msgid "Enable this account"
 msgstr "Activer ce compte"
 
-msgid "Enable this computer"
-msgstr "Activer cet ordinateur"
+msgid "Enable this device"
+msgstr "Activer cet appareil"
 
 msgid "Enable/disable the details of events on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
@@ -2201,8 +2198,8 @@ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche d
 msgid "Frequency: {frequency}"
 msgstr "Fréquence : {frequency}"
 
-msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
-msgstr "Depuis votre ordinateur principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
+msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
 msgid "Full-Point Bye"
 msgstr "Point joker entier"
@@ -2409,8 +2406,8 @@ msgstr "Message d'information"
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
 
-msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
-msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
+msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
+msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
 
 msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
@@ -2939,12 +2936,6 @@ msgstr "Aucun appariement."
 msgid "No passed events."
 msgstr "Aucun évènement passé."
 
-msgid "No password required"
-msgstr "Pas de mot de passe demandé"
-
-msgid "No password set for the results entry"
-msgstr "Aucun mot de passe pour la saisie des résultats"
-
 msgid "No permissions"
 msgstr "Aucune permission"
 
@@ -3185,17 +3176,8 @@ msgstr "Organisation"
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
 
-msgid "Other devices connected to your network can display screens (pairings, results, rankings...), they are not allowed to do anything else."
-msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans (appariements, résultats, classements...), ils ne peuvent rien faire d'autre."
-
-msgid "Other devices connected to your network can display screens and check-in players."
-msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans et pointer les joueur·euses."
-
-msgid "Other devices connected to your network can display screens and enter results."
-msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans et entrer les résultats."
-
-msgid "Other devices connected to your network can display screens, check-in players and enter results."
-msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans, pointer les joueur·euses et entrer les résultats."
+msgid "Other devices connected to your network can display screens, check-in players and enter results (depending on the screens you publish)."
+msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans, pointer les joueur·euses et entrer les résultats (selon les écrans que vous publiez)."
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
@@ -3349,12 +3331,6 @@ msgstr "Évènements passés"
 msgid "Password does not match."
 msgstr "Le mot de passe n'est pas correct."
 
-msgid "Password to enter results"
-msgstr "Mot de passe de saisie des résultats"
-
-msgid "Password to enter results:"
-msgstr "Mot de passe de saisie des résultats :"
-
 msgid "Password:"
 msgstr "Mot de passe :"
 
@@ -3414,12 +3390,12 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
-msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
-
-#, python-format
 msgid "Player [%(player)s] has been created."
 msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
+
+#, python-format
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament_uniq_id)s]."
 
 msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
 msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament_uniq_id}] au tournoi [{dst_tournament_uniq_id}]."
@@ -4311,6 +4287,9 @@ msgstr "Visualisation"
 msgid "Split by:"
 msgstr "Séparateur :"
 
+msgid "Stand-alone"
+msgstr "Autonome"
+
 msgid "Standard"
 msgstr "Standard"
 
@@ -4383,8 +4362,8 @@ msgstr "L'identifiant utilisé pour se connecter à la plateforme ChessEvent (by
 msgid "The IP address [{ip}] is not valid."
 msgstr "L'adresse IP [{ip}]  n'est pas valide."
 
-msgid "The IP address, used tu identify the computer."
-msgstr "L'adresse IP, utilisée pour identifier l'ordinateur."
+msgid "The IP address, used tu identify the device."
+msgstr "L'adresse IP, utilisée pour identifier l'appareil."
 
 #, python-format
 msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
@@ -4563,8 +4542,8 @@ msgstr "La temps minimal, quelle que soit la différence de classement entre les
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
 
-msgid "The mode below is used by default when creating new events (it can be changed at any time)."
-msgstr "Le mode ci-dessous est utilisé par défaut à la création de nouveaux évènements (il peut être modifié à n'importe quel moment)."
+msgid "The mode below is used by default for the events."
+msgstr ""
 
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
@@ -4652,9 +4631,6 @@ msgstr "La mot de passe est composé de 10 caractères majuscules, il est utilis
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
-
-msgid "The password required on input screens to enter results (optional)."
-msgstr "Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif)."
 
 msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Sharly Chess event of the tournament)."
 msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChessEvent (par défaut le mot de passe ChessEvent défini pour l'évènement Sharly Chess du tournoi)."
@@ -4853,17 +4829,17 @@ msgstr "Ce compte ne peut pas être supprimé."
 msgid "This action can not be applied to the tournaments of this event."
 msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
 
-msgid "This computer can not be deleted."
-msgstr "Cet ordinateur ne peut pas être supprimé."
-
-msgid "This computer can not be duplicated."
-msgstr "Cet ordinateur ne peut pas être dupliqué."
-
-msgid "This computer can not be updated."
-msgstr "Cet ordinateur ne peut pas être modifié."
-
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
+
+msgid "This device can not be deleted."
+msgstr "Cet appareil ne peut pas être supprimé."
+
+msgid "This device can not be duplicated."
+msgstr "Cet appareil ne peut pas être dupliqué."
+
+msgid "This device can not be updated."
+msgstr "Cet appareil ne peut pas être modifié."
 
 msgid "This display controller is private (not visible by the spectators)."
 msgstr "Ce pilote d'afficheurs est privé (non visible des spectateur·ices)."
@@ -5293,8 +5269,8 @@ msgstr "Identifiant unique : %(uniq_id)s"
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
-msgid "Unknown computers' access has been updated."
-msgstr "L'accès des ordinateurs inconnus a été mis à jour."
+msgid "Unknown devices' access has been updated."
+msgstr "L'accès des appareils inconnus a été mis à jour."
 
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
@@ -5401,20 +5377,14 @@ msgstr "Limite Elo haute"
 msgid "Use Sharly Chess as a stand-alone application"
 msgstr "Utiliser Sharly Chess comme une application autonome"
 
-msgid "Use connected devices to display screens"
-msgstr "Utiliser des appareils connectés pour afficher des écrans"
-
-msgid "Use connected devices to display screens and check-in players"
-msgstr "Utiliser des appareils connectés pour afficher des écrans et pointer les joueur·euses"
-
-msgid "Use connected devices to display screens and enter results"
-msgstr "Utiliser des appareils connectés pour afficher des écrans et entrer des résultats"
-
 msgid "Use connected devices to display screens, check-in players and enter results"
 msgstr "Utiliser des appareils connectés pour afficher des écrans, pointer les joueur·euses et entrer des résultats"
 
 msgid "Use connected devices to…"
 msgstr "Utiliser des appareils connectés pour…"
+
+msgid "Use customize permissions for accounts and devices"
+msgstr "Personnalisez les actions autorisées pour les comptes et les appareils"
 
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
@@ -5486,8 +5456,8 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
-msgid "Warning: the deletion of a computer is permanent!"
-msgstr "Attention : la suppression d'un ordinateur est définitive !"
+msgid "Warning: the deletion of a device is permanent!"
+msgstr "Attention : la suppression d'un appareil est définitive !"
 
 msgid "Warning: the deletion of a display controller is permanent!"
 msgstr "Attention : la suppression d'un pilote d'afficheurs est définitive !"
@@ -5612,7 +5582,7 @@ msgid "You are connected on an unknown client (%(host)s)."
 msgstr "Vous êtes connecté·e sur un client inconnu (%(host)s)."
 
 #, python-format
-msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown computer)."
+msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown device)."
 msgstr "Vous êtes connecté·e sur le client « %(host)s » mais les accès de ce client sont désactivés (vous avez les mêmes permissions que les clients inconnus)."
 
 #, python-format
@@ -5646,8 +5616,8 @@ msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
 msgid "You are not allowed to delete this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
 
-msgid "You are not allowed to delete this computer."
-msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
+msgid "You are not allowed to delete this device."
+msgstr "Vous n'êtes pas autorisé·e à dupliquer cet appareil."
 
 msgid "You are not allowed to download fees."
 msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."
@@ -5655,8 +5625,8 @@ msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation
 msgid "You are not allowed to duplicate this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
 
-msgid "You are not allowed to duplicate this computer."
-msgstr "Vous n'êtes pas autorisé·e à dupliquer cet ordinateur."
+msgid "You are not allowed to duplicate this device."
+msgstr "Vous n'êtes pas autorisé·e à dupliquer cet appareil."
 
 msgid "You are not allowed to enter results."
 msgstr "Vous n'êtes pas autorisé·e à entrer des résultats."
@@ -5709,14 +5679,14 @@ msgstr "Vous n'êtes pas autorisé·e à modifier le tournoi."
 msgid "You are not allowed to update this account."
 msgstr "Vous n'êtes pas autorisé·e à modifier ce compte."
 
-msgid "You are not allowed to update this computer."
-msgstr "Vous n'êtes pas autorisé·e à modifier cet ordinateur."
+msgid "You are not allowed to update this device."
+msgstr "Vous n'êtes pas autorisé·e à modifier cet appareil."
 
 msgid "You are on the Sharly Chess server."
 msgstr "Vous êtes sur le serveur Sharly Chess."
 
-msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!)."
-msgstr "Vous êtes la seule personne à gérer votre évènement, sur le serveur Sharly Chess; les autres appareils ne sont pas autorisés à se connecter à votre ordinateur (en particulier, vous devrez partager un affichage aux utilisateur·ices pour montrer les appariements, les résultats, les classements... ou les imprimer !)."
+msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!)."
+msgstr "Vous êtes la seule personne à gérer votre évènement, sur le serveur Sharly Chess; les autres appareils ne sont pas autorisés à se connecter à votre appareil (en particulier, vous devrez partager un affichage aux utilisateur·ices pour montrer les appariements, les résultats, les classements... ou les imprimer !)."
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."
@@ -5727,11 +5697,11 @@ msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela
 msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette case."
 
-msgid "You can temporarily invalidate computers by turning this switch off."
-msgstr "Vous pouvez désactiver temporairement les ordinateurs en décochant cette case."
+msgid "You can temporarily invalidate devices by turning this switch off."
+msgstr "Vous pouvez désactiver temporairement les appareils en décochant cette case."
 
-msgid "You decide which computers and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers..."
-msgstr "Vous décidez les ordinateurs et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes... Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans..."
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers..."
+msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes... Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans..."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
@@ -5977,15 +5947,66 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-msgid "…display screens"
-msgstr "…afficher des écrans"
+#~ msgid "Are you sure you wish to proceed?"
+#~ msgstr "Êtes vous sûr de vouloir continuer ?"
 
-msgid "…display screens and check-in players"
-msgstr "…afficher des écrans et pointer les joueur·euses"
+#~ msgid "Add a device"
+#~ msgstr "Créer un appareil"
 
-msgid "…display screens and enter results"
-msgstr "…afficher des écrans et entrer des résultats"
+#~ msgid "Adding devices allows you to grant permissions to people on other clients,"
+#~ msgstr "La création d'appareils vous permet de donner des permissions à d'autres appareils,"
 
-msgid "…display screens, check-in players and enter results"
-msgstr "…afficher des écrans, pointer les joueur·euses et entrer des résultats"
+#~ msgid "Customize the permissions (advanced feature)"
+#~ msgstr "Personnaliser les permissions (fonctionnalité avancée)"
+
+#~ msgid "No password required"
+#~ msgstr "Pas de mot de passe demandé"
+
+#~ msgid "No password set for the results entry"
+#~ msgstr "Aucun mot de passe pour la saisie des résultats"
+
+#~ msgid "Other devices connected to your network can display screens (pairings, results, rankings...), they are not allowed to do anything else."
+#~ msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans (appariements, résultats, classements...), ils ne peuvent rien faire d'autre."
+
+#~ msgid "Other devices connected to your network can display screens and check-in players."
+#~ msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans et pointer les joueur·euses."
+
+#~ msgid "Other devices connected to your network can display screens and enter results."
+#~ msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans et entrer les résultats."
+
+#~ msgid "Other devices connected to your network can display screens, check-in players and enter results."
+#~ msgstr "Les appareils connectés sur votre réseau peuvent afficher les écrans, pointer les joueur·euses et entrer les résultats."
+
+#~ msgid "Password to enter results"
+#~ msgstr "Mot de passe de saisie des résultats"
+
+#~ msgid "Password to enter results:"
+#~ msgstr "Mot de passe de saisie des résultats :"
+
+#~ msgid "The password required on input screens to enter results (optional)."
+#~ msgstr "Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif)."
+
+#~ msgid "Use connected devices to display screens"
+#~ msgstr "Utiliser des appareils connectés pour afficher des écrans"
+
+#~ msgid "Use connected devices to display screens and check-in players"
+#~ msgstr "Utiliser des appareils connectés pour afficher des écrans et pointer les joueur·euses"
+
+#~ msgid "Use connected devices to display screens and enter results"
+#~ msgstr "Utiliser des appareils connectés pour afficher des écrans et entrer des résultats"
+
+#~ msgid "…display screens"
+#~ msgstr "…afficher des écrans"
+
+#~ msgid "…display screens and check-in players"
+#~ msgstr "…afficher des écrans et pointer les joueur·euses"
+
+#~ msgid "…display screens and enter results"
+#~ msgstr "…afficher des écrans et entrer des résultats"
+
+#~ msgid "…display screens, check-in players and enter results"
+#~ msgstr "…afficher des écrans, pointer les joueur·euses et entrer des résultats"
+
+#~ msgid "The mode below is used by default when creating new events (it can be changed at any time)."
+#~ msgstr "Le mode ci-dessous est utilisé par défaut à la création de nouveaux évènements (il peut être modifié à n'importe quel moment)."
 

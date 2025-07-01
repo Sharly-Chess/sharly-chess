@@ -22,11 +22,11 @@
                     </h4>
                 {% endif %}
                 {% with
-                    title=_('Default execution mode for new events'),
-                    text=_('The mode below is used by default when creating new events (it can be changed at any time).'),
-                    name='default_mode'
+                    title=_('Default execution mode'),
+                    text=_('The mode below is used by default for the events.'),
+                    name='default_exec_mode'
                 %}
-                    {% include '../common/modal/mode.html' %}
+                    {% include '../common/modal/exec_mode.html' %}
                 {% endwith %}
                 <h4>
                     {{ _('General') }}

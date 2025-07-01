@@ -25,10 +25,6 @@ msgid "%(count)d players unpaired"
 msgstr ""
 
 #, python-format
-msgid "%(player)s - Round %(num)s"
-msgstr ""
-
-#, python-format
 msgid "%(lib)s version"
 msgstr ""
 
@@ -57,6 +53,10 @@ msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-format
+msgid "%(player)s - Round %(num)s"
+msgstr ""
 
 #, python-format
 msgid "%(set_name)s (check-in)"
@@ -255,10 +255,13 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-msgid "Add a computer to the event."
+msgid "Add a criterion to the list."
 msgstr ""
 
-msgid "Add a criterion to the list."
+msgid "Add a device"
+msgstr ""
+
+msgid "Add a device to the event."
 msgstr ""
 
 msgid "Add a display controller to the event."
@@ -336,6 +339,9 @@ msgstr ""
 msgid "Add player"
 msgstr ""
 
+msgid "Adding devices allows you to grant permissions to people on other clients,"
+msgstr ""
+
 msgid "Administrator"
 msgstr ""
 
@@ -394,9 +400,6 @@ msgid "Archived event"
 msgstr ""
 
 msgid "Archived events"
-msgstr ""
-
-msgid "Are you sure you wish to proceed?"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -517,7 +520,7 @@ msgstr "Avg. Perfect Perf."
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
-msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED COMPUTERS!"
+msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED DEVICES!"
 msgstr ""
 
 msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!"
@@ -914,27 +917,6 @@ msgstr ""
 msgid "Complementary pairings successfully generated!"
 msgstr ""
 
-msgid "Computer [{ip}] already set."
-msgstr ""
-
-msgid "Computer [{ip}] has been created."
-msgstr ""
-
-msgid "Computer [{ip}] has been deleted."
-msgstr ""
-
-msgid "Computer [{ip}] has been updated."
-msgstr ""
-
-msgid "Computer creation"
-msgstr ""
-
-msgid "Computers"
-msgstr ""
-
-msgid "Computers ({num})"
-msgstr ""
-
 msgid "Configuration"
 msgstr ""
 
@@ -944,7 +926,7 @@ msgstr ""
 msgid "Connect other devices!"
 msgstr ""
 
-msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgid "Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -1025,9 +1007,6 @@ msgstr ""
 msgid "Create a category"
 msgstr ""
 
-msgid "Create a computer"
-msgstr ""
-
 msgid "Create a display controller"
 msgstr ""
 
@@ -1094,9 +1073,6 @@ msgstr ""
 msgid "Creating accounts allows you to grant permissions to people on other clients,"
 msgstr ""
 
-msgid "Creating computers allows you to grant permissions to people on other clients,"
-msgstr ""
-
 msgid "Criteria"
 msgstr ""
 
@@ -1143,7 +1119,7 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Customize the permissions (advanced feature)"
+msgid "Custom"
 msgstr ""
 
 msgid "DOUBLE"
@@ -1210,7 +1186,7 @@ msgstr ""
 msgid "Default directory of the Papi files:"
 msgstr ""
 
-msgid "Default execution mode for new events"
+msgid "Default execution mode"
 msgstr ""
 
 msgid "Default federation"
@@ -1244,13 +1220,13 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid "Delete the Computer."
-msgstr ""
-
 msgid "Delete the account."
 msgstr ""
 
 msgid "Delete the category."
+msgstr ""
+
+msgid "Delete the device."
 msgstr ""
 
 msgid "Delete the display controller."
@@ -1287,7 +1263,7 @@ msgid "Deletion of account [%(username)s]"
 msgstr ""
 
 #, python-format
-msgid "Deletion of computer [%(ip)s]"
+msgid "Deletion of device [%(ip)s]"
 msgstr ""
 
 #, python-format
@@ -1335,6 +1311,27 @@ msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr ""
 
 msgid "Details"
+msgstr ""
+
+msgid "Device [{ip}] already set."
+msgstr ""
+
+msgid "Device [{ip}] has been created."
+msgstr ""
+
+msgid "Device [{ip}] has been deleted."
+msgstr ""
+
+msgid "Device [{ip}] has been updated."
+msgstr ""
+
+msgid "Device creation"
+msgstr ""
+
+msgid "Devices"
+msgstr ""
+
+msgid "Devices ({num})"
 msgstr ""
 
 msgid "Direct encounter"
@@ -1385,7 +1382,7 @@ msgstr ""
 msgid "Display controllers ({num})"
 msgstr ""
 
-msgid "Display controllers allow you to control screens at your event from your main computer."
+msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
 msgstr ""
 
 msgid "Display manager"
@@ -1479,7 +1476,7 @@ msgstr ""
 msgid "Duplicate the category and its criteria and prizes."
 msgstr ""
 
-msgid "Duplicate the computer."
+msgid "Duplicate the device."
 msgstr ""
 
 msgid "Duplicate the rotator."
@@ -1687,7 +1684,7 @@ msgstr ""
 msgid "Edit the properties and the permissions of the account."
 msgstr ""
 
-msgid "Edit the properties and the permissions of the computer."
+msgid "Edit the properties and the permissions of the device."
 msgstr ""
 
 msgid "Edit the properties of the category."
@@ -1722,11 +1719,11 @@ msgid "Editing of account [%(username)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of computer [%(ip)s]"
+msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of default timers for event [%(event_uniq_id)s]"
+msgid "Editing of device [%(ip)s]"
 msgstr ""
 
 #, python-format
@@ -1764,7 +1761,7 @@ msgstr ""
 msgid "Editing of unauthenticated access"
 msgstr ""
 
-msgid "Editing of unknown computers' access"
+msgid "Editing of unknown devices' access"
 msgstr ""
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
@@ -1782,7 +1779,7 @@ msgstr ""
 msgid "Enable this account"
 msgstr ""
 
-msgid "Enable this computer"
+msgid "Enable this device"
 msgstr ""
 
 msgid "Enable/disable the details of events on the cards below."
@@ -2201,7 +2198,7 @@ msgstr ""
 msgid "Frequency: {frequency}"
 msgstr ""
 
-msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
 msgid "Full-Point Bye"
@@ -2409,7 +2406,7 @@ msgstr ""
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
-msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr ""
 
 msgid "Input screen creation"
@@ -2939,12 +2936,6 @@ msgstr ""
 msgid "No passed events."
 msgstr ""
 
-msgid "No password required"
-msgstr ""
-
-msgid "No password set for the results entry"
-msgstr ""
-
 msgid "No permissions"
 msgstr ""
 
@@ -3185,16 +3176,7 @@ msgstr ""
 msgid "Other ODBC drivers found on the server"
 msgstr ""
 
-msgid "Other devices connected to your network can display screens (pairings, results, rankings...), they are not allowed to do anything else."
-msgstr ""
-
-msgid "Other devices connected to your network can display screens and check-in players."
-msgstr ""
-
-msgid "Other devices connected to your network can display screens and enter results."
-msgstr ""
-
-msgid "Other devices connected to your network can display screens, check-in players and enter results."
+msgid "Other devices connected to your network can display screens, check-in players and enter results (depending on the screens you publish)."
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
@@ -3349,12 +3331,6 @@ msgstr ""
 msgid "Password does not match."
 msgstr ""
 
-msgid "Password to enter results"
-msgstr ""
-
-msgid "Password to enter results:"
-msgstr ""
-
 msgid "Password:"
 msgstr ""
 
@@ -3414,11 +3390,11 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(player)s] has been created."
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] has been created."
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
 msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
@@ -4311,6 +4287,9 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
+msgid "Stand-alone"
+msgstr ""
+
 msgid "Standard"
 msgstr ""
 
@@ -4383,7 +4362,7 @@ msgstr ""
 msgid "The IP address [{ip}] is not valid."
 msgstr ""
 
-msgid "The IP address, used tu identify the computer."
+msgid "The IP address, used tu identify the device."
 msgstr ""
 
 #, python-format
@@ -4563,7 +4542,7 @@ msgstr ""
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
-msgid "The mode below is used by default when creating new events (it can be changed at any time)."
+msgid "The mode below is used by default for the events."
 msgstr ""
 
 msgid "The name of the Papi file is not set, by default [{filename}]"
@@ -4651,9 +4630,6 @@ msgid "The password is made of 10 uppercase letters, it is used to connect to th
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr ""
-
-msgid "The password required on input screens to enter results (optional)."
 msgstr ""
 
 msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Sharly Chess event of the tournament)."
@@ -4853,16 +4829,16 @@ msgstr ""
 msgid "This action can not be applied to the tournaments of this event."
 msgstr ""
 
-msgid "This computer can not be deleted."
-msgstr ""
-
-msgid "This computer can not be duplicated."
-msgstr ""
-
-msgid "This computer can not be updated."
-msgstr ""
-
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
+msgstr ""
+
+msgid "This device can not be deleted."
+msgstr ""
+
+msgid "This device can not be duplicated."
+msgstr ""
+
+msgid "This device can not be updated."
 msgstr ""
 
 msgid "This display controller is private (not visible by the spectators)."
@@ -5293,7 +5269,7 @@ msgstr ""
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
-msgid "Unknown computers' access has been updated."
+msgid "Unknown devices' access has been updated."
 msgstr ""
 
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
@@ -5401,19 +5377,13 @@ msgstr ""
 msgid "Use Sharly Chess as a stand-alone application"
 msgstr ""
 
-msgid "Use connected devices to display screens"
-msgstr ""
-
-msgid "Use connected devices to display screens and check-in players"
-msgstr ""
-
-msgid "Use connected devices to display screens and enter results"
-msgstr ""
-
 msgid "Use connected devices to display screens, check-in players and enter results"
 msgstr ""
 
 msgid "Use connected devices to…"
+msgstr ""
+
+msgid "Use customize permissions for accounts and devices"
 msgstr ""
 
 msgid "Use log-level specific colors"
@@ -5486,7 +5456,7 @@ msgstr ""
 msgid "Warning: round #%(round)d is not finished."
 msgstr ""
 
-msgid "Warning: the deletion of a computer is permanent!"
+msgid "Warning: the deletion of a device is permanent!"
 msgstr ""
 
 msgid "Warning: the deletion of a display controller is permanent!"
@@ -5612,7 +5582,7 @@ msgid "You are connected on an unknown client (%(host)s)."
 msgstr ""
 
 #, python-format
-msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown computer)."
+msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown device)."
 msgstr ""
 
 #, python-format
@@ -5646,7 +5616,7 @@ msgstr ""
 msgid "You are not allowed to delete this account."
 msgstr ""
 
-msgid "You are not allowed to delete this computer."
+msgid "You are not allowed to delete this device."
 msgstr ""
 
 msgid "You are not allowed to download fees."
@@ -5655,7 +5625,7 @@ msgstr ""
 msgid "You are not allowed to duplicate this account."
 msgstr ""
 
-msgid "You are not allowed to duplicate this computer."
+msgid "You are not allowed to duplicate this device."
 msgstr ""
 
 msgid "You are not allowed to enter results."
@@ -5709,13 +5679,13 @@ msgstr ""
 msgid "You are not allowed to update this account."
 msgstr ""
 
-msgid "You are not allowed to update this computer."
+msgid "You are not allowed to update this device."
 msgstr ""
 
 msgid "You are on the Sharly Chess server."
 msgstr ""
 
-msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!)."
+msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!)."
 msgstr ""
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
@@ -5727,10 +5697,10 @@ msgstr ""
 msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr ""
 
-msgid "You can temporarily invalidate computers by turning this switch off."
+msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr ""
 
-msgid "You decide which computers and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers..."
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers..."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
@@ -5977,15 +5947,69 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-msgid "…display screens"
-msgstr ""
+#~ msgid "Are you sure you wish to proceed?"
+#~ msgstr ""
 
-msgid "…display screens and check-in players"
-msgstr ""
+#~ msgid "Add a device"
+#~ msgstr ""
 
-msgid "…display screens and enter results"
-msgstr ""
+#~ msgid "Adding devices allows you to grant permissions to people on other clients,"
+#~ msgstr ""
 
-msgid "…display screens, check-in players and enter results"
-msgstr ""
+#~ msgid "Customize the permissions (advanced feature)"
+#~ msgstr ""
+
+#~ msgid "No password required"
+#~ msgstr ""
+
+#~ msgid "No password set for the results entry"
+#~ msgstr ""
+
+#~ msgid "Other devices connected to your network can display screens (pairings, results, rankings...), they are not allowed to do anything else."
+#~ msgstr ""
+
+#~ msgid "Other devices connected to your network can display screens and check-in players."
+#~ msgstr ""
+
+#~ msgid "Other devices connected to your network can display screens and enter results."
+#~ msgstr ""
+
+#~ msgid "Other devices connected to your network can display screens, check-in players and enter results."
+#~ msgstr ""
+
+#~ msgid "Password to enter results"
+#~ msgstr ""
+
+#~ msgid "Password to enter results:"
+#~ msgstr ""
+
+#~ msgid "The IP address, used to identify the device."
+#~ msgstr ""
+
+#~ msgid "The password required on input screens to enter results (optional)."
+#~ msgstr ""
+
+#~ msgid "Use connected devices to display screens"
+#~ msgstr ""
+
+#~ msgid "Use connected devices to display screens and check-in players"
+#~ msgstr ""
+
+#~ msgid "Use connected devices to display screens and enter results"
+#~ msgstr ""
+
+#~ msgid "…display screens"
+#~ msgstr ""
+
+#~ msgid "…display screens and check-in players"
+#~ msgstr ""
+
+#~ msgid "…display screens and enter results"
+#~ msgstr ""
+
+#~ msgid "…display screens, check-in players and enter results"
+#~ msgstr ""
+
+#~ msgid "The mode below is used by default when creating new events (it can be changed at any time)."
+#~ msgstr ""
 

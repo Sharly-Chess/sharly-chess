@@ -65,9 +65,18 @@
                     <th scope="row" class="text-nowrap">{{ _('Execution mode') }}</th>
                     <td>
                         <span
-                            {{ macros.tooltip_attributes('info', admin_event.mode.help, 'top') }}
+                            {{ macros.tooltip_attributes('info', admin_event.exec_mode.help, 'top') }}
                         >
-                            {{ admin_event.mode.long_text }}
+                            {{ admin_event.exec_mode.name }}
+                            {% if not admin_event.stored_event.path %}
+                                <span class="fst-italic">
+                                    {{ _('(by default)') }}
+                                </span>
+                            {% endif %}
+                            <br/>
+                            <span style="font-size: 0.8rem">
+                                {{ admin_event.exec_mode.description }}
+                            </span>
                         </span>
                     </td>
                 </tr>

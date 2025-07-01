@@ -9,11 +9,11 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from data.auth.entities import Computer
+from data.auth.entities import Device
 from data.auth.roles import Role
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredComputer
+from database.sqlite.event.event_store import StoredDevice
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -22,12 +22,12 @@ from web.controllers.base_controller import WebContext
 from web.messages import Message
 
 
-class ComputerAdminWebContext(BaseEventAdminWebContext):
+class DeviceAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        computer_id: int | None,
+        device_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -40,59 +40,58 @@ class ComputerAdminWebContext(BaseEventAdminWebContext):
             event_uniq_id=event_uniq_id,
         )
         assert self.admin_event is not None
-        self.admin_computer: Computer | None = None
+        self.admin_device: Device | None = None
         if self.error:
             return
-        if computer_id:
+        if device_id:
             try:
-                self.admin_computer = self.admin_event.computers_by_id[computer_id]
+                self.admin_device = self.admin_event.devices_by_id[device_id]
             except KeyError:
-                self._redirect_error(f'Computer [{computer_id}] not found.')
+                self._redirect_error(f'Device [{device_id}] not found.')
                 return
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'admin_computer': self.admin_computer,
+            'admin_device': self.admin_device,
             'roles': Role.roles(),
         }
 
 
-class ComputerAdminController(BaseEventAdminController):
+class DeviceAdminController(BaseEventAdminController):
     @staticmethod
-    def _admin_validate_computer_update_data(
+    def _admin_validate_device_update_data(
         action: str,
-        web_context: ComputerAdminWebContext,
+        web_context: DeviceAdminWebContext,
         data: dict[str, str] | None = None,
-    ) -> StoredComputer:
+    ) -> StoredDevice:
         assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        computer_id: int | None = None
+        device_id: int | None = None
         ip: str | None = None
         edit_properties: bool = True
         edit_permissions: bool = True
         active: bool = False
         permissions: dict[int, str | None] = {}
-        if web_context.admin_computer and action in [
+        if web_context.admin_device and action in [
             'update',
             'delete',
         ]:
-            computer_id = web_context.admin_computer.id
-            edit_properties = web_context.admin_computer.edit_properties
-            edit_permissions = web_context.admin_computer.edit_permissions
+            device_id = web_context.admin_device.id
+            edit_properties = web_context.admin_device.edit_properties
+            edit_permissions = web_context.admin_device.edit_permissions
         if action in [
             'delete',
         ]:
             pass
         else:
-            if web_context.admin_computer and (
-                web_context.admin_computer.unknown
-                or web_context.admin_computer.localhost
+            if web_context.admin_device and (
+                web_context.admin_device.unknown or web_context.admin_device.localhost
             ):
-                ip = web_context.admin_computer.ip
-                active = web_context.admin_computer.active
+                ip = web_context.admin_device.ip
+                active = web_context.admin_device.active
             else:
                 ip = WebContext.form_data_to_str(data, field := 'ip')
                 if not ip:
@@ -105,19 +104,19 @@ class ComputerAdminController(BaseEventAdminController):
                     data[field] = ip
                     match action:
                         case 'create' | 'clone':
-                            if ip in web_context.admin_event.computers_by_ip:
-                                errors[field] = _(
-                                    'Computer [{ip}] already set.'
-                                ).format(ip=ip)
+                            if ip in web_context.admin_event.devices_by_ip:
+                                errors[field] = _('Device [{ip}] already set.').format(
+                                    ip=ip
+                                )
                         case 'update':
-                            assert web_context.admin_computer is not None
+                            assert web_context.admin_device is not None
                             if (
-                                ip != web_context.admin_computer.ip
-                                and ip in web_context.admin_event.computers_by_ip
+                                ip != web_context.admin_device.ip
+                                and ip in web_context.admin_event.devices_by_ip
                             ):
-                                errors[field] = _(
-                                    'Computer [{ip}] already set.'
-                                ).format(ip=ip)
+                                errors[field] = _('Device [{ip}] already set.').format(
+                                    ip=ip
+                                )
                         case _:
                             raise ValueError(f'action=[{action}]')
                 else:
@@ -130,8 +129,8 @@ class ComputerAdminController(BaseEventAdminController):
                     permissions[role_id] = WebContext.form_data_to_str(
                         data, f'permission_{role_id}'
                     )
-        return StoredComputer(
-            id=computer_id,
+        return StoredDevice(
+            id=device_id,
             edit_properties=edit_properties,
             edit_permissions=edit_permissions,
             active=active,
@@ -141,20 +140,20 @@ class ComputerAdminController(BaseEventAdminController):
         )
 
     @classmethod
-    def _admin_event_computers_render(
+    def _admin_event_devices_render(
         cls,
         request: HTMXRequest,
         event_uniq_id: str,
         modal: str | None = None,
         action: str | None = None,
-        computer_id: int | None = None,
+        device_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        web_context: ComputerAdminWebContext = ComputerAdminWebContext(
+        web_context: DeviceAdminWebContext = DeviceAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            computer_id=computer_id,
+            device_id=device_id,
             data=data,
         )
         if web_context.error:
@@ -164,28 +163,28 @@ class ComputerAdminController(BaseEventAdminController):
         template_context: dict[str, Any] = cls._get_admin_event_render_context(
             web_context,
         ) | {
-            'admin_event_tab': 'admin-event-computers-tab',
+            'admin_event_tab': 'admin-event-devices-tab',
         }
 
         match modal:
             case None:
                 pass
-            case 'computer':
+            case 'device':
                 if data is None:
                     ip: str | None = None
                     active: bool | None = None
                     match action:
                         case 'update':
-                            assert web_context.admin_computer is not None
-                            ip = web_context.admin_computer.stored_computer.ip
+                            assert web_context.admin_device is not None
+                            ip = web_context.admin_device.stored_device.ip
                         case 'create' | 'clone' | 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            assert web_context.admin_computer is not None
-                            active = web_context.admin_computer.stored_computer.active
+                            assert web_context.admin_device is not None
+                            active = web_context.admin_device.stored_device.active
                         case 'create':
                             active = True
                         case 'delete':
@@ -210,11 +209,11 @@ class ComputerAdminController(BaseEventAdminController):
                     )
                     match action:
                         case 'update' | 'clone':
-                            assert web_context.admin_computer is not None
+                            assert web_context.admin_device is not None
                             for (
                                 role,
                                 permission,
-                            ) in web_context.admin_computer.permissions_by_role.items():
+                            ) in web_context.admin_device.permissions_by_role.items():
                                 data[f'role_{role.value}'] = (
                                     WebContext.value_to_form_data(True)
                                 )
@@ -225,17 +224,17 @@ class ComputerAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    stored_computer: StoredComputer = (
-                        cls._admin_validate_computer_update_data(
+                    stored_device: StoredDevice = (
+                        cls._admin_validate_device_update_data(
                             action, web_context, data
                         )
                     )
-                    errors = stored_computer.errors
+                    errors = stored_device.errors
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'previous_computer': (
-                        web_context.admin_computer if action == 'create' else None
+                    'previous_device': (
+                        web_context.admin_device if action == 'create' else None
                     ),
                     'modal': modal,
                     'action': action,
@@ -247,59 +246,59 @@ class ComputerAdminController(BaseEventAdminController):
         return cls._admin_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/computers',
-        name='admin-event-computers-tab',
+        path='/admin/event/{event_uniq_id:str}/devices',
+        name='admin-event-devices-tab',
         cache=1,
     )
-    async def htmx_admin_event_computers_tab(
+    async def htmx_admin_event_devices_tab(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_computers_render(
+        return self._admin_event_devices_render(
             request,
             event_uniq_id=event_uniq_id,
         )
 
     @get(
-        path='/admin/computer-modal/create/{event_uniq_id:str}',
-        name='admin-computer-create-modal',
+        path='/admin/device-modal/create/{event_uniq_id:str}',
+        name='admin-device-create-modal',
         cache=1,
     )
-    async def htmx_admin_computer_create_modal(
+    async def htmx_admin_device_create_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect:
-        return self._admin_event_computers_render(
+        return self._admin_event_devices_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='computer',
+            modal='device',
             action='create',
-            computer_id=None,
+            device_id=None,
         )
 
     @get(
-        path='/admin/computer-modal/{action:str}/{event_uniq_id:str}/{computer_id:int}',
-        name='admin-computer-modal',
+        path='/admin/device-modal/{action:str}/{event_uniq_id:str}/{device_id:int}',
+        name='admin-device-modal',
         cache=1,
     )
-    async def htmx_admin_computer_modal(
+    async def htmx_admin_device_modal(
         self,
         request: HTMXRequest,
         action: str,
         event_uniq_id: str,
-        computer_id: int | None,
+        device_id: int | None,
     ) -> Template | ClientRedirect:
-        return self._admin_event_computers_render(
+        return self._admin_event_devices_render(
             request,
             event_uniq_id=event_uniq_id,
-            modal='computer',
+            modal='device',
             action=action,
-            computer_id=computer_id,
+            device_id=device_id,
         )
 
-    def _admin_computer_update(
+    def _admin_device_update(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -308,14 +307,14 @@ class ComputerAdminController(BaseEventAdminController):
         ],
         action: str,
         event_uniq_id: str,
-        computer_id: int | None,
+        device_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
             case 'update' | 'delete' | 'create':
-                web_context: ComputerAdminWebContext = ComputerAdminWebContext(
+                web_context: DeviceAdminWebContext = DeviceAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
-                    computer_id=computer_id,
+                    device_id=device_id,
                     data=data,
                 )
             case _:
@@ -324,18 +323,18 @@ class ComputerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        stored_computer: StoredComputer = self._admin_validate_computer_update_data(
+        stored_device: StoredDevice = self._admin_validate_device_update_data(
             action, web_context, data
         )
-        if stored_computer.errors:
-            return self._admin_event_computers_render(
+        if stored_device.errors:
+            return self._admin_event_devices_render(
                 request,
                 event_uniq_id=event_uniq_id,
-                modal='computer',
+                modal='device',
                 action=action,
-                computer_id=computer_id,
+                device_id=device_id,
                 data=data,
-                errors=stored_computer.errors,
+                errors=stored_device.errors,
             )
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
@@ -343,62 +342,56 @@ class ComputerAdminController(BaseEventAdminController):
         ) as event_database:
             match action:
                 case 'create':
-                    stored_computer = event_database.add_stored_computer(
-                        stored_computer
-                    )
+                    stored_device = event_database.add_stored_device(stored_device)
                     event_database.commit()
                     Message.success(
                         request,
-                        _('Computer [{ip}] has been created.').format(
-                            ip=stored_computer.ip
+                        _('Device [{ip}] has been created.').format(
+                            ip=stored_device.ip
                         ),
                     )
                 case 'update':
                     if (
-                        web_context.admin_computer is None
-                        or web_context.admin_computer.localhost
+                        web_context.admin_device is None
+                        or web_context.admin_device.localhost
                     ):
                         raise RuntimeError(
-                            f'{web_context.admin_computer=} for [{action=}]'
+                            f'{web_context.admin_device=} for [{action=}]'
                         )
-                    stored_computer = event_database.update_stored_computer(
-                        stored_computer
-                    )
+                    stored_device = event_database.update_stored_device(stored_device)
                     event_database.commit()
                     Message.success(
                         request,
-                        _("Unknown computers' access has been updated.")
-                        if web_context.admin_computer.unknown
-                        else _('Computer [{ip}] has been updated.').format(
-                            ip=stored_computer.ip
+                        _("Unknown devices' access has been updated.")
+                        if web_context.admin_device.unknown
+                        else _('Device [{ip}] has been updated.').format(
+                            ip=stored_device.ip
                         ),
                     )
                 case 'delete':
                     if (
-                        web_context.admin_computer is None
-                        or web_context.admin_computer.localhost
-                        or web_context.admin_computer.unknown
+                        web_context.admin_device is None
+                        or web_context.admin_device.localhost
+                        or web_context.admin_device.unknown
                     ):
                         raise RuntimeError(
-                            f'{web_context.admin_computer=} for [{action=}]'
+                            f'{web_context.admin_device=} for [{action=}]'
                         )
-                    event_database.delete_stored_computer(web_context.admin_computer.id)
+                    event_database.delete_stored_device(web_context.admin_device.id)
                     event_database.commit()
                     Message.success(
                         request,
-                        _('Computer [{ip}] has been deleted.').format(
-                            ip=web_context.admin_computer.ip
+                        _('Device [{ip}] has been deleted.').format(
+                            ip=web_context.admin_device.ip
                         ),
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
         event_loader.clear_cache(event_uniq_id)
-        return self._admin_event_computers_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_event_devices_render(request, event_uniq_id=event_uniq_id)
 
-    @post(
-        path='/admin/computer-create/{event_uniq_id:str}', name='admin-computer-create'
-    )
-    async def htmx_admin_computer_create(
+    @post(path='/admin/device-create/{event_uniq_id:str}', name='admin-device-create')
+    async def htmx_admin_device_create(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
@@ -407,55 +400,55 @@ class ComputerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_computer_update(
+        return self._admin_device_update(
             request,
             event_uniq_id=event_uniq_id,
             action='create',
-            computer_id=None,
+            device_id=None,
             data=data,
         )
 
     @patch(
-        path='/admin/computer-update/{event_uniq_id:str}/{computer_id:int}',
-        name='admin-computer-update',
+        path='/admin/device-update/{event_uniq_id:str}/{device_id:int}',
+        name='admin-device-update',
     )
-    async def htmx_admin_computer_update(
+    async def htmx_admin_device_update(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        computer_id: int | None,
+        device_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_computer_update(
+        return self._admin_device_update(
             request,
             event_uniq_id=event_uniq_id,
             action='update',
-            computer_id=computer_id,
+            device_id=device_id,
             data=data,
         )
 
     @delete(
-        path='/admin/computer-delete/{event_uniq_id:str}/{computer_id:int}',
-        name='admin-computer-delete',
+        path='/admin/device-delete/{event_uniq_id:str}/{device_id:int}',
+        name='admin-device-delete',
         status_code=HTTP_200_OK,
     )
-    async def htmx_admin_computer_delete(
+    async def htmx_admin_device_delete(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        computer_id: int | None,
+        device_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
-        return self._admin_computer_update(
+        return self._admin_device_update(
             request,
             event_uniq_id=event_uniq_id,
             action='delete',
-            computer_id=computer_id,
+            device_id=device_id,
             data=data,
         )

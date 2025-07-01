@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.mode import Mode
+from data.auth.exec_mode import ExecMode
 from data.auth.roles import Role
 
 
@@ -236,18 +236,18 @@ class StoredAccess(ABC):
 
 
 LOCALHOST_ID: int = 1
-ANY_COMPUTER_ID: int = 2
+ANY_DEVICE_ID: int = 2
 
 
 @dataclass
-class StoredComputer(StoredAccess):
+class StoredDevice(StoredAccess):
     ip: str | None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
-# computers are stored at event-level, this provides event-free
+# Devices are stored at event-level, this provides event-free
 # instances that can be used when no events are available (welcome page, ...)
-localhost_stored_computer: StoredComputer = StoredComputer(
+localhost_stored_device: StoredDevice = StoredDevice(
     id=LOCALHOST_ID,
     edit_properties=False,
     edit_permissions=False,
@@ -258,8 +258,8 @@ localhost_stored_computer: StoredComputer = StoredComputer(
     ip=None,
 )
 
-unknown_stored_computer: StoredComputer = StoredComputer(
-    id=ANY_COMPUTER_ID,
+unknown_stored_device: StoredDevice = StoredDevice(
+    id=ANY_DEVICE_ID,
     edit_properties=False,
     edit_permissions=True,
     active=True,
@@ -312,7 +312,7 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    mode: int = Mode.STAND_ALONE.value
+    exec_mode: int = ExecMode.STAND_ALONE.value
     last_update: float = 0.0
 
     # Plugins can add their own tournament data
@@ -331,7 +331,7 @@ class StoredEvent(BaseStoredEvent):
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
-    stored_computers: list[StoredComputer] = field(default_factory=list[StoredComputer])
+    stored_devices: list[StoredDevice] = field(default_factory=list[StoredDevice])
     stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
