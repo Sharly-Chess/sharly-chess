@@ -9,7 +9,9 @@ English version below
 
 ## Interface web
 
+- Passage d'une barre de navigation horizontale à une barre latérale (2.8.0)
 - Simplification de la page d'accueil et ajout d'un QR code pour faciliter la connexion des clients (2.8.0)
+- Ajout de boutons « Créer et ajouter à nouveau » pour réduire nombre de clics lors de la création d'objets (2.8.0)
 
 ### Gestion des joueur·euses
 
@@ -17,10 +19,13 @@ English version below
 - Ajout des listes de pointage (2.8.0)
 - Mise à jour des drapeaux des fédérations (2.8.0)
 - Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
+- Clarification des sources de données de joueur·euses (2.8.0)
 
 ### Gestion des appariements
 
 - Support officiel du moteur interne d'appariement (_bbpPairings_) (2.8.0)
+- Génération d'appariements complémentaires (2.8.0)
+- Exécution des opérations non-sécurisées lors du passage en mode non-sécurisé (2.8.0)
 
 ### Gestion des écrans
 
@@ -29,6 +34,14 @@ English version below
 ### Gestion des prix
 
 - Ajout de l'onglet Prix avec la définition et le calcul des prix (2.8.0)
+
+### Impression de documents
+
+- Nouveaux documents (2.8.0)
+  - Pointage des joueur·euses
+  - Indicateurs de performance pour la ronde
+  - Liste des prix
+  - Attribution des prix
 
 ---
 
@@ -42,7 +55,9 @@ English version below
 
 ## Web interface
 
+- Switch from a top navbar to a side navbar (2.8.0)
 - Simplified the home page and added a QR code to ease the connection of devices (2.8.0)
+- 'Create and add another' buttons added to reduce click count when creating objects (2.8.0)
 
 # Players management
 
@@ -50,10 +65,13 @@ English version below
 - Added check-in lists (2.8.0)
 - Updated federation flags (2.8.0)
 - Calculation of the players' category relative to the date of the tournament (2.8.0)
+- Clarification of player data sources (2.8.0)
 
 ### Pairings management
 
 - Official support for the internal pairing engine (_bbpPairings_) (2.8.0)
+- Complementary pairings generation (2.8.0)
+- Unsafe operations execution when switching to unsafe mode (2.8.0)
 
 ### Screens management
 
@@ -62,3 +80,11 @@ English version below
 ### Prizes management
 
 - Added the Prizes tab with the definition and calculation of prizes (2.8.0)
+
+### Print documents
+
+- New documents (2.8.0)
+  - Player check-in list
+  - Round performance indicators
+  - Prize list
+  - Prize assignment
