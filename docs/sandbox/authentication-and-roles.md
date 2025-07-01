@@ -1,26 +1,35 @@
-# _Sharly Chess_ - Authentication and roles
+# _Sharly Chess_ - Authorizations
 
-This page is a proposal to add roles in the application, not implemented yet.
+> [!NOTE]
+> In version 2.4 (up to version 2.8), _Sharly Chess_ distinguishes two roles:
+> - **the arbiter role** (which is obtained by connecting from the server `127.0.0.1`), which can access:
+>   - the administration pages, or arbiter pages;
+>   - the public pages, with some additional privileges.
+> - **the standard role**, which allows:
+>   - to view public screens;
+>   - to score and enter results (with or without password protection).
+> This document will move to the user documentation in version 2.9.
 
-## Roles in version 2.4
+## Execution modes
 
-In version 2.4, _Sharly Chess_ distinguishes two roles:
-- **the arbiter role** (which is obtained by connecting from the server `127.0.0.1`), which can access:
-  - the administration pages, or arbiter pages;
-  - the public pages, with some additional privileges.
-- **the standard role**, which allows:
-  - to view public screens;
-  - to score and enter results (with or without password protection).
+Three execution modes are possible:
 
-## Development Proposal
+- *Stand-alone (by default)*: You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer.
+- *Standard*: Other devices connected to your network can display screens, check-in players and enter results.
+- *Custom*: authorizations for devices and users are based on roles.
 
-### Roles
+The execution mode is set by default at application-level (for all the events) and can be overridden by the events.
+
+## Roles
+
+> [!IMPORTANT]
+> The roles are used only when the custom mode is used, they offer a powerful way to customize the authorizations granted to users and devices:
 
 The roles in _Sharly Chess_ are:
 
 - **Administrator** (of the application)
 - **Organizer** (of an event)
-- **Display manager** (of an event)
+- **Screen Manager** (of an event)
 - **Chief Arbiter** (of an event)
 - **Deputy Chief Arbiter** (of an event)
 - **Pairings Officer** (of tournaments)
@@ -29,27 +38,82 @@ The roles in _Sharly Chess_ are:
 - **Check-in officer** (of tournaments)
 - **Spectator** (of an event)
 
-The arbiter roles are directly inspired by the FIDE hierarchical system:
-- The **Chief Arbiter** with admin-like rights over the event;
-- The **Deputy Chief Arbiter(s)** with lower rights over basically the whole event;
-- The **Sector Arbiter(s)** with rights over their sector (a sector being a set of tournaments);
-- The **Pairings Officer(s)** with full pairings management rights over a set of tournaments;
-- The Match Arbiter(s) - who can set results for their sector - are named **Results Officer** since this role may be assigned to players in _Sharly Chess_.
+> [!NOTE]
+> The arbiter roles are directly inspired by the FIDE hierarchical system:
+> - The **Chief Arbiter** with admin-like rights over the event;
+> - The **Deputy Chief Arbiter(s)** with lower rights over basically the whole event;
+> - The **Sector Arbiter(s)** with rights over their sector (a sector being a set of tournaments);
+> - The **Pairings Officer(s)** with full pairings management rights over a set of tournaments;
+> - The Match Arbiter(s) - who can set results for their sector - are named **Results Officer** since this role may be assigned to players in _Sharly Chess_.
+> In Continental and World events,
+> - the CA, DCA and SA roles are mostly management positions (although they can intervene on games if Match Arbiters can't do it, of course), so they wouldn't play with the software once the rights are set up.
+> - Pairings Officer are the ones doing the bulk of the work on the pairings software (especially in case of team tournaments)
+> - Match Arbiters are focused on the games, so can enter results, but that's about it (although they should be able to correct wrong results).
 
 Some roles 'include' other roles:
 - Administrators can do anything all the other roles can do;
-- Organizers can do anything Display Managers can do;
+- Organizers can do anything Screen Managers can do;
 - Chief Arbiters can do anything Deputy Chief Arbiters can do;
 - Deputy Chief Arbiters can do anything Sector Arbiters and Pairing Officers can do;
 - Sector Arbiters can do anything Results Officers and Check-in Officers can do.
 - All the roles can do anything Spectators can do.
 
-> [!NOTE]
-> - In Continental and World events, the CA, DCA and SA roles are mostly management positions (although they can intervene on games if Match Arbiters can't do it, of course), so they wouldn't play with the software once the rights are set up.
-> - Pairings Officer are the ones doing the bulk of the work on the pairings software (especially in case of team tournaments)
-> - Match Arbiters are focused on the games, so can enter results, but that's about it (although they should be able to correct wrong results).
+## Devices
 
-### Permissions by role
+Devices are defined on the web UI by their IP address.
+
+### Examples
+
+| :unlock:/:lock: |     Computer      | Comment           |
+|:---------------:|:-----------------:|:------------------|
+|     :lock:      |    ``0.0.0.0``    | Any computer      |
+|     :lock:      |   ``127.0.0.1``   | The server itself |
+|                 | ``192.168.1.115`` | A local computer  |
+
+### Device roles
+
+Devices can be given roles, without any other authentication.
+
+> [!IMPORTANT]
+> They must be trusted devices on a trusted network!
+
+| :unlock:/:lock: |     Computer      |        Comment         |   Administrator    | Organizer | Screen<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer |     Spectator      |
+|:---------------:|:-----------------:|:----------------------:|:------------------:|:---------:|:------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:------------------:|:------------------:|
+|     :lock:      |   ``127.0.0.1``   | Server (Chief Arbiter) | :white_check_mark: |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
+|                 | ``192.168.1.100`` |  Deputy Chief Arbiter  |        :x:         |    :x:    |        :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
+|                 | ``192.168.1.115`` |   Check-in computer    |        :x:         |    :x:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  |        :x:         |        :ok:        |
+|                 | ``192.168.1.119`` |    Result computer     |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          | :white_check_mark: |        :ok:        |
+|                 |   ``0.0.0.0``     |    Display computer    |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         | :white_check_mark: |
+
+> [!NOTE]
+> Connections from the server automatically have the Administrator role (not configurable).
+
+## Accounts
+
+Users are defined by credentials (a unique username and an optional password).
+
+### Examples
+
+| :unlock:/:lock: |     User      | Comment           |
+|:---------------:|:-------------:|:------------------|
+|                 |  ``arbiter``  | The chief arbiter |
+|                 | ``127.0.0.1`` | The server itself |
+|                 |  ``0.0.0.0``  | _Unauthenticated_ |
+
+> [!NOTE]
+> No need to authenticate on the server, the Administrator role is automatically given to the server.
+
+### Account roles
+
+Accounts can be given roles, after they authenticate.
+
+| :unlock:/:lock: |       User        |           Comment           |   Administrator    | Organizer | Screen<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer  |     Spectator      |
+|:---------------:|:-----------------:|:---------------------------:|:------------------:|:---------:|:------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:-------------------:|:------------------:|
+|                 |     ``mary``      |    Deputy Chief Arbiter     |        :x:         |    :x:    |        :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:         |        :ok:        |
+|                 |     ``john``      | Check-in and Result Officer |        :x:         |    :x:    |        :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  | :white_check_mark:  |        :ok:        |
+|                 |         -         |      _Unauthenticated_      |        :x:         |    :x:    |                    |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |         :x:         | :white_check_mark: |
+
+## Permissions by role
 
 |                                |  Administrator  | Organizer | Screen<br/>manager | Chief<br/>Arbiter | Deputy<br/>Chief<br/>Arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Results<br/>Officer | Spectator |        -        |
 |--------------------------------|:---------------:|:---------:|:------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:-------------------:|:---------:|:---------------:|
@@ -121,66 +185,7 @@ Some roles 'include' other roles:
 | Manage rotators                |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
 | Manage controllers             |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
 | Manage timers                  |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
-| View private screens           |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:         |    :x:    |       :x:       |
+| View private screens           |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :x:          |        :x:         |         :x:          |         :x:         |    :x:    |       :x:       |
 | View public screens            |      :ok:       |   :ok:    |        :ok:        |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:         |   :ok:    |       :x:       |
 
 (*) Accessing the list of the public events is needed to authenticate (the accounts are defined at event-level).
-
-### Computers
-
-Computers are defined on the web UI by:
-- an IP address (the IP address of the machine accessing the _Sharly Chess_ server);
-- several comma-separated IP addresses.
-
-#### Examples
-
-| :unlock:/:lock: |     Computer      | Comment           |
-|:---------------:|:-----------------:|:------------------|
-|     :lock:      |         -         | Any computer      |
-|     :lock:      |   ``127.0.0.1``   | The server itself |
-|                 | ``192.168.1.115`` | A local computer  |
-
-#### Computer roles
-
-Computers can be given roles, without any other authentication.
-
-> [!NOTE]
-> They must be trusted computers on a trusted network!
-
-| :unlock:/:lock: |     Computer      |        Comment         |   Administrator    | Organizer | Display<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer |     Spectator      |
-|:---------------:|:-----------------:|:----------------------:|:------------------:|:---------:|:-------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:------------------:|:------------------:|
-|     :lock:      |   ``127.0.0.1``   | Server (Chief Arbiter) | :white_check_mark: |   :ok:    |        :ok:         |       :ok:        |             :ok:             |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
-|                 | ``192.168.1.100`` |  Deputy Chief Arbiter  |        :x:         |    :x:    |         :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:        |        :ok:        |
-|                 | ``192.168.1.115`` |   Check-in computer    |        :x:         |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  |        :x:         |        :ok:        |
-|                 | ``192.168.1.119`` |    Result computer     |        :x:         |    :x:    |                     |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          | :white_check_mark: |        :ok:        |
-|                 |         -         |    Display computer    |        :x:         |    :x:    |                     |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |        :x:         | :white_check_mark: |
-
-> [!NOTE]
-> Connections from the server automatically have the Administrator role (not configurable).
-
-### Users
-
-Users are defined on the web UI by credentials:
-- a unique username;
-- a password.
-
-#### Examples
-
-| :unlock:/:lock: |     User      | Comment                       |
-|:---------------:|:-------------:|:------------------------------|
-|                 |  ``arbiter``  | The chief arbiter |
-|                 | ``127.0.0.1`` | The server itself             |
-|                 |       -       | Anauthenticated               |
-
-> [!NOTE]
-> No need to authenticate on the server, the Administrator role is automatically given to the server.
-
-#### User roles
-
-Users can be given roles, after they authenticate.
-
-| :unlock:/:lock: |       User        |           Comment           |   Administrator    | Organizer | Display<br/>Manager | Chief<br/>arbiter | Deputy<br/>Chief<br/>arbiter | Pairings<br/>Officer | Sector<br/>Arbiter | Check-in<br/>Officer | Result<br/>Officer  |     Spectator      |
-|:---------------:|:-----------------:|:---------------------------:|:------------------:|:---------:|:-------------------:|:-----------------:|:----------------------------:|:--------------------:|:------------------:|:--------------------:|:-------------------:|:------------------:|
-|                 |     ``mary``      |    Deputy Chief Arbiter     |        :x:         |    :x:    |         :x:         |        :x:        |      :white_check_mark:      |         :ok:         |        :ok:        |         :ok:         |        :ok:         |        :ok:        |
-|                 |     ``john``      | Check-in and Result Officer |        :x:         |    :x:    |         :x:         |        :x:        |             :x:              |         :x:          |        :x:         |  :white_check_mark:  | :white_check_mark:  |        :ok:        |
-|                 |         -         |      _Unauthenticated_      |        :x:         |    :x:    |                     |        :x:        |             :x:              |         :x:          |        :x:         |         :x:          |         :x:         | :white_check_mark: |
