@@ -15,9 +15,9 @@
 
 Three execution modes are possible:
 
-- *Stand-alone (by default)*: You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer.
-- *Standard*: Other devices connected to your network can display screens, check-in players and enter results.
-- *Custom*: authorizations for devices and users are based on roles.
+- **Stand-alone (by default)**: You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your computer.
+- **Standard**: Other devices connected to your network can display screens, check-in players and enter results.
+- **Custom**: authorizations for devices and users are based on roles.
 
 The execution mode is set by default at application-level (for all the events) and can be overridden by the events.
 
