@@ -59,6 +59,7 @@ English version below
 - Correction de la recherche FFE en ligne (2.7.7)
 - Correction de la recherche des joueur·euses FFE par leur identifiant FIDE (2.7.7)
 - Correction de l'ajout de joueur·euses FIDE non présent·es dans la base FFE (2.7.7)
+- Correction de l'ajout de joueur·euses sans identifiant FFE (2.7.10)
 
 ## ChessEvent
 
@@ -129,6 +130,7 @@ English version below
 - Fixed FFE online search (2.7.7)
 - Fixed searching FFE players by their FIDE ID (2.7.7)
 - Fixed adding FIDE players when not present in the FFE database (2.7.7)
+- Fixed the creation of players with no FFE ID (2.7.10)
 
 ## ChessEvent
 
