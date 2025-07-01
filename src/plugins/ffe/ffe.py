@@ -9,7 +9,6 @@ from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
-from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
 from common.exception import SharlyChessException
@@ -24,7 +23,7 @@ from data.tie_breaks import TieBreak
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_sql_server import FFESqlServer
-from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_MIN_UPLOAD_DELAY
+from plugins.ffe.utils import FFE_DEFAULT_UPLOAD_DELAY, FFE_EPOCH, FFE_MIN_UPLOAD_DELAY
 from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
 from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
 from data.player import Player, PlayerRating
@@ -183,7 +182,11 @@ class FfePlugin(Plugin):
             'RefFFE': self.get_data(
                 pd,
                 'ffe_id',
-                (datetime.now() - relativedelta(years=30)),  # like Papi does :-(
+            )
+            or int(
+                (
+                    datetime.now() - FFE_EPOCH
+                ).total_seconds(),  # NOTE(Amaras): Papi epoch starts on 2000-01-01
             ),
             'AffType': (
                 self.get_data(pd, 'ffe_licence').to_papi_value
