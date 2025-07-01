@@ -222,7 +222,7 @@ class EventDatabase(MigrationDatabase):
                         'rotators',
                         'timer_colors',
                         'timer_delays',
-                        'mode',
+                        'exec_mode',
                     ],
                     empty_allowed=False,
                 )
@@ -296,9 +296,7 @@ class EventDatabase(MigrationDatabase):
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
-                        exec_mode=event_dict.get(
-                            'mode', SharlyChessConfig().default_exec_mode
-                        ),
+                        exec_mode=event_dict.get('exec_mode', None),
                     )
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
@@ -973,7 +971,7 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
-            mode=row['mode'],
+            exec_mode=row['exec_mode'],
             last_update=row['last_update'],
         )
         plugin_manager.hook.augment_event_after_db_fetch(
@@ -1046,7 +1044,7 @@ class EventDatabase(MigrationDatabase):
                     'message_color',
                     'message_background_color',
                     'prize_currency',
-                    'mode',
+                    'exec_mode',
                 ],
             )
             | {

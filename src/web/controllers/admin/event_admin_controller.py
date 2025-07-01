@@ -105,6 +105,9 @@ class EventAdminController(BaseEventAdminController):
                 )
                 template_context |= {
                     'federation_options': cls._get_federation_options(None),
+                    'exec_mode_options': cls._get_exec_mode_options(
+                        SharlyChessConfig().default_exec_mode
+                    ),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         SharlyChessConfig.default_record_illegal_moves_number
                     ),
@@ -361,7 +364,11 @@ class EventAdminController(BaseEventAdminController):
             case 'update':
                 if web_context.admin_event is None:
                     raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                previous_mode: ExecMode = web_context.admin_event.exec_mode
+                previous_exec_mode: ExecMode | None = None
+                if web_context.admin_event.stored_event.exec_mode is not None:
+                    previous_exec_mode = ExecMode(
+                        web_context.admin_event.stored_event.exec_mode
+                    )
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -375,11 +382,13 @@ class EventAdminController(BaseEventAdminController):
                             _('Renaming the database failed: {ex}.').format(ex=ex),
                         )
                 with EventDatabase(uniq_id, write=True) as event_database:
-                    new_mode: ExecMode = ExecMode(stored_event.exec_mode)
+                    new_exec_mode: ExecMode | None = None
+                    if stored_event.exec_mode is not None:
+                        new_exec_mode = ExecMode(stored_event.exec_mode)
                     event_database.update_stored_event(
                         stored_event,
-                        reset_permissions=new_mode != previous_mode
-                        and new_mode != ExecMode.CUSTOM,
+                        reset_permissions=new_exec_mode != previous_exec_mode
+                        and new_exec_mode != ExecMode.CUSTOM,
                     )
                     event_database.commit()
                 if rename:
@@ -404,16 +413,13 @@ class EventAdminController(BaseEventAdminController):
             case 'clone':
                 if web_context.admin_event is None:
                     raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                previous_mode: ExecMode = web_context.admin_event.exec_mode
                 EventDatabase(web_context.admin_event.uniq_id).clone(
                     new_uniq_id=uniq_id
                 )
                 with EventDatabase(uniq_id, write=True) as event_database:
-                    new_mode: ExecMode = ExecMode(stored_event.exec_mode)
                     event_database.update_stored_event(
                         stored_event,
-                        reset_permissions=new_mode != previous_mode
-                        and new_mode != ExecMode.CUSTOM,
+                        reset_permissions=False,
                     )
                     event_database.commit()
                 Message.success(

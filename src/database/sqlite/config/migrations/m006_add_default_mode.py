@@ -5,9 +5,9 @@ from database.sqlite.migration import BaseMigration
 class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
-            f'ALTER TABLE `info` ADD `default_mode` INTEGER NOT NULL DEFAULT {ExecMode.STAND_ALONE.value}'
+            f'ALTER TABLE `info` ADD `default_exec_mode` INTEGER NOT NULL DEFAULT {ExecMode.STAND_ALONE.value}'
         )
         self.database.execute('UPDATE `info` SET `force_edit` = 1')
 
     def backward(self):
-        self.database.execute('ALTER TABLE `info` DROP COLUMN `default_mode`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `default_exec_mode`')

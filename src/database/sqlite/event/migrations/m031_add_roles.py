@@ -1,4 +1,3 @@
-from data.auth.exec_mode import ExecMode
 from database.sqlite.event.event_store import (
     anonymous_stored_account,
     localhost_stored_device,
@@ -66,7 +65,7 @@ class Migration(BaseMigration):
                 ),
             )
         self.database.execute(
-            f'ALTER TABLE `info` ADD `exec_mode` INTEGER NOT NULL DEFAULT {ExecMode.STAND_ALONE.value}',
+            'ALTER TABLE `info` ADD `exec_mode` INTEGER',
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 

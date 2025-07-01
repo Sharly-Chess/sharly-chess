@@ -207,7 +207,7 @@ class Event:
     def exec_mode(self) -> ExecMode:
         if self.stored_event.exec_mode is not None:
             return ExecMode(self.stored_event.exec_mode)
-        return SharlyChessConfig.default_exec_mode
+        return SharlyChessConfig().default_exec_mode
 
     @property
     def formatted_start_date_time(self) -> str:

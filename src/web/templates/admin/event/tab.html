@@ -62,13 +62,13 @@
                     </tr>
                 {%endif %}
                 <tr>
-                    <th scope="row" class="text-nowrap">{{ _('Execution mode') }}</th>
+                    <th scope="row" class="text-nowrap">{{ _('Execution') }}</th>
                     <td>
                         <span
                             {{ macros.tooltip_attributes('info', admin_event.exec_mode.help, 'top') }}
                         >
                             {{ admin_event.exec_mode.name }}
-                            {% if not admin_event.stored_event.path %}
+                            {% if not admin_event.stored_event.exec_mode %}
                                 <span class="fst-italic">
                                     {{ _('(by default)') }}
                                 </span>

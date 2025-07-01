@@ -18,7 +18,7 @@ class StoredConfig:
     launch_browser: bool
     federation: str | None = None
     locale: str | None = None
-    default_mode: int = ExecMode.STAND_ALONE.value
+    default_exec_mode: int = ExecMode.STAND_ALONE.value
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

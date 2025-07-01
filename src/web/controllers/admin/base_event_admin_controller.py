@@ -290,7 +290,7 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-box-arrow-in-right',
                 },
             }
-        if (
+        if web_context.admin_event.exec_mode.custom and (
             web_context.client.can_manage_accounts
             or web_context.client.can_manage_devices
         ):

@@ -81,7 +81,7 @@ class AdminWebContext(WebContext):
             super().template_context
             | {
                 'admin_tab': self.admin_tab,
-                'modes': ExecMode.modes(),
+                'exec_modes': ExecMode.exec_modes(),
             }
             | plugin_context
         )
@@ -91,7 +91,25 @@ class BaseAdminController(BaseController):
     """A base class inherited by all the admin controllers."""
 
     @staticmethod
-    def _get_federation_options(default_federation: str | None):
+    def _get_exec_mode_options(
+        default_exec_mode: ExecMode | None = None,
+    ) -> dict[str, str]:
+        """Returns the possible options for the execution mode."""
+        options: dict[str, str] = {}
+        if default_exec_mode:
+            options |= {
+                '': _('By default - {option}').format(
+                    option=f'{default_exec_mode.name}'
+                ),
+            }
+        options |= {
+            str(exec_mode.value): f'{exec_mode.name} - {exec_mode.description}'
+            for exec_mode in ExecMode.exec_modes()
+        }
+        return options
+
+    @staticmethod
+    def _get_federation_options(default_federation: str | None) -> dict[str, str]:
         if default_federation:
             return {
                 default_federation: _('By default - {option}').format(
@@ -378,14 +396,14 @@ class BaseAdminController(BaseController):
         message_color: str | None = None
         message_background_color: str | None = None
         prize_currency: str | None = None
-        mode: int | None = None
+        exec_mode: int | None = None
         match action:
             case 'clone' | 'update' | 'create':
-                mode = WebContext.form_data_to_int(data, field := 'mode', None)
-                if mode is None:
-                    errors[field] = _('Please select the execution mode for the event.')
-                else:
-                    mode = ExecMode(mode).value
+                exec_mode = WebContext.form_data_to_int(
+                    data, field := 'exec_mode', None
+                )
+                if exec_mode is not None:
+                    exec_mode = ExecMode(exec_mode).value
                 name = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
                     errors[field] = _('Please enter the name of the event.')
@@ -545,7 +563,7 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
-            exec_mode=mode,
+            exec_mode=exec_mode,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
@@ -763,5 +781,5 @@ class BaseAdminController(BaseController):
                 message_background_color
             ),
             'prize_currency': WebContext.value_to_form_data(prize_currency),
-            'mode': WebContext.value_to_form_data(mode),
+            'exec_mode': WebContext.value_to_form_data(mode),
         } | plugin_form_data

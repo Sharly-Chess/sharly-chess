@@ -1186,7 +1186,7 @@ msgstr ""
 msgid "Default directory of the Papi files:"
 msgstr ""
 
-msgid "Default execution mode"
+msgid "Default execution mode of the events:"
 msgstr ""
 
 msgid "Default federation"
@@ -1882,7 +1882,10 @@ msgstr ""
 msgid "Events"
 msgstr ""
 
-msgid "Execution mode"
+msgid "Execution"
+msgstr ""
+
+msgid "Execution mode of this event:"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -2237,9 +2240,6 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
-msgid "General"
-msgstr ""
-
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2581,6 +2581,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
+msgstr ""
+
+msgid "Learn more…"
 msgstr ""
 
 msgid "Libraries"
@@ -3571,9 +3574,6 @@ msgstr ""
 msgid "Please select a type of criterion."
 msgstr ""
 
-msgid "Please select the execution mode for the event."
-msgstr ""
-
 msgid "Please validate the global configuration of the application."
 msgstr ""
 
@@ -4275,9 +4275,6 @@ msgstr ""
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr ""
 
-msgid "Specify below the mode used to run the event (read carefully to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!)."
-msgstr ""
-
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -4324,6 +4321,9 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
+msgstr ""
+
+msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -4540,9 +4540,6 @@ msgid "The minimum time, whatever the ranking difference between the two players
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-msgid "The mode below is used by default for the events."
 msgstr ""
 
 msgid "The name of the Papi file is not set, by default [{filename}]"
@@ -5377,13 +5374,10 @@ msgstr ""
 msgid "Use Sharly Chess as a stand-alone application"
 msgstr ""
 
-msgid "Use connected devices to display screens, check-in players and enter results"
+msgid "Use connected devices"
 msgstr ""
 
-msgid "Use connected devices to…"
-msgstr ""
-
-msgid "Use customize permissions for accounts and devices"
+msgid "Use customized permissions"
 msgstr ""
 
 msgid "Use log-level specific colors"
@@ -5685,7 +5679,7 @@ msgstr ""
 msgid "You are on the Sharly Chess server."
 msgstr ""
 
-msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!)."
+msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings… or print them!)."
 msgstr ""
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
@@ -5700,7 +5694,7 @@ msgstr ""
 msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr ""
 
-msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers..."
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
@@ -5947,69 +5941,24 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "Are you sure you wish to proceed?"
+#~ msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!."
 #~ msgstr ""
 
-#~ msgid "Add a device"
+#~ msgid "Default execution mode:"
 #~ msgstr ""
 
-#~ msgid "Adding devices allows you to grant permissions to people on other clients,"
+#~ msgid "Execution mode:"
 #~ msgstr ""
 
-#~ msgid "Customize the permissions (advanced feature)"
+#~ msgid "Default execution mode"
 #~ msgstr ""
 
-#~ msgid "No password required"
+#~ msgid "Execution mode"
 #~ msgstr ""
 
-#~ msgid "No password set for the results entry"
+#~ msgid "General"
 #~ msgstr ""
 
-#~ msgid "Other devices connected to your network can display screens (pairings, results, rankings...), they are not allowed to do anything else."
-#~ msgstr ""
-
-#~ msgid "Other devices connected to your network can display screens and check-in players."
-#~ msgstr ""
-
-#~ msgid "Other devices connected to your network can display screens and enter results."
-#~ msgstr ""
-
-#~ msgid "Other devices connected to your network can display screens, check-in players and enter results."
-#~ msgstr ""
-
-#~ msgid "Password to enter results"
-#~ msgstr ""
-
-#~ msgid "Password to enter results:"
-#~ msgstr ""
-
-#~ msgid "The IP address, used to identify the device."
-#~ msgstr ""
-
-#~ msgid "The password required on input screens to enter results (optional)."
-#~ msgstr ""
-
-#~ msgid "Use connected devices to display screens"
-#~ msgstr ""
-
-#~ msgid "Use connected devices to display screens and check-in players"
-#~ msgstr ""
-
-#~ msgid "Use connected devices to display screens and enter results"
-#~ msgstr ""
-
-#~ msgid "…display screens"
-#~ msgstr ""
-
-#~ msgid "…display screens and check-in players"
-#~ msgstr ""
-
-#~ msgid "…display screens and enter results"
-#~ msgstr ""
-
-#~ msgid "…display screens, check-in players and enter results"
-#~ msgstr ""
-
-#~ msgid "The mode below is used by default when creating new events (it can be changed at any time)."
+#~ msgid "Please select the execution mode for the event."
 #~ msgstr ""
 

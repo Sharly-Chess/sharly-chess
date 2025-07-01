@@ -1,49 +1,19 @@
-<h4>
-    {{ title }}
-</h4>
-<div class="row">
-    <div class="col-12">
-        {{ text }}
-    </div>
-    <div class="col-12">
-        {% set mode=modes[0] %}
-        {{ admin_macros.radio_input(
-            name=name,
-            value=mode.value|string,
-            label='',
-            placeholder=mode.name,
-            help_text='',
-            info=mode.help,
-            data=data,
-            errors=errors
-        ) }}
-        <div>
-            {{ _('Use connected devices to…') }}
-        </div>
-        <div class="ms-5">
-            {% for mode in modes[1:-1]%}
-                {{ admin_macros.radio_input(
-                    name=name,
-                    value=mode.value|string,
-                    label='',
-                    placeholder=mode.name,
-                    help_text='',
-                    info=mode.help,
-                    data=data,
-                    errors=errors
-                ) }}
-            {% endfor %}
-        </div>
-        {% set mode=modes[-1] %}
-        {{ admin_macros.radio_input(
-            name=name,
-            value=mode.value|string,
-            label='',
-            placeholder=mode.name,
-            help_text='',
-            info=mode.help,
-            data=data,
-            errors=errors
-        ) }}
-    </div>
+{{ admin_macros.select_input(
+    name=name,
+    label=label,
+    help_text=_('Take some time to understand what each mode entails, and don\'t be shy about taking advantage of the full power of Sharly Chess!'),
+    select_options=exec_mode_options,
+    data=data, errors=errors
+) }}
+<div>
+    {{ _('Learn more…') }}
+    {% for exec_mode in exec_modes %}
+        <span
+            class="ps-4 text-decoration-underline"
+            {{ macros.tooltip_attributes('info', '<span class="fw-bold">' ~ exec_mode.description ~ '</span><br/>' ~ exec_mode.help, 'top') }}
+        >
+            <i class="bi-info-circle-fill"></i>
+            {{ exec_mode.name }}
+        </span>
+    {% endfor %}
 </div>

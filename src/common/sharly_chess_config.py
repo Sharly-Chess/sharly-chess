@@ -154,7 +154,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def default_exec_mode(self) -> ExecMode:
-        return ExecMode(self.stored_config.default_mode)
+        return ExecMode(self.stored_config.default_exec_mode)
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

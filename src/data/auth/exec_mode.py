@@ -17,7 +17,7 @@ class ExecMode(IntEnum):
         return tuple(item.value for item in cls)
 
     @classmethod
-    def modes(cls) -> tuple[Self, ...]:
+    def exec_modes(cls) -> tuple[Self, ...]:
         return tuple(cls)
 
     @property
@@ -40,11 +40,9 @@ class ExecMode(IntEnum):
             case ExecMode.STAND_ALONE:
                 return _('Use Sharly Chess as a stand-alone application')
             case ExecMode.STANDARD:
-                return _(
-                    'Use connected devices to display screens, check-in players and enter results'
-                )
+                return _('Use connected devices')
             case ExecMode.CUSTOM:
-                return _('Use customize permissions for accounts and devices')
+                return _('Use customized permissions')
             case _:
                 raise ValueError(f'mode={self}')
 
@@ -54,7 +52,7 @@ class ExecMode(IntEnum):
         match self:
             case ExecMode.STAND_ALONE:
                 return _(
-                    'You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings... or print them!).'
+                    'You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings… or print them!).'
                 )
             case ExecMode.STANDARD:
                 return _(
@@ -62,7 +60,7 @@ class ExecMode(IntEnum):
                 )
             case ExecMode.CUSTOM:
                 return _(
-                    'You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds... Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers...'
+                    'You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…'
                 )
             case _:
                 raise ValueError(f'mode={self}')

@@ -102,8 +102,8 @@ class IndexAdminController(BaseAdminController):
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
-        default_mode: int = (
-            WebContext.form_data_to_int(data, 'default_mode')
+        default_exec_mode: int = (
+            WebContext.form_data_to_int(data, 'default_exec_mode')
             or ExecMode.STAND_ALONE.value
         )
         return StoredConfig(
@@ -116,7 +116,7 @@ class IndexAdminController(BaseAdminController):
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
-            default_mode=default_mode,
+            default_exec_mode=default_exec_mode,
             errors=errors,
         )
 
@@ -321,8 +321,8 @@ class IndexAdminController(BaseAdminController):
                         'locale': WebContext.value_to_form_data(
                             sharly_chess_config.stored_config.locale
                         ),
-                        'default_mode': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.default_mode
+                        'default_exec_mode': WebContext.value_to_form_data(
+                            sharly_chess_config.stored_config.default_exec_mode
                         ),
                     }
                     for plugin in plugin_manager.all_plugins:
@@ -364,6 +364,7 @@ class IndexAdminController(BaseAdminController):
                     'federation_options': cls._get_federation_options(
                         SharlyChessConfig.default_federation
                     ),
+                    'exec_mode_options': cls._get_exec_mode_options(),
                     'modal': modal,
                     'data': data,
                     'errors': errors,
@@ -398,6 +399,7 @@ class IndexAdminController(BaseAdminController):
                     'federation_options': cls._get_federation_options(
                         default_federation=None
                     ),
+                    'exec_mode_options': cls._get_exec_mode_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,

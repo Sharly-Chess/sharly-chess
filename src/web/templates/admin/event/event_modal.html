@@ -290,13 +290,19 @@
                             {% endwith %}
                         </div>
                     </div>
-                    {% with
-                        title=_('Execution mode'),
-                        text=_('Specify below the mode used to run the event (read carefully to understand what each mode entails, and don\'t be shy about taking advantage of the full power of Sharly Chess!).'),
-                        name='exec_mode'
-                    %}
-                        {% include '../common/modal/exec_mode.html' %}
-                    {% endwith %}
+                    <h4>
+                        {{ _('Execution') }}
+                    </h4>
+                    <div class="row">
+                        <div class="col-12">
+                            {% with
+                                name='exec_mode',
+                                label=_('Execution mode of this event:')
+                            %}
+                                {% include '../common/modal/exec_mode.html' %}
+                            {% endwith %}
+                        </div>
+                    </div>
                 {% endif %}
             </form>
         </div>

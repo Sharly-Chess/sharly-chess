@@ -62,12 +62,12 @@
                 <td>{{ sharly_chess_config.web_port }}</td>
             </tr>
             <tr>
-                <th scope="row" class="text-nowrap">{{ _('Default execution mode') }}</th>
+                <th scope="row" class="text-nowrap">{{ _('Execution') }}</th>
                 <td>
                     <span
                         {{ macros.tooltip_attributes('info', sharly_chess_config.default_exec_mode.help, 'top') }}
                     >
-                        {{ sharly_chess_config.default_mode.description }}
+                        {{ sharly_chess_config.default_exec_mode.description }}
                     </span>
                 </td>
             </tr>
