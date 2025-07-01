@@ -671,23 +671,24 @@ class PlayerAdminController(BaseEventAdminController):
                     paid: float = 0.0
                     fixed: int | None = None
                     plugin_data = {}
-                    if search_player:
-                        first_name = search_player.first_name
-                        last_name = search_player.last_name
-                        gender = search_player.gender
-                        date_of_birth = search_player.date_of_birth
-                        ratings = search_player.ratings
-                        title = search_player.title
-                        federation = search_player.federation
-                        club = search_player.club
-                        fide_id = search_player.fide_id or None
-                        mail = search_player.mail
-                        phone = search_player.phone
-                        comment = search_player.comment
-                        owed = search_player.owed or 0.0
-                        paid = search_player.paid or 0.0
-                        fixed = search_player.fixed
-                        plugin_data = search_player.plugin_data or {}
+                    data_player = search_player or web_context.admin_player
+                    if data_player:
+                        first_name = data_player.first_name
+                        last_name = data_player.last_name
+                        gender = data_player.gender
+                        date_of_birth = data_player.date_of_birth
+                        ratings = data_player.ratings
+                        title = data_player.title
+                        federation = data_player.federation
+                        club = data_player.club
+                        fide_id = data_player.fide_id or None
+                        mail = data_player.mail
+                        phone = data_player.phone
+                        comment = data_player.comment
+                        owed = data_player.owed or 0.0
+                        paid = data_player.paid or 0.0
+                        fixed = data_player.fixed
+                        plugin_data = data_player.plugin_data or {}
                     match action:
                         case 'update' | 'delete':
                             assert admin_player is not None
