@@ -156,12 +156,16 @@ class SharlyChessConfig(metaclass=Singleton):
     web_host: str = '0.0.0.0'
 
     # The ports the web server tries to start on, tried one after the other.
-    web_ports: list[int] = [
-        80,
-        81,
-        8080,
-        8081,
-    ]
+    web_ports: list[int] = (
+        [
+            80,
+            81,
+            8080,
+            8081,
+        ]
+        if not os.getenv('TEST_ENV') == 'true'
+        else [9000]
+    )
 
     """ The accepted console log levels. """
     console_log_levels: dict[int, str] = {

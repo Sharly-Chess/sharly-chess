@@ -114,6 +114,7 @@
     "mktime",
     "morphdom",
     "mshe",
+    "networkidle",
     "newstyle",
     "ngettext",
     "NOCASE",

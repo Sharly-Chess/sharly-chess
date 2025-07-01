@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 import requests
-from playwright.sync_api import sync_playwright
 
 # Note: Keeping default event loop policy for Windows (ProactorEventLoop)
 # The WindowsSelectorEventLoop doesn't support subprocess operations
@@ -150,61 +149,11 @@ def backend_server(request):
     server.stop()
 
 
-@pytest.fixture(scope='session')
-def browser_context_args():
-    """Configure browser context arguments."""
-    return {
-        'viewport': {'width': 1280, 'height': 720},
-        'ignore_https_errors': True,
-    }
+@pytest.fixture(autouse=True)
+def setup_page(page, backend_server):
+    if not backend_server:
+        return None
 
-
-@pytest.fixture(scope='session')
-def playwright_instance(request):
-    """Create a Playwright instance for e2e tests only."""
-    # Check if any of the selected tests have the 'e2e' marker
-    if not any(item.get_closest_marker('e2e') for item in request.session.items):
-        # No e2e tests selected, skip Playwright startup
-        yield None
-        return
-
-    with sync_playwright() as p:
-        yield p
-
-
-@pytest.fixture(scope='session')
-def browser(playwright_instance):
-    """Create a browser instance for e2e tests only."""
-    if playwright_instance is None:
-        yield None
-        return
-
-    print('Launching Chromium browser...')
-    browser = playwright_instance.chromium.launch(headless=True)
-    print(f'Browser launched successfully: {browser}')
-    yield browser
-    browser.close()
-
-
-@pytest.fixture
-def context(browser, browser_context_args):
-    """Create a new browser context for each e2e test."""
-    if browser is None:
-        yield None
-        return
-
-    context = browser.new_context(**browser_context_args)
-    yield context
-    context.close()
-
-
-@pytest.fixture
-def page(context, backend_server):
-    """Create a new page for each e2e test."""
-    if context is None or backend_server is None:
-        yield None
-        return
-
-    page = context.new_page()
+    page.set_default_timeout(8000)
     page.base_url = backend_server.base_url
-    yield page
+    return page

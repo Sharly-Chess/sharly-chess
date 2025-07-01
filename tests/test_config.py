@@ -2,6 +2,8 @@
 
 from pathlib import Path
 from typing import Dict
+import re
+from playwright.sync_api import Page, Locator
 
 
 class TestConfig:
@@ -9,7 +11,7 @@ class TestConfig:
 
     # Server configuration
     TEST_HOST = '127.0.0.1'  # Use IP instead of localhost
-    TEST_PORT = 80
+    TEST_PORT = 9000
     TEST_TIMEOUT = 8  # seconds to wait for server startup
 
     # Test data configuration
@@ -25,6 +27,15 @@ class TestConfig:
 
 class TestUtils:
     """Utility functions for tests."""
+
+    @staticmethod
+    def button_by_text(page: Page, text: str) -> Locator:
+        """
+        Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
+        """
+        return page.get_by_role(
+            'button', name=re.compile(rf'\b{text}\b', re.IGNORECASE)
+        )
 
     @staticmethod
     def take_screenshot(page, name: str):
