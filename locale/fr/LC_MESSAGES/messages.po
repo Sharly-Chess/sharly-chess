@@ -4543,7 +4543,7 @@ msgid "The minimum value of a shared prize in this category (by default: no thre
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
 
 msgid "The mode below is used by default for the events."
-msgstr ""
+msgstr "Le mode ci-dessous est utilisé par défaut par les évènements."
 
 msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
