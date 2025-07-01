@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.12.0"
-version = "2.8.0rc2"
+version = "2.8.0rc3"
 
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
@@ -26,7 +26,6 @@ dependencies = [
   "colorama ~= 0.4.6",
   "colorlog ~= 6.9.0",
   "cryptography ~= 44.0.0",
-  "python-dateutil ~= 2.9.0",
   "httpdate ~= 1.2.0",
   "iso4217parse ~= 0.6.2",
   "Jinja2 ~= 3.1.5",

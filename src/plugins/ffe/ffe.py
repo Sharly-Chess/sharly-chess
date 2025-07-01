@@ -9,7 +9,6 @@ from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
-from dateutil.relativedelta import relativedelta
 from packaging.version import Version
 
 from common.exception import SharlyChessException
@@ -46,7 +45,7 @@ from plugins.ffe.ffe_entity import (
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
-from plugins.ffe.utils import FFEUtils, PlayerFFELicence
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFE_EPOCH
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginNavBarItem, PluginUtils
@@ -189,8 +188,10 @@ class FfePlugin(Plugin):
             'RefFFE': self.get_data(
                 pd,
                 'ffe_id',
-                (datetime.now() - relativedelta(years=30)),  # like Papi does :-(
-            ),
+            )
+            or int(
+                (datetime.now() - FFE_EPOCH).total_seconds()
+            ),  # NOTE(Amaras): the Papi epoch starts on 2000-01-01
             'AffType': (
                 self.get_data(pd, 'ffe_licence').to_papi_value
                 if self.get_data(pd, 'ffe_licence')

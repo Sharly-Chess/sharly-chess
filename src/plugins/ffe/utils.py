@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import IntEnum
 from functools import partial
 from typing import Self
@@ -14,6 +15,7 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 FFE_MIN_UPLOAD_DELAY = 3
 FFE_DEFAULT_UPLOAD_DELAY = 3
+FFE_EPOCH = datetime(2000, 1, 1)
 
 
 class FFEUtils:
