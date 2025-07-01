@@ -8,6 +8,7 @@
 > - **the standard role**, which allows:
 >   - to view public screens;
 >   - to score and enter results (with or without password protection).
+>
 > This document will move to the user documentation in version 2.9.
 
 ## Execution modes
