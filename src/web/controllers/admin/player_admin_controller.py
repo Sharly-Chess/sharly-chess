@@ -2030,8 +2030,14 @@ class PlayerAdminController(BaseEventAdminController):
             )
         search = request.query_params.get(data_source.search_element_name)
         players: list[Player] | None = None
+        connection_error: str | None = None
         if search:
-            players = await data_source.search_player(search, DataSource.SEARCH_LIMIT)
+            try:
+                players = await data_source.search_player(
+                    search, DataSource.SEARCH_LIMIT
+                )
+            except SharlyChessException as e:
+                connection_error = str(e)
             SessionHandler.set_session_admin_players_active_data_source(
                 request, data_source.id
             )
@@ -2042,5 +2048,6 @@ class PlayerAdminController(BaseEventAdminController):
             | {
                 'search_results': players,
                 'data_source': data_source,
+                'connection_error': connection_error,
             },
         )
