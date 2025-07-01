@@ -3176,7 +3176,7 @@ msgstr ""
 msgid "Other ODBC drivers found on the server"
 msgstr ""
 
-msgid "Other devices connected to your network can display screens, check-in players and enter results (depending on the screens you publish)."
+msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."

@@ -58,7 +58,7 @@ class ExecMode(IntEnum):
                 )
             case ExecMode.STANDARD:
                 return _(
-                    'Other devices connected to your network can display screens, check-in players and enter results (depending on the screens you publish).'
+                    'Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled.'
                 )
             case ExecMode.CUSTOM:
                 return _(
