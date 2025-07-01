@@ -26,7 +26,6 @@ dependencies = [
   "colorama ~= 0.4.6",
   "colorlog ~= 6.9.0",
   "cryptography ~= 44.0.0",
-  "python-dateutil ~= 2.9.0",
   "httpdate ~= 1.2.0",
   "iso4217parse ~= 0.6.2",
   "Jinja2 ~= 3.1.5",
