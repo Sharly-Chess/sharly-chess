@@ -845,9 +845,7 @@ class Client:
         return self._has_event_role(
             [
                 Role.DISPLAY_MANAGER,
-                Role.PAIRINGS_OFFICER,
-                Role.CHECK_IN_OFFICER,
-                Role.RESULTS_OFFICER,
+                Role.DEPUTY_CHIEF_ARBITER,
             ],
         )
 
