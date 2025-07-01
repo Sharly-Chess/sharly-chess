@@ -1,6 +1,7 @@
 # Needs to be imported first to avoid circular import
 from plugins import manager  # Noqa E402
 
+import pytest
 from data.tournament import Tournament
 
 from data.prize.player_filter_options import (
@@ -60,6 +61,7 @@ from utils.tests import BaseTestCase
 ROUNDS = 6
 
 
+@pytest.mark.unit
 class PrizesTestCase(BaseTestCase):
     def setUp(self):
         self.category_index = 1

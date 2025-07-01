@@ -5,6 +5,7 @@ from typing import Callable
 # Needs to be imported first to avoid circular import
 from plugins import manager  # Noqa E402
 
+import pytest
 from data.tie_breaks import tie_breaks, options
 from data.tournament import Tournament
 from data.player import Player
@@ -12,6 +13,7 @@ from plugins.ffe import ffe_tie_breaks
 from utils.tests import BaseTestCase
 
 
+@pytest.mark.unit
 class TieBreakTestCase(BaseTestCase, ABC):
     @property
     @abstractmethod
@@ -58,6 +60,7 @@ class TieBreakTestCase(BaseTestCase, ABC):
         )
 
 
+@pytest.mark.unit
 class SwissTieBreakTestCase(TieBreakTestCase):
     @property
     def tournament_uniq_id(self) -> str:
@@ -764,6 +767,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
 
+@pytest.mark.unit
 class RoundRobinTieBreakTestCase(TieBreakTestCase):
     @property
     def tournament_uniq_id(self) -> str:

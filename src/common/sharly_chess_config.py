@@ -1,4 +1,5 @@
 import logging
+import os
 import socket
 import sys
 from pathlib import Path
@@ -113,7 +114,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def force_edit(self) -> bool:
-        return self.stored_config.force_edit
+        return self.stored_config.force_edit and os.getenv('TEST_ENV') != 'true'
 
     @property
     def console_log_level(self) -> int:
@@ -141,7 +142,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def launch_browser(self) -> bool:
-        return self.stored_config.launch_browser
+        return self.stored_config.launch_browser and os.getenv('TEST_ENV') != 'true'
 
     @property
     def federation(self) -> Federation:

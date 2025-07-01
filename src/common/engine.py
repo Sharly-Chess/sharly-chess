@@ -1,5 +1,6 @@
 import filecmp
 import json
+import os
 import re
 import shutil
 import time
@@ -235,7 +236,7 @@ class Engine(ABC):
                         prefix,
                         previous_databases[(recovered_version, prefix)],
                     )
-            if DEVEL_ENV and not recovered_version:
+            if DEVEL_ENV and not recovered_version and os.getenv('TEST_ENV') != 'true':
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
                 no_answer = _('N *** THE LETTER TO ANSWER NO')
                 while True:

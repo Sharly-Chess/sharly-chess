@@ -1,10 +1,12 @@
 # Needs to be imported first to avoid circular import
 from plugins import manager  # Noqa E402
 
+import pytest
 from data.pairings.engines import BergerPairingEngine
 from utils.tests import BaseTestCase
 
 
+@pytest.mark.unit
 class PairingTestCase(BaseTestCase):
     """Tests for all the pairing systems."""
 

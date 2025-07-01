@@ -136,6 +136,7 @@
     "Prenom",
     "pyinstaller",
     "pyodbc",
+    "pytest",
     "Rapide",
     "REGAUD",
     "Regle",
