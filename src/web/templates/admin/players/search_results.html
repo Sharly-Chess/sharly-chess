@@ -18,11 +18,16 @@
             </li>
         {% endfor %}
     {% else %}
-        <li class="dropdown-item text-nowrap">
+        <li class="dropdown-item no_hover text-nowrap">
             <span class="fst-italic">{{ _('No results.') }}</span>
         </li>
     {% endif %}
     <script>
         $('#{{ data_source.id }}-search-results').show();
     </script>
+{% elif connection_error %}
+    <li class="dropdown-item no-hover text-nowrap">
+        <i class="bi-cloud-slash pe-1"></i>
+        <span class="fst-italic">{{ connection_error }}</span>
+    </li>
 {% endif %}
