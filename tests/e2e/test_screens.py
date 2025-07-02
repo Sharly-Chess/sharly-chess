@@ -19,7 +19,7 @@ class TestScreensFunctionality:
     def test_create_and_delete_simple_screen(self, page: Page):
         page.goto('/admin/event/event-test-screen/screens')
         TestUtils.button_by_text(page, 'Create a screen').click()
-        TestUtils.button_by_text(page, 'Results entry').click()
+        page.get_by_test_id('create-screen-type-input').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_role('textbox', name='ID (unique):').fill('test-screen')

@@ -56,7 +56,6 @@ class TestUtils:
             'hide_background_image': True,
             'background_image': None,
             'background_color': '#ffffff',
-            'update_password': '',
             'record_illegal_moves': False,
             'rules': '',
             'message_text': '',
