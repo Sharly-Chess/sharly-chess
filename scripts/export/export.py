@@ -6,6 +6,7 @@ import sys
 from pkgutil import iter_modules
 from types import ModuleType
 
+import requests
 from packaging.version import Version, InvalidVersion
 
 from common.i18n import update_i18n_files
@@ -28,7 +29,7 @@ from PyInstaller.__main__ import run
 # Needs to be imported first to avoid circular import
 from plugins.manager import plugin_manager  # Noqa
 
-from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER
+from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER, TMP_DIR
 from data.pairings.engines import BbpPairings
 from common import SHARLY_CHESS_VERSION
 from common.sharly_chess_config import SharlyChessConfig
@@ -157,6 +158,26 @@ def build_exe():
     for file in files:
         pyinstaller_params.append(
             f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
+        )
+    iso4217parse_dir: Path = TMP_DIR / 'iso4217parse'
+    iso4217parse_dir.mkdir(parents=True, exist_ok=True)
+    iso4217parse_version = '0.6.2'
+    iso4217parse_url: str = f'https://raw.githubusercontent.com/tammoippen/iso4217parse/refs/tags/v{iso4217parse_version}/iso4217parse'
+    for filename in [
+        'data.json',
+        'symbols.json',
+    ]:
+        url: str = f'{iso4217parse_url}/{filename}'
+        logger.info(f'Downloading {url}...')
+        response = requests.get(url, stream=True, timeout=3)
+        response.raise_for_status()
+        file: Path = iso4217parse_dir / filename
+        with open(file, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        logger.info('Done.')
+        pyinstaller_params.append(
+            f'--add-data={file};{file.parent.relative_to(TMP_DIR)}'
         )
     run(pyinstaller_params)
 
