@@ -1,6 +1,5 @@
 import filecmp
 import json
-import os
 import re
 import shutil
 import time
@@ -18,6 +17,7 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 
 from common import (
     SHARLY_CHESS_VERSION,
+    TEST_ENV,
     TMP_DIR,
     REQUEST_TIMEOUT,
     EVENTS_FOLDER,
@@ -236,7 +236,7 @@ class Engine(ABC):
                         prefix,
                         previous_databases[(recovered_version, prefix)],
                     )
-            if DEVEL_ENV and not recovered_version and os.getenv('TEST_ENV') != 'true':
+            if DEVEL_ENV and not recovered_version and not TEST_ENV:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
                 no_answer = _('N *** THE LETTER TO ANSWER NO')
                 while True:
@@ -572,7 +572,7 @@ class Engine(ABC):
         """Compares the current version with the most recent version on the Sharly Chess GitHub repository
         If the current release is stable, more recent pre-releases are ignored; otherwise the most recent release is chosen.
         Returns the most recent version available and the corresponding down URL if any, None otherwise."""
-        if os.getenv('TEST_ENV') == 'true':
+        if TEST_ENV:
             return None, None
         most_recent_version, download_url = cls._get_most_recent_version()
         if not most_recent_version:

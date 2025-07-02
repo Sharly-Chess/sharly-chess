@@ -1,5 +1,4 @@
 import logging
-import os
 import socket
 import sys
 from pathlib import Path
@@ -16,6 +15,7 @@ from common import (
     BASE_DIR,
     EVENTS_DIR,
     SHARLY_CHESS_VERSION,
+    TEST_ENV,
     enable_experimental_features,
 )
 from common.i18n import (
@@ -114,7 +114,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def force_edit(self) -> bool:
-        return self.stored_config.force_edit and os.getenv('TEST_ENV') != 'true'
+        return self.stored_config.force_edit and not TEST_ENV
 
     @property
     def console_log_level(self) -> int:
@@ -142,7 +142,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def launch_browser(self) -> bool:
-        return self.stored_config.launch_browser and os.getenv('TEST_ENV') != 'true'
+        return self.stored_config.launch_browser and not TEST_ENV
 
     @property
     def federation(self) -> Federation:
@@ -163,7 +163,7 @@ class SharlyChessConfig(metaclass=Singleton):
             8080,
             8081,
         ]
-        if not os.getenv('TEST_ENV') == 'true'
+        if not TEST_ENV
         else [9000]
     )
 
