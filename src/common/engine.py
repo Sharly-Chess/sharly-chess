@@ -30,6 +30,7 @@ from common.logger import (
     get_logger,
     input_interactive,
     print_interactive_input,
+    set_logging_config,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -47,6 +48,7 @@ class Engine(ABC):
 
     def __init__(self):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
+        set_logging_config(file_path=self.log_file_path)
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         logger.info(
             'Sharly Chess %s - %s - %s',
