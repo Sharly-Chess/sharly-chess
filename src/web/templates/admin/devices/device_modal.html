@@ -88,7 +88,9 @@
                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
             >
                 <i class="bi-floppy-fill pe-1"></i>
-                {% if action == 'update' %}
+                {% if action == 'create' %}
+                    {{ _('Add') }}
+                {% elif action == 'update' %}
                     {{ _('Save') }}
                 {% elif action == 'delete' %}
                     {{ _('Delete') }}
