@@ -1,11 +1,28 @@
 # Needs to be imported first to avoid circular import
+from pathlib import Path
+from unittest import TestCase
+from data.loader import EventLoader
 from plugins import manager  # Noqa E402
 
+import pytest
 from data.pairings.engines import BergerPairingEngine
-from utils.tests import BaseTestCase
+from tests.test_config import TestUtils
 
 
-class PairingTestCase(BaseTestCase):
+@pytest.mark.unit
+class PairingTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        database = TestUtils.create_event('test-pairings-event')
+        database.populate(Path('../unit/test-event.yml'))
+        cls.event = EventLoader().load_event('test-pairings-event')
+
+    @classmethod
+    def tearDownClass(cls):
+        TestUtils.delete_event('test-pairings-event')
+        super().tearDownClass()
+
     """Tests for all the pairing systems."""
 
     def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):

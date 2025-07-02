@@ -1,6 +1,9 @@
 # Needs to be imported first to avoid circular import
+from unittest import TestCase
+from data.loader import EventLoader
 from plugins import manager  # Noqa E402
 
+import pytest
 from data.tournament import Tournament
 
 from data.prize.player_filter_options import (
@@ -46,6 +49,7 @@ from database.sqlite.event.event_store import (
     StoredTournament,
 )
 from plugins.ffe.ffe_entity import FfeLeaguePlayerFilter, FfeLeaguesFilterOption
+from tests.test_config import TestUtils
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -55,12 +59,23 @@ from utils.enum import (
     TournamentRating,
     PlayerCategory,
 )
-from utils.tests import BaseTestCase
 
 ROUNDS = 6
 
 
-class PrizesTestCase(BaseTestCase):
+@pytest.mark.unit
+class PrizesTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        TestUtils.create_event('test-prizes-event')
+        cls.event = EventLoader().load_event('test-prizes-event')
+
+    @classmethod
+    def tearDownClass(cls):
+        TestUtils.delete_event('test-prizes-event')
+        super().tearDownClass()
+
     def setUp(self):
         self.category_index = 1
         self.criterion_index = 1
