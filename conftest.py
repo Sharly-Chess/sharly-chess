@@ -3,6 +3,7 @@
 import os
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -66,12 +67,11 @@ class BackendServer:
         # Start your backend server process
         # Adjust this command based on how your server is started
         cmd = [
-            'python',
+            sys.executable,
             str(Path('./src/sharly_chess.py').resolve()),
             '--path',
             str(TestConfig.TEST_DATA_DIR.resolve()),
         ]
-
         os.chdir(TestConfig.TEST_DATA_DIR.resolve())
 
         # Create log file for server output - use unique name to avoid conflicts

@@ -50,6 +50,8 @@ class SharlyChessConfig(metaclass=Singleton):
     def _get_system_user_locale() -> str | None:
         """Returns the locale used by the user at system-level,
         if known by the i18n stuff (otherwise returns None)."""
+        if TEST_ENV:
+            return 'en_GB'
         if sys.platform == 'win32':  # pragma: py-not-win32
             import locale
             import ctypes
