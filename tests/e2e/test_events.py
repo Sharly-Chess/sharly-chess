@@ -10,20 +10,24 @@ class TestEventFunctionality:
     def test_create_and_delete_event(self, page: Page):
         page.goto('/admin/config')
         TestUtils.button_by_text(page, 'Create an event').click()
-        page.get_by_label('Federation:').select_option('FRA')
-        page.get_by_role('textbox', name='ID (unique):').fill('test-event')
-        page.get_by_role('textbox', name='Name:').fill('Test Event')
-        page.locator('button[type=submit]').click()
+        modal = page.locator('.modal-dialog')
+        expect(modal).to_be_visible()
+        modal.get_by_label('Federation:').select_option('FRA')
+        modal.get_by_role('textbox', name='ID (unique):').fill('test-event')
+        modal.get_by_role('textbox', name='Name:').fill('Test Event')
+        modal.locator('button[type=submit]').click()
         expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
             'test-event'
         )
 
         page.goto('/admin')
-        locator = page.locator("div.card:has-text('Unique ID: test-event')")
-        expect(locator).to_be_visible()
-
-        locator.click()
+        card = page.locator("div.card:has-text('Unique ID: test-event')")
+        expect(card).to_be_visible()
+        card.click()
         TestUtils.button_by_text(page, 'Delete').click()
-        page.locator('#uniq-id').fill('test-event')
-        page.locator('button[type=submit]').click()
+
+        modal = page.locator('.modal-dialog')
+        expect(modal).to_be_visible()
+        modal.locator('#uniq-id').fill('test-event')
+        modal.locator('button[type=submit]').click()
         expect(page.get_by_text('Event [test-event] has been deleted')).to_be_visible()

@@ -312,12 +312,14 @@
                 form="modal-form"
                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
             >
-                <i class="bi-floppy-fill pe-1"></i>
                 {% if action in ['create', 'clone', ] %}
+                    <i class="bi-floppy-fill pe-1"></i>
                     {{ _('Create') }}
                 {% elif action == 'update' %}
+                    <i class="bi-floppy-fill pe-1"></i>
                     {{ _('Save') }}
                 {% elif action == 'delete' %}
+                    <i class="bi-trash pe-1"></i>
                     {{ _('Delete') }}
                 {% else %}
                     ?
