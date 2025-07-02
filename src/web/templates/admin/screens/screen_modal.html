@@ -3,17 +3,17 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action in ['create', 'clone', ] %}
-                    {% if screen_type == 'input' %}
+                    {% if screen_type.value == 'input' %}
                         {{ _('Input screen creation') }}
-                    {% elif screen_type == 'boards' %}
+                    {% elif screen_type.value == 'boards' %}
                         {{ _('Boards screen creation') }}
-                    {% elif screen_type == 'players' %}
+                    {% elif screen_type.value == 'players' %}
                         {{ _('Players screen creation') }}
-                    {% elif screen_type == 'results' %}
+                    {% elif screen_type.value == 'results' %}
                         {{ _('Results screen creation') }}
-                    {% elif screen_type == 'ranking' %}
+                    {% elif screen_type.value == 'ranking' %}
                         {{ _('Ranking screen creation') }}
-                    {% elif screen_type == 'image' %}
+                    {% elif screen_type.value == 'image' %}
                         {{ _('Image screen creation') }}
                     {% else %}
                         ?
@@ -31,7 +31,7 @@
             <form
                 id="modal-form"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
+                    hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
                 {% elif action == 'update' %}
@@ -50,24 +50,24 @@
                     </h4>
                 {% else %}
                     <h4>
-                        {% if screen_type == 'input' %}
+                        {% if screen_type.value == 'input' %}
                             {{ _('Properties (results entry)') }}
-                        {% elif screen_type == 'boards' %}
+                        {% elif screen_type.value == 'boards' %}
                             {{ _('Properties (pairings by board)') }}
-                        {% elif screen_type == 'players' %}
+                        {% elif screen_type.value == 'players' %}
                             {{ _('Properties (pairings by player)') }}
-                        {% elif screen_type == 'results' %}
+                        {% elif screen_type.value == 'results' %}
                             {{ _('Properties (last results)') }}
-                        {% elif screen_type == 'ranking' %}
+                        {% elif screen_type.value == 'ranking' %}
                             {{ _('Properties (ranking)') }}
-                        {% elif screen_type == 'image' %}
+                        {% elif screen_type.value == 'image' %}
                             {{ _('Properties (image)') }}
                         {% else %}
                             ?
                         {% endif %}
                     </h4>
 
-                    {% set col = 6 if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] else 4 %}
+                    {% set col = 6 if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] else 4 %}
                     <div class="row">
                         <div class="col-12 col-xl-{{col}} mb-3">
                             {{ admin_macros.switch_input(
@@ -82,7 +82,7 @@
                             {{ admin_macros.text_input(
                                 name='uniq_id',
                                 label=_('ID (unique):'),
-                                placeholder=_('E.g.: %(screen_type)s-screen', screen_type=screen_type),
+                                placeholder=_('E.g.: %(screen_type)s-screen', screen_type=screen_type.value),
                                 help_text=_('The Unique ID, used to reference the screen.'),
                                 data=data, errors=errors
                             ) }}
@@ -96,7 +96,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] %}
+                        {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] %}
                             <div class="col-12 col-xl-{{col}} mb-3">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
@@ -107,7 +107,7 @@
                                 ) }}
                             </div>
                         {% endif %}
-                        {% if screen_type == 'ranking' %}
+                        {% if screen_type.value == 'ranking' %}
                             <div class="col-12 col-md-6 mb-3">
                                 {% include '../common/modal/ranking_crosstable.html' %}
                             </div>
@@ -115,7 +115,7 @@
                                 {% include '../common/modal/ranking_round.html' %}
                             </div>
                         {% endif %}
-                        {% if screen_type == 'image' %}
+                        {% if screen_type.value == 'image' %}
                             <div class="col-12 col-md-6 mb-3">
                                 {{ admin_macros.text_input(
                                     name='background_image',
@@ -140,12 +140,12 @@
                         {% endif %}
                     </div>
 
-                    {% if screen_type in ['players', 'ranking', 'results', ] %}
+                    {% if screen_type.value in ['players', 'ranking', 'results', ] %}
                         <h4>
                             {{ _('Selection') }}
                         </h4>
                         <div class="row">
-                            {% if screen_type == 'players' %}
+                            {% if screen_type.value == 'players' %}
                                 <div class="col-12 mb-3">
                                     {% include '../common/modal/show_unpaired.html' %}
                                 </div>
@@ -153,7 +153,7 @@
                                     {% include '../common/modal/show_opponent.html' %}
                                 </div>
                             {% endif %}
-                            {% if screen_type == 'ranking' %}
+                            {% if screen_type.value == 'ranking' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/ranking_min_points.html' %}
                                 </div>
@@ -161,7 +161,7 @@
                                     {% include '../common/modal/ranking_max_points.html' %}
                                 </div>
                             {% endif %}
-                            {% if screen_type == 'results' %}
+                            {% if screen_type.value == 'results' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {{ admin_macros.number_input(
                                         name='results_limit',
@@ -206,7 +206,7 @@
                         </div>
                     {% endif %}
 
-                    {% if screen_type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
+                    {% if screen_type.value in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                         <h4>
                             {{ _('Layout') }}
                         </h4>
@@ -238,7 +238,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            {% if screen_type == 'input' %}
+                            {% if screen_type.value == 'input' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/exit_button.html' %}
                                 </div>

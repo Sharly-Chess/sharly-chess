@@ -100,7 +100,7 @@ class ScreenAdminController(BaseEventAdminController):
         match action:
             case 'create':
                 assert web_context.screen_type is not None
-                type_ = web_context.screen_type
+                type_: ScreenType = web_context.screen_type
                 match type_:
                     case (
                         ScreenType.BOARDS
@@ -506,9 +506,7 @@ class ScreenAdminController(BaseEventAdminController):
                 )
             )
             screens_by_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
-            if not web_context.client.can_manage_screens:
-                screens_by_type_sorted_by_uniq_id = {}
-            elif admin_screens_show_family_screens:
+            if admin_screens_show_family_screens:
                 screens_by_type_sorted_by_uniq_id = (
                     web_context.admin_event.screens_by_screen_type_sorted_by_uniq_id
                 )
@@ -602,36 +600,44 @@ class ScreenAdminController(BaseEventAdminController):
                             uniq_id = web_context.admin_screen.stored_screen.uniq_id
                             name = web_context.admin_screen.stored_screen.name
                         case 'create':
-                            assert screen_type is not None
+                            assert web_context.screen_type is not None
                             uniq_id = web_context.admin_event.get_unused_screen_uniq_id(
-                                screen_type=ScreenType(screen_type)
+                                screen_type=ScreenType(web_context.screen_type)
                             )
-                            match screen_type:
-                                case 'input' | 'boards' | 'players' | 'ranking':
+                            match web_context.screen_type:
+                                case (
+                                    ScreenType.INPUT
+                                    | ScreenType.BOARDS
+                                    | ScreenType.PLAYERS
+                                    | ScreenType.RANKING
+                                ):
                                     init_set_tournament_id = list(
                                         web_context.admin_event.tournaments_by_id.keys()
                                     )[0]
-                                case 'results' | 'image':
+                                case ScreenType.RESULTS | ScreenType.IMAGE:
                                     pass
                                 case _:
-                                    raise ValueError(f'screen_type=[{screen_type}]')
+                                    raise ValueError(
+                                        f'screen_type=[{web_context.screen_type}]'
+                                    )
                             name = web_context.admin_event.get_unused_screen_name(
                                 screen_type=ScreenType(screen_type)
                             )
-                            match screen_type:
-                                case 'ranking':
+                            match web_context.screen_type:
+                                case ScreenType.RANKING:
                                     ranking_crosstable = False
                                 case (
-                                    'input'
-                                    | 'boards'
-                                    | 'players'
-                                    | 'ranking'
-                                    | 'results'
-                                    | 'image'
+                                    ScreenType.INPUT
+                                    | ScreenType.BOARDS
+                                    | ScreenType.PLAYERS
+                                    | ScreenType.RESULTS
+                                    | ScreenType.IMAGE
                                 ):
                                     pass
                                 case _:
-                                    raise ValueError(f'screen_type=[{screen_type}]')
+                                    raise ValueError(
+                                        f'screen_type=[{web_context.screen_type}]'
+                                    )
                         case 'clone':
                             if web_context.admin_screen is None:
                                 raise RuntimeError(
@@ -699,9 +705,9 @@ class ScreenAdminController(BaseEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
-                            if screen_type != ScreenType.IMAGE:
+                            if web_context.screen_type != ScreenType.IMAGE:
                                 menu_link = True
-                            match screen_type:
+                            match web_context.screen_type:
                                 case ScreenType.BOARDS:
                                     menu = '@boards'
                                 case ScreenType.INPUT:
@@ -713,7 +719,9 @@ class ScreenAdminController(BaseEventAdminController):
                                 case ScreenType.RESULTS | ScreenType.IMAGE:
                                     pass
                                 case _:
-                                    raise ValueError(f'screen_type={screen_type}')
+                                    raise ValueError(
+                                        f'screen_type={web_context.screen_type}'
+                                    )
                         case 'delete':
                             pass
                         case _:

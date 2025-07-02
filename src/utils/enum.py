@@ -1073,7 +1073,7 @@ class ScreenType(StrEnum):
 
     @classmethod
     def screen_types(cls) -> tuple[Self, ...]:
-        return tuple(cls)
+        return tuple(cls(st) for st in cls)
 
     @property
     def name(self) -> str:
