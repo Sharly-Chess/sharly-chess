@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import Annotated, Any
 
 from litestar.plugins.htmx import HTMXRequest
@@ -7,6 +8,7 @@ from litestar.params import Body
 from common.exception import SharlyChessException
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.client import Client
+from data.auth.client_tracker import ClientTracker
 from data.event import Event
 from data.loader import EventLoader
 from web.controllers.user.base_user_controller import UserWebContext
@@ -41,8 +43,14 @@ class EventUserWebContext(UserWebContext):
             self._redirect_error(f'Access denied for event [{event_uniq_id}].')
         except SharlyChessException as pwe:
             self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}.')
+        # tracks the visit of the client
+        ClientTracker().track_client(
+            self.client.host,
+            self.client.event.uniq_id if self.client.event else None,
+            self.client.account.username if self.client.account else None,
+        )
 
-    @property
+    @cached_property
     def client(self) -> Client:
         """Returns the client (account and device) of the request."""
         return Client(self.request, self.user_event)

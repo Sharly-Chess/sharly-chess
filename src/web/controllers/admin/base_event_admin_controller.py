@@ -1,4 +1,5 @@
 import logging
+from functools import cached_property
 from typing import Annotated, Any
 
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
@@ -9,6 +10,7 @@ from litestar.response import Template
 from common.exception import SharlyChessException
 from common.i18n import _
 from data.auth.client import Client
+from data.auth.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
@@ -46,8 +48,14 @@ class BaseEventAdminWebContext(AdminWebContext):
             except SharlyChessException as pwe:
                 self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
+        # tracks the visit of the client
+        ClientTracker().track_client(
+            self.client.host,
+            self.client.event.uniq_id if self.client.event else None,
+            self.client.account.username if self.client.account else None,
+        )
 
-    @property
+    @cached_property
     def client(self) -> Client:
         """Returns the client (account and device) of the request."""
         return Client(self.request, self.admin_event)

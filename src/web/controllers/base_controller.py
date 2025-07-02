@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from functools import cached_property
 from itertools import cycle
 import re
 import time
@@ -29,6 +30,7 @@ from common.i18n.utils import (
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.client import Client
+from data.auth.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
@@ -57,10 +59,13 @@ class WebContext:
         self.error: ClientRedirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
+        # tracks the visit of the client
+        ClientTracker().track_client(request.client.host)
 
-    @property
+    @cached_property
     def client(self) -> Client:
-        """Returns the client (account and device) of the request. This method may be overridden with an event parameter."""
+        """Returns the client (account and device) of the request.
+        This method may be overridden with an event parameter passed to Client()."""
         return Client(self.request)
 
     @property
