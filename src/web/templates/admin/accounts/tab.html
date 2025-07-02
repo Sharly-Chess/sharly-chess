@@ -71,11 +71,9 @@
                         </span>
                     </td>
                     {% if roles %}
-                        {% for role in roles[:1] %}
-                            {% with entity=account %}
-                                {% include '../common/access/tab_role_permission_cells.html' %}
-                            {% endwith %}
-                        {% endfor %}
+                        {% with role=roles[0], entity=account %}
+                            {% include '../common/access/tab_role_permission_cells.html' %}
+                        {% endwith %}
                     {% else %}
                         <td class="{% if not account.active %}text-secondary{% endif %}">
                             <span class="fst-italic">-</span>
@@ -173,13 +171,13 @@
                     </td>
                 </tr>
                 {% if roles | length > 1 %}
-                    {% for role in roles[1:] %}
-                        <tr class="">
+                    <tr class="">
+                        {% for role in roles[1:] %}
                             {% with entity=account %}
                                 {% include '../common/access/tab_role_permission_cells.html' %}
                             {% endwith %}
-                        </tr>
-                    {% endfor %}
+                        {% endfor %}
+                    </tr>
                 {% endif %}
             {% endfor %}
         </tbody>

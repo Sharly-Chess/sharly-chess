@@ -67,11 +67,9 @@
                         </span>
                     </td>
                     {% if roles %}
-                        {% for role in roles[:1] %}
-                            {% with entity=device %}
-                                {% include '../common/access/tab_role_permission_cells.html' %}
-                            {% endwith %}
-                        {% endfor %}
+                        {% with role=roles[0], entity=device %}
+                            {% include '../common/access/tab_role_permission_cells.html' %}
+                        {% endwith %}
                     {% else %}
                         <td class="{% if not device.active %}text-secondary{% endif %}">
                             <span class="fst-italic">-</span>
@@ -171,11 +169,9 @@
                 {% if roles | length > 1 %}
                     {% for role in roles[1:] %}
                         <tr class="">
-                            {% for role in roles[1:] %}
-                                {% with entity=device %}
-                                    {% include '../common/access/tab_role_permission_cells.html' %}
-                                {% endwith %}
-                            {% endfor %}
+                            {% with entity=device %}
+                                {% include '../common/access/tab_role_permission_cells.html' %}
+                            {% endwith %}
                         </tr>
                     {% endfor %}
                 {% endif %}
