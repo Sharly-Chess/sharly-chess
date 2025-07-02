@@ -2,6 +2,7 @@ from enum import IntEnum
 from typing import Self
 
 from common.i18n import _
+from data.auth.entities import Device, Account
 from data.auth.roles import Role
 
 
@@ -74,24 +75,36 @@ class ExecMode(IntEnum):
         return self == ExecMode.CUSTOM
 
     @property
-    def unknown_device_reset_roles(self) -> list[Role]:
-        """Returns the list of the roles to set to localhost when resetting the device permissions for the mode."""
+    def predefined_devices(self) -> list[Device]:
+        """Returns the list of the deices that correspond to predefined modes (all the roles but CUSTOM)."""
+        localhost_device: Device = Device.localhost_device()
+        unknown_device: Device = Device.unknown_device()
         match self:
             case ExecMode.STAND_ALONE:
-                return []
-            case ExecMode.STANDARD:
                 return [
-                    Role.CHECK_IN_OFFICER,
-                    Role.RESULTS_OFFICER,
+                    localhost_device,
+                    unknown_device,
                 ]
-            case ExecMode.CUSTOM:
+            case ExecMode.STANDARD:
+                unknown_device.permissions_by_role |= {
+                    Role.CHECK_IN_OFFICER: None,
+                    Role.RESULTS_OFFICER: None,
+                }
                 return [
-                    Role.SPECTATOR,
+                    localhost_device,
+                    unknown_device,
                 ]
             case _:
                 raise ValueError(f'mode={self}')
 
     @property
-    def anonymous_account_reset_roles(self) -> list[Role]:
-        """Returns the list of the roles to set to anonymous accounts when resetting the account permissions for the mode."""
-        return []
+    def predefined_accounts(self) -> list[Account]:
+        """Returns the list of the accounts that correspond to predefined modes (all the roles but CUSTOM)."""
+        anonymous_account: Account = Account.anonymous_account()
+        match self:
+            case ExecMode.STAND_ALONE | ExecMode.STANDARD:
+                return [
+                    anonymous_account,
+                ]
+            case _:
+                raise ValueError(f'mode={self}')

@@ -9,9 +9,6 @@ from litestar_htmx import HTMXRequest
 from data.auth.entities import (
     Device,
     Account,
-    anonymous_account,
-    unknown_device,
-    localhost_device,
 )
 from data.auth.roles import Role, RoleScope
 from data.tournament import Tournament
@@ -47,11 +44,11 @@ class Client:
         self.event: 'Event | None' = event
         self.device: Device = self._find_device()
         self.active_device: Device = (
-            self.device if self.device.active else unknown_device
+            self.device if self.device.active else Device.unknown_device()
         )
         self.account: Account = self._find_account()
         self.active_account: Account = (
-            self.account if self.account.active else anonymous_account
+            self.account if self.account.active else Account.anonymous_account()
         )
 
     def _find_device(
@@ -59,9 +56,9 @@ class Client:
     ) -> Device:
         """Returns a Device object that corresponds to the host of the request."""
         if Device.host_is_localhost(self.host):
-            return localhost_device
+            return Device.localhost_device()
         if self.event is None:
-            return unknown_device
+            return Device.unknown_device()
         with suppress(KeyError):
             return self.event.devices_by_ip[self.host]
         return self.event.devices_by_id[ANY_DEVICE_ID]
@@ -71,7 +68,7 @@ class Client:
     ) -> Account:
         """Returns an Account object that corresponds to the session."""
         if self.event is None:
-            return anonymous_account
+            return Account.anonymous_account()
         return SessionHandler.get_account(self.request, self.event)
 
     # ---------------------------------------------------------------------------------

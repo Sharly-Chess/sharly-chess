@@ -519,7 +519,7 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str = stored_event.uniq_id
         EventDatabase(uniq_id).create()
         with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event, reset_permissions=False)
+            event_database.update_stored_event(stored_event)
             event_database.commit()
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)

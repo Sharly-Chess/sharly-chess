@@ -825,12 +825,14 @@ class Event:
     def devices_by_id(self) -> dict[int, Device]:
         if self.errors:
             return {}
-        devices_by_id: dict[int, Device] = {
-            stored_device.id: Device(stored_device)
-            for stored_device in self.stored_event.stored_devices
-            if stored_device.id is not None
-        }
-        return devices_by_id
+        if self.exec_mode.custom:
+            return {
+                stored_device.id: Device(stored_device)
+                for stored_device in self.stored_event.stored_devices
+                if stored_device.id is not None
+            }
+        else:
+            return {device.id: device for device in self.exec_mode.predefined_devices}
 
     @cached_property
     def devices_by_ip(self) -> dict[str, Device]:
@@ -855,12 +857,16 @@ class Event:
     def accounts_by_id(self) -> dict[int, Account]:
         if self.errors:
             return {}
-        accounts_by_id: dict[int, Account] = {
-            stored_account.id: Account(stored_account)
-            for stored_account in self.stored_event.stored_accounts
-            if stored_account.id is not None
-        }
-        return accounts_by_id
+        if self.exec_mode.custom:
+            return {
+                stored_account.id: Account(stored_account)
+                for stored_account in self.stored_event.stored_accounts
+                if stored_account.id is not None
+            }
+        else:
+            return {
+                account.id: account for account in self.exec_mode.predefined_accounts
+            }
 
     @cached_property
     def accounts_by_username(self) -> dict[str, Account]:

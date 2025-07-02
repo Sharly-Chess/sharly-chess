@@ -8,9 +8,6 @@ from database.sqlite.event.event_store import (
     LOCALHOST_ID,
     ANY_DEVICE_ID,
     ANONYMOUS_ID,
-    anonymous_stored_account,
-    localhost_stored_device,
-    unknown_stored_device,
 )
 from data.auth.roles import Role
 
@@ -113,11 +110,17 @@ class Device(AuthEntity):
     def __repr__(self) -> str:
         return f'Device(id={self.id}, ip={self.ip})'
 
+    # devices are stored at event-level, methods localhost_device')
+    # and unknown_device() provide event-free instances that can
+    # be used when no events are available (welcome page, ...)
 
-# devices are stored at event-level, this provides event-free
-# instances that can be used when no events are available (welcome page, ...)
-localhost_device: Device = Device(localhost_stored_device)
-unknown_device: Device = Device(unknown_stored_device)
+    @classmethod
+    def localhost_device(cls) -> Self:
+        return cls(StoredDevice.localhost_stored_device())
+
+    @classmethod
+    def unknown_device(cls) -> Self:
+        return cls(StoredDevice.unknown_stored_device())
 
 
 class Account(AuthEntity):
@@ -186,7 +189,9 @@ class Account(AuthEntity):
     def __repr__(self) -> str:
         return f'Account(id={self.id}, username={self.username})'
 
+    # Accounts are stored at event-level, this provides an event-free
+    # instance that can be used when no events are available (welcome page, ...)
 
-# Accounts are stored at event-level, this provides an event-free
-# instance that can be used when no events are available (welcome page, ...)
-anonymous_account: Account = Account(anonymous_stored_account)
+    @classmethod
+    def anonymous_account(cls) -> Self:
+        return cls(StoredAccount.anonymous_stored_account())

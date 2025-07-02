@@ -27,6 +27,7 @@ from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
 from data.auth.exec_mode import ExecMode
 from data.player import Federation
+from database.sqlite.event.event_store import DEFAULT_HIDE_BACKGROUND_IMAGE
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
@@ -373,7 +374,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_columns: int = 4
 
     # True to hide the background images by default.
-    default_hide_background_image: bool = False
+    default_hide_background_image: bool = DEFAULT_HIDE_BACKGROUND_IMAGE
 
     # The default event background image.
     default_background_image: str = ''

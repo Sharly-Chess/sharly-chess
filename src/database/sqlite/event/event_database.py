@@ -19,6 +19,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.auth.exec_mode import ExecMode
 from data.board import Board
 from data.result import Result as DataResult
+from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -39,9 +40,6 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredDevice,
     StoredAccount,
-    LOCALHOST_ID,
-    ANY_DEVICE_ID,
-    ANONYMOUS_ID,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -189,6 +187,40 @@ class EventDatabase(MigrationDatabase):
         super().create()
         if populate:
             self._populate()
+
+    def _post_migrate(self):
+        with EventDatabase(self.uniq_id, write=True) as event_database:
+            # preset the STANDARD mode for further CUSTOM use
+            for device in ExecMode.STANDARD.predefined_devices:
+                event_database.execute(
+                    'INSERT INTO `device`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
+                    (
+                        device.id,
+                        device.edit_properties,
+                        device.edit_permissions,
+                        device.active,
+                        device.ip,
+                        SQLiteDatabase.dump_to_json_database_field(
+                            device.permissions_by_role
+                        ),
+                    ),
+                )
+            for account in ExecMode.STANDARD.predefined_accounts:
+                event_database.execute(
+                    'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    (
+                        account.id,
+                        account.edit_properties,
+                        account.edit_permissions,
+                        account.active,
+                        account.username,
+                        account.password,
+                        SQLiteDatabase.dump_to_json_database_field(
+                            account.permissions_by_role
+                        ),
+                    ),
+                )
+            event_database.commit()
 
     def _populate(self):
         try:
@@ -1012,10 +1044,8 @@ class EventDatabase(MigrationDatabase):
     def update_stored_event(
         self,
         stored_event: StoredEvent,
-        reset_permissions: bool = False,
     ):
-        """Updates the event database with the information in the provided
-        `stored_event` and reset the permissions if wanted."""
+        """Updates the event database with the information in the provided `stored_event`."""
 
         per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(
             stored_event=stored_event
@@ -1063,44 +1093,6 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
-
-        if reset_permissions:
-            mode: ExecMode = ExecMode(stored_event.exec_mode)
-            # delete all the devices but the predefined ones
-            self.execute(
-                'DELETE FROM `device` WHERE `id` NOT IN (?, ?)',
-                (
-                    LOCALHOST_ID,
-                    ANY_DEVICE_ID,
-                ),
-            )
-            # Set the permissions that correspond to the mode
-            self.execute(
-                'UPDATE `device` SET `active` = ?, `permissions` = ? WHERE id = ?',
-                (
-                    True,
-                    self.dump_to_json_database_permissions(
-                        {role.value: None for role in mode.unknown_device_reset_roles}
-                    ),
-                    ANY_DEVICE_ID,
-                ),
-            )
-            # Delete all the accounts but the predefined ones
-            self.execute('DELETE FROM `account` WHERE `id` <> ?', (ANONYMOUS_ID,))
-            # Set the permissions that correspond to the mode
-            self.execute(
-                'UPDATE `account` SET `active` = ?, `permissions` = ? WHERE id = ?',
-                (
-                    True,
-                    self.dump_to_json_database_permissions(
-                        {
-                            role.value: None
-                            for role in mode.anonymous_account_reset_roles
-                        }
-                    ),
-                    ANONYMOUS_ID,
-                ),
-            )
 
     # ---------------------------------------------------------------------------------
     # StoredTimerHour

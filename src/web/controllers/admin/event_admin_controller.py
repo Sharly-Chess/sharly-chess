@@ -15,7 +15,6 @@ from pyexcel_ods3 import save_data
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.exec_mode import ExecMode
 from data.display_controller import DisplayController
 from data.loader import EventLoader
 from data.player import Player
@@ -364,11 +363,6 @@ class EventAdminController(BaseEventAdminController):
             case 'update':
                 if web_context.admin_event is None:
                     raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                previous_exec_mode: ExecMode | None = None
-                if web_context.admin_event.stored_event.exec_mode is not None:
-                    previous_exec_mode = ExecMode(
-                        web_context.admin_event.stored_event.exec_mode
-                    )
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
                     event_loader.clear_cache(web_context.admin_event.uniq_id)
@@ -382,14 +376,7 @@ class EventAdminController(BaseEventAdminController):
                             _('Renaming the database failed: {ex}.').format(ex=ex),
                         )
                 with EventDatabase(uniq_id, write=True) as event_database:
-                    new_exec_mode: ExecMode | None = None
-                    if stored_event.exec_mode is not None:
-                        new_exec_mode = ExecMode(stored_event.exec_mode)
-                    event_database.update_stored_event(
-                        stored_event,
-                        reset_permissions=new_exec_mode != previous_exec_mode
-                        and new_exec_mode != ExecMode.CUSTOM,
-                    )
+                    event_database.update_stored_event(stored_event)
                     event_database.commit()
                 if rename:
                     Message.success(
@@ -417,10 +404,7 @@ class EventAdminController(BaseEventAdminController):
                     new_uniq_id=uniq_id
                 )
                 with EventDatabase(uniq_id, write=True) as event_database:
-                    event_database.update_stored_event(
-                        stored_event,
-                        reset_permissions=False,
-                    )
+                    event_database.update_stored_event(stored_event)
                     event_database.commit()
                 Message.success(
                     request,

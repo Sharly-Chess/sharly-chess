@@ -4,9 +4,8 @@ All the classes of this module are basic data classes stored in the event databa
 
 from abc import ABC
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Self
 
-from common.sharly_chess_config import SharlyChessConfig
 from data.auth.roles import Role
 
 
@@ -243,28 +242,33 @@ class StoredDevice(StoredAccess):
     ip: str | None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
+    # Devices are stored at event-level, methods localhost_stored_device()
+    # and unknown_stored_device') this provides event-free instances that
+    # can be used when no events are available (welcome page, ...)
 
-# Devices are stored at event-level, this provides event-free
-# instances that can be used when no events are available (welcome page, ...)
-localhost_stored_device: StoredDevice = StoredDevice(
-    id=LOCALHOST_ID,
-    edit_properties=False,
-    edit_permissions=False,
-    active=True,
-    permissions={
-        Role.ADMINISTRATOR: None,
-    },
-    ip=None,
-)
+    @classmethod
+    def localhost_stored_device(cls) -> Self:
+        return StoredDevice(
+            id=LOCALHOST_ID,
+            edit_properties=False,
+            edit_permissions=False,
+            active=True,
+            permissions={
+                Role.ADMINISTRATOR: None,
+            },
+            ip=None,
+        )
 
-unknown_stored_device: StoredDevice = StoredDevice(
-    id=ANY_DEVICE_ID,
-    edit_properties=False,
-    edit_permissions=True,
-    active=True,
-    permissions={},
-    ip=None,
-)
+    @classmethod
+    def unknown_stored_device(cls) -> Self:
+        return cls(
+            id=ANY_DEVICE_ID,
+            edit_properties=False,
+            edit_permissions=True,
+            active=True,
+            permissions={},
+            ip=None,
+        )
 
 
 ANONYMOUS_ID: int = 1
@@ -276,18 +280,24 @@ class StoredAccount(StoredAccess):
     password: str | None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
+    # Accounts are stored at event-level, method anonymous_stored_account()
+    # provides an event-free instance that can be used when no events are
+    # available (welcome page, ...)
 
-# Accounts are stored at event-level, this provides an event-free
-# instance that can be used when no events are available (welcome page, ...)
-anonymous_stored_account: StoredAccount = StoredAccount(
-    id=ANONYMOUS_ID,
-    edit_properties=False,
-    edit_permissions=True,
-    active=True,
-    permissions={},
-    username=None,
-    password=None,
-)
+    @classmethod
+    def anonymous_stored_account(cls) -> Self:
+        return cls(
+            id=ANONYMOUS_ID,
+            edit_properties=False,
+            edit_permissions=True,
+            active=True,
+            permissions={},
+            username=None,
+            password=None,
+        )
+
+
+DEFAULT_HIDE_BACKGROUND_IMAGE: bool = False
 
 
 @dataclass
@@ -300,7 +310,7 @@ class BaseStoredEvent:
     public: bool = False
     path: str | None = None
     location: str | None = None
-    hide_background_image: bool = SharlyChessConfig.default_hide_background_image
+    hide_background_image: bool = DEFAULT_HIDE_BACKGROUND_IMAGE
     background_image: str | None = None
     background_color: str | None = None
     record_illegal_moves: int | None = None
