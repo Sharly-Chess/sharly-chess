@@ -71,6 +71,7 @@
                     >
                         <li>
                             <button
+                                data-testid="create-screen-type-{{ screen_type.value }}"
                                 class="dropdown-item text-start cursor-pointer"
                                 {% if screen_type_create_enabled %}
                                     hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
