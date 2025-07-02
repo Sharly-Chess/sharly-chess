@@ -161,7 +161,7 @@ class BbpPairings(PairingEngine):
         partial_pairings: bool = False,
     ) -> list[Board]:
         pairings_dir = TMP_DIR / 'pairings'
-        pairings_dir.mkdir(exist_ok=True)
+        pairings_dir.mkdir(exist_ok=True, parents=True)
         trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
         pairings_file_path = pairings_dir / f'{tournament.uniq_id}-pairings.txt'
         trf_tournament = tournament.to_trf(

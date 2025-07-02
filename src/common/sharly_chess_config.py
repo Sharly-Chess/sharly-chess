@@ -15,6 +15,7 @@ from common import (
     BASE_DIR,
     EVENTS_DIR,
     SHARLY_CHESS_VERSION,
+    TEST_ENV,
     enable_experimental_features,
 )
 from common.i18n import (
@@ -51,6 +52,8 @@ class SharlyChessConfig(metaclass=Singleton):
     def _get_system_user_locale() -> str | None:
         """Returns the locale used by the user at system-level,
         if known by the i18n stuff (otherwise returns None)."""
+        if TEST_ENV:
+            return 'en_GB'
         if sys.platform == 'win32':  # pragma: py-not-win32
             import locale
             import ctypes
@@ -115,7 +118,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def force_edit(self) -> bool:
-        return self.stored_config.force_edit
+        return self.stored_config.force_edit and not TEST_ENV
 
     @property
     def console_log_level(self) -> int:
@@ -143,7 +146,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def launch_browser(self) -> bool:
-        return self.stored_config.launch_browser
+        return self.stored_config.launch_browser and not TEST_ENV
 
     @property
     def federation(self) -> Federation:
@@ -161,12 +164,16 @@ class SharlyChessConfig(metaclass=Singleton):
     web_host: str = '0.0.0.0'
 
     # The ports the web server tries to start on, tried one after the other.
-    web_ports: list[int] = [
-        80,
-        81,
-        8080,
-        8081,
-    ]
+    web_ports: list[int] = (
+        [
+            80,
+            81,
+            8080,
+            8081,
+        ]
+        if not TEST_ENV
+        else [9000]
+    )
 
     """ The accepted console log levels. """
     console_log_levels: dict[int, str] = {
@@ -251,9 +258,6 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The extension of YAML files.
     yml_ext: str = 'yml'
-
-    # ID of the event used for testing
-    test_event_uniq_id: str = 'test-event'
 
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))

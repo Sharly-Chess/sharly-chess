@@ -17,6 +17,7 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 
 from common import (
     SHARLY_CHESS_VERSION,
+    TEST_ENV,
     TMP_DIR,
     REQUEST_TIMEOUT,
     EVENTS_FOLDER,
@@ -29,6 +30,7 @@ from common.logger import (
     get_logger,
     input_interactive,
     print_interactive_input,
+    set_logging_config,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -46,6 +48,7 @@ class Engine(ABC):
 
     def __init__(self):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
+        set_logging_config(file_path=self.log_file_path)
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         logger.info(
             'Sharly Chess %s - %s - %s',
@@ -235,7 +238,7 @@ class Engine(ABC):
                         prefix,
                         previous_databases[(recovered_version, prefix)],
                     )
-            if DEVEL_ENV and not recovered_version:
+            if DEVEL_ENV and not recovered_version and not TEST_ENV:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
                 no_answer = _('N *** THE LETTER TO ANSWER NO')
                 while True:
@@ -253,7 +256,6 @@ class Engine(ABC):
                             for file in SharlyChessConfig.example_events_yml_path.glob(
                                 f'*.{SharlyChessConfig.yml_ext}'
                             )
-                            if file.stem != SharlyChessConfig.test_event_uniq_id
                         ):
                             EventDatabase(event_id).create(populate=True)
                         SharlyChessConfig.default_papi_path.mkdir(
@@ -571,6 +573,8 @@ class Engine(ABC):
         """Compares the current version with the most recent version on the Sharly Chess GitHub repository
         If the current release is stable, more recent pre-releases are ignored; otherwise the most recent release is chosen.
         Returns the most recent version available and the corresponding down URL if any, None otherwise."""
+        if TEST_ENV:
+            return None, None
         most_recent_version, download_url = cls._get_most_recent_version()
         if not most_recent_version:
             return None, None

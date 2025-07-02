@@ -184,14 +184,13 @@ class EventDatabase(MigrationDatabase):
 
         super().create()
         if populate:
-            self._populate()
+            self.populate(
+                SharlyChessConfig.example_events_yml_path / f'{self.uniq_id}.yml'
+            )
 
-    def _populate(self):
+    def populate(self, yml_file: Path):
         try:
             with EventDatabase(self.uniq_id, write=True) as event_database:
-                yml_file = (
-                    SharlyChessConfig.example_events_yml_path / f'{self.uniq_id}.yml'
-                )
                 event_dict = yaml.safe_load(yml_file.read_text(encoding='utf-8'))
                 self._check_populate_dict(
                     yml_file,
