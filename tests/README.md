@@ -122,7 +122,7 @@ The test environment is isolated with:
 ```python
 async def test_example(page: Page):
     \"\"\"Test example functionality.\"\"\"
-    await page.goto(f"{page.base_url}/")
+    await page.goto(f"/")
     await page.wait_for_load_state("networkidle")
 
     # Your test assertions here

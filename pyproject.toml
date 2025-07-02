@@ -53,7 +53,7 @@ translate = ["transformers", "torch", "sentencepiece", "sacremoses"]
 
 export = ["PyInstaller"]
 
-tests = ["pytest", "pytest-playwright", "pytest-asyncio"]
+tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 
 [tool.ruff.format]
 quote-style = "single"

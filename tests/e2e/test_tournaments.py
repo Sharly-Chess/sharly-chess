@@ -9,7 +9,7 @@ from tests.test_config import TestUtils
 class TestTournamentFunctionality:
     def test_create_and_delete_tournament(self, page: Page):
         TestUtils.create_event('tournament-test-event')
-        page.goto(f'{page.base_url}/admin/event/tournament-test-event/tournaments')
+        page.goto('/admin/event/tournament-test-event/tournaments')
         TestUtils.button_by_text(page, 'Create a tournament').click()
         page.get_by_role('textbox', name='ID (unique):').fill('test-tournament')
         page.get_by_role('textbox', name='Name:').fill('Test Tournament')

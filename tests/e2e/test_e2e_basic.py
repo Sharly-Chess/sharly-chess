@@ -16,14 +16,12 @@ class TestBasicFunctionality:
 
         # Check if page has the expected attributes
         assert hasattr(page, 'goto'), 'Page should have goto method'
-        assert hasattr(page, 'base_url'), 'Page should have base_url attribute'
 
         print(f'Page type: {type(page)}')
-        print(f'Base URL: {page.base_url}')
 
     def test_homepage_loads(self, page: Page):
         """Test that the homepage loads successfully."""
 
         # Test basic Playwright navigation with data URL
-        page.goto(page.base_url)
+        page.goto('/')
         expect(page).to_have_title('Sharly Chess')

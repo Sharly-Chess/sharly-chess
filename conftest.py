@@ -157,5 +157,4 @@ def setup_page(page, backend_server):
         return None
 
     page.set_default_timeout(8000)
-    page.base_url = backend_server.base_url
     return page
