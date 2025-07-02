@@ -72,6 +72,8 @@ class BackendServer:
             str(TestConfig.TEST_DATA_DIR.resolve()),
         ]
 
+        os.chdir(TestConfig.TEST_DATA_DIR.resolve())
+
         # Create log file for server output - use unique name to avoid conflicts
         import time
 

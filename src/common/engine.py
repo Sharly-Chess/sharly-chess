@@ -572,6 +572,8 @@ class Engine(ABC):
         """Compares the current version with the most recent version on the Sharly Chess GitHub repository
         If the current release is stable, more recent pre-releases are ignored; otherwise the most recent release is chosen.
         Returns the most recent version available and the corresponding down URL if any, None otherwise."""
+        if os.getenv('TEST_ENV') == 'true':
+            return None, None
         most_recent_version, download_url = cls._get_most_recent_version()
         if not most_recent_version:
             return None, None
