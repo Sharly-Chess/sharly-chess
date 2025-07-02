@@ -33,19 +33,19 @@ class RoleScope(IntEnum):
 
 
 class Role(IdentifiableEntity, ABC):
-    @abstractmethod
     @property
+    @abstractmethod
     def scope(self) -> RoleScope:
         """The scope of effect of the role."""
 
-    @abstractmethod
     @property
+    @abstractmethod
     def sub_roles(self) -> list[type['Role']]:
         """Roles to inherit the permissions of."""
         return []
 
-    @abstractmethod
     @property
+    @abstractmethod
     def help_text(self) -> str:
         """Explanation of the role's actions"""
 
@@ -95,7 +95,7 @@ class ResultOfficerRole(Role):
 
     @staticmethod
     def static_name() -> str:
-        return _('Result officer')
+        return _('Result Officer')
 
     @property
     def scope(self) -> RoleScope:
