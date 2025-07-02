@@ -894,6 +894,14 @@ class Event:
         return self.accounts_by_id[ANONYMOUS_ID]
 
     @property
+    def default_custom_mode_objects(self) -> bool:
+        """Returns True if the object has no stored accounts and devices."""
+        return (
+            not self.stored_event.stored_accounts
+            or not self.stored_event.stored_devices
+        )
+
+    @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_event.plugin_data or {}
 

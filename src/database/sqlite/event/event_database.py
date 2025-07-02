@@ -16,8 +16,10 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.exec_mode import ExecMode
 from data.board import Board
 from data.result import Result as DataResult
+from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -3019,3 +3021,38 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_account(self, account_id: int):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
         self.set_last_update()
+
+    def create_custom_exec_mode_objects(self):
+        """Add the accounts and devices that correspond to the default
+        permissions of the custom mode. These objects are added juste
+        before doing an action on the fake permissions used from the
+        creation of the object."""
+        for device in ExecMode.CUSTOM.predefined_devices:
+            self.database.execute(
+                'INSERT INTO `device`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
+                (
+                    device.id,
+                    device.edit_properties,
+                    device.edit_permissions,
+                    device.active,
+                    device.ip,
+                    SQLiteDatabase.dump_to_json_database_field(
+                        device.permissions_by_role
+                    ),
+                ),
+            )
+        for account in ExecMode.CUSTOM.predefined_accounts:
+            self.database.execute(
+                'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (
+                    account.id,
+                    account.edit_properties,
+                    account.edit_permissions,
+                    account.active,
+                    account.username,
+                    account.password,
+                    SQLiteDatabase.dump_to_json_database_field(
+                        account.permissions_by_role
+                    ),
+                ),
+            )
