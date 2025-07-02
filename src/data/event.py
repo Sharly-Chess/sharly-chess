@@ -825,13 +825,15 @@ class Event:
     def devices_by_id(self) -> dict[int, Device]:
         if self.errors:
             return {}
-        if self.exec_mode.custom:
+        if self.exec_mode.custom and self.stored_event.stored_devices:
+            # we used the stored devices only for ExecMode.CUSTOM and if found in the database
             return {
                 stored_device.id: Device(stored_device)
                 for stored_device in self.stored_event.stored_devices
                 if stored_device.id is not None
             }
         else:
+            # otherwise we use the predefined devices of the mode
             return {device.id: device for device in self.exec_mode.predefined_devices}
 
     @cached_property
@@ -857,13 +859,15 @@ class Event:
     def accounts_by_id(self) -> dict[int, Account]:
         if self.errors:
             return {}
-        if self.exec_mode.custom:
+        if self.exec_mode.custom and self.stored_event.stored_accounts:
+            # we used the stored accounts only for ExecMode.CUSTOM and if found in the database
             return {
                 stored_account.id: Account(stored_account)
                 for stored_account in self.stored_event.stored_accounts
                 if stored_account.id is not None
             }
         else:
+            # otherwise we use the predefined accounts of the mode
             return {
                 account.id: account for account in self.exec_mode.predefined_accounts
             }

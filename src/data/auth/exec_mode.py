@@ -85,7 +85,8 @@ class ExecMode(IntEnum):
                     localhost_device,
                     unknown_device,
                 ]
-            case ExecMode.STANDARD:
+            case ExecMode.STANDARD | ExecMode.CUSTOM:
+                # we initialize the custom mode as the standard mode
                 unknown_device.permissions_by_role |= {
                     Role.CHECK_IN_OFFICER: None,
                     Role.RESULTS_OFFICER: None,
@@ -102,7 +103,8 @@ class ExecMode(IntEnum):
         """Returns the list of the accounts that correspond to predefined modes (all the roles but CUSTOM)."""
         anonymous_account: Account = Account.anonymous_account()
         match self:
-            case ExecMode.STAND_ALONE | ExecMode.STANDARD:
+            case ExecMode.STAND_ALONE | ExecMode.STANDARD | ExecMode.CUSTOM:
+                # we initialize the custom mode as the standard mode
                 return [
                     anonymous_account,
                 ]

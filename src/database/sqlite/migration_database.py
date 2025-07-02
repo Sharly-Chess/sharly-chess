@@ -111,7 +111,6 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         This may change the structure of the database."""
         for manager in self.migration_managers:
             manager.migrate()
-            self._post_migrate()
 
     def create(self):
         """Create a database by running the migrations from scratch.
@@ -127,12 +126,6 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         with self.create_instance(self.file, True) as database:
             for manager in database.migration_managers:
                 manager.migrate()
-            database._post_migrate()
-
-    def _post_migrate(self):
-        """Allow databases to do thing after the last migration,
-        see EventDatabase._post_migrate for an example."""
-        pass
 
     def __enter__(self) -> Self:
         if not self.exists():

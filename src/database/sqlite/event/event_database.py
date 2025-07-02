@@ -16,10 +16,8 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.exec_mode import ExecMode
 from data.board import Board
 from data.result import Result as DataResult
-from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -187,40 +185,6 @@ class EventDatabase(MigrationDatabase):
         super().create()
         if populate:
             self._populate()
-
-    def _post_migrate(self):
-        with EventDatabase(self.uniq_id, write=True) as event_database:
-            # preset the STANDARD mode for further CUSTOM use
-            for device in ExecMode.STANDARD.predefined_devices:
-                event_database.execute(
-                    'INSERT INTO `device`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
-                    (
-                        device.id,
-                        device.edit_properties,
-                        device.edit_permissions,
-                        device.active,
-                        device.ip,
-                        SQLiteDatabase.dump_to_json_database_field(
-                            device.permissions_by_role
-                        ),
-                    ),
-                )
-            for account in ExecMode.STANDARD.predefined_accounts:
-                event_database.execute(
-                    'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    (
-                        account.id,
-                        account.edit_properties,
-                        account.edit_permissions,
-                        account.active,
-                        account.username,
-                        account.password,
-                        SQLiteDatabase.dump_to_json_database_field(
-                            account.permissions_by_role
-                        ),
-                    ),
-                )
-            event_database.commit()
 
     def _populate(self):
         try:
