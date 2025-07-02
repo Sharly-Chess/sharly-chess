@@ -54,29 +54,19 @@ class BackendServer:
         env = os.environ.copy()
         env.update(TestConfig.get_test_env_vars())
 
-        data_dir = TestConfig.TEST_DATA_DIR.resolve()
-        data_dir.mkdir(parents=True, exist_ok=True)
-
-        # Remove contents
-        for item in data_dir.iterdir():
-            if item.is_file() or item.is_symlink():
-                item.unlink()
-            elif item.is_dir():
-                shutil.rmtree(item)
-
         # Start your backend server process
         # Adjust this command based on how your server is started
         cmd = [
             sys.executable,
-            str(Path('./src/sharly_chess.py').resolve()),
+            str(Path('../../src/sharly_chess.py').resolve()),
             '--path',
             str(TestConfig.TEST_DATA_DIR.resolve()),
         ]
-        os.chdir(TestConfig.TEST_DATA_DIR.resolve())
 
         # Create log file for server output - use unique name to avoid conflicts
         import time
 
+        data_dir = TestConfig.TEST_DATA_DIR.resolve()
         log_file = data_dir / f'server_{int(time.time())}.log'
 
         # Keep reference to log file handle so we can close it later
@@ -134,8 +124,25 @@ class BackendServer:
         raise RuntimeError(f'Server did not start within {timeout} seconds')
 
 
+@pytest.fixture(autouse=True, scope='session')
+def set_working_dir(request):
+    """Set the working directory and prepare the data directory."""
+    data_dir = TestConfig.TEST_DATA_DIR.resolve()
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Remove contents
+    for item in data_dir.iterdir():
+        if item.is_file() or item.is_symlink():
+            item.unlink()
+        elif item.is_dir():
+            shutil.rmtree(item)
+
+    os.chdir(TestConfig.TEST_DATA_DIR.resolve())
+    return
+
+
 @pytest.fixture(scope='session')
-def backend_server(request):
+def backend_server(request, set_working_dir):
     """Fixture to start and stop the backend server for e2e tests only."""
     # Check if any of the selected tests have the 'e2e' marker
     if not any(item.get_closest_marker('e2e') for item in request.session.items):

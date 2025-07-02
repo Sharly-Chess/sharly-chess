@@ -1,8 +1,11 @@
 from abc import abstractmethod, ABC
 from decimal import Decimal
+from pathlib import Path
 from typing import Callable
+from unittest import TestCase
 
 # Needs to be imported first to avoid circular import
+from data.loader import EventLoader
 from plugins import manager  # Noqa E402
 
 import pytest
@@ -10,11 +13,23 @@ from data.tie_breaks import tie_breaks, options
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
-from utils.tests import BaseTestCase
+from tests.test_config import TestUtils
 
 
 @pytest.mark.unit
-class TieBreakTestCase(BaseTestCase, ABC):
+class TieBreakTestCase(TestCase, ABC):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        database = TestUtils.create_event('test-tiebreaks-event')
+        database.populate(Path('../unit/test-event.yml'))
+        cls.event = EventLoader().load_event('test-tiebreaks-event')
+
+    @classmethod
+    def tearDownClass(cls):
+        TestUtils.delete_event('test-tiebreaks-event')
+        super().tearDownClass()
+
     @property
     @abstractmethod
     def tournament_uniq_id(self) -> str:

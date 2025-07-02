@@ -22,7 +22,7 @@ class TestConfig:
     TEST_TIMEOUT = 15  # seconds to wait for server startup
 
     # Test data configuration
-    TEST_DATA_DIR = Path(__file__).parent / 'data'
+    TEST_DATA_DIR = Path(__file__).parent / 'tmp'
 
     @classmethod
     def get_test_env_vars(cls) -> Dict[str, str]:
@@ -73,10 +73,13 @@ class TestUtils:
         data = {**defaults, **overrides}
         stored_event = StoredEvent(**data)
 
-        EventDatabase(uniq_id).create()
+        database = EventDatabase(uniq_id)
+        database.file.unlink(missing_ok=True)
+        database.create()
         with EventDatabase(uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
             event_database.commit()
+        return database
 
     @staticmethod
     def create_tournament(

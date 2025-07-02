@@ -40,6 +40,7 @@ class SQLiteDatabase:
         database: Connection | None = None
         try:
             self.acquire_lock()
+            Path(self.file).parent.mkdir(parents=True, exist_ok=True)
             database = connect(database=self.file, detect_types=1, uri=True)
             if script:
                 database.executescript(script)

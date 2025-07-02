@@ -254,7 +254,6 @@ class Engine(ABC):
                             for file in SharlyChessConfig.example_events_yml_path.glob(
                                 f'*.{SharlyChessConfig.yml_ext}'
                             )
-                            if file.stem != SharlyChessConfig.test_event_uniq_id
                         ):
                             EventDatabase(event_id).create(populate=True)
                         SharlyChessConfig.default_papi_path.mkdir(
