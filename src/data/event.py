@@ -821,7 +821,7 @@ class Event:
             ],
         )
 
-    @cached_property
+    @property
     def devices_by_id(self) -> dict[int, Device]:
         if self.errors:
             return {}
@@ -836,11 +836,11 @@ class Event:
             # otherwise we use the predefined devices of the mode
             return {device.id: device for device in self.exec_mode.predefined_devices}
 
-    @cached_property
+    @property
     def devices_by_ip(self) -> dict[str, Device]:
         return {device.ip: device for device in self.devices_by_id.values()}
 
-    @cached_property
+    @property
     def devices_sorted_by_ip(self) -> list[Device]:
         return sorted(
             self.devices_by_ip.values(),
@@ -855,7 +855,7 @@ class Event:
     def unknown_device(self) -> Device:
         return self.devices_by_id[ANY_DEVICE_ID]
 
-    @cached_property
+    @property
     def accounts_by_id(self) -> dict[int, Account]:
         if self.errors:
             return {}
@@ -872,11 +872,11 @@ class Event:
                 account.id: account for account in self.exec_mode.predefined_accounts
             }
 
-    @cached_property
+    @property
     def accounts_by_username(self) -> dict[str, Account]:
         return {account.username: account for account in self.accounts_by_id.values()}
 
-    @cached_property
+    @property
     def accounts_sorted_by_username(self) -> list[Account]:
         return sorted(
             self.accounts_by_username.values(),

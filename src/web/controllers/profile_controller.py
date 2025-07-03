@@ -37,8 +37,6 @@ class ProfileController(BaseController):
                 'errors': errors or {},
             },
             re_target='#modal-wrapper',
-            trigger_event='modal_opened',
-            after='settle',
         )
 
     @get(
@@ -110,11 +108,19 @@ class ProfileController(BaseController):
                         web_context.admin_event,
                         account,
                     )
+
+                    # Update the web context to reflect the login
+                    web_context: ProfileWebContext = ProfileWebContext(
+                        request,
+                        event_uniq_id=event_uniq_id,
+                        data=data,
+                    )
                 else:
                     errors[field] = _('Password does not match.')
                     data[field] = ''
             except KeyError:
                 errors['username'] = _('Invalid username.')
+
         return self._render_profile_modal(
             web_context,
             data=data,
@@ -147,6 +153,14 @@ class ProfileController(BaseController):
             web_context.admin_event,
             None,
         )
+
+        # Update the web context to reflect the login
+        web_context: ProfileWebContext = ProfileWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=data,
+        )
+
         return self._render_profile_modal(
             web_context,
             data=data,
