@@ -40,6 +40,8 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredDevice,
     StoredAccount,
+    ANONYMOUS_ID,
+    UNKNOWN_DEVICE_ID,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -2874,6 +2876,8 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_device: StoredDevice,
     ) -> StoredDevice:
+        if not self.get_stored_device(UNKNOWN_DEVICE_ID):
+            self._create_custom_exec_mode_objects()
         fields: list[str] = [
             'active',
             'ip',
@@ -2966,6 +2970,8 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_account: StoredAccount,
     ) -> StoredAccount:
+        if not self.get_stored_account(ANONYMOUS_ID):
+            self._create_custom_exec_mode_objects()
         fields: list[str] = [
             'active',
             'username',
@@ -3022,7 +3028,11 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
         self.set_last_update()
 
-    def create_custom_exec_mode_objects(self):
+    # ---------------------------------------------------------------------------------
+    # Access predefined objects
+    # ---------------------------------------------------------------------------------
+
+    def _create_custom_exec_mode_objects(self):
         """Add the accounts and devices that correspond to the default
         permissions of the custom mode. These objects are added juste
         before doing an action on the fake permissions used from the

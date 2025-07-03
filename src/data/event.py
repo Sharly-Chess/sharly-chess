@@ -42,7 +42,7 @@ from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
     ANONYMOUS_ID,
-    ANY_DEVICE_ID,
+    UNKNOWN_DEVICE_ID,
 )
 
 
@@ -853,7 +853,7 @@ class Event:
 
     @property
     def unknown_device(self) -> Device:
-        return self.devices_by_id[ANY_DEVICE_ID]
+        return self.devices_by_id[UNKNOWN_DEVICE_ID]
 
     @property
     def accounts_by_id(self) -> dict[int, Account]:

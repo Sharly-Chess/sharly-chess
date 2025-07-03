@@ -12,7 +12,7 @@ from data.auth.entities import (
 )
 from data.auth.roles import Role, RoleScope
 from data.tournament import Tournament
-from database.sqlite.event.event_store import ANY_DEVICE_ID
+from database.sqlite.event.event_store import UNKNOWN_DEVICE_ID
 from web.session import SessionHandler
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ class Client:
             return Device.unknown_device()
         with suppress(KeyError):
             return self.event.devices_by_ip[self.host]
-        return self.event.devices_by_id[ANY_DEVICE_ID]
+        return self.event.devices_by_id[UNKNOWN_DEVICE_ID]
 
     def _find_account(
         self,

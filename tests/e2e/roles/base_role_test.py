@@ -40,8 +40,6 @@ class BaseRoleTest:
 
     def create_user(self, permissions: dict[Role, str | None]):
         with EventDatabase(PUBLIC_EVENT_ID, write=True) as db:
-            db.create_custom_exec_mode_objects()
-            db.commit()
             self.account = db.add_stored_account(
                 StoredAccount(
                     id=None,

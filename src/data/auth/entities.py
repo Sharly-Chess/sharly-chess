@@ -6,7 +6,7 @@ from database.sqlite.event.event_store import (
     StoredDevice,
     StoredAccount,
     LOCALHOST_ID,
-    ANY_DEVICE_ID,
+    UNKNOWN_DEVICE_ID,
     ANONYMOUS_ID,
 )
 from data.auth.roles import Role
@@ -76,7 +76,7 @@ class Device(AuthEntity):
     @property
     def unknown(self) -> bool:
         """Returns True the device represent any client."""
-        return self.stored_device.id == ANY_DEVICE_ID
+        return self.stored_device.id == UNKNOWN_DEVICE_ID
 
     @property
     def ip(self) -> str:

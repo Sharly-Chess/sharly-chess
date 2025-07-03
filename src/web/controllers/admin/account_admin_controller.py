@@ -341,8 +341,6 @@ class AccountAdminController(BaseEventAdminController):
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
-            if web_context.admin_event.default_custom_mode_objects:
-                event_database.create_custom_exec_mode_objects()
             match action:
                 case 'create':
                     stored_account = event_database.add_stored_account(stored_account)

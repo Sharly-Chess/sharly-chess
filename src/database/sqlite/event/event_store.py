@@ -234,7 +234,7 @@ class StoredAccess(ABC):
 
 
 LOCALHOST_ID: int = 1
-ANY_DEVICE_ID: int = 2
+UNKNOWN_DEVICE_ID: int = 2
 
 
 @dataclass
@@ -262,7 +262,7 @@ class StoredDevice(StoredAccess):
     @classmethod
     def unknown_stored_device(cls) -> Self:
         return cls(
-            id=ANY_DEVICE_ID,
+            id=UNKNOWN_DEVICE_ID,
             edit_properties=False,
             edit_permissions=True,
             active=True,
