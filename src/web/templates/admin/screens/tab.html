@@ -127,6 +127,7 @@
                         {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
                             <button
                                 type="button"
+                                data-testid="accordion-screen-type-{{ screen_type.value }}"
                                 class="collapse-button {% if not expanded %}collapsed{% endif %}"
                                 data-bs-toggle="collapse"
                                 data-bs-target="#{{ id }}"

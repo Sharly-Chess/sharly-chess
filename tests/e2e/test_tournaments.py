@@ -1,5 +1,3 @@
-"""End-to-end tests for events."""
-
 import pytest
 from playwright.sync_api import Page, expect
 from tests.test_config import TestUtils

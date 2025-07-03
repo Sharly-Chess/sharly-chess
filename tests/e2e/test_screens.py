@@ -1,5 +1,3 @@
-"""End-to-end tests for events."""
-
 import pytest
 from playwright.sync_api import Page, expect
 from tests.test_config import TestUtils
@@ -25,6 +23,8 @@ class TestScreensFunctionality:
         modal.get_by_role('textbox', name='ID (unique):').fill('test-screen')
         modal.get_by_role('textbox', name='Name:').fill('Test Screen')
         modal.locator('button[type=submit]').click()
+        page.get_by_test_id('accordion-screen-type-input').click()
+
         card = page.locator("div.card:has-text('Test Screen')")
         expect(card).to_be_visible()
 
