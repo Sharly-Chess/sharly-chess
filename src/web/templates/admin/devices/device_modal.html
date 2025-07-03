@@ -89,10 +89,13 @@
             >
                 <i class="bi-floppy-fill pe-1"></i>
                 {% if action == 'create' %}
+                    <i class="bi-floppy-fill pe-1"></i>
                     {{ _('Add') }}
                 {% elif action == 'update' %}
+                    <i class="bi-floppy-fill pe-1"></i>
                     {{ _('Save') }}
                 {% elif action == 'delete' %}
+                    <i class="bi-trash pe-1"></i>
                     {{ _('Delete') }}
                 {% endif %}
             </button>
