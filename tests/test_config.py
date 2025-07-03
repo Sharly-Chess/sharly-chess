@@ -46,7 +46,7 @@ class TestUtils:
         # Provide defaults
         defaults = {
             'uniq_id': uniq_id,
-            'name': 'Test Event',
+            'name': uniq_id,
             'federation': 'FRA',
             'start': start_ts,
             'stop': stop_ts,

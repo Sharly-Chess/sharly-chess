@@ -2,6 +2,7 @@
 {% with nav_title=_('Profile') %}
     <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_title, 'right') }}>
         <button
+            data-testid="profile-button"
             class="nav-link text-start me-1 position-relative align-items-center"
             hx-get="{{
                 url_for('profile-modal', event_uniq_id=admin_event.uniq_id)
