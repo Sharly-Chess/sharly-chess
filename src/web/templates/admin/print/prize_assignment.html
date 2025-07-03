@@ -55,7 +55,7 @@
                             {% if assigned_prize.prize.is_monetary %}
                                 {{ format_prize_value(assigned_prize.value) }}
                             {% else %}
-                                {{ prize.description }}
+                                {{ assigned_prize.prize.description }}
                             {% endif %}
                         </div>
                         {% if show_warnings and assigned_prize.warning %}
