@@ -74,9 +74,12 @@ class PairingEngine(ABC):
             pab_board.stored_board.index += len(stored_boards)
         if self.reorder_boards:
             index_delta = max(
-                board.index
-                for board in tournament.get_round_boards(round_)
-                if board.black_player
+                (
+                    board.index
+                    for board in tournament.get_round_boards(round_)
+                    if board.black_player
+                )
+                or [0]
             )
             for index, board in enumerate(sorted(boards, reverse=True)):
                 board.stored_board.index = index_delta + index
