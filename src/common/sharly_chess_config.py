@@ -78,7 +78,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return DEFAULT_LOCALE
 
     @staticmethod
-    def _get_locale_federation(system_user_locale: str) -> str:
+    def _get_locale_federation(system_user_locale: str | None) -> str:
         if system_user_locale is not None:
             country_code = system_user_locale.split('_')[-1].upper()
             country = pycountry.countries.get(alpha_2=country_code)
