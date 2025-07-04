@@ -1,39 +1,83 @@
+import weakref
 from functools import total_ordering
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Literal
 
 from common import format_timestamp
+from database.access.papi.papi_store import StoredBoard
 from utils.enum import Result, PlayerRatingType
-from data.player import Player
 
 if TYPE_CHECKING:
+    from _weakref import ReferenceType
+    from data.pairing import Pairing
+    from data.player import Player
     from data.tournament import Tournament
 
 
-@dataclass
 @total_ordering
 class Board:
     """The Board class, represented by its index in the board order and its
     display number (fixed tables).
     Stores both players and the result of the match between the two."""
 
-    board_id: int | None = None
-    number: int | None = None
-    white_player: Player | None = None
-    black_player: Player | None = None
-    result: Result = Result.NO_RESULT
+    def __init__(
+        self, tournament: 'Tournament', round_: int, stored_board: StoredBoard
+    ):
+        self.round = round_
+        self.stored_board = stored_board
+        self._white_player_ref: 'ReferenceType[Player]' = weakref.ref(
+            tournament.players_by_id[stored_board.white_player_id]
+        )
+        self._black_player_ref: Optional['ReferenceType[Player]'] = (
+            weakref.ref(tournament.players_by_id[stored_board.black_player_id])
+            if stored_board.black_player_id
+            else None
+        )
 
     @property
-    def id(self) -> int | None:
-        return self.board_id
-
-    @id.setter
-    def id(self, new_id):
-        self.board_id = new_id
+    def white_player(self) -> 'Player':
+        if (player := self._white_player_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return player
 
     @property
-    def exempt(self) -> bool:
-        return self.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+    def black_player(self) -> Optional['Player']:
+        if not self._black_player_ref:
+            return None
+        if (player := self._black_player_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return player
+
+    @property
+    def white_pairing(self) -> 'Pairing':
+        return self.white_player.pairings_by_round[self.round]
+
+    @property
+    def black_pairing(self) -> Optional['Pairing']:
+        if not self.black_player:
+            return None
+        return self.black_player.pairings_by_round[self.round]
+
+    @property
+    def identifier(self) -> int:
+        # TODO (Molrn - Big move) rename to *id* once *Board.id*'s usages have been replaced
+        assert self.stored_board.id is not None
+        return self.stored_board.id
+
+    @property
+    def index(self) -> int:
+        return self.stored_board.index
+
+    @property
+    def number(self) -> int:
+        return (
+            self.white_player.fixed
+            or getattr(self.black_player, 'fixed', None)
+            or self.white_player.tournament.first_board_number + self.index
+        )
+
+    @property
+    def result(self) -> Result:
+        return self.white_pairing.result
 
     @property
     def no_result(self) -> bool:
@@ -41,19 +85,26 @@ class Board:
 
     @property
     def result_str(self) -> str:
-        return str(self.result) if self.result else ''
+        return str(self.result)
 
-    @property
-    def white_player_id(self) -> int | None:
-        if self.white_player:
-            return self.white_player.id
-        return None
+    def replace_player(
+        self, new_player: 'Player', player_color: Literal['white', 'black']
+    ):
+        if player_color == 'white':
+            self._white_player_ref = weakref.ref(new_player)
+            self.stored_board.white_player_id = new_player.id
+        else:
+            self._black_player_ref = weakref.ref(new_player)
+            self.stored_board.black_player_id = new_player.id
 
-    @property
-    def black_player_id(self) -> int | None:
-        if self.black_player:
-            return self.black_player.id
-        return None
+    def permute_colors(self):
+        white_player = self.white_player
+        black_player = self.black_player
+        assert black_player is not None
+        self.stored_board.white_player_id = black_player.id
+        self.stored_board.black_player_id = white_player.id
+        self.replace_player(black_player, 'white')
+        self.replace_player(white_player, 'black')
 
     def to_pgn(
         self,
@@ -76,7 +127,7 @@ class Board:
         )
 
     @classmethod
-    def _player_to_pgn(cls, player: Player | None, is_white: bool) -> str:
+    def _player_to_pgn(cls, player: Optional['Player'], is_white: bool) -> str:
         field_prefix = 'White' if is_white else 'Black'
         if player is None:
             return f'[{field_prefix} ""]'
@@ -96,8 +147,6 @@ class Board:
         # p1 < p2 calls p1.__lt__(p2)
         if not isinstance(other, Board):
             return NotImplemented
-        if self.board_id is not None and other.board_id is not None:
-            return self.board_id < other.board_id
         if self.black_player is None:
             # The pairing allocated bye board is last
             return True
@@ -108,8 +157,6 @@ class Board:
         # the highest-scoring players
         self_player_1: Player
         self_player_2: Player
-        if self.white_player is None:
-            raise ValueError('The white player is not defined.')
         if self.white_player < self.black_player:
             self_player_1 = self.black_player
             self_player_2 = self.white_player
@@ -119,8 +166,6 @@ class Board:
         # Here self_player_1 is the strongest player of this board
         other_player_1: Player
         other_player_2: Player
-        if other.white_player is None:
-            raise ValueError('The white player is not defined.')
         if other.white_player < other.black_player:
             other_player_1 = other.black_player
             other_player_2 = other.white_player
@@ -153,15 +198,11 @@ class Board:
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, Board):
             return NotImplemented
-        if self.board_id is not None and other.board_id is not None:
-            return self.board_id == other.board_id
         if self.black_player is None or other.black_player is None:
             raise ValueError('The black player is not defined.')
         # There is only one pairing allocated bye
         self_player_1: Player
         self_player_2: Player
-        if self.white_player is None:
-            raise ValueError('The white player is not defined.')
         if self.white_player < self.black_player:
             self_player_1 = self.black_player
             self_player_2 = self.white_player
@@ -170,8 +211,6 @@ class Board:
             self_player_2 = self.black_player
         other_player_1: Player
         other_player_2: Player
-        if other.white_player is None:
-            raise ValueError('The white player is not defined.')
         if other.white_player < other.black_player:
             other_player_1 = other.black_player
             other_player_2 = other.white_player
@@ -182,3 +221,19 @@ class Board:
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})'
+
+    # --------------------------------------------------------------------------
+    # Legacy
+    # --------------------------------------------------------------------------
+
+    @property
+    def board_id(self) -> int:
+        return self.index + 1
+
+    @property
+    def id(self) -> int:
+        return self.index + 1
+
+    @property
+    def exempt(self) -> bool:
+        return self.black_player is None

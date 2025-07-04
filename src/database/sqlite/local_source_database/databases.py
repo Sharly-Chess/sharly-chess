@@ -14,7 +14,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Player
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
@@ -105,7 +105,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self,
         string: str,
         limit: int | None = None,
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         """Search a player in the database.
         Returns maximum *limit* results (no limit if *limit* is None)."""
 

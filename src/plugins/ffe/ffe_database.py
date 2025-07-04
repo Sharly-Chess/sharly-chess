@@ -13,7 +13,8 @@ from requests.exceptions import ConnectionError
 
 from common.i18n import _
 from common.logger import get_logger
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import PlayerRating
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
@@ -205,8 +206,8 @@ class FfeDatabase(LocalSourceDatabase):
             self.commit()
 
     @staticmethod
-    def get_player_from_row(row: dict[str, Any]) -> Player:
-        return Player(
+    def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        return StoredPlayer(
             id=0,
             first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
@@ -222,23 +223,21 @@ class FfeDatabase(LocalSourceDatabase):
                 TournamentRating.STANDARD: PlayerRating(
                     row['standard_rating'],
                     PlayerRatingType(row['standard_rating_type']),
-                ),
+                ).stored_value,
                 TournamentRating.RAPID: PlayerRating(
                     row['rapid_rating'],
                     PlayerRatingType(row['rapid_rating_type']),
-                ),
+                ).stored_value,
                 TournamentRating.BLITZ: PlayerRating(
                     row['blitz_rating'],
                     PlayerRatingType(row['blitz_rating_type']),
-                ),
+                ).stored_value,
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
-            federation=Federation(row['federation']),
-            club=Club(row['club']),
+            federation=row['federation'],
+            club=row['club'],
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
-            pairings={},  # Pairings are read from Papi but not used
-            tournament=None,
             plugin_data={
                 PLUGIN_NAME: {
                     'ffe_id': row['ffe_id'],
@@ -249,7 +248,9 @@ class FfeDatabase(LocalSourceDatabase):
             },
         )
 
-    def search_player(self, string: str, limit: int | None = None) -> list[Player]:
+    def search_player(
+        self, string: str, limit: int | None = None
+    ) -> list[StoredPlayer]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
@@ -290,37 +291,37 @@ class FfeDatabase(LocalSourceDatabase):
             query,
             tuple(params),
         )
-        return [self.get_player_from_row(row) for row in self.fetchall()]
+        return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
-    def _get_player_by_id(
+    def _get_stored_player_by_id(
         self,
         field: str,
         id_: int,
-    ) -> Player | None:
+    ) -> StoredPlayer | None:
         self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_,))
         if row := self.fetchone():
-            return self.get_player_from_row(row)
+            return self.get_stored_player_from_row(row)
         else:
             return None
 
-    def get_player_by_ffe_id(
+    def get_stored_player_by_ffe_id(
         self,
         player_ffe_id: int,
-    ) -> Player | None:
-        return self._get_player_by_id('ffe_id', player_ffe_id)
+    ) -> StoredPlayer | None:
+        return self._get_stored_player_by_id('ffe_id', player_ffe_id)
 
-    def get_player_by_fide_id(
+    def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
-    ) -> Player | None:
-        return self._get_player_by_id('fide_id', player_fide_id)
+    ) -> StoredPlayer | None:
+        return self._get_stored_player_by_id('fide_id', player_fide_id)
 
-    def get_players_by_ffe_licence_number(
+    def get_stored_players_by_ffe_licence_number(
         self, player_ffe_licence_numbers: list[str]
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
         self.execute(
             f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
             tuple(player_ffe_licence_numbers),
         )
-        return [self.get_player_from_row(row) for row in self.fetchall()]
+        return [self.get_stored_player_from_row(row) for row in self.fetchall()]

@@ -1,11 +1,16 @@
-# Needs to be imported first to avoid circular import
-from unittest import TestCase
-from data.loader import EventLoader
-from plugins import manager  # Noqa E402
+from datetime import date
+from unittest.mock import patch, PropertyMock
 
 import pytest
-from data.tournament import Tournament
+from unittest import TestCase
 
+# Needs to be imported first to avoid circular import
+from plugins import manager  # Noqa E402
+
+from data.event import Event
+from data.loader import EventLoader
+from data.tournament import Tournament
+from data.player import Federation, PlayerRating, Club
 from data.prize.player_filter_options import (
     GenderOption,
     MaxRatingOption,
@@ -26,21 +31,19 @@ from data.prize.player_filters import (
     FederationPlayerFilter,
     RatingTypePlayerFilter,
 )
-
-
-from data.pairing import Pairing
 from data.prize.prize import Prize
-
-from datetime import date
 from data.prize.prize_sharing import (
     AveragePrizeSharing,
     HortSystemPrizeSharing,
     NoPrizeSharing,
     PrizeSharing,
 )
-
-from data.player import Federation, Player, PlayerRating, Club
 from data.prize.prize_group import AssignedPrize
+from database.access.papi.papi_store import (
+    StoredPlayer,
+    StoredTournamentPlayer,
+    StoredPairing,
+)
 from database.sqlite.event.event_store import (
     StoredPrize,
     StoredPrizeCategory,
@@ -51,7 +54,6 @@ from database.sqlite.event.event_store import (
 from plugins.ffe.ffe_entity import FfeLeaguePlayerFilter, FfeLeaguesFilterOption
 from tests.test_config import TestUtils
 from utils.enum import (
-    BoardColor,
     PlayerGender,
     PlayerRatingType,
     PlayerTitle,
@@ -65,6 +67,8 @@ ROUNDS = 6
 
 @pytest.mark.unit
 class PrizesTestCase(TestCase):
+    event: Event
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -92,70 +96,92 @@ class PrizesTestCase(TestCase):
         )
 
     def assign_prizes(
-        self, stored_categories: list[StoredPrizeCategory], players: list[Player]
+        self,
+        stored_categories: list[StoredPrizeCategory],
+        stored_players: list[StoredPlayer],
     ):
         self.stored_prize_group.stored_prize_categories = stored_categories
         for index, stored_category in enumerate(stored_categories):
             stored_category.index = index
-        self.tournament = Tournament(
-            self.event,
-            StoredTournament(
-                uniq_id='empty',
-                name='empty',
-                id=1,
-                path='',
-                filename='',
-                current_round=ROUNDS,
-                stored_prize_groups=[self.stored_prize_group],
-            ),
-        )
-        for index, player in enumerate(players):
-            player.id = 1001 + index
-            player.tournament = self.tournament
-        self.tournament._players = players
-        return self.tournament.prize_groups_by_id[1].assign_prizes()
+        for index, stored_player in enumerate(stored_players):
+            id_ = 1001 + index
+            stored_player.id = id_
+            stored_player.stored_tournament_player.player_id = id_
+            for (
+                stored_pairing
+            ) in stored_player.stored_tournament_player.stored_pairings:
+                stored_pairing.player_id = id_
+        with patch(
+            'data.tournament.Tournament.rounds', new_callable=PropertyMock
+        ) as mock_rounds:
+            mock_rounds.return_value = ROUNDS
+            self.tournament = Tournament(
+                self.event,
+                StoredTournament(
+                    uniq_id='empty',
+                    name='empty',
+                    id=1,
+                    path='',
+                    filename='',
+                    current_round=ROUNDS,
+                    rounds=ROUNDS,
+                    stored_prize_groups=[self.stored_prize_group],
+                    stored_players=stored_players,
+                ),
+            )
+            return self.tournament.prize_groups_by_id[1].assign_prizes()
 
     def player(
         self,
         elo: int,
-        points: float,
+        points: int,
         gender: PlayerGender = PlayerGender.NONE,
         rating_type: PlayerRatingType = PlayerRatingType.FIDE,
         year_of_birth: int = 2000,
         federation: str = 'FRA',
         club: str = '',
         ffe_league: str = '',
-    ) -> Player:
-        player = Player(
-            id=0,
+    ) -> StoredPlayer:
+        stored_pairings: list[StoredPairing] = []
+        for round_ in range(1, 7):
+            result = Result.GAIN if round_ <= points else Result.LOSS
+            stored_pairings.append(
+                StoredPairing(
+                    tournament_id=1,
+                    player_id=0,
+                    round_=round_,
+                    result=result.value,
+                    board_id=None,
+                )
+            )
+        stored_player = StoredPlayer(
+            id=None,
             first_name='A',
             last_name='B' + str(elo),
             date_of_birth=date(year_of_birth, 1, 1),
             gender=gender,
             fide_id=None,
-            federation=Federation(federation),
+            federation=federation,
             title=PlayerTitle.NONE,
-            pairings={},
             mail=None,
             phone=None,
             comment=None,
             owed=0,
             paid=0,
             ratings={
-                rating: PlayerRating(elo, rating_type) for rating in TournamentRating
+                rating: PlayerRating(elo, rating_type).stored_value
+                for rating in TournamentRating
             },
-            club=Club(club),
+            club=club,
             fixed=False,
             check_in=False,
             plugin_data={'ffe': {'league': ffe_league}},
+            stored_tournament_player=StoredTournamentPlayer(
+                tournament_id=1,
+                stored_pairings=stored_pairings,
+            ),
         )
-        player.points = points
-        player.pairings = {}
-        for i in range(1, 7):
-            result = Result.GAIN if i <= points else Result.LOSS
-            player.pairings[i] = Pairing(BoardColor.WHITE, 1, result)
-        player.points = points
-        return player
+        return stored_player
 
     def stored_category(
         self,
@@ -211,7 +237,7 @@ class PrizesTestCase(TestCase):
 
     def assert_has_prize(
         self,
-        player: Player,
+        stored_player: StoredPlayer,
         prize: Prize | StoredPrize,
         prize_list: list[AssignedPrize],
         has_warning: bool = False,
@@ -220,7 +246,7 @@ class PrizesTestCase(TestCase):
             (
                 prize
                 for prize in prize_list
-                if prize.assigned_to and prize.assigned_to.id == player.id
+                if prize.assigned_to and prize.assigned_to.id == stored_player.id
             ),
             None,
         )
@@ -232,27 +258,34 @@ class PrizesTestCase(TestCase):
 
     def assert_has_prize_value(
         self,
-        player: Player,
+        stored_player: StoredPlayer,
         value: float,
         prize_list: list[AssignedPrize],
         has_warning: bool = False,
     ):
         assigned_prize = next(
-            prize
-            for prize in prize_list
-            if prize.assigned_to and prize.assigned_to.id == player.id
+            (
+                prize
+                for prize in prize_list
+                if prize.assigned_to and prize.assigned_to.id == stored_player.id
+            ),
+            None,
         )
-        self.assertIsNotNone(assigned_prize)
+        assert assigned_prize is not None, (
+            f'No assigned prize for player {stored_player.id}'
+        )
         self.assertEqual(bool(assigned_prize.warning), has_warning)
         self.assertIn(
-            player.id,
+            stored_player.id,
             [prize.assigned_to.id for prize in prize_list if prize.assigned_to],
         )
         self.assertEqual(assigned_prize.value, value)
 
-    def assert_has_no_prize(self, player: Player, prize_list: list[AssignedPrize]):
+    def assert_has_no_prize(
+        self, stored_player: StoredPlayer, prize_list: list[AssignedPrize]
+    ):
         self.assertNotIn(
-            player.id,
+            stored_player.id,
             [prize.assigned_to.id for prize in prize_list if prize.assigned_to],
         )
 

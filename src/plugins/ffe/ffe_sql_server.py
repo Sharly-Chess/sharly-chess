@@ -7,7 +7,8 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import PlayerRating
+from database.access.papi.papi_store import StoredPlayer
 from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
@@ -94,9 +95,9 @@ class FFESqlServer(SqlServer):
     )
 
     @staticmethod
-    def _get_player_from_row(row: dict[str, Any]) -> Player:
-        return Player(
-            id=0,
+    def _get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        return StoredPlayer(
+            id=None,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
             last_name=row['Nom'].upper(),
             date_of_birth=row['NeLe'],
@@ -110,21 +111,19 @@ class FFESqlServer(SqlServer):
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
                     row['Elo'], PlayerRatingType.from_papi_value(row['Fide'])
-                ),
+                ).stored_value,
                 TournamentRating.RAPID: PlayerRating(
                     row['Rapide'], PlayerRatingType.from_papi_value(row['Fide03'])
-                ),
+                ).stored_value,
                 TournamentRating.BLITZ: PlayerRating(
                     row['Elo06'], PlayerRatingType.from_papi_value(row['Fide06'])
-                ),
+                ).stored_value,
             },
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
-            federation=Federation(row['Federation']),
-            club=Club(row['ClubNom']) if row['ClubNom'] else None,
+            federation=row['Federation'],
+            club=row['ClubNom'] if row['ClubNom'] else '',
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
-            pairings={},  # Pairings are read from Papi but not used
-            tournament=None,
             plugin_data={
                 PLUGIN_NAME: {
                     'ffe_id': row['Ref'],
@@ -169,13 +168,13 @@ class FFESqlServer(SqlServer):
 
     async def search_player(
         self, string: str, limit: int | None = None
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
         # licence number, so that it skips a more complex request
         string = string.upper().strip()
         if ffe_licence_number := self.string_matches_ffe_licence_number(string):
-            return await self.get_players_by_ffe_licence_number(
+            return await self.get_stored_players_by_ffe_licence_number(
                 [
                     ffe_licence_number,
                 ]
@@ -237,37 +236,40 @@ class FFESqlServer(SqlServer):
             query,
             tuple(params),
         )
-        return [self._get_player_from_row(row) async for row in self.fetchall()]
+        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
 
-    async def _get_player_by_condition(
+    async def _get_stored_player_by_condition(
         self,
         condition: str,
         params: tuple,
-    ) -> Player | None:
+    ) -> StoredPlayer | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(
             query,
             params,
         )
         if row := await self.fetchone():
-            return self._get_player_from_row(row)
+            return self._get_stored_player_from_row(row)
         else:
             return None
 
-    async def get_player_by_ffe_id(
+    async def get_stored_player_by_ffe_id(
         self,
         player_ffe_id: int,
-    ) -> Player | None:
-        return await self._get_player_by_condition('joueur.Ref = ?', (player_ffe_id,))
+    ) -> StoredPlayer | None:
+        return await self._get_stored_player_by_condition(
+            'joueur.Ref = ?', (player_ffe_id,)
+        )
 
-    async def get_player_by_fide_id(
+    async def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
-    ) -> Player | None:
-        return await self._get_player_by_condition(
+    ) -> StoredPlayer | None:
+        return await self._get_stored_player_by_condition(
             'joueur.FideCode IN (?, ?)',
             (
                 self.remote_fide_id_format_1(player_fide_id),
@@ -275,24 +277,10 @@ class FFESqlServer(SqlServer):
             ),
         )
 
-    async def get_players_by_id(
-        self,
-        field: str,
-        player_ids: list[str] | list[int],
-    ) -> list[Player]:
-        query_array = ', '.join('?' for _ in player_ids)
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {field} IN ({query_array})'
-        )
-        await self.execute(query, tuple(player_ids))
-        return [self._get_player_from_row(row) async for row in self.fetchall()]
-
-    async def get_players_by_ffe_licence_number(
+    async def get_stored_players_by_ffe_licence_number(
         self,
         player_ffe_licence_numbers: list[str],
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
@@ -300,12 +288,12 @@ class FFESqlServer(SqlServer):
             f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
-        return [self._get_player_from_row(row) async for row in self.fetchall()]
+        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
 
     async def get_players_by_fide_id(
         self,
         player_fide_ids: list[int],
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
@@ -323,4 +311,4 @@ class FFESqlServer(SqlServer):
                 for player_fide_id in player_fide_ids
             ),
         )
-        return [self._get_player_from_row(row) async for row in self.fetchall()]
+        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]

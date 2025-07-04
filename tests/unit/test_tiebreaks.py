@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Callable
 from unittest import TestCase
 
+from data.event import Event
+
 # Needs to be imported first to avoid circular import
 from data.loader import EventLoader
 from plugins import manager  # Noqa E402
@@ -18,6 +20,8 @@ from tests.test_config import TestUtils
 
 @pytest.mark.unit
 class TieBreakTestCase(TestCase, ABC):
+    event: Event
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
