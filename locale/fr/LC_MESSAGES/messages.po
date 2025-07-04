@@ -176,6 +176,9 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
+msgid "A new account must have a password set."
+msgstr "Un mot de passe doit être défini pour les nouveaux comptes."
+
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
@@ -2505,8 +2508,8 @@ msgstr "Réponse non valide du site FFE."
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
-msgid "Invalid username."
-msgstr "Identifiant non valide."
+msgid "Invalid username or password."
+msgstr "Identifiant ou mot de passe invalide."
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
@@ -2829,6 +2832,9 @@ msgstr "Nouveau pilote d'afficheurs"
 
 msgid "New event"
 msgstr "Nouvel évènement"
+
+msgid "New password. Leave blank for no change."
+msgstr "Le nouveau mot de passe. Laisser vide pour ne pas changer."
 
 msgid "New results are in, refresh your browser"
 msgstr "De nouveaux résultats ont été enregistrés, actualisez votre navigateur"
@@ -4224,6 +4230,9 @@ msgstr "Écrans simples ({num})"
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
+msgid "Something went wrong. Please ask your administrator to recreate your account."
+msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
+
 msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
 
@@ -4635,8 +4644,8 @@ msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChessEvent 
 msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChesssEvent (par défaut, peut être modifié pour chaque tournoi)."
 
-msgid "The password, used to authenticate."
-msgstr "Le mot de passe, utilisé pour s'authentifier."
+msgid "The password, used to authenticate. It is impossible to see the password once set, but it can be overwritten if necessary."
+msgstr "Le mot de passe, utilisé pour s'authentifier. Il est impossible de revoir le mot de passe, mais il et possible de le redéfinir si besoin"
 
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."

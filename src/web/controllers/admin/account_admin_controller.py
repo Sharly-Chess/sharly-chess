@@ -1,6 +1,7 @@
 import re
 from typing import Annotated, Any
 
+from argon2 import PasswordHasher
 from litestar import post, get, delete, patch
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -90,13 +91,14 @@ class AccountAdminController(BaseEventAdminController):
         else:
             if web_context.admin_account and web_context.admin_account.anonymous:
                 username = web_context.admin_account.username
-                password = web_context.admin_account.password
+                password_hash = web_context.admin_account.password_hash
                 active = web_context.admin_account.active
             else:
                 username = WebContext.form_data_to_str(data, field := 'username')
                 if not username:
                     errors[field] = _('Please enter the username.')
-                elif not re.match(r'^[a-zA-Z0-9_\-]+$', username):
+                # NOTE(Amaras): this prevents usernames starting with -
+                elif not re.match(r'^[a-zA-Z0-9_][a-zA-Z0-9_\-]*$', username):
                     errors[field] = _(
                         'Accepted characters are letters, numbers, underscore (_) and minus (-).'
                     )
@@ -119,7 +121,14 @@ class AccountAdminController(BaseEventAdminController):
                                 ).format(username=username)
                         case _:
                             raise ValueError(f'action=[{action}]')
-                password = WebContext.form_data_to_str(data, 'password')
+                password = WebContext.form_data_to_str(data, field := 'password')
+                if password is None and action not in ['create', 'clone']:
+                    password_hash = web_context.admin_account.password_hash
+                elif password is not None:
+                    ph = PasswordHasher()
+                    password_hash = ph.hash(password)
+                else:
+                    password_hash = None
                 active = WebContext.form_data_to_bool(data, 'active')
             for role_id in Role.values():
                 if WebContext.form_data_to_bool(data, f'role_{role_id}'):
@@ -132,7 +141,7 @@ class AccountAdminController(BaseEventAdminController):
             edit_permissions=edit_permissions,
             active=active,
             username=username,
-            password=password,
+            password_hash=password_hash,
             permissions=permissions,
             errors=errors,
         )
@@ -171,7 +180,6 @@ class AccountAdminController(BaseEventAdminController):
                 if data is None:
                     username: str | None = None
                     active: bool | None = None
-                    password: str | None = None
                     match action:
                         case 'update':
                             assert web_context.admin_account is not None
@@ -184,7 +192,6 @@ class AccountAdminController(BaseEventAdminController):
                         case 'update' | 'clone':
                             assert web_context.admin_account is not None
                             active = web_context.admin_account.stored_account.active
-                            password = web_context.admin_account.stored_account.password
                         case 'create':
                             active = True
                         case 'delete':
@@ -195,7 +202,7 @@ class AccountAdminController(BaseEventAdminController):
                         {
                             'username': WebContext.value_to_form_data(username),
                             'active': WebContext.value_to_form_data(active),
-                            'password': WebContext.value_to_form_data(password),
+                            'password': '',
                         }
                         | {
                             f'role_{role_value}': WebContext.value_to_form_data(False)

@@ -2938,7 +2938,7 @@ class EventDatabase(MigrationDatabase):
             edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
             edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
             username=row['username'],
-            password=row['password'],
+            password_hash=row['password_hash'],
             permissions=cls.set_dict_int_keys(
                 cls.load_json_from_database_field(row['permissions'])
             )
@@ -2966,18 +2966,30 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_account: StoredAccount,
     ) -> StoredAccount:
-        fields: list[str] = [
-            'active',
-            'username',
-            'password',
-            'permissions',
-        ]
-        params: list = [
-            stored_account.active,
-            stored_account.username,
-            stored_account.password,
-            self.dump_to_json_database_permissions(stored_account.permissions),
-        ]
+        if stored_account.password_hash is not None:
+            fields: list[str] = [
+                'active',
+                'username',
+                'password_hash',
+                'permissions',
+            ]
+            params: list = [
+                stored_account.active,
+                stored_account.username,
+                stored_account.password_hash,
+                self.dump_to_json_database_permissions(stored_account.permissions),
+            ]
+        else:
+            fields: list[str] = [
+                'active',
+                'username',
+                'permissions',
+            ]
+            params: list = [
+                stored_account.active,
+                stored_account.username,
+                self.dump_to_json_database_permissions(stored_account.permissions),
+            ]
         fetched_stored_account: StoredAccount | None
         if stored_account.id is None:
             protected_fields: list[str] = [f'`{f}`' for f in fields]
@@ -3043,14 +3055,14 @@ class EventDatabase(MigrationDatabase):
             )
         for account in ExecMode.CUSTOM.predefined_accounts:
             self.database.execute(
-                'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password_hash`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 (
                     account.id,
                     account.edit_properties,
                     account.edit_permissions,
                     account.active,
                     account.username,
-                    account.password,
+                    account.password_hash,
                     SQLiteDatabase.dump_to_json_database_field(
                         account.permissions_by_role
                     ),

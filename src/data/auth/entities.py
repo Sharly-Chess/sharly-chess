@@ -168,11 +168,14 @@ class Account(AuthEntity):
         return self.stored_account.username
 
     @property
-    def password(self) -> str | None:
-        """Returns the password of the account."""
+    def password_hash(self) -> str | None:
+        """Returns the password hash of the account."""
         if self.anonymous:
             return None
-        return self.stored_account.password
+        return self.stored_account.password_hash
+
+    def update_password(self, new_hash: str):
+        self.stored_account.password_hash = new_hash
 
     def matches(
         self,

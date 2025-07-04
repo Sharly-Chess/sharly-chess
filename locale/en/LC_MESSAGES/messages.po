@@ -176,6 +176,9 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
+msgid "A new account must have a password set."
+msgstr ""
+
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -2505,7 +2508,7 @@ msgstr ""
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
-msgid "Invalid username."
+msgid "Invalid username or password."
 msgstr ""
 
 msgid "Invalid value [{value}]."
@@ -2828,6 +2831,9 @@ msgid "New display controller"
 msgstr ""
 
 msgid "New event"
+msgstr ""
+
+msgid "New password. Leave blank for no change."
 msgstr ""
 
 msgid "New results are in, refresh your browser"
@@ -4224,6 +4230,9 @@ msgstr ""
 msgid "Soft Haley system"
 msgstr ""
 
+msgid "Something went wrong. Please ask your administrator to recreate your account."
+msgstr ""
+
 msgid "Sonnenborn-Berger"
 msgstr ""
 
@@ -4635,7 +4644,7 @@ msgstr ""
 msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
-msgid "The password, used to authenticate."
+msgid "The password, used to authenticate. It is impossible to see the password once set, but it can be overwritten if necessary."
 msgstr ""
 
 msgid "The phone numbers."
