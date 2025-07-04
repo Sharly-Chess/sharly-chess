@@ -1,18 +1,43 @@
-from dataclasses import dataclass
-from typing import Callable
+import weakref
+from typing import Callable, TYPE_CHECKING
 
 from trf.Player import Game as TrfGame
 
+from data.board import Board
+from database.access.papi.papi_store import StoredPairing
 from utils.enum import Result, BoardColor
 
+if TYPE_CHECKING:
+    from _weakref import ReferenceType
+    from data.player import Player
 
-@dataclass
+
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
 
-    color: BoardColor | None = None
-    opponent_id: int | None = None
-    result: Result = Result.NO_RESULT
+    def __init__(self, player: 'Player', stored_pairing: StoredPairing):
+        self._player_ref: 'ReferenceType[Player]' = weakref.ref(player)
+        self.stored_pairing = stored_pairing
+
+    @property
+    def player(self) -> 'Player':
+        if (player := self._player_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return player
+
+    @property
+    def board(self) -> Board | None:
+        if not (board_id := self.stored_pairing.board_id):
+            return None
+        return self.player.tournament.boards_by_id[board_id]
+
+    @property
+    def round(self) -> int:
+        return self.stored_pairing.round_
+
+    @property
+    def result(self) -> Result:
+        return Result(self.stored_pairing.result)
 
     @property
     def zero_point_bye(self) -> bool:
@@ -133,3 +158,28 @@ class Pairing:
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
+
+    # --------------------------------------------------------------------------
+    # Legacy
+    # --------------------------------------------------------------------------
+
+    @property
+    def color(self) -> BoardColor | None:
+        if not (board := self.board):
+            return None
+        return (
+            BoardColor.WHITE
+            if board.white_player.id == self.player.id
+            else BoardColor.BLACK
+        )
+
+    @property
+    def opponent_id(self) -> int | None:
+        board = self.board
+        if not board or not board.black_player:
+            return None
+        return (
+            board.black_player.id
+            if self.color == BoardColor.WHITE
+            else board.white_player.id
+        )

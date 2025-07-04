@@ -26,6 +26,7 @@ from data.prize.player_filter_options import (
 )
 from data.prize.player_filters import PlayerFilter
 from data.tournament import Tournament
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
@@ -81,13 +82,13 @@ class _FfeDataSource(ABC):
     @abstractmethod
     async def player_matches_from_licence_number(
         self, ffe_licence_numbers: list[str]
-    ) -> list[Player] | None:
+    ) -> list[StoredPlayer] | None:
         """Fetch player matches in the data source from their licence numbers.
         Return None if it fails."""
 
     @staticmethod
-    def _get_ffe_licence_number(player: Player) -> str | None:
-        return get_data(player.plugin_data, 'ffe_licence_number')
+    def _get_ffe_licence_number(stored_player: StoredPlayer) -> str | None:
+        return get_data(stored_player.plugin_data, 'ffe_licence_number')
 
     async def _get_player_matches(
         self,
@@ -97,16 +98,16 @@ class _FfeDataSource(ABC):
     ) -> list[PlayerComparator] | None:
         ffe_licence_numbers: list[str] = []
         for player in players:
-            if licence_number := self._get_ffe_licence_number(player):
+            if licence_number := self._get_ffe_licence_number(player.stored_player):
                 ffe_licence_numbers.append(licence_number)
-        match_players = await self.player_matches_from_licence_number(
+        match_stored_players = await self.player_matches_from_licence_number(
             ffe_licence_numbers
         )
-        if match_players is None:
+        if match_stored_players is None:
             return None
         return DataSource.create_player_comparators(
             players,
-            match_players,
+            match_stored_players,
             lambda p1, p2: (
                 self._get_ffe_licence_number(p1) is not None
                 and self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
@@ -125,8 +126,8 @@ class _FfeDataSource(ABC):
         return '/ffe_search_result.html'
 
     @staticmethod
-    def _get_player_source_id(player: Player) -> str:
-        return str(get_data(player.plugin_data, 'ffe_id'))
+    def _get_player_source_id(stored_player: StoredPlayer) -> str:
+        return str(get_data(stored_player.plugin_data, 'ffe_id'))
 
 
 class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
@@ -156,12 +157,14 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
 
     async def player_matches_from_licence_number(
         self, ffe_licence_numbers: list[str]
-    ) -> list[Player] | None:
+    ) -> list[StoredPlayer] | None:
         database = FfeDatabase()
         if not database.exists():
             return None
         with database:
-            return database.get_players_by_ffe_licence_number(ffe_licence_numbers)
+            return database.get_stored_players_by_ffe_licence_number(
+                ffe_licence_numbers
+            )
 
     @property
     def search_fields(self) -> list[str]:
@@ -171,14 +174,16 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
     def player_search_result_template(self) -> str:
         return self._player_search_result_template
 
-    def get_player_source_id(self, player: Player) -> str:
-        return self._get_player_source_id(player)
+    def get_player_source_id(self, stored_player: StoredPlayer) -> str:
+        return self._get_player_source_id(stored_player)
 
-    async def get_player_by_source_id(self, player_source_id: str) -> Player | None:
+    async def get_stored_player_by_source_id(
+        self, player_source_id: str
+    ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         with FfeDatabase() as database:
-            return database.get_player_by_ffe_id(int(player_source_id))
+            return database.get_stored_player_by_ffe_id(int(player_source_id))
 
 
 class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
@@ -212,10 +217,10 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
 
     async def player_matches_from_licence_number(
         self, ffe_licence_numbers: list[str]
-    ) -> list[Player] | None:
+    ) -> list[StoredPlayer] | None:
         try:
             async with FFESqlServer() as server:
-                return await server.get_players_by_ffe_licence_number(
+                return await server.get_stored_players_by_ffe_licence_number(
                     ffe_licence_numbers
                 )
         except SharlyChessException:
@@ -229,18 +234,22 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
     def player_search_result_template(self) -> str:
         return self._player_search_result_template
 
-    def get_player_source_id(self, player: Player) -> str:
-        return self._get_player_source_id(player)
+    def get_player_source_id(self, stored_player: StoredPlayer) -> str:
+        return self._get_player_source_id(stored_player)
 
-    async def get_player_by_source_id(self, player_source_id: str) -> Player | None:
+    async def get_stored_player_by_source_id(
+        self, player_source_id: str
+    ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         async with FFESqlServer() as ffe_sql_server:
-            return await ffe_sql_server.get_player_by_ffe_id(int(player_source_id))
+            return await ffe_sql_server.get_stored_player_by_ffe_id(
+                int(player_source_id)
+            )
 
     async def search_player(
         self, string: str, limit: int | None = None
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
             return await ffe_sql_server.search_player(unicode_normalize(string), limit)
 

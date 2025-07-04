@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
+from database.access.papi.papi_store import StoredPlayer, StoredBoard
 
 
 @dataclass
@@ -109,6 +110,13 @@ class StoredTournament:
     last_check_in_update: float = field(default=0.0)
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
+    )
+
+    # TODO (Molrn - multi tournament) move to StoredEvent
+    stored_players: list[StoredPlayer] = field(default_factory=list[StoredPlayer])
+
+    stored_boards_by_round: dict[int, list[StoredBoard]] = field(
+        default_factory=dict[int, list[StoredBoard]]
     )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 

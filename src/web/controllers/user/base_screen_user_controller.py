@@ -287,7 +287,9 @@ class BaseScreenUserController(BaseUserController):
                 for screen_set in web_context.screen.screen_sets_sorted_by_order
             }:
                 tournament.compute_player_ranks(
-                    after_round=web_context.screen.ranking_round
+                    after_round=tournament.correct_ranking_round(
+                        web_context.screen.ranking_round
+                    )
                 )
         return HTMXTemplate(
             template_name='user/screen.html',

@@ -11,8 +11,14 @@ from common.logger import get_logger
 from data.pairing import Pairing
 from data.pairings import PairingVariation
 from data.pairings.variations import StandardSwissVariation
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import Player, PlayerRating
 from data.tie_breaks import TieBreak, PapiTieBreakManager
+from database.access.papi.papi_store import (
+    StoredPlayer,
+    StoredTournamentPlayer,
+    StoredPairing,
+    StoredBoard,
+)
 from utils.enum import (
     Result,
     PlayerGender,
@@ -332,10 +338,57 @@ class PapiDatabase(AccessDatabase):
                 variable, (tie_breaks.pop(0).papi_id or '') if tie_breaks else ''
             )
 
-    def read_players(self, tournament_id: int, rounds: int) -> dict[int, Player]:
+    @classmethod
+    def _stored_player_from_row(
+        cls,
+        tournament_id: int,
+        row: dict[str, Any],
+        stored_pairings: list[StoredPairing],
+    ) -> StoredPlayer:
+        player_id = Player.player_sharly_chess_id_from_papi_id(
+            tournament_id, row['Ref']
+        )
+        return StoredPlayer(
+            id=player_id,
+            last_name=row['Nom'] or '',
+            first_name=row['Prenom'] or '',
+            date_of_birth=row['NeLe'].date() if row['NeLe'] else None,
+            gender=PlayerGender.from_papi_value(row['Sexe'] or ''),
+            mail=row['EMail'] or '',
+            phone=row['Tel'] or '',
+            comment=row['Commentaire'] or '',
+            owed=float(row['InscriptionDu'] or 0.0),
+            paid=float(row['InscriptionRegle'] or 0.0),
+            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+            ratings={
+                tr: PlayerRating(
+                    row[tr.papi_value_field] or 0,
+                    PlayerRatingType.from_papi_value(row[tr.papi_type_field]),
+                ).stored_value
+                for tr in TournamentRating
+            },
+            fide_id=int(str(row['FideCode']).strip()) if row['FideCode'] else None,
+            federation=row['Federation'] or '',
+            club=row['Club'] or '',
+            fixed=row['Fixe'] or 0,
+            check_in=row['Pointe'] or False,
+            stored_tournament_player=StoredTournamentPlayer(
+                tournament_id=tournament_id,
+                player_id=player_id,
+                stored_pairings=stored_pairings,
+            ),
+        )
+
+    @staticmethod
+    def _rating_type_from_row(row: dict[str, Any], tournament_rating: TournamentRating):
+        value = row[tournament_rating.papi_type_field]
+        return PlayerRatingType.from_papi_value(value).value
+
+    def read_players(
+        self, tournament_id: int, rounds: int
+    ) -> tuple[list[StoredPlayer], dict[int, list[StoredBoard]]]:
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event."""
-        players: dict[int, Player] = {}
 
         per_plugin_fields = plugin_manager.hook.get_db_player_fields()
         plugin_fields = [field for fields in per_plugin_fields for field in fields]
@@ -371,8 +424,19 @@ class PapiDatabase(AccessDatabase):
             f'SELECT {", ".join(player_fields)} FROM joueur WHERE Ref <> ? ORDER BY Ref'
         )
         self._execute(query, (EXEMPT_PLAYER_ID,))
+        stored_players: list[StoredPlayer] = []
+        stored_boards_by_round: dict[int, list[StoredBoard]] = {
+            round_: [] for round_ in range(1, rounds + 1)
+        }
+        board_ids_by_player_id_by_round: dict[int, dict[int, int]] = {
+            round_: {} for round_ in range(1, rounds + 1)
+        }
+        next_board_id = 1
         for row in self._fetchall():
-            pairings: dict[int, Pairing] = {}
+            stored_pairings: list[StoredPairing] = []
+            player_id = Player.player_sharly_chess_id_from_papi_id(
+                tournament_id, row['Ref']
+            )
             for round_ in range(1, rounds + 1):
                 rf = RoundFields(round_)
                 color: BoardColor | None
@@ -382,56 +446,59 @@ class PapiDatabase(AccessDatabase):
                 except ValueError:
                     color = None
                 opponent_papi_id: int | None = row[rf.opponent]
-                pairings[round_] = Pairing(
-                    color,
-                    Player.player_sharly_chess_id_from_papi_id(
+                result = Result.from_papi_value(
+                    row[rf.result] or PapiResult.NOT_PAIRED.value,
+                    opponent_papi_id is None,
+                    opponent_papi_id == EXEMPT_PLAYER_ID,
+                    color_str == BYE_COLOR,
+                )
+                board_id: int | None = None
+                if opponent_papi_id:
+                    opponent_id = Player.player_sharly_chess_id_from_papi_id(
                         tournament_id, opponent_papi_id
                     )
-                    if opponent_papi_id and opponent_papi_id != EXEMPT_PLAYER_ID
-                    else None,
-                    Result.from_papi_value(
-                        row[rf.result] or PapiResult.NOT_PAIRED.value,
-                        opponent_papi_id is None,
-                        opponent_papi_id == EXEMPT_PLAYER_ID,
-                        color_str == BYE_COLOR,
-                    ),
-                )
-            player_sharly_chess_id: int = Player.player_sharly_chess_id_from_papi_id(
-                tournament_id, row['Ref']
-            )
-            fide_id: int | None = None
-            if row['FideCode']:
-                fide_id = int(str(row['FideCode']).strip())
-            player = Player(
-                id=player_sharly_chess_id,
-                last_name=row['Nom'] or '',
-                first_name=row['Prenom'] or '',
-                date_of_birth=row['NeLe'].date() if row['NeLe'] else None,
-                gender=PlayerGender.from_papi_value(row['Sexe'] or ''),
-                mail=row['EMail'] or '',
-                phone=row['Tel'] or '',
-                comment=row['Commentaire'] or '',
-                owed=float(row['InscriptionDu'] or 0.0),
-                paid=float(row['InscriptionRegle'] or 0.0),
-                title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
-                ratings={
-                    tr: PlayerRating(
-                        row[tr.papi_value_field] or 0,
-                        PlayerRatingType.from_papi_value(row[tr.papi_type_field]),
+                    if player_id in board_ids_by_player_id_by_round[round_]:
+                        board_id = board_ids_by_player_id_by_round[round_][player_id]
+                    else:
+                        board_id = next_board_id
+                        next_board_id += 1
+                        stored_boards_by_round[round_].append(
+                            StoredBoard(
+                                id=board_id,
+                                white_player_id=(
+                                    opponent_id
+                                    if color == BoardColor.BLACK
+                                    else player_id
+                                ),
+                                black_player_id=(
+                                    None
+                                    if opponent_papi_id == EXEMPT_PLAYER_ID
+                                    else player_id
+                                    if color == BoardColor.BLACK
+                                    else opponent_id
+                                ),
+                                index=0,
+                            )
+                        )
+                        board_ids_by_player_id_by_round[round_][opponent_id] = board_id
+                        board_ids_by_player_id_by_round[round_][player_id] = board_id
+                stored_pairings.append(
+                    StoredPairing(
+                        tournament_id=tournament_id,
+                        player_id=player_id,
+                        round_=round_,
+                        result=result.value,
+                        board_id=board_id,
                     )
-                    for tr in TournamentRating
-                },
-                fide_id=fide_id,
-                federation=Federation(row['Federation'] or ''),
-                club=Club(row['Club'] or ''),
-                fixed=row['Fixe'] or 0,
-                check_in=row['Pointe'] or False,
-                pairings=pairings,
+                )
+            stored_player = self._stored_player_from_row(
+                tournament_id, row, stored_pairings
             )
-
-            plugin_manager.hook.augment_player_after_db_fetch(player=player, row=row)
-            players[player_sharly_chess_id] = player
-        return players
+            plugin_manager.hook.augment_player_after_db_fetch(
+                stored_player=stored_player, row=row
+            )
+            stored_players.append(stored_player)
+        return stored_players, stored_boards_by_round
 
     def set_player_result(
         self,

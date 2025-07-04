@@ -3,12 +3,13 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import TYPE_CHECKING, Any, Self, Callable, SupportsFloat, Optional
+from typing import Self, Callable, SupportsFloat, TYPE_CHECKING, Any
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
 from common.i18n import _
 from data.pairing import Pairing
+from database.access.papi.papi_store import StoredPlayer, StoredPairing
 from utils import StaticUtils
 from utils.enum import (
     PlayerGender,
@@ -79,152 +80,39 @@ class PlayerRating:
     value: int
     type: PlayerRatingType
 
+    @classmethod
+    def from_stored_value(cls, dict_rating: dict[str, int]):
+        return cls(dict_rating['value'], PlayerRatingType(dict_rating['type']))
+
+    @property
+    def stored_value(self) -> dict[str, int]:
+        return {
+            'value': self.value,
+            'type': self.type.value,
+        }
+
     def __str__(self) -> str:
         return f'{self.value} {self.type.short_name}'
 
 
-class TournamentPlayer:
-    """A class representing a player in a tournament"""
-
-    def __init__(
-        self,
-        id: int,
-        last_name: str,
-        first_name: str | None,
-        date_of_birth: date | None,
-        gender: PlayerGender,
-        fide_id: int | None,
-        federation: Federation,
-        title: PlayerTitle,
-        pairings: dict[int, Pairing],
-        estimation: int | None = None,
-        point_values: dict[Result, float] | None = None,
-        tournament: Optional['Tournament'] = None,
-    ):
-        self.id = id
-        self.last_name: str = last_name
-        self.first_name: str | None = first_name
-        self.date_of_birth: date | None = date_of_birth
-        self.gender: PlayerGender = gender
-        self.fide_id: int | None = fide_id
-        self.federation: Federation = federation
-        self.title: PlayerTitle = title
-        self._estimation: int | None = estimation
-        self.pairings: dict[int, Pairing] = pairings
-        self._point_values: dict[Result, float] | None = point_values
-        self._tournament_ref: Optional['ReferenceType[Tournament]'] = None
-        self.tournament: Optional['Tournament'] = tournament
-
-    @property
-    def tournament(self) -> Optional['Tournament']:  # type: ignore
-        return self._tournament_ref() if self._tournament_ref else None
-
-    @tournament.setter
-    def tournament(self, tournament: Optional['Tournament']):  # type: ignore
-        self._tournament_ref = weakref.ref(tournament) if tournament else None
-
-    @property
-    def full_name(self) -> str:
-        if self.first_name:
-            return _('{first_name} {last_name}').format(
-                first_name=self.first_name, last_name=self.last_name
-            )
-        return self.last_name
-
-    @property
-    def point_values(self) -> dict[Result, float] | None:
-        return self._point_values
-
-    def points_before(self, before_round: int, only_played: bool = False) -> float:
-        # NOTE(Amaras) this does not rely on the fact that insertion order
-        # is preserved in 3.6+ dict, because I can't be sure insertion order
-        # is the correct (increasing) round order
-        # NOTE(Amaras) if you were to include the current round
-        # in the computation, boards regularly change their ordering
-        # during the current round as results are added
-        return sum(
-            pairing.result.points(self.point_values)
-            for round_index, pairing in self.pairings.items()
-            if round_index < before_round and (pairing.played or not only_played)
-        )
-
-    def points_after(self, after_round: int) -> float:
-        # NOTE(Amaras) this does not rely on the fact that insertion order
-        # is preserved in 3.6+ dict, because I can't be sure insertion order
-        # is the correct (increasing) round order
-        # NOTE(Amaras) if you were to include the current round
-        # in the computation, boards regularly change their ordering
-        # during the current round as results are added
-        return sum(
-            pairing.result.points(self.point_values)
-            for round_index, pairing in self.pairings.items()
-            if round_index <= after_round
-        )
-
-    def total_points(self, only_played: bool = False) -> float:
-        return sum(
-            pairing.result.points(self.point_values)
-            for pairing in self.pairings.values()
-            if pairing.played or not only_played
-        )
-
-    @property
-    def estimation(self):
-        return self._estimation or 0
-
-
 @total_ordering
-class Player(TournamentPlayer):
-    """A class representing a player in Sharly Chess."""
-
+class Player:
+    # TODO (Molrn - multi tournament) Split into 2 classes:
+    #  - Player(stored_player)
+    #  - TournamentPlayer(tournament, player, stored_tournament_player)
     def __init__(
         self,
-        id: int,
-        last_name: str,
-        first_name: str,
-        date_of_birth: date | None,
-        gender: PlayerGender,
-        fide_id: int | None,
-        federation: Federation,
-        title: PlayerTitle,
-        pairings: dict[int, Pairing],
-        # Extra fields
-        mail: str | None,
-        phone: str | None,
-        comment: str | None,
-        owed: float | None,
-        paid: float | None,
-        ratings: dict[TournamentRating, PlayerRating],
-        club: Club | None,
-        fixed: int | None,
-        check_in: bool,
-        tournament: Optional['Tournament'] = None,
-        errors: dict[str, str] | None = None,
-        # Plugins can add their own player data
-        plugin_data: dict[str, dict[str, Any]] | None = None,
+        tournament: 'Tournament',
+        stored_player: StoredPlayer,
     ):
-        super().__init__(
-            id,
-            last_name,
-            first_name,
-            date_of_birth,
-            gender,
-            fide_id,
-            federation,
-            title,
-            pairings,
-            tournament=tournament,
-        )
-        self.mail: str | None = mail
-        self.phone: str | None = phone
-        self.comment: str | None = comment
-        self.owed: float | None = owed
-        self.paid: float | None = paid
-        self.ratings: dict[TournamentRating, PlayerRating] = ratings
-        self.federation: Federation = federation
-        self.club: Club | None = club
-        self.fixed: int | None = fixed
-        self.check_in: bool = check_in
+        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self.stored_player = stored_player
+        self.stored_tournament_player = self.stored_player.stored_tournament_player
+        self.ratings = self._get_ratings()
+
+        # TournamentPlayer
+        self.pairings_by_round = self._get_pairings_by_round()
+        self._estimation: int | None = None
         self.points: float | None = None
         self.vpoints: float | None = None
         self.board_id: int | None = None
@@ -236,31 +124,156 @@ class Player(TournamentPlayer):
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
-        self.errors: dict[str, str] = errors or {}
-        self.plugin_data: dict[str, dict[str, Any]] = plugin_data or {}
-
-    @staticmethod
-    def player_sharly_chess_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
-        return tournament_id * 10000 + ref_id
-
-    @staticmethod
-    def player_papi_id_from_sharly_chess_id(player_id: int) -> int:
-        return player_id % 10000
-
-    @staticmethod
-    def player_tournament_id_from_sharly_chess_id(player_id: int) -> int:
-        return player_id // 10000
 
     @property
-    def ref_id(self) -> int:
-        """Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
-        assert self.id is not None
-        return self.player_papi_id_from_sharly_chess_id(self.id)
+    def id(self) -> int:
+        assert self.stored_player.id is not None
+        return self.stored_player.id
 
     @property
-    def tournament_id(self) -> int:
-        assert self.id is not None
-        return self.player_tournament_id_from_sharly_chess_id(self.id)
+    def last_name(self) -> str:
+        return self.stored_player.last_name
+
+    @property
+    def first_name(self) -> str | None:
+        return self.stored_player.first_name
+
+    @property
+    def full_name(self) -> str:
+        if self.first_name:
+            return _('{first_name} {last_name}').format(
+                first_name=self.first_name, last_name=self.last_name
+            )
+        return self.last_name
+
+    @property
+    def date_of_birth(self) -> date | None:
+        return self.stored_player.date_of_birth
+
+    @property
+    def year_of_birth(self) -> int:
+        return self.date_of_birth.year if self.date_of_birth else 0
+
+    @property
+    def gender(self) -> PlayerGender:
+        return PlayerGender(self.stored_player.gender)
+
+    @property
+    def mail(self) -> str | None:
+        return self.stored_player.mail
+
+    @property
+    def phone(self) -> str | None:
+        return self.stored_player.phone
+
+    @property
+    def comment(self) -> str | None:
+        return self.stored_player.comment
+
+    @property
+    def owed(self) -> float:
+        return self.stored_player.owed
+
+    @property
+    def paid(self) -> float:
+        return self.stored_player.paid
+
+    @property
+    def title(self) -> PlayerTitle:
+        return PlayerTitle(self.stored_player.title)
+
+    @property
+    def fide_id(self) -> int | None:
+        return self.stored_player.fide_id
+
+    @property
+    def federation(self) -> Federation:
+        return Federation(self.stored_player.federation)
+
+    @property
+    def club(self) -> Club:
+        return Club(self.stored_player.club)
+
+    @property
+    def fixed(self) -> int | None:
+        return self.stored_player.fixed
+
+    @property
+    def check_in(self) -> bool:
+        return self.stored_player.check_in
+
+    @property
+    def plugin_data(self) -> dict[str, dict[str, Any]]:
+        return self.stored_player.plugin_data
+
+    def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
+        return {
+            TournamentRating(tr_value): PlayerRating(
+                rating['value'], PlayerRatingType(rating['type'])
+            )
+            for tr_value, rating in self.stored_player.ratings.items()
+        }
+
+    def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
+        return self.ratings.get(
+            tournament_rating, PlayerRating(0, PlayerRatingType.ESTIMATED)
+        )
+
+    def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
+        for tournament_rating, player_rating in ratings.items():
+            self.stored_player.ratings[tournament_rating.value] = (
+                player_rating.stored_value
+            )
+        self.ratings = self._get_ratings()
+
+    @property
+    def not_paired_str(self) -> str:
+        return (
+            _('Unpaired *** FEMALE')
+            if self.gender == PlayerGender.FEMALE
+            else _('Unpaired *** MALE')
+        )
+
+    @property
+    def exempt_str(self) -> str:
+        return (
+            _('Exempt *** FEMALE')
+            if self.gender == PlayerGender.FEMALE
+            else _('Exempt *** MALE')
+        )
+
+    # --------------------------------------------------------------------------
+    # TournamentPlayer
+    # --------------------------------------------------------------------------
+
+    @property
+    def tournament(self) -> 'Tournament':
+        if (tournament := self._tournament_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return tournament
+
+    def _get_pairings_by_round(self) -> dict[int, Pairing]:
+        known_pairings: dict[int, Pairing] = {}
+        for stored_pairing in self.stored_tournament_player.stored_pairings:
+            pairing = Pairing(self, stored_pairing)
+            known_pairings[pairing.round] = pairing
+        return {
+            round_: (
+                known_pairings[round_]
+                if round_ in known_pairings
+                else Pairing(
+                    self,
+                    StoredPairing(
+                        tournament_id=self.tournament.id,
+                        player_id=self.id,
+                        round_=round_,
+                        result=Result.NO_RESULT.value,
+                        board_id=None,
+                    ),
+                )
+            )
+            for round_ in range(1, self.tournament.rounds + 1)
+        }
 
     @property
     def estimation(self) -> int:
@@ -278,10 +291,6 @@ class Player(TournamentPlayer):
     @property
     def estimated(self) -> bool:
         return self.rating_type == PlayerRatingType.ESTIMATED
-
-    @property
-    def year_of_birth(self) -> int:
-        return self.date_of_birth.year if self.date_of_birth else 0
 
     @cached_property
     def category(self) -> PlayerCategory:
@@ -308,12 +317,7 @@ class Player(TournamentPlayer):
 
     @property
     def _tournament_rating(self) -> PlayerRating:
-        assert self.tournament is not None
         return self.get_rating(self.tournament.rating)
-
-    @property
-    def point_values(self) -> dict[Result, float] | None:
-        return self.tournament.point_values if self.tournament else None
 
     @property
     def ratings_str(self) -> str:
@@ -324,9 +328,41 @@ class Player(TournamentPlayer):
             ]
         )
 
-    def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return self.ratings.get(
-            tournament_rating, PlayerRating(0, PlayerRatingType.ESTIMATED)
+    @property
+    def point_values(self) -> dict[Result, float] | None:
+        return self.tournament.point_values
+
+    def points_before(self, before_round: int, only_played: bool = False) -> float:
+        # NOTE(Amaras) this does not rely on the fact that insertion order
+        # is preserved in 3.6+ dict, because I can't be sure insertion order
+        # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
+        return sum(
+            pairing.result.points(self.point_values)
+            for round_, pairing in self.pairings.items()
+            if round_ < before_round and (pairing.played or not only_played)
+        )
+
+    def points_after(self, after_round: int) -> float:
+        # NOTE(Amaras) this does not rely on the fact that insertion order
+        # is preserved in 3.6+ dict, because I can't be sure insertion order
+        # is the correct (increasing) round order
+        # NOTE(Amaras) if you were to include the current round
+        # in the computation, boards regularly change their ordering
+        # during the current round as results are added
+        return sum(
+            pairing.result.points(self.point_values)
+            for round_index, pairing in self.pairings.items()
+            if round_index <= after_round
+        )
+
+    def total_points(self, only_played: bool = False) -> float:
+        return sum(
+            pairing.result.points(self.point_values)
+            for pairing in self.pairings.values()
+            if pairing.played or not only_played
         )
 
     def compute_points(self, *, before_round: int):
@@ -344,6 +380,20 @@ class Player(TournamentPlayer):
         Otherwise, leave `self.points` as None."""
         if self.points is not None:
             self.points += points
+
+    @property
+    def points_str(self) -> str:
+        return StaticUtils.points_str(self.points)
+
+    def add_vpoints(self, vpoints: float):
+        """If `self.vpoints` is set, add `vpoints` to it.
+        Otherwise, leave `self.vpoints` as None."""
+        if self.vpoints is not None:
+            self.vpoints += vpoints
+
+    @property
+    def vpoints_str(self) -> str:
+        return StaticUtils.points_str(self.vpoints)
 
     def to_trf(
         self,
@@ -364,8 +414,11 @@ class Player(TournamentPlayer):
                     games.append(trf_game)
                 elif next_round_pairings_as_zpb and not pairing.not_paired:
                     games.append(
-                        Pairing(result=Result.ZERO_POINT_BYE).to_trf(
-                            round_nb, player_id_to_trf_id
+                        TrfGame(
+                            startrank='0000',  # type: ignore
+                            color='-',
+                            result=Result.ZERO_POINT_BYE.to_trf,
+                            round=round_nb,
                         )
                     )
 
@@ -383,36 +436,6 @@ class Player(TournamentPlayer):
             points=self.points_after(after_round),
             rank=self.rank,
             games=games,
-        )
-
-    @property
-    def points_str(self) -> str:
-        return StaticUtils.points_str(self.points)
-
-    def add_vpoints(self, vpoints: float):
-        """If `self.vpoints` is set, add `vpoints` to it.
-        Otherwise, leave `self.vpoints` as None."""
-        if self.vpoints is not None:
-            self.vpoints += vpoints
-
-    @property
-    def vpoints_str(self) -> str:
-        return StaticUtils.points_str(self.vpoints)
-
-    @property
-    def not_paired_str(self) -> str:
-        return (
-            _('Unpaired *** FEMALE')
-            if self.gender == PlayerGender.FEMALE
-            else _('Unpaired *** MALE')
-        )
-
-    @property
-    def exempt_str(self) -> str:
-        return (
-            _('Exempt *** FEMALE')
-            if self.gender == PlayerGender.FEMALE
-            else _('Exempt *** MALE')
         )
 
     def set_board(self, board_id: int, board_number: int, color: BoardColor):
@@ -455,7 +478,6 @@ class Player(TournamentPlayer):
     @cached_property
     def can_check_in_out(self) -> bool:
         """Returns True if the player can check-in/out, i.e. does not have a ZPB for the next round."""
-        assert self.tournament is not None
         if self.tournament.finished:
             return False
         if self.tournament.playing:
@@ -471,10 +493,7 @@ class Player(TournamentPlayer):
 
     @property
     def color_str(self) -> str:
-        if self.color is None:
-            return ''
-        else:
-            return str(self.color)
+        return str(self.color or '')
 
     @property
     def time_control_initial_time_minutes(self) -> int | None:
@@ -609,3 +628,32 @@ class Player(TournamentPlayer):
             f'(#{self.id} rank={self._rank} ratings={ratings_str} title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
+
+    # --------------------------------------------------------------------------
+    # Legacy
+    # --------------------------------------------------------------------------
+
+    @staticmethod
+    def player_sharly_chess_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
+        return tournament_id * 10000 + ref_id
+
+    @staticmethod
+    def player_papi_id_from_sharly_chess_id(player_id: int) -> int:
+        return player_id % 10000
+
+    @staticmethod
+    def player_tournament_id_from_sharly_chess_id(player_id: int) -> int:
+        return player_id // 10000
+
+    @property
+    def ref_id(self) -> int:
+        """Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
+        return self.player_papi_id_from_sharly_chess_id(self.id)
+
+    @property
+    def tournament_id(self) -> int:
+        return self.player_tournament_id_from_sharly_chess_id(self.id)
+
+    @property
+    def pairings(self) -> dict[int, Pairing]:
+        return self.pairings_by_round

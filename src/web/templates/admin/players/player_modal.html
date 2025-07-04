@@ -222,9 +222,9 @@
                             {# can not use *_input() here because of a specific pattern for rating type/value #}
                             {%
                                 with
-                                    name='rating_' ~ tournament_rating.value,
+                                    name=tournament_rating.form_key ~ '_rating',
                                     id=name|replace('_', '-'),
-                                    name2='rating_type_' ~ tournament_rating.value
+                                    name2=tournament_rating.form_key ~ '_rating_type'
                             %}
                                 <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
                                 <input

@@ -5,7 +5,7 @@ from data.tournament import Tournament
 from datetime import datetime, timedelta
 from pathlib import Path
 import time
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 import re
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
@@ -88,7 +88,7 @@ class TestUtils:
         overrides = overrides or {}
 
         # Provide defaults
-        defaults = {
+        defaults: dict[str, Any] = {
             'id': None,
             'uniq_id': uniq_id,
             'name': uniq_id,
@@ -128,7 +128,7 @@ class TestUtils:
         data = {**defaults, **overrides}
         stored_tournament = StoredTournament(**data)
 
-        event_loader: EventLoader = EventLoader.get(request=None)
+        event_loader = EventLoader()
         admin_event = event_loader.load_event(event_uniq_id)
         with EventDatabase(event_uniq_id, write=True) as event_database:
             stored_tournament = event_database.add_stored_tournament(stored_tournament)
