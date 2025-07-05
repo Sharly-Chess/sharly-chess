@@ -22,7 +22,7 @@ class Migration(BaseMigration):
             '    `edit_permissions` INTEGER NOT NULL DEFAULT 1,'
             '    `active` INTEGER NOT NULL DEFAULT 1,'
             '    `username` TEXT,'
-            '    `password` TEXT,'
+            '    `password_hash` TEXT,'
             '    `permissions` TEXT,'
             '    PRIMARY KEY(`id` AUTOINCREMENT),'
             '    UNIQUE(`username`)'
