@@ -5,6 +5,9 @@ from playwright.sync_api import Page, expect
 from tests.test_config import TestUtils
 
 
+EVENT_ID = 'test-event-e2e'
+
+
 @pytest.mark.e2e
 class TestEventFunctionality:
     def test_create_and_delete_event(self, page: Page):
@@ -13,7 +16,7 @@ class TestEventFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_label('Federation:').select_option('FRA')
-        modal.get_by_role('textbox', name='ID (unique):').fill('test-event-e2e')
+        modal.get_by_role('textbox', name='ID (unique):').fill(EVENT_ID)
         modal.get_by_role('textbox', name='Name:').fill('Test Event')
         modal.locator('button[type=submit]').click()
         expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
@@ -28,8 +31,6 @@ class TestEventFunctionality:
 
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.locator('#uniq-id').fill('test-event-e2e')
+        modal.locator('#uniq-id').fill(EVENT_ID)
         modal.locator('button[type=submit]').click()
-        expect(
-            page.get_by_text('Event [test-event-e2e] has been deleted')
-        ).to_be_visible()
+        expect(page.get_by_text(f'Event [{EVENT_ID}] has been deleted')).to_be_visible()

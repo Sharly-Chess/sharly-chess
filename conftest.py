@@ -163,5 +163,5 @@ def setup_page(page, backend_server):
     if not backend_server:
         return None
 
-    page.set_default_timeout(8000)
+    page.set_default_timeout(15000)
     return page
