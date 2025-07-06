@@ -3,7 +3,7 @@ from typing import Self
 
 from common.i18n import _
 from data.auth.entities import Device, Account
-from data.auth.roles import Role
+from data.auth.roles import CheckInOfficerRole, ResultOfficerRole
 
 
 class ExecMode(IntEnum):
@@ -87,10 +87,10 @@ class ExecMode(IntEnum):
                 ]
             case ExecMode.STANDARD | ExecMode.CUSTOM:
                 # we initialize the custom mode as the standard mode
-                unknown_device.permissions_by_role |= {
-                    Role.CHECK_IN_OFFICER: None,
-                    Role.RESULTS_OFFICER: None,
-                }
+                unknown_device.stored_device.roles += [
+                    CheckInOfficerRole.static_id(),
+                    ResultOfficerRole.static_id(),
+                ]
                 return [
                     localhost_device,
                     unknown_device,

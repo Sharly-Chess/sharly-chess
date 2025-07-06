@@ -222,10 +222,10 @@ class AccountAdminController(BaseEventAdminController):
                                 role,
                                 permission,
                             ) in web_context.admin_account.permissions_by_role.items():
-                                data[f'role_{role.value}'] = (
-                                    WebContext.value_to_form_data(True)
+                                data[f'role_{role.id}'] = WebContext.value_to_form_data(
+                                    True
                                 )
-                                data[f'permission_{role.value}'] = (
+                                data[f'permission_{role.id}'] = (
                                     WebContext.value_to_form_data(permission)
                                 )
                         case 'create' | 'delete':
