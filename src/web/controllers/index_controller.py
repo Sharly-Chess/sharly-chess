@@ -11,6 +11,7 @@ from litestar.channels import ChannelsPlugin
 from litestar.response import ServerSentEventMessage, ServerSentEvent
 
 from common.i18n import _
+from common.sharly_chess_config import SharlyChessConfig
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
 
@@ -89,7 +90,11 @@ class IndexController(BaseController):
         request: HTMXRequest,
     ) -> Redirect:
         return Redirect(
-            request.app.route_reverse('static', file_path='/images/sharly-chess.ico')
+            request.app.route_reverse(
+                'static',
+                file_path='/images/sharly-chess.ico',
+                version=SharlyChessConfig.version,
+            )
         )
 
     @staticmethod

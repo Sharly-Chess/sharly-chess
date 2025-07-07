@@ -80,7 +80,7 @@
             <td>
                 <img
                     class="player-federation-flag pe-1"
-                    src="{{ url_for('static', file_path='/images/federations/' ~ sharly_chess_config.federation ~ '.svg') }}"
+                    src="{{ macros.federation_flag_url(sharly_chess_config.federation) }}"
                 />
                 {{ sharly_chess_config.federation.name }} - {{ sharly_chess_config.federations[sharly_chess_config.federation.name] }}
                 {% if not sharly_chess_config.stored_config.federation %}

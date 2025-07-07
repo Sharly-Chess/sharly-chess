@@ -2,7 +2,7 @@
 
 <img
     class="player-federation-flag pe-1"
-    src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+    src="{{ macros.federation_flag_url(player.federation) }}"
 />
 {% if player.plugin_data.ffe.ffe_licence_number %}
     {{ player.plugin_data.ffe.ffe_licence_number }}
