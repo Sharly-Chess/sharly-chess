@@ -3,6 +3,7 @@ import logging
 import re
 import time
 from collections import defaultdict, Counter
+from contextlib import suppress
 from dataclasses import dataclass
 from functools import total_ordering, cached_property
 from logging import Logger
@@ -41,8 +42,8 @@ from utils.enum import (
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
-    ANONYMOUS_ID,
-    ANY_DEVICE_ID,
+    StoredDevice,
+    StoredAccount,
 )
 
 
@@ -119,6 +120,8 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
+        self.devices_by_id = self._get_devices_by_id()
+        self.accounts_by_id = self._get_accounts_by_id()
         self.messages: list[EventMessage] = []
         last_load_date: float | None = event_last_load_date_by_uniq_id.get(
             self.uniq_id, None
@@ -418,7 +421,7 @@ class Event:
     @property
     def basic_screens_by_screen_type_by_id(
         self,
-    ) -> defaultdict[ScreenType, list[Screen]]:
+    ) -> defaultdict[ScreenType, dict[int, Screen]]:
         basic_screens_by_screen_type_by_id: defaultdict[
             ScreenType, dict[int, Screen]
         ] = defaultdict(dict[int, Screen])
@@ -821,10 +824,28 @@ class Event:
             ],
         )
 
-    @property
-    def devices_by_id(self) -> dict[int, Device]:
-        if self.errors:
-            return {}
+    # -------------------------------------------------------------------------
+    # Devices
+    # -------------------------------------------------------------------------
+
+    def create_custom_exec_mode_objects(self):
+        """Add the accounts and devices that correspond to the default
+        permissions of the custom mode. These objects are added juste
+        before doing an action on the fake permissions used from the
+        creation of the object."""
+        if not self.default_custom_mode_objects:
+            return
+        with EventDatabase(self.uniq_id, True) as database:
+            database.create_custom_exec_mode_objects()
+            database.commit()
+        for device in ExecMode.CUSTOM.predefined_devices:
+            self.stored_event.stored_devices.append(device.stored_device)
+            self.devices_by_id[device.id] = device
+        for account in ExecMode.CUSTOM.predefined_accounts:
+            self.stored_event.stored_accounts.append(account.stored_account)
+            self.accounts_by_id[account.id] = account
+
+    def _get_devices_by_id(self) -> dict[int, Device]:
         if self.exec_mode.custom and self.stored_event.stored_devices:
             # we used the stored devices only for ExecMode.CUSTOM and if found in the database
             return {
@@ -835,6 +856,29 @@ class Event:
         else:
             # otherwise we use the predefined devices of the mode
             return {device.id: device for device in self.exec_mode.predefined_devices}
+
+    def create_device(self, stored_device: StoredDevice) -> Device:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_device = database.add_stored_device(stored_device)
+            database.commit()
+        self.stored_event.stored_devices.append(stored_device)
+        device = Device(stored_device)
+        self.devices_by_id[device.id] = device
+        return device
+
+    def update_device(self, stored_device: StoredDevice):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_device(stored_device)
+            database.commit()
+
+    def delete_device(self, device: Device):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_device(device.id)
+            database.commit()
+        with suppress(ValueError):
+            self.stored_event.stored_devices.remove(device.stored_device)
+        if device.id in self.devices_by_id:
+            del self.devices_by_id[device.id]
 
     @property
     def devices_by_ip(self) -> dict[str, Device]:
@@ -853,12 +897,13 @@ class Event:
 
     @property
     def unknown_device(self) -> Device:
-        return self.devices_by_id[ANY_DEVICE_ID]
+        return self.devices_by_id[Device.ANY_DEVICE_ID]
 
-    @property
-    def accounts_by_id(self) -> dict[int, Account]:
-        if self.errors:
-            return {}
+    # -------------------------------------------------------------------------
+    # Accounts
+    # -------------------------------------------------------------------------
+
+    def _get_accounts_by_id(self) -> dict[int, Account]:
         if self.exec_mode.custom and self.stored_event.stored_accounts:
             # we used the stored accounts only for ExecMode.CUSTOM and if found in the database
             return {
@@ -872,8 +917,31 @@ class Event:
                 account.id: account for account in self.exec_mode.predefined_accounts
             }
 
+    def create_account(self, stored_account: StoredAccount) -> Account:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_account = database.add_stored_account(stored_account)
+            database.commit()
+        self.stored_event.stored_accounts.append(stored_account)
+        account = Account(stored_account)
+        self.accounts_by_id[account.id] = account
+        return account
+
+    def update_account(self, stored_account: StoredAccount):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_account(stored_account)
+            database.commit()
+
+    def delete_account(self, account: Account):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_account(account.id)
+            database.commit()
+        with suppress(ValueError):
+            self.stored_event.stored_accounts.remove(account.stored_account)
+        if account.id in self.accounts_by_id:
+            del self.accounts_by_id[account.id]
+
     @property
-    def accounts_by_username(self) -> dict[str, Account]:
+    def accounts_by_username(self) -> dict[str | None, Account]:
         return {account.username: account for account in self.accounts_by_id.values()}
 
     @property
@@ -888,7 +956,7 @@ class Event:
 
     @property
     def anonymous_account(self) -> Account:
-        return self.accounts_by_id[ANONYMOUS_ID]
+        return self.accounts_by_id[Account.ANONYMOUS_ID]
 
     @property
     def default_custom_mode_objects(self) -> bool:

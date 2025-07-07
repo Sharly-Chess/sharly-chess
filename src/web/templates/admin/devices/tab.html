@@ -50,7 +50,7 @@
         </thead>
         <tbody>
             {% for device in admin_event.devices_sorted_by_ip %}
-                {% set roles=device.permissions_by_role.keys() | list %}
+                {% set roles=device.roles %}
                 <tr class="">
                     <th scope="row" class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
                         <span class="{% if device.localhost or device.unknown %}fst-italic{% endif %}">
@@ -95,7 +95,7 @@
                             <button
                                 {% if admin_event.exec_mode.custom and device_can_be_updated and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-device-modal', action='update', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
+                                    hx-get="{{ url_for('admin-device-update-modal', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -123,7 +123,7 @@
                             <button
                                 {% if admin_event.exec_mode.custom and device_can_be_cloned and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-device-modal', action='clone', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
+                                    hx-get="{{ url_for('admin-device-clone-modal', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -151,7 +151,7 @@
                             <button
                                 {% if admin_event.exec_mode.custom and device_can_be_deleted and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-danger"
-                                    hx-get="{{ url_for('admin-device-modal', action='delete', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
+                                    hx-get="{{ url_for('admin-device-delete-modal', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload

@@ -4895,7 +4895,7 @@ msgstr ""
 msgid "This role allows to nominate Chief Arbiters, edit the event; it inherits the Display Manager role."
 msgstr ""
 
-msgid "This role allows to nominate Deputy Chief Arbiters, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role)."
+msgid "This role allows to nominate Deputy Chief Arbiters, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
 msgstr ""
 
 msgid "This role allows to pair the players using a pairing engine or manually, for some or all the tournaments of the event."

@@ -37,6 +37,9 @@ class IdentifiableEntity(ABC):
             return NotImplemented
         return self.id == other.id
 
+    def __hash__(self):
+        return hash(self.id)
+
 
 class EntityManager[T: IdentifiableEntity](ABC):
     @staticmethod
@@ -73,3 +76,8 @@ class EntityManager[T: IdentifiableEntity](ABC):
     def objects(cls) -> list[T]:
         """Get one object per type initialized with the default constructor."""
         return [type_() for type_ in cls.entity_types()]
+
+    @classmethod
+    def ids(cls) -> list[str]:
+        """Get a list of all the entity IDs."""
+        return [type_.static_id() for type_ in cls.entity_types()]

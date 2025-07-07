@@ -1,0 +1,17 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Deletion of account [%(username)s]', username=admin_account.username) }}
+{% endblock %}
+
+{% block delete_warning %}
+    {{ _('Warning: the deletion of an account is permanent!') }}
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-account-delete',
+        event_uniq_id=admin_event.uniq_id,
+        account_id=admin_account.id,
+    ) }}
+{% endblock %}

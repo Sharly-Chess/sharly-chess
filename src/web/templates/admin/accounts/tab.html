@@ -50,7 +50,7 @@
         </thead>
         <tbody>
             {% for account in admin_event.accounts_sorted_by_username %}
-                {% set roles=account.permissions_by_role.keys() | list %}
+                {% set roles=account.roles %}
                 <tr class="">
                     <th scope="row" class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
                         {% if account.anonymous %}
@@ -99,7 +99,7 @@
                             <button
                                 {% if admin_event.exec_mode.custom and account_can_be_updated and client_can_manage_account %}
                                     class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-account-modal', action='update', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                                    hx-get="{{ url_for('admin-account-update-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -127,7 +127,7 @@
                             <button
                                 {% if admin_event.exec_mode.custom and account_can_be_cloned and client_can_manage_account %}
                                     class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-account-modal', action='clone', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                                    hx-get="{{ url_for('admin-account-clone-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload
@@ -155,7 +155,7 @@
                             <button
                                 {% if admin_event.exec_mode.custom and account_can_be_cloned and client_can_manage_account %}
                                     class="btn btn-sm btn-outline-danger"
-                                    hx-get="{{ url_for('admin-account-modal', action='delete', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                                    hx-get="{{ url_for('admin-account-delete-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     preload

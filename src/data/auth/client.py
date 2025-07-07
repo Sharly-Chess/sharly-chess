@@ -1,18 +1,17 @@
-import fnmatch
 from contextlib import suppress
 from dataclasses import dataclass
-from functools import cached_property
-from typing import TYPE_CHECKING
+from functools import cached_property, cache
+from typing import TYPE_CHECKING, Optional
 
 from litestar_htmx import HTMXRequest
 
+from data.auth.actions import AuthAction
 from data.auth.entities import (
     Device,
     Account,
 )
-from data.auth.roles import Role, RoleScope
-from data.tournament import Tournament
-from database.sqlite.event.event_store import ANY_DEVICE_ID
+from data.auth.managers import RoleManager
+from data.auth.roles import Role
 from web.session import SessionHandler
 
 if TYPE_CHECKING:
@@ -21,9 +20,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Permission:
-    # None if the permission applies to all the tournaments, or a list of patterns
-    tournament_uniq_ids: str | None = None
-    # False if explicitly granted, True if inherited
+    tournament_ids: set[int] | None = None
     inherited: bool = False
 
 
@@ -33,15 +30,15 @@ class Client:
     def __init__(
         self,
         request: HTMXRequest,
-        event: 'Event | None' = None,
+        event: Optional['Event'] = None,
     ):
         self.request = request
         self.host: str = (
             self.request.client.host
             if self.request.client and self.request.client.host
-            else None
-        ) or '?'
-        self.event: 'Event | None' = event
+            else '?'
+        )
+        self.event: Optional['Event'] = event
         self.device: Device = self._find_device()
         self.active_device: Device = (
             self.device if self.device.active else Device.unknown_device()
@@ -61,7 +58,7 @@ class Client:
             return Device.unknown_device()
         with suppress(KeyError):
             return self.event.devices_by_ip[self.host]
-        return self.event.devices_by_id[ANY_DEVICE_ID]
+        return self.event.devices_by_id[Device.ANY_DEVICE_ID]
 
     def _find_account(
         self,
@@ -71,409 +68,202 @@ class Client:
             return Account.anonymous_account()
         return SessionHandler.get_account(self.request, self.event)
 
+    def __repr__(self) -> str:
+        return f'{self.__class__}(account={self.account}, device={self.device}, host={self.host}, permissions={self.permissions_by_role})'
+
     # ---------------------------------------------------------------------------------
-    # Global permissions
+    # Permissions / actions
     # ---------------------------------------------------------------------------------
 
     @cached_property
-    def permissions_by_role(
-        self,
-    ) -> dict[Role, Permission]:
+    def permissions_by_role(self) -> dict[Role, Permission]:
         """Returns all the permissions by role, granted or inherited as a device or an account."""
-        device_permissions_by_role: dict[Role, Permission] = {}
-        for (
-            device_role,
-            device_permission,
-        ) in self.active_device.permissions_by_role.items():
-            device_permissions_by_role[device_role] = Permission(
-                tournament_uniq_ids=device_permission,
-            )
-            for sub_role in device_role.sub_roles:
-                device_permissions_by_role[sub_role] = Permission(
-                    tournament_uniq_ids=device_permission,
-                    inherited=True,
-                )
-        account_permissions_by_role: dict[Role, Permission] = {}
-        for (
-            account_role,
-            account_permission,
-        ) in self.active_account.permissions_by_role.items():
-            account_permissions_by_role[account_role] = Permission(
-                tournament_uniq_ids=account_permission,
-            )
-            for sub_role in account_role.sub_roles:
-                account_permissions_by_role[sub_role] = Permission(
-                    tournament_uniq_ids=account_permission,
-                    inherited=True,
-                )
         permissions_by_role: dict[Role, Permission] = {}
-        for role in Role.roles():
-            if (
-                role in device_permissions_by_role
-                and role in account_permissions_by_role
-            ):
-                # device and account both allowed
-                tournament_uniq_ids: str | None
-                if (
-                    device_permissions_by_role[role].tournament_uniq_ids is None
-                    or account_permissions_by_role[role].tournament_uniq_ids is None
-                ):
-                    # allowed for all the tournaments
-                    tournament_uniq_ids = None
-                else:
-                    device_permission_parts: set[str] = set(
-                        device_permissions_by_role[role].tournament_uniq_ids.split(  # type: ignore
-                            ','
-                        )
-                    )
-                    account_permission_parts: set[str] = set(
-                        account_permissions_by_role[role].tournament_uniq_ids.split(',')  # type: ignore
-                    )
-                    tournament_uniq_ids = ','.join(
-                        device_permission_parts | account_permission_parts
-                    )
-                permissions_by_role[role] = Permission(
-                    tournament_uniq_ids=tournament_uniq_ids,
-                    inherited=device_permissions_by_role[role].inherited
-                    and account_permissions_by_role[role].inherited,
+        for access_entity in (self.active_account, self.active_device):
+            tournament_ids = access_entity.tournament_ids
+            for role in access_entity.roles:
+                permissions_by_role[role] = self._merge_permissions(
+                    Permission(tournament_ids),
+                    permissions_by_role.get(role, None),
                 )
-            elif role in device_permissions_by_role:
-                permissions_by_role[role] = Permission(
-                    tournament_uniq_ids=device_permissions_by_role[
-                        role
-                    ].tournament_uniq_ids,
-                    inherited=device_permissions_by_role[role].inherited,
-                )
-            elif role in account_permissions_by_role:
-                permissions_by_role[role] = Permission(
-                    tournament_uniq_ids=account_permissions_by_role[
-                        role
-                    ].tournament_uniq_ids,
-                    inherited=account_permissions_by_role[role].inherited,
-                )
-            else:
-                continue
-        return permissions_by_role
-
-    # ---------------------------------------------------------------------------------
-    # Application scope
-    # ---------------------------------------------------------------------------------
-
-    def _has_application_role(
-        self,
-        search_roles: Role | list[Role],
-    ) -> bool:
-        """Returns True if the client has one of the given *search_roles* for the application, False otherwise."""
-        if isinstance(search_roles, Role):
-            search_roles = [
-                search_roles,
-            ]
-        assert all(role.scope == RoleScope.APPLICATION for role in search_roles)
-        return self.active_device.localhost
-
-    # ---------------------------------------------------------------------------------
-    # Event scope
-    # ---------------------------------------------------------------------------------
-
-    @cached_property
-    def _allowed_for_event_by_role_dict(
-        self,
-    ) -> dict[Role, bool]:
-        """Returns a dict of bool indicating if the client has a role for the event (at least for one tournament)."""
-        return {role: role in self.permissions_by_role for role in Role.roles()}
-
-    def _has_event_role(
-        self,
-        search_roles: Role | list[Role],
-    ) -> bool:
-        """Returns True if the client has one of the given *search_roles* for the given event, False otherwise."""
-        if isinstance(search_roles, Role):
-            search_roles = [
-                search_roles,
-            ]
-        return any(self._allowed_for_event_by_role_dict[role] for role in search_roles)
-
-    # ---------------------------------------------------------------------------------
-    # Tournament scope
-    # ---------------------------------------------------------------------------------
+                for sub_role in role.sub_roles():
+                    permissions_by_role[sub_role] = self._merge_permissions(
+                        Permission(tournament_ids),
+                        permissions_by_role.get(sub_role, None),
+                    )
+        return {
+            role: permissions_by_role[role]
+            for role in RoleManager.objects()
+            if role in permissions_by_role
+        }
 
     @staticmethod
-    def _tournament_matches_permission(
-        tournament: Tournament,
-        permission: Permission,
-    ) -> bool:
-        if permission.tournament_uniq_ids is None:
-            return True
-        for part in permission.tournament_uniq_ids.split(','):
-            if '*' in part:
-                if fnmatch.fnmatch(tournament.uniq_id, part):
-                    return True
-            elif tournament.uniq_id == part:
-                return True
-        return False
-
-    @cached_property
-    def _allowed_for_tournament_by_role_dict(
-        self,
-    ) -> dict[Role, dict[int, bool]]:
-        """Returns a dict of dict of bool indicating if the client
-        has a role for the tournaments (key is the tournament id).
-        usage: __allowed_for_tournament_by_role_dict[role][tournament.id]"""
-        assert self.event is not None
-        return {
-            role: {
-                tournament.id: self._tournament_matches_permission(
-                    tournament, self.permissions_by_role[role]
-                )
-                if role in self.permissions_by_role
-                else False
-                for tournament in self.event.tournaments_by_id.values()
-            }
-            for role in Role.roles()
-        }
-
-    def _has_tournament_role(
-        self,
-        tournament: Tournament,
-        search_roles: Role | list[Role],
-    ) -> bool:
-        """Returns True if the client has one of the given *search_roles* for the given tournament, False otherwise."""
-        if isinstance(search_roles, Role):
-            search_roles = [
-                search_roles,
-            ]
-        return any(
-            self._allowed_for_tournament_by_role_dict[role][tournament.id]
-            for role in search_roles
+    def _merge_permissions(
+        permission1: Permission, permission2: Permission | None
+    ) -> Permission:
+        if not permission2:
+            return permission1
+        tournament_ids: set[int] | None = None
+        if (
+            permission1.tournament_ids is not None
+            and permission2.tournament_ids is not None
+        ):
+            tournament_ids = permission1.tournament_ids | permission2.tournament_ids
+        return Permission(
+            tournament_ids=tournament_ids,
+            inherited=permission1.inherited or permission2.inherited,
         )
 
-    def _allowed_for_roles_by_tournament_id(
-        self,
-        search_roles: Role | list[Role],
-    ) -> dict[int, bool]:
-        """Returns a dict indicating if the client is allowed for some roles on each tournament.
-        Usage:
-            @property
-            def can_xxx_by_tournament_id(self) -> dict[int, bool]:
-                return self._allowed_for_roles_by_tournament_id(search_roles)
-        """
-        if isinstance(search_roles, Role):
-            search_roles = [
-                search_roles,
-            ]
+    @staticmethod
+    @cache
+    def roles_by_action() -> dict[AuthAction, list[Role]]:
+        roles_by_action: dict[AuthAction, list[Role]] = {
+            action: [] for action in AuthAction
+        }
+        for role in RoleManager.objects():
+            for action in role.allowed_actions():
+                roles_by_action[action].append(role)
+        return roles_by_action
+
+    @cached_property
+    def allowed_actions(self) -> set[AuthAction]:
+        actions: set[AuthAction] = set()
+        for auth_entity in (self.active_device, self.active_account):
+            for role in auth_entity.roles:
+                actions |= role.allowed_actions()
+        return actions
+
+    def action_allowed_by_tournament_id(self, action: AuthAction) -> dict[int, bool]:
         assert self.event is not None
         return {
-            tournament.id: any(
-                self._allowed_for_tournament_by_role_dict[role][tournament.id]
-                for role in search_roles
-            )
-            for tournament in self.event.tournaments_by_id.values()
+            tournament_id: self._action_allowed_for_tournament(action, tournament_id)
+            for tournament_id in self.event.tournaments_by_id
         }
+
+    def _action_allowed_for_tournament(
+        self, action: AuthAction, tournament_id: int
+    ) -> bool:
+        if action not in self.allowed_actions:
+            return False
+        for role in self.roles_by_action()[action]:
+            permission = self.permissions_by_role.get(role, None)
+            if permission and (
+                permission.tournament_ids is None
+                or tournament_id in permission.tournament_ids
+            ):
+                return True
+        return False
 
     # ---------------------------------------------------------------------------------
     # Application
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_application_settings(
-        self,
-    ) -> bool:
+    def can_view_application_settings(self) -> bool:
         """Returns true if the client can view the applications settings."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+        return AuthAction.VIEW_APPLICATION_SETTINGS in self.allowed_actions
 
     @property
-    def can_update_application_settings(
-        self,
-    ) -> bool:
+    def can_update_application_settings(self) -> bool:
         """Returns true if the client can update the application settings."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+        return AuthAction.UPDATE_APPLICATION_SETTINGS in self.allowed_actions
 
     @property
-    def can_manage_source_databases(
-        self,
-    ) -> bool:
-        """Returns true if the client can manage the local source databases."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+    def can_manage_source_databases(self) -> bool:
+        """Returns true if the client can manage the source databases."""
+        return AuthAction.MANAGE_SOURCE_DATABASES in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_private_events(
-        self,
-    ) -> bool:
-        """Returns true if the client can ."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+    def can_view_private_events(self) -> bool:
+        """Returns true if the client can view the private events."""
+        return AuthAction.VIEW_PRIVATE_EVENTS in self.allowed_actions
 
     @property
-    def can_add_event(
-        self,
-    ) -> bool:
+    def can_add_event(self) -> bool:
         """Returns true if the client can add an event."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+        return AuthAction.ADD_EVENTS in self.allowed_actions
 
     @property
-    def can_view_detailed_event_cards(
-        self,
-    ) -> bool:
+    def can_view_detailed_event_cards(self) -> bool:
         """Returns true if the client can view the details on the event cards."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+        return AuthAction.VIEW_DETAILED_EVENT_CARDS in self.allowed_actions
 
     @property
-    def can_delete_event(
-        self,
-    ) -> bool:
+    def can_delete_event(self) -> bool:
         """Returns true if the client can delete the event."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+        return AuthAction.DELETE_EVENTS in self.allowed_actions
 
     @property
-    def can_rename_event(
-        self,
-    ) -> bool:
+    def can_rename_event(self) -> bool:
         """Returns true if the client can rename the event (change the URLs)."""
-        return self._has_application_role(Role.ADMINISTRATOR)
+        return AuthAction.RENAME_EVENTS in self.allowed_actions
 
     @property
-    def can_update_event(
-        self,
-    ) -> bool:
+    def can_update_event(self) -> bool:
         """Returns true if the client can update the event."""
-        return self._has_event_role(
-            [
-                Role.ORGANIZER,
-                Role.CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.UPDATE_EVENTS in self.allowed_actions
 
     @property
-    def can_view_event_complete_config(
-        self,
-    ) -> bool:
+    def can_view_event_complete_config(self) -> bool:
         """Returns true if the client can the event complete config."""
-        return self._has_event_role(
-            [
-                Role.ORGANIZER,
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.VIEW_EVENT_COMPLETE_CONFIG in self.allowed_actions
 
     @property
-    def can_view_event_basic_config(
-        self,
-    ) -> bool:
+    def can_view_event_basic_config(self) -> bool:
         """Returns true if the client can the basic event config."""
-        return self._has_event_role(
-            [
-                Role.ORGANIZER,
-                Role.SECTOR_ARBITER,
-            ],
-        )
+        return AuthAction.VIEW_EVENT_BASIC_CONFIG in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Accounts and devices
     # ---------------------------------------------------------------------------------
 
     @cached_property
-    def role_management(
-        self,
-    ) -> dict[Role, bool]:
+    def role_management(self) -> dict[Role, bool]:
         """Returns a dict of bool indicating if the client can manage the given role or not."""
-        return {
-            Role.ADMINISTRATOR: False,
-            Role.ORGANIZER: self._has_application_role(
-                Role.ADMINISTRATOR,
-            ),
-            Role.DISPLAY_MANAGER: self._has_event_role(
-                Role.ORGANIZER,
-            ),
-            Role.CHIEF_ARBITER: self._has_event_role(
-                Role.ORGANIZER,
-            ),
-            Role.DEPUTY_CHIEF_ARBITER: self._has_event_role(
-                [
-                    Role.ORGANIZER,
-                    Role.CHIEF_ARBITER,
-                ],
-            ),
-            Role.PAIRINGS_OFFICER: self._has_event_role(
-                Role.DEPUTY_CHIEF_ARBITER,
-            ),
-            Role.SECTOR_ARBITER: self._has_event_role(
-                Role.DEPUTY_CHIEF_ARBITER,
-            ),
-            Role.CHECK_IN_OFFICER: self._has_event_role(
-                Role.DEPUTY_CHIEF_ARBITER,
-            ),
-            Role.RESULTS_OFFICER: self._has_event_role(
-                Role.DEPUTY_CHIEF_ARBITER,
-            ),
-            Role.SPECTATOR: self._has_event_role(
-                [
-                    Role.DISPLAY_MANAGER,
-                    Role.DEPUTY_CHIEF_ARBITER,
-                ],
-            ),
-        }
+        manageable_roles: set[Role] = set()
+        for auth_entity in (self.active_account, self.active_device):
+            for role in auth_entity.roles:
+                manageable_roles |= role.manageable_roles()
+        return {role: role in manageable_roles for role in RoleManager.objects()}
 
     @property
-    def can_manage_accounts(
-        self,
-    ) -> bool:
+    def can_manage_accounts(self) -> bool:
         """Returns true if the client can manage (add/update/delete) accounts
         (the client may not be able to manage all the accounts but there may
         be accounts that it can manage)."""
-        return self._has_event_role(
-            [
-                Role.DISPLAY_MANAGER,
-                Role.DEPUTY_CHIEF_ARBITER,
-            ]
-        )
+        return AuthAction.MANAGE_ACCOUNTS in self.allowed_actions
 
     @property
-    def can_manage_account_by_account_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_manage_account_by_account_id(self) -> dict[int, bool]:
         """Returns true if the client can manage (update/delete)
         the given account (the client must manage all the roles of the account)."""
         assert self.event is not None
         return {
-            account.id: all(
-                self.role_management[role] for role in account.permissions_by_role
-            )
+            account.id: all(self.role_management[role] for role in account.roles)
             for account in self.event.accounts_by_id.values()
         }
 
     @property
-    def can_manage_devices(
-        self,
-    ) -> bool:
+    def can_manage_devices(self) -> bool:
         """Returns true if the client can manage (add/update/delete) accounts."""
-        return self._has_event_role(
-            [
-                Role.DISPLAY_MANAGER,
-                Role.DEPUTY_CHIEF_ARBITER,
-            ]
-        )
+        return AuthAction.MANAGE_DEVICES in self.allowed_actions
 
     @property
-    def can_manage_device_by_device_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_manage_device_by_device_id(self) -> dict[int, bool]:
         """Returns true if the client can manage (update/delete)
         the given device (the client must manage all the roles of the device)."""
         assert self.event is not None
         return {
-            device.id: all(
-                self.role_management[role] for role in device.permissions_by_role
-            )
+            device.id: all(self.role_management[role] for role in device.roles)
             for device in self.event.devices_by_id.values()
         }
 
     @property
-    def can_manage_roles(
-        self,
-    ) -> bool:
+    def can_manage_roles(self) -> bool:
         """Returns true if the client can manage at least one role."""
         return any(self.role_management)
 
@@ -482,408 +272,235 @@ class Client:
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_tournaments_tab(
-        self,
-    ) -> bool:
+    def can_view_tournaments_tab(self) -> bool:
         """Returns true if the client can access the Tournaments tab and view the tournament cards."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.VIEW_TOURNAMENTS_TAB in self.allowed_actions
 
     @property
-    def can_add_tournament(
-        self,
-    ) -> bool:
+    def can_add_tournament(self) -> bool:
         """Returns true if the client can add a tournament to the event."""
-        return self._has_event_role(
-            Role.CHIEF_ARBITER,
-        )
+        return AuthAction.ADD_TOURNAMENTS in self.allowed_actions
 
     @property
-    def can_update_tournaments(
-        self,
-    ) -> bool:
+    def can_update_tournaments(self) -> bool:
         """Returns true if the client can update a tournament of the event."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.UPDATE_TOURNAMENTS in self.allowed_actions
 
     @property
-    def can_delete_tournaments(
-        self,
-    ) -> bool:
+    def can_delete_tournaments(self) -> bool:
         """Returns true if the client can delete a tournament of the event."""
-        return self._has_event_role(
-            Role.CHIEF_ARBITER,
-        )
+        return AuthAction.DELETE_TOURNAMENTS in self.allowed_actions
 
     @property
-    def can_publish_results(
-        self,
-    ) -> bool:
+    def can_publish_results(self) -> bool:
         """Returns true if the client can publish the results of tournaments (e.g.: to an external website)."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.PUBLISH_RESULTS in self.allowed_actions
 
     @property
-    def can_publish_rules(
-        self,
-    ) -> bool:
+    def can_publish_rules(self) -> bool:
         """Returns true if the client can publish the rules or tournaments (e.g.: to an external website)."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.PUBLISH_RULES in self.allowed_actions
 
     @property
-    def can_download_fees(
-        self,
-    ) -> bool:
+    def can_download_fees(self) -> bool:
         """Returns true if the client can download the fees of tournaments (e.g.: from an external website)."""
-        return self._has_event_role(
-            [
-                Role.ORGANIZER,
-                Role.DEPUTY_CHIEF_ARBITER,
-            ]
-        )
+        return AuthAction.DOWNLOAD_FEES in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Players
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_players_tab(
-        self,
-    ) -> bool:
+    def can_view_players_tab(self) -> bool:
         """Returns true if the client can access the Players tab."""
-        return self._has_event_role(
-            [
-                Role.SECTOR_ARBITER,
-                Role.PAIRINGS_OFFICER,
-            ],
-        )
+        return AuthAction.VIEW_PLAYERS_TAB in self.allowed_actions
 
     @property
-    def can_add_player(
-        self,
-    ) -> bool:
+    def can_add_player(self) -> bool:
         """Returns true if the client can add a player to the event
         (it may be impossible, e.g. the tournament is finished)."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.ADD_PLAYERS in self.allowed_actions
 
     @property
-    def can_update_players(
-        self,
-    ) -> bool:
+    def can_update_players(self) -> bool:
         """Returns true if the client can update the players
         (including with local or remote databases)."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.UPDATE_PLAYERS in self.allowed_actions
 
     @property
-    def can_update_players_history_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_update_players_history_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         update the players' history (byes) of the tournaments.
         See also can_set_xxx_point_bye_by_tournament_id()."""
-        return self._allowed_for_roles_by_tournament_id(
-            [
-                Role.CHECK_IN_OFFICER,
-                Role.PAIRINGS_OFFICER,
-            ],
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.UPDATE_PLAYERS_HISTORY)
 
     @property
-    def can_delete_players(
-        self,
-    ) -> bool:
+    def can_delete_players(self) -> bool:
         """Returns true if the client can delete players of the event
         (it may be impossible, e.g. if they have no game)."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.DELETE_PLAYERS in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Check-in
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_open_close_check_in(
-        self,
-    ) -> bool:
+    def can_open_close_check_in(self) -> bool:
         """Returns true if the client can open and close the check-in."""
-        return self._has_event_role(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return AuthAction.OPEN_CLOSE_CHECK_IN in self.allowed_actions
 
     @property
-    def can_check_in_players_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_check_in_players_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
-        update the players' history (byes) of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(Role.CHECK_IN_OFFICER)
+        check in players of the tournaments."""
+        return self.action_allowed_by_tournament_id(AuthAction.CHECK_IN_PLAYERS)
 
     # ---------------------------------------------------------------------------------
     # Pairings
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_pairings_tab(
-        self,
-    ) -> bool:
+    def can_view_pairings_tab(self) -> bool:
         """Returns true if the client can access the Pairings tab."""
-        return self._has_event_role(
-            [
-                Role.SECTOR_ARBITER,
-                Role.PAIRINGS_OFFICER,
-            ],
-        )
+        return AuthAction.VIEW_PAIRINGS_TAB in self.allowed_actions
 
     @property
-    def can_use_pairing_engine_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_use_pairing_engine_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         use the pairing engine for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.USE_PAIRING_ENGINE)
 
     @property
-    def can_manually_pair_players_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_manually_pair_players_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         use manually pair players of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.MANUALLY_PAIR_PLAYERS)
 
     @property
-    def can_unpair_round_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_unpair_round_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         unpair all the boards of a round for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.UNPAIR_ROUND)
 
     @property
-    def can_unpair_board_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_unpair_board_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         (manually) unpair boards for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.UNPAIR_BOARD)
 
     @property
-    def can_permute_board_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_permute_board_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         permute paired players for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.PERMUTE_BOARD)
 
     @property
-    def can_set_current_round_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_set_current_round_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
-        unpair all the boards for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        set the current round for the tournaments."""
+        return self.action_allowed_by_tournament_id(AuthAction.SET_CURRENT_ROUND)
 
     @property
-    def can_set_zero_point_bye_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_set_zero_point_bye_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         set HPB to players of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            [
-                Role.PAIRINGS_OFFICER,
-            ],
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.SET_ZPB)
 
     @property
-    def can_set_half_point_bye_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_set_half_point_bye_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         set HPB to players of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            [
-                Role.PAIRINGS_OFFICER,
-            ],
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.SET_HPB)
 
     @property
-    def can_set_full_point_bye_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_set_full_point_bye_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         set FPB to players of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            [
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.SET_FPB)
 
     @property
-    def can_view_draft_pairings_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_view_draft_pairings_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         view draft pairings of the tournaments (before they are published)."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.VIEW_DRAFT_PAIRINGS)
 
     @property
-    def can_publish_pairings_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_publish_pairings_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         publish pairings of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.PUBLISH_PAIRINGS)
 
     # ---------------------------------------------------------------------------------
     # Rankings
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_draft_rankings_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_view_draft_rankings_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         view draft rankings of the tournaments (before they are published)."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.VIEW_DRAFT_RANKINGS)
 
     @property
-    def can_publish_rankings_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_publish_rankings_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         publish rankings of the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.PAIRINGS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.PUBLISH_RANKINGS)
 
     # ---------------------------------------------------------------------------------
     # Results
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_enter_results_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_enter_results_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         enter results for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.RESULTS_OFFICER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.ENTER_RESULTS)
 
     @property
-    def can_update_results_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_update_results_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         update previously entered results for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.SECTOR_ARBITER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.UPDATE_RESULTS)
 
     @property
-    def can_set_special_results_by_tournament_id(
-        self,
-    ) -> dict[int, bool]:
+    def can_set_special_results_by_tournament_id(self) -> dict[int, bool]:
         """Returns a dict indicating if the client can
         set special results (such as 0.0-0.5) for the tournaments."""
-        return self._allowed_for_roles_by_tournament_id(
-            Role.DEPUTY_CHIEF_ARBITER,
-        )
+        return self.action_allowed_by_tournament_id(AuthAction.SET_SPECIAL_RESULTS)
 
     # ---------------------------------------------------------------------------------
     # Screens
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_manage_screens(
-        self,
-    ) -> bool:
+    def can_manage_screens(self) -> bool:
         """Returns true if the client can manage the screens of the event."""
-        return self._has_event_role(
-            [
-                Role.DISPLAY_MANAGER,
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.MANAGE_SCREENS in self.allowed_actions
 
     @property
-    def can_view_private_screens(
-        self,
-    ) -> bool:
+    def can_view_private_screens(self) -> bool:
         """Returns true if the client can view private screens."""
-        return self._has_event_role(
-            [
-                Role.DISPLAY_MANAGER,
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.VIEW_PRIVATE_SCREENS in self.allowed_actions
 
     @property
-    def can_view_public_screens(
-        self,
-    ) -> bool:
+    def can_view_public_screens(self) -> bool:
         """Returns true if the client can view public screens."""
-        return self._has_event_role(
-            Role.SPECTATOR,
-        )
-
-    def __repr__(self) -> str:
-        return f'{self.__class__}(account={self.account}, device={self.device}, host={self.host}, permissions={self.permissions_by_role})'
+        return AuthAction.VIEW_PUBLIC_SCREENS in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Prizes
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_prizes_tab(
-        self,
-    ) -> bool:
+    def can_view_prizes_tab(self) -> bool:
         """Returns true if the client can access the Prizes tab."""
-        return self._has_event_role(
-            [
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.VIEW_PRIZES_TAB in self.allowed_actions
 
     @property
-    def can_manage_prizes(
-        self,
-    ) -> bool:
+    def can_manage_prizes(self) -> bool:
         """Returns a dict indicating if the client can
         manage the prizes."""
-        return self._has_event_role(
-            [
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.MANAGE_PRIZES in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Print
@@ -893,12 +510,6 @@ class Client:
     #  on a per-tournament basis but this needs an important
     #  work on the print modal.
     @property
-    def can_print(
-        self,
-    ) -> bool:
+    def can_print(self) -> bool:
         """Returns true if the client can access the Prizes tab."""
-        return self._has_event_role(
-            [
-                Role.DEPUTY_CHIEF_ARBITER,
-            ],
-        )
+        return AuthAction.PRINT in self.allowed_actions
