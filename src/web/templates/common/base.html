@@ -4,14 +4,14 @@
     <head>
         {% if not request.htmx %}
             <title>{% block title %}Sharly Chess{% endblock %}</title>
-            <link rel="shortcut icon" type="image/png" href="{{ url_for('static', file_path='/images/sharly-chess.ico') }}"/>
+            <link rel="shortcut icon" type="image/png" href="{{ url_for('static', file_path='/images/sharly-chess.ico') }}?version={{ sharly_chess_config.version }}"/>
             {# https://github.com/twbs/bootstrap/releases #}
             <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ sharly_chess_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
             {# https://github.com/twbs/icons/releases #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-' ~ sharly_chess_config.bootstrap_icons_version ~ '/font/bootstrap-icons.min.css') }}">
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/user.css') }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/admin.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/user.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/admin.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
             {# https://jquery.com/download/ #}
             <script src="{{ url_for('static', file_path='/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~ '.min.js') }}"></script>
             {# https://unpkg.com/browse/htmx.org@<htmx_version>/dist/ #}
@@ -23,16 +23,16 @@
             <script src="{{ url_for('static', file_path='/lib/htmx/sse-' ~ sharly_chess_config.htmx_sse_version ~ '/sse.js') }}"></script>
             {# https://github.com/SortableJS/Sortable #}
             <script src="{{ url_for('static', file_path='/lib/Sortable/Sortable-' ~ sharly_chess_config.sortable_version ~ '/Sortable.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}?version={{ sharly_chess_config.version }}"></script>
             {# https://github.com/vakata/jstree #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ sharly_chess_config.jstree_version ~ '/dist/themes/default/style.min.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ sharly_chess_config.jstree_version ~ '/dist/jstree.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ sharly_chess_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}?version={{ sharly_chess_config.version }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}?version={{ sharly_chess_config.version }}"></script>
             {# https://github.com/apalfrey/select2-bootstrap-5-theme #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/css/select2.min.css') }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/dark-bootstrap-5.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/dark-bootstrap-5.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/bootstrap-5-' ~ sharly_chess_config.select2_bootstrap_theme_version ~ '.min.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/js/select2.full.min.js') }}"></script>
             <script>
