@@ -852,7 +852,7 @@ with_indicator: display a loading indicator, optional
     doc_ref
 ) %}
     <h5 class="d-flex align-items-center gap-2 py-0 my-0 text-primary">
-        {{ macros.doc_icon(doc_ref, 'fs-5') }}
+        {% if doc_ref %}{{ macros.doc_icon(doc_ref, 'fs-5') }}{% endif %}
         {{ title }}
     </h5>
 {% endmacro %}
