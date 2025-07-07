@@ -1,3 +1,4 @@
+from argon2 import PasswordHasher
 from data.loader import EventLoader
 import pytest
 from playwright.sync_api import Browser, Page, expect
@@ -39,6 +40,8 @@ class BaseRoleTest:
         cls.delete_user(cls)
 
     def create_user(self, permissions: dict[Role, str | None]):
+        ph = PasswordHasher()
+        password_hash = ph.hash('test-password')
         with EventDatabase(PUBLIC_EVENT_ID, write=True) as db:
             db.create_custom_exec_mode_objects()
             db.commit()
@@ -49,7 +52,7 @@ class BaseRoleTest:
                     edit_permissions=True,
                     active=True,
                     username='test-account',
-                    password='test-password',
+                    password_hash=password_hash,
                     permissions=permissions,
                 )
             )

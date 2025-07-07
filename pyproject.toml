@@ -21,6 +21,9 @@ dependencies = [
   "XlsxWriter ~= 3.2.2",
   "aioodbc ~= 0.5.0",
   "apluggy ~= 1.1.0",
+  # Latests compatible version should always be preferred due to security reasons
+  # This can be pinned later due to security concerns
+  "argon2-cffi",
   "babel ~= 2.16.0",
   "chardet ~= 5.2.0",
   "colorama ~= 0.4.6",

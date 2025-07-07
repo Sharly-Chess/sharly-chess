@@ -885,9 +885,6 @@ class Event:
                 account.username,
             ),
         )
-        return sorted(
-            self.accounts_by_id.values(), key=lambda account: account.username or ''
-        )
 
     @property
     def anonymous_account(self) -> Account:

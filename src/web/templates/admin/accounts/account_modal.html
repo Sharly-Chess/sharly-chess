@@ -52,10 +52,15 @@
                                 ) }}
                             </div>
                             <div class="col-12 col-md-6 mb-3">
+                            {% if action in ['create', 'clone'] %}
+                            {% set password_message = _('The password, used to authenticate. It is impossible to see the password once set, but it can be overwritten if necessary.') %}
+                            {% elif action == 'update' %}
+                            {% set password_message = _('New password. Leave blank for no change.')%}
+                            {% endif %}
                                 {{ admin_macros.password_input(
                                     name='password',
                                     label=_('Password:'),
-                                    help_text=_('The password, used to authenticate.'),
+                                    help_text=password_message,
                                     data=data, errors=errors
                                 ) }}
                             </div>

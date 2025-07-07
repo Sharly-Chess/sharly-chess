@@ -277,7 +277,7 @@ ANONYMOUS_ID: int = 1
 @dataclass
 class StoredAccount(StoredAccess):
     username: str | None
-    password: str | None
+    password_hash: str | None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
     # Accounts are stored at event-level, method anonymous_stored_account()
@@ -293,7 +293,7 @@ class StoredAccount(StoredAccess):
             active=True,
             permissions={},
             username=None,
-            password=None,
+            password_hash=None,
         )
 
 
