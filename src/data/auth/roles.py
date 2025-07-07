@@ -65,6 +65,7 @@ class Role(IdentifiableEntity, ABC):
         return actions
 
     @classmethod
+    @cache
     def _sub_role_types(cls) -> set[type['Role']]:
         sub_role_types: set[type['Role']] = set(cls.direct_sub_roles())
         for direct_sub_role_type in cls.direct_sub_roles():
@@ -239,7 +240,7 @@ class SectorArbiterRole(Role):
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
         return [
-            DeputyChiefArbiterRole,
+            CheckInOfficerRole,
             ResultOfficerRole,
         ]
 

@@ -1,0 +1,17 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Deletion of device [%(ip)s]', ip=admin_device.ip) }}
+{% endblock %}
+
+{% block delete_warning %}
+    {{ _('Warning: the deletion of a device is permanent!') }}
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-device-delete',
+        event_uniq_id=admin_event.uniq_id,
+        device_id=admin_device.id,
+    ) }}
+{% endblock %}

@@ -222,8 +222,6 @@ class StoredDisplayController:
 @dataclass
 class StoredAccess(ABC):
     id: int | None
-    edit_properties: bool
-    edit_permissions: bool
     active: bool
     roles: list[str]
     tournament_ids: list[int] | None
@@ -232,14 +230,12 @@ class StoredAccess(ABC):
 @dataclass
 class StoredDevice(StoredAccess):
     ip: str | None
-    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 @dataclass
 class StoredAccount(StoredAccess):
     username: str | None
     password_hash: str | None
-    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 DEFAULT_HIDE_BACKGROUND_IMAGE: bool = False

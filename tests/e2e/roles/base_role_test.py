@@ -13,8 +13,7 @@ class BaseRoleTest:
     @pytest.fixture(scope='class', autouse=True)
     def auth_page(self, request, lan_page: Page, browser: Browser):
         cls = request.cls  # the actual test class instance
-
-        cls.create_user(cls, cls.get_permissions(cls))
+        cls.create_user(cls, cls.get_roles(cls), cls.get_tournament_ids(cls))
         cls.do_login(cls, lan_page)
 
         # Store the auth state a tmp file
@@ -39,7 +38,9 @@ class BaseRoleTest:
         auth_context.close()
         cls.delete_user(cls)
 
-    def create_user(self, permissions: dict[Role, str | None]):
+    def create_user(
+        self, role_types: list[type[Role]], tournament_ids: list[int] | None = None
+    ):
         ph = PasswordHasher()
         password_hash = ph.hash('test-password')
         with EventDatabase(PUBLIC_EVENT_ID, write=True) as db:
@@ -48,12 +49,11 @@ class BaseRoleTest:
             self.account = db.add_stored_account(
                 StoredAccount(
                     id=None,
-                    edit_properties=True,
-                    edit_permissions=True,
                     active=True,
                     username='test-account',
                     password_hash=password_hash,
-                    permissions=permissions,
+                    roles=[type_.static_id() for type_ in role_types],
+                    tournament_ids=tournament_ids,
                 )
             )
             db.commit()
@@ -74,6 +74,10 @@ class BaseRoleTest:
         button.click()
         expect(lan_page.get_by_text('Account: test-account')).to_be_visible()
 
-    def get_permissions(self) -> dict[Role, str | None]:
-        """Override this in subclasses to specify the role to test."""
+    def get_roles(self) -> list[type[Role]]:
+        """Override this in subclasses to specify the roles to test."""
         raise NotImplementedError
+
+    def get_tournament_ids(self) -> list[int] | None:
+        """Override this in subclasses to specify the tournaments to restrict the account to."""
+        return None

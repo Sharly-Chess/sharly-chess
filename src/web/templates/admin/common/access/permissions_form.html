@@ -1,0 +1,37 @@
+<h4>
+    {{ _('Permissions') }}
+</h4>
+<div class="row mb-3">
+    {{ admin_macros.select_input(
+        name='roles',
+        label=_('%(string)s:', string=_('Roles')),
+        help_text=(
+            _('The roles to attribute to this device.')
+            if usage == 'device' else
+            _('The roles to attribute to this account.')
+        ),
+        select_options=role_options,
+        multiple_select=true,
+        placeholder=_('Choose at least one role.'),
+        data=data, errors=errors
+    ) }}
+</div>
+<div class="row mb-3">
+    {{ admin_macros.select_input(
+        name='tournament_ids',
+        label=_('%(string)s:', string=_('Tournaments')),
+        help_text=(
+            _(
+                'The tournaments on which the device can act '
+                '(if none, the device can act on all the tournaments).'
+            ) if usage == 'device' else _(
+                'The tournaments on which the account can act '
+                '(if none, the account can act on all the tournaments).'
+            )
+        ),
+        select_options=tournament_options,
+        multiple_select=true,
+        placeholder=_('Choose one, many or no tournaments.'),
+        data=data, errors=errors
+    ) }}
+</div>

@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from common.i18n import _
 from data.auth.managers import RoleManager
@@ -14,36 +14,38 @@ class AuthEntity[T: StoredAccess](ABC):
     """An abstract access entity."""
 
     def __init__(self, stored_access: T):
-        self.stored_access = stored_access
+        self._stored_access = stored_access
 
     @property
     def id(self) -> int:
-        assert self.stored_access.id is not None
-        return self.stored_access.id
+        assert self._stored_access.id is not None
+        return self._stored_access.id
 
     @property
+    @abstractmethod
     def edit_properties(self) -> bool:
         """Returns False if the device is locked (can not be updated or deleted)."""
-        return self.stored_access.edit_properties
 
     @property
+    @abstractmethod
     def edit_permissions(self) -> bool:
         """Returns True if the permissions of the device can be updated."""
-        return self.stored_access.edit_permissions
 
     @property
     def active(self) -> bool:
-        return self.stored_access.active
+        return self._stored_access.active
 
     @property
     def roles(self) -> list[Role]:
-        return [RoleManager.get_object(role_id) for role_id in self.stored_access.roles]
+        return [
+            RoleManager.get_object(role_id) for role_id in self._stored_access.roles
+        ]
 
     @property
     def tournament_ids(self) -> set[int] | None:
-        if self.stored_access.tournament_ids is None:
+        if self._stored_access.tournament_ids is None:
             return None
-        return set(self.stored_access.tournament_ids)
+        return set(self._stored_access.tournament_ids)
 
 
 class Device(AuthEntity[StoredDevice]):
@@ -58,6 +60,14 @@ class Device(AuthEntity[StoredDevice]):
     def __init__(self, stored_device: StoredDevice):
         super().__init__(stored_device)
         self.stored_device = stored_device
+
+    @property
+    def edit_properties(self) -> bool:
+        return not self.localhost and not self.unknown
+
+    @property
+    def edit_permissions(self) -> bool:
+        return not self.localhost
 
     @classmethod
     def host_is_localhost(cls, host: str) -> bool:
@@ -105,8 +115,6 @@ class Device(AuthEntity[StoredDevice]):
         return cls(
             StoredDevice(
                 id=cls.LOCALHOST_ID,
-                edit_properties=False,
-                edit_permissions=False,
                 active=True,
                 roles=[AdministratorRole.static_id()],
                 tournament_ids=None,
@@ -119,8 +127,6 @@ class Device(AuthEntity[StoredDevice]):
         return cls(
             StoredDevice(
                 id=cls.ANY_DEVICE_ID,
-                edit_properties=False,
-                edit_permissions=True,
                 active=True,
                 roles=[],
                 tournament_ids=None,
@@ -138,6 +144,14 @@ class Account(AuthEntity[StoredAccount]):
     def __init__(self, stored_account: StoredAccount):
         super().__init__(stored_account)
         self.stored_account = stored_account
+
+    @property
+    def edit_properties(self) -> bool:
+        return not self.anonymous
+
+    @property
+    def edit_permissions(self) -> bool:
+        return True
 
     @property
     def anonymous(self) -> bool:
@@ -168,8 +182,6 @@ class Account(AuthEntity[StoredAccount]):
         return cls(
             StoredAccount(
                 id=cls.ANONYMOUS_ID,
-                edit_properties=False,
-                edit_permissions=True,
                 active=True,
                 roles=[],
                 tournament_ids=None,

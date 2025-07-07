@@ -19,7 +19,6 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.auth.exec_mode import ExecMode
 from data.board import Board
 from data.result import Result as DataResult
-from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -875,13 +874,6 @@ class EventDatabase(MigrationDatabase):
         """Serializes the timer delays into JSON.
         By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
         return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
-
-    @classmethod
-    def dump_to_json_database_permissions(
-        cls, permissions: dict[int, str | None]
-    ) -> str:
-        """Serializes the permissions into JSON."""
-        return cls.dump_to_json_database_field(permissions) or '{}'
 
     # ---------------------------------------------------------------------------------
     # Plugin metadata
@@ -2844,13 +2836,11 @@ class EventDatabase(MigrationDatabase):
         return StoredDevice(
             id=row['id'],
             active=cls.load_bool_from_database_field(row['active']),
-            edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
-            edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
             ip=row['ip'],
-            permissions=cls.set_dict_int_keys(
-                cls.load_json_from_database_field(row['permissions'])
-            )
-            or {},
+            roles=cls.load_json_from_database_field(row['roles'], []),
+            tournament_ids=cls.load_json_from_database_field(
+                row['tournament_ids'], None
+            ),
         )
 
     def get_stored_device(self, device_id: int) -> StoredDevice | None:
@@ -2871,36 +2861,33 @@ class EventDatabase(MigrationDatabase):
         yield from map(self._row_to_stored_device, self.fetchall())
 
     def _write_stored_device(
-        self,
-        stored_device: StoredDevice,
+        self, stored_device: StoredDevice, insert_id: bool = False
     ) -> StoredDevice:
-        fields: list[str] = [
-            'active',
-            'ip',
-            'permissions',
-        ]
-        params: list = [
-            stored_device.active,
-            stored_device.ip,
-            self.dump_to_json_database_permissions(stored_device.permissions),
-        ]
+        fields = self._get_fields_dict(stored_device, ['active', 'ip']) | {
+            'roles': self.dump_to_json_database_field(stored_device.roles),
+            'tournament_ids': self.dump_to_json_database_field(
+                stored_device.tournament_ids
+            ),
+        }
         fetched_stored_device: StoredDevice | None
-        if stored_device.id is None:
-            protected_fields: list[str] = [f'`{f}`' for f in fields]
+        if stored_device.id is None or insert_id:
+            if insert_id:
+                fields |= {'id': stored_device.id}
+            fields_str = ', '.join(f'`{field}`' for field in fields)
+            values_str = ', '.join(['?'] * len(fields))
             self.execute(
-                f'INSERT INTO `device`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params),
+                f'INSERT INTO `device`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
             )
             device_id: int | None = self._last_inserted_id()
             if device_id is None:
                 raise RuntimeError('Device insertion failed')
             fetched_stored_device = self.get_stored_device(device_id=device_id)
         else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_device.id]
+            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
             self.execute(
-                f'UPDATE `device` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params),
+                f'UPDATE `device` SET {field_sets} WHERE `id` = ?',
+                tuple(fields.values()) + (stored_device.id,),
             )
             fetched_stored_device = self.get_stored_device(device_id=stored_device.id)
         if fetched_stored_device is None:
@@ -2908,10 +2895,7 @@ class EventDatabase(MigrationDatabase):
         self.set_last_update()
         return fetched_stored_device
 
-    def add_stored_device(
-        self,
-        stored_device: StoredDevice,
-    ) -> StoredDevice:
+    def add_stored_device(self, stored_device: StoredDevice) -> StoredDevice:
         assert stored_device.id is None, f'stored_device.id={stored_device.id}'
         return self._write_stored_device(stored_device)
 
@@ -2935,14 +2919,12 @@ class EventDatabase(MigrationDatabase):
         return StoredAccount(
             id=row['id'],
             active=cls.load_bool_from_database_field(row['active']),
-            edit_properties=cls.load_bool_from_database_field(row['edit_properties']),
-            edit_permissions=cls.load_bool_from_database_field(row['edit_permissions']),
             username=row['username'],
             password_hash=row['password_hash'],
-            permissions=cls.set_dict_int_keys(
-                cls.load_json_from_database_field(row['permissions'])
-            )
-            or {},
+            roles=cls.load_json_from_database_field(row['roles'], []),
+            tournament_ids=cls.load_json_from_database_field(
+                row['tournament_ids'], None
+            ),
         )
 
     def get_stored_account(self, account_id: int) -> StoredAccount | None:
@@ -2963,50 +2945,35 @@ class EventDatabase(MigrationDatabase):
         yield from map(self._row_to_stored_account, self.fetchall())
 
     def _write_stored_account(
-        self,
-        stored_account: StoredAccount,
+        self, stored_account: StoredAccount, insert_id: bool = False
     ) -> StoredAccount:
-        if stored_account.password_hash is not None:
-            fields: list[str] = [
-                'active',
-                'username',
-                'password_hash',
-                'permissions',
-            ]
-            params: list = [
-                stored_account.active,
-                stored_account.username,
-                stored_account.password_hash,
-                self.dump_to_json_database_permissions(stored_account.permissions),
-            ]
-        else:
-            fields: list[str] = [
-                'active',
-                'username',
-                'permissions',
-            ]
-            params: list = [
-                stored_account.active,
-                stored_account.username,
-                self.dump_to_json_database_permissions(stored_account.permissions),
-            ]
+        fields = self._get_fields_dict(
+            stored_account, ['active', 'username', 'password_hash']
+        ) | {
+            'roles': self.dump_to_json_database_field(stored_account.roles),
+            'tournament_ids': self.dump_to_json_database_field(
+                stored_account.tournament_ids
+            ),
+        }
         fetched_stored_account: StoredAccount | None
-        if stored_account.id is None:
-            protected_fields: list[str] = [f'`{f}`' for f in fields]
+        if stored_account.id is None or insert_id:
+            if insert_id:
+                fields |= {'id': stored_account.id}
+            fields_str = ', '.join(f'`{field}`' for field in fields)
+            values_str = ', '.join(['?'] * len(fields))
             self.execute(
-                f'INSERT INTO `account`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params),
+                f'INSERT INTO `account`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
             )
             account_id: int | None = self._last_inserted_id()
             if account_id is None:
                 raise RuntimeError('Account insertion failed')
             fetched_stored_account = self.get_stored_account(account_id=account_id)
         else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_account.id]
+            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
             self.execute(
-                f'UPDATE `account` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params),
+                f'UPDATE `account` SET {field_sets} WHERE `id` = ?',
+                tuple(fields.values()) + (stored_account.id,),
             )
             fetched_stored_account = self.get_stored_account(
                 account_id=stored_account.id
@@ -3016,17 +2983,11 @@ class EventDatabase(MigrationDatabase):
         self.set_last_update()
         return fetched_stored_account
 
-    def add_stored_account(
-        self,
-        stored_account: StoredAccount,
-    ) -> StoredAccount:
+    def add_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         assert stored_account.id is None, f'{stored_account.id=}'
         return self._write_stored_account(stored_account)
 
-    def update_stored_account(
-        self,
-        stored_account: StoredAccount,
-    ) -> StoredAccount:
+    def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         assert stored_account.id is not None
         return self._write_stored_account(stored_account)
 
@@ -3040,31 +3001,6 @@ class EventDatabase(MigrationDatabase):
         before doing an action on the fake permissions used from the
         creation of the object."""
         for device in ExecMode.CUSTOM.predefined_devices:
-            self.database.execute(
-                'INSERT INTO `device`(`id`, `edit_properties`, `edit_permissions`, `active`, `ip`, `permissions`) VALUES (?, ?, ?, ?, ?, ?)',
-                (
-                    device.id,
-                    device.edit_properties,
-                    device.edit_permissions,
-                    device.active,
-                    device.ip,
-                    SQLiteDatabase.dump_to_json_database_field(
-                        device.permissions_by_role
-                    ),
-                ),
-            )
+            self._write_stored_device(device.stored_device, insert_id=True)
         for account in ExecMode.CUSTOM.predefined_accounts:
-            self.database.execute(
-                'INSERT INTO `account`(`id`, `edit_properties`, `edit_permissions`, `active`, `username`, `password_hash`, `permissions`) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (
-                    account.id,
-                    account.edit_properties,
-                    account.edit_permissions,
-                    account.active,
-                    account.username,
-                    account.password_hash,
-                    SQLiteDatabase.dump_to_json_database_field(
-                        account.permissions_by_role
-                    ),
-                ),
-            )
+            self._write_stored_account(account.stored_account, insert_id=True)

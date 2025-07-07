@@ -1182,5 +1182,5 @@ class PointValueType(Enum):
 class FormAction(StrEnum):
     UPDATE = 'update'
     CREATE = 'create'
-    DUPLICATE = 'duplicate'
+    CLONE = 'clone'
     DELETE = 'delete'

@@ -134,6 +134,7 @@ class Client:
         return actions
 
     def action_allowed_by_tournament_id(self, action: AuthAction) -> dict[int, bool]:
+        assert self.event is not None
         return {
             tournament_id: self._action_allowed_for_tournament(action, tournament_id)
             for tournament_id in self.event.tournaments_by_id

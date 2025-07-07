@@ -37,6 +37,9 @@ class IdentifiableEntity(ABC):
             return NotImplemented
         return self.id == other.id
 
+    def __hash__(self):
+        return hash(self.id)
+
 
 class EntityManager[T: IdentifiableEntity](ABC):
     @staticmethod
