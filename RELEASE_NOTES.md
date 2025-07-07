@@ -12,6 +12,7 @@ English version below
 - Passage d'une barre de navigation horizontale à une barre latérale (2.8.0)
 - Simplification de la page d'accueil et ajout d'un QR code pour faciliter la connexion des clients (2.8.0)
 - Ajout de boutons « Créer et ajouter à nouveau » pour réduire nombre de clics lors de la création d'objets (2.8.0)
+- Rechargement des ressources statiques après les mises à jour (2.8.1)
 
 ### Gestion des joueur·euses
 
@@ -26,6 +27,7 @@ English version below
 - Support officiel du moteur interne d'appariement (_bbpPairings_) (2.8.0)
 - Génération d'appariements complémentaires (2.8.0)
 - Exécution des opérations non-sécurisées lors du passage en mode non-sécurisé (2.8.0)
+- Correction de la navigation entre les rondes (2.8.1)
 
 ### Gestion des écrans
 
@@ -58,6 +60,7 @@ English version below
 - Switch from a top navbar to a side navbar (2.8.0)
 - Simplified the home page and added a QR code to ease the connection of devices (2.8.0)
 - 'Create and add another' buttons added to reduce click count when creating objects (2.8.0)
+- Reload static resources after upgrading (2.8.1)
 
 # Players management
 
@@ -72,6 +75,7 @@ English version below
 - Official support for the internal pairing engine (_bbpPairings_) (2.8.0)
 - Complementary pairings generation (2.8.0)
 - Unsafe operations execution when switching to unsafe mode (2.8.0)
+- Fixed navigation between rounds (2.8.1)
 
 ### Screens management
 

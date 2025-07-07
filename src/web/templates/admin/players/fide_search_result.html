@@ -2,7 +2,7 @@
 
 <img
     class="player-federation-flag pe-1"
-    src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+    src="{{ macros.federation_flag_url(player.federation) }}"
 />
 {{ player.fide_id }}
 <span class="fw-bold">
