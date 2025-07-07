@@ -2,7 +2,7 @@
     <span {{ macros.tooltip_attributes('info', _('First round'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}"
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"

@@ -38,7 +38,7 @@
                             <span>
                                 <img
                                     class="player-federation-flag pe-1"
-                                    src="{{ url_for('static', file_path='/images/federations/' ~ federation ~ '.svg') }}"
+                                    src="{{ macros.federation_flag_url(federation) }}"
                                 />
                                 ({{ admin_event.federation_counts[federation] }})
                             </span>
