@@ -47,7 +47,7 @@ English version below
 
 ## FFE
 
-- Correction de la mise à jour manuelle vers le site FFE (2.8.2)
+- Correction du téléversement manuel des résultats (2.8.2)
 
 ---
 
@@ -99,4 +99,4 @@ English version below
 
 ## FFE
 
-- Fixed the manual FFE button (2.8.2)
+- Fixed the manual results upload (2.8.2)
