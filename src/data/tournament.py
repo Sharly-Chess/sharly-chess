@@ -1271,8 +1271,9 @@ class Tournament:
                 )
             )
             event_database.commit()
-        self.players_by_id[board.white_player.id].pairings[round_].result = result
-        self.players_by_id[board.black_player.id].pairings[round_].result = result
+        board.white_pairing.stored_pairing.result = result.value
+        assert board.black_pairing is not None
+        board.black_pairing.stored_pairing.result = result.value
         self.clear_cache()
         board.white_player.clear_cache()
         board.black_player.clear_cache()
