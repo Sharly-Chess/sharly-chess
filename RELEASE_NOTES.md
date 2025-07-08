@@ -45,6 +45,10 @@ English version below
   - Liste des prix
   - Attribution des prix
 
+## FFE
+
+- Correction de la mise à jour du bouton de téléchargement vers le site FFE (2.8.2)
+
 ---
 
 # English
@@ -92,3 +96,7 @@ English version below
   - Round performance indicators
   - Prize list
   - Prize assignment
+
+## FFE
+
+- Fixed the update of the FFE upload button (2.8.2)
