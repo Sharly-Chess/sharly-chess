@@ -46,6 +46,10 @@ English version below
   - Liste des prix
   - Attribution des prix
 
+## FFE
+
+- Correction du téléversement manuel des résultats (2.8.2)
+
 ---
 
 # English
@@ -94,3 +98,7 @@ English version below
   - Round performance indicators
   - Prize list
   - Prize assignment
+
+## FFE
+
+- Fixed the manual results upload (2.8.2)

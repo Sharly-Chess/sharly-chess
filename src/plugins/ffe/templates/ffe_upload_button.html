@@ -1,3 +1,5 @@
+{% import '/common/macros.j2' as macros with context %}
+
 <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Upload to the FFE'), 'right') }}>
     <button
         id="ffe-upload-button"

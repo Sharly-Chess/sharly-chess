@@ -10,7 +10,7 @@ from typing import override
 from packaging.version import Version
 
 from common import TMP_DIR
-from common.i18n import _
+from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -241,6 +241,10 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         2. Create a temp database
         3. Populate the temp database from the source file
         4. Copy the temp file to the correct file location"""
+
+        # Set the locale (called in a new thread)
+        set_locale(SharlyChessConfig().locale)
+
         self.__class__.is_updating = True
         self.publish_database_status_updated()
         if not NetworkMonitor.connected():
