@@ -72,12 +72,12 @@ class PrizesTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        TestUtils.create_event('test-prizes-event')
+        TestUtils.create_event_direct('test-prizes-event')
         cls.event = EventLoader().load_event('test-prizes-event')
 
     @classmethod
     def tearDownClass(cls):
-        TestUtils.delete_event('test-prizes-event')
+        TestUtils.delete_event_direct('test-prizes-event')
         super().tearDownClass()
 
     def setUp(self):
