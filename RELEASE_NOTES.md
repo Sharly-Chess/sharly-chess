@@ -32,6 +32,7 @@ English version below
 ### Gestion des écrans
 
 - Ajout de la possibilité de ne pas afficher les adversaires sur les écrans d'appariements par ordre alphabétique (2.8.0)
+- Correction de la suppression des résultats (2.8.2)
 
 ### Gestion des prix
 
@@ -80,6 +81,7 @@ English version below
 ### Screens management
 
 - Added the possibility not to show the opponents on pairings screens by alphabetical order (2.8.0)
+- Fixed deletion of results (2.8.2)
 
 ### Prizes management
 
