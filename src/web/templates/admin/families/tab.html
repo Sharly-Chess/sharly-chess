@@ -52,18 +52,20 @@
                 'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people-fill', 'tooltip_text': _('Add a family of screens to display the pairings by alphabetical order.'), },
                 'ranking': { 'title': _('Ranking'), 'icon_class': 'bi-trophy', 'tooltip_text': _('Add a family of screens to display the ranking.'), },
             }.items() %}
-                <li
-                    class="dropdown-item text-start cursor-pointer"
-                    hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {{ macros.tooltip_attributes('info', family_data.tooltip_text, 'left') }}
-                >
-                    <i class="{{ family_data['icon_class'] }}"></i>
-                    {{ family_data['title'] }}
+                <li>
+                    <button
+                        class="dropdown-item text-start cursor-pointer"
+                        hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        preload
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        {{ macros.tooltip_attributes('info', family_data.tooltip_text, 'left') }}
+                    >
+                        <i class="{{ family_data['icon_class'] }}"></i>
+                        {{ family_data['title'] }}
+                    </button>
                 </li>
             {% endfor %}
         </ul>

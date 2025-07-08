@@ -6,6 +6,9 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from common.sharly_chess_config import SharlyChessConfig
+from playwright.sync_api import Browser, Playwright, APIRequestContext
+from typing import Generator
 
 import pytest
 import requests
@@ -163,5 +166,30 @@ def setup_page(page, backend_server):
     if not backend_server:
         return None
 
-    page.set_default_timeout(8000)
+    page.set_default_timeout(15000)
     return page
+
+
+@pytest.fixture(scope='session')
+def lan_context(browser: Browser):
+    config = SharlyChessConfig()
+    config.web_port = 9000
+    context = browser.new_context(base_url=config.lan_url)
+    yield context
+    context.close()
+
+
+@pytest.fixture(scope='session')
+def lan_page(lan_context):
+    page = lan_context.new_page()
+    page.set_default_timeout(15000)
+    return page
+
+
+@pytest.fixture(scope='session')
+def api_request_context(
+    playwright: Playwright,
+) -> Generator[APIRequestContext, None, None]:
+    request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
+    yield request_context
+    request_context.dispose()

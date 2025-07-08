@@ -25,13 +25,13 @@ class TieBreakTestCase(TestCase, ABC):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        database = TestUtils.create_event('test-tiebreaks-event')
+        database = TestUtils.create_event_direct('test-tiebreaks-event')
         database.populate(Path('../unit/test-event.yml'))
         cls.event = EventLoader().load_event('test-tiebreaks-event')
 
     @classmethod
     def tearDownClass(cls):
-        TestUtils.delete_event('test-tiebreaks-event')
+        TestUtils.delete_event_direct('test-tiebreaks-event')
         super().tearDownClass()
 
     @property
