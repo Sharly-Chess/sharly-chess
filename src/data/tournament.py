@@ -1257,11 +1257,11 @@ class Tournament:
         assert board.white_player is not None
         assert board.black_player is not None
         assert board.id is not None
+        round_ = self.current_round
+        result = Result.NO_RESULT
         with self.papi_write_database as papi_database:
             for player in (board.white_player, board.black_player):
-                papi_database.set_player_result(
-                    player.ref_id, self.current_round, Result.NO_RESULT, True
-                )
+                papi_database.set_player_result(player.ref_id, round_, result, True)
             papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             self.stored_tournament.last_result_update = (
@@ -1270,6 +1270,11 @@ class Tournament:
                 )
             )
             event_database.commit()
+        self.players_by_id[board.white_player.id].pairings[round_].result = result
+        self.players_by_id[board.black_player.id].pairings[round_].result = result
+        self.clear_cache()
+        board.white_player.clear_cache()
+        board.black_player.clear_cache()
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
