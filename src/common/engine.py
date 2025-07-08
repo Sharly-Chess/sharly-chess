@@ -98,7 +98,7 @@ class Engine(ABC):
                 ]:
                     break
                 raise ValueError(f'choice=[{choice}]')
-        if not EventLoader.get(request=None).event_uniq_ids:
+        if not EventLoader().event_uniq_ids and not TEST_ENV:
             logger.info(
                 'No event database found, looking for old event databases in the current release...'
             )
@@ -112,8 +112,8 @@ class Engine(ABC):
                 # rename the old event database with the new extension
                 file.rename(event_database.file)
                 # now load the new database
-                EventLoader.get(request=None).load_event(event_uniq_id)
-        if not EventLoader.get(request=None).event_uniq_ids:
+                EventLoader().load_event(event_uniq_id)
+        if not EventLoader().event_uniq_ids and not TEST_ENV:
             logger.info(
                 'Still no event database found, looking for previously installed releases of Sharly Chess...'
             )

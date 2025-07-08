@@ -348,7 +348,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_players_show_opponent: bool = True
 
     # The default delay between pages on rotators (in seconds).
-    default_rotator_delay: int = 15
+    default_rotator_delay: int = 1 if TEST_ENV else 15
 
     # The default text shown on timers before the start of a round.
     default_timer_round_text_before: str = 'Début de la ronde {} dans %s'
@@ -357,13 +357,13 @@ class SharlyChessConfig(metaclass=Singleton):
     default_timer_round_text_after: str = 'Ronde {} commencée depuis %s'
 
     # The delay before checking if the user index page has changed.
-    user_index_update_delay: int = 10
+    user_index_update_delay: int = 1 if TEST_ENV else 10
 
     # The delay before checking if a user event page has changed.
-    user_event_update_delay: int = 10
+    user_event_update_delay: int = 1 if TEST_ENV else 10
 
     # The delay before checking if a user screen page has changed.
-    user_screen_update_delay: int = 10
+    user_screen_update_delay: int = 1 if TEST_ENV else 10
 
     # The numbers of columns allowed on pages with grids.
     allowed_columns: list[int] = [1, 2, 3, 4, 6]

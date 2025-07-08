@@ -19,13 +19,13 @@ class PairingTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        database = TestUtils.create_event('test-pairings-event')
+        database = TestUtils.create_event_direct('test-pairings-event')
         database.populate(Path('../unit/test-event.yml'))
         cls.event = EventLoader().load_event('test-pairings-event')
 
     @classmethod
     def tearDownClass(cls):
-        TestUtils.delete_event('test-pairings-event')
+        TestUtils.delete_event_direct('test-pairings-event')
         super().tearDownClass()
 
     """Tests for all the pairing systems."""

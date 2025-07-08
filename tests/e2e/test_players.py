@@ -3,7 +3,7 @@ from data.event import Event
 from data.player import PlayerRating
 from database.sqlite.event.event_database import EventDatabase
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
 from utils.enum import PlayerGender, PlayerRatingType, PlayerTitle, TournamentRating
 
@@ -13,12 +13,12 @@ SCREEN_ID = 'test-screen'
 
 
 @pytest.fixture(scope='module', autouse=True)
-def setup():
-    TestUtils.create_event(EVENT_ID)
-    TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
+def setup(api_request_context: APIRequestContext):
+    TestUtils.create_event(api_request_context, EVENT_ID)
+    TestUtils.create_tournament(api_request_context, EVENT_ID, TOURNAMENT_ID)
     yield
 
-    TestUtils.delete_event(EVENT_ID)
+    TestUtils.delete_event(api_request_context, EVENT_ID)
 
 
 @pytest.mark.e2e

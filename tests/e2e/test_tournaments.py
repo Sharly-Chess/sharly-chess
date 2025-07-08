@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
 
 
@@ -9,8 +9,10 @@ TOURNAMENT_ID = 'test-tournament'
 
 @pytest.mark.e2e
 class TestTournamentFunctionality:
-    def test_create_and_delete_tournament(self, page: Page):
-        TestUtils.create_event(EVENT_ID)
+    def test_create_and_delete_tournament(
+        self, page: Page, api_request_context: APIRequestContext
+    ):
+        TestUtils.create_event(api_request_context, EVENT_ID)
         page.goto(f'/admin/event/{EVENT_ID}/tournaments')
         TestUtils.button_by_text(page, 'Create a tournament').click()
         modal = page.locator('.modal-dialog')
