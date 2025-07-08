@@ -1,6 +1,8 @@
 """Test configuration and utilities."""
 
 from plugins.manager import plugin_manager  # Noqa
+from common.sharly_chess_config import SharlyChessConfig
+from database.access.papi.papi_database import PapiDatabase
 from data.tournament import Tournament
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -82,6 +84,14 @@ class TestUtils:
         return database
 
     @staticmethod
+    def create_papi_file(name: str):
+        path = SharlyChessConfig.default_papi_path
+        path.mkdir(parents=True, exist_ok=True)
+        file_path = path / f'{name}.papi'
+        PapiDatabase(file_path).create_empty()
+        return file_path
+
+    @staticmethod
     def create_tournament(
         event_uniq_id: str, uniq_id: str, overrides: Optional[dict] = None
     ):
@@ -126,6 +136,10 @@ class TestUtils:
 
         # Merge overrides
         data = {**defaults, **overrides}
+
+        papi_path = TestUtils.create_papi_file(event_uniq_id)
+        data['filename'] = event_uniq_id
+
         stored_tournament = StoredTournament(**data)
 
         event_loader = EventLoader()
@@ -137,6 +151,7 @@ class TestUtils:
             ).update_papi_database_from_stored_tournament()
             event_database.commit()
         event_loader.clear_cache(event_uniq_id)
+        return papi_path
 
     @staticmethod
     def delete_event(uniq_id: str):

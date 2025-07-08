@@ -60,6 +60,7 @@
                     {% endif %}
                 >
                     <button
+                        data-testid="add-player-button"
                         class="btn btn-primary text-nowrap"
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"

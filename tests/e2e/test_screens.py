@@ -1,23 +1,25 @@
-"""End-to-end tests for events."""
-
 import pytest
 from playwright.sync_api import Page, expect
 from tests.test_config import TestUtils
 
 
+EVENT_ID = 'event-test-screen'
+TOURNAMENT_ID = 'tournament-test-screen'
+
+
 @pytest.fixture(scope='module', autouse=True)
 def setup():
-    TestUtils.create_event('event-test-screen')
-    TestUtils.create_tournament('event-test-screen', 'tournament-test-screen')
+    TestUtils.create_event(EVENT_ID)
+    TestUtils.create_tournament(EVENT_ID, 'tournament-test-screen')
     yield
 
-    TestUtils.delete_event('event-test-screen')
+    TestUtils.delete_event(EVENT_ID)
 
 
 @pytest.mark.e2e
 class TestScreensFunctionality:
     def test_create_and_delete_simple_screen(self, page: Page):
-        page.goto('/admin/event/event-test-screen/screens')
+        page.goto(f'/admin/event/{EVENT_ID}/screens')
         TestUtils.button_by_text(page, 'Create a screen').click()
         TestUtils.button_by_text(page, 'Results entry').click()
         modal = page.locator('.modal-dialog')
