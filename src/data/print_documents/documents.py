@@ -351,7 +351,7 @@ class BoardPrintDocument(PrintDocument, ABC):
         assert self.tournament is not None
         for player in self.tournament.players:
             self.tournament.set_player_points(player, before_round=self.at_round)
-        return self.tournament.build_boards(self.at_round)
+        return self.tournament.get_round_boards(self.at_round)
 
     @property
     def template_context(self) -> dict[str, Any]:

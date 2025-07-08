@@ -256,3 +256,12 @@
         hx-indicator="#please-wait"
     ></div>
 {% endmacro %}
+
+{% macro federation_flag_url(
+    federation
+)%}
+    {{ url_for(
+        'static',
+        file_path='/images/federations/' ~ federation ~ '.svg'
+    ) }}?version={{ sharly_chess_config.version }}
+{% endmacro %}

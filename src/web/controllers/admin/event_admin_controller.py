@@ -559,8 +559,8 @@ class EventAdminController(BaseEventAdminController):
             )
         return self._admin_event_config_render(
             request,
-            modal='print',
             event_uniq_id=event_uniq_id,
+            modal='print',
             data=data,
             errors=errors,
         )

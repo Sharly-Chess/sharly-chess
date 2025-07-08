@@ -11,7 +11,8 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import Player
+from data.player import Player, PlayerRating
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.manager import plugin_manager
@@ -26,13 +27,14 @@ class PlayerComparator(ABC):
         self,
         field_ids: list[str],
         player: Player,
-        match_player: Player | None = None,
+        match_stored_player: StoredPlayer | None = None,
     ):
         self.field_ids = field_ids
         self.player = player
-        if match_player:
-            match_player.tournament = player.tournament
-        self.match_player = match_player
+        self.match_player: Player | None = None
+        if match_stored_player:
+            match_stored_player.id = 0
+            self.match_player = Player(player.tournament, match_stored_player)
 
     @property
     @abstractmethod
@@ -73,6 +75,7 @@ class FidePlayerComparator(PlayerComparator):
             if field_id in self.field_ids:
                 src_rating = self.player.get_rating(tr)
                 match_rating = self.match_player.get_rating(tr)
+
                 if match_rating.value and src_rating != match_rating:
                     diff_field_ids.append(field_id)
         field_id: str = 'name'
@@ -114,41 +117,45 @@ class FidePlayerComparator(PlayerComparator):
     def update_player_from_match(self, field_ids: list[str]):
         if not self.match_player:
             return
+        stored_player = self.player.stored_player
+        match_stored_player = self.match_player.stored_player
+        updated_ratings: dict[TournamentRating, PlayerRating] = {}
         for tr in TournamentRating:
             field_id: str = f'rating_{tr.value}'
             if field_id in field_ids:
                 match_rating = self.match_player.get_rating(tr)
                 if match_rating.value:
-                    self.player.ratings[tr] = match_rating
+                    updated_ratings[tr] = match_rating
+        self.player.update_ratings(updated_ratings)
         field_id: str = 'name'
         if field_id in field_ids:
-            if (self.player.first_name, self.player.last_name) != (
-                self.match_player.first_name,
-                self.match_player.last_name,
+            if (stored_player.first_name, stored_player.last_name) != (
+                match_stored_player.first_name,
+                match_stored_player.last_name,
             ):
-                self.player.last_name = self.match_player.last_name
-                self.player.first_name = self.match_player.first_name
+                stored_player.last_name = match_stored_player.last_name
+                stored_player.first_name = match_stored_player.first_name
         field_id: str = 'federation'
         if field_id in field_ids:
-            if self.player.federation != self.match_player.federation:
-                self.player.federation = self.match_player.federation
+            if stored_player.federation != match_stored_player.federation:
+                stored_player.federation = match_stored_player.federation
         field_id: str = 'club'
         if field_id in field_ids:
-            if self.player.club != self.match_player.club:
-                self.player.club = self.match_player.club
+            if stored_player.club != match_stored_player.club:
+                stored_player.club = match_stored_player.club
         field_id: str = 'gender'
         if field_id in field_ids:
-            if self.player.gender != self.match_player.gender:
-                self.player.gender = self.match_player.gender
+            if stored_player.gender != match_stored_player.gender:
+                stored_player.gender = match_stored_player.gender
         field_id: str = 'date_of_birth'
         if field_id in field_ids:
             if self.match_date_differs():
-                self.player.date_of_birth = self.match_player.date_of_birth
+                stored_player.date_of_birth = match_stored_player.date_of_birth
         field_id: str = 'fide_id'
         if field_id in field_ids:
-            match_fide_id = self.match_player.fide_id
-            if match_fide_id and self.player.fide_id != match_fide_id:
-                self.player.fide_id = match_fide_id
+            match_fide_id = match_stored_player.fide_id
+            if match_fide_id and stored_player.fide_id != match_fide_id:
+                stored_player.fide_id = match_fide_id
 
 
 @dataclass
@@ -228,8 +235,8 @@ class DataSource(IdentifiableEntity, ABC):
     @staticmethod
     def create_player_comparators(
         players: list[Player],
-        match_players: list[Player],
-        match_condition: Callable[[Player, Player], bool],
+        match_stored_players: list[StoredPlayer],
+        match_condition: Callable[[StoredPlayer, StoredPlayer], bool],
         field_ids: list[str],
         diff_only: bool,
         comparator: type[PlayerComparator],
@@ -241,9 +248,9 @@ class DataSource(IdentifiableEntity, ABC):
                 player,
                 next(
                     (
-                        match_player
-                        for match_player in match_players
-                        if match_condition(player, match_player)
+                        match_stored_player
+                        for match_stored_player in match_stored_players
+                        if match_condition(player.stored_player, match_stored_player)
                     ),
                     None,
                 ),
@@ -275,53 +282,63 @@ class DataSource(IdentifiableEntity, ABC):
     @abstractmethod
     async def search_player(
         self, string: str, limit: int | None = None
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
 
     @abstractmethod
-    async def get_player_by_source_id(self, player_source_id: str) -> Player | None:
+    async def get_stored_player_by_source_id(
+        self, player_source_id: str
+    ) -> StoredPlayer | None:
         """Get a player by its identifier in the data source."""
 
     @abstractmethod
-    def get_player_source_id(self, player: Player) -> str:
+    def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         """Get the id of the player in the source formatted as a string."""
 
-    async def fetch_player(self, player_source_id: str) -> Player | None:
-        player = await self.get_player_by_source_id(player_source_id)
-        if player:
-            self._adjust_player_from_fide_database(player)
+    async def fetch_player(self, player_source_id: str) -> StoredPlayer | None:
+        stored_player = await self.get_stored_player_by_source_id(player_source_id)
+        if stored_player:
+            self._adjust_player_from_fide_database(stored_player)
             await plugin_manager.ahook.augment_player_after_search(
-                player=player, data_source=self
+                stored_player=stored_player, data_source=self
             )
-        return player
+        return stored_player
 
     @staticmethod
-    def _adjust_player_from_fide_database(source_player: Player):
+    def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
         """Cross-references the player with the FIDE Database.
         Override this method to disable this behavior."""
-        fide_id = source_player.fide_id
+        fide_id = src_stored_player.fide_id
         database = FideDatabase()
         if not fide_id or not database.exists():
             return
         with database:
-            fide_player = database.get_player_by_fide_id(fide_id)
-            if not fide_player:
+            fide_stored_player = database.get_stored_player_by_fide_id(fide_id)
+            if not fide_stored_player:
                 return
-            source_player.federation = fide_player.federation
-            source_player.title = fide_player.title
-            for rating_type in [
-                TournamentRating.STANDARD,
-                TournamentRating.RAPID,
-                TournamentRating.BLITZ,
-            ]:
-                fide_rating = fide_player.get_rating(rating_type)
-                source_rating = source_player.get_rating(rating_type)
-                if (
+            src_stored_player.federation = fide_stored_player.federation
+            src_stored_player.title = fide_stored_player.title
+            for rating_type in TournamentRating:
+                stored_fide_rating = fide_stored_player.ratings.get(
+                    rating_type.value, None
+                )
+                if not stored_fide_rating:
+                    continue
+                fide_rating = PlayerRating.from_stored_value(stored_fide_rating)
+                stored_source_rating = src_stored_player.ratings.get(
+                    rating_type.value, None
+                )
+                source_rating = (
+                    PlayerRating.from_stored_value(stored_source_rating)
+                    if stored_source_rating
+                    else None
+                )
+                if not source_rating or (
                     source_rating.type == PlayerRatingType.ESTIMATED
                     and fide_rating.type != PlayerRatingType.ESTIMATED
                 ):
-                    source_player.ratings[rating_type] = fide_rating
+                    src_stored_player.ratings[rating_type.value] = stored_fide_rating
 
 
 class LocalDataSource(DataSource, ABC):
@@ -352,7 +369,7 @@ class LocalDataSource(DataSource, ABC):
 
     async def search_player(
         self, string: str, limit: int | None = None
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         with self.local_database_type() as database:
             return database.search_player(string, limit)
 
@@ -409,7 +426,7 @@ class FideDataSource(LocalDataSource):
 
     @staticmethod
     @override
-    def _adjust_player_from_fide_database(source_player: Player):
+    def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
         pass
 
     async def get_player_matches(
@@ -423,7 +440,7 @@ class FideDataSource(LocalDataSource):
             return None
         fide_ids = [player.fide_id for player in players if player.fide_id]
         with database:
-            match_players = database.get_players_by_fide_id(fide_ids)
+            match_players = database.get_stored_players_by_fide_id(fide_ids)
             return self.create_player_comparators(
                 players,
                 match_players,
@@ -441,11 +458,13 @@ class FideDataSource(LocalDataSource):
     def player_search_result_template(self) -> str:
         return '/admin/players/fide_search_result.html'
 
-    async def get_player_by_source_id(self, player_source_id: str) -> Player | None:
+    async def get_stored_player_by_source_id(
+        self, player_source_id: str
+    ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         with FideDatabase() as database:
-            return database.get_player_by_fide_id(int(player_source_id))
+            return database.get_stored_player_by_fide_id(int(player_source_id))
 
-    def get_player_source_id(self, player: Player) -> str:
-        return str(player.fide_id)
+    def get_player_source_id(self, stored_player: StoredPlayer) -> str:
+        return str(stored_player.fide_id)

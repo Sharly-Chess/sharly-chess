@@ -138,7 +138,7 @@
             <span class="">
                 <img
                     class="player-federation-flag pe-1"
-                    src="{{ url_for('static', file_path='/images/federations/' ~ player.federation ~ '.svg') }}"
+                    src="{{ macros.federation_flag_url(player.federation) }}"
                     {{ macros.tooltip_attributes('info', player.federation, 'left') }}
                 />
             </span>
@@ -207,7 +207,7 @@
     {% if 'fide' in admin_players_filter_columns %}
         <td class="text-nowrap text-center w-1">
             <img
-                src="{{ url_for('static', file_path='/images/fide-light.svg') }}"
+                src="{{ url_for('static', file_path='/images/fide-light.svg') }}?version={{ sharly_chess_config.version }}"
                 style="height: 1.2em"
                 class="p-0 {% if player.fide_id %}cursor-pointer{% else %}fide-id-none{% endif %}"
                 {% if player.fide_id %}

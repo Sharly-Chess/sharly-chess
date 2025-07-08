@@ -468,6 +468,18 @@ class TournamentRating(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @property
+    def form_key(self) -> str:
+        match self:
+            case TournamentRating.STANDARD:
+                return 'standard'
+            case TournamentRating.RAPID:
+                return 'rapid'
+            case TournamentRating.BLITZ:
+                return 'blitz'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
     def print_view_header(self) -> str:
         match self:
             case TournamentRating.STANDARD:

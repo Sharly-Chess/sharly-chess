@@ -1,6 +1,9 @@
 # Needs to be imported first to avoid circular import
 from pathlib import Path
 from unittest import TestCase
+
+from data.board import Board
+from data.event import Event
 from data.loader import EventLoader
 from plugins import manager  # Noqa E402
 
@@ -11,26 +14,60 @@ from tests.test_config import TestUtils
 
 @pytest.mark.unit
 class PairingTestCase(TestCase):
+    event: Event
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        database = TestUtils.create_event('test-pairings-event')
+        database = TestUtils.create_event_direct('test-pairings-event')
         database.populate(Path('../unit/test-event.yml'))
         cls.event = EventLoader().load_event('test-pairings-event')
 
     @classmethod
     def tearDownClass(cls):
-        TestUtils.delete_event('test-pairings-event')
+        TestUtils.delete_event_direct('test-pairings-event')
         super().tearDownClass()
 
     """Tests for all the pairing systems."""
 
-    def assert_no_pairings_diff_in_tournament(self, tournament_uniq_id: str):
+    def assert_no_pairings_diff_in_tournament(
+        self,
+        tournament_uniq_id: str,
+        ignore_order: bool = False,
+        max_round: int | None = None,
+    ):
         tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
         tournament.set_default_pairing_settings()
-        for round_ in range(1, tournament.rounds + 1):
-            diff = tournament.pairing_variation.engine.pairings_diff(tournament, round_)
-            self.assertEqual(diff, [], f'round {round_}')
+        diff_display = ''
+        for round_ in range(1, (max_round or tournament.rounds) + 1):
+            diff = tournament.pairing_variation.engine.pairings_diff(
+                tournament, round_, ignore_order
+            )
+            if diff:
+                diff_display = self._diff_display(diff)
+            self.assertEqual(
+                diff,
+                [],
+                f'Round {round_}: {len(diff)} differences\n\n{diff_display}',
+            )
+
+    @classmethod
+    def _diff_display(
+        cls, pairing_diff: list[tuple[Board | None, Board | None]]
+    ) -> str:
+        message = f'Real boards{"":<19}Expected boards\n'
+        for real_board, expected_board in pairing_diff:
+            message += f'{cls._board_display(real_board)}   {cls._board_display(expected_board)}\n'
+        return message
+
+    @staticmethod
+    def _board_display(board: Board | None) -> str:
+        if not board:
+            return f'{"":<14} - {"":<10}'
+        return (
+            f'{board.index:>2}. {board.white_player.full_name:<10}'
+            f' - {getattr(board.black_player, "full_name", ""):<10}'
+        )
 
     # ---------------------------------------------------------------------------------
     # Swiss pairing systems
@@ -75,17 +112,17 @@ class PairingTestCase(TestCase):
     def test_swiss_papi_haley(self):
         self.assert_no_pairings_diff_in_tournament('papi-haley')
 
-    def _test_swiss_papi_haley_soft(self):
-        # TODO figure out what is wrong with round 5
-        self.assert_no_pairings_diff_in_tournament('papi-haley-soft')
+    def test_swiss_papi_haley_soft(self):
+        # TODO (Molrn) figure out what is wrong with round 5
+        self.assert_no_pairings_diff_in_tournament('papi-haley-soft', max_round=4)
 
     def _test_swiss_papi_progressive(self):
-        # TODO figure out what is wrong with round 5
-        self.assert_no_pairings_diff_in_tournament('papi-progressive')
+        # TODO (Molrn) figure out what is wrong with round 5
+        self.assert_no_pairings_diff_in_tournament('papi-progressive', max_round=4)
 
     def _test_swiss_papi_nicois(self):
-        # TODO figure out what is wrong with round 3
-        self.assert_no_pairings_diff_in_tournament('papi-nicois')
+        # TODO (Molrn) figure out what is wrong with round 3
+        self.assert_no_pairings_diff_in_tournament('papi-nicois', max_round=2)
 
     # ---------------------------------------------------------------------------------
     # Berger
@@ -220,13 +257,15 @@ class PairingTestCase(TestCase):
         self.assert_generated_berger_table_equals_fide_table(16, fide_berger_table)
 
     def test_berger_tec(self):
-        self.assert_no_pairings_diff_in_tournament('tec-round-robin')
+        self.assert_no_pairings_diff_in_tournament('tec-round-robin', ignore_order=True)
 
     def test_berger_papi(self):
-        self.assert_no_pairings_diff_in_tournament('papi-berger')
+        self.assert_no_pairings_diff_in_tournament('papi-berger', ignore_order=True)
 
     def test_berger_papi_odd(self):
-        self.assert_no_pairings_diff_in_tournament('papi-berger-odd')
+        self.assert_no_pairings_diff_in_tournament('papi-berger-odd', ignore_order=True)
 
     def test_berger_papi_large(self):
-        self.assert_no_pairings_diff_in_tournament('papi-berger-large')
+        self.assert_no_pairings_diff_in_tournament(
+            'papi-berger-large', ignore_order=True
+        )

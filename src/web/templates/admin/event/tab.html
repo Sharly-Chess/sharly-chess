@@ -90,7 +90,7 @@
                         <span>
                             <img
                                 class="player-federation-flag ms-1 ps-1 pe-1"
-                                src="{{ url_for('static', file_path='/images/federations/' ~ admin_event.federation ~ '.svg') }}"
+                                src="{{ macros.federation_flag_url(admin_event.federation) }}"
                             />
                             {{ admin_event.federation }}
                             -

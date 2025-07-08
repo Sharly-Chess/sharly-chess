@@ -243,6 +243,7 @@ with_indicator: display a loading indicator, optional
                 {% if default_checkbox %}
                     {{ default_checkbox_text or _('by default') }}
                     <input
+                        data-testid="{{ default_checkbox_id }}"
                         id="{{ default_checkbox_id }}"
                         name="{{ default_checkbox_name }}"
                         type="checkbox"
@@ -266,6 +267,7 @@ with_indicator: display a loading indicator, optional
                     <select
                         name="{{ name }}"
                         id="{{ id }}"
+                        data-testid="{{ id }}"
                         class="form-select {% if error or (name in errors) %}is-invalid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if disabled or (select_options|length <= 1 and not multiple_select) %}
@@ -311,6 +313,7 @@ with_indicator: display a loading indicator, optional
                     <input
                         id="{{ id }}"
                         name="{{ name }}"
+                        data-testid="{{ id }}"
                         type="checkbox"
                         class="form-check-input"
                         value="on"
@@ -346,6 +349,7 @@ with_indicator: display a loading indicator, optional
                         <input
                             id="{{ id }}"
                             name="{{ name }}"
+                            data-testid="{{ id }}"
                             type="hidden"
                             value="{{ value }}"
                         />
@@ -353,6 +357,7 @@ with_indicator: display a loading indicator, optional
                     <input
                         id="{{ id }}"
                         name="{{ name }}"
+                        data-testid="{{ id }}"
                         type="{{ input_type if not password_visible else 'text' }}"
                         {% if number_min != '' %}
                             min="{{ number_min }}"
@@ -408,6 +413,7 @@ with_indicator: display a loading indicator, optional
                     {% if input_type == 'password' %}
                         <i
                             id="{{ id }}-toggle-password"
+                            data-testid="{{ id }}-toggle-password"
                             class="input-group-text {{ 'bi-eye-slash-fill' if not password_visible else 'bi-eye-fill' }} ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
                             hx-on:click="toggle_password(event, '#{{ id }}')"
                         ></i>
@@ -958,6 +964,7 @@ with_indicator: display a loading indicator, optional
     <div class="btn-group dropup">
         <button
             type="submit"
+            data-testid="{{ active_option }}-button"
             form="{{ form_id }}"
             name="{{ active_option }}"
             class="btn btn-primary"

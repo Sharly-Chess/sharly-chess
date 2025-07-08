@@ -209,7 +209,7 @@
                                         {% if federation %}
                                             <img
                                                 class="player-federation-flag pe-1"
-                                                src="{{ url_for('static', file_path='/images/federations/' ~ federation ~ '.svg') }}"
+                                                src="{{ macros.federation_flag_url(federation) }}"
                                             />
                                         {% endif %}
                                     </td>

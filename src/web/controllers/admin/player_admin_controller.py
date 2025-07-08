@@ -25,6 +25,7 @@ from data.input_output.managers import DataSourceManager
 from data.pairing import Pairing
 from data.player import Player, Federation, Club, PlayerRating
 from data.tournament import Tournament
+from database.access.papi.papi_store import StoredPlayer, StoredTournamentPlayer
 from utils.enum import (
     PlayerCategory,
     PlayerGender,
@@ -83,6 +84,14 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
 
+    def get_admin_tournament(self) -> Tournament:
+        assert self.admin_tournament is not None
+        return self.admin_tournament
+
+    def get_admin_player(self) -> Player:
+        assert self.admin_player is not None
+        return self.admin_player
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -100,21 +109,14 @@ class PlayerAdminController(BaseEventAdminController):
         cls,
         action: str,
         web_context: PlayerAdminWebContext,
-        data: dict[str, str] | None = None,
-    ) -> Player:
+        data: dict[str, str],
+    ) -> dict[str, str]:
         assert web_context.admin_event is not None
         errors: dict[str, str] = {}
-        if data is None:
-            data = {}
-        field = ''
-        if action in [
-            'delete',
-        ]:
-            assert web_context.admin_player is not None
-            return web_context.admin_player
         tournament: Tournament | None = None
+        field = 'tournament_id'
         try:
-            tournament_id = WebContext.form_data_to_int(data, field := 'tournament_id')
+            tournament_id = WebContext.form_data_to_int(data, field)
             if not tournament_id:
                 raise ValueError('Tournament ID not supplied')
             tournament = web_context.admin_event.tournaments_by_id[tournament_id]
@@ -133,27 +135,18 @@ class PlayerAdminController(BaseEventAdminController):
         last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('Please enter the last name.')
-        else:
-            last_name = last_name.upper()
-        first_name: str | None = WebContext.form_data_to_str(data, 'first_name')
-        if first_name:
-            first_name = first_name.title() if first_name else ''
-        date_of_birth: date | None = WebContext.form_data_to_date(
-            data, field := 'date_of_birth'
-        )
-        gender: PlayerGender | None = PlayerGender.NONE
         try:
             if value := WebContext.form_data_to_int(data, field := 'gender'):
-                gender = PlayerGender(value)
+                PlayerGender(value)
         except ValueError:
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
             data[field] = ''
         ratings: dict[TournamentRating, PlayerRating] = {
             tr: PlayerRating(
-                value=WebContext.form_data_to_int(data, f'rating_{tr.value}') or 0,
+                value=WebContext.form_data_to_int(data, f'{tr.form_key}_rating') or 0,
                 type=PlayerRatingType(
-                    WebContext.form_data_to_int(data, f'rating_type_{tr.value}')
+                    WebContext.form_data_to_int(data, f'{tr.form_key}_rating_type')
                     or PlayerRatingType.ESTIMATED.value
                 ),
             )
@@ -161,30 +154,23 @@ class PlayerAdminController(BaseEventAdminController):
         }
         for tr, rating in ratings.items():
             if rating.type != PlayerRatingType.ESTIMATED and not rating.value:
-                errors[f'rating_type_{tr.value}'] = _(
+                errors[f'{tr.form_key}_rating_type'] = _(
                     'Only estimated ratings are optional.'
                 )
-        title: PlayerTitle | None = PlayerTitle.NONE
         try:
             if value := WebContext.form_data_to_int(data, field := 'title'):
-                title = PlayerTitle(value)
+                PlayerTitle(value)
         except ValueError:
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
-        federation_name: str | None = WebContext.form_data_to_str(
+        federation = WebContext.form_data_to_str(
             data, field := 'federation', SharlyChessConfig().default_federation
         )
-        federation: Federation | None = None
-        if federation_name not in SharlyChessConfig.federations:
+        if federation not in SharlyChessConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-        else:
-            federation = Federation(federation_name)
-        club_name: str | None = WebContext.form_data_to_str(data, field := 'club')
-        club: Club | None = Club(club_name) if club_name else None
-        fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
             if (
@@ -200,73 +186,84 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
             )
-        mail: str | None = None
         try:
-            mail = WebContext.form_data_to_mail(data, field := 'mail')
+            WebContext.form_data_to_mail(data, field := 'mail')
         except ValueError:
             errors[field] = _('Invalid mail [{mail}].').format(mail=data[field])
-        phone: str | None = None
         try:
-            phone = WebContext.form_data_to_phone(data, field := 'phone')
+            WebContext.form_data_to_phone(data, field := 'phone')
         except ValueError:
             errors[field] = _('Invalid phone number [{phone}].').format(
                 phone=data[field]
             )
-        owed: float | None = 0.0
         try:
-            owed = WebContext.form_data_to_float(data, field := 'owed')
+            WebContext.form_data_to_float(data, field := 'owed')
         except ValueError:
             errors[field] = _('Invalid amount [{amount}].').format(amount=data[field])
-        paid: float | None = 0.0
         try:
-            paid = WebContext.form_data_to_float(data, field := 'paid')
+            WebContext.form_data_to_float(data, field := 'paid')
         except ValueError:
             errors[field] = _('Invalid amount [{amount}].').format(amount=data[field])
-        comment: str | None = data.get('comment')
-        fixed: int | None = None
         try:
-            fixed = WebContext.form_data_to_int(data, field := 'fixed', minimum=1)
+            WebContext.form_data_to_int(data, field := 'fixed', minimum=1)
         except ValueError:
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
 
-        # Have plugins validate their fields and return private plugin data
-        per_plugin_player_data = plugin_manager.hook.get_validated_player_form_fields(
+        plugin_manager.hook.validate_player_form_fields(
             action=action, tournament=tournament, data=data, errors=errors
         )
+        return errors
+
+    @classmethod
+    def _stored_player_from_data(
+        cls,
+        data: dict[str, str],
+        existing_player: Player | None = None,
+    ) -> StoredPlayer:
+        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+        if existing_player and existing_player.tournament.id == tournament_id:
+            stored_tournament_player = existing_player.stored_tournament_player
+        else:
+            stored_tournament_player = StoredTournamentPlayer(
+                tournament_id=tournament_id
+            )
         plugin_data = {
-            key: value for data in per_plugin_player_data for key, value in data.items()
+            key: value
+            for data in plugin_manager.hook.get_player_form_fields(data=data)
+            for key, value in data.items()
         }
-
-        assert federation is not None
-        assert gender is not None
-        assert title is not None
-
-        return Player(
-            id=web_context.admin_player.id
-            if action != 'create' and web_context.admin_player
-            else 0,
-            first_name=first_name or '',
-            last_name=last_name or '',
-            date_of_birth=date_of_birth,
-            gender=gender,
-            mail=mail,
-            phone=phone,
-            comment=comment,
-            owed=owed,
-            paid=paid,
-            title=title,
-            ratings=ratings,
-            fide_id=fide_id,
-            federation=federation,
-            club=club,
-            fixed=fixed,
-            check_in=False,  # not taken into account when updating/creating/deleting the player
-            pairings={},  # Pairings are read from Papi but not used
-            tournament=tournament,
-            errors=errors,
+        return StoredPlayer(
+            id=existing_player.id if existing_player else 0,
+            first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
+            last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
+            date_of_birth=WebContext.form_data_to_date(data, 'date_of_birth'),
+            gender=WebContext.form_data_to_int(data, 'gender') or PlayerGender.NONE,
+            mail=WebContext.form_data_to_str(data, 'mail'),
+            phone=WebContext.form_data_to_str(data, 'phone'),
+            comment=data.get('comment'),
+            owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
+            paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
+            title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE,
+            ratings={
+                tr.value: PlayerRating(
+                    WebContext.form_data_to_int(data, f'{tr.form_key}_rating') or 0,
+                    PlayerRatingType(
+                        WebContext.form_data_to_int(data, f'{tr.form_key}_rating_type')
+                        or PlayerRatingType.ESTIMATED
+                    ),
+                ).stored_value
+                for tr in TournamentRating
+            },
+            fide_id=WebContext.form_data_to_int(data, 'fide_id'),
+            federation=WebContext.form_data_to_str(data, 'federation')
+            or SharlyChessConfig().default_federation,
+            club=WebContext.form_data_to_str(data, 'club') or '',
+            fixed=WebContext.form_data_to_int(data, 'fixed'),
+            check_in=existing_player.check_in if existing_player else False,
             plugin_data=plugin_data,
+            stored_tournament_player=stored_tournament_player,
         )
 
     @staticmethod
@@ -482,7 +479,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None = None,
         old_player_id: int | None = None,
         deleted_player_id: int | None = None,
-        search_player: Player | None = None,
+        search_stored_player: StoredPlayer | None = None,
         tournament_id: int | None = None,
         page: int | None = None,
         data: dict[str, str] | None = None,
@@ -655,14 +652,14 @@ class PlayerAdminController(BaseEventAdminController):
                     first_name: str | None = None
                     last_name: str | None = None
                     date_of_birth: date | None = None
-                    gender: PlayerGender = PlayerGender.NONE
+                    gender: int = PlayerGender.NONE.value
                     ratings: dict[TournamentRating, PlayerRating] = {
                         tr: PlayerRating(0, PlayerRatingType.ESTIMATED)
                         for tr in TournamentRating
                     }
-                    title: PlayerTitle = PlayerTitle.NONE
-                    federation: Federation | None = None
-                    club: Club | None = None
+                    title: int = PlayerTitle.NONE.value
+                    federation: str | None = None
+                    club: str | None = None
                     fide_id: int | None = None
                     mail: str | None = None
                     phone: str | None = None
@@ -670,25 +667,30 @@ class PlayerAdminController(BaseEventAdminController):
                     owed: float = 0.0
                     paid: float = 0.0
                     fixed: int | None = None
-                    plugin_data = {}
-                    data_player = search_player or web_context.admin_player
-                    if data_player:
-                        first_name = data_player.first_name
-                        last_name = data_player.last_name
-                        gender = data_player.gender
-                        date_of_birth = data_player.date_of_birth
-                        ratings = data_player.ratings
-                        title = data_player.title
-                        federation = data_player.federation
-                        club = data_player.club
-                        fide_id = data_player.fide_id or None
-                        mail = data_player.mail
-                        phone = data_player.phone
-                        comment = data_player.comment
-                        owed = data_player.owed or 0.0
-                        paid = data_player.paid or 0.0
-                        fixed = data_player.fixed
-                        plugin_data = data_player.plugin_data or {}
+                    plugin_data: dict[str, dict[str, Any]] = {}
+                    stored_player = search_stored_player or getattr(
+                        admin_player, 'stored_player', None
+                    )
+                    if stored_player:
+                        first_name = stored_player.first_name
+                        last_name = stored_player.last_name
+                        gender = stored_player.gender
+                        date_of_birth = stored_player.date_of_birth
+                        for tr_value, rating in stored_player.ratings.items():
+                            ratings[TournamentRating(tr_value)] = (
+                                PlayerRating.from_stored_value(rating)
+                            )
+                        title = stored_player.title
+                        federation = stored_player.federation
+                        club = stored_player.club
+                        fide_id = stored_player.fide_id or None
+                        mail = stored_player.mail
+                        phone = stored_player.phone
+                        comment = stored_player.comment
+                        owed = stored_player.owed
+                        paid = stored_player.paid
+                        fixed = stored_player.fixed
+                        plugin_data = stored_player.plugin_data
                     match action:
                         case 'update' | 'delete':
                             assert admin_player is not None
@@ -714,6 +716,19 @@ class PlayerAdminController(BaseEventAdminController):
                         else None
                     )
 
+                    rating_data: dict[str, Any] = {}
+                    for tournament_rating in TournamentRating:
+                        rating_ = ratings[tournament_rating]
+                        key = tournament_rating.form_key
+                        rating_data |= {
+                            f'{key}_rating': WebContext.value_to_form_data(
+                                rating_.value or None
+                            ),
+                            f'{key}_rating_type': WebContext.value_to_form_data(
+                                rating_.type.value
+                            ),
+                        }
+
                     per_plugin_form_data = plugin_manager.hook.get_player_form_data(
                         plugin_data=plugin_data
                     )
@@ -727,14 +742,14 @@ class PlayerAdminController(BaseEventAdminController):
                         {
                             'last_name': WebContext.value_to_form_data(last_name),
                             'first_name': WebContext.value_to_form_data(first_name),
-                            'gender': WebContext.value_to_form_data(gender.value),
+                            'gender': WebContext.value_to_form_data(gender),
                             'tournament_id': WebContext.value_to_form_data(
                                 tournament_id
                             ),
                             'date_of_birth': WebContext.value_to_date_form_data(
                                 date_of_birth
                             ),
-                            'title': WebContext.value_to_form_data(title.value),
+                            'title': WebContext.value_to_form_data(title),
                             'federation': WebContext.value_to_form_data(federation),
                             'fide_id': WebContext.value_to_form_data(fide_id),
                             'club': WebContext.value_to_form_data(club),
@@ -748,18 +763,7 @@ class PlayerAdminController(BaseEventAdminController):
                                 request
                             ),
                         }
-                        | {
-                            f'rating_{tr.value}': WebContext.value_to_form_data(
-                                ratings[tr].value or None
-                            )
-                            for tr in TournamentRating
-                        }
-                        | {
-                            f'rating_type_{tr.value}': WebContext.value_to_form_data(
-                                ratings[tr].type.value
-                            )
-                            for tr in TournamentRating
-                        }
+                        | rating_data
                         | plugin_form_data
                     )
                 if errors is None:
@@ -1072,14 +1076,14 @@ class PlayerAdminController(BaseEventAdminController):
                 request, f'Unknown data source [{data_source_id}].'
             )
         errors: dict[str, str] = {}
-        source_player: Player | None = None
+        stored_player: StoredPlayer | None = None
         if not data_source.is_available:
             return self.redirect_error(
                 request, f'Data source [{data_source_id}] is not available.'
             )
         try:
-            source_player = await data_source.fetch_player(player_source_id)
-            if not source_player:
+            stored_player = await data_source.fetch_player(player_source_id)
+            if not stored_player:
                 return self.redirect_error(
                     request,
                     (
@@ -1097,7 +1101,7 @@ class PlayerAdminController(BaseEventAdminController):
             event_uniq_id=event_uniq_id,
             modal='player',
             action='create',
-            search_player=source_player,
+            search_stored_player=stored_player,
             tournament_id=int(tournament_id) if tournament_id else None,
             errors=errors,
         )
@@ -1152,7 +1156,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None,
     ) -> Template | ClientRedirect:
         match action:
-            case 'update' | 'create' | 'delete':
+            case 'update' | 'create':
                 web_context: PlayerAdminWebContext = PlayerAdminWebContext(
                     request,
                     event_uniq_id=event_uniq_id,
@@ -1168,10 +1172,8 @@ class PlayerAdminController(BaseEventAdminController):
         add_other = 'add_other' in data
         if action == 'create':
             SessionHandler.set_session_admin_player_add_other_active(request, add_other)
-        player: Player = self._admin_validate_player_update_data(
-            action, web_context, data
-        )
-        if player.errors:
+        errors = self._admin_validate_player_update_data(action, web_context, data)
+        if errors:
             return self._admin_event_players_render(
                 request,
                 event_uniq_id=event_uniq_id,
@@ -1179,21 +1181,25 @@ class PlayerAdminController(BaseEventAdminController):
                 action=action,
                 player_id=player_id,
                 data=data,
-                errors=player.errors,
+                errors=errors,
             )
-
+        stored_player = self._stored_player_from_data(
+            data, web_context.admin_player if action == 'update' else None
+        )
+        event = web_context.get_admin_event()
+        tournament_id = stored_player.stored_tournament_player.tournament_id
+        tournament = event.tournaments_by_id[tournament_id]
+        player = Player(tournament, stored_player)
         new_player_id: int | None = None
         match action:
             case 'update':
-                assert player.tournament is not None
                 assert web_context.admin_player is not None
                 assert web_context.admin_player.tournament is not None
 
                 plugin_manager.hook.set_player_default_ratings(
-                    federation=web_context.admin_event.federation, player=player
+                    federation=event.federation, player=player
                 )
                 previous_tournament = web_context.admin_player.tournament
-                tournament = player.tournament
                 if tournament.id != previous_tournament.id:
                     papi_ref_id = tournament.add_player(player)
                     previous_tournament.delete_player(player)
@@ -1271,27 +1277,6 @@ class PlayerAdminController(BaseEventAdminController):
                 return self._admin_event_players_render(
                     request, event_uniq_id=event_uniq_id
                 )
-            case 'delete':
-                assert player.tournament is not None
-                tournament = player.tournament
-                if player.has_real_pairings:
-                    Message.error(
-                        request,
-                        _(
-                            'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
-                        ).format(
-                            player=player.full_name,
-                            tournament_uniq_id=tournament.uniq_id,
-                        ),
-                    )
-                else:
-                    tournament.delete_player(player)
-                    self.delete_from_search_results(request, player.id)
-                    return self._admin_event_players_render(
-                        request,
-                        event_uniq_id=event_uniq_id,
-                        deleted_player_id=player.id,
-                    )
             case _:
                 raise ValueError(f'action=[{action}]')
         return self._admin_event_players_render(
@@ -1579,12 +1564,33 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         player_id: int,
     ) -> Template | ClientRedirect:
-        return self._admin_player_update(
+        web_context = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            action='delete',
             player_id=player_id,
             data=data,
+        )
+        player = web_context.get_admin_player()
+        tournament = player.tournament
+        deleted_player_id: int | None = None
+        if player.has_real_pairings:
+            Message.error(
+                request,
+                _(
+                    'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
+                ).format(
+                    player=player.full_name,
+                    tournament_uniq_id=tournament.uniq_id,
+                ),
+            )
+        else:
+            tournament.delete_player(player)
+            self.delete_from_search_results(request, player.id)
+            deleted_player_id = player.id
+        return self._admin_event_players_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            deleted_player_id=deleted_player_id,
         )
 
     @patch(
@@ -2032,10 +2038,18 @@ class PlayerAdminController(BaseEventAdminController):
         players: list[Player] | None = None
         connection_error: str | None = None
         if search:
+            # TODO (Molrn - multi tournament) Remove the tournament and use the Player wrapper
+            tournament = next(
+                tournament for tournament in web_context.get_admin_event().tournaments
+            )
             try:
-                players = await data_source.search_player(
+                stored_players = await data_source.search_player(
                     search, DataSource.SEARCH_LIMIT
                 )
+                players = []
+                for stored_player in stored_players:
+                    stored_player.id = 0
+                    players.append(Player(tournament, stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionHandler.set_session_admin_players_active_data_source(
