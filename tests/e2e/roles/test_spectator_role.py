@@ -36,9 +36,12 @@ class TestSpectatorRole(BaseRoleTest):
         auth_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{public_input_screen.uniq_id}')
         rows = auth_page.locator('table tbody tr')
         expect(rows).to_have_count(8)
+
+        # We should NOT see the modal
         row = rows.filter(has_text='ALYX')
         row.click()
         modal = auth_page.locator('.modal-dialog')
+        auth_page.wait_for_timeout(200)
         expect(modal).not_to_be_visible()
 
         # Test no access to the private input screen, should redirect to the home page
