@@ -1,5 +1,4 @@
 from datetime import date
-from locale import setlocale, LC_TIME
 from data.event import Event
 from data.player import PlayerRating
 from database.sqlite.event.event_database import EventDatabase
@@ -32,8 +31,7 @@ class TestPlayersFunctionality:
         expect(modal).to_be_visible()
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
-        setlocale(LC_TIME, 'en_GB')  # NOTE(Amaras): hack, but it somehow works
-        modal.get_by_test_id('date-of-birth').fill(birthdate.strftime('%Y-%m-%d'))
+        modal.get_by_test_id('date-of-birth').fill(birthdate.isoformat())
         modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
         modal.get_by_test_id('club').fill('SC Club')
         modal.get_by_test_id('fixed').fill('100')
