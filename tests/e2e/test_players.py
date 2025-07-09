@@ -25,6 +25,7 @@ def setup(api_request_context: APIRequestContext):
 @pytest.mark.e2e
 class TestPlayersFunctionality:
     def test_create_update_delete_player(self, page: Page):
+        birthdate = date(2000, 10, 5)
         page.goto(f'/admin/event/{EVENT_ID}/players')
         page.get_by_test_id('add-player-button').click()
         modal = page.locator('.modal-dialog')
@@ -32,7 +33,7 @@ class TestPlayersFunctionality:
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
         setlocale(LC_TIME, 'en_GB')  # NOTE(Amaras): hack, but it somehow works
-        modal.get_by_test_id('date-of-birth').fill('2000-10-05')
+        modal.get_by_test_id('date-of-birth').fill(birthdate.strftime('%Y-%m-%d'))
         modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
         modal.get_by_test_id('club').fill('SC Club')
         modal.get_by_test_id('fixed').fill('100')
@@ -69,7 +70,7 @@ class TestPlayersFunctionality:
             assert player.tournament.uniq_id == TOURNAMENT_ID
             assert player.last_name == 'DOE'
             assert player.first_name == 'John'
-            assert player.date_of_birth == date(2000, 10, 5)
+            assert player.date_of_birth == birthdate
             assert player.gender == PlayerGender.MALE
             assert player.club.name == 'SC Club'
             assert player.fixed == 100
