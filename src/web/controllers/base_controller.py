@@ -228,7 +228,7 @@ class WebContext:
     def form_data_to_list_int(
         data: dict[str, str], field: str, empty_value: list[int] | None = None
     ) -> list[int]:
-        if field not in data:
+        if field not in data or not data[field]:
             return empty_value or []
         return [int(element) for element in data[field].split(';')]
 

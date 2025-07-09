@@ -10,7 +10,7 @@ class TestOrganizerRole(BaseRoleTest):
     def get_roles(self):
         return [OrganizerRole]
 
-    def test_access_to_visible_tournaments(self, auth_page):
+    def test_access_to_visible_events(self, auth_page):
         self.auth_page.goto('/admin/current_events')
         expect(auth_page.locator('.card')).to_have_count(1)
         expect(

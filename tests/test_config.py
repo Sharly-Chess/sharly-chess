@@ -63,22 +63,26 @@ class TestUtils:
         'plugin_data': {},
     }
 
-    @staticmethod
-    def prepare_form_data(data: dict[str, str]):
-        form_data = {
-            k: (
-                ''
-                if v is None
-                else 'off'
-                if v is False
-                else 'on'
-                if v is True
-                else str(v)
-            )
-            for k, v in data.items()
-        }
+    @classmethod
+    def prepare_form_data(cls, data: dict[str, Any]):
+        items = []
+        for k, v in data.items():
+            if isinstance(v, (list, tuple)):
+                for item in v:
+                    items.append((k, cls.prepare_value(item)))
+            else:
+                items.append((k, cls.prepare_value(v)))
+        return urllib.parse.urlencode(items)
 
-        return urllib.parse.urlencode(form_data)
+    @staticmethod
+    def prepare_value(v):
+        if v is None:
+            return ''
+        if v is False:
+            return 'off'
+        if v is True:
+            return 'on'
+        return str(v)
 
     @staticmethod
     def check_api_response(response: APIResponse):

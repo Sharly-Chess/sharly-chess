@@ -1,25 +1,30 @@
-from argon2 import PasswordHasher
-from data.loader import EventLoader
 import pytest
-from playwright.sync_api import Browser, Page, expect
+from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredAccount
 from data.auth.roles import Role
 from common.sharly_chess_config import SharlyChessConfig
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
+from tests.test_config import TestUtils
 
 
 class BaseRoleTest:
     @pytest.fixture(scope='class', autouse=True)
-    def auth_page(self, request, lan_page: Page, browser: Browser):
+    def auth_page(
+        self,
+        api_request_context: APIRequestContext,
+        request,
+        login_page: Page,
+        browser: Browser,
+    ):
         cls = request.cls  # the actual test class instance
-        cls.create_user(cls, cls.get_roles(cls), cls.get_tournament_ids(cls))
-        cls.do_login(cls, lan_page)
+        stored_account = cls.create_user(
+            cls, api_request_context, cls.get_roles(cls), cls.get_tournament_ids(cls)
+        )
+        cls.do_login(cls, login_page)
 
         # Store the auth state a tmp file
         storage = f'auth-{cls.__class__.__name__.lower()}.json'
-        lan_page.context.storage_state(path=storage)
-        lan_page.context.close()
+        login_page.context.storage_state(path=storage)
 
         config = SharlyChessConfig()
         config.web_port = 9000
@@ -36,43 +41,51 @@ class BaseRoleTest:
 
         auth_page.close()
         auth_context.close()
-        cls.delete_user(cls)
+        cls.delete_user(cls, api_request_context, stored_account.id)
 
     def create_user(
-        self, role_types: list[type[Role]], tournament_ids: list[int] | None = None
+        self,
+        api_request_context: APIRequestContext,
+        role_types: list[type[Role]],
+        tournament_ids: list[int] | None = None,
     ):
-        ph = PasswordHasher()
-        password_hash = ph.hash('test-password')
-        with EventDatabase(PUBLIC_EVENT_ID, write=True) as db:
-            db.create_custom_exec_mode_objects()
-            db.commit()
-            self.account = db.add_stored_account(
-                StoredAccount(
-                    id=None,
-                    active=True,
-                    username='test-account',
-                    password_hash=password_hash,
-                    roles=[type_.static_id() for type_ in role_types],
-                    tournament_ids=tournament_ids,
-                )
-            )
-            db.commit()
-        EventLoader.get(request=None).unload_event(PUBLIC_EVENT_ID)
+        username = 'test-account'
+        data = {
+            'username': username,
+            'password': 'test-password',
+            'active': True,
+            'roles': [type_.static_id() for type_ in role_types],
+            'tournament_ids': tournament_ids,
+        }
 
-    def delete_user(self):
-        with EventDatabase(PUBLIC_EVENT_ID, write=True) as db:
-            db.delete_stored_account(self.account.id)
-            db.commit()
-        EventLoader.get(request=None).unload_event(PUBLIC_EVENT_ID)
+        form_data = TestUtils.prepare_form_data(data)
 
-    def do_login(self, lan_page: Page):
-        lan_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
-        lan_page.get_by_test_id('profile-button').click()
-        lan_page.locator('#username').fill('test-account')
-        lan_page.locator('#password').fill('test-password')
-        button = lan_page.locator('#modal-form button[type=submit]')
+        res = api_request_context.post(
+            f'/admin/account-create/{PUBLIC_EVENT_ID}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+            data=form_data,
+        )
+        TestUtils.check_api_response(res)
+        with EventDatabase(PUBLIC_EVENT_ID) as event_database:
+            accounts = event_database.load_stored_accounts()
+            stored_account = next(a for a in accounts if a.username == username)
+        return stored_account
+
+    def delete_user(self, api_request_context: APIRequestContext, account_id: int):
+        res = api_request_context.delete(
+            f'/admin/account-delete/{PUBLIC_EVENT_ID}/{account_id}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        )
+        TestUtils.check_api_response(res)
+
+    def do_login(self, login_page: Page):
+        login_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        login_page.get_by_test_id('profile-button').click()
+        login_page.locator('#username').fill('test-account')
+        login_page.locator('#password').fill('test-password')
+        button = login_page.locator('#modal-form button[type=submit]')
         button.click()
-        expect(lan_page.get_by_text('Account: test-account')).to_be_visible()
+        expect(login_page.get_by_text('Account: test-account')).to_be_visible()
 
     def get_roles(self) -> list[type[Role]]:
         """Override this in subclasses to specify the roles to test."""
