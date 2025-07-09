@@ -3,8 +3,9 @@ from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
 from data.auth.roles import Role
 from common.sharly_chess_config import SharlyChessConfig
-from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
+from tests.e2e.roles.conftest import PUBLIC_EVENT_ID, TOURNAMENT_ID
 from tests.test_config import TestUtils
+from utils.enum import ScreenType
 
 
 class BaseRoleTest:
@@ -17,6 +18,12 @@ class BaseRoleTest:
         browser: Browser,
     ):
         cls = request.cls  # the actual test class instance
+
+        if not cls.get_roles(cls) and not cls.get_tournament_ids(cls):
+            # Don't logon for anonymous tests
+            yield None
+            return
+
         stored_account = cls.create_user(
             cls, api_request_context, cls.get_roles(cls), cls.get_tournament_ids(cls)
         )
@@ -94,3 +101,44 @@ class BaseRoleTest:
     def get_tournament_ids(self) -> list[int] | None:
         """Override this in subclasses to specify the tournaments to restrict the account to."""
         return None
+
+    @pytest.fixture(autouse=True)
+    def role_test_tournament(
+        self, api_request_context: APIRequestContext, role_test_events
+    ):
+        tournament = TestUtils.create_tournament(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            TOURNAMENT_ID,
+            papi_file='test-screens',
+        )
+        yield tournament
+        TestUtils.delete_tournament(api_request_context, PUBLIC_EVENT_ID, tournament)
+
+    @pytest.fixture()
+    def public_input_screen(
+        self, api_request_context: APIRequestContext, role_test_tournament
+    ):
+        stored_screen = TestUtils.create_screen(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            'public-input',
+            ScreenType.INPUT,
+            {'init_set_tournament_id': role_test_tournament.id, 'public': True},
+        )
+        yield stored_screen
+        TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
+
+    @pytest.fixture()
+    def private_input_screen(
+        self, api_request_context: APIRequestContext, role_test_tournament
+    ):
+        stored_screen = TestUtils.create_screen(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            'private-input',
+            ScreenType.INPUT,
+            {'init_set_tournament_id': role_test_tournament.id, 'public': False},
+        )
+        yield stored_screen
+        TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)

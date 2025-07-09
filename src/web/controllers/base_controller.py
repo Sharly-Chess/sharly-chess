@@ -14,7 +14,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template
+from litestar.response import Redirect, Template
 from phonenumbers.phonenumberutil import NumberParseException
 
 from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
@@ -396,8 +396,11 @@ class BaseController(Controller):
     def redirect_error(
         request: HTMXRequest, errors: str | list[str] | Exception
     ) -> ClientRedirect:
-        Message.error(request, errors)
-        return ClientRedirect(redirect_to=index_url(request))
+        if request.headers.get('hx-request') == 'true':
+            Message.error(request, errors)
+            return ClientRedirect(redirect_to=index_url(request))
+        else:
+            return Redirect(index_url(request))
 
     @staticmethod
     def render_messages(
