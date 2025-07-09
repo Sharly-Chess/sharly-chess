@@ -29,12 +29,13 @@ class TestSingleScreensFunctionality:
     def test_create_and_delete_simple_screen(self, page: Page):
         page.goto(f'/admin/event/{EVENT_ID}/screens')
         TestUtils.button_by_text(page, 'Create a screen').click()
-        TestUtils.button_by_text(page, 'Results entry').click()
+        page.get_by_test_id('create-screen-type-input').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_role('textbox', name='ID (unique):').fill('test-screen')
         modal.get_by_role('textbox', name='Name:').fill('Test Screen')
         modal.locator('button[type=submit]').click()
+        page.get_by_test_id('accordion-screen-type-input').click()
         card = page.locator("div.card:has-text('Test Screen')")
         expect(card).to_be_visible()
 
@@ -98,7 +99,6 @@ class TestSingleScreensFunctionality:
     def test_boards_screen(
         self,
         tournament,
-        page: Page,
         lan_page: Page,
         api_request_context: APIRequestContext,
     ):

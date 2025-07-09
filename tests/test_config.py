@@ -4,6 +4,7 @@ import shutil
 
 import time
 import urllib
+from data.auth.exec_mode import ExecMode
 from plugins.manager import plugin_manager  # Noqa
 from common.sharly_chess_config import SharlyChessConfig
 from database.access.papi.papi_database import PapiDatabase
@@ -44,6 +45,7 @@ class TestUtils:
 
     event_defaults = {
         'name': 'Test Event',
+        'exec_mode': ExecMode.STANDARD.value,
         'federation': 'FRA',
         'public': True,
         'path': '',

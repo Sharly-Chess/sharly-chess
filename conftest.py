@@ -183,8 +183,7 @@ def lan_context(browser: Browser):
 def lan_page(lan_context):
     page = lan_context.new_page()
     page.set_default_timeout(15000)
-    yield page
-    page.close()
+    return page
 
 
 @pytest.fixture(scope='session')
