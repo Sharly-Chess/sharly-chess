@@ -4,11 +4,12 @@ from functools import partial
 from threading import Thread, Timer
 from time import time
 
-from common.i18n import _
+from common.i18n import _, set_locale
 from common.logger import (
     get_logger,
 )
 from common.network import NetworkMonitor
+from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
@@ -165,6 +166,9 @@ class FfeBackgroundUploader:
     ) -> None:
         """Upload a tournament to FFE."""
 
+        # Set the locale (called in a new thread)
+        set_locale(SharlyChessConfig().locale)
+
         # We refetch the latest event and tournament
         event = EventLoader().events_by_id.get(event_uniq_id, None)
         if not event:
@@ -268,6 +272,8 @@ class FfeBackgroundUploader:
 
         def _upload_tournaments(cls: FfeBackgroundUploader) -> None:
             try:
+                # Set the locale (called in a new thread)
+                set_locale(SharlyChessConfig().locale)
                 for tournament in updated_tournaments:
                     scheduled_upload = cls.timeout_threads.get(
                         cls.result_id(tournament)
