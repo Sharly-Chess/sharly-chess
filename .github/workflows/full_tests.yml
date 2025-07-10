@@ -8,9 +8,7 @@ permissions:
 on:
     # schedule:
     #     - cron: '0 2 * * *'  # 2 AM UTC
-    push:
-        tags:
-            - "*"
+    workflow_call:
     workflow_dispatch:
 
 jobs:
