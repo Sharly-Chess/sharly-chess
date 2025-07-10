@@ -31,7 +31,8 @@ class TestPlayersFunctionality:
         expect(modal).to_be_visible()
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
-        modal.get_by_test_id('date-of-birth').fill(birthdate.isoformat())
+
+        modal.get_by_test_id('date-of-birth').fill('2000-10-30')
         modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
         modal.get_by_test_id('club').fill('SC Club')
         modal.get_by_test_id('fixed').fill('100')
@@ -68,7 +69,7 @@ class TestPlayersFunctionality:
             assert player.tournament.uniq_id == TOURNAMENT_ID
             assert player.last_name == 'DOE'
             assert player.first_name == 'John'
-            assert player.date_of_birth == birthdate
+            assert player.date_of_birth == date(2000, 10, 30)
             assert player.gender == PlayerGender.MALE
             assert player.club.name == 'SC Club'
             assert player.fixed == 100

@@ -2273,12 +2273,6 @@ msgstr "Maître International"
 msgid "Internationalization"
 msgstr "Internationalisation"
 
-msgid "Internet connection established"
-msgstr "Connexion Internet établie"
-
-msgid "Internet connection lost"
-msgstr "Connexion Internet perdue"
-
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identifiant FFE [{ffe_id}] non valide."
 

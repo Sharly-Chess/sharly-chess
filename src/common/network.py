@@ -6,7 +6,6 @@ from logging import Logger
 import time
 from threading import Thread
 
-from common.i18n import _
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -58,13 +57,13 @@ class NetworkMonitor:
         selected_servers: list[str] = random.sample(root_dns_servers, 2)
         if any(cls._test_dns_server(server) for server in selected_servers):
             if not cls.connected_status:
-                logger.info(_('Internet connection established'))
+                logger.info('Internet connection established')
                 if ServerEngine.app:
                     ServerEngine.app.emit('connected')
             cls.connected_status = True
         else:
             if cls.connected_status:
-                logger.info(_('Internet connection lost'))
+                logger.info('Internet connection lost')
                 # NOTE(Molrn) 'disconnected' event not emitted as an event without listeners raises
             cls.connected_status = False
 
