@@ -24,14 +24,12 @@ def setup(api_request_context: APIRequestContext):
 @pytest.mark.e2e
 class TestPlayersFunctionality:
     def test_create_update_delete_player(self, page: Page):
-        birthdate = date(2000, 10, 5)
         page.goto(f'/admin/event/{EVENT_ID}/players')
         page.get_by_test_id('add-player-button').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
-
         modal.get_by_test_id('date-of-birth').fill('2000-10-30')
         modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
         modal.get_by_test_id('club').fill('SC Club')
