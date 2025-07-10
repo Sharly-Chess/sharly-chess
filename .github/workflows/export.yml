@@ -9,7 +9,10 @@ permissions:
   contents: write
 
 jobs:
+  tests:
+    uses: ./.github/workflows/full_tests.yml
   export-sharly-chess:
+    needs: tests
     runs-on: windows-latest
     steps:
       # get the current date to set the title of the release
