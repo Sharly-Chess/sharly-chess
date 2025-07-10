@@ -33,7 +33,7 @@ jobs:
 
             - name: Install Playwright browsers
               run: |
-                python -m playwright install --with-deps
+                python -m playwright install --with-deps chromium
 
             - name: Download Access Database Engine
               run: |
