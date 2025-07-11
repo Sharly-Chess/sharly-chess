@@ -114,7 +114,7 @@ class SpectatorRole(Role):
 
     @property
     def help_text(self) -> str:
-        return _('This role allows to view the public displays of the event.')
+        return _('Allows access to Screens marked as public.')
 
 
 class ResultsEntryRole(Role):
@@ -124,7 +124,7 @@ class ResultsEntryRole(Role):
 
     @staticmethod
     def static_name() -> str:
-        return _('Results Entry')
+        return _('Results Entry via public screens')
 
     @property
     def scope(self) -> RoleScope:
@@ -141,8 +141,7 @@ class ResultsEntryRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to enter results for some '
-            'or all the tournaments of the event.'
+            'Allows entry of results via any input Screens that have been marked as public.'
         )
 
 
@@ -153,7 +152,7 @@ class CheckInRole(Role):
 
     @staticmethod
     def static_name() -> str:
-        return _('Check-in')
+        return _('Check-in via input Screens')
 
     @property
     def scope(self) -> RoleScope:
@@ -173,8 +172,7 @@ class CheckInRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to check-in players for some '
-            'or all the tournaments of the event.'
+            'Allows check-in via any input Screens that have been marked as public.'
         )
 
 
@@ -219,8 +217,7 @@ class PairingRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to pair the players using a pairing engine '
-            'or manually, for some or all the tournaments of the event.'
+            'Allows pairing of the players, either using a pairing engine or manually.'
         )
 
 
@@ -255,10 +252,7 @@ class SectorArbitrationRole(Role):
 
     @property
     def help_text(self) -> str:
-        return _(
-            'This role inherits the Check-in and Results Entry '
-            'roles for some or all the tournaments of the event.'
-        )
+        return _('Allows check-in and results entry.')
 
 
 class DeputyChiefArbitrationRole(Role):
@@ -307,10 +301,7 @@ class DeputyChiefArbitrationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to manage players, results (including special '
-            'results and results modification), check-in, pairing and displays; '
-            'it inherits the Sector Arbitration, Pairing, Check-in, '
-            'Results Entry roles for all the tournaments of the event.'
+            'Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays.'
         )
 
 
@@ -342,8 +333,7 @@ class ChiefArbitrationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, '
-            'manage tournaments; it inherits the Deputy Chief Arbitration role.'
+            'Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role.'
         )
 
 
@@ -374,7 +364,9 @@ class ScreenManagementRole(Role):
 
     @property
     def help_text(self) -> str:
-        return _('This role allows to manage the displays.')
+        return _(
+            'Allows management of Screens and the account and devices that can access them.'
+        )
 
 
 class OrganizationRole(Role):
@@ -406,8 +398,7 @@ class OrganizationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to grant/revoke the Chief Arbitration role, edit the event; '
-            'it inherits the Screen Management role.'
+            'Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role.'
         )
 
     @classmethod
@@ -448,7 +439,5 @@ class AdministrationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role inherits all the other roles and can do anything '
-            'on the application; ONLY PEOPLE CONNECTED ON THE SHARLY CHESS '
-            'SERVER OWN THIS ROLE.'
+            'Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).'
         )

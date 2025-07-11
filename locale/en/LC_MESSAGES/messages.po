@@ -378,6 +378,33 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
+msgid "Allows access to Screens marked as public."
+msgstr ""
+
+msgid "Allows check-in and results entry."
+msgstr ""
+
+msgid "Allows check-in via any input Screens that have been marked as public."
+msgstr ""
+
+msgid "Allows entry of results via any input Screens that have been marked as public."
+msgstr ""
+
+msgid "Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role."
+msgstr ""
+
+msgid "Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role."
+msgstr ""
+
+msgid "Allows management of Screens and the account and devices that can access them."
+msgstr ""
+
+msgid "Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays."
+msgstr ""
+
+msgid "Allows pairing of the players, either using a pairing engine or manually."
+msgstr ""
+
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -747,6 +774,9 @@ msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Check-in via input Screens"
 msgstr ""
 
 msgid "Checked-in"
@@ -2394,6 +2424,9 @@ msgstr ""
 msgid "Include players of these rating types."
 msgstr ""
 
+msgid "Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
+msgstr ""
+
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -3910,7 +3943,7 @@ msgstr ""
 msgid "Results"
 msgstr ""
 
-msgid "Results Entry"
+msgid "Results Entry via public screens"
 msgstr ""
 
 msgid "Results entry"
@@ -4887,36 +4920,6 @@ msgid "This label will be used for the link to other screens to the screens of t
 msgstr ""
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr ""
-
-msgid "This role allows to check-in players for some or all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to enter results for some or all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to grant/revoke the Chief Arbitration role, edit the event; it inherits the Screen Management role."
-msgstr ""
-
-msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbitration role."
-msgstr ""
-
-msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbitration, Pairing, Check-in, Results Entry roles for all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to manage the displays."
-msgstr ""
-
-msgid "This role allows to pair the players using a pairing engine or manually, for some or all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to view the public displays of the event."
-msgstr ""
-
-msgid "This role inherits all the other roles and can do anything on the application; ONLY PEOPLE CONNECTED ON THE SHARLY CHESS SERVER OWN THIS ROLE."
-msgstr ""
-
-msgid "This role inherits the Check-in and Results Entry roles for some or all the tournaments of the event."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -5963,5 +5966,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Result Entry"
+#~ msgstr ""
+
+#~ msgid "Results Entry"
 #~ msgstr ""
 

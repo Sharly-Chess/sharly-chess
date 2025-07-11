@@ -378,6 +378,33 @@ msgstr "Tous les tournois"
 msgid "Allow"
 msgstr "Autoriser"
 
+msgid "Allows access to Screens marked as public."
+msgstr "Permet l'accès aux écrans publics."
+
+msgid "Allows check-in and results entry."
+msgstr "Autorise le pointage des joueur·euses et la saisie des résultats."
+
+msgid "Allows check-in via any input Screens that have been marked as public."
+msgstr "Autorise le pointage des joueur·euses sur des écrans publics."
+
+msgid "Allows entry of results via any input Screens that have been marked as public."
+msgstr "Autorise la saisie des résultats sur des écrans publics."
+
+msgid "Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role."
+msgstr "Autorise l'attribution et la révocation du rôle « Arbitrage en chef·fe » et l'édition des évènements ; inclut les persmissions du rôle « Gestion de l'affichage »."
+
+msgid "Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role."
+msgstr "Autorise l'attribution et la révocation du rôle « Arbitrage adjoint », l'édition des évènements et la gestion des tournois ; inclut les persmissions du rôle « Gestion de l'affichage »."
+
+msgid "Allows management of Screens and the account and devices that can access them."
+msgstr "Autorise la gestion des écrans et la gestion des comptes et appareils qui peuvent s'y connecter."
+
+msgid "Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays."
+msgstr "Ce rôle permet de gérer les joueur·euses, les résultats (y compris les résultats spéciaux et la modification des résultats), le pointage, les appariements et les affichages ; il hérite des rôles « Arbitrage de secteur », « Appariement des tournois », « Pointage des joueur·euses » et « Saisie des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
+
+msgid "Allows pairing of the players, either using a pairing engine or manually."
+msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appariement ou manuellement."
+
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -748,6 +775,9 @@ msgstr "Le pointage est fermé pour le tournoi [{tournament_uniq_id}]."
 
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
 msgstr "Le pointage est ouvert pour le tournoi [{tournament_uniq_id}]."
+
+msgid "Check-in via input Screens"
+msgstr "Pointage sur écrans publics"
 
 msgid "Checked-in"
 msgstr "Pointé·e"
@@ -2394,6 +2424,9 @@ msgstr "Inclure les joueur·euses de ces catégories."
 msgid "Include players of these rating types."
 msgstr "Inclure les joueur·euses de ces types de classement."
 
+msgid "Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
+msgstr "Ce rôle inclut tous les autres rôles et donne un accès complet à l'application ; ce rôle est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -3910,8 +3943,8 @@ msgstr "Résultat"
 msgid "Results"
 msgstr "Résultats"
 
-msgid "Results Entry"
-msgstr "Saisie des résultats"
+msgid "Results Entry via public screens"
+msgstr "Saisie des résultats sur écrans publics"
 
 msgid "Results entry"
 msgstr "Saisie des résultats"
@@ -4888,36 +4921,6 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-msgid "This role allows to check-in players for some or all the tournaments of the event."
-msgstr "Ce rôle permet de pointer les joueur·euses pour certains tournois (ou tous les tournois) de l'évènement."
-
-msgid "This role allows to enter results for some or all the tournaments of the event."
-msgstr "Ce rôle permet d'entrer les résultats pour certains tournois (ou tous les tournois) de l'évènement."
-
-msgid "This role allows to grant/revoke the Chief Arbitration role, edit the event; it inherits the Screen Management role."
-msgstr "Ce rôle permet d'accorder/révoquer le rôle Arbitrage en chef·fe et d'éditer les évènements ; il hérite du rôle « Gestion de l'affichage »."
-
-msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbitration role."
-msgstr "Ce rôle permet d'accorder/révoquer le rôle Arbitrage adjoint, d'éditer les évènements et gérer les tournois ; il hérite du rôle « Arbitrage en chef·fe »."
-
-msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbitration, Pairing, Check-in, Results Entry roles for all the tournaments of the event."
-msgstr "Ce rôle permet de gérer les joueur·euses, les résultats (y compris les résultats spéciaux et la modification des résultats), le pointage, les appariements et les affichages ; il hérite des rôles « Arbitrage de secteur », « Appariement des tournois », « Pointage des joueur·euses » et « Saisie des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
-
-msgid "This role allows to manage the displays."
-msgstr "Ce rôle permet de gérer les affichages."
-
-msgid "This role allows to pair the players using a pairing engine or manually, for some or all the tournaments of the event."
-msgstr "Ce rôle permet d'apparier les joueur·euses en utilisant un moteur ou manuellement, pour certains tournois (ou tous les tournois) de l'évènement."
-
-msgid "This role allows to view the public displays of the event."
-msgstr "Ce rôle permet de visualiser les affichages publics de l'évènement."
-
-msgid "This role inherits all the other roles and can do anything on the application; ONLY PEOPLE CONNECTED ON THE SHARLY CHESS SERVER OWN THIS ROLE."
-msgstr "Ce rôle hérite de tous les autres rôles et permet de tout faire dans l'application ; SEULES LES PERSONNES CONNECTÉES SUR LE SERVEUR SHARLY CHESS ONT CE RÔLE."
-
-msgid "This role inherits the Check-in and Results Entry roles for some or all the tournaments of the event."
-msgstr "Ce rôle hérite des rôles « Pointage des joueur·euses » et « Saisie des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
