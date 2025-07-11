@@ -18,7 +18,6 @@ SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 TEST_ENV: bool = os.getenv('TEST_ENV') == 'true'
-
 # True when experimental features are enabled (relying on an engine option), False otherwise.
 _EXPERIMENTAL_FEATURES: bool = False
 
