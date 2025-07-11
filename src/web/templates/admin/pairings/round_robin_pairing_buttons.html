@@ -7,7 +7,7 @@
 >
     {% if not admin_tournament.has_pairings %}
         <div
-            {% if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] %}
+            {% if admin_tournament.id not in client.tournament_ids_allowing_use_pairing_engine %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to generate the pairings.'), 'top') }}
             {% elif pairings_generation_disabled_message %}
                 {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
@@ -17,7 +17,11 @@
         >
             <button
                 class="btn btn-outline-primary text-nowrap"
-                {% if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] or pairings_generation_disabled_message %}
+                {% if
+                    (admin_tournament.id not in client.tournament_ids_allowing_use_pairing_engine)
+                    or
+                    pairings_generation_disabled_message
+                %}
                     disabled
                 {% else %}
                     hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
@@ -37,7 +41,7 @@
 
     {% if admin_tournament.has_pairings and not admin_tournament.has_results %}
         <div
-            {% if not client.can_unpair_round_by_tournament_id[admin_tournament.id] %}
+            {% if admin_tournament.id not in client.tournament_ids_allowing_unpair_round %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}
             {% else %}
                 {{ macros.tooltip_attributes('info', _('Unpair all the rounds of the tournament.'), 'top') }}
@@ -45,7 +49,7 @@
         >
             <button
                 class="btn btn-outline-primary text-nowrap"
-                {% if not client.can_unpair_round_by_tournament_id[admin_tournament.id] %}
+                {% if admin_tournament.id not in client.tournament_ids_allowing_unpair_round %}
                     disabled
                 {% else %}
                     hx-post="{{ url_for('admin-pairings-unpair-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
@@ -60,7 +64,7 @@
 
     {% if round_status == 'CURRENT' and not admin_tournament.playing and not admin_tournament.finished %}
         <div
-            {% if not client.can_set_current_round_by_tournament_id[admin_tournament.id] %}
+            {% if admin_tournament.id not in client.tournament_ids_allowing_set_current_round %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set the current round.'), 'top') }}
             {% else %}
                 {{ macros.tooltip_attributes('info', _('Mark this round as over and define the next one as the current round.'), 'top') }}
@@ -68,7 +72,7 @@
         >
             <button
                 class="btn btn-outline-primary text-nowrap"
-                {% if not client.can_set_current_round_by_tournament_id[admin_tournament.id] %}
+                {% if admin_tournament.id not in client.tournament_ids_allowing_set_current_round %}
                     disabled
                 {% else %}
                     hx-put="{{ url_for('admin-tournament-set-current-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, current_round=admin_round + 1) }}"

@@ -22,13 +22,13 @@
                             action='ZPB'
                         ) %}
                         <span
-                            {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
+                            {% if admin_tournament.id not in client.tournament_ids_allowing_set_zero_point_bye %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
                             {% endif %}
                         >
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
+                                {% if admin_tournament.id not in client.tournament_ids_allowing_set_zero_point_bye %}
                                     disabled
                                 {% else %}
                                     {% if action in allowed_actions %}
@@ -60,13 +60,13 @@
                             action='LEAVE'
                         ) %}
                         <span
-                            {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
+                            {% if admin_tournament.id not in client.tournament_ids_allowing_set_zero_point_bye %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
                             {% endif %}
                         >
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
+                                {% if admin_tournament.id not in client.tournament_ids_allowing_set_zero_point_bye %}
                                     disabled
                                 {% else %}
                                     {% if action in allowed_actions %}
@@ -99,13 +99,13 @@
                             action='RETURN'
                         ) %}
                         <span
-                            {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
+                            {% if admin_tournament.id not in client.tournament_ids_allowing_set_zero_point_bye %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
                             {% endif %}
                         >
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if not client.can_set_zero_point_bye_by_tournament_id[admin_tournament.id] %}
+                                {% if admin_tournament.id not in client.tournament_ids_allowing_set_zero_point_bye %}
                                     disabled
                                 {% else %}
                                     {% if action in allowed_actions %}
@@ -143,13 +143,13 @@
                             action='RETURN'
                         ) %}
                         <span
-                            {% if not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id] %}
+                            {% if admin_tournament.id not in client.tournament_ids_allowing_set_half_point_bye %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Half-Point Byes.'), 'right') }}
                             {% endif %}
                         >
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id] %}
+                                {% if admin_tournament.id not in client.tournament_ids_allowing_set_half_point_bye %}
                                     disabled
                                 {% else %}
                                     {% if action in allowed_actions %}
@@ -175,7 +175,7 @@
                     {% else %}
                         <span
                             class="w-100"
-                            {% if not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id] %}
+                            {% if admin_tournament.id not in client.tournament_ids_allowing_set_half_point_bye %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Half-Point Byes.'), 'right') }}
                             {% elif no_bye_possible %}
                                 {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=player.tournament.last_rounds_no_byes), 'top') }}
@@ -194,7 +194,7 @@
                             <button
                                 class="btn btn-outline-primary w-100"
                                 {% if
-                                    not client.can_set_half_point_bye_by_tournament_id[admin_tournament.id]
+                                    (admin_tournament.id not in client.tournament_ids_allowing_set_half_point_bye)
                                     or
                                     no_bye_possible
                                     or
@@ -233,7 +233,7 @@
                     {% if action in existing_actions %}
                         <span
                             class="w-100"
-                            {% if not client.can_manually_pair_players_by_tournament_id[admin_tournament.id] %}
+                            {% if admin_tournament.id not in client.tournament_ids_allowing_manually_pair_players %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to pair players.'), 'right') }}
                             {% elif admin_tournament.check_in_open %}
                                 {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
@@ -241,7 +241,11 @@
                         >
                             <button
                                 class="btn btn-outline-primary w-100 {% if exempt_player %}d-flex flex-column align-items-center gap-1{% endif %}"
-                                {% if not client.can_manually_pair_players_by_tournament_id[admin_tournament.id] or admin_tournament.check_in_open %}
+                                {% if
+                                    (admin_tournament.id not in client.tournament_ids_allowing_manually_pair_players)
+                                    or
+                                    admin_tournament.check_in_open
+                                %}
                                     disabled
                                 {% else %}
                                     {% if action in allowed_actions %}
