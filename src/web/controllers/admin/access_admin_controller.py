@@ -336,9 +336,7 @@ class AccessAdminController(BaseEventAdminController):
                 errors[field] = _('Account [{username}] already exists.').format(
                     username=username
                 )
-        roles = WebContext.form_data_to_list_str(data, field := 'roles') or []
-        if not roles:
-            errors[field] = _('At least one role is expected.')
+        # no validation on the roles, an empty list is accepted.
         return errors
 
     @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
@@ -625,9 +623,7 @@ class AccessAdminController(BaseEventAdminController):
                     errors[field] = _('Device [{ip}] already set.').format(ip=ip)
             else:
                 errors[field] = _('The IP address [{ip}] is not valid.').format(ip=ip)
-        roles = WebContext.form_data_to_list_str(data, field := 'roles') or []
-        if not roles:
-            errors[field] = _('At least one role is expected.')
+        # no validation on the roles, an empty list is accepted.
         return errors
 
     @post(path='/admin/device-create/{event_uniq_id:str}', name='admin-device-create')
