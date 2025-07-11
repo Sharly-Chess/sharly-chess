@@ -1,15 +1,15 @@
 from data.auth.roles import (
     Role,
     SpectatorRole,
-    ResultOfficerRole,
-    AdministratorRole,
-    OrganizerRole,
-    DisplayManagerRole,
-    ChiefArbiterRole,
-    DeputyChiefArbiterRole,
-    SectorArbiterRole,
-    PairingsOfficerRole,
-    CheckInOfficerRole,
+    ResultsEntryRole,
+    AdministrationRole,
+    OrganizationRole,
+    ScreenManagementRole,
+    ChiefArbitrationRole,
+    DeputyChiefArbitrationRole,
+    SectorArbitrationRole,
+    PairingRole,
+    CheckInRole,
 )
 from utils.entity import EntityManager
 
@@ -18,14 +18,14 @@ class RoleManager(EntityManager[Role]):
     @staticmethod
     def entity_types() -> list[type[Role]]:
         return [
-            AdministratorRole,
-            OrganizerRole,
-            DisplayManagerRole,
-            ChiefArbiterRole,
-            DeputyChiefArbiterRole,
-            SectorArbiterRole,
-            PairingsOfficerRole,
-            CheckInOfficerRole,
-            ResultOfficerRole,
+            AdministrationRole,
+            OrganizationRole,
+            ScreenManagementRole,
+            ChiefArbitrationRole,
+            DeputyChiefArbitrationRole,
+            SectorArbitrationRole,
+            PairingRole,
+            CheckInRole,
+            ResultsEntryRole,
             SpectatorRole,
         ]

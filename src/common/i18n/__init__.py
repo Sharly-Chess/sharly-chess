@@ -4,7 +4,7 @@ from gettext import GNUTranslations
 from logging import Logger
 from pathlib import Path
 
-from common import BASE_DIR, DEVEL_ENV
+from common import BASE_DIR, DEVEL_ENV, TEST_ENV
 from common.exception import SharlyChessException
 from common.i18n.babel_updaters import BabelUpdater, BabelMOFilesUpdater
 from common.i18n.locale_info import LocaleInfo
@@ -77,7 +77,7 @@ locale_infos: dict[str, LocaleInfo] = {
 
 _auto_update_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update'
 
-if DEVEL_ENV:
+if DEVEL_ENV and not TEST_ENV:
     if _auto_update_file.is_file():
         BabelUpdater(locale_infos, DEFAULT_LOCALE)
     else:

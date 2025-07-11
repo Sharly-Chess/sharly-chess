@@ -176,9 +176,6 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
-msgid "A new account must have a password set."
-msgstr ""
-
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -345,7 +342,7 @@ msgstr ""
 msgid "Adding devices allows you to grant permissions to people on other clients,"
 msgstr ""
 
-msgid "Administrator"
+msgid "Administration"
 msgstr ""
 
 msgid "Age"
@@ -379,6 +376,33 @@ msgid "All the tournaments"
 msgstr ""
 
 msgid "Allow"
+msgstr ""
+
+msgid "Allows access to Screens marked as public."
+msgstr ""
+
+msgid "Allows check-in and results entry."
+msgstr ""
+
+msgid "Allows check-in via any input Screens that have been marked as public."
+msgstr ""
+
+msgid "Allows entry of results via any input Screens that have been marked as public."
+msgstr ""
+
+msgid "Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role."
+msgstr ""
+
+msgid "Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role."
+msgstr ""
+
+msgid "Allows management of Screens and the account and devices that can access them."
+msgstr ""
+
+msgid "Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays."
+msgstr ""
+
+msgid "Allows pairing of the players, either using a pairing engine or manually."
 msgstr ""
 
 msgid "An unexpected error occurred."
@@ -445,6 +469,9 @@ msgid "At least one league is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one role is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -739,9 +766,6 @@ msgstr ""
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
-msgid "Check-in Officer"
-msgstr ""
-
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
@@ -750,6 +774,9 @@ msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Check-in via input Screens"
 msgstr ""
 
 msgid "Checked-in"
@@ -790,7 +817,7 @@ msgstr ""
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
-msgid "Chief Arbiter"
+msgid "Chief Arbitration"
 msgstr ""
 
 msgid "Choose a custom image:"
@@ -812,6 +839,12 @@ msgid "Choose at least one league."
 msgstr ""
 
 msgid "Choose at least one rating type."
+msgstr ""
+
+msgid "Choose at least one role."
+msgstr ""
+
+msgid "Choose one, many or no tournaments."
 msgstr ""
 
 msgid "Choose the columns displayed."
@@ -1301,7 +1334,7 @@ msgstr ""
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
-msgid "Deputy Chief Arbiter"
+msgid "Deputy Chief Arbitration"
 msgstr ""
 
 msgid "Description"
@@ -1386,9 +1419,6 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
-msgstr ""
-
-msgid "Display manager"
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -2394,6 +2424,9 @@ msgstr ""
 msgid "Include players of these rating types."
 msgstr ""
 
+msgid "Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
+msgstr ""
+
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -3170,10 +3203,10 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organization"
 msgstr ""
 
-msgid "Organizer"
+msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
@@ -3246,6 +3279,9 @@ msgstr ""
 msgid "Paired against: %(opponent_name)s"
 msgstr ""
 
+msgid "Pairing"
+msgstr ""
+
 msgid "Pairing Allocated Bye"
 msgstr ""
 
@@ -3262,9 +3298,6 @@ msgid "Pairing system"
 msgstr ""
 
 msgid "Pairings"
-msgstr ""
-
-msgid "Pairings Officer"
 msgstr ""
 
 msgid "Pairings by board"
@@ -3329,9 +3362,6 @@ msgid "Passed ({num})"
 msgstr ""
 
 msgid "Passed events"
-msgstr ""
-
-msgid "Password does not match."
 msgstr ""
 
 msgid "Password:"
@@ -3913,7 +3943,7 @@ msgstr ""
 msgid "Results"
 msgstr ""
 
-msgid "Results Officer"
+msgid "Results Entry via public screens"
 msgstr ""
 
 msgid "Results entry"
@@ -3953,6 +3983,9 @@ msgid "Rnd.Boa"
 msgstr ""
 
 msgid "Role"
+msgstr ""
+
+msgid "Roles"
 msgstr ""
 
 #, python-format
@@ -4088,6 +4121,9 @@ msgstr ""
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Screen Management"
+msgstr ""
+
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
@@ -4142,7 +4178,7 @@ msgstr ""
 msgid "Searching…"
 msgstr ""
 
-msgid "Sector arbiter"
+msgid "Sector arbitration"
 msgstr ""
 
 msgid "Seed color"
@@ -4728,6 +4764,12 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The roles to attribute to this account."
+msgstr ""
+
+msgid "The roles to attribute to this device."
+msgstr ""
+
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
@@ -4744,7 +4786,7 @@ msgstr ""
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
-msgid "The screens displayed by the display controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -4788,6 +4830,12 @@ msgid "The tournament of which you want to show the pairings, mandatory."
 msgstr ""
 
 msgid "The tournament to print."
+msgstr ""
+
+msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
+msgstr ""
+
+msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
@@ -4872,36 +4920,6 @@ msgid "This label will be used for the link to other screens to the screens of t
 msgstr ""
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-msgstr ""
-
-msgid "This role allows to check-in players for some or all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to enter results for some or all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbiter, Pairings Officer, Check-in Officer, Results Officer roles for all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to manage the displays."
-msgstr ""
-
-msgid "This role allows to nominate Chief Arbiters, edit the event; it inherits the Display Manager role."
-msgstr ""
-
-msgid "This role allows to nominate Deputy Chief Arbiters, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
-msgstr ""
-
-msgid "This role allows to pair the players using a pairing engine or manually, for some or all the tournaments of the event."
-msgstr ""
-
-msgid "This role allows to view the public displays of the event."
-msgstr ""
-
-msgid "This role inherits all the other roles and can do anything on the application; ONLY PEOPLE CONNECTED ON THE SHARLY CHESS SERVER OWN THIS ROLE."
-msgstr ""
-
-msgid "This role inherits the Check-in Officer and Results Officer roles for some or all the tournaments of the event."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -5116,9 +5134,6 @@ msgid "Tournament record"
 msgstr ""
 
 msgid "Tournament rules are not set"
-msgstr ""
-
-msgid "Tournament unique IDs"
 msgstr ""
 
 msgid "Tournament visibility successfully set"
@@ -5634,9 +5649,6 @@ msgstr ""
 msgid "You are not allowed to generate the pairings."
 msgstr ""
 
-msgid "You are not allowed to grant/revoke this permission."
-msgstr ""
-
 msgid "You are not allowed to manage prizes."
 msgstr ""
 
@@ -5944,24 +5956,18 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!."
+#~ msgid "Screen management"
 #~ msgstr ""
 
-#~ msgid "Default execution mode:"
+#~ msgid "Sector Arbitration"
 #~ msgstr ""
 
-#~ msgid "Execution mode:"
+#~ msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
 #~ msgstr ""
 
-#~ msgid "Default execution mode"
+#~ msgid "Result Entry"
 #~ msgstr ""
 
-#~ msgid "Execution mode"
-#~ msgstr ""
-
-#~ msgid "General"
-#~ msgstr ""
-
-#~ msgid "Please select the execution mode for the event."
+#~ msgid "Results Entry"
 #~ msgstr ""
 
