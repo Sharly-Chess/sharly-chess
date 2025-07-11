@@ -18,6 +18,10 @@ import requests
 
 from tests.test_config import TestConfig
 
+# Set up environment variables here to make TEST_ENV available in common.i18n
+env = os.environ.copy()
+env.update(TestConfig.get_test_env_vars())
+
 
 def pytest_configure(config):
     """Register custom markers."""
@@ -53,9 +57,6 @@ class BackendServer:
 
     def start(self):
         """Start the backend server."""
-        # Set up environment variables
-        env = os.environ.copy()
-        env.update(TestConfig.get_test_env_vars())
 
         # Start your backend server process
         # Adjust this command based on how your server is started
