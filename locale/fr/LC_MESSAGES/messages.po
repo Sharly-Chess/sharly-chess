@@ -342,7 +342,7 @@ msgstr "Ajouter"
 msgid "Adding devices allows you to grant permissions to people on other clients,"
 msgstr "La création d'appareils vous permet de donner des permissions à d'autres appareils,"
 
-msgid "Administrator"
+msgid "Administration"
 msgstr "Administration"
 
 msgid "Age"
@@ -739,9 +739,6 @@ msgstr "Pointage"
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
 
-msgid "Check-in Officer"
-msgstr "Pointage des joueur·euses"
-
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr "Le pointage est fermé pour le tournoi [%(tournament_uniq_id)s]."
@@ -790,7 +787,7 @@ msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s"
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 
-msgid "Chief Arbiter"
+msgid "Chief Arbitration"
 msgstr "Arbitrage en chef·fe"
 
 msgid "Choose a custom image:"
@@ -1307,7 +1304,7 @@ msgstr "Suppression du chronomètre [%(timer_uniq_id)s]"
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr "Suppression du tournoi [%(tournament_uniq_id)s]"
 
-msgid "Deputy Chief Arbiter"
+msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
 
 msgid "Description"
@@ -1393,9 +1390,6 @@ msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé en mode personnalisable)."
-
-msgid "Display manager"
-msgstr "Gestion de l'affichage"
 
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
@@ -3176,11 +3170,11 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
+msgid "Organization"
+msgstr "Organisation"
+
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
-
-msgid "Organizer"
-msgstr "Organisation"
 
 msgid "Other ODBC drivers found on the server"
 msgstr "Autres pilotes ODBC sur le serveur"
@@ -3252,6 +3246,9 @@ msgstr "Apparier le tournoi"
 msgid "Paired against: %(opponent_name)s"
 msgstr "Apparié·e contre : %(opponent_name)s"
 
+msgid "Pairing"
+msgstr "Appariement"
+
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
@@ -3269,9 +3266,6 @@ msgstr "Système d'appariements"
 
 msgid "Pairings"
 msgstr "Appariements"
-
-msgid "Pairings Officer"
-msgstr "Appariement des tournois"
 
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
@@ -3913,11 +3907,11 @@ msgstr "Rés."
 msgid "Result"
 msgstr "Résultat"
 
-msgid "Result Officer"
-msgstr "Saisie des résultats"
-
 msgid "Results"
 msgstr "Résultats"
+
+msgid "Results Entry"
+msgstr "Saisie des résultats"
 
 msgid "Results entry"
 msgstr "Saisie des résultats"
@@ -4094,6 +4088,9 @@ msgstr "Score"
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Screen Management"
+msgstr "Gestion de l'affichage"
+
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr "Écran [{pattern}] introuvable pour le menu de l'écran [{screen_uniq_id}]."
 
@@ -4148,7 +4145,7 @@ msgstr "Rechercher par : %(fields)s"
 msgid "Searching…"
 msgstr "Recherche en cours…"
 
-msgid "Sector arbiter"
+msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
 
 msgid "Seed color"
@@ -4756,7 +4753,7 @@ msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernièr
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr "Les familles à afficher en rotation (les familles d'écrans de saisie apparaissent en italique car elles ne devraient normalement pas être incluses dans les écrans rotatifs)."
 
-msgid "The screens displayed by the display controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -4898,17 +4895,17 @@ msgstr "Ce rôle permet de pointer les joueur·euses pour certains tournois (ou 
 msgid "This role allows to enter results for some or all the tournaments of the event."
 msgstr "Ce rôle permet d'entrer les résultats pour certains tournois (ou tous les tournois) de l'évènement."
 
-msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbiter, Pairings Officer, Check-in Officer, Results Officer roles for all the tournaments of the event."
-msgstr "Ce rôle permet de gérer les joueur·euses, les résultats (y compris les résultats spéciaux et la modification des résultats), le pointage, les appariements et les affichages ; il hérite des rôles « Arbitrage de secteur », « Appariement des tournois », « Pointage des joueur·euses » et « Entrée des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
+msgid "This role allows to grant/revoke the Chief Arbitration role, edit the event; it inherits the Screen Management role."
+msgstr "Ce rôle permet d'accorder/révoquer le rôle Arbitrage en chef·fe et d'éditer les évènements ; il hérite du rôle « Gestion de l'affichage »."
+
+msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbitration role."
+msgstr "Ce rôle permet d'accorder/révoquer le rôle Arbitrage adjoint, d'éditer les évènements et gérer les tournois ; il hérite du rôle « Arbitrage en chef·fe »."
+
+msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbitration, Pairing, Check-in, Results Entry roles for all the tournaments of the event."
+msgstr "Ce rôle permet de gérer les joueur·euses, les résultats (y compris les résultats spéciaux et la modification des résultats), le pointage, les appariements et les affichages ; il hérite des rôles « Arbitrage de secteur », « Appariement des tournois », « Pointage des joueur·euses » et « Saisie des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
 
 msgid "This role allows to manage the displays."
 msgstr "Ce rôle permet de gérer les affichages."
-
-msgid "This role allows to nominate Chief Arbiters, edit the event; it inherits the Display Manager role."
-msgstr "Ce rôle permet de nommer les arbitres en chef·fe et d'éditer les évènements ; il hérite du rôle « Gestion de l'affichage »."
-
-msgid "This role allows to nominate Deputy Chief Arbiters, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
-msgstr "Ce rôle permet de nommer les arbitres adjoint·es, d'éditer les évènements et gérer les tournois ; il hérite du rôle « Arbitrage en chef·fe »."
 
 msgid "This role allows to pair the players using a pairing engine or manually, for some or all the tournaments of the event."
 msgstr "Ce rôle permet d'apparier les joueur·euses en utilisant un moteur ou manuellement, pour certains tournois (ou tous les tournois) de l'évènement."
@@ -4919,8 +4916,8 @@ msgstr "Ce rôle permet de visualiser les affichages publics de l'évènement."
 msgid "This role inherits all the other roles and can do anything on the application; ONLY PEOPLE CONNECTED ON THE SHARLY CHESS SERVER OWN THIS ROLE."
 msgstr "Ce rôle hérite de tous les autres rôles et permet de tout faire dans l'application ; SEULES LES PERSONNES CONNECTÉES SUR LE SERVEUR SHARLY CHESS ONT CE RÔLE."
 
-msgid "This role inherits the Check-in Officer and Results Officer roles for some or all the tournaments of the event."
-msgstr "Ce rôle hérite des rôles « Pointage des joueur·euses » et « Entrée des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
+msgid "This role inherits the Check-in and Results Entry roles for some or all the tournaments of the event."
+msgstr "Ce rôle hérite des rôles « Pointage des joueur·euses » et « Saisie des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
@@ -5955,4 +5952,7 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Results Entry"
+#~ msgstr "Saisie des résultats"
 

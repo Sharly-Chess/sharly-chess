@@ -1,14 +1,14 @@
 import pytest
 from playwright.sync_api import expect
-from data.auth.roles import DeputyChiefArbiterRole
+from data.auth.roles import DeputyChiefArbitrationRole
 from tests.e2e.roles.base_role_test import BaseRoleTest
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
 
 
 @pytest.mark.e2e
-class TestDeputyChiefArbiterRole(BaseRoleTest):
+class TestDeputyChiefArbitrationRole(BaseRoleTest):
     def get_roles(self):
-        return [DeputyChiefArbiterRole]
+        return [DeputyChiefArbitrationRole]
 
     def test_access_to_visible_events(self, auth_page):
         self.auth_page.goto('/admin/current_events')

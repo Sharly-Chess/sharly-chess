@@ -117,14 +117,14 @@ class SpectatorRole(Role):
         return _('This role allows to view the public displays of the event.')
 
 
-class ResultOfficerRole(Role):
+class ResultsEntryRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'RESULT_OFFICER'
+        return 'RESULTS_ENTRY'
 
     @staticmethod
     def static_name() -> str:
-        return _('Result Officer')
+        return _('Results Entry')
 
     @property
     def scope(self) -> RoleScope:
@@ -146,14 +146,14 @@ class ResultOfficerRole(Role):
         )
 
 
-class CheckInOfficerRole(Role):
+class CheckInRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'CHECK_IN_OFFICER'
+        return 'CHECK_IN'
 
     @staticmethod
     def static_name() -> str:
-        return _('Check-in Officer')
+        return _('Check-in')
 
     @property
     def scope(self) -> RoleScope:
@@ -178,14 +178,14 @@ class CheckInOfficerRole(Role):
         )
 
 
-class PairingsOfficerRole(Role):
+class PairingRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'PAIRINGS_OFFICER'
+        return 'PAIRING'
 
     @staticmethod
     def static_name() -> str:
-        return _('Pairings Officer')
+        return _('Pairing')
 
     @property
     def scope(self) -> RoleScope:
@@ -193,7 +193,7 @@ class PairingsOfficerRole(Role):
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
-        return [CheckInOfficerRole]
+        return [CheckInRole]
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -224,14 +224,14 @@ class PairingsOfficerRole(Role):
         )
 
 
-class SectorArbiterRole(Role):
+class SectorArbitrationRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'SECTOR_ARBITER'
+        return 'SECTOR_ARBITRATION'
 
     @staticmethod
     def static_name() -> str:
-        return _('Sector arbiter')
+        return _('Sector arbitration')
 
     @property
     def scope(self) -> RoleScope:
@@ -240,8 +240,8 @@ class SectorArbiterRole(Role):
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
         return [
-            CheckInOfficerRole,
-            ResultOfficerRole,
+            CheckInRole,
+            ResultsEntryRole,
         ]
 
     @staticmethod
@@ -256,19 +256,19 @@ class SectorArbiterRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role inherits the Check-in Officer and Results Officer '
+            'This role inherits the Check-in and Results Entry '
             'roles for some or all the tournaments of the event.'
         )
 
 
-class DeputyChiefArbiterRole(Role):
+class DeputyChiefArbitrationRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'DEPUTY_CHIEF_ARBITER'
+        return 'DEPUTY_CHIEF_ARBITRATION'
 
     @staticmethod
     def static_name() -> str:
-        return _('Deputy Chief Arbiter')
+        return _('Deputy Chief Arbitration')
 
     @property
     def scope(self) -> RoleScope:
@@ -277,8 +277,8 @@ class DeputyChiefArbiterRole(Role):
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
         return [
-            PairingsOfficerRole,
-            SectorArbiterRole,
+            PairingRole,
+            SectorArbitrationRole,
         ]
 
     @staticmethod
@@ -309,19 +309,19 @@ class DeputyChiefArbiterRole(Role):
         return _(
             'This role allows to manage players, results (including special '
             'results and results modification), check-in, pairing and displays; '
-            'it inherits the Sector Arbiter, Pairings Officer, Check-in Officer, '
-            'Results Officer roles for all the tournaments of the event.'
+            'it inherits the Sector Arbitration, Pairing, Check-in, '
+            'Results Entry roles for all the tournaments of the event.'
         )
 
 
-class ChiefArbiterRole(Role):
+class ChiefArbitrationRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'CHIEF_ARBITER'
+        return 'CHIEF_ARBITRATION'
 
     @staticmethod
     def static_name() -> str:
-        return _('Chief Arbiter')
+        return _('Chief Arbitration')
 
     @property
     def scope(self) -> RoleScope:
@@ -329,7 +329,7 @@ class ChiefArbiterRole(Role):
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
-        return [DeputyChiefArbiterRole]
+        return [DeputyChiefArbitrationRole]
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -342,19 +342,19 @@ class ChiefArbiterRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to nominate Deputy Chief Arbiters, edit the event, '
-            'manage tournaments; it inherits the Deputy Chief Arbiter role.'
+            'This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, '
+            'manage tournaments; it inherits the Deputy Chief Arbitration role.'
         )
 
 
-class DisplayManagerRole(Role):
+class ScreenManagementRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'DISPLAY_MANAGER'
+        return 'SCREEN_MANAGEMENT'
 
     @staticmethod
     def static_name() -> str:
-        return _('Display manager')
+        return _('Screen Management')
 
     @property
     def scope(self) -> RoleScope:
@@ -377,14 +377,14 @@ class DisplayManagerRole(Role):
         return _('This role allows to manage the displays.')
 
 
-class OrganizerRole(Role):
+class OrganizationRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'ORGANIZER'
+        return 'ORGANIZATION'
 
     @staticmethod
     def static_name() -> str:
-        return _('Organizer')
+        return _('Organization')
 
     @property
     def scope(self) -> RoleScope:
@@ -392,7 +392,7 @@ class OrganizerRole(Role):
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
-        return [DisplayManagerRole]
+        return [ScreenManagementRole]
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -406,23 +406,23 @@ class OrganizerRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'This role allows to nominate Chief Arbiters, edit the event; '
-            'it inherits the Display Manager role.'
+            'This role allows to grant/revoke the Chief Arbitration role, edit the event; '
+            'it inherits the Screen Management role.'
         )
 
     @classmethod
     def manageable_roles(cls) -> set[Role]:
-        return cls.sub_roles() | ChiefArbiterRole.sub_roles()
+        return cls.sub_roles() | ChiefArbitrationRole.sub_roles()
 
 
-class AdministratorRole(Role):
+class AdministrationRole(Role):
     @staticmethod
     def static_id() -> str:
-        return 'ADMINISTRATOR'
+        return 'ADMINISTRATION'
 
     @staticmethod
     def static_name() -> str:
-        return _('Administrator')
+        return _('Administration')
 
     @property
     def scope(self) -> RoleScope:
@@ -430,7 +430,7 @@ class AdministratorRole(Role):
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
-        return [OrganizerRole, ChiefArbiterRole]
+        return [OrganizationRole, ChiefArbitrationRole]
 
     @staticmethod
     def role_actions() -> list[AuthAction]:

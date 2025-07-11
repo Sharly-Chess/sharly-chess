@@ -7,7 +7,7 @@ from database.sqlite.event.event_store import (
     StoredAccount,
     StoredAccess,
 )
-from data.auth.roles import Role, AdministratorRole
+from data.auth.roles import Role, AdministrationRole
 
 
 class AuthEntity[T: StoredAccess](ABC):
@@ -116,7 +116,7 @@ class Device(AuthEntity[StoredDevice]):
             StoredDevice(
                 id=cls.LOCALHOST_ID,
                 active=True,
-                roles=[AdministratorRole.static_id()],
+                roles=[AdministrationRole.static_id()],
                 tournament_ids=None,
                 ip=None,
             )

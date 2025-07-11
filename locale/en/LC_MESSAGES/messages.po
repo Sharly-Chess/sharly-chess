@@ -342,7 +342,7 @@ msgstr ""
 msgid "Adding devices allows you to grant permissions to people on other clients,"
 msgstr ""
 
-msgid "Administrator"
+msgid "Administration"
 msgstr ""
 
 msgid "Age"
@@ -739,9 +739,6 @@ msgstr ""
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
-msgid "Check-in Officer"
-msgstr ""
-
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
 msgstr ""
@@ -790,7 +787,7 @@ msgstr ""
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
-msgid "Chief Arbiter"
+msgid "Chief Arbitration"
 msgstr ""
 
 msgid "Choose a custom image:"
@@ -1307,7 +1304,7 @@ msgstr ""
 msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
-msgid "Deputy Chief Arbiter"
+msgid "Deputy Chief Arbitration"
 msgstr ""
 
 msgid "Description"
@@ -1392,9 +1389,6 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
-msgstr ""
-
-msgid "Display manager"
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -3176,10 +3170,10 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organization"
 msgstr ""
 
-msgid "Organizer"
+msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
 msgid "Other ODBC drivers found on the server"
@@ -3252,6 +3246,9 @@ msgstr ""
 msgid "Paired against: %(opponent_name)s"
 msgstr ""
 
+msgid "Pairing"
+msgstr ""
+
 msgid "Pairing Allocated Bye"
 msgstr ""
 
@@ -3268,9 +3265,6 @@ msgid "Pairing system"
 msgstr ""
 
 msgid "Pairings"
-msgstr ""
-
-msgid "Pairings Officer"
 msgstr ""
 
 msgid "Pairings by board"
@@ -3913,10 +3907,10 @@ msgstr "Res."
 msgid "Result"
 msgstr ""
 
-msgid "Result Officer"
+msgid "Results"
 msgstr ""
 
-msgid "Results"
+msgid "Results Entry"
 msgstr ""
 
 msgid "Results entry"
@@ -4094,6 +4088,9 @@ msgstr ""
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Screen Management"
+msgstr ""
+
 msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
 msgstr ""
 
@@ -4148,7 +4145,7 @@ msgstr ""
 msgid "Searching…"
 msgstr ""
 
-msgid "Sector arbiter"
+msgid "Sector arbitration"
 msgstr ""
 
 msgid "Seed color"
@@ -4756,7 +4753,7 @@ msgstr ""
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
-msgid "The screens displayed by the display controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -4898,16 +4895,16 @@ msgstr ""
 msgid "This role allows to enter results for some or all the tournaments of the event."
 msgstr ""
 
-msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbiter, Pairings Officer, Check-in Officer, Results Officer roles for all the tournaments of the event."
+msgid "This role allows to grant/revoke the Chief Arbitration role, edit the event; it inherits the Screen Management role."
+msgstr ""
+
+msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbitration role."
+msgstr ""
+
+msgid "This role allows to manage players, results (including special results and results modification), check-in, pairing and displays; it inherits the Sector Arbitration, Pairing, Check-in, Results Entry roles for all the tournaments of the event."
 msgstr ""
 
 msgid "This role allows to manage the displays."
-msgstr ""
-
-msgid "This role allows to nominate Chief Arbiters, edit the event; it inherits the Display Manager role."
-msgstr ""
-
-msgid "This role allows to nominate Deputy Chief Arbiters, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
 msgstr ""
 
 msgid "This role allows to pair the players using a pairing engine or manually, for some or all the tournaments of the event."
@@ -4919,7 +4916,7 @@ msgstr ""
 msgid "This role inherits all the other roles and can do anything on the application; ONLY PEOPLE CONNECTED ON THE SHARLY CHESS SERVER OWN THIS ROLE."
 msgstr ""
 
-msgid "This role inherits the Check-in Officer and Results Officer roles for some or all the tournaments of the event."
+msgid "This role inherits the Check-in and Results Entry roles for some or all the tournaments of the event."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -5955,4 +5952,16 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Screen management"
+#~ msgstr ""
+
+#~ msgid "Sector Arbitration"
+#~ msgstr ""
+
+#~ msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
+#~ msgstr ""
+
+#~ msgid "Result Entry"
+#~ msgstr ""
 

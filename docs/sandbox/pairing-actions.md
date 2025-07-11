@@ -4,14 +4,14 @@ This page provides an overview of the actions in the tournaments, players, and p
 
 ## Round status definition
 
-| Round                | Definition                                                                                | FR                                 |
-|----------------------|-------------------------------------------------------------------------------------------|------------------------------------|
-| Current round        | The last round with pairings                                                              | Ronde courante (ou ronde en cours) |
-| Previous round       | The round immediately preceding the current round (N-1)                                   | Ronde précédente                   |
-| Past rounds          | The rounds preceding the previous round (N-2, N-3, ...)                                   | Rondes passées                     |
-| Next round           | The round immediately following the current round (N+1)                                   | Ronde suivante                     |
-| Future rounds        | The rounds following the next round (N+2, N+3, ...)                                       | Rondes futures                     |
-| Last published round | The last round for which the chief arbiter changed the status from "draft" to "published" | Dernière ronde publiée             |
+| Round                | Definition                                                                  | FR                                 |
+|----------------------|-----------------------------------------------------------------------------|------------------------------------|
+| Current round        | The last round with pairings                                                | Ronde courante (ou ronde en cours) |
+| Previous round       | The round immediately preceding the current round (N-1)                     | Ronde précédente                   |
+| Past rounds          | The rounds preceding the previous round (N-2, N-3, ...)                     | Rondes passées                     |
+| Next round           | The round immediately following the current round (N+1)                     | Ronde suivante                     |
+| Future rounds        | The rounds following the next round (N+2, N+3, ...)                         | Rondes futures                     |
+| Last published round | The last round for which the status was changed from "draft" to "published" | Dernière ronde publiée             |
 
 > [!NOTE]
 > :information_source:
