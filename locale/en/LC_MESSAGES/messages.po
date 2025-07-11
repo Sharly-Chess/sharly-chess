@@ -176,9 +176,6 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
-msgid "A new account must have a password set."
-msgstr ""
-
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -445,6 +442,9 @@ msgid "At least one league is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one role is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -812,6 +812,12 @@ msgid "Choose at least one league."
 msgstr ""
 
 msgid "Choose at least one rating type."
+msgstr ""
+
+msgid "Choose at least one role."
+msgstr ""
+
+msgid "Choose one, many or no tournaments."
 msgstr ""
 
 msgid "Choose the columns displayed."
@@ -3331,9 +3337,6 @@ msgstr ""
 msgid "Passed events"
 msgstr ""
 
-msgid "Password does not match."
-msgstr ""
-
 msgid "Password:"
 msgstr ""
 
@@ -3910,10 +3913,10 @@ msgstr "Res."
 msgid "Result"
 msgstr ""
 
-msgid "Results"
+msgid "Result Officer"
 msgstr ""
 
-msgid "Results Officer"
+msgid "Results"
 msgstr ""
 
 msgid "Results entry"
@@ -3953,6 +3956,9 @@ msgid "Rnd.Boa"
 msgstr ""
 
 msgid "Role"
+msgstr ""
+
+msgid "Roles"
 msgstr ""
 
 #, python-format
@@ -4728,6 +4734,12 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The roles to attribute to this account."
+msgstr ""
+
+msgid "The roles to attribute to this device."
+msgstr ""
+
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
@@ -4788,6 +4800,12 @@ msgid "The tournament of which you want to show the pairings, mandatory."
 msgstr ""
 
 msgid "The tournament to print."
+msgstr ""
+
+msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
+msgstr ""
+
+msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
@@ -5116,9 +5134,6 @@ msgid "Tournament record"
 msgstr ""
 
 msgid "Tournament rules are not set"
-msgstr ""
-
-msgid "Tournament unique IDs"
 msgstr ""
 
 msgid "Tournament visibility successfully set"
@@ -5634,9 +5649,6 @@ msgstr ""
 msgid "You are not allowed to generate the pairings."
 msgstr ""
 
-msgid "You are not allowed to grant/revoke this permission."
-msgstr ""
-
 msgid "You are not allowed to manage prizes."
 msgstr ""
 
@@ -5943,25 +5955,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!."
-#~ msgstr ""
-
-#~ msgid "Default execution mode:"
-#~ msgstr ""
-
-#~ msgid "Execution mode:"
-#~ msgstr ""
-
-#~ msgid "Default execution mode"
-#~ msgstr ""
-
-#~ msgid "Execution mode"
-#~ msgstr ""
-
-#~ msgid "General"
-#~ msgstr ""
-
-#~ msgid "Please select the execution mode for the event."
-#~ msgstr ""
 

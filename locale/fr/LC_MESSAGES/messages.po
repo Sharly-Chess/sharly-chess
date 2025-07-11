@@ -176,9 +176,6 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
-msgid "A new account must have a password set."
-msgstr "Un mot de passe doit être défini pour les nouveaux comptes."
-
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
@@ -446,6 +443,9 @@ msgstr "Au moins une ligue est attendue."
 
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
+
+msgid "At least one role is expected."
+msgstr "Au moins un rôle doit être donné."
 
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
@@ -813,6 +813,12 @@ msgstr "Choisir au moins une ligue."
 
 msgid "Choose at least one rating type."
 msgstr "Choisissez au moins un type de classement."
+
+msgid "Choose at least one role."
+msgstr "Veuillez choisir au moins un rôle."
+
+msgid "Choose one, many or no tournaments."
+msgstr "Choisissez aucun, un ou plusieurs tournois."
 
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
@@ -3331,9 +3337,6 @@ msgstr "Passés ({num})"
 msgid "Passed events"
 msgstr "Évènements passés"
 
-msgid "Password does not match."
-msgstr "Le mot de passe n'est pas correct."
-
 msgid "Password:"
 msgstr "Mot de passe :"
 
@@ -3910,11 +3913,11 @@ msgstr "Rés."
 msgid "Result"
 msgstr "Résultat"
 
+msgid "Result Officer"
+msgstr "Saisie des résultats"
+
 msgid "Results"
 msgstr "Résultats"
-
-msgid "Results Officer"
-msgstr "Entrée des résultats"
 
 msgid "Results entry"
 msgstr "Saisie des résultats"
@@ -3954,6 +3957,9 @@ msgstr "Rde.Ech"
 
 msgid "Role"
 msgstr "Rôle"
+
+msgid "Roles"
+msgstr "Rôles"
 
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
@@ -4728,6 +4734,12 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
 
+msgid "The roles to attribute to this account."
+msgstr "Les rôles à attribuer à ce compte."
+
+msgid "The roles to attribute to this device."
+msgstr "Les rôles à attribuer à cet appareil."
+
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr "Le délai de rotation entre deux écrans (par défaut %(default)d secondes)."
@@ -4789,6 +4801,12 @@ msgstr "Le tournoi dont on souhaite afficher les appariements, obligatoire."
 
 msgid "The tournament to print."
 msgstr "Le tournoi à imprimer."
+
+msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
+msgstr "Les tournois sur lesquels le compte pourra agir (si aucun, le compte peut agir sur tous les tournois)."
+
+msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
+msgstr "Les tournois sur lesquels l'appareil pourra agir (si aucun, l'appareil peut agir sur tous les tournois)."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
@@ -5117,9 +5135,6 @@ msgstr "Historique"
 
 msgid "Tournament rules are not set"
 msgstr "Le règlement du tournoi n’est pas défini"
-
-msgid "Tournament unique IDs"
-msgstr "Identifiants uniques des tournois"
 
 msgid "Tournament visibility successfully set"
 msgstr "Visibilité du tournoi définie avec succès"
@@ -5634,9 +5649,6 @@ msgstr "Vous n'êtes pas autorisé·e à générer les appariements complémenta
 msgid "You are not allowed to generate the pairings."
 msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 
-msgid "You are not allowed to grant/revoke this permission."
-msgstr "Vous n'êtes pas autorisé·e à accorder/retirer cette permission."
-
 msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
@@ -5943,16 +5955,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Default execution mode"
-#~ msgstr "Mode d'e'xécution "
-
-#~ msgid "Execution mode"
-#~ msgstr ""
-
-#~ msgid "General"
-#~ msgstr "Général"
-
-#~ msgid "Please select the execution mode for the event."
-#~ msgstr "Veuillez sélectionner le mode d'exécution pour cet évènement."
 
