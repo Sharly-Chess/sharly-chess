@@ -110,7 +110,10 @@ class FFESession(Session):
             date_str = datetime.strftime(
                 datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
             )
-            debug_file = ffe.TMP_DIR / f'{url.replace("/", "_")}-{date_str}-raw.html'
+            debug_file = (
+                ffe.TMP_DIR
+                / f'{url.replace("://", "_").replace("/", "_")}-{date_str}-raw.html'
+            )
             try:
                 with open(debug_file, 'w', encoding='utf-8') as f:
                     f.write(content)
@@ -148,7 +151,7 @@ class FFESession(Session):
         )
         debug_file = (
             ffe.TMP_DIR
-            / f'{(self.last_url_read or "").replace("/", "_")}-{date_str}-parsed.html'
+            / f'{(self.last_url_read or "").replace("://", "_").replace("/", "_")}-{date_str}-parsed.html'
         )
         try:
             with open(debug_file, 'w', encoding='utf-8') as f:
