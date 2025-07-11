@@ -1,37 +1,137 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros %}
+
 <h4>
     {{ _('Permissions') }}
 </h4>
 <div class="row mb-3">
-    {{ admin_macros.select_input(
-        name='roles',
-        label=_('%(string)s:', string=_('Roles')),
-        help_text=(
-            _('The roles to attribute to this device.')
-            if usage == 'device' else
-            _('The roles to attribute to this account.')
-        ),
-        select_options=role_options,
-        multiple_select=true,
-        placeholder=_('Choose at least one role.'),
-        data=data, errors=errors
-    ) }}
+    {% set id = 'roles' %}
+    {% set name = 'roles' %}
+
+    <div class="input-block">
+        <label
+            for="{{ id }}"
+            class="form-check-label flex-grow-1 mb-1"
+        >
+            {{ _('%(string)s:', string=_('Roles')) }}
+        </label>
+        <div class="pw-input-group">
+            <select
+                name="{{ name }}"
+                id="{{ id }}"
+                class="form-select sharly-chess-select2 {% if error or (name in errors) %}is-invalid{% endif %}"
+                aria-describedby="{{ id }}-help {{ id }}-error"
+                multiple
+                style="display:none"
+                data-placeholder="{{ _('Choose at least one role.') }}"
+            >
+                {% for role in manageable_roles %}
+                    <option
+                        value="{{ role.id }}"
+                        {% if role in selected_roles %}
+                            selected
+                        {% endif %}
+                        {% if role in inherited_roles %}
+                            disabled
+                        {% endif %}
+                        title="{{ role.help_text }}"
+                    >
+                        {{ role.name }}
+                        {% if role in inherited_roles %}
+                            {{ _('(inherited)') }}
+                        {% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+            <script>
+                $('#{{ id }}').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: $(this).data('placeholder'),
+                    templateResult: (option) => {
+                        if (!option.id) {
+                            return option.text;
+                        }
+                        return $(
+                            '<div ' +
+                            '    class="role-option w-100" ' +
+                            '    data-bs-title="' + $(option.element).attr('data-bs-title') + '" ' +
+                            '>' + option.text +
+                            '</div>'
+                        );
+                    },
+                    templateSelection: (option) => option.text,
+                });
+                $('#{{ id }}').on('select2:unselecting', function(e) {
+                    $(this).data('select2').$dropdown.hide();
+                });
+                $('.select2-search__field').css('width', '100%');
+                $('body').tooltip({
+                    selector: '[data-bs-toggle="tooltip"],.select2-results__option',
+                    title: function() {
+                        return $(this).prev().attr("data-bs-title");
+                    },
+                    placement: "right",
+                    container: "body",
+                    html: true,
+                    zIndex: 10010,
+                });
+            </script>
+        </div>
+        <div id="{{ id }}-help" class="form-text">
+            {% if usage == 'device' %}
+                {{ _('The roles to attribute to this device.') }}
+            {% else %}
+                {{ _('The roles to attribute to this account.') }}
+            {% endif %}
+        </div>
+        {% if name in errors %}
+            <div id="{{ id }}-error" class="form-text invalid-feedback">
+                {{ errors[name] }}
+            </div>
+        {% endif %}
+    </div>
 </div>
-<div class="row mb-3">
-    {{ admin_macros.select_input(
-        name='tournament_ids',
-        label=_('%(string)s:', string=_('Tournaments')),
-        help_text=(
-            _(
-                'The tournaments on which the device can act '
-                '(if none, the device can act on all the tournaments).'
-            ) if usage == 'device' else _(
-                'The tournaments on which the account can act '
-                '(if none, the account can act on all the tournaments).'
-            )
-        ),
-        select_options=tournament_options,
-        multiple_select=true,
-        placeholder=_('Choose one, many or no tournaments.'),
-        data=data, errors=errors
-    ) }}
-</div>
+{% if tournament_role_selected %}
+    <div class="row mb-3">
+        {{ admin_macros.select_input(
+            name='tournament_ids',
+            label=_('%(string)s:', string=_('Tournaments')),
+            help_text=(
+                _(
+                    'The tournaments on which the device can act '
+                    '(if none, the device can act on all the tournaments).'
+                ) if usage == 'device' else _(
+                    'The tournaments on which the account can act '
+                    '(if none, the account can act on all the tournaments).'
+                )
+            ),
+            select_options=tournament_options,
+            multiple_select=true,
+            placeholder=_('Choose one, many or no tournaments.'),
+            data=data, errors=errors
+        ) }}
+    </div>
+{% else %}
+    <input id="tournament-ids" type="hidden" value="">
+{% endif %}
+
+<button
+    id="reload-permissions-form-button"
+    hx-get="{{ url_for(
+        'admin-access-permissions-form',
+        event_uniq_id=admin_event.uniq_id,
+    ) }}"
+    hx-target="#permissions-form"
+    hx-swap="innerHTML"
+    hx-vals="js:{
+        tournament_ids: $('#tournament-ids').val(),
+        roles: $('#roles').val(),
+    }"
+    style="display:none"
+></button>
+<script>
+    $('#roles').change(() => setTimeout(() => {
+        $('#reload-permissions-form-button').click();
+    }, 300));
+</script>
