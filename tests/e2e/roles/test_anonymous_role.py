@@ -31,8 +31,8 @@ class TestAnonymousRole(BaseRoleTest):
 
         # Test no access to the public input screen, should redirect to the home page
         lan_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{public_input_screen.uniq_id}')
-        lan_page.wait_for_url('/error/403')
+        lan_page.wait_for_url('/admin')
 
         # Test no access to the private input screen, should redirect to the home page
         lan_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{private_input_screen.uniq_id}')
-        lan_page.wait_for_url('/error/403')
+        lan_page.wait_for_url('/admin')
