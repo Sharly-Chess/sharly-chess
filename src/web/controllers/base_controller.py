@@ -236,7 +236,7 @@ class WebContext:
     def form_data_to_list_str(
         data: dict[str, str], field: str, empty_value: list[str] | None = None
     ) -> list[str]:
-        if field not in data:
+        if field not in data or not data[field]:
             return empty_value or []
         return [element.strip() for element in data[field].split(';')]
 

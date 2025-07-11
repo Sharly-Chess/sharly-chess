@@ -69,9 +69,11 @@
                     </div>
                 {% endif %}
                 {% if action in ['create', 'clone', ] or (admin_account.edit_permissions and client.can_manage_account_by_account_id[admin_account.id]) %}
-                    {% with usage = 'account' %}
-                        {% include '../common/access/permissions_form.html' %}
-                    {% endwith %}
+                    <div id="permissions-form">
+                        {% with usage = 'account' %}
+                            {% include '../common/access/permissions_form.html' %}
+                        {% endwith %}
+                    </div>
                 {% endif %}
             </form>
         </div>

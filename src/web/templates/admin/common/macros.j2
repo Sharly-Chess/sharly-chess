@@ -268,7 +268,13 @@ with_indicator: display a loading indicator, optional
                         name="{{ name }}"
                         id="{{ id }}"
                         data-testid="{{ id }}"
-                        class="form-select {% if error or (name in errors) %}is-invalid{% endif %}"
+                        class="form-select
+                            {% if error or (name in errors) %}
+                                is-invalid
+                            {% endif %}
+                            {% if multiple_select %}
+                                sharly-chess-select2
+                            {% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if disabled or (select_options|length <= 1 and not multiple_select) %}
                             disabled

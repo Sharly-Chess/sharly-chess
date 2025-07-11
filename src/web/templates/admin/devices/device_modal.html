@@ -56,9 +56,11 @@
                     </div>
                 {% endif %}
                 {% if action in ['create', 'clone', ] or ( admin_device.edit_permissions and client.can_manage_device_by_device_id[admin_device.id]) %}
-                    {% with usage = 'device' %}
-                        {% include '../common/access/permissions_form.html' %}
-                    {% endwith %}
+                    <div id="permissions-form">
+                        {% with usage = 'device' %}
+                            {% include '../common/access/permissions_form.html' %}
+                        {% endwith %}
+                    </div>
                 {% endif %}
             </form>
         </div>
