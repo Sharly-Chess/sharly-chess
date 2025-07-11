@@ -80,12 +80,12 @@ class ExecMode(IntEnum):
         localhost_device: Device = Device.localhost_device()
         unknown_device: Device = Device.unknown_device()
         match self:
-            case ExecMode.STAND_ALONE:
+            case ExecMode.STAND_ALONE | ExecMode.CUSTOM:
                 return [
                     localhost_device,
                     unknown_device,
                 ]
-            case ExecMode.STANDARD | ExecMode.CUSTOM:
+            case ExecMode.STANDARD:
                 # we initialize the custom mode as the standard mode
                 unknown_device.stored_device.roles += [
                     CheckInOfficerRole.static_id(),
