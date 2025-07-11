@@ -234,7 +234,7 @@ class Client:
         for auth_entity in (self.active_account, self.active_device):
             for role in auth_entity.roles:
                 manageable_roles |= role.manageable_roles()
-        return list(manageable_roles)
+        return sorted(manageable_roles, key=lambda r: r.order)
 
     @property
     def can_manage_accounts(self) -> bool:

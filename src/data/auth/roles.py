@@ -35,6 +35,11 @@ class RoleScope(IntEnum):
 class Role(IdentifiableEntity, ABC):
     @property
     @abstractmethod
+    def order(self) -> int:
+        """The of the role, used when presenting lists of roles."""
+
+    @property
+    @abstractmethod
     def scope(self) -> RoleScope:
         """The scope of effect of the role."""
 
@@ -101,6 +106,10 @@ class SpectatorRole(Role):
         return _('Spectator')
 
     @property
+    def order(self) -> int:
+        return 60
+
+    @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
 
@@ -125,6 +134,10 @@ class ResultsEntryRole(Role):
     @staticmethod
     def static_name() -> str:
         return _('Results Entry via public screens')
+
+    @property
+    def order(self) -> int:
+        return 50
 
     @property
     def scope(self) -> RoleScope:
@@ -153,6 +166,10 @@ class CheckInRole(Role):
     @staticmethod
     def static_name() -> str:
         return _('Check-in via input Screens')
+
+    @property
+    def order(self) -> int:
+        return 51
 
     @property
     def scope(self) -> RoleScope:
@@ -184,6 +201,10 @@ class PairingRole(Role):
     @staticmethod
     def static_name() -> str:
         return _('Pairing')
+
+    @property
+    def order(self) -> int:
+        return 30
 
     @property
     def scope(self) -> RoleScope:
@@ -231,6 +252,10 @@ class SectorArbitrationRole(Role):
         return _('Sector arbitration')
 
     @property
+    def order(self) -> int:
+        return 40
+
+    @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
 
@@ -263,6 +288,10 @@ class DeputyChiefArbitrationRole(Role):
     @staticmethod
     def static_name() -> str:
         return _('Deputy Chief Arbitration')
+
+    @property
+    def order(self) -> int:
+        return 21
 
     @property
     def scope(self) -> RoleScope:
@@ -315,6 +344,10 @@ class ChiefArbitrationRole(Role):
         return _('Chief Arbitration')
 
     @property
+    def order(self) -> int:
+        return 20
+
+    @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
 
@@ -347,6 +380,10 @@ class ScreenManagementRole(Role):
         return _('Screen Management')
 
     @property
+    def order(self) -> int:
+        return 11
+
+    @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
 
@@ -377,6 +414,10 @@ class OrganizationRole(Role):
     @staticmethod
     def static_name() -> str:
         return _('Organization')
+
+    @property
+    def order(self) -> int:
+        return 10
 
     @property
     def scope(self) -> RoleScope:
@@ -414,6 +455,10 @@ class AdministrationRole(Role):
     @staticmethod
     def static_name() -> str:
         return _('Administration')
+
+    @property
+    def order(self) -> int:
+        return 0
 
     @property
     def scope(self) -> RoleScope:
