@@ -29,7 +29,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action in ['create', 'clone', ] or (admin_device.edit_properties and client.can_manage_device_by_device_id[admin_device.id]) %}
+                {% if action in ['create', 'clone', ] or (admin_device.edit_properties and (admin_device.id in client.manageable_device_ids)) %}
                     <h4>
                         {{ _('Identification') }}
                     </h4>
@@ -55,7 +55,7 @@
                         ) }}
                     </div>
                 {% endif %}
-                {% if action in ['create', 'clone', ] or ( admin_device.edit_permissions and client.can_manage_device_by_device_id[admin_device.id]) %}
+                {% if action in ['create', 'clone', ] or (admin_device.edit_permissions and (admin_device.id in client.manageable_device_ids)) %}
                     <div id="permissions-form">
                         {% with usage = 'device' %}
                             {% include '../common/access/permissions_form.html' %}

@@ -79,7 +79,7 @@
                         </td>
                     {% endif %}
                     <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        {% set client_can_manage_device=client.can_manage_device_by_device_id[device.id] %}
+                        {% set client_can_manage_device=device.id in client.manageable_device_ids %}
                         {% set device_can_be_updated=device.edit_properties or device.edit_permissions %}
                         <span
                             {% if not admin_event.exec_mode.custom %}
