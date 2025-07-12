@@ -405,6 +405,9 @@ msgstr "Ce rôle permet de gérer les joueur·euses, les résultats (y compris l
 msgid "Allows pairing of the players, either using a pairing engine or manually."
 msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appariement ou manuellement."
 
+msgid "Allows to create accounts, declare devices and grant them permissions."
+msgstr "Permet la création de comptes, la déclaration d'appareils et l'assignation de permissions."
+
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -850,6 +853,9 @@ msgstr "Choisissez aucun, un ou plusieurs tournois."
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
+msgid "Choose the roles."
+msgstr "Choisissez les rôles."
+
 msgid "Choose what to do after closing the check-in:"
 msgstr "Choisissez quoi faire après avoir fermé le pointage :"
 
@@ -1158,6 +1164,9 @@ msgstr "Affiche actuellement l'écran [{uniq_id}]"
 msgid "Custom"
 msgstr "Personnalisé"
 
+msgid "Customize the permissions"
+msgstr "Personnaliser les permissions"
+
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
@@ -1221,9 +1230,6 @@ msgstr "Répertoire par défaut des fichiers Papi"
 
 msgid "Default directory of the Papi files:"
 msgstr "Répertoire par défaut des fichiers Papi :"
-
-msgid "Default execution mode of the events:"
-msgstr "Mode d'exécution par défaut des évènements :"
 
 msgid "Default federation"
 msgstr "Fédération par défaut"
@@ -1918,8 +1924,8 @@ msgstr "Évènements"
 msgid "Execution"
 msgstr "Exécution"
 
-msgid "Execution mode of this event:"
-msgstr "Mode d'exécution de cet évènement :"
+msgid "Execution mode:"
+msgstr "Mode d'exécution :"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -2612,9 +2618,6 @@ msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
-
-msgid "Learn more…"
-msgstr "En savoir plus…"
 
 msgid "Libraries"
 msgstr "Bibliothèques"
@@ -4323,9 +4326,6 @@ msgstr "Visualisation"
 msgid "Split by:"
 msgstr "Séparateur :"
 
-msgid "Stand-alone"
-msgstr "Autonome"
-
 msgid "Standard"
 msgstr "Standard"
 
@@ -4361,9 +4361,6 @@ msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de to
 
 msgid "Swiss"
 msgstr "Suisse"
-
-msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!"
-msgstr "Lisez attentivement pour comprendre ce qu'implique chaque mode, et ne soyez pas timide pour profiter de toute la puissance de Sharly Chess !"
 
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
@@ -5389,11 +5386,8 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
-msgid "Use Sharly Chess as a stand-alone application"
-msgstr "Utiliser Sharly Chess comme une application autonome"
-
-msgid "Use connected devices"
-msgstr "Utiliser des appareils connectés"
+msgid "Use connected devices to check-in players and enter results on public screens"
+msgstr "Utiliser des appareils connectés pour pointer les joueur·euses et entrer les résultats sur des écrans publics"
 
 msgid "Use customized permissions"
 msgstr "Personnalisez les permissions"
@@ -5693,9 +5687,6 @@ msgstr "Vous n'êtes pas autorisé·e à modifier cet appareil."
 
 msgid "You are on the Sharly Chess server."
 msgstr "Vous êtes sur le serveur Sharly Chess."
-
-msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings… or print them!)."
-msgstr "Vous êtes la seule personne à gérer votre évènement, sur le serveur Sharly Chess ; les autres appareils ne sont pas autorisés à se connecter à votre appareil (en particulier, vous devrez partager un affichage aux utilisateur·ices pour montrer les appariements, les résultats, les classements… ou les imprimer !)."
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."

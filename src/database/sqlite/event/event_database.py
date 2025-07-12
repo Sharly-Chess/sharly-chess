@@ -39,6 +39,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredDevice,
     StoredAccount,
+    DEFAULT_CUSTOM_EXEC_MODE,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -218,7 +219,7 @@ class EventDatabase(MigrationDatabase):
                         'rotators',
                         'timer_colors',
                         'timer_delays',
-                        'exec_mode',
+                        'custom_exec_mode',
                     ],
                     empty_allowed=False,
                 )
@@ -292,7 +293,9 @@ class EventDatabase(MigrationDatabase):
                         timer_colors=timer_colors,
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
-                        exec_mode=event_dict.get('exec_mode', None),
+                        custom_exec_mode=event_dict.get(
+                            'custom_exec_mode', DEFAULT_CUSTOM_EXEC_MODE
+                        ),
                     )
                 )
                 timer_ids_by_uniq_id: dict[str, int] = {}
@@ -960,7 +963,9 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
-            exec_mode=row['exec_mode'],
+            custom_exec_mode=self.load_bool_from_database_field(
+                row['custom_exec_mode']
+            ),
             last_update=row['last_update'],
         )
         plugin_manager.hook.augment_event_after_db_fetch(
@@ -1031,7 +1036,7 @@ class EventDatabase(MigrationDatabase):
                     'message_color',
                     'message_background_color',
                     'prize_currency',
-                    'exec_mode',
+                    'custom_exec_mode',
                 ],
             )
             | {

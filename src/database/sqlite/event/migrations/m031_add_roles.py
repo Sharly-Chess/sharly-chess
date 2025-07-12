@@ -1,3 +1,4 @@
+from database.sqlite.event.event_store import DEFAULT_CUSTOM_EXEC_MODE
 from database.sqlite.migration import BaseMigration
 
 
@@ -27,7 +28,7 @@ class Migration(BaseMigration):
             ')'
         )
         self.database.execute(
-            'ALTER TABLE `info` ADD `exec_mode` INTEGER',
+            f'ALTER TABLE `info` ADD `custom_exec_mode` INTEGER NOT NULL DEFAULT {1 if DEFAULT_CUSTOM_EXEC_MODE else 0}',
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 
@@ -35,6 +36,6 @@ class Migration(BaseMigration):
         self.database.execute(
             'ALTER TABLE `info` ADD `update_password` TEXT',
         )
-        self.database.execute('ALTER TABLE `info` DROP COLUMN `exec_mode`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `custom_exec_mode`')
         self.database.execute('DROP TABLE IF EXISTS `account`')
         self.database.execute('DROP TABLE IF EXISTS `device`')

@@ -68,11 +68,6 @@
                             {{ macros.tooltip_attributes('info', admin_event.exec_mode.help, 'top') }}
                         >
                             {{ admin_event.exec_mode.name }}
-                            {% if not admin_event.stored_event.exec_mode %}
-                                <span class="fst-italic">
-                                    {{ _('(by default)') }}
-                                </span>
-                            {% endif %}
                             <br/>
                             <span style="font-size: 0.8rem">
                                 {{ admin_event.exec_mode.description }}

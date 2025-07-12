@@ -4,7 +4,6 @@ import shutil
 
 import time
 import urllib
-from data.auth.exec_mode import ExecMode
 from plugins.manager import plugin_manager  # Noqa
 from common.sharly_chess_config import SharlyChessConfig
 from database.access.papi.papi_database import PapiDatabase
@@ -16,6 +15,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
+    DEFAULT_CUSTOM_EXEC_MODE,
 )
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse
 from utils.enum import ScreenType
@@ -45,7 +45,7 @@ class TestUtils:
 
     event_defaults = {
         'name': 'Test Event',
-        'exec_mode': ExecMode.STANDARD.value,
+        'custom_exec_mode': DEFAULT_CUSTOM_EXEC_MODE,
         'federation': 'FRA',
         'public': True,
         'path': '',

@@ -405,6 +405,9 @@ msgstr ""
 msgid "Allows pairing of the players, either using a pairing engine or manually."
 msgstr ""
 
+msgid "Allows to create accounts, declare devices and grant them permissions."
+msgstr ""
+
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -1158,6 +1161,9 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
+msgid "Customize the permissions"
+msgstr ""
+
 msgid "DOUBLE"
 msgstr ""
 
@@ -1220,9 +1226,6 @@ msgid "Default directory of the Papi files"
 msgstr ""
 
 msgid "Default directory of the Papi files:"
-msgstr ""
-
-msgid "Default execution mode of the events:"
 msgstr ""
 
 msgid "Default federation"
@@ -1918,7 +1921,7 @@ msgstr ""
 msgid "Execution"
 msgstr ""
 
-msgid "Execution mode of this event:"
+msgid "Execution mode:"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -2611,9 +2614,6 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
-msgstr ""
-
-msgid "Learn more…"
 msgstr ""
 
 msgid "Libraries"
@@ -4323,9 +4323,6 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
-msgid "Stand-alone"
-msgstr ""
-
 msgid "Standard"
 msgstr ""
 
@@ -4360,9 +4357,6 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
-msgstr ""
-
-msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -5389,10 +5383,7 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
-msgid "Use Sharly Chess as a stand-alone application"
-msgstr ""
-
-msgid "Use connected devices"
+msgid "Use connected devices to check-in players and enter results on public screens"
 msgstr ""
 
 msgid "Use customized permissions"
@@ -5692,9 +5683,6 @@ msgid "You are not allowed to update this device."
 msgstr ""
 
 msgid "You are on the Sharly Chess server."
-msgstr ""
-
-msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings… or print them!)."
 msgstr ""
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."

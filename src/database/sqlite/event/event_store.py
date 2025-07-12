@@ -249,6 +249,8 @@ class StoredAccount(StoredAccess):
 
 DEFAULT_HIDE_BACKGROUND_IMAGE: bool = False
 
+DEFAULT_CUSTOM_EXEC_MODE: bool = False
+
 
 @dataclass
 class BaseStoredEvent:
@@ -271,7 +273,7 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    exec_mode: int | None = None
+    custom_exec_mode: bool = DEFAULT_CUSTOM_EXEC_MODE
     last_update: float = 0.0
 
     # Plugins can add their own tournament data
