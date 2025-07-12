@@ -15,10 +15,10 @@
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
     <td class="text-center" style="width: 3rem;">
         <span
-            {% if not client.can_enter_results_by_tournament_id[admin_tournament.id] %}
+            {% if admin_tournament.id not in client.tournament_ids_allowing_enter_results %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
                 {% set allowed=false %}
-            {% elif board.result_str and not client.can_update_results_by_tournament_id[admin_tournament.id] %}
+            {% elif board.result_str and (admin_tournament.id not in client.tournament_ids_allowing_update_results) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to update results.'), 'top') }}
                 {% set allowed=false %}
             {% else %}

@@ -83,7 +83,7 @@
                         </td>
                     {% endif %}
                     <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        {% set client_can_manage_account=client.can_manage_account_by_account_id[account.id] %}
+                        {% set client_can_manage_account=account.id in client.manageable_account_ids %}
                         {% set account_can_be_updated=account.edit_properties or account.edit_permissions %}
                         <span
                             {% if not admin_event.exec_mode.custom %}
