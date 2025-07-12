@@ -29,7 +29,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action in ['create', 'clone', ] or (admin_account.edit_properties and client.can_manage_account_by_account_id[admin_account.id]) %}
+                {% if action in ['create', 'clone', ] or (admin_account.edit_properties and (admin_account.id in client.manageable_account_ids)) %}
                     <h4>
                         {{ _('Authentication') }}
                     </h4>
@@ -68,7 +68,7 @@
                         ) }}
                     </div>
                 {% endif %}
-                {% if action in ['create', 'clone', ] or (admin_account.edit_permissions and client.can_manage_account_by_account_id[admin_account.id]) %}
+                {% if action in ['create', 'clone', ] or (admin_account.edit_permissions and (admin_account.id in client.manageable_account_ids)) %}
                     <div id="permissions-form">
                         {% with usage = 'account' %}
                             {% include '../common/access/permissions_form.html' %}
