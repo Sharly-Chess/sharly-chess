@@ -7,7 +7,7 @@
 >
     {% if 'FULL_PAIRING' in allowed_actions %}
         <div
-            {% if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] %}
+            {% if admin_tournament.id not in client.tournament_ids_allowing_use_pairing_engine %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to generate the pairings.'), 'top') }}
             {% elif pairings_generation_disabled_message %}
                 {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
@@ -18,7 +18,7 @@
             <button
                 class="btn btn-outline-primary text-nowrap"
                 {% if
-                    not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id]
+                    (admin_tournament.id not in client.tournament_ids_allowing_use_pairing_engine)
                     or
                     pairings_generation_disabled_message
                 %}
@@ -61,7 +61,7 @@
     ) %}
     {% if action in existing_actions and admin_tournament.is_round_partially_paired(admin_round) %}
         <div
-            {% if not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id] %}
+            {% if admin_tournament.id not in client.tournament_ids_allowing_use_pairing_engine %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to generate complementary pairings.'), 'top') }}
             {% elif pairings_generation_disabled_message %}
                 {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
@@ -72,7 +72,7 @@
             <button
                 class="btn btn-outline-primary text-nowrap"
                 {% if
-                    not client.can_use_pairing_engine_by_tournament_id[admin_tournament.id]
+                    (admin_tournament.id not in client.tournament_ids_allowing_use_pairing_engine)
                     or
                     pairings_generation_disabled_message
                 %}
@@ -114,7 +114,7 @@
     {% if action in existing_actions %}
         {% set allowed=not admin_tournament.round_has_result(admin_round) %}
             <div
-                {% if not client.can_unpair_round_by_tournament_id[admin_tournament.id] %}
+                {% if admin_tournament.id not in client.tournament_ids_allowing_unpair_round %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}
                 {% elif allowed %}
                     {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}
@@ -125,7 +125,7 @@
             <button
                 class="btn btn-outline-primary text-nowrap"
                 {% if
-                    not client.can_unpair_round_by_tournament_id[admin_tournament.id]
+                    (admin_tournament.id not in client.tournament_ids_allowing_unpair_round)
                     or
                     not allowed
                 %}

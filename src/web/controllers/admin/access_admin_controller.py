@@ -139,11 +139,7 @@ class AccessAdminController(BaseEventAdminController):
             inherited_roles |= role.sub_roles()
         selected_roles = [role for role in roles if role not in inherited_roles]
         return {
-            'manageable_roles': [
-                role
-                for role, is_manageable in web_context.client.role_management.items()
-                if is_manageable
-            ],
+            'manageable_roles': web_context.client.manageable_roles,
             'selected_roles': selected_roles,
             'inherited_roles': inherited_roles,
             'tournament_role_selected': any(
