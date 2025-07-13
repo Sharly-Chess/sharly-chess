@@ -15,7 +15,6 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
-    DEFAULT_CUSTOM_EXEC_MODE,
 )
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse
 from utils.enum import ScreenType
@@ -45,7 +44,7 @@ class TestUtils:
 
     event_defaults = {
         'name': 'Test Event',
-        'custom_exec_mode': DEFAULT_CUSTOM_EXEC_MODE,
+        'custom_exec_mode': SharlyChessConfig.default_custom_exec_mode,
         'federation': 'FRA',
         'public': True,
         'path': '',

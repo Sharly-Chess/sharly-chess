@@ -39,7 +39,6 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredDevice,
     StoredAccount,
-    DEFAULT_CUSTOM_EXEC_MODE,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -294,7 +293,8 @@ class EventDatabase(MigrationDatabase):
                         timer_delays=timer_delays,
                         public=event_dict.get('public', False),
                         custom_exec_mode=event_dict.get(
-                            'custom_exec_mode', DEFAULT_CUSTOM_EXEC_MODE
+                            'custom_exec_mode',
+                            SharlyChessConfig.default_custom_exec_mode,
                         ),
                     )
                 )
