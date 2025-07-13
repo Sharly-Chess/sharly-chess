@@ -16,7 +16,7 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.exec_mode import ExecMode
+from data.auth.entities import Device, Account
 from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
@@ -3000,12 +3000,20 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
         self.set_last_update()
 
-    def create_custom_exec_mode_objects(self):
+    # ---------------------------------------------------------------------------------
+    # StoredDevice and StoredAccount
+    # ---------------------------------------------------------------------------------
+
+    def create_custom_exec_mode_objects(
+        self,
+        predefined_custom_devices: list[Device],
+        predefined_custom_accounts: list[Account],
+    ):
         """Add the accounts and devices that correspond to the default
         permissions of the custom mode. These objects are added juste
         before doing an action on the fake permissions used from the
         creation of the object."""
-        for device in ExecMode.CUSTOM.predefined_devices:
+        for device in predefined_custom_devices:
             self._write_stored_device(device.stored_device, insert_id=True)
-        for account in ExecMode.CUSTOM.predefined_accounts:
+        for account in predefined_custom_accounts:
             self._write_stored_account(account.stored_account, insert_id=True)
