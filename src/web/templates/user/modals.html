@@ -38,7 +38,7 @@
                             >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
                             <button
                                 class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and client.can_update_results(wp.tournament.id) %}
+                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"

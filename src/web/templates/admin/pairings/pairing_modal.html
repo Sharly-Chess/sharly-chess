@@ -22,7 +22,7 @@
                         {% if
                             board.exempt
                             or
-                            client.can_enter_results(admin_tournament.id)
+                            not client.can_enter_results(admin_tournament.id)
                             or
                             (board.result and not client.can_update_results(admin_tournament.id))
                         %}
@@ -60,7 +60,7 @@
                         {% if
                             board.exempt
                             or
-                            client.can_enter_results(admin_tournament.id)
+                            not client.can_enter_results(admin_tournament.id)
                             or
                             (board.result and not client.can_update_results(admin_tournament.id))
                         %}
