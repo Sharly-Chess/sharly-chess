@@ -6,7 +6,7 @@
         and
         not board.exempt
         and
-        (board.white_player.tournament.id in client.tournament_ids_allowing_enter_results)
+        client.can_enter_results(board.white_player.tournament.id)
     %}
         {% with wp=board.white_player, bp=board.black_player %}
             <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
@@ -18,7 +18,7 @@
                         <div class="row d-flex align-items-center justify-content-center">
                             <button
                                 class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and (wp.tournament.id not in client.tournament_ids_allowing_update_results) %}
+                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=3) }}"
@@ -28,7 +28,7 @@
                             >{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</button>
                             <button
                                 class="result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and (wp.tournament.id not in client.tournament_ids_allowing_update_results) %}
+                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=2) }}"
@@ -38,7 +38,7 @@
                             >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
                             <button
                                 class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and (wp.tournament.id not in client.tournament_ids_allowing_update_results) %}
+                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"
@@ -47,7 +47,7 @@
                                 {% endif %}
                             >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</button>
                         </div>
-                        {% if wp.tournament.id in client.tournament_ids_allowing_set_special_results %}
+                        {% if client.can_set_special_results(wp.tournament.id) %}
                             <div class="row d-flex align-items-center justify-content-center mt-3">
                                 <button
                                     class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
@@ -71,7 +71,7 @@
                         {% endif %}
                     </div>
                     <div class="modal-footer row d-flex align-items-center justify-content-center">
-                        {% if (wp.tournament.id in client.tournament_ids_allowing_update_results) and board.result_str %}
+                        {% if client.can_update_results(wp.tournament.id) and board.result_str %}
                             <button
                                 class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                 {% if board.result_str %}
@@ -98,7 +98,7 @@
     {% elif
         player
         and
-        player.tournament.id in client.tournament_ids_allowing_check_in_players
+        client.can_check_in_players(player.tournament.id)
     %}
         <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
             <div class="modal-content bg-secondary-subtle">

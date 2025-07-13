@@ -12,6 +12,7 @@ from data.auth.entities import (
 )
 from data.auth.managers import RoleManager
 from data.auth.roles import Role
+from utils.enum import Result
 from web.session import SessionHandler
 
 if TYPE_CHECKING:
@@ -133,18 +134,6 @@ class Client:
                 actions |= role.allowed_actions()
         return actions
 
-    def tournament_ids_allowing_action(self, action: AuthAction) -> list[int]:
-        """Returns the IDs of the tournaments for which the action is allowed."""
-        assert self.event is not None
-        return list(
-            filter(
-                lambda tournament_id: self._action_allowed_for_tournament(
-                    action, tournament_id
-                ),
-                self.event.tournaments_by_id.keys(),
-            )
-        )
-
     def _action_allowed_for_tournament(
         self, action: AuthAction, tournament_id: int
     ) -> bool:
@@ -236,6 +225,10 @@ class Client:
                 manageable_roles |= role.manageable_roles()
         return [role for role in RoleManager.objects() if role in manageable_roles]
 
+    def can_manage_role(self, role: Role) -> bool:
+        """Returns True if the client can manage the role."""
+        return role in self.manageable_roles
+
     @property
     def can_manage_accounts(self) -> bool:
         """Returns true if the client can manage (add/update/delete) accounts
@@ -254,6 +247,10 @@ class Client:
             if all(role in self.manageable_roles for role in account.roles)
         ]
 
+    def can_manage_account(self, account_id: int) -> bool:
+        """Returns True if the client can mange the account."""
+        return account_id in self.manageable_account_ids
+
     @property
     def can_manage_devices(self) -> bool:
         """Returns true if the client can manage (add/update/delete) accounts."""
@@ -269,6 +266,11 @@ class Client:
             for device in self.event.devices_by_id.values()
             if all(role in self.manageable_roles for role in device.roles)
         ]
+
+    def can_manage_device(self, device_id: int) -> bool:
+        """Returns true if the client can manage the device (the client must
+        be able to manage all the roles of the device)."""
+        return device_id in self.manageable_device_ids
 
     @property
     def can_manage_roles(self) -> bool:
@@ -335,12 +337,11 @@ class Client:
         (including with local or remote databases)."""
         return AuthAction.UPDATE_PLAYERS in self.allowed_actions
 
-    @property
-    def tournament_ids_allowing_update_players_history(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        update the players' history (byes).
-        See also tournament_ids_allowing_set_xxx_point_bye()."""
-        return self.tournament_ids_allowing_action(AuthAction.UPDATE_PLAYERS_HISTORY)
+    def can_update_players_history(self, tournament_id: int) -> bool:
+        """Returns True if the client can update the players's history."""
+        return self._action_allowed_for_tournament(
+            AuthAction.UPDATE_PLAYERS_HISTORY, tournament_id
+        )
 
     @property
     def can_delete_players(self) -> bool:
@@ -357,10 +358,11 @@ class Client:
         """Returns true if the client can open and close the check-in."""
         return AuthAction.OPEN_CLOSE_CHECK_IN in self.allowed_actions
 
-    @property
-    def tournament_ids_allowing_check_in_players(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can check-in players."""
-        return self.tournament_ids_allowing_action(AuthAction.CHECK_IN_PLAYERS)
+    def can_check_in_players(self, tournament_id: int) -> bool:
+        """Returns True if the client can check-in players for a tournament."""
+        return self._action_allowed_for_tournament(
+            AuthAction.CHECK_IN_PLAYERS, tournament_id
+        )
 
     # ---------------------------------------------------------------------------------
     # Pairings
@@ -371,109 +373,109 @@ class Client:
         """Returns true if the client can access the Pairings tab."""
         return AuthAction.VIEW_PAIRINGS_TAB in self.allowed_actions
 
-    @property
-    def tournament_ids_allowing_use_pairing_engine(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        use the pairing engine."""
-        return self.tournament_ids_allowing_action(AuthAction.USE_PAIRING_ENGINE)
+    def can_use_paring_engine(self, tournament_id: int) -> bool:
+        """Returns True if the client can use the pairing engine for a tournament."""
+        return self._action_allowed_for_tournament(
+            AuthAction.USE_PAIRING_ENGINE, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_manually_pair_players(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        use manually pair players."""
-        return self.tournament_ids_allowing_action(AuthAction.MANUALLY_PAIR_PLAYERS)
+    def can_manually_pair_players(self, tournament_id: int) -> bool:
+        """Returns True if the client can manually pair players for a tournament."""
+        return self._action_allowed_for_tournament(
+            AuthAction.MANUALLY_PAIR_PLAYERS, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_unpair_round(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        unpair all the boards of a round."""
-        return self.tournament_ids_allowing_action(AuthAction.UNPAIR_ROUND)
+    def can_unpair_round(self, tournament_id: int) -> bool:
+        """Returns True if the client can unpair all the boards of a round."""
+        return self._action_allowed_for_tournament(
+            AuthAction.UNPAIR_ROUND, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_unpair_board(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        (manually) unpair boards."""
-        return self.tournament_ids_allowing_action(AuthAction.UNPAIR_BOARD)
+    def can_unpair_board(self, tournament_id: int) -> bool:
+        """Returns True if the client can unpair a board."""
+        return self._action_allowed_for_tournament(
+            AuthAction.UNPAIR_BOARD, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_permute_board(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        permute paired players."""
-        return self.tournament_ids_allowing_action(AuthAction.PERMUTE_BOARD)
+    def can_permute_board(self, tournament_id: int) -> bool:
+        """Returns True if the client can permute paired players."""
+        return self._action_allowed_for_tournament(
+            AuthAction.PERMUTE_BOARD, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_set_current_round(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        set the current round."""
-        return self.tournament_ids_allowing_action(AuthAction.SET_CURRENT_ROUND)
+    def can_set_current_round(self, tournament_id: int) -> bool:
+        """Returns True if the client can set the current round of a tournament."""
+        return self._action_allowed_for_tournament(
+            AuthAction.SET_CURRENT_ROUND, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_set_zero_point_bye(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        set HPB to players."""
-        return self.tournament_ids_allowing_action(AuthAction.SET_ZPB)
+    def can_set_zero_point_bye(self, tournament_id: int) -> bool:
+        """Returns True if the client can set a zero point bye to a player."""
+        return self._action_allowed_for_tournament(AuthAction.SET_ZPB, tournament_id)
 
-    @property
-    def tournament_ids_allowing_set_half_point_bye(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        set HPB to players."""
-        return self.tournament_ids_allowing_action(AuthAction.SET_HPB)
+    def can_set_half_point_bye(self, tournament_id: int) -> bool:
+        """Returns True if the client can set a half point bye to a player."""
+        return self._action_allowed_for_tournament(AuthAction.SET_HPB, tournament_id)
 
-    @property
-    def tournament_ids_allowing_set_full_point_bye(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        set FPB to players."""
-        return self.tournament_ids_allowing_action(AuthAction.SET_FPB)
+    def can_set_full_point_bye(self, tournament_id: int) -> bool:
+        """Returns True if the client can set a full point bye to a player."""
+        return self._action_allowed_for_tournament(AuthAction.SET_FPB, tournament_id)
 
-    @property
-    def tournament_ids_allowing_view_draft_pairings(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        view draft pairings (before they are published)."""
-        return self.tournament_ids_allowing_action(AuthAction.VIEW_DRAFT_PAIRINGS)
+    def can_view_draft_pairings(self, tournament_id: int) -> bool:
+        """Returns True if the client can view draft pairings (before they are published)."""
+        return self._action_allowed_for_tournament(
+            AuthAction.VIEW_DRAFT_PAIRINGS, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_publish_pairings(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        publish pairings."""
-        return self.tournament_ids_allowing_action(AuthAction.PUBLISH_PAIRINGS)
+    def can_publish_pairings(self, tournament_id: int) -> bool:
+        """Returns True if the client can publish pairings."""
+        return self._action_allowed_for_tournament(
+            AuthAction.PUBLISH_PAIRINGS, tournament_id
+        )
 
     # ---------------------------------------------------------------------------------
     # Rankings
     # ---------------------------------------------------------------------------------
 
-    @property
-    def tournament_ids_alowing_view_draft_rankings(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        view draft rankings (before they are published)."""
-        return self.tournament_ids_allowing_action(AuthAction.VIEW_DRAFT_RANKINGS)
+    def can_view_draft_rankings(self, tournament_id: int) -> bool:
+        """Returns True if the client can view draft rankings (before they are published)."""
+        return self._action_allowed_for_tournament(
+            AuthAction.VIEW_DRAFT_RANKINGS, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_publish_rankings(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        publish rankings."""
-        return self.tournament_ids_allowing_action(AuthAction.PUBLISH_RANKINGS)
+    def can_publish_rankings(self, tournament_id: int) -> bool:
+        """Returns True if the client can publish rankings."""
+        return self._action_allowed_for_tournament(
+            AuthAction.PUBLISH_RANKINGS, tournament_id
+        )
 
     # ---------------------------------------------------------------------------------
     # Results
     # ---------------------------------------------------------------------------------
 
-    @property
-    def tournament_ids_allowing_enter_results(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        enter results."""
-        return self.tournament_ids_allowing_action(AuthAction.ENTER_RESULTS)
+    def can_enter_results(self, tournament_id: int) -> bool:
+        """Returns True if the client can enter results for a tournament."""
+        return self._action_allowed_for_tournament(
+            AuthAction.ENTER_RESULTS, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_update_results(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        update previously entered results."""
-        return self.tournament_ids_allowing_action(AuthAction.UPDATE_RESULTS)
+    def can_update_results(self, tournament_id: int) -> bool:
+        """Returns True if the client can update previously entered results."""
+        return self._action_allowed_for_tournament(
+            AuthAction.UPDATE_RESULTS, tournament_id
+        )
 
-    @property
-    def tournament_ids_allowing_set_special_results(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        set special results (such as O.0-F, 0.0-0.5)."""
-        return self.tournament_ids_allowing_action(AuthAction.SET_SPECIAL_RESULTS)
+    def can_set_special_results(self, tournament_id: int) -> bool:
+        """Returns True if the client can set special results (such as O.0-F, 0.0-0.5)."""
+        return self._action_allowed_for_tournament(
+            AuthAction.SET_SPECIAL_RESULTS, tournament_id
+        )
+
+    def imputable_results_for_tournament(self, tournament_id: int) -> list[Result]:
+        if self.can_set_special_results(tournament_id):
+            return Result.user_imputable_results()
+        else:
+            return Result.admin_imputable_results()
 
     # ---------------------------------------------------------------------------------
     # Screens

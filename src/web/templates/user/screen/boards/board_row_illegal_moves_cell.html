@@ -1,7 +1,7 @@
 {% if
     screen.type == 'input'
     and
-    (tournament.id in client.tournament_ids_allowing_enter_results)
+    client.can_enter_results(tournament.id)
     and
     tournament.record_illegal_moves
 %}
