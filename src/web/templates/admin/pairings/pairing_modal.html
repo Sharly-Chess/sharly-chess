@@ -22,9 +22,9 @@
                         {% if
                             board.exempt
                             or
-                            (admin_tournament.id not in client.tournament_ids_allowing_enter_results)
+                            client.can_enter_results(admin_tournament.id)
                             or
-                            (board.result and (admin_tournament.id not in client.tournament_ids_allowing_update_results))
+                            (board.result and not client.can_update_results(admin_tournament.id))
                         %}
                             disabled
                         {% else %}
@@ -60,9 +60,9 @@
                         {% if
                             board.exempt
                             or
-                            (admin_tournament.id not in client.tournament_ids_allowing_enter_results)
+                            client.can_enter_results(admin_tournament.id)
                             or
-                            (board.result and (admin_tournament.id not in client.tournament_ids_allowing_update_results))
+                            (board.result and not client.can_update_results(admin_tournament.id))
                         %}
                             disabled
                         {% else %}
@@ -98,9 +98,9 @@
                         {% if
                             board.exempt
                             or
-                            (admin_tournament.id not in client.tournament_ids_allowing_enter_results)
+                            not client.can_enter_results(admin_tournament.id)
                             or
-                            (board.result and (admin_tournament.id not in client.tournament_ids_allowing_update_results))
+                            (board.result and not client.can_update_results(admin_tournament.id))
                         %}
                             disabled
                         {% else %}
@@ -138,11 +138,11 @@
                         {% if
                             board.exempt
                             or
-                            (admin_tournament.id not in client.tournament_ids_allowing_set_special_results)
+                            not client.can_set_special_results(admin_tournament.id)
                             or
-                            (admin_tournament.id not in client.tournament_ids_allowing_enter_results)
+                            not client.can_enter_results(admin_tournament.id)
                             or
-                            (board.result and (admin_tournament.id not in client.tournament_ids_allowing_update_results))
+                            (board.result and not client.can_update_results(admin_tournament.id))
                         %}
                             disabled
                         {% else %}
@@ -306,7 +306,7 @@
                             or
                             board.exempt
                             or
-                            (admin_tournament.id not in client.tournament_ids_allowing_update_results)
+                            not client.can_update_results(admin_tournament.id)
                         %}
                             disabled
                         {% else %}

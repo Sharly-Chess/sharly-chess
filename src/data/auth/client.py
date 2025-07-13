@@ -134,18 +134,6 @@ class Client:
                 actions |= role.allowed_actions()
         return actions
 
-    def tournament_ids_allowing_action(self, action: AuthAction) -> list[int]:
-        """Returns the IDs of the tournaments for which the action is allowed."""
-        assert self.event is not None
-        return list(
-            filter(
-                lambda tournament_id: self._action_allowed_for_tournament(
-                    action, tournament_id
-                ),
-                self.event.tournaments_by_id.keys(),
-            )
-        )
-
     def _action_allowed_for_tournament(
         self, action: AuthAction, tournament_id: int
     ) -> bool:
@@ -471,35 +459,17 @@ class Client:
             AuthAction.ENTER_RESULTS, tournament_id
         )
 
-    @property
-    def tournament_ids_allowing_enter_results(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        enter results."""
-        return self.tournament_ids_allowing_action(AuthAction.ENTER_RESULTS)
-
     def can_update_results(self, tournament_id: int) -> bool:
         """Returns True if the client can update previously entered results."""
         return self._action_allowed_for_tournament(
             AuthAction.UPDATE_RESULTS, tournament_id
         )
 
-    @property
-    def tournament_ids_allowing_update_results(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        update previously entered results."""
-        return self.tournament_ids_allowing_action(AuthAction.UPDATE_RESULTS)
-
     def can_set_special_results(self, tournament_id: int) -> bool:
         """Returns True if the client can set special results (such as O.0-F, 0.0-0.5)."""
         return self._action_allowed_for_tournament(
             AuthAction.SET_SPECIAL_RESULTS, tournament_id
         )
-
-    @property
-    def tournament_ids_allowing_set_special_results(self) -> list[int]:
-        """Returns the IDs of the tournaments of which the client can
-        set special results (such as O.0-F, 0.0-0.5)."""
-        return self.tournament_ids_allowing_action(AuthAction.SET_SPECIAL_RESULTS)
 
     def imputable_results_for_tournament(self, tournament_id: int) -> list[Result]:
         if self.can_set_special_results(tournament_id):
