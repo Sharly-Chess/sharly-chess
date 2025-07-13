@@ -18,7 +18,7 @@ class Guard:
     EVENT_UNIQ_ID_PARAM: str = 'event_uniq_id'
 
     @classmethod
-    def _get_event_from_uniq_id(cls, request: HTMXRequest) -> Event:
+    def _get_event(cls, request: HTMXRequest) -> Event:
         """Returns the event of the request (stored in the state of the request)."""
         if cls.REQUEST_EVENT_ATTR not in request.state:
             try:
@@ -36,11 +36,11 @@ class Guard:
     REQUEST_CLIENT_ATTR: str = 'sharly_chess_client'
 
     @classmethod
-    def _get_client_from_event_uniq_id(cls, request: HTMXRequest) -> Client:
+    def _get_client(cls, request: HTMXRequest) -> Client:
         """Returns the client of the request (stored in the state of the request)."""
         if cls.REQUEST_CLIENT_ATTR not in request.state:
             request.state[cls.REQUEST_CLIENT_ATTR] = Client(
-                request, cls._get_event_from_uniq_id(request)
+                request, cls._get_event(request)
             )
         return request.state[cls.REQUEST_CLIENT_ATTR]
 
@@ -48,7 +48,7 @@ class Guard:
     SCREEN_UNIQ_ID_PARAM: str = 'screen_uniq_id'
 
     @classmethod
-    def _get_screen_from_uniq_id(cls, request: HTMXRequest) -> Screen:
+    def _get_screen(cls, request: HTMXRequest) -> Screen:
         """Returns the screen of the request (stored in the state of the request)."""
         if cls.REQUEST_SCREEN_ATTR not in request.state:
             try:
@@ -56,7 +56,7 @@ class Guard:
             except KeyError:
                 raise ClientException
             try:
-                request.state[cls.REQUEST_SCREEN_ATTR] = cls._get_event_from_uniq_id(
+                request.state[cls.REQUEST_SCREEN_ATTR] = cls._get_event(
                     request
                 ).screens_by_uniq_id[screen_uniq_id]
             except KeyError:
@@ -66,8 +66,8 @@ class Guard:
     @classmethod
     def screen_is_visible(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
         """Raises an exception if the screen of the request is not visible."""
-        client: Client = cls._get_client_from_event_uniq_id(request)
-        screen: Screen = cls._get_screen_from_uniq_id(request)
+        client: Client = cls._get_client(request)
+        screen: Screen = cls._get_screen(request)
         if screen.public:
             if not client.can_view_public_screens:
                 raise PermissionDeniedException()
