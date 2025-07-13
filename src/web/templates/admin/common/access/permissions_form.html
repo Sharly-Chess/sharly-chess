@@ -23,7 +23,7 @@
                 aria-describedby="{{ id }}-help {{ id }}-error"
                 multiple
                 style="display:none"
-                data-placeholder="{{ _('Choose at least one role.') }}"
+                data-placeholder="{{ _('Leave empty to grant no permissions at all.') }}"
             >
                 {% for role in manageable_roles %}
                     <option

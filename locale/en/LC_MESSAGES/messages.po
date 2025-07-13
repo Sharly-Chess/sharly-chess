@@ -474,9 +474,6 @@ msgstr ""
 msgid "At least one rating type is expected."
 msgstr ""
 
-msgid "At least one role is expected."
-msgstr ""
-
 msgid "At least one value is expected."
 msgstr ""
 
@@ -842,9 +839,6 @@ msgid "Choose at least one league."
 msgstr ""
 
 msgid "Choose at least one rating type."
-msgstr ""
-
-msgid "Choose at least one role."
 msgstr ""
 
 msgid "Choose one, many or no tournaments."
@@ -2614,6 +2608,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
+msgstr ""
+
+msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"
@@ -5943,19 +5940,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Screen management"
-#~ msgstr ""
-
-#~ msgid "Sector Arbitration"
-#~ msgstr ""
-
-#~ msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
-#~ msgstr ""
-
-#~ msgid "Result Entry"
-#~ msgstr ""
-
-#~ msgid "Results Entry"
-#~ msgstr ""
 

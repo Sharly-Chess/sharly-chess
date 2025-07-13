@@ -474,9 +474,6 @@ msgstr "Au moins une ligue est attendue."
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
 
-msgid "At least one role is expected."
-msgstr "Au moins un rôle doit être donné."
-
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
 
@@ -844,17 +841,11 @@ msgstr "Choisir au moins une ligue."
 msgid "Choose at least one rating type."
 msgstr "Choisissez au moins un type de classement."
 
-msgid "Choose at least one role."
-msgstr "Veuillez choisir au moins un rôle."
-
 msgid "Choose one, many or no tournaments."
 msgstr "Choisissez aucun, un ou plusieurs tournois."
 
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
-
-msgid "Choose the roles."
-msgstr "Choisissez les rôles."
 
 msgid "Choose what to do after closing the check-in:"
 msgstr "Choisissez quoi faire après avoir fermé le pointage :"
@@ -2618,6 +2609,9 @@ msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
+
+msgid "Leave empty to grant no permissions at all."
+msgstr "Laissez vide pour n'accorder aucune permission."
 
 msgid "Libraries"
 msgstr "Bibliothèques"
@@ -5947,6 +5941,6 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "Results Entry"
-#~ msgstr "Saisie des résultats"
+#~ msgid "Choose the roles."
+#~ msgstr "Choisissez les rôles."
 
