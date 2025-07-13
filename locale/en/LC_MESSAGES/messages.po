@@ -405,6 +405,9 @@ msgstr ""
 msgid "Allows pairing of the players, either using a pairing engine or manually."
 msgstr ""
 
+msgid "Allows to create accounts, declare devices and grant them permissions."
+msgstr ""
+
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -469,9 +472,6 @@ msgid "At least one league is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
-msgstr ""
-
-msgid "At least one role is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -841,9 +841,6 @@ msgstr ""
 msgid "Choose at least one rating type."
 msgstr ""
 
-msgid "Choose at least one role."
-msgstr ""
-
 msgid "Choose one, many or no tournaments."
 msgstr ""
 
@@ -1158,6 +1155,9 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
+msgid "Customize the permissions"
+msgstr ""
+
 msgid "DOUBLE"
 msgstr ""
 
@@ -1220,9 +1220,6 @@ msgid "Default directory of the Papi files"
 msgstr ""
 
 msgid "Default directory of the Papi files:"
-msgstr ""
-
-msgid "Default execution mode of the events:"
 msgstr ""
 
 msgid "Default federation"
@@ -1918,7 +1915,7 @@ msgstr ""
 msgid "Execution"
 msgstr ""
 
-msgid "Execution mode of this event:"
+msgid "Execution mode:"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -2613,7 +2610,7 @@ msgstr ""
 msgid "Leagues"
 msgstr ""
 
-msgid "Learn more…"
+msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"
@@ -4323,9 +4320,6 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
-msgid "Stand-alone"
-msgstr ""
-
 msgid "Standard"
 msgstr ""
 
@@ -4360,9 +4354,6 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
-msgstr ""
-
-msgid "Take some time to understand what each mode entails, and don't be shy about taking advantage of the full power of Sharly Chess!"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -5389,10 +5380,7 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
-msgid "Use Sharly Chess as a stand-alone application"
-msgstr ""
-
-msgid "Use connected devices"
+msgid "Use connected devices to check-in players and enter results on public screens"
 msgstr ""
 
 msgid "Use customized permissions"
@@ -5694,9 +5682,6 @@ msgstr ""
 msgid "You are on the Sharly Chess server."
 msgstr ""
 
-msgid "You are the only one to manage your event, on the Sharly Chess server; other devices are not allowed to connect to your server (in particular you will have to share a display to the users to show pairings, results, rankings… or print them!)."
-msgstr ""
-
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr ""
 
@@ -5955,19 +5940,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Screen management"
-#~ msgstr ""
-
-#~ msgid "Sector Arbitration"
-#~ msgstr ""
-
-#~ msgid "This role allows to grant/revoke the Deputy Chief Arbitration role, edit the event, manage tournaments; it inherits the Deputy Chief Arbiter role."
-#~ msgstr ""
-
-#~ msgid "Result Entry"
-#~ msgstr ""
-
-#~ msgid "Results Entry"
-#~ msgstr ""
 

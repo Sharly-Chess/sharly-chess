@@ -332,9 +332,7 @@ class AccessAdminController(BaseEventAdminController):
                 errors[field] = _('Account [{username}] already exists.').format(
                     username=username
                 )
-        roles = WebContext.form_data_to_list_str(data, field := 'roles') or []
-        if not roles:
-            errors[field] = _('At least one role is expected.')
+        # no validation on the roles, an empty list is accepted.
         return errors
 
     @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
@@ -415,6 +413,9 @@ class AccessAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
+        if event.create_custom_exec_mode_objects():
+            # reload the context because the accounts have changed
+            web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
         event.create_custom_exec_mode_objects()
         account = web_context.get_admin_account()
         stored_account = account.stored_account
@@ -621,9 +622,7 @@ class AccessAdminController(BaseEventAdminController):
                     errors[field] = _('Device [{ip}] already set.').format(ip=ip)
             else:
                 errors[field] = _('The IP address [{ip}] is not valid.').format(ip=ip)
-        roles = WebContext.form_data_to_list_str(data, field := 'roles') or []
-        if not roles:
-            errors[field] = _('At least one role is expected.')
+        # no validation on the roles, an empty list is accepted.
         return errors
 
     @post(path='/admin/device-create/{event_uniq_id:str}', name='admin-device-create')
@@ -698,7 +697,9 @@ class AccessAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
-        event.create_custom_exec_mode_objects()
+        if event.create_custom_exec_mode_objects():
+            # reload the context because the devices have changed
+            web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
         device = web_context.get_admin_device()
         stored_device = device.stored_device
         if not device.unknown:

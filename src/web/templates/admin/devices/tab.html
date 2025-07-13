@@ -7,7 +7,7 @@
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% if client.can_manage_devices %}
                 <span
-                    {% if not admin_event.exec_mode.custom %}
+                    {% if not admin_event.custom_exec_mode %}
                         {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('info', _('Add a device to the event.'), 'top') }}
@@ -15,7 +15,7 @@
                 >
                     <button
                         class="btn btn-primary text-nowrap ms-1"
-                        {% if admin_event.exec_mode.custom %}
+                        {% if admin_event.custom_exec_mode %}
                             hx-get="{{ url_for('admin-device-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
@@ -82,7 +82,7 @@
                         {% set client_can_manage_device=device.id in client.manageable_device_ids %}
                         {% set device_can_be_updated=device.edit_properties or device.edit_permissions %}
                         <span
-                            {% if not admin_event.exec_mode.custom %}
+                            {% if not admin_event.custom_exec_mode %}
                                 {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
                             {% elif not device_can_be_updated %}
                                 {{ macros.tooltip_attributes('warning', _('This device can not be updated.'), 'top') }}
@@ -93,7 +93,7 @@
                             {% endif %}
                         >
                             <button
-                                {% if admin_event.exec_mode.custom and device_can_be_updated and client_can_manage_device %}
+                                {% if admin_event.custom_exec_mode and device_can_be_updated and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-primary"
                                     hx-get="{{ url_for('admin-device-update-modal', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
@@ -110,7 +110,7 @@
                         </span>
                         {% set device_can_be_cloned=device.edit_properties %}
                         <span
-                            {% if not admin_event.exec_mode.custom %}
+                            {% if not admin_event.custom_exec_mode %}
                                 {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
                             {% elif not device_can_be_cloned %}
                                 {{ macros.tooltip_attributes('warning', _('This device can not be duplicated.'), 'top') }}
@@ -121,7 +121,7 @@
                             {% endif %}
                         >
                             <button
-                                {% if admin_event.exec_mode.custom and device_can_be_cloned and client_can_manage_device %}
+                                {% if admin_event.custom_exec_mode and device_can_be_cloned and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-primary"
                                     hx-get="{{ url_for('admin-device-clone-modal', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
@@ -138,7 +138,7 @@
                         </span>
                         {% set device_can_be_deleted=device.edit_properties %}
                         <span
-                            {% if not admin_event.exec_mode.custom %}
+                            {% if not admin_event.custom_exec_mode %}
                                 {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
                             {% elif not device_can_be_deleted %}
                                 {{ macros.tooltip_attributes('warning', _('This device can not be deleted.'), 'top') }}
@@ -149,7 +149,7 @@
                             {% endif %}
                         >
                             <button
-                                {% if admin_event.exec_mode.custom and device_can_be_deleted and client_can_manage_device %}
+                                {% if admin_event.custom_exec_mode and device_can_be_deleted and client_can_manage_device %}
                                     class="btn btn-sm btn-outline-danger"
                                     hx-get="{{ url_for('admin-device-delete-modal', event_uniq_id=admin_event.uniq_id, device_id=device.id) }}"
                                     hx-target="body"
@@ -180,7 +180,7 @@
     </table>
 
     <div class="text-center mt-4">
-        {% if admin_event.exec_mode.custom %}
+        {% if admin_event.custom_exec_mode %}
             <i class="bi-exclamation-triangle-fill text-danger fs-4"></i>
             <br/>
             {{ _('Warning: by default, only people on your Sharly Chess server can access the application.') }}

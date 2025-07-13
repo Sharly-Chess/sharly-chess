@@ -104,9 +104,6 @@ class EventAdminController(BaseEventAdminController):
                 )
                 template_context |= {
                     'federation_options': cls._get_federation_options(None),
-                    'exec_mode_options': cls._get_exec_mode_options(
-                        SharlyChessConfig().default_exec_mode
-                    ),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         SharlyChessConfig.default_record_illegal_moves_number
                     ),

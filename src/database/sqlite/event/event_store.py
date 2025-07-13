@@ -247,9 +247,6 @@ class StoredAccount(StoredAccess):
     password_hash: str | None
 
 
-DEFAULT_HIDE_BACKGROUND_IMAGE: bool = False
-
-
 @dataclass
 class BaseStoredEvent:
     uniq_id: str
@@ -257,10 +254,11 @@ class BaseStoredEvent:
     federation: str
     start: float
     stop: float
+    hide_background_image: bool
+    custom_exec_mode: bool
     public: bool = False
     path: str | None = None
     location: str | None = None
-    hide_background_image: bool = DEFAULT_HIDE_BACKGROUND_IMAGE
     background_image: str | None = None
     background_color: str | None = None
     record_illegal_moves: int | None = None
@@ -271,7 +269,6 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    exec_mode: int | None = None
     last_update: float = 0.0
 
     # Plugins can add their own tournament data

@@ -26,9 +26,7 @@ from common.i18n import (
 )
 from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
-from data.auth.exec_mode import ExecMode
 from data.player import Federation
-from database.sqlite.event.event_store import DEFAULT_HIDE_BACKGROUND_IMAGE
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
@@ -156,9 +154,7 @@ class SharlyChessConfig(metaclass=Singleton):
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
 
-    @property
-    def default_exec_mode(self) -> ExecMode:
-        return ExecMode(self.stored_config.default_exec_mode)
+    default_custom_exec_mode: bool = False
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'
@@ -378,7 +374,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_columns: int = 4
 
     # True to hide the background images by default.
-    default_hide_background_image: bool = DEFAULT_HIDE_BACKGROUND_IMAGE
+    default_hide_background_image: bool = False
 
     # The default event background image.
     default_background_image: str = ''

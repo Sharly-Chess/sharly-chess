@@ -95,7 +95,6 @@ class ConfigDatabase(MigrationDatabase):
             federation=row['federation'],
             launch_browser=self.load_bool_from_database_field(row['launch_browser']),
             locale=row['locale'],
-            default_exec_mode=row['default_exec_mode'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -120,7 +119,6 @@ class ConfigDatabase(MigrationDatabase):
                 'launch_browser',
                 'federation',
                 'locale',
-                'default_exec_mode',
             ],
         )
         field_sets = (f'`{f}` = ?' for f in fields.keys())
