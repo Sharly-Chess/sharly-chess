@@ -844,9 +844,6 @@ msgstr ""
 msgid "Choose the columns displayed."
 msgstr ""
 
-msgid "Choose the roles."
-msgstr ""
-
 msgid "Choose what to do after closing the check-in:"
 msgstr ""
 
@@ -2611,6 +2608,9 @@ msgid "Leagues"
 msgstr ""
 
 msgid "Learn more…"
+msgstr ""
+
+msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"

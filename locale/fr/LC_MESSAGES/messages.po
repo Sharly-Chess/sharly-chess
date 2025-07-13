@@ -844,9 +844,6 @@ msgstr "Choisissez aucun, un ou plusieurs tournois."
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
-msgid "Choose the roles."
-msgstr Choisissez les rôles.
-
 msgid "Choose what to do after closing the check-in:"
 msgstr "Choisissez quoi faire après avoir fermé le pointage :"
 
@@ -2612,6 +2609,9 @@ msgstr "Ligues"
 
 msgid "Learn more…"
 msgstr "En savoir plus…"
+
+msgid "Leave empty to grant no permissions at all."
+msgstr "Laissez vide pour n'accorder aucune permission."
 
 msgid "Libraries"
 msgstr "Bibliothèques"
