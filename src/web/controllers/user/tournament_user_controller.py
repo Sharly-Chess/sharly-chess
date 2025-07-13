@@ -432,9 +432,8 @@ class ResultUserController(BaseInputUserController):
         else:
             if result not in (
                 Result.admin_imputable_results()
-                if board_web_context.client.tournament_ids_allowing_set_special_results[
-                    board_web_context.tournament.id
-                ]
+                if board_web_context.tournament.id
+                in board_web_context.client.tournament_ids_allowing_set_special_results
                 else Result.user_imputable_results()
             ):
                 return BaseController.redirect_error(
