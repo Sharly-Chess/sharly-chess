@@ -1,4 +1,3 @@
-from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.migration import BaseMigration
 
 
@@ -28,7 +27,7 @@ class Migration(BaseMigration):
             ')'
         )
         self.database.execute(
-            f'ALTER TABLE `info` ADD `custom_exec_mode` INTEGER NOT NULL DEFAULT {int(SharlyChessConfig.default_hide_background_image)}',
+            'ALTER TABLE `info` ADD `custom_exec_mode` INTEGER NOT NULL DEFAULT 0',
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 
