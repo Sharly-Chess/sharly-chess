@@ -6,7 +6,7 @@
         and
         not board.exempt
         and
-        (board.white_player.tournament.id in client.tournament_ids_allowing_enter_results)
+        client.can_enter_results(board.white_player.tournament.id)
     %}
         {% with wp=board.white_player, bp=board.black_player %}
             <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
@@ -98,7 +98,7 @@
     {% elif
         player
         and
-        player.tournament.id in client.tournament_ids_allowing_check_in_players
+        client.can_check_in_players(player.tournament.id)
     %}
         <div class="modal-dialog modal-dialog-centered input-screen-result-modal">
             <div class="modal-content bg-secondary-subtle">
