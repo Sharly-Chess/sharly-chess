@@ -13,7 +13,6 @@ from litestar.params import Body
 from common import REQUEST_TIMEOUT, format_timestamp_date
 from common.i18n import _, ngettext
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.exec_mode import ExecMode
 from data.event import Event
 from data.loader import EventLoader
 from utils.enum import Result, TournamentRating
@@ -81,7 +80,6 @@ class AdminWebContext(WebContext):
             super().template_context
             | {
                 'admin_tab': self.admin_tab,
-                'exec_modes': ExecMode.exec_modes(),
             }
             | plugin_context
         )
@@ -89,24 +87,6 @@ class AdminWebContext(WebContext):
 
 class BaseAdminController(BaseController):
     """A base class inherited by all the admin controllers."""
-
-    @staticmethod
-    def _get_exec_mode_options(
-        default_exec_mode: ExecMode | None = None,
-    ) -> dict[str, str]:
-        """Returns the possible options for the execution mode."""
-        options: dict[str, str] = {}
-        if default_exec_mode:
-            options |= {
-                '': _('By default - {option}').format(
-                    option=f'{default_exec_mode.name}'
-                ),
-            }
-        options |= {
-            str(exec_mode.value): f'{exec_mode.name} - {exec_mode.description}'
-            for exec_mode in ExecMode.exec_modes()
-        }
-        return options
 
     @staticmethod
     def _get_federation_options(default_federation: str | None) -> dict[str, str]:
@@ -396,14 +376,12 @@ class BaseAdminController(BaseController):
         message_color: str | None = None
         message_background_color: str | None = None
         prize_currency: str | None = None
-        exec_mode: int | None = None
+        custom_exec_mode: bool | None = None
         match action:
             case 'clone' | 'update' | 'create':
-                exec_mode = WebContext.form_data_to_int(
-                    data, field := 'exec_mode', None
+                custom_exec_mode = WebContext.form_data_to_bool(
+                    data, 'custom_exec_mode'
                 )
-                if exec_mode is not None:
-                    exec_mode = ExecMode(exec_mode).value
                 name = WebContext.form_data_to_str(data, field := 'name')
                 if not name:
                     errors[field] = _('Please enter the name of the event.')
@@ -563,7 +541,7 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
-            exec_mode=exec_mode,
+            custom_exec_mode=bool(custom_exec_mode),
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
@@ -710,7 +688,7 @@ class BaseAdminController(BaseController):
         message_color: str | None = None
         message_background_color: str | None = None
         prize_currency: str | None = None
-        mode: int | None = None
+        custom_exec_mode: bool | None = None
         match action:
             case 'update' | 'clone':
                 if admin_event is None:
@@ -729,7 +707,7 @@ class BaseAdminController(BaseController):
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
-                mode = stored_event.exec_mode
+                custom_exec_mode = stored_event.custom_exec_mode
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
                 public = False
@@ -737,7 +715,7 @@ class BaseAdminController(BaseController):
                 hide_background_image = (
                     sharly_chess_config.default_hide_background_image
                 )
-                mode = sharly_chess_config.default_exec_mode
+                custom_exec_mode = sharly_chess_config.default_custom_exec_mode
             case 'delete':
                 pass
             case _:
@@ -781,5 +759,5 @@ class BaseAdminController(BaseController):
                 message_background_color
             ),
             'prize_currency': WebContext.value_to_form_data(prize_currency),
-            'exec_mode': WebContext.value_to_form_data(mode),
+            'custom_exec_mode': WebContext.value_to_form_data(custom_exec_mode),
         } | plugin_form_data

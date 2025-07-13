@@ -2,7 +2,6 @@ import pytest
 from playwright.sync_api import APIRequestContext, Browser
 
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.exec_mode import ExecMode
 from tests.test_config import TestUtils
 
 
@@ -17,12 +16,12 @@ def role_test_events(api_request_context: APIRequestContext):
     TestUtils.create_event(
         api_request_context,
         PUBLIC_EVENT_ID,
-        {'exec_mode': ExecMode.CUSTOM, 'public': True},
+        {'custom_exec_mode': True, 'public': True},
     )
     TestUtils.create_event(
         api_request_context,
         PRIVATE_EVENT_ID,
-        {'exec_mode': ExecMode.CUSTOM, 'public': False},
+        {'custom_exec_mode': True, 'public': False},
     )
 
     yield

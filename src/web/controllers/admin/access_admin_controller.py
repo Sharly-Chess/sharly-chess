@@ -413,6 +413,9 @@ class AccessAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
+        if event.create_custom_exec_mode_objects():
+            # reload the context because the accounts have changed
+            web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
         event.create_custom_exec_mode_objects()
         account = web_context.get_admin_account()
         stored_account = account.stored_account
@@ -694,7 +697,9 @@ class AccessAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
-        event.create_custom_exec_mode_objects()
+        if event.create_custom_exec_mode_objects():
+            # reload the context because the devices have changed
+            web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
         device = web_context.get_admin_device()
         stored_device = device.stored_device
         if not device.unknown:

@@ -27,7 +27,7 @@ class Migration(BaseMigration):
             ')'
         )
         self.database.execute(
-            'ALTER TABLE `info` ADD `exec_mode` INTEGER',
+            'ALTER TABLE `info` ADD `custom_exec_mode` INTEGER NOT NULL DEFAULT 0',
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 
@@ -35,6 +35,6 @@ class Migration(BaseMigration):
         self.database.execute(
             'ALTER TABLE `info` ADD `update_password` TEXT',
         )
-        self.database.execute('ALTER TABLE `info` DROP COLUMN `exec_mode`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `custom_exec_mode`')
         self.database.execute('DROP TABLE IF EXISTS `account`')
         self.database.execute('DROP TABLE IF EXISTS `device`')
