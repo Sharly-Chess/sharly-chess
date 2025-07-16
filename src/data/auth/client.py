@@ -373,7 +373,7 @@ class Client:
         """Returns true if the client can access the Pairings tab."""
         return AuthAction.VIEW_PAIRINGS_TAB in self.allowed_actions
 
-    def can_use_paring_engine(self, tournament_id: int) -> bool:
+    def can_use_pairing_engine(self, tournament_id: int) -> bool:
         """Returns True if the client can use the pairing engine for a tournament."""
         return self._action_allowed_for_tournament(
             AuthAction.USE_PAIRING_ENGINE, tournament_id
