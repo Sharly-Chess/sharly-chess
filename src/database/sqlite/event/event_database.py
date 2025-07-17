@@ -1380,6 +1380,9 @@ class EventDatabase(MigrationDatabase):
             start=row['start'],
             stop=row['stop'],
             location=row['location'],
+            three_points_for_a_win=cls.load_bool_from_database_field(
+                row['three_points_for_a_win']
+            ),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(
             stored_tournament=stored_tournament, row=row
@@ -1427,81 +1430,62 @@ class EventDatabase(MigrationDatabase):
             for key, value in data.items()
         }
 
-        # check_in_open is not updated here but in set_tournament_check_in()
-        fields: list[str] = [
-            'uniq_id',
-            'name',
-            'path',
-            'filename',
-            'time_control_initial_time',
-            'time_control_increment',
-            'time_control_handicap_penalty_step',
-            'time_control_handicap_penalty_value',
-            'time_control_handicap_min_time',
-            'record_illegal_moves',
-            'rules',
-            'first_board_number',
-            'paired_bye_result',
-            'max_byes',
-            'tie_breaks',
-            'rounds',
-            'rating',
-            'pairing',
-            'location',
-            'start',
-            'stop',
-            'last_rounds_no_byes',
-            'last_update',
-            'last_result_update',
-            'last_illegal_move_update',
-            'last_check_in_update',
-        ] + [field for field in plugin_data.keys()]
-
-        params: list = [
-            stored_tournament.uniq_id,
-            stored_tournament.name,
-            stored_tournament.path,
-            stored_tournament.filename,
-            stored_tournament.time_control_initial_time,
-            stored_tournament.time_control_increment,
-            stored_tournament.time_control_handicap_penalty_step,
-            stored_tournament.time_control_handicap_penalty_value,
-            stored_tournament.time_control_handicap_min_time,
-            stored_tournament.record_illegal_moves,
-            stored_tournament.rules,
-            stored_tournament.first_board_number,
-            stored_tournament.paired_bye_result,
-            stored_tournament.max_byes,
-            self.dump_to_json_database_field(stored_tournament.tie_breaks),
-            stored_tournament.rounds,
-            stored_tournament.rating,
-            stored_tournament.pairing,
-            stored_tournament.location,
-            stored_tournament.start,
-            stored_tournament.stop,
-            stored_tournament.last_rounds_no_byes,
-            time.time(),
-            stored_tournament.last_result_update,
-            stored_tournament.last_illegal_move_update,
-            stored_tournament.last_check_in_update,
-        ] + [value for value in plugin_data.values()]
+        fields = (
+            self._get_fields_dict(
+                stored_tournament,
+                [
+                    'uniq_id',
+                    'name',
+                    'path',
+                    'filename',
+                    'time_control_initial_time',
+                    'time_control_increment',
+                    'time_control_handicap_penalty_step',
+                    'time_control_handicap_penalty_value',
+                    'time_control_handicap_min_time',
+                    'record_illegal_moves',
+                    'rules',
+                    'first_board_number',
+                    'paired_bye_result',
+                    'max_byes',
+                    'rounds',
+                    'rating',
+                    'pairing',
+                    'location',
+                    'start',
+                    'stop',
+                    'last_rounds_no_byes',
+                    'last_result_update',
+                    'last_illegal_move_update',
+                    'last_check_in_update',
+                    'three_points_for_a_win',
+                ],
+            )
+            | {
+                'tie_breaks': self.dump_to_json_database_field(
+                    stored_tournament.tie_breaks
+                ),
+                'last_update': time.time(),
+            }
+            | plugin_data
+        )
 
         if stored_tournament.id is None:
-            protected_fields = [f'`{f}`' for f in fields]
+            fields_str = ', '.join(f'`{f}`' for f in fields)
+            values_str = ', '.join(['?'] * len(fields))
             self.execute(
-                f'INSERT INTO `tournament`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params),
+                f'INSERT INTO `tournament`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
             )
             tournament_id: int | None = self._last_inserted_id()
             if tournament_id is None:
                 raise RuntimeError('Tournament insertion failed')
             fetched_stored_tournament = self.get_stored_tournament(tournament_id)
         else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_tournament.id]
+            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
             self.execute(
-                f'UPDATE `tournament` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params),
+                f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
+                tuple(fields.values()) + (stored_tournament.id,),
             )
             fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
         if fetched_stored_tournament is None:

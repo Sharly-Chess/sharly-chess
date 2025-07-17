@@ -34,7 +34,6 @@ from utils import SharedUtils
 from utils.enum import (
     BoardColor,
     PlayerGender,
-    PointValueType,
     Result,
     TournamentRating,
     TrfType,
@@ -368,6 +367,10 @@ class Tournament:
         return None
 
     @property
+    def stored_three_points_for_a_win(self) -> bool:
+        return self.stored_tournament.three_points_for_a_win
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -426,8 +429,9 @@ class Tournament:
         return self.papi_tournament_info.rating
 
     @property
-    def point_value_type(self) -> PointValueType:
-        return self.papi_tournament_info.point_value_type
+    def three_points_for_a_win(self) -> bool:
+        # TODO (Molrn) Replace by a detailed point value override
+        return self.papi_tournament_info.three_points_for_a_win
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
@@ -671,7 +675,10 @@ class Tournament:
 
     @property
     def point_values(self) -> dict[Result, float]:
-        return self.point_value_type.point_values
+        if self.three_points_for_a_win:
+            return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+        else:
+            return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
@@ -1461,7 +1468,11 @@ class Tournament:
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
-        from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
+        from plugins.ffe.utils import (
+            PapiPairingSystem,
+            PapiPairingVariation,
+            PapiThreePointsForAWin,
+        )
 
         if not self.file_exists:
             return
@@ -1473,9 +1484,14 @@ class Tournament:
                     if tie_break.papi_id is not None
                 ]
             )
+            three_points_for_a_win = PapiThreePointsForAWin.get_plugin_value(
+                self.stored_three_points_for_a_win
+            )
+            assert three_points_for_a_win is not None
             papi_info: dict[PapiVariable, str | int] = {
                 PapiVariable.ROUNDS: self.stored_rounds,
                 PapiVariable.RATING: self.stored_rating.to_papi_value,
+                PapiVariable.THREE_POINTS_FOR_A_WIN: three_points_for_a_win,
             }
             if self.stored_pairing_variation:
                 if variation := PapiPairingVariation.get_plugin_value(

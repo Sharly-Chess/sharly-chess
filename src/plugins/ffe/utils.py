@@ -131,3 +131,16 @@ class PapiPairingVariation(PluginCoreMapper[str, PairingVariation]):
         if core_object == variations.DoubleBergerRoundRobinVariation():
             core_object = variations.BergerRoundRobinVariation()
         return super().get_plugin_value(core_object)
+
+
+class PapiThreePointsForAWin(PluginCoreMapper[str, bool]):
+    @classmethod
+    def _core_object_by_plugin_value(cls) -> dict[str, bool]:
+        return {
+            'OUI': True,
+            'NON': False,
+        }
+
+    @classmethod
+    def get_core_object(cls, plugin_value: str) -> bool:
+        return cls._core_object_by_plugin_value()[plugin_value.upper()]
