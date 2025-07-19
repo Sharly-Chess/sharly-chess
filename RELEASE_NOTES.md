@@ -14,6 +14,10 @@ English version below
 - Ajout de boutons « Créer et ajouter à nouveau » pour réduire nombre de clics lors de la création d'objets (2.8.0)
 - Rechargement des ressources statiques après les mises à jour (2.8.1)
 
+### Gestion des tournois
+
+- Correction du formulaire d'édition des tournois (2.8.3)
+
 ### Gestion des joueur·euses
 
 - Ajout du genre sur les impressions des joueur·euses (2.8.0)
@@ -46,6 +50,10 @@ English version below
   - Liste des prix
   - Attribution des prix
 
+## Exports
+
+- Correction des titres FIDE des joueur·euses (2.8.3)
+
 ## FFE
 
 - Correction du téléversement manuel des résultats (2.8.2)
@@ -67,7 +75,11 @@ English version below
 - 'Create and add another' buttons added to reduce click count when creating objects (2.8.0)
 - Reload static resources after upgrading (2.8.1)
 
-# Players management
+### Tournaments management
+
+- Fixed tournament editing form (2.8.3)
+
+### Players management
 
 - Added the gender on the player views (2.8.0)
 - Added check-in lists (2.8.0)
@@ -98,6 +110,10 @@ English version below
   - Round performance indicators
   - Prize list
   - Prize assignment
+
+## Exports
+
+- Fixed players' title (2.8.3)
 
 ## FFE
 
