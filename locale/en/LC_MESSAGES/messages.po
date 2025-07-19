@@ -5296,7 +5296,8 @@ msgstr ""
 msgid "Unpair tournament"
 msgstr ""
 
-msgid "Unpaired"
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
 msgstr ""
 
 msgid "Unpaired *** FEMALE"

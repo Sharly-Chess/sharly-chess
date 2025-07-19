@@ -22,7 +22,7 @@
                 {% if action in ['create', 'clone', ] %}
                     hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                    hx-patch="{{ url_for('admin-account-update', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}

@@ -5296,8 +5296,9 @@ msgstr "Désapparier toutes les rondes du tournoi."
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
-msgid "Unpaired"
-msgstr "Non-apparié·es"
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
+msgstr "Non-apparié·es (%(unpaired)d)"
 
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"
