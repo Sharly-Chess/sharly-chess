@@ -687,8 +687,9 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-msgid "Byes *** Players with byes"
-msgstr "Byes"
+#, python-format
+msgid "Byes (%(byes)d) *** Players with byes"
+msgstr "Byes (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"

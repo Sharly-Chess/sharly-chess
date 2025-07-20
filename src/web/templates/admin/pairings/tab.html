@@ -182,7 +182,7 @@
                         {% endif %}
 
                         {% if admin_bye_players|length > 0 %}
-                            {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
+                            {% with title=_('Byes (%(byes)d) *** Players with byes', byes=admin_bye_players|length), unpaired=admin_bye_players %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
                         {% endif %}

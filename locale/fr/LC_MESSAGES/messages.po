@@ -687,8 +687,8 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Byes *** Players with byes"
-msgstr "Forfaits et absences"
+msgid "Byes (%(byes)d) *** Players with byes"
+msgstr "Forfaits et absences (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
