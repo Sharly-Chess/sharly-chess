@@ -8,11 +8,11 @@
         style="top: var(--header-height);"
     >
         <tr>
-            <th>{{ title }}</th>
-            <th></th>
-            {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
-                <th></th>
-            {% endif %}
+            <th
+                    colspan="{% if admin_tournament.pairing_system.show_unpaired_player_modal %}3{% else %}2{% endif %}"
+            >
+                {{ title }}
+            </th>
         </tr>
     </thead>
     <tbody>
