@@ -20,9 +20,9 @@
                                         <th scope="col" class="board-number">Ech</th>
                                         <th scope="col" class="points">Pts</th>
                                         {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
-                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and (tournament.id in client.tournament_ids_allowing_enter_results) and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
+                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and client.can_enter_results(tournament.id) and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
                                         <th scope="col" class="score">Score</th>
-                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and (tournament.id in client.tournament_ids_allowing_enter_results) and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
+                                        <th scope="col" class="player w-50" {% if screen.type == 'input' and client.can_enter_results(tournament.id) and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
                                         {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
                                         <th scope="col" class="points">Pts</th>
                                     </tr>
@@ -33,9 +33,9 @@
                                     {% set editable =
                                         screen.type == 'input'
                                         and (
-                                            tournament.id in client.tournament_ids_allowing_update_results
+                                            client.can_update_results(tournament.id)
                                             or
-                                            (not board.result_str and (tournament.id in client.tournament_ids_allowing_enter_results))
+                                            (not board.result_str and client.can_enter_results(tournament.id))
                                         )
                                     %}
                                     <tr
@@ -43,7 +43,7 @@
                                         class="
                                             board-row
                                             {% if editable %}editable{% endif %}
-                                            {% if tournament.id in client.tournament_ids_allowing_set_special_results %}special-results-allowed{% endif %}
+                                            {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
                                             {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
                                             {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
                                         >

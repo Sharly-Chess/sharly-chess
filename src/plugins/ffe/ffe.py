@@ -774,14 +774,10 @@ class FfePlugin(Plugin):
             }
 
         return {
-            'ffe_id': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'ffe_id', None)
-            ),
-            'ffe_password': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'ffe_password', None)
-            ),
-            'ffe_auto_upload': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'ffe_auto_upload', None)
+            'ffe_id': self.get_data(tournament.plugin_data, 'ffe_id', None),
+            'ffe_password': self.get_data(tournament.plugin_data, 'ffe_password', None),
+            'ffe_auto_upload': self.get_data(
+                tournament.plugin_data, 'ffe_auto_upload', None
             ),
         }
 
