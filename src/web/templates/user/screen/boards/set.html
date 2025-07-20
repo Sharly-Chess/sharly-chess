@@ -58,7 +58,7 @@
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modal-wrapper"
                                             {% endif %}
-                                        >{{ board.number }}.</th>
+                                        >{{ board.number }}.{% if board.number != board.id %} ({{ board.id }}.){% endif %}</th>
                                         <td
                                             class="points bg-transparent text-center"
                                             {% if editable %}
