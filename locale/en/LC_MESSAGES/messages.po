@@ -3430,7 +3430,7 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-msgid "Point count"
+msgid "Point counting"
 msgstr ""
 
 msgid "Points for draw (Half-Point Bye)"

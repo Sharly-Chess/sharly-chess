@@ -3430,8 +3430,8 @@ msgstr "Veuillez patienter…"
 msgid "Plugins"
 msgstr "Plug-ins"
 
-msgid "Point count"
-msgstr "Décompte des points"
+msgid "Point counting"
+msgstr "Comptage des points"
 
 msgid "Points for draw (Half-Point Bye)"
 msgstr "Points de match nul (demi-point joker)"
