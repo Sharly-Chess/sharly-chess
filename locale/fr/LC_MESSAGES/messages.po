@@ -63,8 +63,8 @@ msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
 
 #, python-format
-msgid "%(set_name)s (round %(round)d)"
-msgstr "%(set_name)s (ronde %(round)d)"
+msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
+msgstr "%(set_name)s (ronde %(round)d) [reste %(remaining)d échiquiers]"
 
 #, python-format
 msgid "%(string)s:"

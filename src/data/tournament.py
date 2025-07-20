@@ -600,6 +600,10 @@ class Tournament:
     def boards(self) -> list[Board]:
         return self.get_round_boards(self.current_round)
 
+    @property
+    def boards_without_result(self) -> list[Board]:
+        return [board for board in self.boards if board.result == Result.NO_RESULT]
+
     @cached_property
     def unpaired_players(self) -> list[Player]:
         return self.get_unpaired_players(self.boards)
