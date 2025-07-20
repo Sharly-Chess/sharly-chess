@@ -46,4 +46,4 @@ class TestSpectatorRole(BaseRoleTest):
 
         # Test no access to the private input screen, should redirect to the home page
         auth_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{private_input_screen.uniq_id}')
-        auth_page.wait_for_url('/admin')
+        auth_page.wait_for_url('/error/403')

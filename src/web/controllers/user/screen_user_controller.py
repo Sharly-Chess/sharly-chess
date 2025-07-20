@@ -14,6 +14,7 @@ from web.controllers.user.base_screen_user_controller import (
     DisplayControllerUserWebContext,
     RotatorUserWebContext,
 )
+from web.guards import Guard
 
 
 class ScreenUserController(BaseScreenUserController):
@@ -106,6 +107,7 @@ class ScreenUserController(BaseScreenUserController):
     @get(
         path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen',
+        guards=[Guard.screen_is_visible],
     )
     async def htmx_user_screen(
         self,
