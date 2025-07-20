@@ -52,7 +52,7 @@ English version below
 
 ## Exports
 
-- Correction des titres FIDE des joueur·euses (2.8.3)
+- Correction des titres FIDE des joueur·euses dans les exports PGN (2.8.3)
 
 ## FFE
 
@@ -113,7 +113,7 @@ English version below
 
 ## Exports
 
-- Fixed players' title (2.8.3)
+- Fixed PGN export players' title (2.8.3)
 
 ## FFE
 
