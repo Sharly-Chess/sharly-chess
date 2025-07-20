@@ -3430,6 +3430,9 @@ msgstr "Veuillez patienter…"
 msgid "Plugins"
 msgstr "Plug-ins"
 
+msgid "Point counting"
+msgstr "Comptage des points"
+
 msgid "Points for draw (Half-Point Bye)"
 msgstr "Points de match nul (demi-point joker)"
 
@@ -4712,6 +4715,9 @@ msgstr "Cet écran est public (visible des utilisateur·ices)."
 msgid "This will cause the table numbers to be reordered."
 msgstr "Cela peut modifier l'ordre des tables."
 
+msgid "Three points for a win"
+msgstr "Victoire à 3 points"
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
@@ -5153,6 +5159,9 @@ msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
+
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
+msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0."
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."

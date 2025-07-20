@@ -26,7 +26,6 @@ from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     BoardColor,
-    PointValueType,
     PapiResult,
 )
 from database.access.access_database import AccessDatabase
@@ -67,7 +66,7 @@ class PapiTournamentInfo:
     rating_limit1: int = 0
     rating_limit2: int = 0
     tie_breaks: list[TieBreak] = field(default_factory=list[TieBreak])
-    point_value_type: PointValueType = PointValueType.STANDARD
+    three_points_for_a_win: bool = False
     arbiter: str = ''
 
 
@@ -84,7 +83,7 @@ class PapiVariable(StrEnum):
     TIE_BREAK1 = 'Dep1'
     TIE_BREAK2 = 'Dep2'
     TIE_BREAK3 = 'Dep3'
-    POINT_VALUE_TYPE = 'DecomptePoints'
+    THREE_POINTS_FOR_A_WIN = 'DecomptePoints'
     LOCATION = 'Lieu'
     START_DATE = 'DateDebut'
     END_DATE = 'DateFin'
@@ -144,7 +143,7 @@ class PapiDatabase(AccessDatabase):
                 PapiVariable.TIE_BREAK1,
                 PapiVariable.TIE_BREAK2,
                 PapiVariable.TIE_BREAK3,
-                PapiVariable.POINT_VALUE_TYPE,
+                PapiVariable.THREE_POINTS_FOR_A_WIN,
                 PapiVariable.ARBITER,
             ]
         )
@@ -159,7 +158,7 @@ class PapiDatabase(AccessDatabase):
             if tie_break_type := tie_break_type_by_id.get(papi_id, None):
                 tie_breaks.append(tie_break_type())
 
-        from plugins.ffe.utils import PapiPairingVariation
+        from plugins.ffe.utils import PapiPairingVariation, PapiThreePointsForAWin
 
         return PapiTournamentInfo(
             rounds=int(values[PapiVariable.ROUNDS]),
@@ -170,8 +169,8 @@ class PapiDatabase(AccessDatabase):
             rating_limit1=int(values[PapiVariable.RATING_LIMIT1]),
             rating_limit2=int(values[PapiVariable.RATING_LIMIT2]),
             tie_breaks=tie_breaks,
-            point_value_type=PointValueType.from_papi_value(
-                values[PapiVariable.POINT_VALUE_TYPE]
+            three_points_for_a_win=PapiThreePointsForAWin.get_core_object(
+                values[PapiVariable.THREE_POINTS_FOR_A_WIN]
             ),
             arbiter=values[PapiVariable.ARBITER],
         )

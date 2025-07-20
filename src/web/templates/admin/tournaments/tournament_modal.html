@@ -391,6 +391,15 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.switch_input(
+                                name='three_points_for_a_win',
+                                label=_('%(string)s:', string=_('Point counting')),
+                                placeholder=_('Three points for a win'),
+                                help_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
 
                     <h4>
