@@ -67,7 +67,7 @@ msgid "%(set_name)s (check-in)"
 msgstr ""
 
 #, python-format
-msgid "%(set_name)s (round %(round)d)"
+msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
 msgstr ""
 
 #, python-format
