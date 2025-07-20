@@ -1,9 +1,9 @@
 <table
-    id="players-table"
+    id="{{ table_id }}"
     class="table prominent table-striped table-sm w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
 >
     <thead
-        id="players-table-header"
+        id="{{ table_id }}-header"
         class="position-sticky z-2"
         style="top: var(--header-height);"
     >
