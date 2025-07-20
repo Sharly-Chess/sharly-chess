@@ -611,8 +611,8 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
-msgid "Board"
-msgstr "Éch."
+msgid "Board (%(remaining)d)"
+msgstr "Éch. (%(remaining)d)"
 
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"

@@ -200,7 +200,7 @@
                             style="top: var(--header-height);"
                         >
                             <tr>
-                                <th>{{ _('Board') }}</th>
+                                <th>{{ _('Board (%(remaining)d)', remaining=admin_tournament.boards_without_result|length) }}</th>
                                 <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
                                 {% if admin_tournament.print_real_points %}
                                     <th>&nbsp;</th>

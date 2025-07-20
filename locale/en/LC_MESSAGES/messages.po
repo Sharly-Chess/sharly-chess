@@ -611,7 +611,8 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
-msgid "Board"
+#, python-format
+msgid "Board (%(remaining)d)"
 msgstr ""
 
 #, python-format
