@@ -81,7 +81,7 @@ class Board:
         if player is None:
             return f'[{field_prefix} ""]'
         rating = player.rating if player.rating_type == PlayerRatingType.FIDE else '-'
-        name = f'{player.last_name}' + (
+        name = player.last_name + (
             f', {player.first_name}' if player.first_name else ''
         )
         return (
