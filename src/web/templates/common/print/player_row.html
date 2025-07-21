@@ -21,7 +21,7 @@
     {% if pairings_list %}
         {{ macros.extra_column_data("points", player, extra_columns)}}
         <td class="points text-start">[{{player.points_str}}]</td>
-        {{ macros.extra_column_data("plays", player, extra_columns)}}
+        {{ macros.extra_column_data("board", player, extra_columns)}}
         {% with opponent_id=player.pairings[pairings_round].opponent_id %}
             {% if not opponent_id %}
             <td class="plays text-center fw-bold">{{ _('Pairing Allocated Bye')}}<td>
@@ -32,7 +32,9 @@
             {% else %}
                 {% set opponent=tournament.players_by_id[opponent_id] %}
                 {% set color=player.color %}
-                <td class="plays text-center fw-bold">{{ _('Plays %(board)d %(color)s *** PLAYS STRING FOR PAIRINGS PRINT', board=player.board_number, color=color) }}
+                <td class="board text-center fw-bold">{{ _('Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT', board=player.board_number) }}
+                {{ macros.extra_column_data("color", player, extra_columns) }}
+                <td class="color text-center fw-bold">{{ _('%(color)s *** COLOR FOR PAIRINGS PRINT', color=color)}}
                 {{ macros.extra_column_data("title", opponent, extra_columns)}}
                 <td class="title text-end">{{ opponent.title.short_name }}</td>
                 {{ macros.extra_column_data("name", opponent, extra_columns)}}

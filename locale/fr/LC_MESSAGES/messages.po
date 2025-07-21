@@ -5,6 +5,11 @@ msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
 
 #, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "avec les %(color)s"
+
+
+#, python-format
 msgid "#%(board_number)d"
 msgstr "n°%(board_number)d"
 
@@ -3507,8 +3512,8 @@ msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
 
 #, python-format
-msgid "Plays %(board)d %(color)s *** PLAYS STRING FOR PAIRINGS PRINT"
-msgstr "Table %(board)d avec les %(color)s"
+msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
+msgstr "Table %(board)d"
 
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."

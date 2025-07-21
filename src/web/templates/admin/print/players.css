@@ -17,7 +17,8 @@
     .player-row .points { font-weight: bold; }
 }
 @media print {
-    .player-table .plays { font-weight: bold; }
+    .player-table .board,
+    .player-table .color { font-weight: bold; }
 }
 {# ========== TEXT ALIGN ========== #}
 .player-table .name,

@@ -9,6 +9,10 @@ msgid "#%(board_number)d"
 msgstr ""
 
 #, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "with %(color)s"
+
+#, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
 
@@ -3509,8 +3513,8 @@ msgid "Playing in tournament [%(uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Plays %(board)d %(color)s *** PLAYS STRING FOR PAIRINGS PRINT"
-msgstr "Plays with %(color)s on board %(board)d"
+msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
+msgstr "Plays on board %(board)d"
 
 msgid "Please choose the document."
 msgstr ""
