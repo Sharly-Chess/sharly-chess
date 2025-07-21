@@ -524,7 +524,9 @@ class Tournament:
             [
                 player
                 for player in self.players
-                if not self.current_round or player.board_id
+                if not self.current_round
+                or player.board_id
+                and player not in self.unpaired_players
             ],
             key=lambda p: (p.last_name, p.first_name),
         )

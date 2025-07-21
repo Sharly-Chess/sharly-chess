@@ -14,6 +14,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.PlayerListPrintDocument,
             documents.PlayerCheckinListPrintDocument,
             documents.PairingPrintDocument,
+            documents.AlphabeticalPairingsPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,

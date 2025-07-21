@@ -408,6 +408,13 @@ msgstr ""
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr ""
 
+msgid "Alphabetical Pairings"
+msgstr ""
+
+#, python-format
+msgid "Alphabetical Pairings (round #{round})"
+msgstr ""
+
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -3500,6 +3507,10 @@ msgstr ""
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr ""
+
+#, python-format
+msgid "Plays %(board)d %(color)s *** PLAYS STRING FOR PAIRINGS PRINT"
+msgstr "Plays with %(color)s on board %(board)d"
 
 msgid "Please choose the document."
 msgstr ""

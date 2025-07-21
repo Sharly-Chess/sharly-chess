@@ -2,7 +2,7 @@
     {% if checkin_list %}
         {{ macros.extra_column_header("checkin", extra_columns)}}
         <td class="checkin text-center">☐</td>
-    {% else %}
+    {% elif not pairings_list %}
         {{ macros.extra_column_data("rank", player, extra_columns)}}
         <td class="rank text-end">
             {% if ranking or crosstable %}
@@ -15,37 +15,64 @@
     {{ macros.extra_column_data("title", player, extra_columns)}}
     <td class="title text-end">{{ player.title.short_name }}</td>
     {{ macros.extra_column_data("name", player, extra_columns)}}
-    <td class="name text-start fw-bold">{{ player.full_name }}</td>
+    <td class="name text-start{{ "fw-bold" if not pairings_list}}">{{ player.full_name }}</td>
     {{ macros.extra_column_data("elo", player, extra_columns)}}
-    <td class="rating text-end">{{ player.rating_str }}</td>
-    {{ macros.extra_column_data("category", player, extra_columns)}}
-    <td class="category text-center">{{ player.category.short_name }}</td>
-    {{ macros.extra_column_data("gender", player, extra_columns)}}
-    <td class="category text-center">{{ player.gender.short_name }}</td>
-    {{ macros.extra_column_data("federation", player, extra_columns)}}
-    <td class="federation text-center">{{ player.federation }}</td>
-    {% if crosstable %}
-        {{ macros.extra_column_data("first-round", player, extra_columns)}}
-        {% for crosstable_string in (player.crosstable_strings)[:ranking_round] %}
-            <td class="round text-center">{{ crosstable_string }}</td>
-        {% endfor %}
+    <td class="rating text-{{ "start" if pairings_list else "end"}}">{{ player.rating_str }}</td>
+    {% if pairings_list %}
+        {{ macros.extra_column_data("points", player, extra_columns)}}
+        <td class="points text-start">[{{player.points_str}}]</td>
+        {{ macros.extra_column_data("plays", player, extra_columns)}}
+        {% with opponent_id=player.pairings[pairings_round].opponent_id %}
+            {% if not opponent_id %}
+            <td class="plays text-center fw-bold">{{ _('Pairing Allocated Bye')}}<td>
+            {{ macros.extra_column_data("title", player, extra_columns) }}
+            {{ macros.extra_column_data("name", player, extra_columns) }}
+            {{ macros.extra_column_data("elo", player, extra_columns) }}
+            {{ macros.extra_column_data("points", player, extra_columns) }}
+            {% else %}
+                {% set opponent=tournament.players_by_id[opponent_id] %}
+                {% set color=player.color %}
+                <td class="plays text-center fw-bold">{{ _('Plays %(board)d %(color)s *** PLAYS STRING FOR PAIRINGS PRINT', board=player.board_number, color=color) }}
+                {{ macros.extra_column_data("title", opponent, extra_columns)}}
+                <td class="title text-end">{{ opponent.title.short_name }}</td>
+                {{ macros.extra_column_data("name", opponent, extra_columns)}}
+                <td class="name text-start">{{ opponent.full_name }}</td>
+                {{ macros.extra_column_data("elo", opponent, extra_columns)}}
+                <td class="rating text-start">{{ opponent.rating_str }}</td>
+                {{ macros.extra_column_data("points", opponent, extra_columns)}}
+                <td class="points text-start">[{{opponent.points_str}}]</td>
+            {% endif %}
+        {% endwith %}
     {% else %}
-         {{ macros.extra_column_data("club", player, extra_columns)}}
-        <td class="club text-start">{{ player.club }}</td>
-    {% endif %}
-    {% if checkin_list %}
-        {{ macros.extra_column_header("paid", extra_columns)}}
-        <td class="payment text-center">{{ player.paid }}</td>
-        {{ macros.extra_column_header("owes", extra_columns)}}
-        <td class="extra_column_header text-center">{{ player.owed }}</td>
-        {{ macros.extra_column_header("comments", extra_columns)}}
-        <td class="category text-center">{{ player.comment }}</td>
-    {% endif %}
-    {% if ranking or crosstable %}
-        <td class="points text-center fw-bold">{{ player.points_str }}</td>
-        {% for tie_break_string in player.tie_break_values_as_strings %}
-            <td class="tie-break text-center">{{ tie_break_string }}</td>
-        {% endfor %}
+        {{ macros.extra_column_data("category", player, extra_columns)}}
+        <td class="category text-center">{{ player.category.short_name }}</td>
+        {{ macros.extra_column_data("gender", player, extra_columns)}}
+        <td class="category text-center">{{ player.gender.short_name }}</td>
+        {{ macros.extra_column_data("federation", player, extra_columns)}}
+        <td class="federation text-center">{{ player.federation }}</td>
+        {% if crosstable %}
+            {{ macros.extra_column_data("first-round", player, extra_columns)}}
+            {% for crosstable_string in (player.crosstable_strings)[:ranking_round] %}
+                <td class="round text-center">{{ crosstable_string }}</td>
+            {% endfor %}
+        {% else %}
+            {{ macros.extra_column_data("club", player, extra_columns)}}
+            <td class="club text-start">{{ player.club }}</td>
+        {% endif %}
+        {% if checkin_list %}
+            {{ macros.extra_column_header("paid", extra_columns)}}
+            <td class="payment text-center">{{ player.paid }}</td>
+            {{ macros.extra_column_header("owes", extra_columns)}}
+            <td class="extra_column_header text-center">{{ player.owed }}</td>
+            {{ macros.extra_column_header("comments", extra_columns)}}
+            <td class="category text-center">{{ player.comment }}</td>
+        {% endif %}
+        {% if ranking or crosstable %}
+            <td class="points text-center fw-bold">{{ player.points_str }}</td>
+            {% for tie_break_string in player.tie_break_values_as_strings %}
+                <td class="tie-break text-center">{{ tie_break_string }}</td>
+            {% endfor %}
+        {% endif %}
     {% endif %}
     {{ macros.extra_column_data("end", extra_columns)}}
 </tr>

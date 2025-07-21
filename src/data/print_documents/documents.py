@@ -88,6 +88,14 @@ class PlayerPrintDocument(PrintDocument, ABC):
         return False
 
     @property
+    def is_pairings_list(self) -> bool:
+        return False
+
+    @property
+    def pairings_round(self) -> int | None:
+        return None
+
+    @property
     def is_player_list(self) -> bool:
         return False
 
@@ -112,6 +120,8 @@ class PlayerPrintDocument(PrintDocument, ABC):
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
+            'pairings_list': self.is_pairings_list,
+            'pairings_round': self.pairings_round,
             'checkin_list': self.is_player_checkin_list,
             'ranking_round': self.ranking_round,
         }
@@ -335,6 +345,73 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
             'tournament': self.tournament,
             'scores': self.ordered_players,
         }
+
+
+class AlphabeticalPairingsPrintDocument(PlayerPrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'alpha-pairings'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Alphabetical Pairings')
+
+    @property
+    def title(self) -> str:
+        return _('Alphabetical Pairings (round #{round})').format(
+            round=self.pairings_round
+        )
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [RoundPrintOption]
+
+    @override
+    @property
+    def pairings_round(self) -> int:
+        assert self.tournament is not None
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.last_paired_round
+        )
+
+    @override
+    @property
+    def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
+        return self.tournament.players_by_name_without_unpaired
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        paired_round = self._get_option(RoundPrintOption)
+        assert self.tournament is not None
+        if paired_round.value is None:
+            if self.tournament.last_paired_round < 1:
+                raise OptionError(
+                    _('The tournament has not yet started.'),
+                    paired_round,
+                )
+            return
+        if paired_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                paired_round,
+            )
+        if paired_round.value > self.tournament.last_paired_round:
+            raise OptionError(
+                _('This round is not finished (last finished: #{round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
+                paired_round,
+            )
+
+    @override
+    @property
+    def is_pairings_list(self) -> bool:
+        return True
 
 
 class BoardPrintDocument(PrintDocument, ABC):

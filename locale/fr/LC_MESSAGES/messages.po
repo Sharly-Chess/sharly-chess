@@ -408,6 +408,13 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr "Permet la création de comptes, la déclaration d'appareils et l'assignation de permissions."
 
+msgid "Alphabetical Pairings"
+msgstr "Appariements alphabétiques"
+
+#, python-format
+msgid "Alphabetical Pairings (round #{round})"
+msgstr "Appariements par ordre alphabétique (ronde n°{round})"
+
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -3498,6 +3505,10 @@ msgstr "En cours"
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
+
+#, python-format
+msgid "Plays %(board)d %(color)s *** PLAYS STRING FOR PAIRINGS PRINT"
+msgstr "Table %(board)d avec les %(color)s"
 
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
