@@ -5090,12 +5090,6 @@ msgstr "Le tournoi [{tournament_uniq_id}] est en cours."
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
 msgstr "Le tournoi [{tournament_uniq_id}] est terminé, on ne peut plus y ajouter de joueur·euses."
 
-msgid "Tournament [{tournament_uniq_id}] is not started yet."
-msgstr "Le tournoi [{tournament_uniq_id}] n'est pas encore démarré."
-
-msgid "Tournament [{tournament_uniq_id}] is started."
-msgstr "Le tournoi [{tournament_uniq_id}] est démarré."
-
 msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr "Tournoi [{tournament_uniq_id}] : {text}"
 
