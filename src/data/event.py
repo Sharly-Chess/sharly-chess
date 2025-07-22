@@ -192,6 +192,15 @@ class Event:
     def stop(self) -> float:
         return self.stored_event.stop
 
+    def passed(self, now: float | None = None) -> bool:
+        return self.stored_event.passed(now)
+
+    def coming(self, now: float | None = None) -> bool:
+        return self.stored_event.coming(now)
+
+    def current(self, now: float | None = None) -> bool:
+        return self.stored_event.current(now)
+
     @property
     def federation(self) -> str:
         return self.stored_event.federation
