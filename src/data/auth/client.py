@@ -471,11 +471,13 @@ class Client:
             AuthAction.SET_SPECIAL_RESULTS, tournament_id
         )
 
-    def imputable_results_for_tournament(self, tournament_id: int) -> list[Result]:
+    def imputable_results_for_tournament(
+        self, tournament_id: int
+    ) -> tuple[Result, ...]:
         if self.can_set_special_results(tournament_id):
-            return Result.user_imputable_results()
-        else:
             return Result.admin_imputable_results()
+        else:
+            return Result.user_imputable_results()
 
     # ---------------------------------------------------------------------------------
     # Screens
