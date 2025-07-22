@@ -120,15 +120,15 @@ Accounts can be given roles, after they authenticate.
 |--------------------------------------------|:---------:|:---------:|:---------:|:---------:|:---------:|:----------:|:----------:|:----------:|:----------:|:---------:|:---------:|
 | **Scope**                                  | **Appl.** | **Event** | **Event** | **Event** | **Event** | **Tourn.** | **Tourn.** | **Tourn.** | **Tourn.** | **Event** | **Appl.** |
 | **APPLICATION**                            |           |           |           |           |           |            |            |            |            |           |           |
-| View application settings                  |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
-| Update application settings                |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
-| Grant/revoke Administration role           |    :x:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
-| Add events                                 |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
-| Source databases management                |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View application settings                  |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
+| Update application settings                |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
+| Grant/revoke Administration role           |    :x:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
+| Add events                                 |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
+| Source databases management                |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
 | View public current events                 |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |  :ok:(*)  |
+| View detailed event cards                  |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
 | View private events                        |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
-| View passed/coming events                  |   :ok:    |   :ok:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
-| View detailed event cards                  |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View passed/coming events                  |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
 | **EVENTS**                                 |           |           |           |           |           |            |            |            |            |           |           |
 | Delete an event                            |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
 | Rename an event                            |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
