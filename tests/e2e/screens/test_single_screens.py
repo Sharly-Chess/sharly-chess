@@ -87,6 +87,21 @@ class TestSingleScreensFunctionality:
 
         row.click()
         modal = lan_page.locator('.modal-dialog')
+        # The modal should not be visible since check-in is not open yet
+        expect(modal).not_to_be_visible()
+
+        # Open check-in
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
+        )
+        # Reload the page
+        lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        # Try to open the modal again
+        rows = lan_page.locator('table tbody tr')
+        expect(rows).to_have_count(16)
+        row.click()
+        modal = lan_page.locator('.modal-dialog')
+
         expect(modal).to_be_visible()
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
         expect(button).to_contain_text('ALYX')
