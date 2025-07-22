@@ -396,14 +396,14 @@ class Client:
             AuthAction.UNPAIR_ROUND, tournament_id
         )
 
-    def can_unpair_board(self, tournament_id: int) -> bool:
-        """Returns True if the client can unpair a board."""
+    def can_unpair_boards(self, tournament_id: int) -> bool:
+        """Returns True if the client can individually unpair the boards of a tournament."""
         return self._action_allowed_for_tournament(
             AuthAction.UNPAIR_BOARD, tournament_id
         )
 
-    def can_permute_board(self, tournament_id: int) -> bool:
-        """Returns True if the client can permute paired players."""
+    def can_permute_boards(self, tournament_id: int) -> bool:
+        """Returns True if the client can permute paired players of a tournament."""
         return self._action_allowed_for_tournament(
             AuthAction.PERMUTE_BOARD, tournament_id
         )
