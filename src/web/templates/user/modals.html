@@ -71,10 +71,10 @@
                         {% endif %}
                     </div>
                     <div class="modal-footer row d-flex align-items-center justify-content-center">
-                        {% if client.can_update_results(wp.tournament.id) and board.result_str %}
+                        {% if client.can_update_results(wp.tournament.id) %}
                             <button
                                 class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result_str %}
+                                {% if board.no_result %}
                                     disabled
                                 {% else %}
                                     hx-trigger="click"
