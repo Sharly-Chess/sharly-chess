@@ -748,7 +748,10 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_data(
-        self, event: 'Event', tournament: 'Tournament | None'
+        self,
+        event: 'Event',
+        tournament: 'Tournament | None',
+        action: str,
     ) -> dict[str, Any]:
         if not tournament:
             return {
@@ -758,10 +761,14 @@ class FfePlugin(Plugin):
             }
 
         return {
-            'ffe_id': WebContext.value_to_form_data(
+            'ffe_id': ''
+            if action == 'clone'
+            else WebContext.value_to_form_data(
                 self.get_data(tournament.plugin_data, 'ffe_id', None)
             ),
-            'ffe_password': WebContext.value_to_form_data(
+            'ffe_password': ''
+            if action == 'clone'
+            else WebContext.value_to_form_data(
                 self.get_data(tournament.plugin_data, 'ffe_password', None)
             ),
             'ffe_auto_upload': WebContext.value_to_form_data(
