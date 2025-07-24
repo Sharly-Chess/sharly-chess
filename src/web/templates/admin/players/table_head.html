@@ -43,13 +43,15 @@
                 {{ _('Name *** NAME COLUMN HEADER FOR PLAYERS') }}
                 {{ admin_macros.admin_players_sort_link(url, 'bi-sort-alpha-down', 'alpha', admin_players_sort) }}
                 <input
-                    type="text"
+                    type="search"
+                    id="player_search"
                     name="admin_players_filter_name"
                     class="admin-players-filter-name py-0 px-1"
                     hx-get="{{ url }}"
                     hx-target="body"
-                    hx-trigger="keyup changed delay:0.2s"
+                    hx-trigger="keyup changed delay:0.5s, search"
                     hx-indicator="#please-wait"
+                    hx-sync="this:replace"
                     value="{{ admin_players_filter_name }}"
                 />
                 <i
@@ -102,12 +104,14 @@
                         {% include 'filter_clubs.html' %}
                     {% endif %}
                     <input
-                        type="text"
+                        type="search"
+                        id="club_search"
                         name="admin_players_filter_clubs_search"
                         class="admin-players-filter-origin py-0 px-1"
                         hx-get="{{ url }}"
                         hx-target="body"
-                        hx-trigger="keyup changed delay:0.2s"
+                        hx-trigger="keyup changed delay:0.5s, search"
+                        hx-sync="this:replace"
                         preload
                         hx-indicator="#please-wait"
                         value="{{ admin_players_filter_clubs_search }}"
