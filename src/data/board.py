@@ -81,11 +81,17 @@ class Board:
         if player is None:
             return f'[{field_prefix} ""]'
         rating = player.rating if player.rating_type == PlayerRatingType.FIDE else '-'
-        name = f'{player.last_name}, {player.first_name or "?"}'
+        name = player.last_name + (
+            f', {player.first_name}' if player.first_name else ''
+        )
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
-            f'[{field_prefix}Title "{player.title.to_fide_value or "-"}"]\n'
-            f'[{field_prefix}Elo "{rating or "-"}"]\n'
+            + (
+                f'[{field_prefix}Title "{player.title.to_fide_value}"]\n'
+                if player.title.to_fide_value
+                else ''
+            )
+            + f'[{field_prefix}Elo "{rating or "-"}"]\n'
         )
 
     @staticmethod
