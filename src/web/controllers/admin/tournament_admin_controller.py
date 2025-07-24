@@ -542,7 +542,10 @@ class TournamentAdminController(BaseEventAdminController):
                         for data in per_plugin_form_data
                         for key, value in data.items()
                     }
-                    data = WebContext.values_dict_to_form_data(
+                    data = {
+                        'start': WebContext.value_to_datetime_form_data(start),
+                        'stop': WebContext.value_to_datetime_form_data(stop),
+                    } | WebContext.values_dict_to_form_data(
                         {
                             'uniq_id': uniq_id,
                             'name': name,
@@ -563,8 +566,6 @@ class TournamentAdminController(BaseEventAdminController):
                             'tie_break_2': tie_break_2,
                             'tie_break_3': tie_break_3,
                             'location': location,
-                            'start': start,
-                            'stop': stop,
                             'rounds': rounds,
                             'rating': rating,
                             'pairing_system': pairing_system.id,
