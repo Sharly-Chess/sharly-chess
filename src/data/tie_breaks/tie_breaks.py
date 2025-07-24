@@ -1079,7 +1079,8 @@ class AverageRatingOpponentsTieBreak(TieBreak):
 class PerformanceTieBreak(TieBreak, ABC):
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        return [RoundRobinPairingSystem()]
+        # TODO (Molrn) Forbid for Round-Robin after big-move
+        return []
 
 
 class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
