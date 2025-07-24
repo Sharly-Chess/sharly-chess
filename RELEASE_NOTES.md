@@ -17,6 +17,8 @@ English version below
 ### Gestion des tournois
 
 - Correction du formulaire d'édition des tournois (2.8.3)
+- Compatibilité Papi pour l'utilisation de la performance en départage des tournois toutes-rondes (2.8.3)
+- Non copie des informations FFE/ChessEvent lors de la duplication de tournois (2.8.3)
 
 ### Gestion des joueur·euses
 
@@ -41,6 +43,7 @@ English version below
 ### Gestion des prix
 
 - Ajout de l'onglet Prix avec la définition et le calcul des prix (2.8.0)
+- Amélioration du formatage des prix (2.8.3)
 
 ### Impression de documents
 
@@ -78,6 +81,8 @@ English version below
 ### Tournaments management
 
 - Fixed tournament editing form (2.8.3)
+- _Papi_ compatibility for using tie-break Performance for round-robin tournaments (2.8.3)
+- Omit FFE/ChessEvent credentials when duplicating tournaments (2.8.3)
 
 ### Players management
 
@@ -102,6 +107,7 @@ English version below
 ### Prizes management
 
 - Added the Prizes tab with the definition and calculation of prizes (2.8.0)
+- Improved prize formatting (2.8.3)
 
 ### Print documents
 
