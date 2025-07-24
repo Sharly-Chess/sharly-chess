@@ -27,6 +27,7 @@ English version below
 - Mise à jour des drapeaux des fédérations (2.8.0)
 - Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
 - Clarification des sources de données de joueur·euses (2.8.0)
+- Amélioration du filtrage sur le nom et le club (2.8.3)
 
 ### Gestion des appariements
 
@@ -91,6 +92,7 @@ English version below
 - Updated federation flags (2.8.0)
 - Calculation of the players' category relative to the date of the tournament (2.8.0)
 - Clarification of player data sources (2.8.0)
+- Improved filtering on players' name and club (2.8.3)
 
 ### Pairings management
 
