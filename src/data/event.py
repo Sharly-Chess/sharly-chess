@@ -193,13 +193,14 @@ class Event:
         return self.stored_event.stop
 
     def passed(self, now: float | None = None) -> bool:
-        return self.stored_event.passed(now)
+        return self.stored_event.stop < (now or time.time())
 
     def coming(self, now: float | None = None) -> bool:
-        return self.stored_event.coming(now)
+        return self.stored_event.start > (now or time.time())
 
     def current(self, now: float | None = None) -> bool:
-        return self.stored_event.current(now)
+        now = now or time.time()
+        return not self.passed(now) and not self.coming(now)
 
     @property
     def federation(self) -> str:

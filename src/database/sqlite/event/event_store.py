@@ -2,7 +2,6 @@
 All the classes of this module are basic data classes stored in the event databases.
 """
 
-import time
 from abc import ABC
 from dataclasses import dataclass, field
 from typing import Any
@@ -275,16 +274,6 @@ class BaseStoredEvent:
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None
-
-    def passed(self, now: float | None = None) -> bool:
-        return self.stop < (now or time.time())
-
-    def coming(self, now: float | None = None) -> bool:
-        return self.start > (now or time.time())
-
-    def current(self, now: float | None = None) -> bool:
-        now = now or time.time()
-        return not self.passed(now) and not self.coming(now)
 
 
 @dataclass

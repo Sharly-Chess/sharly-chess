@@ -232,11 +232,11 @@ class EventLoader:
         now = time.time()
         match status:
             case 'passed':
-                conditions.append(lambda event: event.passed(now))
+                conditions.append(lambda event: event.stop < now)
             case 'current':
-                conditions.append(lambda event: event.current(now))
+                conditions.append(lambda event: event.start <= now <= event.stop)
             case 'coming':
-                conditions.append(lambda event: event.coming(now))
+                conditions.append(lambda event: now < event.start)
         return sorted(
             cls._filter_events_metadata(conditions),
             key=lambda event: (-event.stop, -event.start, event.name),
