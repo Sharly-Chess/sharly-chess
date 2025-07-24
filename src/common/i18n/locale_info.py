@@ -183,6 +183,7 @@ class LocaleInfo:
             ):
                 if before_line != after_line:
                     changed = True
+                    break
         if changed:
             shutil.move(tmp_file, self.po_file)
         else:
