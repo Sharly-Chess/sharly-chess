@@ -490,14 +490,10 @@ class Tournament:
         # as it itself calls `self.players_by_id`.
         # To avoid this dependency, `self._players` is temporarily allocated.
         self._players = players_by_id.values()
-        illegal_moves: Counter[int] = self.get_illegal_moves(self.current_round)
         for player in self.players:
-            player.illegal_moves = illegal_moves[player.id]
             player.tournament = self
-            self.set_player_points(player, before_round=self.current_round)
-        self._estimate_players(self.players, after_round=self.current_round)
         self.pairing_system.update_player_results(self)
-        self._boards = self.build_boards()
+        self.set_for_round()
         self._players = None
         return players_by_id
 
@@ -790,6 +786,17 @@ class Tournament:
         for family in self.dependent_families:
             family.clear_cache()
         self.event.clear_player_cache()
+
+    def set_for_round(self, round_: int | None = None):
+        """Set the tournament for the given round (defaults to the current round)"""
+        if round_ is None:
+            round_ = self.current_round
+        illegal_moves: Counter[int] = self.get_illegal_moves(round_)
+        for player in self.players:
+            player.illegal_moves = illegal_moves[player.id]
+            self.set_player_points(player, before_round=round_)
+        self._estimate_players(self.players, after_round=round_)
+        self._boards = self.build_boards(round_)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(

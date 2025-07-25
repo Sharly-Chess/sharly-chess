@@ -93,9 +93,8 @@ class PairingEngine(ABC):
         if not tournament.round_has_pairings(round_):
             raise ValueError(f'No pairings for round {round_}')
         pairings_diff: list[tuple[Board | None, Board | None]] = []
-        for player in tournament.players:
-            tournament.set_player_points(player, before_round=round_)
-        real_boards = tournament.build_boards(round_)
+        tournament.set_for_round(round_)
+        real_boards = tournament.boards
         expected_boards = sorted(
             self._generate_boards(tournament, round_), reverse=True
         )
