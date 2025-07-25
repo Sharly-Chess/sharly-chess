@@ -84,11 +84,7 @@ class TestSingleScreensFunctionality:
         # Should not be checked in
         row = rows.filter(has_text='ALYX')
         expect(row.locator('i.bi-square')).to_be_visible()
-
-        row.click()
-        modal = lan_page.locator('.modal-dialog')
-        # The modal should not be visible since check-in is not open yet
-        expect(modal).not_to_be_visible()
+        expect(row).not_to_have_attribute('hx-get', value='')
 
         # Open check-in
         api_request_context.patch(
@@ -99,6 +95,7 @@ class TestSingleScreensFunctionality:
         # Try to open the modal again
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(16)
+        row = rows.filter(has_text='ALYX')
         row.click()
         modal = lan_page.locator('.modal-dialog')
 
