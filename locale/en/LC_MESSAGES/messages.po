@@ -1849,6 +1849,12 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
+msgid "FIDE recommended tie-breaks for round-robin tournaments:"
+msgstr ""
+
+msgid "FIDE recommended tie-breaks for swiss tournaments:"
+msgstr ""
+
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
@@ -2358,6 +2364,10 @@ msgid "Ko. *** ACRONYM FOR PAPI KOYA"
 msgstr "Ko."
 
 msgid "Koya"
+msgstr ""
+
+#, python-format
+msgid "Koya System (the number of points achieved against all opponents who have achieved 50 %% or more)"
 msgstr ""
 
 msgid "Koya system"
@@ -3030,6 +3040,9 @@ msgid "Other ODBC drivers found on the server"
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
+msgstr ""
+
+msgid "Other tie-breaks should not be used unless you really know what you do."
 msgstr ""
 
 msgid "Others"
@@ -3996,6 +4009,9 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
+msgid "Set the recommended tie-breaks"
+msgstr ""
+
 msgid "Settings"
 msgstr ""
 
@@ -4072,6 +4088,9 @@ msgid "Single Screens ({num})"
 msgstr ""
 
 msgid "Soft Haley system"
+msgstr ""
+
+msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
 msgstr ""
 
 msgid "Sonnenborn-Berger"
@@ -4180,6 +4199,12 @@ msgid "Texts before and after the hour below are optional for round numbers, man
 msgstr ""
 
 msgid "Thanks :-)"
+msgstr ""
+
+msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
+msgstr ""
+
+msgid "The Buchholz System (the sum of the scores of each of the opponents of a player)"
 msgstr ""
 
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
@@ -4312,6 +4337,12 @@ msgid "The following screen families will also be deleted:"
 msgstr ""
 
 msgid "The following screens will also be deleted:"
+msgstr ""
+
+msgid "The greater number of wins"
+msgstr ""
+
+msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
 msgstr ""
 
 msgid "The initial time in seconds (may be empty if an increment is set)."

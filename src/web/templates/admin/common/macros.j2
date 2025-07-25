@@ -201,6 +201,7 @@ with_indicator: display a loading indicator, optional
     dropdown_item='',
     dropdown_classes='',
     select_options={},
+    onchange='',
     multiple_select=false,
     number_min='',
     number_max='',
@@ -277,6 +278,9 @@ with_indicator: display a loading indicator, optional
                             {% if placeholder %}
                                 data-placeholder='{{ placeholder }}'
                             {% endif %}
+                        {% endif %}
+                        {% if onchange %}
+                            onchange="{{ onchange }}"
                         {% endif %}
                     >
                         {% for key, text_or_options in select_options.items() %}
@@ -664,6 +668,7 @@ with_indicator: display a loading indicator, optional
     errors={},
     error=false,
     select_options={'': 'NO OPTIONS'},
+    onchange='',
     multiple_select=false,
     placeholder='',
     disabled=false
@@ -677,6 +682,7 @@ with_indicator: display a loading indicator, optional
         errors=errors,
         error=error,
         select_options=select_options,
+        onchange=onchange,
         multiple_select=multiple_select,
         placeholder=placeholder,
         disabled=disabled,

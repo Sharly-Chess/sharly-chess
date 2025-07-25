@@ -218,7 +218,10 @@ class ChessEventPlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_data(
-        self, event: 'Event', tournament: 'Tournament | None'
+        self,
+        event: 'Event',
+        tournament: 'Tournament | None',
+        action: str,
     ) -> dict[str, Any]:
         if not tournament:
             return {
@@ -240,7 +243,9 @@ class ChessEventPlugin(Plugin):
             'chessevent_event_id': self.get_data(
                 tournament.plugin_data, 'chessevent_event_id', ''
             ),
-            'chessevent_tournament_name': self.get_data(
+            'chessevent_tournament_name': ''
+            if action == 'clone'
+            else self.get_data(
                 tournament.plugin_data, 'chessevent_tournament_name', ''
             ),
         }
