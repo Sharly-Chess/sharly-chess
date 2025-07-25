@@ -108,6 +108,17 @@
                     });
                 }
 
+                {# This function is called after loading a modal and each time the pairing system select has changed on the tournament modal #}
+                function updateTieBreaksHelp() {
+                    if ($('#pairing-system').val() == 'SWISS') {
+                        $('#swiss-tie-breaks-help').show();
+                        $('#round-robin-tie-breaks-help').hide();
+                    } else {
+                        $('#round-robin-tie-breaks-help').show();
+                        $('#swiss-tie-breaks-help').hide();
+                    }
+                }
+
                 function scrollToFirstError() {
                     var errorElements = document.querySelectorAll('#modal-wrapper .is-invalid');
                     if (errorElements.length > 0) {
@@ -173,6 +184,7 @@
 
                     // TODO we shouldn't do this for every modal
                     updateRecordByes();
+                    updateTieBreaksHelp();
                 }
 
                 window.addEventListener("modal_opened", function(event) {
