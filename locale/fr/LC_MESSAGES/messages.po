@@ -1849,6 +1849,12 @@ msgstr "Titre FIDE :"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
+msgid "FIDE recommended tie-breaks for round-robin tournaments:"
+msgstr "Départages recommandés par la FIDE pour les tournois toutes rondes :"
+
+msgid "FIDE recommended tie-breaks for swiss tournaments:"
+msgstr "Départages recommandés par la FIDE pour les tournois suisses :"
+
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
 
@@ -2359,6 +2365,10 @@ msgstr "Ko."
 
 msgid "Koya"
 msgstr "Koya"
+
+#, python-format
+msgid "Koya System (the number of points achieved against all opponents who have achieved 50 %% or more)"
+msgstr "Koya (le nombre de points réalisé scontre des adversaires ayant réalisé 50 %% des points ou plus)"
 
 msgid "Koya system"
 msgstr "Système Koya"
@@ -3031,6 +3041,9 @@ msgstr "Autres pilotes ODBC sur le serveur"
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
+
+msgid "Other tie-breaks should not be used unless you really know what you do."
+msgstr "Les autres départages ne devraient pas être utilisés à moins que vous ne sachiez réellement ce que vous faites."
 
 msgid "Others"
 msgstr "Autres"
@@ -3996,6 +4009,9 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
 
+msgid "Set the recommended tie-breaks"
+msgstr "Utiliser les départages recommandés"
+
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -4073,6 +4089,9 @@ msgstr "Écrans simples ({num})"
 
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
+
+msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
+msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
 
 msgid "Sonnenborn-Berger"
 msgstr "Sonnenborn-Berger"
@@ -4181,6 +4200,12 @@ msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour le
 
 msgid "Thanks :-)"
 msgstr "Merci :-)"
+
+msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
+msgstr "Buchholz tronqué (la somme des scores des adversaires du·de la joueur·euse diminué du plus faible score des adversaires)"
+
+msgid "The Buchholz System (the sum of the scores of each of the opponents of a player)"
+msgstr "Buchholz (la somme des scores des adversaires du·de la joueur·euse)"
 
 msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
 msgstr "La connexion à ChessEvent n'est pas définie pour le tournoi [{tournament_uniq_id}]."
@@ -4313,6 +4338,12 @@ msgstr "Les familles d'écrans suivantes vont également être supprimées :"
 
 msgid "The following screens will also be deleted:"
 msgstr "Les écrans suivants vont également être supprimés :"
+
+msgid "The greater number of wins"
+msgstr "Le plus grand nombre de victoires"
+
+msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
+msgstr "Le plus grand nombre de victoires avec les Noirs"
 
 msgid "The initial time in seconds (may be empty if an increment is set)."
 msgstr "Le temps initial en secondes (peut être nul en cas d'incrément)."
