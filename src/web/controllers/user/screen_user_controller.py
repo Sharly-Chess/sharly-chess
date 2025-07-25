@@ -149,7 +149,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    rotator_guards = super().event_guards + [
+    rotator_guards = EventUserController.event_guards + [
         Guard.rotator_is_visible,
     ]
 
@@ -197,7 +197,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    display_controller_guards = super().event_guards + [
+    display_controller_guards = EventUserController.event_guards + [
         Guard.display_controller_is_visible,
     ]
 
