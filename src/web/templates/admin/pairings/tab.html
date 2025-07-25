@@ -176,13 +176,13 @@
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3 mb-3">
                         {% if admin_unpaired|length > 0 %}
-                            {% with title=_('Unpaired'), unpaired=admin_unpaired %}
+                            {% with title=_('Unpaired'), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
                         {% endif %}
 
                         {% if admin_bye_players|length > 0 %}
-                            {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players %}
+                            {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players, table_id='bye-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
                         {% endif %}
@@ -195,7 +195,7 @@
                         class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
                     >
                         <thead
-                            id="players-table-header"
+                            id="pairings-table-header"
                             class="position-sticky z-2"
                             style="top: var(--header-height);"
                         >
@@ -232,7 +232,7 @@
 
             function scrollToTargetAdjusted(element) {
                 const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
-                const tableHeaderHeight = $('#players-table-header').height();
+                const tableHeaderHeight = $('#pairings-table-header').height();
                 const scrollTop = $(window).scrollTop();
                 const rect = element.getBoundingClientRect();
                 const elementTop = rect.top + scrollTop;
