@@ -17,6 +17,7 @@ from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.pairings.variations import PairingVariation
+    from data.tie_breaks import TieBreak
     from data.tournament import Tournament
 
 
@@ -93,6 +94,21 @@ class PairingSystem(IdentifiableEntity, ABC):
     def variation_container_id(self) -> str:
         """ID of the container of the variation field in the form."""
         return f'{self.variation_field_id}_container'
+
+    @property
+    def tie_break_help_container_id(self) -> str:
+        """ID of the html element containing the tie-break help in the tournament form."""
+        return f'{self.id}_tie_break_help_container'
+
+    @property
+    @abstractmethod
+    def tie_break_help_html_content(self) -> str:
+        """The HTML content of the tie-break help of the pairing system."""
+
+    @property
+    @abstractmethod
+    def default_tie_breaks(self) -> tuple['TieBreak', 'TieBreak', 'TieBreak']:
+        """List of tie-breaks to set as default in the tournament modal."""
 
 
 class SwissPairingSystem(PairingSystem):
@@ -173,6 +189,48 @@ class SwissPairingSystem(PairingSystem):
 
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
+
+    @property
+    def tie_break_help_html_content(self) -> str:
+        return f"""
+            <div>{_('FIDE recommended tie-breaks for swiss tournaments:')}</div>
+            <ol>
+                <li>{
+            _(
+                'The Buchholz Cut 1 (the sum of the scores of '
+                'each of the opponents of a player reduced by '
+                'the lowest score of the opponents)'
+            )
+        }</li>
+                <li>{
+            _(
+                'The Buchholz System (the sum of the scores of '
+                'each of the opponents of a player)'
+            )
+        }</li>
+                <li>{_('The greater number of wins')}</li>
+                <li>{
+            _(
+                'The greater number of wins with Black '
+                '(unplayed games are counted as played with White)'
+            )
+        }</li>
+            </ol>
+        """
+
+    @property
+    def default_tie_breaks(self) -> tuple['TieBreak', 'TieBreak', 'TieBreak']:
+        from data.tie_breaks.tie_breaks import WinsTieBreak
+        from plugins.ffe.ffe_tie_breaks import (
+            PapiBuchholzCutBottomTieBreak,
+            PapiStandardBuchholzTieBreak,
+        )
+
+        return (
+            PapiBuchholzCutBottomTieBreak(),
+            PapiStandardBuchholzTieBreak(),
+            WinsTieBreak(),
+        )
 
 
 class RoundRobinPairingSystem(PairingSystem):
@@ -273,3 +331,41 @@ class RoundRobinPairingSystem(PairingSystem):
                         ),
                     )
                     pairing.stored_pairing.result = Result.REST_GAME.value
+
+    @property
+    def tie_break_help_html_content(self) -> str:
+        return f"""
+            <div>{_('FIDE recommended tie-breaks for round-robin tournaments:')}</div>
+            <ol>
+                <li>{_('The greater number of wins')}</li>
+                <li>{
+            _(
+                'Sonneborn-Berger (the sum of the scores of '
+                'the opponents a player has defeated and half '
+                'the scores of the players with whom he has drawn).'
+            )
+        }</li>
+                <li>{
+            _(
+                'Koya System (the number of points achieved against '
+                'all opponents who have achieved 50 %% or more)'
+            )
+        }</li>
+                <li>{
+            _(
+                'The greater number of wins with Black '
+                '(unplayed games are counted as played with White)'
+            )
+        }</li>
+            </ol>
+        """
+
+    @property
+    def default_tie_breaks(self) -> tuple['TieBreak', 'TieBreak', 'TieBreak']:
+        from data.tie_breaks.tie_breaks import (
+            WinsTieBreak,
+            SonnebornBergerTieBreak,
+            KoyaTieBreak,
+        )
+
+        return WinsTieBreak(), SonnebornBergerTieBreak(), KoyaTieBreak()

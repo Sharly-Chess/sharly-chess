@@ -51,6 +51,7 @@
                         <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
                         {% for round, pairing in admin_player.pairings.items() %}
                             {% set name='round_' ~ round ~ '_result' %}
+                            {% set id=name|replace('_', '-') %}
                             {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round %}
                             {% if pairing.opponent_id %}
                                 {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
@@ -117,6 +118,7 @@
                                     <td colspan="5" class="text-nowrap text-start">
                                         {% if bye_definition_allowed %}
                                             <select
+                                                id="{{ id }}"
                                                 name="{{ name }}"
                                                 class="bye show form-select py-1"
                                                 onchange="updateRecordByes()"
@@ -157,6 +159,47 @@
                                                     </option>
                                                 {% endif %}
                                             </select>
+                                            <script>
+                                                $('#{{ id }}').change(function () {
+                                                    {# get the maximum number of bye that can be given #}
+                                                    max_byes = Number($('[name="max_byes"]').val());
+                                                    if (isNaN(max_byes)) {
+                                                        {# nothing to do #}
+                                                        return;
+                                                    }
+                                                    {# count the total number of byes given, including all the rounds #}
+                                                    byes = $('option[value="8"]:selected').length + 2 * $('option[value="10"]:selected').length;
+                                                    {% if DEVEL_ENV %}
+                                                        console.log('max_byes=' + max_byes + ', byes=' + byes);
+                                                    {% endif %}
+                                                    {# for each visible select, allow the possible options #}
+                                                    $('select.bye.show').each(function() {
+                                                        name = $(this).attr('name')
+                                                        selectedValue = Number($(this).find(':selected').val());
+                                                        if (selectedValue == 8) {
+                                                            {# if HPB is selected, one more bye only is needed for FPB #}
+                                                            {% if DEVEL_ENV %}
+                                                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', fpb_disabled=' + (byes + 1 > max_byes))
+                                                            {% endif %}
+                                                            $(this).find('option[value="10"]').prop('disabled', byes + 1 > max_byes);
+                                                        } else if (selectedValue == 10) {
+                                                            {# if FPB is selected, HPB is always possible #}
+                                                            {% if DEVEL_ENV %}
+                                                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', hpb_disabled=' + false)
+                                                            {% endif %}
+                                                            $(this).find('option[value="8"]').prop('disabled', false);
+                                                        } else {
+                                                            {# one bye is needed for HPB, two for FPB #}
+                                                            {% if DEVEL_ENV %}
+                                                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', hpb_disabled=' + (byes + 1 > max_byes) + ', fpb_disabled=' + (byes + 2 > max_byes))
+                                                            {% endif %}
+                                                            $(this).find('option[value="8"]').prop('disabled', byes + 1 > max_byes);
+                                                            $(this).find('option[value="10"]').prop('disabled', byes + 2 > max_byes);
+                                                        }
+                                                    });
+                                                });
+                                                $('#{{ id }}').trigger('change');
+                                            </script>
                                         {% else %}
                                             {{ admin_player.not_paired_str }}
                                         {% endif %}
