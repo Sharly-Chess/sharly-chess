@@ -299,7 +299,6 @@
                                 label=_('%(string)s:', string=_('Pairing system')),
                                 help_text=_('The system used to generate the pairings.'),
                                 select_options=pairing_system_options,
-                                onchange='updateTieBreaksHelp()',
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -331,17 +330,20 @@
                         <script>
                             $('input[name$="_pairing_variation"][type="hidden"]').remove();
                             $('#pairing-system').change(function() {
-                                const visible_container_id = $(this).val() + '_pairing_variation_container';
-                                let container_id = '';
+                                let elements = '';
                                 {% for pairing_system in pairing_systems %}
-                                    container_id = '{{ pairing_system.variation_container_id }}';
-                                    if (container_id === visible_container_id) {
-                                        $('#' + container_id).css('display',  'block');
+                                    elements = $(
+                                        '#{{ pairing_system.variation_container_id }}, ' +
+                                        '#{{ pairing_system.tie_break_help_container_id }}'
+                                    );
+                                    if ($(this).val() === '{{ pairing_system.id }}') {
+                                        elements.show();
                                     } else {
-                                        $('#' + container_id).css('display',  'none');
+                                        elements.hide();
                                     }
                                 {% endfor %}
                             });
+
                         </script>
                     </div>
                     <div class="row">
@@ -406,48 +408,33 @@
                     <h4>
                         {{ _('Tie-breaks') }}
                     </h4>
-                    <div id="swiss-tie-breaks-help" class="row">
-                        <div class="col-6 col-md-6 form-text">
-                            <div>{{ _('FIDE recommended tie-breaks for swiss tournaments:') }}</div>
-                            <ol>
-                                <li>{{ _('The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)') }}</li>
-                                <li>{{ _('The Buchholz System (the sum of the scores of each of the opponents of a player)') }}</li>
-                                <li>{{ _('The greater number of wins') }}</li>
-                                <li>{{ _('The greater number of wins with Black (unplayed games are counted as played with White)') }}</li>
-                            </ol>
+                    {% for pairing_system in pairing_systems %}
+                        <div
+                            id="{{ pairing_system.tie_break_help_container_id }}"
+                            class="row"
+                            {% if pairing_system.id != data['pairing_system'] %}
+                                style="display:none"
+                            {% endif %}
+                        >
+                            <div class="col-12 col-md-6 form-text">
+                                {{ pairing_system.tie_break_help_html_content|safe }}
+                            </div>
+                            <div class="col-12 col-md-6 form-text">
+                                <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
+                                <button
+                                    type="button"
+                                    class="text-nowrap btn btn-outline-primary form-text"
+                                    onclick="
+                                        {% for tie_break in pairing_system.default_tie_breaks %}
+                                            $('#tie-break-{{ loop.index }}').val('{{ tie_break.id }}');
+                                        {% endfor %}
+                                    "
+                                >
+                                    {{ _('Set the recommended tie-breaks') }}
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-6 col-md-6 form-text">
-                            <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
-                            <button
-                                type="button"
-                                class="text-nowrap btn btn-outline-primary form-text"
-                                onclick="$('#tie-break-1').val('ffe-PAPI_BUCHHOLZ_CUT_BOTTOM'); $('#tie-break-2').val('ffe-PAPI_BUCHHOLZ'); $('#tie-break-3').val('WINS');"
-                            >
-                                {{ _('Set the recommended tie-breaks') }}
-                            </button>
-                        </div>
-                    </div>
-                    <div id="round-robin-tie-breaks-help" class="row">
-                        <div class="col-6 col-md-6 form-text">
-                            <div>{{ _('FIDE recommended tie-breaks for round-robin tournaments:') }}</div>
-                            <ol>
-                                <li>{{ _('The greater number of wins') }}</li>
-                                <li>{{ _('Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn).') }}</li>
-                                <li>{{ _('Koya System (the number of points achieved against all opponents who have achieved 50 %% or more)') }}</li>
-                                <li>{{ _('The greater number of wins with Black (unplayed games are counted as played with White)') }}</li>
-                            </ol>
-                        </div>
-                        <div class="col-6 col-md-6 form-text">
-                            <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
-                            <button
-                                type="button"
-                                class="text-nowrap white btn btn-outline-primary form-text"
-                                onclick="$('#tie-break-1').val('WINS'); $('#tie-break-2').val('SONNENBORN_BERGER'); $('#tie-break-3').val('KOYA');"
-                            >
-                                {{ _('Set the recommended tie-breaks') }}
-                            </button>
-                        </div>
-                    </div>
+                    {% endfor %}
                     <div class="row">
                         {% for index in [1, 2, 3] %}
                             <div
