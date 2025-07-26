@@ -39,7 +39,7 @@ class RankPlayerSorter(PlayerSorter):
         return [
             player
             for player in tournament.compute_player_ranks(
-                correct_round=False, after_round=tournament.rounds
+                after_round=tournament.rounds
             ).values()
         ]
 

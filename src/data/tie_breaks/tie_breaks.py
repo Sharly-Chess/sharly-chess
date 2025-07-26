@@ -12,7 +12,7 @@ from common.i18n import _
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
-from data.player import TournamentPlayer
+from data.player import Player
 from data.tie_breaks.options import (
     TieBreakOption,
     CutTieBreakOption,
@@ -58,7 +58,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     @abstractmethod
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> 'SupportsRichComparison':
@@ -95,7 +95,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     @staticmethod
     def adjusted_score(
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int,
         adjust_fore: bool = False,
@@ -163,7 +163,7 @@ class WinsTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -200,7 +200,7 @@ class GamesWonTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -235,7 +235,7 @@ class GamesPlayedWithBlackTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -270,7 +270,7 @@ class GamesWonWithBlackTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -318,7 +318,7 @@ class ProgressiveScoresTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -351,7 +351,7 @@ class RoundsElectedToPlayTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -378,7 +378,7 @@ class BuchholzTieBreak(TieBreak, ABC):
 
     @staticmethod
     def dummy_score(
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
@@ -448,7 +448,7 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -565,7 +565,7 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -648,7 +648,7 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -702,7 +702,7 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -767,7 +767,7 @@ class SonnebornBergerTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -840,7 +840,7 @@ class SonnebornBergerTieBreak(TieBreak):
 
     @staticmethod
     def _dummy_score(
-        player: 'TournamentPlayer',
+        player: 'Player',
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -908,7 +908,7 @@ class KoyaTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -960,7 +960,7 @@ class KashdanTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> float:
@@ -1041,7 +1041,7 @@ class AverageRatingOpponentsTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -1107,7 +1107,7 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -1163,7 +1163,7 @@ class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -1214,7 +1214,7 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -1400,7 +1400,7 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> int:
@@ -1466,7 +1466,7 @@ class DirectEncounterTieBreak(TieBreak):
 
     def compute_player_value(
         self,
-        player: 'TournamentPlayer',
+        player: 'Player',
         *,
         after_round: int | None,
     ) -> tuple[float, bool]:
@@ -1519,13 +1519,13 @@ class DirectEncounterTieBreak(TieBreak):
                 pairing.result.points(tournament.point_values)
                 for pairing in tied_pairings.values()
             ), True
-        virtual_pairings: dict[int, Pairing] = {
-            opponent_id: Pairing(None, opponent_id, Result.GAIN)
+        tied_results = [pairing.result for pairing in tied_pairings.values()]
+        virtual_results = [
+            Result.GAIN
             for opponent_id in tied_opponents
             if opponent_id not in tied_pairings
-        }
+        ]
         return sum(
-            pairing.result.points(tournament.point_values)
-            for pairing in list(tied_pairings.values())
-            + list(virtual_pairings.values())
+            result.points(tournament.point_values)
+            for result in tied_results + virtual_results
         ), False

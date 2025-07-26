@@ -15,6 +15,7 @@ from common import (
     BASE_DIR,
     EVENTS_DIR,
     SHARLY_CHESS_VERSION,
+    TEST_ENV,
     enable_experimental_features,
 )
 from common.i18n import (
@@ -49,6 +50,8 @@ class SharlyChessConfig(metaclass=Singleton):
     def _get_system_user_locale() -> str | None:
         """Returns the locale used by the user at system-level,
         if known by the i18n stuff (otherwise returns None)."""
+        if TEST_ENV:
+            return 'en_GB'
         if sys.platform == 'win32':  # pragma: py-not-win32
             import locale
             import ctypes
@@ -75,7 +78,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return DEFAULT_LOCALE
 
     @staticmethod
-    def _get_locale_federation(system_user_locale: str) -> str:
+    def _get_locale_federation(system_user_locale: str | None) -> str:
         if system_user_locale is not None:
             country_code = system_user_locale.split('_')[-1].upper()
             country = pycountry.countries.get(alpha_2=country_code)
@@ -113,7 +116,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def force_edit(self) -> bool:
-        return self.stored_config.force_edit
+        return self.stored_config.force_edit and not TEST_ENV
 
     @property
     def console_log_level(self) -> int:
@@ -141,7 +144,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def launch_browser(self) -> bool:
-        return self.stored_config.launch_browser
+        return self.stored_config.launch_browser and not TEST_ENV
 
     @property
     def federation(self) -> Federation:
@@ -155,12 +158,16 @@ class SharlyChessConfig(metaclass=Singleton):
     web_host: str = '0.0.0.0'
 
     # The ports the web server tries to start on, tried one after the other.
-    web_ports: list[int] = [
-        80,
-        81,
-        8080,
-        8081,
-    ]
+    web_ports: list[int] = (
+        [
+            80,
+            81,
+            8080,
+            8081,
+        ]
+        if not TEST_ENV
+        else [9000]
+    )
 
     """ The accepted console log levels. """
     console_log_levels: dict[int, str] = {
@@ -245,9 +252,6 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The extension of YAML files.
     yml_ext: str = 'yml'
-
-    # ID of the event used for testing
-    test_event_uniq_id: str = 'test-event'
 
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
@@ -344,7 +348,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_players_show_opponent: bool = True
 
     # The default delay between pages on rotators (in seconds).
-    default_rotator_delay: int = 15
+    default_rotator_delay: int = 1 if TEST_ENV else 15
 
     # The default text shown on timers before the start of a round.
     default_timer_round_text_before: str = 'Début de la ronde {} dans %s'
@@ -353,13 +357,13 @@ class SharlyChessConfig(metaclass=Singleton):
     default_timer_round_text_after: str = 'Ronde {} commencée depuis %s'
 
     # The delay before checking if the user index page has changed.
-    user_index_update_delay: int = 10
+    user_index_update_delay: int = 1 if TEST_ENV else 10
 
     # The delay before checking if a user event page has changed.
-    user_event_update_delay: int = 10
+    user_event_update_delay: int = 1 if TEST_ENV else 10
 
     # The delay before checking if a user screen page has changed.
-    user_screen_update_delay: int = 10
+    user_screen_update_delay: int = 1 if TEST_ENV else 10
 
     # The numbers of columns allowed on pages with grids.
     allowed_columns: list[int] = [1, 2, 3, 4, 6]

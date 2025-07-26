@@ -16,10 +16,12 @@
                 id="modal-form"
                 {% if action == 'create' %}
                     hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
+                    hx-push-url="true"
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'delete' %}
                     hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
+                    hx-push-url="true"
                 {% elif action == 'update' %}
                     hx-patch="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
                 {% else %}
@@ -313,12 +315,14 @@
                 form="modal-form"
                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
             >
-                <i class="bi-floppy-fill pe-1"></i>
                 {% if action in ['create', 'clone', ] %}
+                    <i class="bi-floppy-fill pe-1"></i>
                     {{ _('Create') }}
                 {% elif action == 'update' %}
+                    <i class="bi-floppy-fill pe-1"></i>
                     {{ _('Save') }}
                 {% elif action == 'delete' %}
+                    <i class="bi-trash pe-1"></i>
                     {{ _('Delete') }}
                 {% else %}
                     ?

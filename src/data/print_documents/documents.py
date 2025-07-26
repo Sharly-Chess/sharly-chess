@@ -350,7 +350,7 @@ class BoardPrintDocument(PrintDocument, ABC):
     def boards(self) -> list[Board]:
         assert self.tournament is not None
         self.tournament.set_for_round(self.at_round)
-        return self.tournament.boards
+        return self.tournament.get_round_boards(self.at_round)
 
     @property
     def template_context(self) -> dict[str, Any]:

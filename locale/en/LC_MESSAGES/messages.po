@@ -3443,6 +3443,9 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
+msgid "Point counting"
+msgstr ""
+
 msgid "Points for draw (Half-Point Bye)"
 msgstr ""
 
@@ -4743,6 +4746,9 @@ msgstr ""
 msgid "This will cause the table numbers to be reordered."
 msgstr ""
 
+msgid "Three points for a win"
+msgstr ""
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr ""
@@ -5183,6 +5189,9 @@ msgid "Use log-level specific colors"
 msgstr ""
 
 msgid "Use no timer"
+msgstr ""
+
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."

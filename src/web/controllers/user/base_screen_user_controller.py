@@ -288,7 +288,9 @@ class BaseScreenUserController(BaseUserController):
             }:
                 if web_context.screen.type == ScreenType.RANKING:
                     tournament.compute_player_ranks(
-                        after_round=web_context.screen.ranking_round
+                        after_round=tournament.correct_ranking_round(
+                            web_context.screen.ranking_round
+                        )
                     )
                 else:
                     tournament.set_for_round()

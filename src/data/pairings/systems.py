@@ -3,6 +3,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from common.i18n import _
+from data.board import Board
 from data.safety_mode import (
     PairingAction,
     PermissionHandler,
@@ -10,6 +11,7 @@ from data.safety_mode import (
     RoundStatus,
     SafetyMode,
 )
+from database.access.papi.papi_store import StoredBoard
 from utils.entity import IdentifiableEntity, EntityManager
 from utils.enum import Result
 
@@ -257,6 +259,17 @@ class RoundRobinPairingSystem(PairingSystem):
         for player in tournament.players:
             if not player.has_real_pairings:
                 break
-            for pairing in player.pairings.values():
-                if pairing.opponent_id is None:
-                    pairing.result = Result.REST_GAME
+            for round_, pairing in player.pairings_by_round.items():
+                if not pairing.board:
+                    board_id = max(tournament.boards_by_id) + 1
+                    tournament.boards_by_id[board_id] = Board(
+                        tournament,
+                        round_,
+                        StoredBoard(
+                            id=board_id,
+                            white_player_id=player.id,
+                            black_player_id=None,
+                            index=len(tournament.get_round_boards(round_)),
+                        ),
+                    )
+                    pairing.stored_pairing.result = Result.REST_GAME.value

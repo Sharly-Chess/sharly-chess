@@ -1,21 +1,22 @@
 from abc import ABC, abstractmethod
 import subprocess
 from functools import cache
+from operator import attrgetter
 from pathlib import Path
 from typing import TextIO, TYPE_CHECKING
 
 import trf
 from packaging.version import Version
+from typing_extensions import override
 
 from common import TMP_DIR, BASE_DIR
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
-from data.pairing import Pairing
 from data.pairings.settings import BergerNumbersSetting
-from data.player import Player
-from utils.enum import TrfType, Result, BoardColor
+from database.access.papi.papi_store import StoredBoard
+from utils.enum import TrfType, Result
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -25,12 +26,12 @@ logger = get_logger()
 
 class PairingEngine(ABC):
     @abstractmethod
-    def _generate_boards(
+    def _generate_stored_boards(
         self,
         tournament: 'Tournament',
         round_: int,
         partial_pairings: bool = False,
-    ) -> list[Board]:
+    ) -> list[StoredBoard]:
         """Generate a list of boards matching all the pairings of tournament
         *tournament* at round *at_round*.
         Bye players should not be taken into account.
@@ -39,6 +40,14 @@ class PairingEngine(ABC):
     @abstractmethod
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
         """Returns an explanation message if the player count is invalid, or None if it is."""
+
+    @property
+    def pab_result(self) -> Result:
+        return Result.PAIRING_ALLOCATED_BYE
+
+    @property
+    def reorder_boards(self) -> bool:
+        return False
 
     def generate_pairings(
         self,
@@ -53,26 +62,41 @@ class PairingEngine(ABC):
                 f'Pairings generation not allowed for round {round_} '
                 f'of tournament [{tournament.uniq_id}].'
             )
-        boards = self._generate_boards(tournament, round_, partial_pairings)
-        for board in boards:
-            white_player = board.white_player
-            black_player = board.black_player
-            if white_player:
-                white_player.pairings[round_] = Pairing(
-                    (
-                        BoardColor.WHITE
-                        if black_player or board.result == Result.PAIRING_ALLOCATED_BYE
-                        else None
-                    ),
-                    black_player.id if black_player else None,
-                    board.result,
-                )
-            if black_player:
-                black_player.pairings[round_] = Pairing(
-                    BoardColor.BLACK,
-                    white_player.id if white_player else None,
-                    board.result,
-                )
+        stored_boards = self._generate_stored_boards(
+            tournament, round_, partial_pairings
+        )
+
+        boards = [
+            Board(tournament, round_, stored_board) for stored_board in stored_boards
+        ]
+        pab_board = tournament.get_round_pab_board(round_)
+        if pab_board:
+            pab_board.stored_board.index += len(stored_boards)
+        if self.reorder_boards:
+            index_delta = max(
+                [
+                    board.index
+                    for board in tournament.get_round_boards(round_)
+                    if board.black_player
+                ]
+                or [0]
+            )
+            for index, board in enumerate(sorted(boards, reverse=True)):
+                board.stored_board.index = index_delta + index
+        next_board_id = max(tournament.boards_by_id.keys() or [0]) + 1
+
+        for stored_board in stored_boards:
+            id_ = next_board_id
+            next_board_id += 1
+            stored_board.id = id_
+            board = Board(tournament, round_, stored_board)
+            tournament.boards_by_id[id_] = board
+            white_stored_pairing = board.white_pairing.stored_pairing
+            white_stored_pairing.board_id = id_
+            if black_pairing := board.black_pairing:
+                black_pairing.stored_pairing.board_id = id_
+            else:
+                white_stored_pairing.result = self.pab_result.value
         tournament.update_round_pairings(round_)
 
     def pairings_generation_disabled_message(
@@ -85,7 +109,7 @@ class PairingEngine(ABC):
         return self.invalid_player_count_message(tournament)
 
     def pairings_diff(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: 'Tournament', round_: int, ignore_order: bool = False
     ) -> list[tuple[Board | None, Board | None]]:
         """For round *round_* of tournament *tournament*, get the diff between
         the real pairings and the expected ones.
@@ -94,9 +118,17 @@ class PairingEngine(ABC):
             raise ValueError(f'No pairings for round {round_}')
         pairings_diff: list[tuple[Board | None, Board | None]] = []
         tournament.set_for_round(round_)
-        real_boards = tournament.boards
+        real_boards = tournament.get_round_boards(round_)
+
+        if ignore_order:
+            real_boards = sorted(real_boards, reverse=True)
         expected_boards = sorted(
-            self._generate_boards(tournament, round_), reverse=True
+            (
+                Board(tournament, round_, stored_board)
+                for stored_board in self._generate_stored_boards(tournament, round_)
+            ),
+            key=None if ignore_order or self.reorder_boards else attrgetter('index'),
+            reverse=ignore_order or self.reorder_boards,
         )
         for i in range(len(real_boards)):
             real = real_boards[i]
@@ -104,9 +136,11 @@ class PairingEngine(ABC):
                 pairings_diff.append((real, None))
                 continue
             expected = expected_boards[i]
+            real_black_id = getattr(real.black_player, 'id', None)
+            expected_black_id = getattr(expected.black_player, 'id', None)
             if (
-                real.white_player_id != expected.white_player_id
-                or real.black_player_id != expected.black_player_id
+                real.white_player.id != expected.white_player.id
+                or real_black_id != expected_black_id
             ):
                 pairings_diff.append((real, expected))
         for i in range(len(real_boards), len(expected_boards)):
@@ -128,6 +162,10 @@ class BbpPairings(PairingEngine):
     @property
     def executable_path(self) -> Path:
         return self.executable_dir / 'bbpPairings.exe'
+
+    @property
+    def reorder_boards(self) -> bool:
+        return True
 
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
         if tournament.player_count <= tournament.rounds:
@@ -153,14 +191,14 @@ class BbpPairings(PairingEngine):
             )
         return None
 
-    def _generate_boards(
+    def _generate_stored_boards(
         self,
         tournament: 'Tournament',
         round_: int,
         partial_pairings: bool = False,
-    ) -> list[Board]:
+    ) -> list[StoredBoard]:
         pairings_dir = TMP_DIR / 'pairings'
-        pairings_dir.mkdir(exist_ok=True)
+        pairings_dir.mkdir(exist_ok=True, parents=True)
         trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
         pairings_file_path = pairings_dir / f'{tournament.uniq_id}-pairings.txt'
         trf_tournament = tournament.to_trf(
@@ -199,36 +237,41 @@ class BbpPairings(PairingEngine):
         tournament: 'Tournament',
         round_: int,
         partial_pairings: bool,
-    ) -> list[Board]:
-        boards: list[Board] = []
+    ) -> list[StoredBoard]:
+        stored_boards: list[StoredBoard] = []
         file.readline()  # table_count
         has_pab = tournament.round_has_pab(round_)
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
             white_player = tournament.players_by_starting_rank[white_trf_id]
             if black_trf_id != cls.BYE_ID:
-                boards.append(
-                    Board(
-                        white_player=white_player,
-                        black_player=tournament.players_by_starting_rank[black_trf_id],
-                    )
-                )
+                black_player_id = tournament.players_by_starting_rank[black_trf_id].id
             elif not (
                 white_player.pairings[round_].next_round_bye
                 or (partial_pairings and has_pab)
             ):
-                boards.append(
-                    Board(
-                        white_player=white_player,
-                        result=Result.PAIRING_ALLOCATED_BYE,
-                    )
-                )
+                black_player_id = None
                 has_pab = True
-        return boards
+            else:
+                continue
+            stored_boards.append(
+                StoredBoard(
+                    id=None,
+                    white_player_id=white_player.id,
+                    black_player_id=black_player_id,
+                    index=0,
+                )
+            )
+        return stored_boards
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
     MIN_PLAYERS = 3
+
+    @override
+    @property
+    def pab_result(self) -> Result:
+        return Result.REST_GAME
 
     @property
     @abstractmethod
@@ -298,42 +341,37 @@ class BergerPairingEngine(RoundRobinPairingEngine):
             previous_pairings = pairings
         return berger_table
 
-    @staticmethod
-    def player_from_pairing_number(
-        pairing_number: int, tournament: 'Tournament'
-    ) -> Player | None:
-        player_id = BergerNumbersSetting.get_value(tournament).get(pairing_number, None)
-        if player_id:
-            return tournament.players_by_id[player_id]
-        return None
-
-    def _generate_boards(
+    def _generate_stored_boards(
         self,
         tournament: 'Tournament',
         round_: int,
         partial_pairings: bool = False,
-    ) -> list[Board]:
-        boards: list[Board] = []
-        player_by_pairing_number = {
-            pairing_number: tournament.players_by_id[player_id]
+    ) -> list[StoredBoard]:
+        stored_boards: list[StoredBoard] = []
+        player_id_by_pairing_number = {
+            pairing_number: player_id
             for player_id, pairing_number in BergerNumbersSetting.get_value(
                 tournament
             ).items()
         }
-        for pairing in self.get_round_pairings(tournament.player_count, round_):
-            white_player = player_by_pairing_number.get(pairing[0], None)
-            black_player = player_by_pairing_number.get(pairing[1], None)
-            if not white_player or not black_player:
-                board = Board(
-                    white_player=white_player or black_player,
+        pairings = self.get_round_pairings(tournament.player_count, round_)
+        for index, pairing in enumerate(pairings):
+            white_player_id = player_id_by_pairing_number.get(pairing[0], None)
+            black_player_id = player_id_by_pairing_number.get(pairing[1], None)
+            if not white_player_id:
+                assert black_player_id is not None
+                white_player_id = black_player_id
+                black_player_id = None
+
+            stored_boards.append(
+                StoredBoard(
+                    id=None,
+                    white_player_id=white_player_id,
+                    black_player_id=black_player_id,
+                    index=index,
                 )
-            else:
-                board = Board(
-                    white_player=white_player,
-                    black_player=black_player,
-                )
-            boards.append(board)
-        return boards
+            )
+        return stored_boards
 
 
 class DoubleBergerPairingEngine(BergerPairingEngine):

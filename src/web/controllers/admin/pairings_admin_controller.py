@@ -111,7 +111,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         unpaired: list[Player] = []
         if self.admin_tournament is not None:
             self.admin_tournament.set_for_round(self.admin_round)
-            self.admin_boards = self.admin_tournament.boards
+            self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
             unpaired = self.admin_tournament.get_unpaired_players(self.admin_boards)
 
         if SessionHandler.get_session_admin_pairings_show_without_results(request):
@@ -949,7 +949,7 @@ class PairingsAdminController(BaseEventAdminController):
             return web_context.error
         tournament = web_context.get_admin_tournament()
         for round_ in reversed(range(1, tournament.rounds + 1)):
-            boards = tournament.build_boards(round_)
+            boards = tournament.get_round_boards(round_)
             tournament.unpair_boards(boards, round_)
         tournament.set_current_round(0)
         return self._admin_event_pairings_render(

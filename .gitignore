@@ -16,6 +16,7 @@ __pycache__/
 /dist/
 /export/
 /test/
+/tests/data/
 /export-test/
 /scripts/i18n/models
 /bin/

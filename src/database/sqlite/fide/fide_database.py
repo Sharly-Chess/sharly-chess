@@ -15,7 +15,8 @@ from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import PlayerRating
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
@@ -204,55 +205,46 @@ class FideDatabase(LocalSourceDatabase):
         yield from map(lambda row: row['federation'], self.fetchall())
 
     @staticmethod
-    def _get_player_from_row(row: dict[str, Any]) -> Player:
-        return Player(
-            id=0,
+    def _get_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        rating_keys = {
+            TournamentRating.STANDARD: 'standard_rating',
+            TournamentRating.RAPID: 'rapid_rating',
+            TournamentRating.BLITZ: 'blitz_rating',
+        }
+        ratings = {
+            tournament_rating.value: PlayerRating(
+                row[key],
+                PlayerRatingType.FIDE if row[key] else PlayerRatingType.ESTIMATED,
+            ).stored_value
+            for tournament_rating, key in rating_keys.items()
+        }
+        return StoredPlayer(
+            id=None,
             first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(
                 f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
             ).date(),
-            gender=PlayerGender(row['gender']),
+            gender=row['gender'],
             mail='',
             phone='',
             comment='',
             owed=0.0,
             paid=0.0,
-            title=PlayerTitle(row['fide_title']),
-            ratings={
-                TournamentRating.STANDARD: PlayerRating(
-                    row['standard_rating'],
-                    PlayerRatingType.FIDE
-                    if row['standard_rating']
-                    else PlayerRatingType.ESTIMATED,
-                ),
-                TournamentRating.RAPID: PlayerRating(
-                    row['rapid_rating'],
-                    PlayerRatingType.FIDE
-                    if row['rapid_rating']
-                    else PlayerRatingType.ESTIMATED,
-                ),
-                TournamentRating.BLITZ: PlayerRating(
-                    row['blitz_rating'],
-                    PlayerRatingType.FIDE
-                    if row['blitz_rating']
-                    else PlayerRatingType.ESTIMATED,
-                ),
-            },
+            title=row['fide_title'],
+            ratings=ratings,
             fide_id=row['fide_id'],
-            federation=Federation(row['federation']),
-            club=Club(''),
+            federation=row['federation'],
+            club='',
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
-            pairings={},  # Pairings are read from Papi but not used
-            tournament=None,
         )
 
     def search_player(
         self,
         string: str,
         limit: int | None = None,
-    ) -> list[Player]:
+    ) -> list[StoredPlayer]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
@@ -291,13 +283,15 @@ class FideDatabase(LocalSourceDatabase):
         self.execute(query, tuple(params))
         return [self._get_player_from_row(row) for row in self.fetchall()]
 
-    def get_player_by_fide_id(self, player_fide_id: int) -> Player | None:
+    def get_stored_player_by_fide_id(self, player_fide_id: int) -> StoredPlayer | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
         return None
 
-    def get_players_by_fide_id(self, player_fide_ids: list[int]) -> list[Player]:
+    def get_stored_players_by_fide_id(
+        self, player_fide_ids: list[int]
+    ) -> list[StoredPlayer]:
         query_array = ', '.join('?' for _ in player_fide_ids)
         self.execute(
             f'SELECT * FROM player WHERE fide_id IN ({query_array})',

@@ -18,7 +18,6 @@ from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
 from data.board import Board
-from data.pairing import Pairing
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.prize.prize_category import PrizeCategory
@@ -30,11 +29,11 @@ from data.tie_breaks import (
     TieBreakManager,
     TieBreakOptionManager,
 )
+from database.access.papi.papi_store import StoredPlayer, StoredBoard
 from utils import SharedUtils
 from utils.enum import (
     BoardColor,
     PlayerGender,
-    PointValueType,
     Result,
     TournamentRating,
     TrfType,
@@ -70,15 +69,27 @@ class Tournament:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
+        # TODO(Molrn - Big move) init all these values from *EventDatabase.load_stored_tournaments*
+        (
+            self.papi_tournament_info,
+            stored_players,
+            stored_boards_by_round,
+        ) = self._read_papi()
+        if not self.stored_tournament.stored_players:
+            self.stored_tournament.stored_players = stored_players
+        if not self.stored_tournament.stored_boards_by_round:
+            self.stored_tournament.stored_boards_by_round = stored_boards_by_round
+        self.players_by_id = self._get_players_by_id()
+        self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
-        self._add_event_warnings()
+        self.pairing_system.update_player_results(self)
 
         self.stored_file_modified_timestamp: float | None = None
         if self.file_exists:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
-        self._players: Collection[Player] | None = None
         self._players_by_rank: dict[int, Player] | None = None
-        self._boards: list[Board] | None = None
+
+        self._add_event_warnings()
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
 
@@ -356,17 +367,16 @@ class Tournament:
         return None
 
     @property
+    def stored_three_points_for_a_win(self) -> bool:
+        return self.stored_tournament.three_points_for_a_win
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
     @property
     def handicap(self) -> bool:
         return bool(self.time_control_handicap_penalty_value)
-
-    @cached_property
-    def papi_tournament_info(self) -> PapiTournamentInfo:
-        papi_tournament_info, _ = self.papi_values
-        return papi_tournament_info
 
     @property
     def rounds(self) -> int:
@@ -419,8 +429,9 @@ class Tournament:
         return self.papi_tournament_info.rating
 
     @property
-    def point_value_type(self) -> PointValueType:
-        return self.papi_tournament_info.point_value_type
+    def three_points_for_a_win(self) -> bool:
+        # TODO (Molrn) Replace by a detailed point value override
+        return self.papi_tournament_info.three_points_for_a_win
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
@@ -482,25 +493,8 @@ class Tournament:
         if prize_group_id in self.prize_groups_by_id:
             del self.prize_groups_by_id[prize_group_id]
 
-    @cached_property
-    def players_by_id(self) -> dict[int, Player]:
-        _, players_by_id = self.papi_values
-        # The computation of the property `current_round` needs to access a players' iterable.
-        # Calling `self.players` in the context of this function creates a circular dependency
-        # as it itself calls `self.players_by_id`.
-        # To avoid this dependency, `self._players` is temporarily allocated.
-        self._players = players_by_id.values()
-        for player in self.players:
-            player.tournament = self
-        self.pairing_system.update_player_results(self)
-        self.set_for_round()
-        self._players = None
-        return players_by_id
-
     @property
     def players(self) -> Collection[Player]:
-        if self._players is not None:
-            return self._players
         return self.players_by_id.values()
 
     @cached_property
@@ -608,9 +602,7 @@ class Tournament:
 
     @property
     def boards(self) -> list[Board]:
-        if self._boards is None:
-            self._boards = self.build_boards()
-        return self._boards
+        return self.get_round_boards(self.current_round)
 
     @cached_property
     def unpaired_players(self) -> list[Player]:
@@ -683,7 +675,10 @@ class Tournament:
 
     @property
     def point_values(self) -> dict[Result, float]:
-        return self.point_value_type.point_values
+        if self.three_points_for_a_win:
+            return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+        else:
+            return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
@@ -741,15 +736,107 @@ class Tournament:
             self.current_round
         ) and not self.is_round_finished(self.current_round)
 
-    @cached_property
-    def papi_values(self) -> tuple[PapiTournamentInfo, dict[int, Player]]:
+    def _read_papi(
+        self,
+    ) -> tuple[
+        PapiTournamentInfo,
+        list[StoredPlayer],
+        dict[int, list[StoredBoard]],
+    ]:
         if self.file_exists:
             with PapiDatabase(self.file) as database:
                 info = database.read_info()
-                players = database.read_players(self.id, info.rounds)
-                return info, players
+                players, boards_by_round = database.read_players(self.id, info.rounds)
+                return info, players, boards_by_round
         else:
-            return PapiTournamentInfo(), {}
+            return PapiTournamentInfo(), [], {}
+
+    def _get_players_by_id(self) -> dict[int, Player]:
+        players_by_id: dict[int, Player] = {}
+        for stored_player in self.stored_tournament.stored_players:
+            player = Player(self, stored_player)
+            players_by_id[player.id] = player
+        return players_by_id
+
+    def _get_boards_by_id(self) -> dict[int, Board]:
+        boards_by_id: dict[int, Board] = {}
+        for (
+            round_,
+            stored_boards,
+        ) in self.stored_tournament.stored_boards_by_round.items():
+            round_boards = []
+            for stored_board in stored_boards:
+                board = Board(self, round_, stored_board)
+                round_boards.append(board)
+                boards_by_id[board.identifier] = board
+
+            # TODO (Molrn - Big move) Remove as indexes should be stored
+            for player in self.players:
+                self.set_player_points(player, before_round=round_)
+            for index, board in enumerate(sorted(round_boards, reverse=True)):
+                board.stored_board.index = index
+
+            for board in round_boards:
+                board.white_player.set_board(
+                    board.index, board.number, BoardColor.WHITE
+                )
+                if board.black_player:
+                    board.black_player.set_board(
+                        board.index, board.number, BoardColor.BLACK
+                    )
+        return boards_by_id
+
+    def _set_handicap(self, round_: int):
+        for board in self.get_round_boards(round_):
+            if not board.black_player:
+                continue
+            strong_player: Player
+            weak_player: Player
+            strong_player, weak_player = sorted(
+                (board.white_player, board.black_player),
+                key=attrgetter('rating'),
+                reverse=True,
+            )
+            weak_time = self.time_control_initial_time or 0
+            rating_diff = strong_player.rating - weak_player.rating
+            if not self.time_control_handicap_penalty_step:
+                penalties = 0
+            else:
+                penalties = rating_diff // self.time_control_handicap_penalty_step
+            strong_time = max(
+                weak_time - penalties * (self.time_control_handicap_penalty_value or 0),
+                self.time_control_handicap_min_time or 0,
+            )
+            strong_player.set_time_control(
+                strong_time, self.time_control_increment or 0, penalties > 0
+            )
+            weak_player.set_time_control(
+                weak_time, self.time_control_increment or 0, False
+            )
+
+    def get_round_boards(self, round_: int) -> list[Board]:
+        return sorted(
+            (board for board in self.boards_by_id.values() if board.round == round_),
+            key=lambda board: board.index,
+        )
+
+    def get_round_pab_board(self, round_: int) -> Board | None:
+        return next(
+            (
+                board
+                for board in self.boards_by_id.values()
+                if board.round == round_ and not board.black_player
+            ),
+            None,
+        )
+
+    def get_unpaired_players(self, boards: list[Board]) -> list[Player]:
+        paired_player_ids: list[int] = []
+        for board in boards:
+            paired_player_ids.append(board.white_player.id)
+            if board.black_player:
+                paired_player_ids.append(board.black_player.id)
+        return [player for player in self.players if player.id not in paired_player_ids]
 
     def check_papi_update(self):
         if not self.file_exists:
@@ -772,15 +859,19 @@ class Tournament:
             for name in dir(self)
             if isinstance(getattr(type(self), name, None), cached_property)
         ]
-        if not clear_papi_cache:
-            cached_property_names.remove('papi_values')
-            cached_property_names.remove('players_by_id')
-            cached_property_names.remove('papi_tournament_info')
         for property_name in cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
+        if clear_papi_cache:
+            (
+                self.papi_tournament_info,
+                self.stored_tournament.stored_players,
+                self.stored_tournament.stored_boards_by_round,
+            ) = self._read_papi()
+            self.players_by_id = self._get_players_by_id()
+            self.boards_by_id = self._get_boards_by_id()
+            self.pairing_system.update_player_results(self)
         self._players_by_rank = None
-        self._boards = None
         for screen in self.related_screens:
             screen.clear_cache_for_tournament(self.id)
         for family in self.dependent_families:
@@ -796,7 +887,8 @@ class Tournament:
             player.illegal_moves = illegal_moves[player.id]
             self.set_player_points(player, before_round=round_)
         self._estimate_players(self.players, after_round=round_)
-        self._boards = self.build_boards(round_)
+        if self.handicap:
+            self._set_handicap(round_)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
@@ -1088,11 +1180,11 @@ class Tournament:
             return max(0, min(ranking_round, self.max_ranking_round))
 
     def compute_player_ranks(
-        self, correct_round: bool = True, *, after_round: int | None
+        self, *, after_round: int | None = None
     ) -> dict[int, Player]:
         """compute and return the ranks of all the players after round *after_round*."""
-        if correct_round:
-            after_round = self.correct_ranking_round(after_round)
+        if after_round is None:
+            after_round = self.max_ranking_round
 
         if after_round:
             # Estimate ratings to ensure we have a defined rating for everyone
@@ -1126,100 +1218,12 @@ class Tournament:
         )
         return self._players_by_rank
 
-    def build_boards(self, at_round: int | None = None) -> list[Board]:
-        """Build boards for round *at_round*. Defaults to the current round.
-        Returns the boards in order and the unpaired players."""
-        if at_round is None:
-            at_round = self.current_round
-        if not at_round:
-            return []
-        boards: list[Board] = []
-        for player in self.players:
-            opponent_id = player.pairings[at_round].opponent_id
-            if opponent_id:
-                player_board: Board | None = None
-                for board in boards:
-                    if (
-                        board.white_player is not None
-                        and board.white_player.id == opponent_id
-                    ):
-                        player_board = board
-                        player_board.black_player = player
-                        break
-                    elif (
-                        board.black_player is not None
-                        and board.black_player.id == opponent_id
-                    ):
-                        player_board = board
-                        player_board.white_player = player
-                        break
-                if player_board is None:
-                    if player.pairings[at_round].color == BoardColor.WHITE:
-                        boards.append(Board(white_player=player))
-                    else:
-                        boards.append(Board(black_player=player))
-            elif player.pairings[at_round].exempt:
-                boards.append(Board(white_player=player))
-
-        boards = sorted(boards, reverse=True)
-        for index, board in enumerate(boards, start=1):
-            board.id = index
-            assert board.white_player is not None
-            number: int
-            if board.white_player.fixed:
-                number = board.white_player.fixed
-            elif board.black_player and board.black_player.fixed:
-                number = board.black_player.fixed
-            else:
-                number = self.first_board_number - 1 + index
-            board.number = number
-            board.white_player.set_board(index, number, BoardColor.WHITE)
-            if board.black_player is not None:
-                board.black_player.set_board(index, number, BoardColor.BLACK)
-            board.result = board.white_player.pairings[at_round].result
-            if self.handicap and board.black_player is not None:
-                strong_player: Player
-                weak_player: Player
-                strong_player, weak_player = sorted(
-                    (board.white_player, board.black_player),
-                    key=attrgetter('rating'),
-                    reverse=True,
-                )
-                weak_time = self.time_control_initial_time or 0
-                rating_diff = strong_player.rating - weak_player.rating
-                if not self.time_control_handicap_penalty_step:
-                    penalties = 0
-                else:
-                    penalties = rating_diff // self.time_control_handicap_penalty_step
-                strong_time = max(
-                    weak_time
-                    - penalties * (self.time_control_handicap_penalty_value or 0),
-                    self.time_control_handicap_min_time or 0,
-                )
-                strong_player.set_time_control(
-                    strong_time, self.time_control_increment or 0, penalties > 0
-                )
-                weak_player.set_time_control(
-                    weak_time, self.time_control_increment or 0, False
-                )
-        return boards
-
-    def get_unpaired_players(self, boards: list[Board]) -> list[Player]:
-        paired_player_ids: list[int] = []
-        for board in boards:
-            if board.white_player:
-                paired_player_ids.append(board.white_player.id)
-            if board.black_player:
-                paired_player_ids.append(board.black_player.id)
-        return [player for player in self.players if player.id not in paired_player_ids]
-
     def add_result(self, board: Board, white_result: Result, round_: int | None = None):
         """Stores the given result for the given `board` in the current round.
         Stores the `white_result` directly, and uses the opposite result
         as the black's result.
         Assumes that no asymmetric result was entered."""
         black_result = white_result.opposite_result
-        assert board.white_player is not None
         assert board.black_player is not None
 
         if round_ is None:
@@ -1238,8 +1242,9 @@ class Tournament:
                 event_database.add_stored_result(self.id, round_, board, white_result)
             )
             event_database.commit()
-        self.players_by_id[board.white_player.id].pairings[round_].result = white_result
-        self.players_by_id[board.black_player.id].pairings[round_].result = black_result
+
+        board.white_player.pairings[round_].stored_pairing.result = white_result.value
+        board.black_player.pairings[round_].stored_pairing.result = black_result.value
         self.clear_cache()
         board.white_player.clear_cache()
         board.black_player.clear_cache()
@@ -1260,8 +1265,6 @@ class Tournament:
 
     def delete_result(self, board: Board):
         """Deletes the result for the given `board` in the current round."""
-        assert self.stored_tournament.id is not None
-        assert board.white_player is not None
         assert board.black_player is not None
         assert board.id is not None
         round_ = self.current_round
@@ -1277,8 +1280,9 @@ class Tournament:
                 )
             )
             event_database.commit()
-        self.players_by_id[board.white_player.id].pairings[round_].result = result
-        self.players_by_id[board.black_player.id].pairings[round_].result = result
+        board.white_pairing.stored_pairing.result = result.value
+        assert board.black_pairing is not None
+        board.black_pairing.stored_pairing.result = result.value
         self.clear_cache()
         board.white_player.clear_cache()
         board.black_player.clear_cache()
@@ -1298,7 +1302,7 @@ class Tournament:
                 event_database.set_tournament_last_check_in_update(self.id)
                 event_database.commit()
                 papi_database.commit()
-        player.check_in = check_in
+        player.stored_player.check_in = check_in
         player.clear_cache()
         self.clear_cache()
 
@@ -1384,39 +1388,46 @@ class Tournament:
     ):
         """Creates a pairing for a round."""
         white_player = self.players_by_id[white_player_id]
-        black_player = (
-            self.players_by_id[black_player_id] if black_player_id is not None else None
-        )
-        white_pairing = white_player.pairings.get(round_nb, None)
-        black_pairing = (
-            black_player.pairings.get(round_nb, None) if black_player else None
-        )
+        black_player = self.players_by_id[black_player_id] if black_player_id else None
+        white_pairing = white_player.pairings[round_nb]
+        black_pairing = black_player.pairings[round_nb] if black_player else None
 
-        if white_pairing and white_pairing.opponent_id:
+        if white_pairing.opponent_id:
             raise ValueError(
-                f'White player {white_player.last_name} {white_player.first_name} already has an opponent for round {round_nb}.'
+                f'White player {white_player.full_name} already has an '
+                f'opponent (id: {white_pairing.opponent_id}) for round {round_nb}.'
             )
-        if black_player is not None and black_pairing and black_pairing.opponent_id:
+        if black_player and black_pairing and black_pairing.opponent_id:
             raise ValueError(
-                f'Black player {black_player.last_name} {black_player.first_name} already has an opponent for round {round_nb}.'
+                f'Black player {black_player.full_name} already has an '
+                f'opponent (id: {black_pairing.opponent_id}) for round {round_nb}.'
             )
-
+        if black_player and black_pairing:
+            result = Result.NO_RESULT
+            board = self.get_round_pab_board(round_nb)
+            assert board is not None
+            board_id = board.identifier
+            board.replace_player(black_player, 'black')
+            black_pairing.stored_pairing.result = result.value
+            black_pairing.stored_pairing.board_id = board_id
+        else:
+            result = Result.PAIRING_ALLOCATED_BYE
+            board_id = max(self.boards_by_id.keys()) + 1
+            stored_board = StoredBoard(
+                id=board_id,
+                white_player_id=white_player.id,
+                black_player_id=None,
+                index=max(board.index for board in self.get_round_boards(round_nb)) + 1,
+            )
+            self.boards_by_id[board_id] = Board(self, round_nb, stored_board)
+        white_pairing.stored_pairing.result = result.value
+        white_pairing.stored_pairing.board_id = board_id
         with self.papi_write_database as papi_database:
-            white_player.pairings[round_nb] = Pairing(
-                BoardColor.WHITE,
-                black_player.id if black_player else None,
-                Result.NO_RESULT if black_player else Result.PAIRING_ALLOCATED_BYE,
-            )
-            papi_database.update_player_pairing(
-                white_player, round_nb, white_player.pairings[round_nb]
-            )
-            if black_player:
+            papi_database.update_player_pairing(white_player, round_nb, white_pairing)
+            if black_player and black_pairing:
                 papi_database.remove_exempt_pairing(round_nb)
-                black_player.pairings[round_nb] = Pairing(
-                    BoardColor.BLACK, white_player.id, Result.NO_RESULT
-                )
                 papi_database.update_player_pairing(
-                    black_player, round_nb, black_player.pairings[round_nb]
+                    black_player, round_nb, black_pairing
                 )
             papi_database.commit()
 
@@ -1427,23 +1438,21 @@ class Tournament:
                     if not player:
                         continue
                     database.remove_player_pairing(player, round_)
-                    self.players_by_id[player.id].pairings[round_] = Pairing()
-
                 if board.result == Result.PAIRING_ALLOCATED_BYE:
                     database.remove_exempt_pairing(round_)
             database.commit()
-        self.clear_cache()
+        self.clear_cache(True)
 
     def permute_board_colors(self, board: Board, round_: int):
-        assert board.white_player is not None
-        assert board.black_player is not None
+        board.permute_colors()
         with self.papi_write_database as database:
-            pairing = Pairing(BoardColor.BLACK, board.black_player.id, board.result)
-            database.update_player_pairing(board.white_player, round_, pairing)
-            self.players_by_id[board.white_player.id].pairings[round_] = pairing
-            pairing = Pairing(BoardColor.WHITE, board.white_player.id, board.result)
-            database.update_player_pairing(board.black_player, round_, pairing)
-            self.players_by_id[board.black_player.id].pairings[round_] = pairing
+            database.update_player_pairing(
+                board.white_player, round_, board.white_player.pairings[round_]
+            )
+            assert board.black_player is not None
+            database.update_player_pairing(
+                board.black_player, round_, board.black_player.pairings[round_]
+            )
             database.commit()
 
     def update_round_pairings(self, round_nb: int):
@@ -1461,7 +1470,11 @@ class Tournament:
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
-        from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
+        from plugins.ffe.utils import (
+            PapiPairingSystem,
+            PapiPairingVariation,
+            PapiThreePointsForAWin,
+        )
 
         if not self.file_exists:
             return
@@ -1473,9 +1486,14 @@ class Tournament:
                     if tie_break.papi_id is not None
                 ]
             )
+            three_points_for_a_win = PapiThreePointsForAWin.get_plugin_value(
+                self.stored_three_points_for_a_win
+            )
+            assert three_points_for_a_win is not None
             papi_info: dict[PapiVariable, str | int] = {
                 PapiVariable.ROUNDS: self.stored_rounds,
                 PapiVariable.RATING: self.stored_rating.to_papi_value,
+                PapiVariable.THREE_POINTS_FOR_A_WIN: three_points_for_a_win,
             }
             if self.stored_pairing_variation:
                 if variation := PapiPairingVariation.get_plugin_value(
@@ -1550,7 +1568,7 @@ class Tournament:
                     result,
                     player.pairings[round_].opponent_id is not None,
                 )
-                player.pairings[round_].result = result
+                player.pairings[round_].stored_pairing.result = result.value
             papi_database.commit()
         self.clear_cache()
         player.clear_cache()

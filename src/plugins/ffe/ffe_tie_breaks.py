@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from data.pairing import Pairing
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
-from data.player import Player, TournamentPlayer
+from data.player import Player
 from data.tie_breaks import TieBreak
 from data.tie_breaks.tie_breaks import BuchholzTieBreak, PerformanceTieBreak
 from plugins.ffe import PLUGIN_NAME
@@ -56,7 +56,7 @@ class PapiTieBreak(TieBreak, ABC):
 class PapiBuchholzTieBreak(PapiTieBreak, BuchholzTieBreak, ABC):
     @staticmethod
     def _papi_adjusted_score(
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int,
     ) -> float:
@@ -89,7 +89,7 @@ class PapiBuchholzTieBreak(PapiTieBreak, BuchholzTieBreak, ABC):
 
     @staticmethod
     def _papi_dummy_score(
-        player: TournamentPlayer,
+        player: Player,
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -129,7 +129,7 @@ class PapiBuchholzTieBreak(PapiTieBreak, BuchholzTieBreak, ABC):
 
     def compute_papi_buchholz_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
         use_cut_top: bool = False,
@@ -212,7 +212,7 @@ class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
     ) -> float:
@@ -242,7 +242,7 @@ class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
     ) -> float:
@@ -274,7 +274,7 @@ class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
     ) -> float:
@@ -309,7 +309,7 @@ class PapiPerformanceTieBreak(PapiTieBreak, PerformanceTieBreak):
 
     def compute_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
     ) -> float:
@@ -366,7 +366,7 @@ class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
 
     def compute_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
     ) -> float:
@@ -410,7 +410,7 @@ class PapiKashdanTieBreak(PapiTieBreak):
 
     def compute_player_value(
         self,
-        player: TournamentPlayer,
+        player: Player,
         *,
         after_round: int | None,
     ) -> float:

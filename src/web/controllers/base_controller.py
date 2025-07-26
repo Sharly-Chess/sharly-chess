@@ -317,6 +317,12 @@ class WebContext:
             return ';'.join(str(element) for element in value)
         raise ValueError(f'unknown type for value [{value}]')
 
+    @classmethod
+    def values_dict_to_form_data(cls, values_dict: dict[str, Any]) -> dict[str, str]:
+        return {
+            key: cls.value_to_form_data(value) for key, value in values_dict.items()
+        }
+
     @staticmethod
     def value_to_datetime_form_data(value: float | datetime | None) -> str | None:
         if value is None:

@@ -22,6 +22,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -171,10 +172,10 @@ class FfePlugin(Plugin):
         return ['RefFFE', 'AffType', 'NrFFE', 'Ligue']
 
     @hookimpl
-    def augment_player_after_db_fetch(self, player: Player, row: dict[str, Any]):
-        if not player.plugin_data:
-            player.plugin_data = {}
-        player.plugin_data[self.id] = {
+    def augment_player_after_db_fetch(
+        self, stored_player: StoredPlayer, row: dict[str, Any]
+    ):
+        stored_player.plugin_data[self.id] = {
             'ffe_id': row['RefFFE'],
             'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType'] or ''),
             'ffe_licence_number': row['NrFFE'] or '',
@@ -286,20 +287,18 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    def get_validated_player_form_fields(
+    def validate_player_form_fields(
         self,
         action: str,
         tournament: 'Tournament',
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
+    ):
         league: str | None = WebContext.form_data_to_str(data, field := 'ffe_league')
         if league and league not in self.FFE_LEAGUES:
             # should never happen, not translated.
             errors[field] = f'Invalid league value [{data[field]}].'
             data[field] = ''
-        ffe_id: int | None = None
-
         if tournament:
             # When adding a player, the tournament may not be chosen (in this case do not test)
             try:
@@ -318,10 +317,9 @@ class FfePlugin(Plugin):
                 errors[field] = _('Invalid FFE ID [{ffe_id}].').format(
                     ffe_id=data[field]
                 )
-        ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
         try:
             if value := WebContext.form_data_to_int(data, field := 'ffe_licence'):
-                ffe_licence = PlayerFFELicence(value)
+                PlayerFFELicence(value)
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
@@ -349,18 +347,25 @@ class FfePlugin(Plugin):
                         tournament_uniq_id=tournament.uniq_id,
                     )
 
+    @hookimpl
+    def get_player_form_fields(self, data: dict[str, str]) -> dict[str, dict[str, Any]]:
         return {
             self.id: {
-                'ffe_id': ffe_id,
-                'ffe_licence': ffe_licence,
-                'ffe_licence_number': ffe_licence_number,
-                'league': league,
+                'ffe_id': WebContext.form_data_to_int(data, 'ffe_id'),
+                'ffe_licence': PlayerFFELicence(
+                    WebContext.form_data_to_int(data, 'ffe_licence')
+                    or PlayerFFELicence.NONE
+                ),
+                'ffe_licence_number': WebContext.form_data_to_str(
+                    data, 'ffe_licence_number'
+                ),
+                'league': WebContext.form_data_to_str(data, 'ffe_league'),
             }
         }
 
     @hookimpl
     async def augment_player_after_search(
-        self, player: Player, data_source: DataSource
+        self, stored_player: StoredPlayer, data_source: DataSource
     ):
         if data_source.id in (
             FfeOnlineDataSource.static_id(),
@@ -368,36 +373,47 @@ class FfePlugin(Plugin):
         ):
             return
         # Try to get more information by requesting the FFE SQL server
-        if not player.fide_id:
+        fide_id = stored_player.fide_id
+        if not fide_id:
             return
-        ffe_player: Player | None = None
+        ffe_stored_player: StoredPlayer | None = None
         try:
             # Try to get more information by requesting the FFE database
             async with FFESqlServer() as ffe_sql_server:
-                ffe_player = await ffe_sql_server.get_player_by_fide_id(player.fide_id)
+                ffe_stored_player = await ffe_sql_server.get_stored_player_by_fide_id(
+                    fide_id
+                )
         except SharlyChessException:
             if (ffe_database := FfeDatabase()).exists():
                 # Try to get more information by requesting the FFE database
                 with ffe_database:
-                    ffe_player = ffe_database.get_player_by_fide_id(player.fide_id)
-        if ffe_player:
-            for rating_type in [
-                TournamentRating.STANDARD,
-                TournamentRating.RAPID,
-                TournamentRating.BLITZ,
-            ]:
-                rating = player.get_rating(rating_type)
-                if rating.type == PlayerRatingType.ESTIMATED:
-                    player.ratings[rating_type] = ffe_player.ratings[rating_type]
-            if (
-                ffe_player.date_of_birth
-                and player.year_of_birth == ffe_player.year_of_birth
+                    ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
+                        fide_id
+                    )
+        if ffe_stored_player:
+            for rating_type in TournamentRating:
+                stored_rating = stored_player.ratings.get(rating_type.value, None)
+                rating = (
+                    PlayerRating.from_stored_value(stored_rating)
+                    if stored_rating
+                    else None
+                )
+                if not rating or rating.type == PlayerRatingType.ESTIMATED:
+                    ffe_stored_rating = ffe_stored_player.ratings.get(
+                        rating_type.value, None
+                    )
+                    if ffe_stored_rating:
+                        stored_player.ratings[rating_type.value] = ffe_stored_rating
+            if not stored_player.date_of_birth or (
+                ffe_stored_player.date_of_birth
+                and stored_player.date_of_birth.year
+                == ffe_stored_player.date_of_birth.year
             ):
-                player.date_of_birth = ffe_player.date_of_birth
-            player.comment = ffe_player.comment
-            player.club = ffe_player.club
-            data = ffe_player.plugin_data
-            player.plugin_data[self.id] = {
+                stored_player.date_of_birth = ffe_stored_player.date_of_birth
+            stored_player.comment = ffe_stored_player.comment
+            stored_player.club = ffe_stored_player.club
+            data = ffe_stored_player.plugin_data
+            stored_player.plugin_data[self.id] = {
                 'ffe_id': self.get_data(data, 'ffe_id'),
                 'ffe_licence': self.get_data(data, 'ffe_licence'),
                 'ffe_licence_number': self.get_data(data, 'ffe_licence_number'),
@@ -763,16 +779,12 @@ class FfePlugin(Plugin):
         return {
             'ffe_id': ''
             if action == 'clone'
-            else WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'ffe_id', None)
-            ),
+            else self.get_data(tournament.plugin_data, 'ffe_id', None),
             'ffe_password': ''
             if action == 'clone'
-            else WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'ffe_password', None)
-            ),
-            'ffe_auto_upload': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'ffe_auto_upload', None)
+            else self.get_data(tournament.plugin_data, 'ffe_password', None),
+            'ffe_auto_upload': self.get_data(
+                tournament.plugin_data, 'ffe_auto_upload', None
             ),
         }
 

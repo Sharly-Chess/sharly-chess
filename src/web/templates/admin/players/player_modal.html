@@ -222,40 +222,49 @@
                             {# can not use *_input() here because of a specific pattern for rating type/value #}
                             {%
                                 with
-                                    name='rating_' ~ tournament_rating.value,
-                                    id=name|replace('_', '-'),
-                                    name2='rating_type_' ~ tournament_rating.value
+                                    name=tournament_rating.form_key ~ '_rating',
+                                    name2=tournament_rating.form_key ~ '_rating_type'
                             %}
-                                <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
-                                <input
-                                    name="{{ name }}"
-                                    type="number" id="{{ id }}"
-                                    class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                    aria-describedby="{{ id }}-help {{ id }}-error"
-                                    value="{{ data[name] }}"
-                                    {% if action == 'delete' %}disabled{% endif %}
-                                />
-                                <select
-                                    name="{{ name2 }}"
-                                    class="mt-2 form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                    {% if action == 'delete' %}disabled{% endif %}
-                                >
-                                    {% for value, text in rating_type_options.items() %}
-                                        <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
-                                            {{ text }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                {% if action != 'delete' %}
-                                    <div id="{{ id }}-help" class="form-text">
-                                        {{ tournament_rating_strings['help'] }}
-                                    </div>
-                                {% endif %}
-                                {% if name in errors %}
-                                    <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                        {{ errors[name] }}
-                                    </div>
-                                {% endif %}
+                                {%
+                                    with
+                                        id=name|replace('_', '-'),
+                                        type_id=name2|replace('_', '-')
+                                %}
+                                    <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
+                                    <input
+                                        name="{{ name }}"
+                                        type="number"
+                                        id="{{ id }}"
+                                        data-testid="{{ id }}"
+                                        class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                        aria-describedby="{{ id }}-help {{ id }}-error"
+                                        value="{{ data[name] }}"
+                                        {% if action == 'delete' %}disabled{% endif %}
+                                    />
+                                    <select
+                                        id="{{ type_id }}"
+                                        data-testid="{{ type_id }}"
+                                        name="{{ name2 }}"
+                                        class="mt-2 form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                        {% if action == 'delete' %}disabled{% endif %}
+                                    >
+                                        {% for value, text in rating_type_options.items() %}
+                                            <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
+                                                {{ text }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if action != 'delete' %}
+                                        <div id="{{ id }}-help" class="form-text">
+                                            {{ tournament_rating_strings['help'] }}
+                                        </div>
+                                    {% endif %}
+                                    {% if name in errors %}
+                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
+                                            {{ errors[name] }}
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
                             {% endwith %}
                         </div>
                     {% endfor %}
@@ -383,10 +392,14 @@
                     form="modal-form"
                     class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
                 >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {% if action == 'update' %}
+                    {% if action in ['create', 'clone', ] %}
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Create') }}
+                    {% elif action == 'update' %}
+                        <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Save') }}
                     {% elif action == 'delete' %}
+                        <i class="bi-trash pe-1"></i>
                         {{ _('Delete') }}
                     {% else %}
                         ?

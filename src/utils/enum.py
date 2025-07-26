@@ -467,6 +467,18 @@ class TournamentRating(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @property
+    def form_key(self) -> str:
+        match self:
+            case TournamentRating.STANDARD:
+                return 'standard'
+            case TournamentRating.RAPID:
+                return 'rapid'
+            case TournamentRating.BLITZ:
+                return 'blitz'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
     def print_view_header(self) -> str:
         match self:
             case TournamentRating.STANDARD:
@@ -1128,39 +1140,6 @@ class NeedsUpload(Enum):
 class TrfType(StrEnum):
     TRF_16 = 'trf-16'
     TRF_BX = 'trf-bx'
-
-
-class PointValueType(Enum):
-    STANDARD = 1
-    PAPI_3_POINTS = 2
-
-    @property
-    def point_values(self) -> dict[Result, float]:
-        match self:
-            case PointValueType.STANDARD:
-                return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
-            case PointValueType.PAPI_3_POINTS:
-                return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
-            case _:
-                raise ValueError(f'{self=}')
-
-    @classmethod
-    def from_papi_value(cls, value: str) -> 'PointValueType':
-        match value.upper():
-            case 'NON':
-                return PointValueType.STANDARD
-            case 'OUI':
-                return PointValueType.PAPI_3_POINTS
-            case _:
-                raise ValueError(f'Cannot convert {value=} to {cls.__class__.__name__}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case PointValueType.PAPI_3_POINTS:
-                return 'OUI'
-            case _:
-                return 'NON'
 
 
 class FormAction(StrEnum):

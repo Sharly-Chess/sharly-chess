@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
+    from database.access.papi.papi_store import StoredPlayer
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
         BaseStoredEvent,
@@ -94,7 +95,7 @@ class AppHookSpecs:
 
     @hookspec
     def augment_player_after_db_fetch(
-        self, player: 'Player', row: dict[str, Any]
+        self, stored_player: 'StoredPlayer', row: dict[str, Any]
     ) -> list[str]:
         """Add plugin specific data to a player after they are fetched from the database"""
 
@@ -119,18 +120,22 @@ class AppHookSpecs:
         """Provide form data for the additional player form fields"""
 
     @hookspec
-    def get_validated_player_form_fields(
+    def validate_player_form_fields(
         self,
         action: str,
         tournament: 'Tournament',
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
-        """Validate the additional player form fields and returns plugin data"""
+    ):
+        """Validate the additional player form fields. Add the errors to the *errors* dict."""
+
+    @hookspec
+    def get_player_form_fields(self, data: dict[str, str]) -> dict[str, dict[str, Any]]:
+        """Get the fields from the player form data."""
 
     @hookspec
     async def augment_player_after_search(
-        self, player: 'Player', data_source: 'DataSource'
+        self, stored_player: 'StoredPlayer', data_source: 'DataSource'
     ):
         """Add plugin specific data to a player after a successful player search"""
 
