@@ -360,6 +360,7 @@ class ScreenManagementRole(Role):
             AuthAction.MANAGE_ACCOUNTS,
             AuthAction.MANAGE_DEVICES,
             AuthAction.MANAGE_SCREENS,
+            AuthAction.VIEW_PRIVATE_SCREENS,
         ]
 
     @property

@@ -1,7 +1,7 @@
 from database.sqlite.event.event_store import StoredScreen
 import pytest
-from playwright.sync_api import expect, Page
-from tests.e2e.roles.base_role_test import BaseRoleTest
+from playwright.sync_api import Page
+from tests.e2e.roles.base_role_test import BaseRoleTest, DisplayMode
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
 
 
@@ -10,29 +10,24 @@ class TestAnonymousRole(BaseRoleTest):
     def get_roles(self):
         return []
 
-    def test_access_to_visible_events(self, lan_page: Page):
-        lan_page.goto('/admin/current_events')
-        # Public events should be visible (otherwise there'd be no way to log onto one)
-        expect(lan_page.locator('.card')).to_have_count(1)
-        expect(
-            lan_page.locator(f"div.card:has-text('{PUBLIC_EVENT_ID}')")
-        ).to_be_visible()
-
-    def test_access_to_visible_screens(
+    def test_access(
         self,
         lan_page: Page,
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
     ):
-        lan_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/input-screens')
-
-        # No screens should be visible
-        expect(lan_page.locator('.card')).to_have_count(0)
-
-        # Test no access to the public input screen, should redirect to the home page
-        lan_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{public_input_screen.uniq_id}')
-        lan_page.wait_for_url('/error/403')
-
-        # Test no access to the private input screen, should redirect to the home page
-        lan_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{private_input_screen.uniq_id}')
-        lan_page.wait_for_url('/error/403')
+        super().assert_access_to_visible_events(PUBLIC_EVENT_ID, lan_page)
+        super().assert_access_to_input_screen(
+            False,
+            DisplayMode.SCREENS_NOT_IN_MENU,
+            PUBLIC_EVENT_ID,
+            lan_page,
+            public_input_screen,
+        )
+        super().assert_access_to_input_screen(
+            False,
+            DisplayMode.SCREENS_NOT_IN_MENU,
+            PUBLIC_EVENT_ID,
+            lan_page,
+            private_input_screen,
+        )

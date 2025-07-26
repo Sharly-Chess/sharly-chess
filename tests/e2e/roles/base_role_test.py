@@ -1,3 +1,5 @@
+from enum import IntEnum
+from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
@@ -6,6 +8,12 @@ from common.sharly_chess_config import SharlyChessConfig
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID, TOURNAMENT_ID
 from tests.test_config import TestUtils
 from utils.enum import ScreenType
+
+
+class DisplayMode(IntEnum):
+    SCREENS_IN_MENU = 0
+    SCREENS_IN_SUBMENU = 1
+    SCREENS_NOT_IN_MENU = 2
 
 
 class BaseRoleTest:
@@ -142,3 +150,82 @@ class BaseRoleTest:
         )
         yield stored_screen
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
+
+    def assert_access_to_visible_events(self, event_id: str, auth_page: Page):
+        auth_page.goto('/admin/current_events')
+        expect(auth_page.locator('.card')).to_have_count(1)
+        expect(auth_page.locator(f"div.card:has-text('{event_id}')")).to_be_visible()
+
+    def assert_access_to_input_screen(
+        self,
+        can_access: bool,
+        mode: DisplayMode,
+        event_id: str,
+        page: Page,
+        screen: StoredScreen,
+    ):
+        match mode:
+            case DisplayMode.SCREENS_NOT_IN_MENU:
+                # There's no button in the menu, but we test direct access
+                page.goto(f'/admin/event/{event_id}/input-screens')
+
+            case DisplayMode.SCREENS_IN_SUBMENU:
+                page.goto(f'/admin/event/{event_id}')
+                screens_button = page.get_by_test_id('nav-admin-event-views-tab')
+                expect(screens_button).to_be_visible()
+                screens_button.click()
+
+                single_screens_button = page.get_by_test_id(
+                    'nav-admin-event-screens-tab-tab'
+                )
+                expect(single_screens_button).to_be_visible()
+                single_screens_button.click()
+
+                accordion_button = page.get_by_test_id('accordion-screen-type-input')
+                expect(accordion_button).to_be_visible()
+                accordion_button.click()
+
+            case DisplayMode.SCREENS_IN_MENU:
+                page.goto(f'/admin/event/{event_id}')
+                screens_button = page.get_by_test_id('nav-admin-event-views-tab')
+                expect(screens_button).not_to_be_visible()
+                input_screens_button = page.get_by_test_id(
+                    'nav-admin-event-input-screens-tab-tab'
+                )
+                expect(input_screens_button).to_be_visible()
+                input_screens_button.click()
+
+        card = page.locator(f"div.card:has-text('{screen.name}')")
+        if can_access:
+            expect(card).to_be_visible()
+        else:
+            expect(card).not_to_be_visible()
+
+        if can_access:
+            # Test access to the input screen
+            page.goto(f'/user/screen/{event_id}/{screen.uniq_id}')
+            rows = page.locator('table tbody tr')
+            expect(rows).to_have_count(8)
+        else:
+            # Test no access to the input screen, should redirect to the 403 page
+            page.goto(f'/user/screen/{event_id}/{screen.uniq_id}')
+            page.wait_for_url('/error/403')
+
+    def assert_access_to_input_screen_checkin(
+        self,
+        can_access: bool,
+        event_id: str,
+        page: Page,
+        screen: StoredScreen,
+    ):
+        # Test access to the public input screen
+        page.goto(f'/user/screen/{event_id}/{screen.uniq_id}')
+        rows = page.locator('table tbody tr')
+        row = rows.filter(has_text='ALYX')
+
+        if can_access:
+            row.click()
+            modal = page.locator('.modal-dialog')
+            expect(modal).to_be_visible()
+        else:
+            expect(row).not_to_have_attribute('hx-get', value='')

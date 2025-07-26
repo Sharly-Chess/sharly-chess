@@ -84,6 +84,8 @@ class TestSingleScreensFunctionality:
         # Should not be checked in
         row = rows.filter(has_text='ALYX')
         expect(row.locator('i.bi-square')).to_be_visible()
+
+        # Clicking the row should not trigger a check-in
         expect(row).not_to_have_attribute('hx-get', value='')
 
         # Open check-in
