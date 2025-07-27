@@ -19,6 +19,7 @@ class TestAnonymousRole(BaseRoleTest):
         # Admin
 
         super().assert_can_access_players_tab(False, PUBLIC_EVENT_ID, lan_page)
+        super().assert_can_access_pairings_tab(False, PUBLIC_EVENT_ID, lan_page)
 
         # Screens
 

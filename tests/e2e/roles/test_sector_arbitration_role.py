@@ -20,6 +20,7 @@ class TestSectorArbitrationRole(BaseRoleTest):
         # Admin
 
         super().assert_can_access_players_tab(True, PUBLIC_EVENT_ID, auth_page)
+        super().assert_can_access_pairings_tab(True, PUBLIC_EVENT_ID, auth_page)
 
         # Screens
 

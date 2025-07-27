@@ -25,6 +25,8 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.controllers.user.event_user_controller import EventUserController
+from web.guards import Guard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -365,6 +367,10 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             return cls._admin_event_render(template_context)
 
+    pairing_tab_guards = EventUserController.event_guards + [
+        Guard.client_can_view_pairings_tab,
+    ]
+
     @get(
         path=[
             '/admin/event/{event_uniq_id:str}/pairings',
@@ -372,6 +378,7 @@ class PairingsAdminController(BaseEventAdminController):
             '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
+        guards=pairing_tab_guards,
         cache=1,
     )
     async def htmx_admin_pairings_tab(

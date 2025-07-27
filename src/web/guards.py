@@ -126,6 +126,17 @@ class Guard:
             )
 
     @classmethod
+    def client_can_view_pairings_tab(
+        cls, request: HTMXRequest, _: BaseRouteHandler
+    ) -> None:
+        """Raises an exception accessing the pairings tab if the client is not allowed"""
+        client: Client = RequestUtils.get_client(request)
+        if not client.can_view_pairings_tab:
+            raise PermissionDeniedException(
+                'You are not allowed to view the pairings tab.'
+            )
+
+    @classmethod
     def client_can_set_illegal_moves(
         cls, request: HTMXRequest, _: BaseRouteHandler
     ) -> None:

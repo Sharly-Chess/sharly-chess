@@ -297,7 +297,6 @@ class BaseRoleTest:
     ):
         page.goto(f'/admin/event/{event_id}')
         players_button = page.get_by_test_id('nav-admin-event-players-tab-tab')
-
         if can_access:
             expect(players_button).to_be_visible()
             players_button.click()
@@ -305,4 +304,22 @@ class BaseRoleTest:
         else:
             expect(players_button).not_to_be_visible()
             page.goto(f'/admin/event/{event_id}/players')
+            page.wait_for_url('/error/403')
+
+    def assert_can_access_pairings_tab(
+        self,
+        can_access: bool,
+        event_id: str,
+        page: Page,
+    ):
+        page.goto(f'/admin/event/{event_id}')
+        pairings_button = page.get_by_test_id('nav-admin-event-pairings-tab-tab')
+
+        if can_access:
+            expect(pairings_button).to_be_visible()
+            pairings_button.click()
+            page.wait_for_url(f'/admin/event/{event_id}/pairings')
+        else:
+            expect(pairings_button).not_to_be_visible()
+            page.goto(f'/admin/event/{event_id}/pairings')
             page.wait_for_url('/error/403')
