@@ -86,14 +86,17 @@ class TestSingleScreensFunctionality:
         expect(row.locator('i.bi-square')).to_be_visible()
 
         # Clicking the row should not trigger a check-in
-        expect(row).not_to_have_attribute('hx-get', value='')
+        hx_get = row.get_attribute('hx-get')
+        assert hx_get is None
 
         # Open check-in
         api_request_context.patch(
             f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
         )
+
         # Reload the page
         lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+
         # Try to open the modal again
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(16)

@@ -5,7 +5,11 @@ from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
 from data.auth.roles import Role
 from common.sharly_chess_config import SharlyChessConfig
-from tests.e2e.roles.conftest import PUBLIC_EVENT_ID, TOURNAMENT_ID
+from tests.e2e.roles.conftest import (
+    PUBLIC_EVENT_ID,
+    TOURNAMENT_ID,
+    TOURNAMENT_UNPAIRED_ID,
+)
 from tests.test_config import TestUtils
 from utils.enum import ScreenType
 
@@ -123,6 +127,19 @@ class BaseRoleTest:
         yield tournament
         TestUtils.delete_tournament(api_request_context, PUBLIC_EVENT_ID, tournament)
 
+    @pytest.fixture(autouse=True)
+    def role_test_unpaired_tournament(
+        self, api_request_context: APIRequestContext, role_test_events
+    ):
+        tournament = TestUtils.create_tournament(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            TOURNAMENT_UNPAIRED_ID,
+            papi_file='test-screens-unpaired',
+        )
+        yield tournament
+        TestUtils.delete_tournament(api_request_context, PUBLIC_EVENT_ID, tournament)
+
     @pytest.fixture()
     def public_input_screen(
         self, api_request_context: APIRequestContext, role_test_tournament
@@ -132,7 +149,29 @@ class BaseRoleTest:
             PUBLIC_EVENT_ID,
             'public-input',
             ScreenType.INPUT,
-            {'init_set_tournament_id': role_test_tournament.id, 'public': True},
+            {
+                'init_set_tournament_id': role_test_tournament.id,
+                'public': True,
+                'name': 'PairedInput Screen',
+            },
+        )
+        yield stored_screen
+        TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
+
+    @pytest.fixture()
+    def public_input_unpaired_screen(
+        self, api_request_context: APIRequestContext, role_test_unpaired_tournament
+    ):
+        stored_screen = TestUtils.create_screen(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            'public-input-unpaired',
+            ScreenType.INPUT,
+            {
+                'init_set_tournament_id': role_test_unpaired_tournament.id,
+                'public': True,
+                'name': 'Unpaired Input Screen',
+            },
         )
         yield stored_screen
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
@@ -196,6 +235,7 @@ class BaseRoleTest:
                 input_screens_button.click()
 
         card = page.locator(f"div.card:has-text('{screen.name}')")
+
         if can_access:
             expect(card).to_be_visible()
         else:
@@ -211,21 +251,38 @@ class BaseRoleTest:
             page.goto(f'/user/screen/{event_id}/{screen.uniq_id}')
             page.wait_for_url('/error/403')
 
-    def assert_access_to_input_screen_checkin(
+    def assert_can_checkin_via_screen(
         self,
         can_access: bool,
         event_id: str,
+        tournament_id: int,
         page: Page,
         screen: StoredScreen,
+        api_request_context: APIRequestContext,
     ):
-        # Test access to the public input screen
+        # Open check-in
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{event_id}/{tournament_id}'
+        )
+
         page.goto(f'/user/screen/{event_id}/{screen.uniq_id}')
         rows = page.locator('table tbody tr')
+
+        expect(rows).to_have_count(16)
         row = rows.filter(has_text='ALYX')
 
         if can_access:
+            # Try to open the modal
             row.click()
             modal = page.locator('.modal-dialog')
+
             expect(modal).to_be_visible()
+            button = TestUtils.button_by_text(modal, 'CHECK-IN')
+            expect(button).to_contain_text('ALYX')
+            button.click()
+
+            # Test that the page is updated
+            expect(row.locator('i.bi-check-square-fill')).to_be_visible()
         else:
-            expect(row).not_to_have_attribute('hx-get', value='')
+            hx_get = row.get_attribute('hx-get')
+            assert hx_get is None
