@@ -36,6 +36,10 @@ from database.sqlite.event.event_store import (
     StoredPrizeCategory,
     StoredPrizeCriterion,
     StoredPrize,
+    StoredPlayer,
+    StoredTournamentPlayer,
+    StoredPairing,
+    StoredBoard,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -1328,14 +1332,14 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_timer(stored_timer)
 
     def delete_stored_timer(self, timer_id: int):
+        # NOTE (Molrn) The table definition of `family` and `screen` are missing
+        # the `ON DELETE SET NULL` clause, so it has to be done manually
         self.execute(
             'UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
         )
         self.execute(
             'UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
         )
-        self._delete_stored_timer_hours(timer_id)
-        # references are not deleted as they should be!
         self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
         self.set_last_update()
 
@@ -1410,9 +1414,14 @@ class EventDatabase(MigrationDatabase):
         stored_tournaments: list[StoredTournament] = []
         for row in self.fetchall():
             stored_tournament = self._row_to_stored_tournament(row)
-            assert stored_tournament.id is not None
+            id_ = stored_tournament.id
+            assert id_ is not None
             stored_tournament.stored_prize_groups = (
-                self.load_tournament_stored_prize_groups(stored_tournament.id)
+                self.load_tournament_stored_prize_groups(id_)
+            )
+            stored_tournament.stored_players = self.load_tournament_stored_players(id_)
+            stored_tournament.stored_boards_by_round = (
+                self.load_tournament_stored_boards_by_round(id_)
             )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
@@ -1585,6 +1594,310 @@ class EventDatabase(MigrationDatabase):
         return self.fetchone()['last_update']
 
     # ---------------------------------------------------------------------------------
+    # StoredPlayer
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_player(cls, row: dict[str, Any]) -> StoredPlayer:
+        return StoredPlayer(
+            id=row['id'],
+            last_name=row['last_name'],
+            first_name=row['first_name'],
+            date_of_birth=cls.load_date_from_database_field(row['date_of_birth']),
+            gender=row['gender'],
+            mail=row['mail'],
+            phone=row['phone'],
+            comment=row['comment'],
+            owed=row['owed'],
+            paid=row['paid'],
+            title=row['title'],
+            ratings=cls.set_dict_int_keys(
+                cls.load_json_from_database_field(row['ratings'])
+            )
+            or {},
+            fide_id=row['fide_id'],
+            federation=row['federation'],
+            club=row['club'],
+            fixed=row['fixed'],
+            check_in=row['check_in'],
+        )
+
+    def load_tournament_stored_players(self, tournament_id: int) -> list[StoredPlayer]:
+        self.execute(
+            'SELECT * FROM `player` WHERE `tournament_id` = ?',
+            (tournament_id,),
+        )
+        stored_players: list[StoredPlayer] = []
+        for row in self.fetchall():
+            player = self._row_to_stored_player(row)
+            assert player.id is not None
+            player.stored_tournament_player = self.load_player_stored_tournament_player(
+                player.id
+            )
+            stored_players.append(player)
+        return stored_players
+
+    @classmethod
+    def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
+        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
+            stored_player=stored_player
+        )
+        return (
+            cls._get_fields_dict(
+                stored_player,
+                [
+                    'first_name',
+                    'last_name',
+                    'gender',
+                    'mail',
+                    'phone',
+                    'comment',
+                    'owed',
+                    'paid',
+                    'title',
+                    'fide_id',
+                    'federation',
+                    'club',
+                    'fixed',
+                ],
+            )
+            | {
+                'date_of_birth': cls.dump_date_to_database_field(
+                    stored_player.date_of_birth
+                ),
+                'ratings': cls.dump_to_json_database_field(stored_player.ratings),
+            }
+            | {
+                key: value
+                for data in per_plugin_player_data
+                for key, value in data.items()
+            }
+        )
+
+    def add_stored_player(
+        self,
+        stored_player: StoredPlayer,
+    ) -> int:
+        fields = self._get_player_fields_dict(stored_player)
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `player`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (player_id := self._last_inserted_id()):
+            raise RuntimeError('Player insertion failed')
+        return player_id
+
+    def update_stored_player(self, stored_player: StoredPlayer):
+        fields = self._get_player_fields_dict(stored_player)
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `player` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_player.id,),
+        )
+
+    def delete_stored_player(self, player_id: int):
+        self.execute('DELETE FROM `player` WHERE `id` = ?;', (player_id,))
+
+    def set_player_check_in(self, player_id: int, check_in: bool):
+        self.execute(
+            'UPDATE `player` SET `check_in` = ? WHERE `id` = ?',
+            (check_in, player_id),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTournamentPlayer
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_player(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentPlayer:
+        return StoredTournamentPlayer(
+            tournament_id=row['tournament_id'],
+            player_id=row['player_id'],
+            pairing_number=row['pairing_number'],
+        )
+
+    def load_player_stored_tournament_player(
+        self, player_id: int
+    ) -> StoredTournamentPlayer:
+        self.execute(
+            'SELECT * FROM `tournament_player` WHERE `player_id` = ?',
+            (player_id,),
+        )
+        tournament_player = self._row_to_stored_tournament_player(self.fetchone())
+        tournament_player.stored_pairings = self.load_tournament_player_stored_pairings(
+            tournament_player.tournament_id, player_id
+        )
+        return tournament_player
+
+    def add_stored_tournament_player(
+        self, stored_tournament_player: StoredTournamentPlayer
+    ):
+        fields = self._get_fields_dict(
+            stored_tournament_player, ['tournament_id', 'player_id', 'pairing_number']
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tournament_player`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        for stored_pairing in stored_tournament_player.stored_pairings:
+            self.add_stored_pairing(stored_pairing)
+
+    def set_tournament_player_pairing_number(
+        self, stored_tournament_player: StoredTournamentPlayer
+    ):
+        self.execute(
+            (
+                'UPDATE `tournament_player` SET `pairing_number` = ? '
+                'WHERE `tournament_id` = ? AND `player_id` = ?'
+            ),
+            (
+                stored_tournament_player.pairing_number,
+                stored_tournament_player.tournament_id,
+                stored_tournament_player.player_id,
+            ),
+        )
+
+    def delete_stored_tournament_player(self, tournament_id: int, player_id: int):
+        self.execute(
+            (
+                'DELETE FROM `tournament_player` '
+                'WHERE `tournament_id` = ? AND `player_id` = ?'
+            ),
+            (tournament_id, player_id),
+        )
+        self.execute(
+            ('DELETE FROM `pairing` WHERE `tournament_id` = ? AND `player_id` = ?'),
+            (tournament_id, player_id),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredPairings
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_pairing(cls, row: dict[str, Any]) -> StoredPairing:
+        return StoredPairing(
+            tournament_id=row['tournament_id'],
+            player_id=row['player_id'],
+            round_=row['round'],
+            result=row['result'],
+            board_id=row['board_id'],
+        )
+
+    def load_tournament_player_stored_pairings(
+        self, tournament_id: int, player_id: int
+    ) -> list[StoredPairing]:
+        self.execute(
+            (
+                'SELECT * FROM `pairing` '
+                'WHERE `tournament_id` = ? AND `player_id` = ? '
+                'ORDER BY `round`'
+            ),
+            (tournament_id, player_id),
+        )
+        return [self._row_to_stored_pairing(row) for row in self.fetchall()]
+
+    def add_stored_pairing(
+        self,
+        stored_pairing: StoredPairing,
+    ):
+        fields = self._get_fields_dict(
+            stored_pairing, ['tournament_id', 'player_id', 'result']
+        ) | {'round': stored_pairing.round_}
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `pairing`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+
+    def update_stored_pairing_result(self, stored_pairing: StoredPairing):
+        self.execute(
+            (
+                'UPDATE `pairing` SET `result` = ? '
+                'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?'
+            ),
+            (
+                stored_pairing.result,
+                stored_pairing.tournament_id,
+                stored_pairing.player_id,
+                stored_pairing.round_,
+            ),
+        )
+
+    def delete_stored_pairing(self, stored_pairing: StoredPairing):
+        self.execute(
+            (
+                'DELETE FROM `pairing` '
+                'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?'
+            ),
+            (
+                stored_pairing.tournament_id,
+                stored_pairing.player_id,
+                stored_pairing.round_,
+            ),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredBoard
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_board(cls, row: dict[str, Any]) -> StoredBoard:
+        return StoredBoard(
+            id=row['id'],
+            white_player_id=row['white_player_id'],
+            black_player_id=row['black_player_id'],
+            index=row['index'],
+        )
+
+    def load_tournament_stored_boards_by_round(
+        self, tournament_id: int
+    ) -> dict[int, list[StoredBoard]]:
+        self.execute(
+            (
+                'SELECT `board`.*, `pairing`.`round` '
+                'FROM `board` INNER JOIN `pairing` '
+                'ON `board`.`id` = `pairing`.`board_id` '
+                'WHERE `pairing`.`tournament_id` = ? '
+                'ORDER BY `pairing`.`round`, `board`.`index`'
+            ),
+            (tournament_id,),
+        )
+        stored_boards_by_round: dict[int, list[StoredBoard]] = {}
+        for row in self.fetchall():
+            board = self._row_to_stored_board(row)
+            round_ = row['round']
+            if round_ in stored_boards_by_round:
+                stored_boards_by_round[round_].append(board)
+            else:
+                stored_boards_by_round[round_] = [board]
+        return stored_boards_by_round
+
+    def add_stored_board(self, stored_board: StoredBoard) -> int:
+        fields = self._get_fields_dict(
+            stored_board, ['white_player_id', 'black_player_id', 'index']
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `board`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (board_id := self._last_inserted_id()):
+            raise RuntimeError('Board insertion failed')
+        return board_id
+
+    def delete_stored_board(self, board_id: int):
+        self.execute('DELETE FROM `board` WHERE `id` = ?;', (board_id,))
+
+    # ---------------------------------------------------------------------------------
     # Illegal moves
     # ---------------------------------------------------------------------------------
 
@@ -1700,7 +2013,7 @@ class EventDatabase(MigrationDatabase):
         return None
 
     def add_stored_result(
-        self, tournament_id: int, round_: int, board: Board, result: UtilResult
+        self, tournament_id: int, board: Board, result: UtilResult
     ) -> float:
         """Stores a result and return the date of the update."""
         assert board.id is not None
@@ -1715,7 +2028,7 @@ class EventDatabase(MigrationDatabase):
             ') VALUES(?, ?, ?, ?, ?, ?, ?)',
             (
                 tournament_id,
-                round_,
+                board.round,
                 board.id,
                 board.white_player.id,
                 board.black_player.id,
@@ -2511,15 +2824,6 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
         )
 
-    def get_stored_prize_group(self, prize_group_id: int) -> StoredPrizeGroup | None:
-        self.execute(
-            'SELECT * FROM `prize_group` WHERE `id` = ?',
-            (prize_group_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize_group(row)
-        return None
-
     def load_tournament_stored_prize_groups(
         self, tournament_id: int
     ) -> list[StoredPrizeGroup]:
@@ -2537,10 +2841,7 @@ class EventDatabase(MigrationDatabase):
             stored_prize_groups.append(prize_group)
         return stored_prize_groups
 
-    def add_stored_prize_group(
-        self,
-        stored_prize_group: StoredPrizeGroup,
-    ) -> int:
+    def add_stored_prize_group(self, stored_prize_group: StoredPrizeGroup) -> int:
         fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2552,10 +2853,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Prize group insertion failed')
         return prize_group_id
 
-    def update_stored_prize_group(
-        self,
-        stored_prize_group: StoredPrizeGroup,
-    ):
+    def update_stored_prize_group(self, stored_prize_group: StoredPrizeGroup):
         fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(
@@ -2581,17 +2879,6 @@ class EventDatabase(MigrationDatabase):
             is_main=cls.load_bool_from_database_field(row['is_main']),
             index=row['index'],
         )
-
-    def get_stored_prize_category(
-        self, prize_category_id: int
-    ) -> StoredPrizeCategory | None:
-        self.execute(
-            'SELECT * FROM `prize_category` WHERE `id` = ?',
-            (prize_category_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize_category(row)
-        return None
 
     def load_prize_group_stored_prize_categories(
         self, prize_group_id: int
@@ -2678,17 +2965,6 @@ class EventDatabase(MigrationDatabase):
             options=cls.load_json_from_database_field(row['options']),
         )
 
-    def get_stored_prize_criterion(
-        self, prize_criterion_id: int
-    ) -> StoredPrizeCriterion | None:
-        self.execute(
-            'SELECT * FROM `prize_criterion` WHERE `id` = ?',
-            (prize_criterion_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize_criterion(row)
-        return None
-
     def load_prize_category_stored_prize_criteria(
         self, prize_category_id: int
     ) -> list[StoredPrizeCriterion]:
@@ -2750,15 +3026,6 @@ class EventDatabase(MigrationDatabase):
             is_monetary=cls.load_bool_from_database_field(row['is_monetary']),
             description=row['description'],
         )
-
-    def get_stored_prize(self, prize_id: int) -> StoredPrize | None:
-        self.execute(
-            'SELECT * FROM `prize` WHERE `id` = ?',
-            (prize_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize(row)
-        return None
 
     def load_prize_category_stored_prizes(
         self, prize_category_id: int

@@ -29,7 +29,12 @@ from data.tie_breaks import (
     TieBreakManager,
     TieBreakOptionManager,
 )
-from database.access.papi.papi_store import StoredPlayer, StoredBoard
+from database.sqlite.event.event_store import (
+    StoredPlayer,
+    StoredBoard,
+    StoredTournamentPlayer,
+    StoredPairing,
+)
 from utils import SharedUtils
 from utils.enum import (
     BoardColor,
@@ -41,20 +46,14 @@ from utils.enum import (
     PlayerRatingType,
     ScreenType,
 )
-from database.access.papi.papi_database import (
-    PapiDatabase,
-    PapiTournamentInfo,
-    PapiVariable,
-    BYE_COLOR,
-    UNPLAYED_COLOR,
-)
+from database.access.papi.papi_database import PapiDatabase, PapiVariable
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.pairings import PairingVariation, PairingSystem
+    from data.pairings import PairingVariation, PairingSystem, PairingVariationManager
 
 logger: Logger = get_logger()
 
@@ -69,16 +68,6 @@ class Tournament:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
-        # TODO(Molrn - Big move) init all these values from *EventDatabase.load_stored_tournaments*
-        (
-            self.papi_tournament_info,
-            stored_players,
-            stored_boards_by_round,
-        ) = self._read_papi()
-        if not self.stored_tournament.stored_players:
-            self.stored_tournament.stored_players = stored_players
-        if not self.stored_tournament.stored_boards_by_round:
-            self.stored_tournament.stored_boards_by_round = stored_boards_by_round
         self.players_by_id = self._get_players_by_id()
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
@@ -330,47 +319,6 @@ class Tournament:
         return self.stored_tournament.last_check_in_update
 
     @property
-    def stored_tie_breaks(self) -> list[TieBreak] | None:
-        if not self.stored_tournament.tie_breaks:
-            return None
-        tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
-        option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager.type_by_id()
-        )
-        for tie_break_dict in self.stored_tournament.tie_breaks:
-            assert isinstance(tie_break_dict['type'], str)
-            assert isinstance(tie_break_dict['options'], dict)
-            tie_break_id = tie_break_dict['type']
-            options: list[TieBreakOption] = []
-            for option_id, value in tie_break_dict['options'].items():
-                if option_type := option_type_by_id.get(option_id, None):
-                    options.append(option_type(value))
-            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                tie_breaks.append(tie_break_type(options))
-        return tie_breaks
-
-    @property
-    def stored_rounds(self) -> int:
-        return self.stored_tournament.rounds
-
-    @property
-    def stored_rating(self) -> TournamentRating:
-        return TournamentRating(self.stored_tournament.rating)
-
-    @property
-    def stored_pairing_variation(self) -> 'PairingVariation | None':
-        from data.pairings import PairingVariationManager
-
-        if variation_id := self.stored_tournament.pairing:
-            return PairingVariationManager.get_object(variation_id)
-        return None
-
-    @property
-    def stored_three_points_for_a_win(self) -> bool:
-        return self.stored_tournament.three_points_for_a_win
-
-    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -380,24 +328,11 @@ class Tournament:
 
     @property
     def rounds(self) -> int:
-        return self.papi_tournament_info.rounds
+        return self.stored_tournament.rounds
 
     @property
     def pairing_variation(self) -> 'PairingVariation':
-        from data.pairings.variations import (
-            BergerRoundRobinVariation,
-            DoubleBergerRoundRobinVariation,
-        )
-
-        papi_variation = self.papi_tournament_info.pairing_variation
-        stored_variation = self.stored_pairing_variation
-        if (
-            papi_variation == BergerRoundRobinVariation()
-            and stored_variation
-            and stored_variation == DoubleBergerRoundRobinVariation()
-        ):
-            return stored_variation
-        return papi_variation
+        return PairingVariationManager.get_object(self.stored_tournament.pairing)
 
     @property
     def pairing_system(self) -> 'PairingSystem':
@@ -426,20 +361,31 @@ class Tournament:
 
     @property
     def rating(self) -> TournamentRating:
-        return self.papi_tournament_info.rating
+        return TournamentRating(self.stored_tournament.rating)
 
     @property
     def three_points_for_a_win(self) -> bool:
         # TODO (Molrn) Replace by a detailed point value override
-        return self.papi_tournament_info.three_points_for_a_win
+        return self.stored_tournament.three_points_for_a_win
 
-    @property
+    @cached_property
     def tie_breaks(self) -> list[TieBreak]:
-        return self.papi_tournament_info.tie_breaks
-
-    @property
-    def arbiter(self) -> str:
-        return self.papi_tournament_info.arbiter
+        tie_breaks: list[TieBreak] = []
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        option_type_by_id: dict[str, type[TieBreakOption]] = (
+            TieBreakOptionManager.type_by_id()
+        )
+        for tie_break_dict in self.stored_tournament.tie_breaks:
+            assert isinstance(tie_break_dict['type'], str)
+            assert isinstance(tie_break_dict['options'], dict)
+            tie_break_id = tie_break_dict['type']
+            options: list[TieBreakOption] = []
+            for option_id, value in tie_break_dict['options'].items():
+                if option_type := option_type_by_id.get(option_id, None):
+                    options.append(option_type(value))
+            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
+                tie_breaks.append(tie_break_type(options))
+        return tie_breaks
 
     @property
     def prize_groups(self) -> Collection[PrizeGroup]:
@@ -736,21 +682,6 @@ class Tournament:
             self.current_round
         ) and not self.is_round_finished(self.current_round)
 
-    def _read_papi(
-        self,
-    ) -> tuple[
-        PapiTournamentInfo,
-        list[StoredPlayer],
-        dict[int, list[StoredBoard]],
-    ]:
-        if self.file_exists:
-            with PapiDatabase(self.file) as database:
-                info = database.read_info()
-                players, boards_by_round = database.read_players(self.id, info.rounds)
-                return info, players, boards_by_round
-        else:
-            return PapiTournamentInfo(), [], {}
-
     def _get_players_by_id(self) -> dict[int, Player]:
         players_by_id: dict[int, Player] = {}
         for stored_player in self.stored_tournament.stored_players:
@@ -838,13 +769,6 @@ class Tournament:
                 paired_player_ids.append(board.black_player.id)
         return [player for player in self.players if player.id not in paired_player_ids]
 
-    def check_papi_update(self):
-        if not self.file_exists:
-            self.clear_cache(clear_papi_cache=True)
-        elif self.stored_file_modified_timestamp != self.file_modified_timestamp:
-            self.clear_cache(clear_papi_cache=True)
-            self.update_stored_file_modified_timestamp()
-
     def update_stored_file_modified_timestamp(self):
         self.stored_file_modified_timestamp = self.file_modified_timestamp
 
@@ -852,7 +776,7 @@ class Tournament:
         self.update_stored_file_modified_timestamp()
         plugin_manager.hook.on_tournament_data_updated(tournament=self)
 
-    def clear_cache(self, clear_papi_cache: bool = False):
+    def clear_cache(self):
         """Clears the cache of the tournament."""
         cached_property_names = [
             name
@@ -862,15 +786,6 @@ class Tournament:
         for property_name in cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
-        if clear_papi_cache:
-            (
-                self.papi_tournament_info,
-                self.stored_tournament.stored_players,
-                self.stored_tournament.stored_boards_by_round,
-            ) = self._read_papi()
-            self.players_by_id = self._get_players_by_id()
-            self.boards_by_id = self._get_boards_by_id()
-            self.pairing_system.update_player_results(self)
         self._players_by_rank = None
         for screen in self.related_screens:
             screen.clear_cache_for_tournament(self.id)
@@ -949,7 +864,7 @@ class Tournament:
             startdate=format_timestamp(self.start_timestamp, '%Y/%m/%d'),
             enddate=format_timestamp(self.stop_timestamp, '%Y/%m/%d'),
             numplayers=len(self.players_by_id),
-            chiefarbiter=self.arbiter,
+            chiefarbiter='',
             players=[
                 player.to_trf(
                     self._player_id_to_trf_id,
@@ -1218,33 +1133,23 @@ class Tournament:
         )
         return self._players_by_rank
 
-    def add_result(self, board: Board, white_result: Result, round_: int | None = None):
+    def add_result(self, board: Board, white_result: Result):
         """Stores the given result for the given `board` in the current round.
         Stores the `white_result` directly, and uses the opposite result
         as the black's result.
         Assumes that no asymmetric result was entered."""
-        black_result = white_result.opposite_result
         assert board.black_player is not None
 
-        if round_ is None:
-            round_ = self.current_round
-
-        with self.papi_write_database as papi_database:
-            papi_database.set_player_result(
-                board.white_player.ref_id, round_, white_result, True
-            )
-            papi_database.set_player_result(
-                board.black_player.ref_id, round_, black_result, True
-            )
-            papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             self.stored_tournament.last_result_update = (
-                event_database.add_stored_result(self.id, round_, board, white_result)
+                event_database.add_stored_result(self.id, board, white_result)
+            )
+            board.white_pairing.update_result(event_database, white_result)
+            board.black_pairing.update_result(
+                event_database, white_result.opposite_result
             )
             event_database.commit()
 
-        board.white_player.pairings[round_].stored_pairing.result = white_result.value
-        board.black_player.pairings[round_].stored_pairing.result = black_result.value
         self.clear_cache()
         board.white_player.clear_cache()
         board.black_player.clear_cache()
@@ -1252,7 +1157,7 @@ class Tournament:
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
             self.uniq_id,
-            round_,
+            board.round,
             board.id,
             board.white_player.last_name,
             board.white_player.first_name,
@@ -1264,25 +1169,17 @@ class Tournament:
         )
 
     def delete_result(self, board: Board):
-        """Deletes the result for the given `board` in the current round."""
+        """Deletes the result for the given `board`."""
         assert board.black_player is not None
-        assert board.id is not None
-        round_ = self.current_round
-        result = Result.NO_RESULT
-        with self.papi_write_database as papi_database:
-            for player in (board.white_player, board.black_player):
-                papi_database.set_player_result(player.ref_id, round_, result, True)
-            papi_database.commit()
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             self.stored_tournament.last_result_update = (
                 event_database.delete_stored_result(
                     self.id, self.current_round, board.id
                 )
             )
+            board.white_pairing.update_result(event_database, Result.NO_RESULT)
+            board.black_pairing.update_result(event_database, Result.NO_RESULT)
             event_database.commit()
-        board.white_pairing.stored_pairing.result = result.value
-        assert board.black_pairing is not None
-        board.black_pairing.stored_pairing.result = result.value
         self.clear_cache()
         board.white_player.clear_cache()
         board.black_player.clear_cache()
@@ -1290,98 +1187,58 @@ class Tournament:
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
             self.uniq_id,
-            self.current_round,
+            board.round,
             board.id,
         )
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
-        with self.papi_write_database as papi_database:
-            with EventDatabase(self.event.uniq_id, write=True) as event_database:
-                papi_database.check_in_player(player.id, check_in)
-                event_database.set_tournament_last_check_in_update(self.id)
-                event_database.commit()
-                papi_database.commit()
+        with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            event_database.set_player_check_in(player.id, check_in)
+            event_database.set_tournament_last_check_in_update(self.id)
+            event_database.commit()
         player.stored_player.check_in = check_in
         player.clear_cache()
         self.clear_cache()
 
-    def add_player(self, player: Player) -> int:
-        """Adds a new player to the tournament, returns the player's ID."""
-        ref = (max(p.ref_id for p in self.players) if self.players_by_id else 1) + 1
-        with self.papi_write_database as papi_database:
-            per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
-                player=player
-            )
-            plugin_data = {
-                key: value
-                for data in per_plugin_player_data
-                for key, value in data.items()
-            }
-            data: dict[str, Any] = {
-                'Ref': ref,
-                'Nom': player.last_name,
-                'Prenom': player.first_name,
-                'Sexe': player.gender.to_papi_value,
-                'NeLe': PapiDatabase.date_to_papi_date(player.date_of_birth),
-                'Cat': player.category.to_papi_value,
-                'Elo': player.get_rating(TournamentRating.STANDARD).value,
-                'Rapide': player.get_rating(TournamentRating.RAPID).value,
-                'Blitz': player.get_rating(TournamentRating.BLITZ).value,
-                'Federation': player.federation.name,
-                'ClubRef': 0,
-                'Club': player.club.name if player.club else None,
-                'Fide': player.get_rating(TournamentRating.STANDARD).type.to_papi_value,
-                'RapideFide': player.get_rating(
-                    TournamentRating.RAPID
-                ).type.to_papi_value,
-                'BlitzFide': player.get_rating(
-                    TournamentRating.BLITZ
-                ).type.to_papi_value,
-                'FideCode': player.fide_id if player.fide_id else None,
-                'FideTitre': player.title.to_papi_value,
-                'Pointe': player.check_in,
-                'InscriptionRegle': player.paid,
-                'InscriptionDu': player.owed,
-                'Tel': player.phone,
-                'EMail': player.mail,
-                'Fixe': player.fixed or 0,
-                'Flotteur': 'X' * 24,
-                'Pts': 0,
-                'PtA': 0,
-                'Commentaire': player.comment,
-            } | plugin_data
-            for round_ in range(1, 25):
-                data[f'Rd{round_:0>2}Adv'] = None
-                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                data[f'Rd{round_:0>2}Cl'] = (
-                    BYE_COLOR if round_ < self.current_round else UNPLAYED_COLOR
+    def add_player_to_tournament(
+        self,
+        stored_player: StoredPlayer,
+        event_database: EventDatabase | None = None,
+    ):
+        assert stored_player.id is not None
+        stored_tournament_player = StoredTournamentPlayer(
+            tournament_id=self.id,
+            player_id=stored_player.id,
+            pairing_number=None,
+            stored_pairings=[
+                StoredPairing(
+                    tournament_id=self.id,
+                    player_id=stored_player.id,
+                    round_=round_,
+                    result=Result.ZERO_POINT_BYE,
+                    board_id=None,
                 )
-            papi_database.write_player_dict(data)
-            papi_database.commit()
-        self.clear_cache(True)
-        return ref
+                for round_ in range(1, self.current_round)
+            ],
+        )
+        stored_player.stored_tournament_player = stored_tournament_player
+        if event_database:
+            event_database.add_stored_tournament_player(stored_tournament_player)
+        else:
+            with EventDatabase(self.event.uniq_id, True) as database:
+                database.add_stored_tournament_player(stored_tournament_player)
+                database.commit()
+        self.players_by_id[stored_player.id] = Player(self, stored_player)
+        self.clear_cache()
 
-    def delete_player(
-        self,
-        player: Player,
-    ):
-        """Removes a player from the tournament, returns the deleted data as a dict if needed
-        (used to move players from one tournament to another one)."""
-        with self.papi_write_database as papi_database:
-            papi_database.delete_player(player.ref_id)
-            papi_database.commit()
-        self.clear_cache(True)
-
-    def update_player(
-        self,
-        player: Player,
-    ):
-        """Updates a player."""
-        with self.papi_write_database as papi_database:
-            papi_database.update_player(player)
-            papi_database.commit()
-        self.clear_cache(True)
+    def delete_player_from_tournament(self, player_id: int):
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_tournament_player(self.id, player_id)
+            database.commit()
+        if player_id in self.players_by_id:
+            del self.players_by_id[player_id]
+        self.clear_cache()
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
@@ -1583,9 +1440,5 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
             database.commit()
-        for setting in self.pairing_variation.settings:
-            setting.save_to_papi_database(
-                self.papi_write_database, pairing_settings[setting.id]
-            )
         self.stored_tournament.pairing_settings = pairing_settings
         self.clear_cache(clear_papi_cache=True)

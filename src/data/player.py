@@ -9,7 +9,8 @@ from trf.Player import Game as TrfGame
 
 from common.i18n import _
 from data.pairing import Pairing
-from database.access.papi.papi_store import StoredPlayer, StoredPairing
+from database.sqlite.event.event_store import StoredPlayer, StoredPairing
+from plugins.manager import plugin_manager
 from utils import StaticUtils
 from utils.enum import (
     PlayerGender,
@@ -23,6 +24,7 @@ from utils.enum import (
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
+    from data.event import Event
     from data.tournament import Tournament
     from data.tie_breaks.tie_breaks import SupportsRichComparison
 
@@ -98,7 +100,7 @@ class PlayerRating:
 @total_ordering
 class Player:
     # TODO (Molrn - multi tournament) Split into 2 classes:
-    #  - Player(stored_player)
+    #  - Player(event, stored_player)
     #  - TournamentPlayer(tournament, player, stored_tournament_player)
     def __init__(
         self,
@@ -124,6 +126,11 @@ class Player:
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
+
+    @property
+    def event(self) -> 'Event':
+        # TODO (Molrn - multi tournament) replace by an event ref
+        return self.tournament.event
 
     @property
     def id(self) -> int:
@@ -208,15 +215,17 @@ class Player:
 
     def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
         return {
-            TournamentRating(tr_value): PlayerRating(
-                rating['value'], PlayerRatingType(rating['type'])
-            )
+            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
             for tr_value, rating in self.stored_player.ratings.items()
         }
 
     def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return self.ratings.get(
-            tournament_rating, PlayerRating(0, PlayerRatingType.ESTIMATED)
+        return (
+            self.ratings.get(tournament_rating, None)
+            or plugin_manager.hook.get_player_estimated_rating(
+                self.event.federation, tournament_rating, self
+            )
+            or PlayerRating(0, PlayerRatingType.ESTIMATED)
         )
 
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):

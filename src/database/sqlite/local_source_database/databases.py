@@ -14,7 +14,7 @@ from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,

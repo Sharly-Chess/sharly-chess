@@ -3,7 +3,7 @@ from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
 from common import format_timestamp
-from database.access.papi.papi_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard
 from utils.enum import Result, PlayerRatingType
 
 if TYPE_CHECKING:
@@ -52,9 +52,8 @@ class Board:
         return self.white_player.pairings_by_round[self.round]
 
     @property
-    def black_pairing(self) -> Optional['Pairing']:
-        if not self.black_player:
-            return None
+    def black_pairing(self) -> 'Pairing':
+        assert self.black_player is not None
         return self.black_player.pairings_by_round[self.round]
 
     @property

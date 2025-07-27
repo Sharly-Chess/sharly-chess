@@ -26,7 +26,7 @@ from data.prize.player_filter_options import (
 )
 from data.prize.player_filters import PlayerFilter
 from data.tournament import Tournament
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase

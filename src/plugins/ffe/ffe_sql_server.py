@@ -8,7 +8,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.player import PlayerRating
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR

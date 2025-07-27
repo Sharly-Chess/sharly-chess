@@ -22,7 +22,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -183,8 +183,8 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    def player_data_for_db_write(self, player: Player) -> dict[str, Any]:
-        pd = player.plugin_data
+    def player_data_for_db_write(self, stored_player: StoredPlayer) -> dict[str, Any]:
+        pd = stored_player.plugin_data
         return {
             'RefFFE': self.get_data(
                 pd,
@@ -421,45 +421,45 @@ class FfePlugin(Plugin):
             }
 
     @hookimpl
-    def set_player_default_ratings(self, federation: str, player: 'Player'):
+    def get_player_estimated_rating(
+        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
+    ) -> PlayerRating | None:
         if federation != 'FRA':
-            return
+            return None
 
-        def set_rating(tournament_rating: TournamentRating, rating_value: int):
-            player.ratings[tournament_rating] = PlayerRating(
-                rating_value, PlayerRatingType.ESTIMATED
-            )
-
-        if not player.get_rating(TournamentRating.RAPID).value:
-            match player.category:
-                case PlayerCategory.U8 | PlayerCategory.U10:
-                    set_rating(TournamentRating.RAPID, 799)
-                case PlayerCategory.U12 | PlayerCategory.U14:
-                    set_rating(TournamentRating.RAPID, 999)
-                case _:
-                    set_rating(TournamentRating.RAPID, 1199)
-        if not player.get_rating(TournamentRating.BLITZ).value:
-            match player.category:
-                case PlayerCategory.U8 | PlayerCategory.U10:
-                    set_rating(TournamentRating.BLITZ, 799)
-                case PlayerCategory.U12 | PlayerCategory.U14:
-                    set_rating(TournamentRating.BLITZ, 999)
-                case _:
-                    set_rating(TournamentRating.BLITZ, 1199)
-        if not player.get_rating(TournamentRating.STANDARD).value:
-            match player.category:
-                case (
-                    PlayerCategory.U8
-                    | PlayerCategory.U10
-                    | PlayerCategory.U12
-                    | PlayerCategory.U14
-                    | PlayerCategory.U16
-                    | PlayerCategory.U18
-                    | PlayerCategory.U20
-                ):
-                    set_rating(TournamentRating.STANDARD, 1299)
-                case _:
-                    set_rating(TournamentRating.STANDARD, 1399)
+        value = 0
+        match tournament_rating:
+            case TournamentRating.RAPID:
+                match player.category:
+                    case PlayerCategory.U8 | PlayerCategory.U10:
+                        value = 799
+                    case PlayerCategory.U12 | PlayerCategory.U14:
+                        value = 999
+                    case _:
+                        value = 1199
+            case TournamentRating.BLITZ:
+                match player.category:
+                    case PlayerCategory.U8 | PlayerCategory.U10:
+                        value = 799
+                    case PlayerCategory.U12 | PlayerCategory.U14:
+                        value = 999
+                    case _:
+                        value = 1199
+            case TournamentRating.STANDARD:
+                match player.category:
+                    case (
+                        PlayerCategory.U8
+                        | PlayerCategory.U10
+                        | PlayerCategory.U12
+                        | PlayerCategory.U14
+                        | PlayerCategory.U16
+                        | PlayerCategory.U18
+                        | PlayerCategory.U20
+                    ):
+                        value = 1299
+                    case _:
+                        value = 1399
+        return PlayerRating(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl
     def is_tournament_participation_possible(

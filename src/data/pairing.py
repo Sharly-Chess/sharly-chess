@@ -4,7 +4,8 @@ from typing import Callable, TYPE_CHECKING
 from trf.Player import Game as TrfGame
 
 from data.board import Board
-from database.access.papi.papi_store import StoredPairing
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredPairing
 from utils.enum import Result, BoardColor
 
 if TYPE_CHECKING:
@@ -38,6 +39,10 @@ class Pairing:
     @property
     def result(self) -> Result:
         return Result(self.stored_pairing.result)
+
+    def update_result(self, event_database: EventDatabase, result: Result):
+        self.stored_pairing.result = result.value
+        event_database.update_stored_pairing_result(self.stored_pairing)
 
     @property
     def zero_point_bye(self) -> bool:

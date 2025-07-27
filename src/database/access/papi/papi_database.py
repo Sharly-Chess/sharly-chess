@@ -13,7 +13,7 @@ from data.pairings import PairingVariation
 from data.pairings.variations import StandardSwissVariation
 from data.player import Player, PlayerRating
 from data.tie_breaks import TieBreak, PapiTieBreakManager
-from database.access.papi.papi_store import (
+from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTournamentPlayer,
     StoredPairing,
@@ -179,13 +179,6 @@ class PapiDatabase(AccessDatabase):
         for name, value in info.items():
             self.update_variable(name, value)
 
-    def read_player_dict(
-        self, player_papi_id: int
-    ) -> dict[str, str | int | float | None]:
-        """Reads the database and return the information of the player with the given Papi ID."""
-        self._execute('SELECT * FROM joueur WHERE Ref = ?', (player_papi_id,))
-        return self._fetchone()
-
     def delete_player(
         self,
         player_papi_id: int,
@@ -193,12 +186,6 @@ class PapiDatabase(AccessDatabase):
         """Reads the database and fetches the information of the player with the given Papi ID,
         returns Papi ID of the deleted player if needed."""
         self._execute('DELETE FROM joueur WHERE Ref = ?', (player_papi_id,))
-
-    @property
-    def next_player_papi_id(self) -> int:
-        """Returns the next Papi ID to use when adding a player to the database."""
-        self._execute('SELECT Max(Ref) AS max FROM joueur')
-        return self._fetchone()['max'] + 1
 
     def write_player_dict(
         self,

@@ -15,7 +15,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
-from database.access.papi.papi_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard
 from utils.enum import TrfType, Result
 
 if TYPE_CHECKING:
@@ -93,8 +93,8 @@ class PairingEngine(ABC):
             tournament.boards_by_id[id_] = board
             white_stored_pairing = board.white_pairing.stored_pairing
             white_stored_pairing.board_id = id_
-            if black_pairing := board.black_pairing:
-                black_pairing.stored_pairing.board_id = id_
+            if board.black_player:
+                board.black_pairing.stored_pairing.board_id = id_
             else:
                 white_stored_pairing.result = self.pab_result.value
         tournament.update_round_pairings(round_)

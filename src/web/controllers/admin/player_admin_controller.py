@@ -25,7 +25,7 @@ from data.input_output.managers import DataSourceManager
 from data.pairing import Pairing
 from data.player import Player, Federation, Club, PlayerRating
 from data.tournament import Tournament
-from database.access.papi.papi_store import StoredPlayer, StoredTournamentPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from utils.enum import (
     PlayerCategory,
     PlayerGender,
@@ -217,25 +217,14 @@ class PlayerAdminController(BaseEventAdminController):
         return errors
 
     @classmethod
-    def _stored_player_from_data(
-        cls,
-        data: dict[str, str],
-        existing_player: Player | None = None,
-    ) -> StoredPlayer:
-        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
-        if existing_player and existing_player.tournament.id == tournament_id:
-            stored_tournament_player = existing_player.stored_tournament_player
-        else:
-            stored_tournament_player = StoredTournamentPlayer(
-                tournament_id=tournament_id
-            )
+    def _stored_player_from_data(cls, data: dict[str, str]) -> StoredPlayer:
         plugin_data = {
             key: value
             for data in plugin_manager.hook.get_player_form_fields(data=data)
             for key, value in data.items()
         }
         return StoredPlayer(
-            id=existing_player.id if existing_player else 0,
+            id=None,
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
             last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
             date_of_birth=WebContext.form_data_to_date(data, 'date_of_birth'),
@@ -261,9 +250,8 @@ class PlayerAdminController(BaseEventAdminController):
             or SharlyChessConfig().default_federation,
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
-            check_in=existing_player.check_in if existing_player else False,
+            check_in=False,
             plugin_data=plugin_data,
-            stored_tournament_player=stored_tournament_player,
         )
 
     @staticmethod
@@ -1183,56 +1171,22 @@ class PlayerAdminController(BaseEventAdminController):
                 data=data,
                 errors=errors,
             )
-        stored_player = self._stored_player_from_data(
-            data, web_context.admin_player if action == 'update' else None
-        )
+        stored_player = self._stored_player_from_data(data)
         event = web_context.get_admin_event()
-        tournament_id = stored_player.stored_tournament_player.tournament_id
+        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
-        player = Player(tournament, stored_player)
         new_player_id: int | None = None
         match action:
             case 'update':
-                assert web_context.admin_player is not None
-                assert web_context.admin_player.tournament is not None
-
-                plugin_manager.hook.set_player_default_ratings(
-                    federation=event.federation, player=player
-                )
+                player = web_context.get_admin_player()
+                event.update_player(player, stored_player)
                 previous_tournament = web_context.admin_player.tournament
                 if tournament.id != previous_tournament.id:
-                    papi_ref_id = tournament.add_player(player)
-                    previous_tournament.delete_player(player)
-                    if not self.filtered_players(request, event_uniq_id, [player]):
-                        self.delete_from_search_results(request, player.id)
-                    new_player_id = Player.player_sharly_chess_id_from_papi_id(
-                        tournament.id, ref_id=papi_ref_id
-                    )
-                    results_session_id = (
-                        SessionHandler.get_session_admin_players_search_results_id(
-                            request
-                        )
-                    )
-                    if results_session_id is not None:
-                        search_results = type(self).search_results_by_session[
-                            results_session_id
-                        ]
-                        try:
-                            assert player.id is not None
-                            i = search_results.index(player.id)
-                            search_results[i] = new_player_id
-                        except ValueError:
-                            pass
-                else:
-                    tournament.update_player(player)
-                    if not self.filtered_players(request, event_uniq_id, [player]):
-                        self.delete_from_search_results(request, player.id)
+                    tournament.add_player_to_tournament(stored_player)
+                    previous_tournament.delete_player_from_tournament(player.id)
+                if not self.filtered_players(request, event_uniq_id, [player]):
+                    self.delete_from_search_results(request, player.id)
             case 'create':
-                assert player.tournament is not None
-                plugin_manager.hook.set_player_default_ratings(
-                    federation=web_context.admin_event.federation, player=player
-                )
-                tournament = player.tournament
                 if tournament.finished:
                     Message.error(
                         request,
@@ -1260,10 +1214,7 @@ class PlayerAdminController(BaseEventAdminController):
                         action=action,
                         data=data,
                     )
-                player_papi_id = tournament.add_player(player)
-                player_id = Player.player_sharly_chess_id_from_papi_id(
-                    tournament.id, player_papi_id
-                )
+                player_id = event.add_player(stored_player, [tournament])
                 self.set_players_search_results(request, event_uniq_id)
                 if add_other:
                     return self._admin_event_players_render(
@@ -1310,36 +1261,15 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        admin_player = web_context.admin_player
-        dst_tournament = web_context.admin_tournament
-        if admin_player is None:
-            raise RuntimeError('admin_player not defined')
-        if dst_tournament is None:
-            raise RuntimeError('admin_tournament not defined')
+        admin_player = web_context.get_admin_player()
+        dst_tournament = web_context.get_admin_tournament()
         src_tournament = admin_player.tournament
-        assert src_tournament is not None
-        new_player_id: int | None = None
         try:
             self._validate_player_tournament_move(admin_player, dst_tournament)
-            papi_ref_id = dst_tournament.add_player(admin_player)
-            src_tournament.delete_player(admin_player)
+            src_tournament.delete_player_from_tournament(admin_player.id)
+            dst_tournament.add_player_to_tournament(admin_player.stored_player)
             if not self.filtered_players(request, event_uniq_id, [admin_player]):
                 self.delete_from_search_results(request, admin_player.id)
-            new_player_id = Player.player_sharly_chess_id_from_papi_id(
-                dst_tournament.id, ref_id=papi_ref_id
-            )
-            results_session_id = (
-                SessionHandler.get_session_admin_players_search_results_id(request)
-            )
-            if results_session_id is not None:
-                search_results = type(self).search_results_by_session[
-                    results_session_id
-                ]
-                try:
-                    i = search_results.index(player_id)
-                    search_results[i] = new_player_id
-                except ValueError:
-                    pass
             Message.success(
                 request,
                 _(
@@ -1358,7 +1288,7 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             old_player_id=player_id,
-            player_id=new_player_id,
+            player_id=admin_player.id,
         )
 
     @staticmethod
@@ -1572,6 +1502,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         player = web_context.get_admin_player()
         tournament = player.tournament
+        event = web_context.get_admin_event()
         deleted_player_id: int | None = None
         if player.has_real_pairings:
             Message.error(
@@ -1584,7 +1515,7 @@ class PlayerAdminController(BaseEventAdminController):
                 ),
             )
         else:
-            tournament.delete_player(player)
+            event.delete_player(player.id)
             self.delete_from_search_results(request, player.id)
             deleted_player_id = player.id
         return self._admin_event_players_render(
