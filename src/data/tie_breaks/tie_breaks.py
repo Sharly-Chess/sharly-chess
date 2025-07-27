@@ -740,15 +740,15 @@ class SonnebornBergerTieBreak(TieBreak):
 
     @staticmethod
     def static_name() -> str:
-        return _('Sonnenborn-Berger')
+        return _('Sonneborn-Berger')
 
     @staticmethod
     def static_id() -> str:
-        return 'SONNENBORN_BERGER'
+        return 'SONNEBORN_BERGER'
 
     @staticmethod
     def static_papi_id() -> str:
-        return 'Sonnenborn-Berger'
+        return 'Sonneborn-Berger'
 
     @property
     def acronym(self) -> str:
@@ -756,7 +756,7 @@ class SonnebornBergerTieBreak(TieBreak):
 
     @property
     def short_name(self) -> str:
-        return _('S-Berger *** SHORT NAME FOR SONNENBORN-BERGER')
+        return _('S-Berger *** SHORT NAME FOR SONNEBORN-BERGER')
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
