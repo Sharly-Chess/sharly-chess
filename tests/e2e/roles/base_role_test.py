@@ -52,6 +52,8 @@ class BaseRoleTest:
             storage_state=storage,
         )
         auth_page = auth_context.new_page()
+        auth_page.set_default_timeout(15000)
+        auth_page.set_default_navigation_timeout(10000)
 
         cls.auth_context = auth_context
         cls.auth_page = auth_page
@@ -286,3 +288,21 @@ class BaseRoleTest:
         else:
             hx_get = row.get_attribute('hx-get')
             assert hx_get is None
+
+    def assert_can_access_players_tab(
+        self,
+        can_access: bool,
+        event_id: str,
+        page: Page,
+    ):
+        page.goto(f'/admin/event/{event_id}')
+        players_button = page.get_by_test_id('nav-admin-event-players-tab-tab')
+
+        if can_access:
+            expect(players_button).to_be_visible()
+            players_button.click()
+            page.wait_for_url(f'/admin/event/{event_id}/players')
+        else:
+            expect(players_button).not_to_be_visible()
+            page.goto(f'/admin/event/{event_id}/players')
+            page.wait_for_url('/error/403')

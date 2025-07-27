@@ -20,6 +20,12 @@ class TestDeputyChiefArbitrationRole(BaseRoleTest):
         role_test_unpaired_tournament: StoredTournament,
         api_request_context: APIRequestContext,
     ):
+        # Admin
+
+        super().assert_can_access_players_tab(True, PUBLIC_EVENT_ID, auth_page)
+
+        # Screens
+
         super().assert_access_to_visible_events(PUBLIC_EVENT_ID, auth_page)
         super().assert_access_to_input_screen(
             True,

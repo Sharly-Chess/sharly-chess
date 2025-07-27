@@ -16,6 +16,12 @@ class TestAnonymousRole(BaseRoleTest):
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
     ):
+        # Admin
+
+        super().assert_can_access_players_tab(False, PUBLIC_EVENT_ID, lan_page)
+
+        # Screens
+
         super().assert_access_to_visible_events(PUBLIC_EVENT_ID, lan_page)
         super().assert_access_to_input_screen(
             False,

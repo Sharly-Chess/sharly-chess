@@ -17,6 +17,12 @@ class TestSectorArbitrationRole(BaseRoleTest):
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
     ):
+        # Admin
+
+        super().assert_can_access_players_tab(True, PUBLIC_EVENT_ID, auth_page)
+
+        # Screens
+
         super().assert_access_to_visible_events(PUBLIC_EVENT_ID, auth_page)
         super().assert_access_to_input_screen(
             True,
