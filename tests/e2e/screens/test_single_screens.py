@@ -1,3 +1,4 @@
+import re
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
@@ -86,8 +87,7 @@ class TestSingleScreensFunctionality:
         expect(row.locator('i.bi-square')).to_be_visible()
 
         # Clicking the row should not trigger a check-in
-        hx_get = row.get_attribute('hx-get')
-        assert hx_get is None
+        expect(row).not_to_have_attribute('hx-get', re.compile(r'.*checkin-modal.*'))
 
         # Open check-in
         api_request_context.patch(
@@ -101,6 +101,9 @@ class TestSingleScreensFunctionality:
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(16)
         row = rows.filter(has_text='AMOS')
+        expect(row.locator('td:nth-child(1)')).to_have_attribute(
+            'hx-get', re.compile(r'.*checkin-modal.*')
+        )
         row.click()
         modal = lan_page.locator('.modal-dialog')
 

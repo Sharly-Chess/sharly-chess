@@ -1,6 +1,5 @@
 from enum import IntEnum
 import re
-import time
 from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Browser, Page, expect, APIRequestContext
@@ -277,6 +276,9 @@ class BaseRoleTest:
 
         if can_access:
             # Try to open the modal
+            expect(row.locator('td:nth-child(1)')).to_have_attribute(
+                'hx-get', re.compile(r'.*checkin-modal.*')
+            )
             row.click()
             modal = page.locator('.modal-dialog')
 
@@ -288,8 +290,9 @@ class BaseRoleTest:
             # Test that the page is updated
             expect(row.locator('i.bi-check-square-fill')).to_be_visible()
         else:
-            hx_get = row.get_attribute('hx-get')
-            assert hx_get is None
+            expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
+                'hx-get', re.compile(r'.*checkin-modal.*')
+            )
 
     def assert_can_access_players_tab(
         self,
@@ -345,21 +348,16 @@ class BaseRoleTest:
         check_in_button = row.get_by_test_id('check-in-cell')
 
         if can_access:
-            max_retries = 5
-            # Wait for the check-in button become available
-            for _ in range(max_retries):
-                page.reload()
-                try:
-                    expect(check_in_button).to_have_class(
-                        re.compile(r'\bbi-circle-fill\b')
-                    )
-                    break
-                except AssertionError:
-                    time.sleep(0.2)
+            TestUtils.poll_expect_with_reload(
+                page,
+                lambda: expect(check_in_button).to_have_class(
+                    re.compile(r'\bbi-circle-fill\b'), timeout=1
+                ),
+            )
 
-            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
-            hx_patch = check_in_button.get_attribute('hx-patch')
-            assert hx_patch is not None
+            expect(check_in_button).to_have_attribute(
+                'hx-patch', re.compile(r'.*player-check-in.*')
+            )
             check_in_button.click()
             expect(check_in_button).to_have_class(
                 re.compile(r'\bbi-check-circle-fill\b')
@@ -367,8 +365,9 @@ class BaseRoleTest:
             check_in_button.click()
             expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
         else:
-            hx_patch = check_in_button.get_attribute('hx-patch')
-            assert hx_patch is None
+            expect(check_in_button).not_to_have_attribute(
+                'hx-patch', re.compile(r'.*player-check-in.*')
+            )
 
     def assert_can_checkin_via_pairings_tab(
         self,
@@ -389,21 +388,16 @@ class BaseRoleTest:
         check_in_button = row.get_by_test_id('check-in-cell')
 
         if can_access:
-            max_retries = 5
-            # Wait for the check-in button become available
-            for _ in range(max_retries):
-                page.reload()
-                try:
-                    expect(check_in_button).to_have_class(
-                        re.compile(r'\bbi-circle-fill\b')
-                    )
-                    break
-                except AssertionError:
-                    time.sleep(0.2)
+            TestUtils.poll_expect_with_reload(
+                page,
+                lambda: expect(check_in_button).to_have_class(
+                    re.compile(r'\bbi-circle-fill\b'), timeout=1
+                ),
+            )
 
-            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
-            hx_post = check_in_button.get_attribute('hx-post')
-            assert hx_post is not None
+            expect(check_in_button).to_have_attribute(
+                'hx-post', re.compile(r'.*pairings-check-in-out.*')
+            )
             check_in_button.click()
             expect(check_in_button).to_have_class(
                 re.compile(r'\bbi-check-circle-fill\b')
@@ -411,5 +405,6 @@ class BaseRoleTest:
             check_in_button.click()
             expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
         else:
-            hx_post = check_in_button.get_attribute('hx-post')
-            assert hx_post is None
+            expect(check_in_button).not_to_have_attribute(
+                'hx-post', re.compile(r'.*pairings-check-in-out.*')
+            )
