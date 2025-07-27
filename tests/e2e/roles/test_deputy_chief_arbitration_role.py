@@ -34,6 +34,13 @@ class TestDeputyChiefArbitrationRole(BaseRoleTest):
         # Pairings tab
 
         super().assert_can_access_pairings_tab(True, PUBLIC_EVENT_ID, auth_page)
+        super().assert_can_checkin_via_pairings_tab(
+            True,
+            PUBLIC_EVENT_ID,
+            role_test_unpaired_tournament.id,
+            auth_page,
+            api_request_context,
+        )
 
         # Screens
 

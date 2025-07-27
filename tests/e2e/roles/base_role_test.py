@@ -369,3 +369,47 @@ class BaseRoleTest:
         else:
             hx_patch = check_in_button.get_attribute('hx-patch')
             assert hx_patch is None
+
+    def assert_can_checkin_via_pairings_tab(
+        self,
+        can_access: bool,
+        event_id: str,
+        tournament_id: int,
+        page: Page,
+        api_request_context: APIRequestContext,
+    ):
+        # Open check-in
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{event_id}/{tournament_id}'
+        )
+
+        page.goto(f'/admin/event/{event_id}/pairings?tournament_id={tournament_id}')
+        rows = page.locator('table#unpaired-players-table tbody tr')
+        row = rows.filter(has_text='AMOS')
+        check_in_button = row.get_by_test_id('check-in-cell')
+
+        if can_access:
+            max_retries = 5
+            # Wait for the check-in button become available
+            for _ in range(max_retries):
+                page.reload()
+                try:
+                    expect(check_in_button).to_have_class(
+                        re.compile(r'\bbi-circle-fill\b')
+                    )
+                    break
+                except AssertionError:
+                    time.sleep(0.2)
+
+            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
+            hx_post = check_in_button.get_attribute('hx-post')
+            assert hx_post is not None
+            check_in_button.click()
+            expect(check_in_button).to_have_class(
+                re.compile(r'\bbi-check-circle-fill\b')
+            )
+            check_in_button.click()
+            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
+        else:
+            hx_post = check_in_button.get_attribute('hx-post')
+            assert hx_post is None
