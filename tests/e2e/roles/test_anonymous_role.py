@@ -16,7 +16,7 @@ class TestAnonymousRole(BaseRoleTest):
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
     ):
-        # Admin
+        # Admin tabs
 
         super().assert_can_access_players_tab(False, PUBLIC_EVENT_ID, lan_page)
         super().assert_can_access_pairings_tab(False, PUBLIC_EVENT_ID, lan_page)

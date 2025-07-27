@@ -1,6 +1,6 @@
-from database.sqlite.event.event_store import StoredScreen
+from database.sqlite.event.event_store import StoredScreen, StoredTournament
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Page, APIRequestContext
 from data.auth.roles import SectorArbitrationRole
 from tests.e2e.roles.base_role_test import BaseRoleTest, DisplayMode
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
@@ -16,10 +16,22 @@ class TestSectorArbitrationRole(BaseRoleTest):
         auth_page: Page,
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
+        role_test_unpaired_tournament: StoredTournament,
+        api_request_context: APIRequestContext,
     ):
-        # Admin
+        # Players tab
 
         super().assert_can_access_players_tab(True, PUBLIC_EVENT_ID, auth_page)
+        super().assert_can_checkin_via_players_tab(
+            True,
+            PUBLIC_EVENT_ID,
+            role_test_unpaired_tournament.id,
+            auth_page,
+            api_request_context,
+        )
+
+        # Pairings tab
+
         super().assert_can_access_pairings_tab(True, PUBLIC_EVENT_ID, auth_page)
 
         # Screens
