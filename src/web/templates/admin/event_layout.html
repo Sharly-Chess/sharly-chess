@@ -84,6 +84,8 @@
             {% with active=(admin_event_tab == nav_id) %}
                 <button
                     class="expanded-only btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
+                    id="nav-{{ nav_id }}-tab"
+                    data-testid="nav-{{ nav_id }}-tab"
                     data-bs-toggle="collapse"
                     data-bs-target="#{{ nav_id }}-collapse"
                 >
@@ -100,6 +102,8 @@
                         {% endif %}
                         <button
                             class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                            id="nav-{{ sub_nav_id }}-tab"
+                            data-testid="nav-{{ sub_nav_id }}-tab"
                             hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
                             preload
                             hx-target="body"
@@ -124,6 +128,7 @@
                     <button
                         class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                         id="nav-{{ nav_id }}-tab"
+                        data-testid="nav-{{ nav_id }}-tab"
                         hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"
                         preload
                         hx-target="body"

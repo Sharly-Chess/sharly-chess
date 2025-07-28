@@ -1,11 +1,24 @@
+from enum import IntEnum
+import re
+from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
 from data.auth.roles import Role
 from common.sharly_chess_config import SharlyChessConfig
-from tests.e2e.roles.conftest import PUBLIC_EVENT_ID, TOURNAMENT_ID
+from tests.e2e.roles.conftest import (
+    PUBLIC_EVENT_ID,
+    TOURNAMENT_ID,
+    TOURNAMENT_UNPAIRED_ID,
+)
 from tests.test_config import TestUtils
 from utils.enum import ScreenType
+
+
+class DisplayMode(IntEnum):
+    SCREENS_IN_MENU = 0
+    SCREENS_IN_SUBMENU = 1
+    SCREENS_NOT_IN_MENU = 2
 
 
 class BaseRoleTest:
@@ -17,6 +30,7 @@ class BaseRoleTest:
         login_page: Page,
         browser: Browser,
     ):
+        """A fixture that logs in the user and returns the authenticated page"""
         cls = request.cls  # the actual test class instance
 
         if not cls.get_roles(cls) and not cls.get_tournament_ids(cls):
@@ -40,6 +54,8 @@ class BaseRoleTest:
             storage_state=storage,
         )
         auth_page = auth_context.new_page()
+        auth_page.set_default_timeout(15000)
+        auth_page.set_default_navigation_timeout(10000)
 
         cls.auth_context = auth_context
         cls.auth_page = auth_page
@@ -56,6 +72,7 @@ class BaseRoleTest:
         role_types: list[type[Role]],
         tournament_ids: list[int] | None = None,
     ):
+        """Creates a user with the specified roles and tournaments"""
         username = 'test-account'
         data = {
             'username': username,
@@ -106,33 +123,81 @@ class BaseRoleTest:
     def role_test_tournament(
         self, api_request_context: APIRequestContext, role_test_events
     ):
+        """A fixture to create a paired tournament"""
         tournament = TestUtils.create_tournament(
             api_request_context,
             PUBLIC_EVENT_ID,
             TOURNAMENT_ID,
             papi_file='test-screens',
         )
+        self.paired_tournament = tournament
         yield tournament
+        self.paired_tournament = None
         TestUtils.delete_tournament(api_request_context, PUBLIC_EVENT_ID, tournament)
 
-    @pytest.fixture()
+    @pytest.fixture(autouse=True)
+    def role_test_unpaired_tournament(
+        self, api_request_context: APIRequestContext, role_test_events
+    ):
+        """A fixture to create an unpaired tournament"""
+        tournament = TestUtils.create_tournament(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            TOURNAMENT_UNPAIRED_ID,
+            papi_file='test-screens-unpaired',
+        )
+        self.unpaired_tournament = tournament
+        yield tournament
+        self.unpaired_tournament = None
+        TestUtils.delete_tournament(api_request_context, PUBLIC_EVENT_ID, tournament)
+
+    @pytest.fixture(autouse=True)
     def public_input_screen(
         self, api_request_context: APIRequestContext, role_test_tournament
     ):
+        """A fixture to create a public input screen for the paired tournament"""
         stored_screen = TestUtils.create_screen(
             api_request_context,
             PUBLIC_EVENT_ID,
             'public-input',
             ScreenType.INPUT,
-            {'init_set_tournament_id': role_test_tournament.id, 'public': True},
+            {
+                'init_set_tournament_id': role_test_tournament.id,
+                'public': True,
+                'name': 'PairedInput Screen',
+            },
         )
+        self.paired_screen = stored_screen
         yield stored_screen
+        self.paired_screen = None
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
 
-    @pytest.fixture()
+    @pytest.fixture(autouse=True)
+    def public_input_unpaired_screen(
+        self, api_request_context: APIRequestContext, role_test_unpaired_tournament
+    ):
+        """A fixture to create a public input screen for the unpaired tournament"""
+        stored_screen = TestUtils.create_screen(
+            api_request_context,
+            PUBLIC_EVENT_ID,
+            'public-input-unpaired',
+            ScreenType.INPUT,
+            {
+                'init_set_tournament_id': role_test_unpaired_tournament.id,
+                'public': True,
+                'name': 'Unpaired Input Screen',
+            },
+        )
+        self.unpaired_screen = stored_screen
+        yield stored_screen
+        self.unpaired_screen = None
+        TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
+
+    @pytest.fixture(autouse=True)
     def private_input_screen(
         self, api_request_context: APIRequestContext, role_test_tournament
     ):
+        """A fixture to create a private input screen for the paired tournament"""
         stored_screen = TestUtils.create_screen(
             api_request_context,
             PUBLIC_EVENT_ID,
@@ -140,5 +205,289 @@ class BaseRoleTest:
             ScreenType.INPUT,
             {'init_set_tournament_id': role_test_tournament.id, 'public': False},
         )
+        self.private_input_screen = stored_screen
         yield stored_screen
+        self.private_input_screen = None
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
+
+    def assert_access_to_visible_events(self, event_id: str, auth_page: Page):
+        """Asserts that the user can access the public event only"""
+        auth_page.goto('/admin/current_events')
+        expect(auth_page.locator('.card')).to_have_count(1)
+        expect(auth_page.locator(f"div.card:has-text('{event_id}')")).to_be_visible()
+
+    # --------------------------------------------------------------------------
+    # Input Screens
+    # --------------------------------------------------------------------------
+
+    def assert_access_to_input_screen(
+        self,
+        can_access: bool,
+        mode: DisplayMode,
+        page: Page,
+        screen: StoredScreen,
+    ):
+        match mode:
+            case DisplayMode.SCREENS_NOT_IN_MENU:
+                # There's no button in the menu, but we test direct access
+                page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/input-screens')
+
+            case DisplayMode.SCREENS_IN_SUBMENU:
+                page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+                screens_button = page.get_by_test_id('nav-admin-event-views-tab')
+                expect(screens_button).to_be_visible()
+                screens_button.click()
+
+                single_screens_button = page.get_by_test_id(
+                    'nav-admin-event-screens-tab-tab'
+                )
+                expect(single_screens_button).to_be_visible()
+                single_screens_button.click()
+
+                accordion_button = page.get_by_test_id('accordion-screen-type-input')
+                expect(accordion_button).to_be_visible()
+                accordion_button.click()
+
+            case DisplayMode.SCREENS_IN_MENU:
+                page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+                screens_button = page.get_by_test_id('nav-admin-event-views-tab')
+                expect(screens_button).not_to_be_visible()
+                input_screens_button = page.get_by_test_id(
+                    'nav-admin-event-input-screens-tab-tab'
+                )
+                expect(input_screens_button).to_be_visible()
+                input_screens_button.click()
+
+        card = page.locator(f"div.card:has-text('{screen.name}')")
+
+        if can_access:
+            expect(card).to_be_visible()
+        else:
+            expect(card).not_to_be_visible()
+
+        if can_access:
+            # Test access to the input screen
+            page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
+            rows = page.locator('table tbody tr')
+            expect(rows).to_have_count(8)
+        else:
+            # Test no access to the input screen, should redirect to the 403 page
+            page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
+            page.wait_for_url('/error/403')
+
+    def assert_can_checkin_via_screen(
+        self,
+        can_access: bool,
+        api_request_context: APIRequestContext,
+    ):
+        # Open check-in
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
+        )
+
+        self.auth_page.goto(
+            f'/user/screen/{PUBLIC_EVENT_ID}/{self.unpaired_screen.uniq_id}'
+        )
+        rows = self.auth_page.locator('table tbody tr')
+
+        expect(rows).to_have_count(16)
+        row = rows.filter(has_text='AMOS')
+
+        if can_access:
+            # Try to open the modal
+            expect(row.locator('td:nth-child(1)')).to_have_attribute(
+                'hx-get', re.compile(r'.*checkin-modal.*')
+            )
+            row.click()
+            modal = self.auth_page.locator('.modal-dialog')
+
+            expect(modal).to_be_visible()
+            button = TestUtils.button_by_text(modal, 'CHECK-IN')
+            expect(button).to_contain_text('AMOS')
+            button.click()
+
+            # Test that the page is updated
+            expect(row.locator('i.bi-check-square-fill')).to_be_visible()
+        else:
+            expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
+                'hx-get', re.compile(r'.*checkin-modal.*')
+            )
+
+    def assert_can_enter_results_via_screen(
+        self,
+        can_enter: bool,
+        can_update: bool,
+        can_set_special_results: bool,
+    ):
+        self.auth_page.goto(
+            f'/user/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
+        )
+        rows = self.auth_page.locator('table tbody tr')
+
+        expect(rows).to_have_count(8)
+        row = rows.filter(has_text='ALYX')
+        result_cell = row.get_by_test_id('board-score')
+        if not can_enter:
+            expect(result_cell).not_to_have_attribute(
+                'hx-get', re.compile(r'.*result-modal.*')
+            )
+            return
+
+        # Try to open the modal
+        expect(result_cell).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
+        row.click()
+        modal = self.auth_page.locator('.modal-dialog')
+
+        expect(modal).to_be_visible()
+        button = TestUtils.button_by_text(modal, 'ALYX')
+        button.click()
+
+        if not can_set_special_results:
+            expect(
+                modal.get_by_test_id('white-wins-by-forfeit-button')
+            ).not_to_be_visible()
+            expect(modal.get_by_test_id('double-forfeit-button')).not_to_be_visible()
+            expect(
+                modal.get_by_test_id('black-wins-by-forfeit-button')
+            ).not_to_be_visible()
+
+        if not can_update:
+            expect(modal.get_by_test_id('clear-result-button')).not_to_be_visible()
+
+        # Test that the page is updated
+        expect(result_cell).to_have_text('1-0')
+
+        if can_update:
+            result_cell.click()
+            expect(modal).to_be_visible()
+            clear_button = modal.get_by_test_id('clear-result-button')
+            clear_button.click()
+            expect(result_cell).to_have_text('#1')
+        else:
+            expect(result_cell).not_to_have_attribute(
+                'hx-get', re.compile(r'.*result-modal.*')
+            )
+
+        if can_set_special_results:
+            result_cell.click()
+            expect(modal).to_be_visible()
+            clear_button = modal.get_by_test_id('white-wins-by-forfeit-button')
+            clear_button.click()
+            expect(result_cell).to_have_text('1-F')
+
+    # --------------------------------------------------------------------------
+    # Players tab
+    # --------------------------------------------------------------------------
+
+    def assert_can_access_players_tab(
+        self,
+        can_access: bool,
+        page: Page,
+    ):
+        page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        players_button = page.get_by_test_id('nav-admin-event-players-tab-tab')
+        if can_access:
+            expect(players_button).to_be_visible()
+            players_button.click()
+            page.wait_for_url(f'/admin/event/{PUBLIC_EVENT_ID}/players')
+        else:
+            expect(players_button).not_to_be_visible()
+            page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/players')
+            page.wait_for_url('/error/403')
+
+    def assert_can_checkin_via_players_tab(
+        self,
+        can_access: bool,
+        api_request_context: APIRequestContext,
+    ):
+        # Open check-in
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
+        )
+
+        self.auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/players')
+        rows = self.auth_page.locator('table#players-table tbody tr')
+        row = rows.filter(has_text='AMOS')
+        check_in_button = row.get_by_test_id('check-in-cell')
+
+        if can_access:
+            TestUtils.poll_expect_with_reload(
+                self.auth_page,
+                lambda: expect(check_in_button).to_have_class(
+                    re.compile(r'\bbi-circle-fill\b'), timeout=1
+                ),
+            )
+
+            expect(check_in_button).to_have_attribute(
+                'hx-patch', re.compile(r'.*player-check-in.*')
+            )
+            check_in_button.click()
+            expect(check_in_button).to_have_class(
+                re.compile(r'\bbi-check-circle-fill\b')
+            )
+            check_in_button.click()
+            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
+        else:
+            expect(check_in_button).not_to_have_attribute(
+                'hx-patch', re.compile(r'.*player-check-in.*')
+            )
+
+    # --------------------------------------------------------------------------
+    # Pairings tab
+    # --------------------------------------------------------------------------
+
+    def assert_can_access_pairings_tab(
+        self,
+        can_access: bool,
+        page: Page,
+    ):
+        page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        pairings_button = page.get_by_test_id('nav-admin-event-pairings-tab-tab')
+
+        if can_access:
+            expect(pairings_button).to_be_visible()
+            pairings_button.click()
+            page.wait_for_url(f'/admin/event/{PUBLIC_EVENT_ID}/pairings')
+        else:
+            expect(pairings_button).not_to_be_visible()
+            page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/pairings')
+            page.wait_for_url('/error/403')
+
+    def assert_can_checkin_via_pairings_tab(
+        self,
+        can_access: bool,
+        api_request_context: APIRequestContext,
+    ):
+        # Open check-in
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
+        )
+
+        self.auth_page.goto(
+            f'/admin/event/{PUBLIC_EVENT_ID}/pairings?tournament_id={self.unpaired_tournament.id}'
+        )
+        rows = self.auth_page.locator('table#unpaired-players-table tbody tr')
+        row = rows.filter(has_text='AMOS')
+        check_in_button = row.get_by_test_id('check-in-cell')
+
+        if can_access:
+            TestUtils.poll_expect_with_reload(
+                self.auth_page,
+                lambda: expect(check_in_button).to_have_class(
+                    re.compile(r'\bbi-circle-fill\b'), timeout=1
+                ),
+            )
+
+            expect(check_in_button).to_have_attribute(
+                'hx-post', re.compile(r'.*pairings-check-in-out.*')
+            )
+            check_in_button.click()
+            expect(check_in_button).to_have_class(
+                re.compile(r'\bbi-check-circle-fill\b')
+            )
+            check_in_button.click()
+            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
+        else:
+            expect(check_in_button).not_to_have_attribute(
+                'hx-post', re.compile(r'.*pairings-check-in-out.*')
+            )

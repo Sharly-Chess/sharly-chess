@@ -1,111 +1,109 @@
-{% if client.can_view_players_tab %}
-    {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
-        {{ macros.refresh_listener(
-            hx_get=url,
-        ) }}
+{% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
+    {{ macros.refresh_listener(
+        hx_get=url,
+    ) }}
 
-        <div
-            hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
-            hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
-            hx-target="#refresh-message"
-            hx-swap="innerHTML"
-        >
-        </div>
-        <div
-            hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
-            hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
-            hx-target="#refresh-message"
-            hx-swap="innerHTML"
-        >
-        </div>
+    <div
+        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
+        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
+    <div
+        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
+        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
+        hx-target="#refresh-message"
+        hx-swap="innerHTML"
+    >
+    </div>
 
-        <div id="top-nav-wrapper">
-            <div id="top-nav-content">
-                {{ admin_macros.admin_title(_('Players'), 'players') }}
-                <div class="flex-grow-1"></div>
-                <div class="d-flex gap-2 ms-auto flex-wrap justify-content-end">
-                    <div class="dropdown d-inline">
-                        <span
-                            {% if client.can_update_players %}
-                                {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
-                            {% else %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to update the players\' information from an external data source.'), 'top') }}
-                            {% endif %}
-                        >
-                            <button
-                                class="btn btn-outline-primary dropdown-toggle mx-auto"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                {% if not client.can_update_players %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi-arrow-repeat pe-1"></i>
-                                {{ _('Update') }}
-                            </button>
-                            <ul class="dropdown-menu">
-                                {% include 'players_diff.html' %}
-                            </ul>
-                        </span>
-                    </div>
-                    {% if admin_event.players_sorted_by_name %}
-                        {% include 'download_players.html' %}
-                    {% endif %}
-                    {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
-                        {% include 'check_in_tournaments.html' %}
-                    {% endif %}
-                    {% include 'filter_columns.html' %}
+    <div id="top-nav-wrapper">
+        <div id="top-nav-content">
+            {{ admin_macros.admin_title(_('Players'), 'players') }}
+            <div class="flex-grow-1"></div>
+            <div class="d-flex gap-2 ms-auto flex-wrap justify-content-end">
+                <div class="dropdown d-inline">
                     <span
-                        {% if not client.can_add_player %}
-                            {{ macros.tooltip_attributes('warning', _('You are not allowed to add players to the event.'), 'top') }}
-                        {% elif admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
-                            {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
-                        {% elif admin_event.tournaments_with_file_sorted_by_uniq_id %}
-                            {{ macros.tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
-                        {% elif admin_event.tournaments_by_id %}
-                            {{ macros.tooltip_attributes('warning', _('No Papi file for the tournaments of the event, players can not be added.'), 'top') }}
+                        {% if client.can_update_players %}
+                            {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
                         {% else %}
-                            {{ macros.tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the players\' information from an external data source.'), 'top') }}
                         {% endif %}
                     >
                         <button
-                            data-testid="add-player-button"class="btn btn-primary text-nowrap"
-                            hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            preload
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                            {% if not client.can_add_player or not admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                            class="btn btn-outline-primary dropdown-toggle mx-auto"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            {% if not client.can_update_players %}
                                 disabled
                             {% endif %}
                         >
-                            <i class="bi-plus-square pe-1"></i>
-                            {{ _('Add player') }}
+                            <i class="bi-arrow-repeat pe-1"></i>
+                            {{ _('Update') }}
                         </button>
+                        <ul class="dropdown-menu">
+                            {% include 'players_diff.html' %}
+                        </ul>
                     </span>
                 </div>
+                {% if admin_event.players_sorted_by_name %}
+                    {% include 'download_players.html' %}
+                {% endif %}
+                {% if admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                    {% include 'check_in_tournaments.html' %}
+                {% endif %}
+                {% include 'filter_columns.html' %}
+                <span
+                    {% if not client.can_add_player %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to add players to the event.'), 'top') }}
+                    {% elif admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                        {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
+                    {% elif admin_event.tournaments_with_file_sorted_by_uniq_id %}
+                        {{ macros.tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
+                    {% elif admin_event.tournaments_by_id %}
+                        {{ macros.tooltip_attributes('warning', _('No Papi file for the tournaments of the event, players can not be added.'), 'top') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
+                    {% endif %}
+                >
+                    <button
+                        data-testid="add-player-button"class="btn btn-primary text-nowrap"
+                        hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        preload
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        {% if not client.can_add_player or not admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-plus-square pe-1"></i>
+                        {{ _('Add player') }}
+                    </button>
+                </span>
             </div>
         </div>
+    </div>
 
-        <section class="pb-1">
-            <table
-                id="players-table"
-                class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
-            >
-                {% include '/admin/players/table_head.html' %}
-                {% include '/admin/players/table_players_page.html' %}
-                <tbody>
-                    <tr id="players-table-empty-row">
-                        {% if not admin_players %}
-                            <td colspan="100%" class="px-3 text-center">
-                                {{ _('No players.') }}
-                            </td>
-                        {% endif %}
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    {% endwith %}
-{% endif %}
+    <section class="pb-1">
+        <table
+            id="players-table"
+            class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+        >
+            {% include '/admin/players/table_head.html' %}
+            {% include '/admin/players/table_players_page.html' %}
+            <tbody>
+                <tr id="players-table-empty-row">
+                    {% if not admin_players %}
+                        <td colspan="100%" class="px-3 text-center">
+                            {{ _('No players.') }}
+                        </td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+    </section>
+{% endwith %}

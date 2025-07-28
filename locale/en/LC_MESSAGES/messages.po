@@ -5121,12 +5121,6 @@ msgstr ""
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] is not started yet."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}] is started."
-msgstr ""
-
 msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
