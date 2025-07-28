@@ -18,8 +18,8 @@ class TestAnonymousRole(BaseRoleTest):
     ):
         # Admin tabs
 
-        super().assert_can_access_players_tab(False, PUBLIC_EVENT_ID, lan_page)
-        super().assert_can_access_pairings_tab(False, PUBLIC_EVENT_ID, lan_page)
+        super().assert_can_access_players_tab(False, lan_page)
+        super().assert_can_access_pairings_tab(False, lan_page)
 
         # Screens
 
@@ -27,14 +27,12 @@ class TestAnonymousRole(BaseRoleTest):
         super().assert_access_to_input_screen(
             False,
             DisplayMode.SCREENS_NOT_IN_MENU,
-            PUBLIC_EVENT_ID,
             lan_page,
             public_input_screen,
         )
         super().assert_access_to_input_screen(
             False,
             DisplayMode.SCREENS_NOT_IN_MENU,
-            PUBLIC_EVENT_ID,
             lan_page,
             private_input_screen,
         )

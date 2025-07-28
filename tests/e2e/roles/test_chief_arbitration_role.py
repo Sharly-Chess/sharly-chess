@@ -1,4 +1,4 @@
-from database.sqlite.event.event_store import StoredScreen, StoredTournament
+from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Page, APIRequestContext
 from data.auth.roles import ChiefArbitrationRole
@@ -15,30 +15,22 @@ class TestChiefArbitrationRole(BaseRoleTest):
         self,
         auth_page: Page,
         public_input_screen: StoredScreen,
-        public_input_unpaired_screen: StoredScreen,
         private_input_screen: StoredScreen,
-        role_test_unpaired_tournament: StoredTournament,
         api_request_context: APIRequestContext,
     ):
         # Players tab
 
-        super().assert_can_access_players_tab(True, PUBLIC_EVENT_ID, auth_page)
+        super().assert_can_access_players_tab(True, auth_page)
         super().assert_can_checkin_via_players_tab(
             True,
-            PUBLIC_EVENT_ID,
-            role_test_unpaired_tournament.id,
-            auth_page,
             api_request_context,
         )
 
         # Pairings tab
 
-        super().assert_can_access_pairings_tab(True, PUBLIC_EVENT_ID, auth_page)
+        super().assert_can_access_pairings_tab(True, auth_page)
         super().assert_can_checkin_via_pairings_tab(
             True,
-            PUBLIC_EVENT_ID,
-            role_test_unpaired_tournament.id,
-            auth_page,
             api_request_context,
         )
 
@@ -48,22 +40,16 @@ class TestChiefArbitrationRole(BaseRoleTest):
         super().assert_access_to_input_screen(
             True,
             DisplayMode.SCREENS_IN_SUBMENU,
-            PUBLIC_EVENT_ID,
             auth_page,
             public_input_screen,
         )
         super().assert_access_to_input_screen(
             True,
             DisplayMode.SCREENS_IN_SUBMENU,
-            PUBLIC_EVENT_ID,
             auth_page,
             private_input_screen,
         )
         super().assert_can_checkin_via_screen(
             True,
-            PUBLIC_EVENT_ID,
-            role_test_unpaired_tournament.id,
-            auth_page,
-            public_input_unpaired_screen,
             api_request_context,
         )

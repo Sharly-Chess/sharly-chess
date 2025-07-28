@@ -19,8 +19,8 @@ class TestSpectatorRole(BaseRoleTest):
     ):
         # Admin tabs
 
-        super().assert_can_access_players_tab(False, PUBLIC_EVENT_ID, auth_page)
-        super().assert_can_access_pairings_tab(False, PUBLIC_EVENT_ID, auth_page)
+        super().assert_can_access_players_tab(False, auth_page)
+        super().assert_can_access_pairings_tab(False, auth_page)
 
         # Screens
 
@@ -28,14 +28,12 @@ class TestSpectatorRole(BaseRoleTest):
         super().assert_access_to_input_screen(
             True,
             DisplayMode.SCREENS_IN_MENU,
-            PUBLIC_EVENT_ID,
             auth_page,
             public_input_screen,
         )
         super().assert_access_to_input_screen(
             False,
             DisplayMode.SCREENS_IN_MENU,
-            PUBLIC_EVENT_ID,
             auth_page,
             private_input_screen,
         )
