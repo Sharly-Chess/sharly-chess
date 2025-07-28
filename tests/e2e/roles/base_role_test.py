@@ -313,6 +313,68 @@ class BaseRoleTest:
                 'hx-get', re.compile(r'.*checkin-modal.*')
             )
 
+    def assert_can_enter_results_via_screen(
+        self,
+        can_enter: bool,
+        can_update: bool,
+        can_set_special_results: bool,
+    ):
+        self.auth_page.goto(
+            f'/user/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
+        )
+        rows = self.auth_page.locator('table tbody tr')
+
+        expect(rows).to_have_count(8)
+        row = rows.filter(has_text='ALYX')
+        result_cell = row.get_by_test_id('board-score')
+        if not can_enter:
+            expect(result_cell).not_to_have_attribute(
+                'hx-get', re.compile(r'.*result-modal.*')
+            )
+            return
+
+        # Try to open the modal
+        expect(result_cell).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
+        row.click()
+        modal = self.auth_page.locator('.modal-dialog')
+
+        expect(modal).to_be_visible()
+        button = TestUtils.button_by_text(modal, 'ALYX')
+        button.click()
+
+        if not can_set_special_results:
+            expect(
+                modal.get_by_test_id('white-wins-by-forfeit-button')
+            ).not_to_be_visible()
+            expect(modal.get_by_test_id('double-forfeit-button')).not_to_be_visible()
+            expect(
+                modal.get_by_test_id('black-wins-by-forfeit-button')
+            ).not_to_be_visible()
+
+        if not can_update:
+            expect(modal.get_by_test_id('clear-result-button')).not_to_be_visible()
+
+        # Test that the page is updated
+        expect(result_cell).to_have_text('1-0')
+
+        if can_update:
+            result_cell.click()
+            expect(modal).to_be_visible()
+            clear_button = modal.get_by_test_id('clear-result-button')
+            clear_button.click()
+            expect(result_cell).to_have_text('#1')
+        else:
+            expect(result_cell).not_to_have_attribute(
+                'hx-get', re.compile(r'.*result-modal.*')
+            )
+
+        if can_set_special_results:
+            result_cell.click()
+            expect(modal).to_be_visible()
+            clear_button = modal.get_by_test_id('white-wins-by-forfeit-button')
+            clear_button.click()
+            expect(result_cell).to_have_text('1-F')
+
     # --------------------------------------------------------------------------
     # Players tab
     # --------------------------------------------------------------------------

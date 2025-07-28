@@ -45,3 +45,5 @@ class TestSectorArbitrationRole(BaseRoleTest):
             auth_page,
             private_input_screen,
         )
+        super().assert_can_checkin_via_screen(True, api_request_context)
+        super().assert_can_enter_results_via_screen(True, True, False)

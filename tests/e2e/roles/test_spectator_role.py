@@ -1,6 +1,6 @@
 from database.sqlite.event.event_store import StoredScreen
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Page, APIRequestContext
 from data.auth.roles import SpectatorRole
 from tests.e2e.roles.base_role_test import BaseRoleTest, DisplayMode
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
@@ -16,6 +16,7 @@ class TestSpectatorRole(BaseRoleTest):
         auth_page: Page,
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
+        api_request_context: APIRequestContext,
     ):
         # Admin tabs
 
@@ -37,3 +38,5 @@ class TestSpectatorRole(BaseRoleTest):
             auth_page,
             private_input_screen,
         )
+        super().assert_can_checkin_via_screen(False, api_request_context)
+        super().assert_can_enter_results_via_screen(False, False, False)
