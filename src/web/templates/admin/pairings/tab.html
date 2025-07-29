@@ -204,9 +204,9 @@
                             {% if admin_tournament.print_real_points %}
                                 <th>&nbsp;</th>
                             {% endif %}
-                            <th>{{ _('White') }}</th>
+                            <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}</th>
                             <th class="text-center">{{ _('Result') }}</th>
-                            <th>{{ _('Black') }}</th>
+                            <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}</th>
                             {% if admin_tournament.print_real_points %}
                                 <th>&nbsp;</th>
                             {% endif %}

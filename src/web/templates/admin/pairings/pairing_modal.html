@@ -349,7 +349,7 @@
                         {% if
                             board.exempt
                             or
-                            not client.can_permute_boards(admin_tournament.id)
+                            not client.can_permute_board(admin_tournament.id)
                         %}
                             disabled
                         {% else %}

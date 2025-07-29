@@ -1,0 +1,35 @@
+{% if
+    admin_tournament.record_illegal_moves
+%}
+    <td class="illegal-moves-cell text-nowrap w-1">
+        {% for _ in range([player.illegal_moves, admin_tournament.record_illegal_moves]|min) %}
+            <span class="illegal-move-flag-wrapper">
+                <i
+                    data-testid="illegal-move-icon-{{ player.color.value}}"
+                    class="
+                        {% if board.result_str %}bi-file-fill{% else %}bi-file-excel-fill{% endif %}
+                        illegal-move-flag
+                        {% if not board.result_str %}delete{% endif %}"
+                    {% if client.can_set_illegal_moves(admin_tournament.id) %}
+                        hx-target="body"
+                        hx-delete="{{ url_for('admin-tournament-delete-illegal-move', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                ></i>
+            </span>
+        {% endfor %}
+        {% if client.can_set_illegal_moves(admin_tournament.id) %}
+            {% if not board.result_str and player.illegal_moves < admin_tournament.record_illegal_moves %}
+                <span class="illegal-move-flag-wrapper">
+                    <i
+                        data-testid="add-illegal-move-button-{{ player.color.value}}"
+                        class="bi-flag illegal-move-flag add player-{{ admin_tournament.id }}-{{ player.id }}"
+                        hx-target="body"
+                        hx-put="{{ url_for('admin-tournament-add-illegal-move', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                        hx-indicator="#please-wait"
+                    ></i>
+                </span>
+            {% endif %}
+        {% endif %}
+    </td>
+{% endif %}

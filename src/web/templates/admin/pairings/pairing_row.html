@@ -12,6 +12,9 @@
     {% if admin_tournament.print_real_points %}
         <td class="text-start">[{{ wp.points_str }}]</td>
     {% endif %}
+    {% if admin_tournament.record_illegal_moves %}
+        {% with player=wp %}{% include '/admin/pairings/illegal_moves_cell.html' %}{% endwith %}
+    {% endif %}
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
     <td class="text-center" style="width: 3rem;">
         <span
@@ -45,6 +48,9 @@
         </span>
     </td>
     {% if bp %}
+        {% if admin_tournament.record_illegal_moves %}
+            {% with player=bp %}{% include '/admin/pairings/illegal_moves_cell.html' %}{% endwith %}
+        {% endif %}
         <td>{{ bp.full_name }} ({{ bp.rating_str }})</td>
         {% if admin_tournament.print_real_points %}
             <td class="text-end">[{{ bp.points_str }}]</td>
@@ -53,6 +59,9 @@
 
     {% else %}
         {% set first_pab_round = wp.first_pab_round %}
+        {% if admin_tournament.record_illegal_moves %}
+            <td></td>
+        {% endif %}
         <td>
             {% if first_pab_round and first_pab_round < admin_round %}
                 <span class="text-danger">
