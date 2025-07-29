@@ -1,5 +1,6 @@
 from enum import IntEnum
 import re
+from data.event import Event
 from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Browser, Page, expect, APIRequestContext
@@ -60,6 +61,7 @@ class BaseRoleTest:
         cls.auth_context = auth_context
         cls.auth_page = auth_page
 
+        self.api_request_context = api_request_context
         yield cls.auth_page
 
         auth_page.close()
@@ -129,6 +131,7 @@ class BaseRoleTest:
             PUBLIC_EVENT_ID,
             TOURNAMENT_ID,
             papi_file='test-screens',
+            overrides={'record_illegal_moves': 1},
         )
         self.paired_tournament = tournament
         yield tournament
@@ -357,6 +360,13 @@ class BaseRoleTest:
         # Test that the page is updated
         expect(result_cell).to_have_text('1-0')
 
+        if can_set_special_results:
+            result_cell.click()
+            expect(modal).to_be_visible()
+            clear_button = modal.get_by_test_id('white-wins-by-forfeit-button')
+            clear_button.click()
+            expect(result_cell).to_have_text('1-F')
+
         if can_update:
             result_cell.click()
             expect(modal).to_be_visible()
@@ -368,12 +378,51 @@ class BaseRoleTest:
                 'hx-get', re.compile(r'.*result-modal.*')
             )
 
-        if can_set_special_results:
-            result_cell.click()
-            expect(modal).to_be_visible()
-            clear_button = modal.get_by_test_id('white-wins-by-forfeit-button')
-            clear_button.click()
-            expect(result_cell).to_have_text('1-F')
+    def assert_can_set_illegal_moves_via_screen(
+        self,
+        can_access: bool,
+        api_request_context: APIRequestContext,
+    ):
+        self.auth_page.goto(
+            f'/user/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
+        )
+        rows = self.auth_page.locator('table tbody tr')
+
+        row = rows.filter(has_text='ALYX')
+        illegal_move_button = row.get_by_test_id('add-illegal-move-button-W')
+        illegal_move_icon = row.get_by_test_id('illegal-move-icon-W')
+        if not can_access:
+            expect(illegal_move_button).not_to_be_visible()
+            expect(illegal_move_icon).not_to_be_visible()
+
+            # Check that the illegal moves are display (but can't be deleted)
+            with EventDatabase(PUBLIC_EVENT_ID) as database:
+                event = Event(database.load_stored_event())
+                alyx = next(
+                    p for p in event.players_by_id.values() if p.last_name == 'ALYX'
+                )
+
+            api_request_context.put(
+                f'/user/add-illegal-move/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
+            )
+            self.auth_page.pause()
+            expect(illegal_move_icon).to_be_visible()
+            expect(illegal_move_icon).not_to_have_attribute(
+                'hx-delete', re.compile(r'.*delete-illegal-move.*')
+            )
+
+            return
+
+        illegal_move_button.click()
+        illegal_move_icon = row.get_by_test_id('illegal-move-icon-W')
+        expect(illegal_move_icon).to_have_attribute(
+            'hx-delete', re.compile(r'.*delete-illegal-move.*')
+        )
+
+        expect(illegal_move_button).not_to_be_visible()
+        illegal_move_icon.click()
+        expect(illegal_move_button).not_to_be_visible()
+        expect(illegal_move_icon).not_to_be_visible()
 
     # --------------------------------------------------------------------------
     # Players tab

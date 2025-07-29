@@ -143,7 +143,7 @@ class Guard:
         """Raises an exception if adding/deleting illegal moves for the tournament of the request is not allowed."""
         client: Client = RequestUtils.get_client(request)
         tournament: Tournament = RequestUtils.get_tournament(request)
-        if not client.can_enter_results(tournament.id):
+        if not client.can_set_illegal_moves(tournament.id):
             raise PermissionDeniedException(
                 f'You are not allowed to set illegal moves for tournament [{tournament.uniq_id}].'
             )

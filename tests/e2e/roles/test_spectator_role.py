@@ -40,3 +40,4 @@ class TestSpectatorRole(BaseRoleTest):
         )
         super().assert_can_checkin_via_screen(False, api_request_context)
         super().assert_can_enter_results_via_screen(False, False, False)
+        super().assert_can_set_illegal_moves_via_screen(False, api_request_context)

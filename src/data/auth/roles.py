@@ -248,6 +248,7 @@ class SectorArbitrationRole(Role):
             AuthAction.VIEW_PLAYERS_TAB,
             AuthAction.VIEW_PAIRINGS_TAB,
             AuthAction.UPDATE_RESULTS,
+            AuthAction.SET_ILLEGAL_MOVES,
         ]
 
     @property

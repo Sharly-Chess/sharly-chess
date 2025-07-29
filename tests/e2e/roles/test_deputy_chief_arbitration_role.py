@@ -51,3 +51,4 @@ class TestDeputyChiefArbitrationRole(BaseRoleTest):
         )
         super().assert_can_checkin_via_screen(True, api_request_context)
         super().assert_can_enter_results_via_screen(True, True, True)
+        super().assert_can_set_illegal_moves_via_screen(True, api_request_context)

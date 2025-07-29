@@ -26,8 +26,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> bool:
         tournament: Tournament = screen_set.tournament
         if tournament.last_update > date:
-            if tournament.last_update > date:
-                return True
+            return True
         if tournament.last_check_in_update > date:
             return True
         match screen_set.type:

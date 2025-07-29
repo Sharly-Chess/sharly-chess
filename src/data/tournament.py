@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 import weakref
 from collections import Counter
 from collections.abc import Collection
@@ -1148,6 +1149,9 @@ class Tournament:
             ):
                 player.illegal_moves += 1
             event_database.commit()
+
+        # No need to reload the tournament, we update the last date for refresh purposes
+        self.stored_tournament.last_illegal_move_update = time.time()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
@@ -1164,6 +1168,9 @@ class Tournament:
             logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
             logger.info('No illegal move found for player [%s].', player.id)
+
+        # No need to reload the tournament, we update the last date for refresh purposes
+        self.stored_tournament.last_illegal_move_update = time.time()
         return deleted
 
     def get_illegal_moves(self, at_round: int) -> Counter[int]:

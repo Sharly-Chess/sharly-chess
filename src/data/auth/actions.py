@@ -62,6 +62,7 @@ class AuthAction(StrEnum):
     # Results
     ENTER_RESULTS = auto()
     UPDATE_RESULTS = auto()
+    SET_ILLEGAL_MOVES = auto()
     SET_SPECIAL_RESULTS = auto()
 
     # Screens
