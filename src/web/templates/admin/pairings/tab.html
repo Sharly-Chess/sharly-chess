@@ -359,8 +359,6 @@
         }
 
         function afterSwapHandler(e) {
-            $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
-
             // If we've swapped a row element, process the next key
             if (e.detail.elt?.dataset?.boardId) {
                 requestInFlight = false;
@@ -368,20 +366,14 @@
             }
         }
 
-        function beforeSwapHandler(e) {
-            $("tr.pairing-row > td").off("click.pairings");
-        }
-
         $(document).ready(function() {
             $(document).off("keydown.pairings");
             $(document).off("click.pairings");
-            $(document).off("htmx:beforeSwap.pairings");
             $(document).off("htmx:afterSwap.pairings");
             $(document).off("highlight_board_with_warning.pairings");
 
             $(document).on("keydown.pairings", keydownHandler);
-            $("tr.pairing-row > td").on("click.pairings", rowClickHandler);
-            $(document).on("htmx:beforeSwap.pairings", beforeSwapHandler);
+            $(document).on("click.pairings", "tr.pairing-row > td", rowClickHandler);
             $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
             $(document).on("highlight_board_with_warning.pairings", function(e) {
             highlightBoardWithError(e.detail.board_id);

@@ -112,10 +112,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         unpaired: list[Player] = []
         if self.admin_tournament is not None:
-            for player in self.admin_tournament.players:
-                self.admin_tournament.set_player_points(
-                    player, before_round=self.admin_round
-                )
+            self.admin_tournament.set_for_round(self.admin_round)
             self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
             unpaired = self.admin_tournament.get_unpaired_players(self.admin_boards)
 

@@ -68,57 +68,6 @@
                     }
                 }
 
-                {# This function is called after loading a modal and each time a bye select has changed on the record modal #}
-                function updateRecordByes() {
-                    {# get the maximum number of bye that can be given #}
-                    max_byes = Number($('[name="max_byes"]').val());
-                    if (isNaN(max_byes)) {
-                        {# nothing to do #}
-                        return;
-                    }
-                    {# count the total number of byes given, including all the rounds #}
-                    byes = $('option[value="8"]:selected').length + 2 * $('option[value="10"]:selected').length;
-                    {% if DEVEL_ENV %}
-                        console.log('max_byes=' + max_byes + ', byes=' + byes);
-                    {% endif %}
-                    {# for each visible select, allow the possible options #}
-                    $('select.bye.show').each(function() {
-                        name = $(this).attr('name')
-                        selectedValue = Number($(this).find(':selected').val());
-                        if (selectedValue == 8) {
-                            {# if HPB is selected, one more bye only is needed for FPB #}
-                            {% if DEVEL_ENV %}
-                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', fpb_disabled=' + (byes + 1 > max_byes))
-                            {% endif %}
-                            $(this).find('option[value="10"]').prop('disabled', byes + 1 > max_byes);
-                        } else if (selectedValue == 10) {
-                            {# if FPB is selected, HPB is always possible #}
-                            {% if DEVEL_ENV %}
-                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', hpb_disabled=' + false)
-                            {% endif %}
-                            $(this).find('option[value="8"]').prop('disabled', false);
-                        } else {
-                            {# one bye is needed for HPB, two for FPB #}
-                            {% if DEVEL_ENV %}
-                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', hpb_disabled=' + (byes + 1 > max_byes) + ', fpb_disabled=' + (byes + 2 > max_byes))
-                            {% endif %}
-                            $(this).find('option[value="8"]').prop('disabled', byes + 1 > max_byes);
-                            $(this).find('option[value="10"]').prop('disabled', byes + 2 > max_byes);
-                        }
-                    });
-                }
-
-                {# This function is called after loading a modal and each time the pairing system select has changed on the tournament modal #}
-                function updateTieBreaksHelp() {
-                    if ($('#pairing-system').val() == 'SWISS') {
-                        $('#swiss-tie-breaks-help').show();
-                        $('#round-robin-tie-breaks-help').hide();
-                    } else {
-                        $('#round-robin-tie-breaks-help').show();
-                        $('#swiss-tie-breaks-help').hide();
-                    }
-                }
-
                 function scrollToFirstError() {
                     var errorElements = document.querySelectorAll('#modal-wrapper .is-invalid');
                     if (errorElements.length > 0) {
@@ -181,10 +130,6 @@
                     closeTooltips();
                     activateTooltips();
                     scrollToFirstError();
-
-                    // TODO we shouldn't do this for every modal
-                    updateRecordByes();
-                    updateTieBreaksHelp();
                 }
 
                 window.addEventListener("modal_opened", function(event) {

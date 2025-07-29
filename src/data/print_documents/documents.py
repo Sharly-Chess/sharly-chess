@@ -349,8 +349,7 @@ class BoardPrintDocument(PrintDocument, ABC):
     @property
     def boards(self) -> list[Board]:
         assert self.tournament is not None
-        for player in self.tournament.players:
-            self.tournament.set_player_points(player, before_round=self.at_round)
+        self.tournament.set_for_round(self.at_round)
         return self.tournament.get_round_boards(self.at_round)
 
     @property
