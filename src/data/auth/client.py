@@ -471,11 +471,19 @@ class Client:
             AuthAction.SET_SPECIAL_RESULTS, tournament_id
         )
 
-    def imputable_results_for_tournament(self, tournament_id: int) -> list[Result]:
+    def can_set_illegal_moves(self, tournament_id: int) -> bool:
+        """Returns True if the client can set illegal moves."""
+        return self._action_allowed_for_tournament(
+            AuthAction.SET_ILLEGAL_MOVES, tournament_id
+        )
+
+    def imputable_results_for_tournament(
+        self, tournament_id: int
+    ) -> tuple[Result, ...]:
         if self.can_set_special_results(tournament_id):
-            return Result.user_imputable_results()
-        else:
             return Result.admin_imputable_results()
+        else:
+            return Result.user_imputable_results()
 
     # ---------------------------------------------------------------------------------
     # Screens

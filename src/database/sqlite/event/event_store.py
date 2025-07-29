@@ -101,13 +101,14 @@ class StoredTournament:
     pairing: str | None = None
     pairing_settings: dict[str, Any] | None = None
     current_round: int | None = None
-    check_in_open: bool = field(default=False)
-    rounds: int = field(default=1)
-    rating: int = field(default=1)
-    last_update: float = field(default=0.0)
-    last_result_update: float = field(default=0.0)
-    last_illegal_move_update: float = field(default=0.0)
-    last_check_in_update: float = field(default=0.0)
+    check_in_open: bool = False
+    rounds: int = 1
+    rating: int = 1
+    last_update: float = 0.0
+    last_result_update: float = 0.0
+    last_illegal_move_update: float = 0.0
+    last_check_in_update: float = 0.0
+    three_points_for_a_win: bool = False
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
     )

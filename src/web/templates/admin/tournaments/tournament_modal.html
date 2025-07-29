@@ -330,17 +330,20 @@
                         <script>
                             $('input[name$="_pairing_variation"][type="hidden"]').remove();
                             $('#pairing-system').change(function() {
-                                const visible_container_id = $(this).val() + '_pairing_variation_container';
-                                let container_id = '';
+                                let elements = '';
                                 {% for pairing_system in pairing_systems %}
-                                    container_id = '{{ pairing_system.variation_container_id }}';
-                                    if (container_id === visible_container_id) {
-                                        $('#' + container_id).css('display',  'block');
+                                    elements = $(
+                                        '#{{ pairing_system.variation_container_id }}, ' +
+                                        '#{{ pairing_system.tie_break_help_container_id }}'
+                                    );
+                                    if ($(this).val() === '{{ pairing_system.id }}') {
+                                        elements.show();
                                     } else {
-                                        $('#' + container_id).css('display',  'none');
+                                        elements.hide();
                                     }
                                 {% endfor %}
                             });
+
                         </script>
                     </div>
                     <div class="row">
@@ -391,11 +394,47 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.switch_input(
+                                name='three_points_for_a_win',
+                                label=_('%(string)s:', string=_('Point counting')),
+                                placeholder=_('Three points for a win'),
+                                help_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
 
                     <h4>
                         {{ _('Tie-breaks') }}
                     </h4>
+                    {% for pairing_system in pairing_systems %}
+                        <div
+                            id="{{ pairing_system.tie_break_help_container_id }}"
+                            class="row"
+                            {% if pairing_system.id != data['pairing_system'] %}
+                                style="display:none"
+                            {% endif %}
+                        >
+                            <div class="col-12 col-md-6 form-text">
+                                {{ pairing_system.tie_break_help_html_content|safe }}
+                            </div>
+                            <div class="col-12 col-md-6 form-text">
+                                <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
+                                <button
+                                    type="button"
+                                    class="text-nowrap btn btn-outline-primary form-text"
+                                    onclick="
+                                        {% for tie_break in pairing_system.default_tie_breaks %}
+                                            $('#tie-break-{{ loop.index }}').val('{{ tie_break.id }}');
+                                        {% endfor %}
+                                    "
+                                >
+                                    {{ _('Set the recommended tie-breaks') }}
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
                     <div class="row">
                         {% for index in [1, 2, 3] %}
                             <div

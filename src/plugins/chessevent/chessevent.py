@@ -218,7 +218,10 @@ class ChessEventPlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_data(
-        self, event: 'Event', tournament: 'Tournament | None'
+        self,
+        event: 'Event',
+        tournament: 'Tournament | None',
+        action: str,
     ) -> dict[str, Any]:
         if not tournament:
             return {
@@ -229,17 +232,21 @@ class ChessEventPlugin(Plugin):
             }
 
         return {
-            'chessevent_user_id': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'chessevent_user_id', '')
+            'chessevent_user_id': self.get_data(
+                tournament.plugin_data,
+                'chessevent_user_id',
+                '',
             ),
-            'chessevent_password': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'chessevent_password', '')
+            'chessevent_password': self.get_data(
+                tournament.plugin_data, 'chessevent_password', ''
             ),
-            'chessevent_event_id': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'chessevent_event_id', '')
+            'chessevent_event_id': self.get_data(
+                tournament.plugin_data, 'chessevent_event_id', ''
             ),
-            'chessevent_tournament_name': WebContext.value_to_form_data(
-                self.get_data(tournament.plugin_data, 'chessevent_tournament_name', '')
+            'chessevent_tournament_name': ''
+            if action == 'clone'
+            else self.get_data(
+                tournament.plugin_data, 'chessevent_tournament_name', ''
             ),
         }
 

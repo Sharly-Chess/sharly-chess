@@ -28,16 +28,16 @@ The execution mode is set by default at application-level (for all the events) a
 
 The roles in _Sharly Chess_ are:
 
-- **Administration** (of the application)
-- **Organization** (of an event)
-- **Screen Management** (of an event)
-- **Chief Arbitration** (of an event)
-- **Deputy Chief Arbitration** (of an event)
-- **Pairing** (of tournaments)
-- **Sector Arbitration** (of tournaments)
-- **Result Entry** (of tournaments)
-- **Check-in** (of tournaments)
-- **Spectator** (of an event)
+- **Administration** (of the application): **ADM**
+- **Organization** (of an event): **ORG**
+- **Screen Management** (of an event): **SM**
+- **Chief Arbitration** (of an event): **CA**
+- **Deputy Chief Arbitration** (of an event): **DCA**
+- **Pairing** (of tournaments): **PA**
+- **Sector Arbitration** (of tournaments): **SA**
+- **Result Entry** (of tournaments): **RE**
+- **Check-in** (of tournaments): **CI**
+- **Spectator** (of an event): **SP**
 
 > [!NOTE]
 > The arbiter roles are directly inspired by the FIDE hierarchical system:
@@ -78,13 +78,13 @@ Devices can be given roles, without any other authentication.
 > [!IMPORTANT]
 > They must be trusted devices on a trusted network!
 
-| :unlock:/:lock: |      Device       |        Comment         |   Administration   | Organization | Screen<br/>Management | Chief<br/>arbitration | Deputy<br/>Chief<br/>arbitration | Pairing | Sector<br/>Arbitration |      Check-in      | Results<br/>Entry  |     Spectator      |
-|:---------------:|:-----------------:|:----------------------:|:------------------:|:------------:|:---------------------:|:---------------------:|:--------------------------------:|:-------:|:----------------------:|:------------------:|:------------------:|:------------------:|
-|     :lock:      |   ``127.0.0.1``   | Server (Chief Arbiter) | :white_check_mark: |     :ok:     |         :ok:          |         :ok:          |               :ok:               |  :ok:   |          :ok:          |        :ok:        |        :ok:        |        :ok:        |
-|                 | ``192.168.1.100`` |  Deputy Chief Arbiter  |        :x:         |     :x:      |          :x:          |          :x:          |        :white_check_mark:        |  :ok:   |          :ok:          |        :ok:        |        :ok:        |        :ok:        |
-|                 | ``192.168.1.115`` |    Check-in device     |        :x:         |     :x:      |          :x:          |          :x:          |               :x:                |   :x:   |          :x:           | :white_check_mark: |        :x:         |        :ok:        |
-|                 | ``192.168.1.119`` |     Result device      |        :x:         |     :x:      |                       |          :x:          |               :x:                |   :x:   |          :x:           |        :x:         | :white_check_mark: |        :ok:        |
-|                 |    ``0.0.0.0``    |     Display device     |        :x:         |     :x:      |                       |          :x:          |               :x:                |   :x:   |          :x:           |        :x:         |        :x:         | :white_check_mark: |
+| :unlock:/:lock: |      Device       |        Comment         |        ADM         | ORG  |  SM  |  CA  |        DCA         |  PA  |  SA  |         CI         |         RE         |         SP         |
+|:---------------:|:-----------------:|:----------------------:|:------------------:|:----:|:----:|:----:|:------------------:|:----:|:----:|:------------------:|:------------------:|:------------------:|
+|     :lock:      |   ``127.0.0.1``   | Server (Chief Arbiter) | :white_check_mark: | :ok: | :ok: | :ok: |        :ok:        | :ok: | :ok: |        :ok:        |        :ok:        |        :ok:        |
+|                 | ``192.168.1.100`` |  Deputy Chief Arbiter  |        :x:         | :x:  | :x:  | :x:  | :white_check_mark: | :ok: | :ok: |        :ok:        |        :ok:        |        :ok:        |
+|                 | ``192.168.1.115`` |    Check-in device     |        :x:         | :x:  | :x:  | :x:  |        :x:         | :x:  | :x:  | :white_check_mark: |        :x:         |        :ok:        |
+|                 | ``192.168.1.119`` |     Result device      |        :x:         | :x:  |      | :x:  |        :x:         | :x:  | :x:  |        :x:         | :white_check_mark: |        :ok:        |
+|                 |    ``0.0.0.0``    |     Display device     |        :x:         | :x:  |      | :x:  |        :x:         | :x:  | :x:  |        :x:         |        :x:         | :white_check_mark: |
 
 > [!NOTE]
 > Connections from the server automatically have the Administration role (not configurable).
@@ -97,7 +97,7 @@ Users are defined by credentials (a unique username and an optional password).
 
 | :unlock:/:lock: |     User      | Comment           |
 |:---------------:|:-------------:|:------------------|
-|                 |  ``arbiter``  | The chief arbiter |
+|                 |  ``arbiter``  | The Chief Arbiter |
 |                 | ``127.0.0.1`` | The server itself |
 |                 |  ``0.0.0.0``  | _Unauthenticated_ |
 
@@ -108,85 +108,86 @@ Users are defined by credentials (a unique username and an optional password).
 
 Accounts can be given roles, after they authenticate.
 
-| :unlock:/:lock: |      Device       |           Comment           | Administration | Organization | Screen<br/>Management | Chief<br/>arbitration | Deputy<br/>Chief<br/>arbitration | Pairing | Sector<br/>Arbitration |      Check-in      | Results<br/>Entry  |     Spectator      |
-|:---------------:|:-----------------:|:---------------------------:|:--------------:|:------------:|:---------------------:|:---------------------:|:--------------------------------:|:-------:|:----------------------:|:------------------:|:------------------:|:------------------:|
-|                 |     ``mary``      |    Deputy Chief Arbiter     |      :x:       |     :x:      |          :x:          |          :x:          |        :white_check_mark:        |  :ok:   |          :ok:          |        :ok:        |        :ok:        |        :ok:        |
-|                 |     ``john``      | Check-in and Result Officer |      :x:       |     :x:      |          :x:          |          :x:          |               :x:                |   :x:   |          :x:           | :white_check_mark: | :white_check_mark: |        :ok:        |
-|                 |         -         |      _Unauthenticated_      |      :x:       |     :x:      |                       |          :x:          |               :x:                |   :x:   |          :x:           |        :x:         |        :x:         | :white_check_mark: |
+| :unlock:/:lock: |      Device       |           Comment           | ADM  | ORG | SM  | CA  |        DCA         |  PA  |  SA  |         CI         |         RE         |         SP         |
+|:---------------:|:-----------------:|:---------------------------:|:----:|:---:|:---:|:---:|:------------------:|:----:|:----:|:------------------:|:------------------:|:------------------:|
+|                 |     ``mary``      |    Deputy Chief Arbiter     | :x:  | :x: | :x: | :x: | :white_check_mark: | :ok: | :ok: |        :ok:        |        :ok:        |        :ok:        |
+|                 |     ``john``      | Check-in and Result Officer | :x:  | :x: | :x: | :x: |        :x:         | :x:  | :x:  | :white_check_mark: | :white_check_mark: |        :ok:        |
+|                 |         -         |      _Unauthenticated_      | :x:  | :x: |     | :x: |        :x:         | :x:  | :x:  |        :x:         |        :x:         | :white_check_mark: |
 
 ## Permissions by role
 
-|                                            | Administration  | Organization | Screen<br/>management | Chief<br/>Arbitration | Deputy<br/>Chief<br/>Arbitration |    Pairing     | Sector<br/>Arbitration |    Check-in    | Results<br/>Entry | Spectator |        -        |
-|--------------------------------------------|:---------------:|:------------:|:---------------------:|:---------------------:|:--------------------------------:|:--------------:|:----------------------:|:--------------:|:-----------------:|:---------:|:---------------:|
-| **Scope**                                  | **Application** |  **Event**   |       **Event**       |       **Event**       |            **Event**             | **Tournament** |     **Tournament**     | **Tournament** |  **Tournament**   | **Event** | **Application** |
-| **APPLICATION**                            |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| View application settings                  |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Update application settings                |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Administration role           |       :x:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Add events                                 |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Source databases management                |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View private events                        |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View public events                         |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |     :ok:(*)     |
-| View detailed event cards                  |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **EVENTS**                                 |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| Delete an event                            |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Rename an event                            |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Update an event                            |      :ok:       |     :ok:     |          :x:          |         :ok:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View the complete event config             |      :ok:       |     :ok:     |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View the basic event config                |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :ok:      |          :ok:          |      :ok:      |       :ok:        |    :x:    |       :x:       |
-| **ROLES**                                  |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| Manage Accounts                            |      :ok:       |     :ok:     |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manage Devices                             |      :ok:       |     :ok:     |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Organization role             |      :ok:       |     :x:      |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Screen Management role        |      :ok:       |     :ok:     |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Chief Arbitration role        |      :ok:       |     :ok:     |          :x:          |          :x:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Deputy Chief Arbitration role |      :ok:       |     :x:      |          :x:          |         :ok:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Sector Arbitration role       |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Pairing role                  |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Results Entry role            |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Grant/revoke Check-in role                 |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Update Spectators                          |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **TOURNAMENTS**                            |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| View Tournaments tab                       |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Add tournaments                            |      :ok:       |     :x:      |          :x:          |         :ok:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Delete a tournament                        |      :ok:       |     :x:      |          :x:          |         :ok:          |               :x:                |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Update tournaments                         |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Publish results                            |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Publish rules                              |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Download fees                              |      :ok:       |     :ok:     |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **PLAYERS**                                |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| View Players tab                           |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :ok:      |          :ok:          |      :x:       |        :x:        |    :x:    |       :x:       |
-| Add players                                |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Delete players                             |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Update players' information                |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Update players' record                     |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **CHECK-IN**                               |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| Open/close check-in                        |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Check-in players                           |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :ok:          |      :ok:      |        :x:        |    :x:    |       :x:       |
-| **PAIRINGS**                               |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| Use the pairing engine                     |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Unpair rounds                              |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manually pair players                      |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manually unpair boards                     |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Set/unset Zero-Point Byes                  |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :ok:          |      :ok:      |        :x:        |    :x:    |       :x:       |
-| Set/unset Half-Point Byes                  |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Set/unset Full-Point Byes                  |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View draft pairings                        |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :ok:      |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Publish pairings                           |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **RANKINGS**                               |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| View draft rankings                        |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Publish rankings                           |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **RESULTS MANAGEMENT**                     |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| Enter results                              |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :ok:          |      :x:       |       :ok:        |    :x:    |       :x:       |
-| Modify results                             |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Use special results                        |      :ok:       |     :x:      |          :x:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| **SCREENS**                                |                 |              |                       |                       |                                  |                |                        |                |                   |           |                 |
-| Manage screens                             |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manage families                            |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manage rotators                            |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manage controllers                         |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| Manage timers                              |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View private screens                       |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :x:       |          :x:           |      :x:       |        :x:        |    :x:    |       :x:       |
-| View public screens                        |      :ok:       |     :ok:     |         :ok:          |         :ok:          |               :ok:               |      :ok:      |          :ok:          |      :ok:      |       :ok:        |   :ok:    |       :x:       |
+|                                            |    ADM    |    ORG    |    SM     |    CA     |    DCA    |     PA     |     SA     |     CI     |     RE     |    SP     |     -     |
+|--------------------------------------------|:---------:|:---------:|:---------:|:---------:|:---------:|:----------:|:----------:|:----------:|:----------:|:---------:|:---------:|
+| **Scope**                                  | **Appl.** | **Event** | **Event** | **Event** | **Event** | **Tourn.** | **Tourn.** | **Tourn.** | **Tourn.** | **Event** | **Appl.** |
+| **APPLICATION**                            |           |           |           |           |           |            |            |            |            |           |           |
+| View application settings                  |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Update application settings                |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Administration role           |    :x:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Add events                                 |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Source databases management                |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View public current events                 |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |  :ok:(*)  |
+| View private events                        |   :ok:    |    n/a    |    n/a    |    n/a    |    n/a    |    n/a     |    n/a     |    n/a     |    n/a     |    n/a    |    :x:    |
+| View passed/coming events                  |   :ok:    |   :ok:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View detailed event cards                  |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **EVENTS**                                 |           |           |           |           |           |            |            |            |            |           |           |
+| Delete an event                            |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Rename an event                            |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Update an event                            |   :ok:    |   :ok:    |    :x:    |   :ok:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View the complete event config             |   :ok:    |   :ok:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View the basic event config                |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :ok:    |    :ok:    |    :ok:    |    :ok:    |    :x:    |    :x:    |
+| **ROLES**                                  |           |           |           |           |           |            |            |            |            |           |           |
+| Manage Accounts                            |   :ok:    |   :ok:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manage Devices                             |   :ok:    |   :ok:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Organization role             |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Screen Management role        |   :ok:    |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Chief Arbitration role        |   :ok:    |   :ok:    |    :x:    |    :x:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Deputy Chief Arbitration role |   :ok:    |    :x:    |    :x:    |   :ok:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Sector Arbitration role       |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Pairing role                  |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Results Entry role            |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Grant/revoke Check-in role                 |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Update Spectators                          |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **TOURNAMENTS**                            |           |           |           |           |           |            |            |            |            |           |           |
+| View Tournaments tab                       |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Add tournaments                            |   :ok:    |    :x:    |    :x:    |   :ok:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Delete a tournament                        |   :ok:    |    :x:    |    :x:    |   :ok:    |    :x:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Update tournaments                         |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Publish results                            |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Publish rules                              |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Download fees                              |   :ok:    |   :ok:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **PLAYERS**                                |           |           |           |           |           |            |            |            |            |           |           |
+| View Players tab                           |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :ok:    |    :ok:    |    :x:     |    :x:     |    :x:    |    :x:    |
+| Add players                                |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Delete players                             |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Update players' information                |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Update players' record                     |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **CHECK-IN**                               |           |           |           |           |           |            |            |            |            |           |           |
+| Open/close check-in                        |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Check-in players                           |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :ok:    |    :ok:    |    :x:     |    :x:    |    :x:    |
+| **PAIRINGS**                               |           |           |           |           |           |            |            |            |            |           |           |
+| Use the pairing engine                     |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Unpair rounds                              |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manually pair players                      |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manually unpair boards                     |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Set/unset Zero-Point Byes                  |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :ok:    |    :ok:    |    :x:     |    :x:    |    :x:    |
+| Set/unset Half-Point Byes                  |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Set/unset Full-Point Byes                  |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View draft pairings                        |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :ok:    |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Publish pairings                           |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **RANKINGS**                               |           |           |           |           |           |            |            |            |            |           |           |
+| View draft rankings                        |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Publish rankings                           |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **RESULTS MANAGEMENT**                     |           |           |           |           |           |            |            |            |            |           |           |
+| Enter results                              |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :ok:    |    :x:     |    :ok:    |    :x:    |    :x:    |
+| Modify results                             |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Use special results                        |   :ok:    |    :x:    |    :x:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| **SCREENS**                                |           |           |           |           |           |            |            |            |            |           |           |
+| Manage screens                             |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manage families                            |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manage rotators                            |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manage controllers                         |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| Manage timers                              |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View private screens                       |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :x:     |    :x:     |    :x:     |    :x:     |    :x:    |    :x:    |
+| View public screens                        |   :ok:    |   :ok:    |   :ok:    |   :ok:    |   :ok:    |    :ok:    |    :ok:    |    :ok:    |    :ok:    |   :ok:    |    :x:    |
 
 (*) Accessing the list of the public events is needed to authenticate (the accounts are defined at event-level).

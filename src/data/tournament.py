@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 import weakref
 from collections import Counter
 from collections.abc import Collection
@@ -34,7 +35,6 @@ from utils import SharedUtils
 from utils.enum import (
     BoardColor,
     PlayerGender,
-    PointValueType,
     Result,
     TournamentRating,
     TrfType,
@@ -368,6 +368,10 @@ class Tournament:
         return None
 
     @property
+    def stored_three_points_for_a_win(self) -> bool:
+        return self.stored_tournament.three_points_for_a_win
+
+    @property
     def download_allowed(self) -> bool:
         return self.file_exists
 
@@ -426,8 +430,9 @@ class Tournament:
         return self.papi_tournament_info.rating
 
     @property
-    def point_value_type(self) -> PointValueType:
-        return self.papi_tournament_info.point_value_type
+    def three_points_for_a_win(self) -> bool:
+        # TODO (Molrn) Replace by a detailed point value override
+        return self.papi_tournament_info.three_points_for_a_win
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
@@ -677,7 +682,10 @@ class Tournament:
 
     @property
     def point_values(self) -> dict[Result, float]:
-        return self.point_value_type.point_values
+        if self.three_points_for_a_win:
+            return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+        else:
+            return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
@@ -785,18 +793,8 @@ class Tournament:
                     )
         return boards_by_id
 
-    def _set_for_current_round(self):
-        current_round = self.current_round
-        illegal_moves: Counter[int] = self.get_illegal_moves(current_round)
-        for player in self.players:
-            player.illegal_moves = illegal_moves[player.id]
-            self.set_player_points(player, before_round=current_round)
-        self._estimate_players(self.players, after_round=current_round)
-        if self.handicap:
-            self._set_handicap()
-
-    def _set_handicap(self):
-        for board in self.boards:
+    def _set_handicap(self, round_: int):
+        for board in self.get_round_boards(round_):
             if not board.black_player:
                 continue
             strong_player: Player
@@ -886,6 +884,18 @@ class Tournament:
         for family in self.dependent_families:
             family.clear_cache()
         self.event.clear_player_cache()
+
+    def set_for_round(self, round_: int | None = None):
+        """Set the tournament for the given round (defaults to the current round)"""
+        if round_ is None:
+            round_ = self.current_round
+        illegal_moves: Counter[int] = self.get_illegal_moves(round_)
+        for player in self.players:
+            player.illegal_moves = illegal_moves[player.id]
+            self.set_player_points(player, before_round=round_)
+        self._estimate_players(self.players, after_round=round_)
+        if self.handicap:
+            self._set_handicap(round_)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
@@ -1145,6 +1155,9 @@ class Tournament:
             ):
                 player.illegal_moves += 1
             event_database.commit()
+
+        # No need to reload the tournament, we update the last date for refresh purposes
+        self.stored_tournament.last_illegal_move_update = time.time()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
@@ -1161,6 +1174,9 @@ class Tournament:
             logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
             logger.info('No illegal move found for player [%s].', player.id)
+
+        # No need to reload the tournament, we update the last date for refresh purposes
+        self.stored_tournament.last_illegal_move_update = time.time()
         return deleted
 
     def get_illegal_moves(self, at_round: int) -> Counter[int]:
@@ -1467,7 +1483,11 @@ class Tournament:
     def update_papi_database_from_stored_tournament(self):
         """Updates the papi database with all the
         values in common with the stored tournament."""
-        from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
+        from plugins.ffe.utils import (
+            PapiPairingSystem,
+            PapiPairingVariation,
+            PapiThreePointsForAWin,
+        )
 
         if not self.file_exists:
             return
@@ -1479,9 +1499,14 @@ class Tournament:
                     if tie_break.papi_id is not None
                 ]
             )
+            three_points_for_a_win = PapiThreePointsForAWin.get_plugin_value(
+                self.stored_three_points_for_a_win
+            )
+            assert three_points_for_a_win is not None
             papi_info: dict[PapiVariable, str | int] = {
                 PapiVariable.ROUNDS: self.stored_rounds,
                 PapiVariable.RATING: self.stored_rating.to_papi_value,
+                PapiVariable.THREE_POINTS_FOR_A_WIN: three_points_for_a_win,
             }
             if self.stored_pairing_variation:
                 if variation := PapiPairingVariation.get_plugin_value(

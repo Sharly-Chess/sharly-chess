@@ -257,6 +257,7 @@ class AppHookSpecs:
         self,
         event: 'Event',
         tournament: 'Tournament | None',
+        action: str,
     ) -> dict[str, Any]:
         """Provide form data for the additional tournament form fields"""
 

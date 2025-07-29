@@ -5,7 +5,7 @@ from typing import Callable
 
 import iso4217parse
 import pycountry
-from babel.numbers import format_currency, format_compact_currency, format_decimal
+from babel.numbers import format_currency, format_decimal, get_decimal_symbol
 
 
 class StaticUtils:
@@ -103,14 +103,12 @@ class StaticUtils:
         from common.i18n import get_locale
 
         locale = get_locale()
+        formatted_value = format_currency(value, currency, locale=locale)
         if value.is_integer():
-            return format_compact_currency(
-                value,
-                currency,
-                locale=locale,
-                fraction_digits=6,
+            formatted_value = formatted_value.replace(
+                f'{get_decimal_symbol(locale)}00', ''
             )
-        return format_currency(value, currency, locale=locale)
+        return formatted_value
 
     @staticmethod
     def localized_number(number: float) -> str:
