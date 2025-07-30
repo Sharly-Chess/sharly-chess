@@ -6,6 +6,7 @@ from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from common import format_timestamp_time, format_timestamp_date
 from common.i18n import _
 from data.loader import EventLoader
+from database.sqlite.event.event_database import EventDatabase
 from web.controllers.user.base_user_controller import BaseUserController, UserWebContext
 from web.messages import Message
 
@@ -81,7 +82,7 @@ class IndexUserController(BaseUserController):
             public_only=not web_context.admin_auth
         )
         return any(
-            max(event.last_update, event.last_tournament_update or 0) > date
+            EventDatabase(event.uniq_id).file_modified_at > date
             for event in events_metadata
         )
 

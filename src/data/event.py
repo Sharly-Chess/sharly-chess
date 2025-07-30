@@ -485,11 +485,11 @@ class Event:
         )
 
     @property
-    def last_update(self) -> float | None:
-        return self.stored_event.last_update
+    def last_update(self) -> float:
+        return EventDatabase(self.uniq_id).file_modified_at
 
     @cached_property
-    def last_update_str(self) -> str | None:
+    def last_update_str(self) -> str:
         return format_timestamp_date_time(self.last_update)
 
     @cached_property
