@@ -8,25 +8,26 @@ import apluggy as pluggy  # type: ignore
 
 from common import APP_NAME
 
-from utils.enum import ScreenType
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
     PluginEngineArgument,
     PluginNavBarItem,
+    PluginData,
 )
+from utils.enum import ScreenType, TournamentRating
 
 if TYPE_CHECKING:
     from data.input_output import DataSource
     from data.pairings.variations import SwissVariation
-    from data.player import Player
+    from data.player import Player, PlayerRating
     from data.print_documents import PrintDocument, PlayerSplitter
     from data.prize.player_filter_options import PlayerFilterOption
     from data.prize.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
-    from database.access.papi.papi_store import StoredPlayer
+    from database.sqlite.event.event_store import StoredPlayer
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
         BaseStoredEvent,
@@ -90,18 +91,9 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_db_player_fields(self) -> list[str]:
-        """Provide addition column field names to read from the database"""
-
-    @hookspec
-    def augment_player_after_db_fetch(
-        self, stored_player: 'StoredPlayer', row: dict[str, Any]
-    ) -> list[str]:
-        """Add plugin specific data to a player after they are fetched from the database"""
-
-    @hookspec
-    def player_data_for_db_write(self, player: 'Player') -> dict[str, Any]:
-        """Provide addition column data for players when writing to the database"""
+    def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin player values.
+        Also provide the ID of the plugin."""
 
     @hookspec
     def get_player_admin_template_context(
@@ -140,8 +132,10 @@ class AppHookSpecs:
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec
-    def set_player_default_ratings(self, federation: str, player: 'Player'):
-        """Set default ratings for an unrated player when they are added to an event"""
+    def get_player_estimated_rating(
+        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
+    ) -> Optional['PlayerRating']:
+        """Get the estimated rating of a player."""
 
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(

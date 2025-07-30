@@ -2,6 +2,7 @@ from collections import defaultdict
 import json
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
+from datetime import date, datetime
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
 from threading import RLock
@@ -124,6 +125,14 @@ class SQLiteDatabase:
     def load_bool_from_database_field(data: int | None) -> bool:
         """Returns True if `data` is 1, False otherwise."""
         return data == 1
+
+    @staticmethod
+    def load_date_from_database_field(data: str | None) -> date | None:
+        return datetime.strptime(data, '%Y-%m-%d').date() if data else None
+
+    @staticmethod
+    def dump_date_to_database_field(date_: date | None) -> str | None:
+        return date_.strftime('%Y-%m-%d') if date_ else None
 
     @staticmethod
     def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:

@@ -11,7 +11,7 @@ from data.safety_mode import (
     RoundStatus,
     SafetyMode,
 )
-from database.access.papi.papi_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard
 from utils.entity import IdentifiableEntity, EntityManager
 from utils.enum import Result
 

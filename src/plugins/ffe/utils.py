@@ -1,15 +1,18 @@
+from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from functools import partial
-from typing import Self
+from typing import Self, Any
 
 from common.i18n import _
 from data.event import Event
+from data.player import Player
 from data.tournament import Tournament
 from data.pairings import PairingVariation, PairingSystem, systems, variations
 from plugins.ffe import PLUGIN_NAME
 from plugins.pairing_acceleration import pairing_variations as accelerations
-from plugins.utils import PluginCoreMapper, PluginUtils
+from plugins.utils import PluginCoreMapper, PluginUtils, PluginData
+from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -36,6 +39,12 @@ class FFEUtils:
         ) is not None:
             return ffe_auto_upload_delay
         return FFE_DEFAULT_UPLOAD_DELAY
+
+    @staticmethod
+    def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
+        plugin_data = player.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfePlayerPluginData)
+        return plugin_data
 
 
 class PlayerFFELicence(IntEnum):
@@ -99,6 +108,57 @@ class PlayerFFELicence(IntEnum):
                 return 'B'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+
+@dataclass
+class FfePlayerPluginData(PluginData):
+    ffe_id: int | None
+    ffe_licence: PlayerFFELicence
+    ffe_licence_number: str | None
+    league: str | None
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            ffe_id=stored_value.get('ffe_id', None),
+            ffe_licence=PlayerFFELicence(
+                stored_value.get('ffe_licence', PlayerFFELicence.NONE)
+            ),
+            ffe_licence_number=stored_value.get('ffe_licence_number', None),
+            league=stored_value.get('league', None),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'ffe_id': self.ffe_id,
+            'ffe_licence': self.ffe_licence.value,
+            'ffe_licence_number': self.ffe_licence_number,
+            'league': self.league,
+        }
+
+    @classmethod
+    def from_form_data(
+        cls, data: dict[str, str], previous_object: Self | None = None
+    ) -> Self:
+        return cls(
+            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
+            ffe_licence=PlayerFFELicence(
+                WebContext.form_data_to_int(data, 'ffe_licence')
+                or PlayerFFELicence.NONE
+            ),
+            ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
+            league=WebContext.form_data_to_str(data, 'ffe_league'),
+        )
+
+    def to_form_data(self) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'ffe_id': self.ffe_id,
+                'ffe_licence': self.ffe_licence.value,
+                'ffe_licence_number': self.ffe_licence_number,
+                'ffe_league': self.league,
+            }
+        )
 
 
 class PapiPairingSystem(PluginCoreMapper[str, PairingSystem]):

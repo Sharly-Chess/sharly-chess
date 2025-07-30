@@ -1,8 +1,6 @@
-import copy
 import random
 import time
 from datetime import datetime
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 import urllib.parse
@@ -15,7 +13,6 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.event import Event
 from data.input_output import (
@@ -32,7 +29,6 @@ from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
 from utils.enum import TournamentRating
-from database.access.papi.papi_database import PapiDatabase, PapiTournamentInfo
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.hookspec import ExtraColumn
@@ -97,7 +93,7 @@ class TournamentAdminController(BaseEventAdminController):
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
-        tie_breaks: list[dict] | None = None
+        tie_breaks: list[dict] = []
         rounds: int | None = None
         pairing: str | None = None
         rating: int | None = None
@@ -217,19 +213,10 @@ class TournamentAdminController(BaseEventAdminController):
                         break
                     tie_breaks.append(tie_break.to_dict())
 
-                create_file = WebContext.form_data_to_bool(data, 'create_file')
-                file_path = cls._extract_papi_file_path(data, web_context.admin_event)
-                if create_file and file_path.exists():
-                    errors['create_file'] = _('File already exists.')
         if action == 'update':
             tournament = web_context.admin_tournament
             assert tournament is not None
-            file_path = cls._extract_papi_file_path(data, web_context.admin_event)
-            if (
-                tournament.file_exists
-                and file_path == tournament.file
-                and tournament.started
-            ):
+            if tournament.started:
                 not_updatable_values: dict[str, str] = {
                     'rating': str(tournament.rating.value),
                     tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
@@ -544,7 +531,7 @@ class TournamentAdminController(BaseEventAdminController):
                         for data in per_plugin_form_data
                         for key, value in data.items()
                     }
-                    data = {
+                    data: dict[str, str] = {
                         'start': WebContext.value_to_datetime_form_data(start),
                         'stop': WebContext.value_to_datetime_form_data(stop),
                     } | WebContext.values_dict_to_form_data(
@@ -614,9 +601,6 @@ class TournamentAdminController(BaseEventAdminController):
                     'pairing_systems': pairing_systems,
                     'pairing_system_options': PairingSystemManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'file_exists': cls._extract_papi_file_path(
-                        data, admin_event
-                    ).exists(),
                     'previous_tournament': (
                         web_context.admin_tournament if action == 'create' else None
                     ),
@@ -720,66 +704,6 @@ class TournamentAdminController(BaseEventAdminController):
             filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
         )
 
-    @post(
-        path='/admin/tournament-file-status/{event_uniq_id:str}',
-        name='admin-tournament-file-status',
-    )
-    async def admin_tournament_file_status(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(request, event_uniq_id, None, data)
-        assert web_context.admin_event is not None
-        template_context: dict[str, Any] = self._get_admin_event_render_context(
-            web_context
-        )
-        file = self._extract_papi_file_path(data, web_context.admin_event)
-        if file.exists():
-            with PapiDatabase(file) as database:
-                papi_tournament_info = database.read_info()
-        else:
-            papi_tournament_info = PapiTournamentInfo()
-        return HTMXTemplate(
-            template_name='admin/tournaments/file_status.html',
-            context=template_context
-            | {
-                'file_exists': file.exists(),
-                'replacement_data': self.papi_tournament_info_to_form_data(
-                    papi_tournament_info
-                ),
-            },
-        )
-
-    @staticmethod
-    def papi_tournament_info_to_form_data(info: PapiTournamentInfo) -> dict[str, str]:
-        tie_breaks = copy.copy(info.tie_breaks)
-        tie_break_1, tie_break_2, tie_break_3 = (
-            tie_breaks.pop(0).id if tie_breaks else '' for __ in range(3)
-        )
-        pairing_system = info.pairing_variation.system()
-        return {
-            'rounds': str(info.rounds),
-            'rating': str(info.rating.value),
-            'pairing_system': pairing_system.id,
-            pairing_system.variation_field_id: info.pairing_variation.id,
-            'tie_break_1': tie_break_1,
-            'tie_break_2': tie_break_2,
-            'tie_break_3': tie_break_3,
-        }
-
-    @staticmethod
-    def _extract_papi_file_path(data: dict[str, str], event: Event) -> Path:
-        dir_path = Path(WebContext.form_data_to_str(data, 'path') or event.path)
-        file_name = WebContext.form_data_to_str(
-            data, 'filename'
-        ) or WebContext.form_data_to_str(data, 'uniq_id', '')
-        return dir_path / f'{file_name}.{SharlyChessConfig.papi_ext}'
-
     def _admin_tournament_update(
         self,
         request: HTMXRequest,
@@ -823,9 +747,6 @@ class TournamentAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_tournament.errors,
             )
-        if WebContext.form_data_to_bool(data, 'create_file'):
-            file_path = self._extract_papi_file_path(data, web_context.admin_event)
-            PapiDatabase(file_path).create_empty()
 
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
@@ -914,9 +835,6 @@ class TournamentAdminController(BaseEventAdminController):
                             'Tournament [{tournament_uniq_id}] has been created.'
                         ).format(tournament_uniq_id=stored_tournament.uniq_id)
                 tournament_id = stored_tournament.id
-                Tournament(
-                    web_context.admin_event, stored_tournament
-                ).update_papi_database_from_stored_tournament()
             event_database.commit()
         event_loader.clear_cache(event_uniq_id)
         if add_other:

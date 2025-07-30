@@ -74,10 +74,10 @@ class ChessEventPlayer:
             self.birth = float(reader.get('birth', int))
 
             self.ffe_id = reader.get('ffe_id', int)
-            self.ffe_license = ChessEventFFELicence.get_core_object(
-                reader.get('ffe_license', int)
+            self.ffe_licence = ChessEventFFELicence.get_core_object(
+                reader.get('ffe_licence', int)
             )
-            self.ffe_license_number = reader.get('ffe_license_number', str)
+            self.ffe_licence_number = reader.get('ffe_licence_number', str)
             self.ffe_league = reader.get('ffe_league', str)
             self.ffe_club_id = reader.get('ffe_club_id', int, 0)
             self.ffe_club = reader.get('ffe_club', str, '')
@@ -140,7 +140,7 @@ class ChessEventPlayer:
                 f'  - Name: {self.last_name} {self.first_name}',
                 f'  - Title / FFE ID / FIDE ID: {self.title} / {self.ffe_id} / {self.fide_id}',
                 f'  - FFE Licence / Licence number / Category / Gender: '
-                f'{self.ffe_license} / {self.ffe_license_number} / {self.category} / {self.gender}',
+                f'{self.ffe_licence} / {self.ffe_licence_number} / {self.category} / {self.gender}',
                 f'  - Birth date: {self.birth}',
                 f'  - Standard rating / rapid / blitz: {self.standard_rating}{self.standard_rating_type} '
                 f'/ {self.rapid_rating}{self.rapide_rating_type} / {self.blitz_rating}{self.blitz_rating_type}',

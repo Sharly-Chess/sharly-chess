@@ -8,7 +8,6 @@ from utils.enum import BoardColor
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
-    from database.access.papi.papi_database import PapiDatabase
 
 
 class PairingSetting[T](IdentifiableEntity, ABC):
@@ -79,10 +78,6 @@ class PairingSetting[T](IdentifiableEntity, ABC):
             if cls.is_valid(tournament):
                 return cls.from_stored_value(value)
         return cls.default_value(tournament)
-
-    def save_to_papi_database(self, papi_database: 'PapiDatabase', object_: T):
-        # TODO remove once papi dependency has been removed
-        pass
 
 
 class ColorSeedSetting(PairingSetting[BoardColor]):
