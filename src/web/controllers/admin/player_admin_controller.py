@@ -1,4 +1,3 @@
-from collections import defaultdict
 from collections.abc import Callable
 from datetime import date
 from logging import Logger
@@ -218,11 +217,6 @@ class PlayerAdminController(BaseEventAdminController):
 
     @classmethod
     def _stored_player_from_data(cls, data: dict[str, str]) -> StoredPlayer:
-        plugin_data = {
-            key: value
-            for data in plugin_manager.hook.get_player_form_fields(data=data)
-            for key, value in data.items()
-        }
         return StoredPlayer(
             id=None,
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
@@ -251,7 +245,10 @@ class PlayerAdminController(BaseEventAdminController):
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
             check_in=False,
-            plugin_data=plugin_data,
+            plugin_data={
+                plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
+                for plugin_id, plugin_data_class in Player.plugin_data_class_by_plugin_id().items()
+            },
         )
 
     @staticmethod
@@ -655,7 +652,7 @@ class PlayerAdminController(BaseEventAdminController):
                     owed: float = 0.0
                     paid: float = 0.0
                     fixed: int | None = None
-                    plugin_data: dict[str, dict[str, Any]] = {}
+                    stored_plugin_data: dict[str, dict[str, Any]] = {}
                     stored_player = search_stored_player or getattr(
                         admin_player, 'stored_player', None
                     )
@@ -678,7 +675,7 @@ class PlayerAdminController(BaseEventAdminController):
                         owed = stored_player.owed
                         paid = stored_player.paid
                         fixed = stored_player.fixed
-                        plugin_data = stored_player.plugin_data
+                        stored_plugin_data = stored_player.plugin_data
                     match action:
                         case 'update' | 'delete':
                             assert admin_player is not None
@@ -717,14 +714,14 @@ class PlayerAdminController(BaseEventAdminController):
                             ),
                         }
 
-                    per_plugin_form_data = plugin_manager.hook.get_player_form_data(
-                        plugin_data=plugin_data
-                    )
-                    plugin_form_data = {
-                        key: value
-                        for data in per_plugin_form_data
-                        for key, value in data.items()
-                    }
+                    plugin_form_data: dict[str, str] = {}
+                    for (
+                        plugin_id,
+                        plugin_data_class,
+                    ) in Player.plugin_data_class_by_plugin_id().items():
+                        plugin_form_data |= plugin_data_class.from_stored_value(
+                            stored_plugin_data.get(plugin_id, {})
+                        ).to_form_data()
 
                     data = (
                         {
@@ -1180,7 +1177,7 @@ class PlayerAdminController(BaseEventAdminController):
             case 'update':
                 player = web_context.get_admin_player()
                 event.update_player(player, stored_player)
-                previous_tournament = web_context.admin_player.tournament
+                previous_tournament = player.tournament
                 if tournament.id != previous_tournament.id:
                     tournament.add_player_to_tournament(stored_player)
                     previous_tournament.delete_player_from_tournament(player.id)
@@ -1773,8 +1770,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
+        event = web_context.get_admin_event()
         try:
             data_source = DataSourceManager.get_object(data_source_id)
         except KeyError:
@@ -1790,7 +1786,7 @@ class PlayerAdminController(BaseEventAdminController):
             if field_id in player_updater_field_ids
         ]
         players: list[Player] = [
-            web_context.admin_event.players_by_id[player_id]
+            event.players_by_id[player_id]
             for player_id in map(int, (id_ for id_ in data['player_ids'] if id_))
         ]
         player_matches = await data_source.get_player_matches(
@@ -1807,23 +1803,7 @@ class PlayerAdminController(BaseEventAdminController):
         else:
             for match in player_matches:
                 match.update_player_from_match(field_ids)
-
-            players_by_tournament_id: dict[int, list[Player]] = defaultdict(
-                list[Player]
-            )
-            for player_match in player_matches:
-                players_by_tournament_id[player_match.player.tournament_id].append(
-                    player_match.player
-                )
-            for tournament_id, tournament_players in players_by_tournament_id.items():
-                tournament: Tournament = web_context.admin_event.tournaments_by_id[
-                    tournament_id
-                ]
-                with tournament.papi_write_database as database:
-                    for player in tournament_players:
-                        database.update_player(player)
-                    database.commit()
-
+            event.update_players([match.player for match in player_matches])
             count: int = len(player_matches)
             Message.success(
                 request,

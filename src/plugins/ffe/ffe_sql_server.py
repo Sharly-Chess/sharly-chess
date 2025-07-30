@@ -13,7 +13,7 @@ from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRating
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.utils import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 
 logger: Logger = get_logger()
 
@@ -125,12 +125,12 @@ class FFESqlServer(SqlServer):
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             plugin_data={
-                PLUGIN_NAME: {
-                    'ffe_id': row['Ref'],
-                    'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType']),
-                    'ffe_licence_number': row['NrFFE'],
-                    'league': row['ClubLigue'],
-                }
+                PLUGIN_NAME: FfePlayerPluginData(
+                    ffe_id=row['Ref'],
+                    ffe_licence=PlayerFFELicence.from_papi_value(row['AffType']),
+                    ffe_licence_number=row['NrFFE'],
+                    league=row['ClubLigue'],
+                ).to_stored_value()
             },
         )
 

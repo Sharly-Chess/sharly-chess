@@ -204,13 +204,6 @@ class PapiDatabase(AccessDatabase):
     def update_player(self, player: Player):
         """Updates the event database with the information in the provided player."""
 
-        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
-            player=player
-        )
-        plugin_data = {
-            key: value for data in per_plugin_player_data for key, value in data.items()
-        }
-
         fields: list[str] = (
             [
                 'Nom',
@@ -230,7 +223,6 @@ class PapiDatabase(AccessDatabase):
             ]
             + [tr.papi_value_field for tr in TournamentRating]
             + [tr.papi_type_field for tr in TournamentRating]
-            + [field for field in plugin_data.keys()]
         )
         params = (
             [
@@ -251,7 +243,6 @@ class PapiDatabase(AccessDatabase):
             ]
             + [player.get_rating(tr).value for tr in TournamentRating]
             + [player.get_rating(tr).type.to_papi_value for tr in TournamentRating]
-            + [value for value in plugin_data.values()]
             + [
                 player.ref_id,
             ]
@@ -376,8 +367,6 @@ class PapiDatabase(AccessDatabase):
         """Reads the database and fetches the Player identification, pairings and results.
         The tournament_id is used to make the players' id unique for an event."""
 
-        per_plugin_fields = plugin_manager.hook.get_db_player_fields()
-        plugin_fields = [field for fields in per_plugin_fields for field in fields]
         player_fields: list[str] = (
             [
                 'Ref',
@@ -401,7 +390,6 @@ class PapiDatabase(AccessDatabase):
                 'Club',
                 'FideCode',
             ]
-            + plugin_fields
         )
         for round_ in range(1, rounds + 1):
             player_fields += RoundFields(round_).all

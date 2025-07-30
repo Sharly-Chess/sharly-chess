@@ -13,7 +13,9 @@ from plugins.utils import (
     ExtraColumn,
     PluginEngineArgument,
     PluginNavBarItem,
+    PluginData,
 )
+from utils.enum import ScreenType, TournamentRating
 
 if TYPE_CHECKING:
     from data.input_output import DataSource
@@ -34,7 +36,6 @@ if TYPE_CHECKING:
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
-    from utils.enum import ScreenType, TournamentRating
     from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 
@@ -90,18 +91,9 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_db_player_fields(self) -> list[str]:
-        """Provide addition column field names to read from the database"""
-
-    @hookspec
-    def augment_player_after_db_fetch(
-        self, stored_player: 'StoredPlayer', row: dict[str, Any]
-    ) -> list[str]:
-        """Add plugin specific data to a player after they are fetched from the database"""
-
-    @hookspec
-    def player_data_for_db_write(self, stored_player: 'StoredPlayer') -> dict[str, Any]:
-        """Provide addition column data for players when writing to the database"""
+    def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin player values.
+        Also provide the ID of the plugin."""
 
     @hookspec
     def get_player_admin_template_context(
@@ -141,7 +133,7 @@ class AppHookSpecs:
 
     @hookspec
     def get_player_estimated_rating(
-        self, federation: str, tournament_rating: 'TournamentRating', player: 'Player'
+        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
     ) -> Optional['PlayerRating']:
         """Get the estimated rating of a player."""
 

@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from data.pairing import Pairing
     from data.player import Player
     from data.tournament import Tournament
+    from database.sqlite.event.event_database import EventDatabase
 
 
 @total_ordering
@@ -32,6 +33,10 @@ class Board:
             if stored_board.black_player_id
             else None
         )
+
+    @property
+    def tournament(self) -> 'Tournament':
+        return self.white_player.tournament
 
     @property
     def white_player(self) -> 'Player':
@@ -100,10 +105,20 @@ class Board:
         white_player = self.white_player
         black_player = self.black_player
         assert black_player is not None
-        self.stored_board.white_player_id = black_player.id
-        self.stored_board.black_player_id = white_player.id
         self.replace_player(black_player, 'white')
         self.replace_player(white_player, 'black')
+        if self.result != Result.NO_RESULT:
+            white_result = self.result
+            self.black_pairing.stored_pairing.result = white_result.value
+            self.white_pairing.stored_pairing.result = (
+                white_result.opposite_result.value
+            )
+        with EventDatabase(self.tournament.event.uniq_id, True) as database:
+            database.update_stored_board(self.stored_board)
+            if self.result != Result.NO_RESULT:
+                database.update_stored_pairing(self.white_pairing.stored_pairing)
+                database.update_stored_pairing(self.black_pairing.stored_pairing)
+            database.commit()
 
     def to_pgn(
         self,

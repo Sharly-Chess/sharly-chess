@@ -29,7 +29,7 @@ from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_access_database import FfeAccessDatabase
-from plugins.ffe.utils import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
@@ -239,12 +239,12 @@ class FfeDatabase(LocalSourceDatabase):
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             plugin_data={
-                PLUGIN_NAME: {
-                    'ffe_id': row['ffe_id'],
-                    'ffe_licence': PlayerFFELicence(row['ffe_licence']),
-                    'ffe_licence_number': row['ffe_licence_number'],
-                    'league': row['league'],
-                }
+                PLUGIN_NAME: FfePlayerPluginData(
+                    ffe_id=row['Ref'],
+                    ffe_licence=PlayerFFELicence.from_papi_value(row['AffType']),
+                    ffe_licence_number=row['NrFFE'],
+                    league=row['ClubLigue'],
+                ).to_stored_value()
             },
         )
 

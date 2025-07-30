@@ -46,14 +46,13 @@ from utils.enum import (
     PlayerRatingType,
     ScreenType,
 )
-from database.access.papi.papi_database import PapiDatabase, PapiVariable
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.pairings import PairingVariation, PairingSystem, PairingVariationManager
+    from data.pairings import PairingVariation, PairingSystem
 
 logger: Logger = get_logger()
 
@@ -73,6 +72,7 @@ class Tournament:
         self.prize_groups_by_id = self._get_prize_groups_by_id()
         self.pairing_system.update_player_results(self)
 
+        self.file.touch(exist_ok=True)
         self.stored_file_modified_timestamp: float | None = None
         if self.file_exists:
             self.stored_file_modified_timestamp = self.file_modified_timestamp
@@ -167,16 +167,6 @@ class Tournament:
     @property
     def log_prefix(self) -> str:
         return f'Event [{self.event.uniq_id}] - Tournament [{self.uniq_id}] - '
-
-    @property
-    def papi_write_database(self) -> PapiDatabase:
-        """This database should be used instead of creating a new instance
-        in write mode to ensure not reloading it unnecessarily."""
-        return PapiDatabase(
-            self.file,
-            write=True,
-            on_exit=self.on_papi_update,
-        )
 
     @property
     def start_timestamp(self) -> float:
@@ -332,6 +322,8 @@ class Tournament:
 
     @property
     def pairing_variation(self) -> 'PairingVariation':
+        from data.pairings import PairingVariationManager
+
         return PairingVariationManager.get_object(self.stored_tournament.pairing)
 
     @property
@@ -772,10 +764,6 @@ class Tournament:
     def update_stored_file_modified_timestamp(self):
         self.stored_file_modified_timestamp = self.file_modified_timestamp
 
-    def on_papi_update(self):
-        self.update_stored_file_modified_timestamp()
-        plugin_manager.hook.on_tournament_data_updated(tournament=self)
-
     def clear_cache(self):
         """Clears the cache of the tournament."""
         cached_property_names = [
@@ -1173,9 +1161,7 @@ class Tournament:
         assert board.black_player is not None
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             self.stored_tournament.last_result_update = (
-                event_database.delete_stored_result(
-                    self.id, self.current_round, board.id
-                )
+                event_database.delete_stored_result(self.id, board.round, board.id)
             )
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
@@ -1259,114 +1245,64 @@ class Tournament:
                 f'Black player {black_player.full_name} already has an '
                 f'opponent (id: {black_pairing.opponent_id}) for round {round_nb}.'
             )
-        if black_player and black_pairing:
-            result = Result.NO_RESULT
-            board = self.get_round_pab_board(round_nb)
-            assert board is not None
-            board_id = board.identifier
-            board.replace_player(black_player, 'black')
-            black_pairing.stored_pairing.result = result.value
-            black_pairing.stored_pairing.board_id = board_id
-        else:
-            result = Result.PAIRING_ALLOCATED_BYE
-            board_id = max(self.boards_by_id.keys()) + 1
-            stored_board = StoredBoard(
-                id=board_id,
-                white_player_id=white_player.id,
-                black_player_id=None,
-                index=max(board.index for board in self.get_round_boards(round_nb)) + 1,
-            )
-            self.boards_by_id[board_id] = Board(self, round_nb, stored_board)
-        white_pairing.stored_pairing.result = result.value
-        white_pairing.stored_pairing.board_id = board_id
-        with self.papi_write_database as papi_database:
-            papi_database.update_player_pairing(white_player, round_nb, white_pairing)
+        with EventDatabase(self.event.uniq_id, True) as database:
             if black_player and black_pairing:
-                papi_database.remove_exempt_pairing(round_nb)
-                papi_database.update_player_pairing(
-                    black_player, round_nb, black_pairing
+                result = Result.NO_RESULT
+                board = self.get_round_pab_board(round_nb)
+                assert board is not None
+                board_id = board.identifier
+                board.replace_player(black_player, 'black')
+                black_pairing.stored_pairing.result = result.value
+                black_pairing.stored_pairing.board_id = board_id
+                black_pairing.update(database)
+            else:
+                result = Result.PAIRING_ALLOCATED_BYE
+                stored_board = StoredBoard(
+                    id=None,
+                    white_player_id=white_player.id,
+                    black_player_id=None,
+                    index=max(board.index for board in self.get_round_boards(round_nb))
+                    + 1,
                 )
-            papi_database.commit()
+                board_id = database.add_stored_board(stored_board)
+                stored_board.id = board_id
+                self.boards_by_id[board_id] = Board(self, round_nb, stored_board)
+            white_pairing.stored_pairing.result = result.value
+            white_pairing.stored_pairing.board_id = board_id
+            white_pairing.update(database)
+            database.commit()
 
-    def unpair_boards(self, boards: list[Board], round_: int):
-        with self.papi_write_database as database:
+    def unpair_boards(self, boards: list[Board]):
+        with EventDatabase(self.event.uniq_id, True) as database:
             for board in boards:
-                for player in (board.white_player, board.black_player):
-                    if not player:
-                        continue
-                    database.remove_player_pairing(player, round_)
-                if board.result == Result.PAIRING_ALLOCATED_BYE:
-                    database.remove_exempt_pairing(round_)
+                board.white_player.delete_pairing(board.round, database)
+                if board.black_player:
+                    board.black_player.delete_pairing(board.round, database)
+                database.delete_stored_board(board.identifier)
+                if board.identifier in self.boards_by_id:
+                    del self.boards_by_id[board.identifier]
             database.commit()
-        self.clear_cache(True)
+        self.clear_cache()
 
-    def permute_board_colors(self, board: Board, round_: int):
-        board.permute_colors()
-        with self.papi_write_database as database:
-            database.update_player_pairing(
-                board.white_player, round_, board.white_player.pairings[round_]
-            )
-            assert board.black_player is not None
-            database.update_player_pairing(
-                board.black_player, round_, board.black_player.pairings[round_]
-            )
-            database.commit()
-
-    def update_round_pairings(self, round_nb: int):
-        """Updates the pairings of all players for a round."""
-        with self.papi_write_database as papi_database:
-            papi_database.remove_exempt_pairing(round_nb)
-            for player in self.players:
-                if round_nb in player.pairings:
-                    papi_database.update_player_pairing(
-                        player, round_nb, player.pairings[round_nb]
-                    )
-            papi_database.commit()
-        self.clear_cache(True)
-
-    def update_papi_database_from_stored_tournament(self):
-        """Updates the papi database with all the
-        values in common with the stored tournament."""
-        from plugins.ffe.utils import (
-            PapiPairingSystem,
-            PapiPairingVariation,
-            PapiThreePointsForAWin,
-        )
-
-        if not self.file_exists:
-            return
-        with self.papi_write_database as papi_database:
-            papi_database.update_tie_breaks(
-                [
-                    tie_break
-                    for tie_break in self.stored_tie_breaks or []
-                    if tie_break.papi_id is not None
-                ]
-            )
-            three_points_for_a_win = PapiThreePointsForAWin.get_plugin_value(
-                self.stored_three_points_for_a_win
-            )
-            assert three_points_for_a_win is not None
-            papi_info: dict[PapiVariable, str | int] = {
-                PapiVariable.ROUNDS: self.stored_rounds,
-                PapiVariable.RATING: self.stored_rating.to_papi_value,
-                PapiVariable.THREE_POINTS_FOR_A_WIN: three_points_for_a_win,
-            }
-            if self.stored_pairing_variation:
-                if variation := PapiPairingVariation.get_plugin_value(
-                    self.stored_pairing_variation
-                ):
-                    system = PapiPairingSystem.get_plugin_value(
-                        self.stored_pairing_variation.system()
-                    )
-                    assert system is not None
-                    papi_info |= {
-                        PapiVariable.PAIRING_VARIATION: variation,
-                        PapiVariable.PAIRING_SYSTEM: system,
-                    }
-            papi_database.write_info(papi_info)
-            papi_database.commit()
-        self.clear_cache(True)
+    def create_boards(
+        self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
+    ):
+        with EventDatabase(self.event.uniq_id, True) as database:
+            for stored_board in stored_boards:
+                id_ = database.add_stored_board(stored_board)
+                stored_board.id = id_
+                board = Board(self, round_, stored_board)
+                self.boards_by_id[id_] = board
+                white_stored_pairing = board.white_pairing.stored_pairing
+                white_stored_pairing.board_id = id_
+                if board.black_player:
+                    board.black_pairing.stored_pairing.board_id = id_
+                    board.black_pairing.update(database)
+                else:
+                    white_stored_pairing.result = pab_result.value
+                board.white_pairing.update(database)
+                database.commit()
+        self.clear_cache()
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
@@ -1376,18 +1312,19 @@ class Tournament:
         assert not self.check_in_open, (
             f'Check-in already open for tournament [{self.uniq_id}].'
         )
-        assert self.stored_tournament.id is not None
-        with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            with self.papi_write_database as papi_database:
-                event_database.set_tournament_last_check_in_update(
-                    self.stored_tournament.id
-                )
-                self.stored_tournament.check_in_open = True
-                event_database.set_tournament_check_in(self.id, True)
-                papi_database.open_check_in(self.current_round + 1)
-                papi_database.commit()
-            event_database.commit()
-        self.clear_cache(True)
+        self.stored_tournament.check_in_open = True
+        present_player_ids: list[int] = []
+        for player in self.players:
+            pairing = player.pairings_by_round.get(self.current_round + 1, None)
+            if not pairing or not pairing.result.is_bye:
+                present_player_ids.append(player.id)
+                player.stored_player.check_in = False
+
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_check_in(self.id, True)
+            database.set_players_check_in(present_player_ids, False)
+            database.commit()
+        self.clear_cache()
 
     def close_check_in(self, zpbs_next_round: bool, zpbs_last_rounds: bool):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
@@ -1395,38 +1332,37 @@ class Tournament:
         assert self.check_in_open, (
             f'Check-in already closed for tournament [{self.uniq_id}].'
         )
-        with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            assert self.stored_tournament.id is not None
-            event_database.set_tournament_last_check_in_update(
-                self.stored_tournament.id
-            )
-            event_database.set_tournament_check_in(self.id, False)
-            event_database.commit()
-            self.stored_tournament.check_in_open = False
-        if zpbs_next_round or zpbs_last_rounds:
-            with self.papi_write_database as papi_database:
-                papi_database.close_check_in(
-                    self.current_round + 1,
-                    (self.rounds + 1) if zpbs_last_rounds else None,
-                )
-                papi_database.commit()
-        self.clear_cache(True)
+        self.stored_tournament.check_in_open = False
+
+        zpb_rounds: list[int] = []
+        if zpbs_last_rounds:
+            zpb_rounds = list(range(self.current_round + 1, self.rounds + 1))
+        elif zpbs_next_round:
+            zpb_rounds = [self.current_round + 1]
+
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_check_in(self.id, False)
+            if zpb_rounds:
+                for player in self.players:
+                    if player.check_in:
+                        continue
+                    pairing = player.pairings_by_round.get(self.current_round + 1, None)
+                    if pairing and pairing.result.is_bye:
+                        continue
+                    for round_ in zpb_rounds:
+                        player.pairings_by_round[round_].update_result(
+                            database, Result.ZERO_POINT_BYE
+                        )
+            database.commit()
+        self.clear_cache()
 
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
-        with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.set_tournament_last_result_update(player.tournament_id)
-            event_database.commit()
-        with self.papi_write_database as papi_database:
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_last_result_update(player.tournament_id)
             for round_, result in byes.items():
-                papi_database.set_player_result(
-                    player.ref_id,
-                    round_,
-                    result,
-                    player.pairings[round_].opponent_id is not None,
-                )
-                player.pairings[round_].stored_pairing.result = result.value
-            papi_database.commit()
+                player.pairings_by_round[round_].update_result(database, result)
+            database.commit()
         self.clear_cache()
         player.clear_cache()
 
@@ -1441,4 +1377,4 @@ class Tournament:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
             database.commit()
         self.stored_tournament.pairing_settings = pairing_settings
-        self.clear_cache(clear_papi_cache=True)
+        self.clear_cache()

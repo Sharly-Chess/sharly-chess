@@ -31,6 +31,7 @@ from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
+from plugins.ffe.utils import FFEUtils
 from plugins.pairing_acceleration.pairing_settings import DualRatingLimitsSetting
 from plugins.utils import PluginUtils
 from utils.enum import Result
@@ -45,11 +46,19 @@ class FfePlayerComparator(FidePlayerComparator):
         if not self.match_player:
             return None
         diff_field_ids = super().diff_field_ids or []
-        for field_id in ('league', 'ffe_licence'):
-            if field_id in self.field_ids and get_data(
-                self.player.plugin_data, field_id
-            ) != get_data(self.match_player.plugin_data, field_id):
-                diff_field_ids.append(field_id)
+        plugin_data = FFEUtils.get_player_plugin_data(self.player)
+        match_plugin_data = FFEUtils.get_player_plugin_data(self.match_player)
+        if (
+            (field_id := 'league') in self.field_ids
+            and match_plugin_data.league
+            and plugin_data.league != match_plugin_data.league
+        ):
+            diff_field_ids.append(field_id)
+        if (
+            (field_id := 'ffe_licence') in self.field_ids
+            and plugin_data.ffe_licence != match_plugin_data.ffe_licence
+        ):
+            diff_field_ids.append(field_id)
         return diff_field_ids
 
     @override
@@ -57,11 +66,19 @@ class FfePlayerComparator(FidePlayerComparator):
         if not self.match_player:
             return
         super().update_player_from_match(field_ids)
-        for field_id in ('league', 'ffe_licence'):
-            if field_id in self.field_ids and get_data(
-                self.player.plugin_data, field_id
-            ) != (match := get_data(self.match_player.plugin_data, field_id)):
-                self.player.plugin_data[PLUGIN_NAME][field_id] = match
+        plugin_data = FFEUtils.get_player_plugin_data(self.player)
+        match_plugin_data = FFEUtils.get_player_plugin_data(self.match_player)
+        if (
+            'league' in self.field_ids
+            and match_plugin_data.league
+            and plugin_data.league != match_plugin_data.league
+        ):
+            plugin_data.league = match_plugin_data.league
+        if (
+            'ffe_licence' in self.field_ids
+            and plugin_data.ffe_licence != match_plugin_data.ffe_licence
+        ):
+            plugin_data.ffe_licence = match_plugin_data.ffe_licence
 
 
 class _FfeDataSource(ABC):
@@ -88,7 +105,7 @@ class _FfeDataSource(ABC):
 
     @staticmethod
     def _get_ffe_licence_number(stored_player: StoredPlayer) -> str | None:
-        return get_data(stored_player.plugin_data, 'ffe_licence_number')
+        return get_data(stored_player.plugin_data, 'ffe_licence_number', None)
 
     async def _get_player_matches(
         self,
@@ -265,7 +282,7 @@ class LeaguePlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(player: Player) -> str:
-        return get_data(player.plugin_data, 'league', '')
+        return FFEUtils.get_player_plugin_data(player).league or ''
 
 
 class NicoisSwissVariation(SwissVariation):
@@ -349,7 +366,7 @@ class FfeLeaguePlayerFilter(PlayerFilter):
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
         leagues = self.get_option_values()[0]
-        return lambda player: get_data(player.plugin_data, 'league') in leagues
+        return lambda player: FFEUtils.get_player_plugin_data(player).league in leagues
 
     def __str__(self) -> str:
         return f'{self.name} ({", ".join(self.get_option_values()[0])})'
@@ -380,7 +397,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
     def get_player_counter(self, tournament: 'Tournament') -> Counter[str]:
         counter: Counter[str] = Counter[str]()
         for player in tournament.players:
-            if league := get_data(player.plugin_data, 'league'):
+            if league := FFEUtils.get_player_plugin_data(player).league:
                 counter[league] += 1
         return counter
 

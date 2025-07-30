@@ -22,7 +22,8 @@ class Migration(BaseMigration):
             '   `club` TEXT,'
             '   `fixed` INTEGER,'
             '   `check_in` INTEGER NOT NULL DEFAULT 0,'
-            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   `plugin_data` TEXT NOT NULL,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT)'
             ')'
         )
         self.database.execute(

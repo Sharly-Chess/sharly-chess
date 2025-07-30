@@ -1620,11 +1620,16 @@ class EventDatabase(MigrationDatabase):
             club=row['club'],
             fixed=row['fixed'],
             check_in=row['check_in'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data']),
         )
 
     def load_tournament_stored_players(self, tournament_id: int) -> list[StoredPlayer]:
         self.execute(
-            'SELECT * FROM `player` WHERE `tournament_id` = ?',
+            (
+                'SELECT `player`.* FROM `player` '
+                'INNER JOIN `tournament_player` ON `player`.`id` = `player_id`'
+                'WHERE `tournament_id` = ?'
+            ),
             (tournament_id,),
         )
         stored_players: list[StoredPlayer] = []
@@ -1639,40 +1644,30 @@ class EventDatabase(MigrationDatabase):
 
     @classmethod
     def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
-        per_plugin_player_data = plugin_manager.hook.player_data_for_db_write(
-            stored_player=stored_player
-        )
-        return (
-            cls._get_fields_dict(
-                stored_player,
-                [
-                    'first_name',
-                    'last_name',
-                    'gender',
-                    'mail',
-                    'phone',
-                    'comment',
-                    'owed',
-                    'paid',
-                    'title',
-                    'fide_id',
-                    'federation',
-                    'club',
-                    'fixed',
-                ],
-            )
-            | {
-                'date_of_birth': cls.dump_date_to_database_field(
-                    stored_player.date_of_birth
-                ),
-                'ratings': cls.dump_to_json_database_field(stored_player.ratings),
-            }
-            | {
-                key: value
-                for data in per_plugin_player_data
-                for key, value in data.items()
-            }
-        )
+        return cls._get_fields_dict(
+            stored_player,
+            [
+                'first_name',
+                'last_name',
+                'gender',
+                'mail',
+                'phone',
+                'comment',
+                'owed',
+                'paid',
+                'title',
+                'fide_id',
+                'federation',
+                'club',
+                'fixed',
+            ],
+        ) | {
+            'date_of_birth': cls.dump_date_to_database_field(
+                stored_player.date_of_birth
+            ),
+            'ratings': cls.dump_to_json_database_field(stored_player.ratings),
+            'plugin_data': cls.dump_to_json_database_field(stored_player.plugin_data),
+        }
 
     def add_stored_player(
         self,
@@ -1704,6 +1699,13 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'UPDATE `player` SET `check_in` = ? WHERE `id` = ?',
             (check_in, player_id),
+        )
+
+    def set_players_check_in(self, player_ids: list[int], check_in: bool):
+        list_set = ', '.join(['?'] * len(player_ids))
+        self.execute(
+            f'UPDATE `player` SET `check_in` = ? WHERE `id` IN ({list_set})',
+            (check_in,) + tuple(player_ids),
         )
 
     # ---------------------------------------------------------------------------------
@@ -1772,7 +1774,7 @@ class EventDatabase(MigrationDatabase):
             (tournament_id, player_id),
         )
         self.execute(
-            ('DELETE FROM `pairing` WHERE `tournament_id` = ? AND `player_id` = ?'),
+            'DELETE FROM `pairing` WHERE `tournament_id` = ? AND `player_id` = ?',
             (tournament_id, player_id),
         )
 
@@ -1808,7 +1810,8 @@ class EventDatabase(MigrationDatabase):
         stored_pairing: StoredPairing,
     ):
         fields = self._get_fields_dict(
-            stored_pairing, ['tournament_id', 'player_id', 'result']
+            stored_pairing,
+            ['tournament_id', 'player_id', 'result', 'board_id'],
         ) | {'round': stored_pairing.round_}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1817,14 +1820,16 @@ class EventDatabase(MigrationDatabase):
             tuple(fields.values()),
         )
 
-    def update_stored_pairing_result(self, stored_pairing: StoredPairing):
+    def update_stored_pairing(self, stored_pairing: StoredPairing):
+        fields = self._get_fields_dict(stored_pairing, ['result', 'board_id'])
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(
             (
-                'UPDATE `pairing` SET `result` = ? '
+                f'UPDATE `pairing` SET {field_sets} '
                 'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?'
             ),
-            (
-                stored_pairing.result,
+            tuple(fields.values())
+            + (
                 stored_pairing.tournament_id,
                 stored_pairing.player_id,
                 stored_pairing.round_,
@@ -1893,6 +1898,16 @@ class EventDatabase(MigrationDatabase):
         if not (board_id := self._last_inserted_id()):
             raise RuntimeError('Board insertion failed')
         return board_id
+
+    def update_stored_board(self, stored_board: StoredBoard):
+        fields = self._get_fields_dict(
+            stored_board, ['white_player_id', 'black_player_id', 'index']
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `board` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_board.id,),
+        )
 
     def delete_stored_board(self, board_id: int):
         self.execute('DELETE FROM `board` WHERE `id` = ?;', (board_id,))
@@ -2016,8 +2031,6 @@ class EventDatabase(MigrationDatabase):
         self, tournament_id: int, board: Board, result: UtilResult
     ) -> float:
         """Stores a result and return the date of the update."""
-        assert board.id is not None
-        assert board.white_player is not None
         assert board.black_player is not None
         date: float = self.set_tournament_last_result_update(tournament_id)
         self.execute(

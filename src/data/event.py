@@ -597,6 +597,14 @@ class Event:
             if player.id in tournament.players_by_id:
                 tournament.clear_cache()
 
+    def update_players(self, players: list[Player]):
+        with EventDatabase(self.uniq_id, True) as database:
+            for player in players:
+                database.update_stored_player(player.stored_player)
+            database.commit()
+        for tournament in self.tournaments:
+            tournament.clear_cache()
+
     @cached_property
     def player_count(self) -> int:
         return len(self.players_by_id)
