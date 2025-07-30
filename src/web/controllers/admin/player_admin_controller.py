@@ -333,7 +333,7 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             )
         if len(filter_tournaments) not in (0, len(admin_event.tournaments_by_id)):
-            filters.append(lambda player: player.tournament_id in filter_tournaments)
+            filters.append(lambda player: player.tournament.id in filter_tournaments)
         if len(filter_federations) not in (0, len(players_federations)):
             filters.append(lambda player: player.federation in filter_federations)
         if len(filter_clubs) not in (0, len(players_clubs)):

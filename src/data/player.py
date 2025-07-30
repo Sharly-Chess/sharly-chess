@@ -648,8 +648,6 @@ class Player:
         return self.board_number_sort_key == other.board_number_sort_key
 
     def __repr__(self):
-        if self.ref_id == 1:
-            return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
             f'{self.ratings.get(tournament_rating, "  -  ")}'
             for tournament_rating in TournamentRating
@@ -662,27 +660,6 @@ class Player:
     # --------------------------------------------------------------------------
     # Legacy
     # --------------------------------------------------------------------------
-
-    @staticmethod
-    def player_sharly_chess_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
-        return tournament_id * 10000 + ref_id
-
-    @staticmethod
-    def player_papi_id_from_sharly_chess_id(player_id: int) -> int:
-        return player_id % 10000
-
-    @staticmethod
-    def player_tournament_id_from_sharly_chess_id(player_id: int) -> int:
-        return player_id // 10000
-
-    @property
-    def ref_id(self) -> int:
-        """Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
-        return self.player_papi_id_from_sharly_chess_id(self.id)
-
-    @property
-    def tournament_id(self) -> int:
-        return self.player_tournament_id_from_sharly_chess_id(self.id)
 
     @property
     def pairings(self) -> dict[int, Pairing]:

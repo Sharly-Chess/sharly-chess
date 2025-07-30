@@ -185,7 +185,7 @@ class FfePlugin(Plugin):
         # The leagues that will be shown on the league select list
         players_leagues: list[str] = sorted(
             {
-                FFEUtils.get_player_plugin_data(player).league
+                FFEUtils.get_player_plugin_data(player).league or ''
                 for player in web_context.admin_event.players_by_id.values()
             }
         )

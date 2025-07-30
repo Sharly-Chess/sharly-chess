@@ -1348,7 +1348,7 @@ class Tournament:
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_last_result_update(player.tournament_id)
+            database.set_tournament_last_result_update(player.tournament.id)
             for round_, result in byes.items():
                 player.pairings_by_round[round_].update_result(database, result)
             database.commit()
