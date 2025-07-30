@@ -789,8 +789,9 @@ class FfePlugin(Plugin):
                     at='first-round' if document.is_crosstable else 'club',
                     title=_('League *** LEAGUE FOR TABLE HEADER'),
                     classes='league',
-                    value=lambda player: FFEUtils.get_player_plugin_data(player).league
-                    or '',
+                    value=lambda player: (
+                        FFEUtils.get_player_plugin_data(player).league or ''
+                    ),
                 )
             ]
         return []
