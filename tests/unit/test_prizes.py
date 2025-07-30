@@ -39,7 +39,7 @@ from data.prize.prize_sharing import (
     PrizeSharing,
 )
 from data.prize.prize_group import AssignedPrize
-from database.access.papi.papi_store import (
+from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTournamentPlayer,
     StoredPairing,

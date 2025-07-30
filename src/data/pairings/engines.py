@@ -15,7 +15,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
-from database.access.papi.papi_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard
 from utils.enum import TrfType, Result
 
 if TYPE_CHECKING:
@@ -55,8 +55,7 @@ class PairingEngine(ABC):
         round_: int,
         partial_pairings: bool = False,
     ):
-        """Generate the pairings of the round *round_* for tournament *tournament*.
-        Generated pairings are stored in the player pairings and in the Papi DB."""
+        """Generate the pairings of the round *round_* for tournament *tournament*."""
         if self.pairings_generation_disabled_message(tournament, round_):
             raise ValueError(
                 f'Pairings generation not allowed for round {round_} '
@@ -83,21 +82,7 @@ class PairingEngine(ABC):
             )
             for index, board in enumerate(sorted(boards, reverse=True)):
                 board.stored_board.index = index_delta + index
-        next_board_id = max(tournament.boards_by_id.keys() or [0]) + 1
-
-        for stored_board in stored_boards:
-            id_ = next_board_id
-            next_board_id += 1
-            stored_board.id = id_
-            board = Board(tournament, round_, stored_board)
-            tournament.boards_by_id[id_] = board
-            white_stored_pairing = board.white_pairing.stored_pairing
-            white_stored_pairing.board_id = id_
-            if black_pairing := board.black_pairing:
-                black_pairing.stored_pairing.board_id = id_
-            else:
-                white_stored_pairing.result = self.pab_result.value
-        tournament.update_round_pairings(round_)
+        tournament.create_boards(stored_boards, round_, self.pab_result)
 
     def pairings_generation_disabled_message(
         self, tournament: 'Tournament', at_round: int

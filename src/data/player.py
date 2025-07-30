@@ -3,13 +3,16 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, Callable, SupportsFloat, TYPE_CHECKING, Any
+from typing import Self, Callable, SupportsFloat, TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
 from common.i18n import _
 from data.pairing import Pairing
-from database.access.papi.papi_store import StoredPlayer, StoredPairing
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredPlayer, StoredPairing
+from plugins.manager import plugin_manager
+from plugins.utils import PluginData
 from utils import StaticUtils
 from utils.enum import (
     PlayerGender,
@@ -23,6 +26,7 @@ from utils.enum import (
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
+    from data.event import Event
     from data.tournament import Tournament
     from data.tie_breaks.tie_breaks import SupportsRichComparison
 
@@ -98,7 +102,7 @@ class PlayerRating:
 @total_ordering
 class Player:
     # TODO (Molrn - multi tournament) Split into 2 classes:
-    #  - Player(stored_player)
+    #  - Player(event, stored_player)
     #  - TournamentPlayer(tournament, player, stored_tournament_player)
     def __init__(
         self,
@@ -109,6 +113,12 @@ class Player:
         self.stored_player = stored_player
         self.stored_tournament_player = self.stored_player.stored_tournament_player
         self.ratings = self._get_ratings()
+        self.plugin_data: dict[str, PluginData] = {
+            plugin_id: plugin_data_class.from_stored_value(
+                self.stored_player.plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }
 
         # TournamentPlayer
         self.pairings_by_round = self._get_pairings_by_round()
@@ -124,6 +134,18 @@ class Player:
         self.time_control_initial_time: int | None = None
         self.time_control_increment: int | None = None
         self.time_control_modified: bool | None = None
+
+    @staticmethod
+    def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
+        return {
+            plugin_id: plugin_data_class
+            for plugin_id, plugin_data_class in plugin_manager.hook.get_player_plugin_data_class()
+        }
+
+    @property
+    def event(self) -> 'Event':
+        # TODO (Molrn - multi tournament) replace by an event ref
+        return self.tournament.event
 
     @property
     def id(self) -> int:
@@ -202,21 +224,19 @@ class Player:
     def check_in(self) -> bool:
         return self.stored_player.check_in
 
-    @property
-    def plugin_data(self) -> dict[str, dict[str, Any]]:
-        return self.stored_player.plugin_data
-
     def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
         return {
-            TournamentRating(tr_value): PlayerRating(
-                rating['value'], PlayerRatingType(rating['type'])
-            )
+            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
             for tr_value, rating in self.stored_player.ratings.items()
         }
 
     def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return self.ratings.get(
-            tournament_rating, PlayerRating(0, PlayerRatingType.ESTIMATED)
+        return (
+            self.ratings.get(tournament_rating, None)
+            or plugin_manager.hook.get_player_estimated_rating(
+                self.event.federation, tournament_rating, self
+            )
+            or PlayerRating(0, PlayerRatingType.ESTIMATED)
         )
 
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
@@ -252,6 +272,19 @@ class Player:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
 
+    def _get_default_pairing(self, round_: int) -> Pairing:
+        return Pairing(
+            self,
+            StoredPairing(
+                tournament_id=self.tournament.id,
+                player_id=self.id,
+                round_=round_,
+                result=Result.NO_RESULT.value,
+                board_id=None,
+            ),
+            exists=False,
+        )
+
     def _get_pairings_by_round(self) -> dict[int, Pairing]:
         known_pairings: dict[int, Pairing] = {}
         for stored_pairing in self.stored_tournament_player.stored_pairings:
@@ -261,19 +294,16 @@ class Player:
             round_: (
                 known_pairings[round_]
                 if round_ in known_pairings
-                else Pairing(
-                    self,
-                    StoredPairing(
-                        tournament_id=self.tournament.id,
-                        player_id=self.id,
-                        round_=round_,
-                        result=Result.NO_RESULT.value,
-                        board_id=None,
-                    ),
-                )
+                else self._get_default_pairing(round_)
             )
             for round_ in range(1, self.tournament.rounds + 1)
         }
+
+    def delete_pairing(self, round_: int, event_database: EventDatabase):
+        event_database.delete_stored_pairing(
+            self.pairings_by_round[round_].stored_pairing
+        )
+        self.pairings_by_round[round_] = self._get_default_pairing(round_)
 
     @property
     def estimation(self) -> int:
@@ -618,8 +648,6 @@ class Player:
         return self.board_number_sort_key == other.board_number_sort_key
 
     def __repr__(self):
-        if self.ref_id == 1:
-            return f'{self.__class__.__name__}(#{self.id} PAB)'
         ratings_str: str = '/'.join(
             f'{self.ratings.get(tournament_rating, "  -  ")}'
             for tournament_rating in TournamentRating
@@ -632,27 +660,6 @@ class Player:
     # --------------------------------------------------------------------------
     # Legacy
     # --------------------------------------------------------------------------
-
-    @staticmethod
-    def player_sharly_chess_id_from_papi_id(tournament_id: int, ref_id: int) -> int:
-        return tournament_id * 10000 + ref_id
-
-    @staticmethod
-    def player_papi_id_from_sharly_chess_id(player_id: int) -> int:
-        return player_id % 10000
-
-    @staticmethod
-    def player_tournament_id_from_sharly_chess_id(player_id: int) -> int:
-        return player_id // 10000
-
-    @property
-    def ref_id(self) -> int:
-        """Returns the Unique ID of the player in the Papi file (needed while using the Papi storage)."""
-        return self.player_papi_id_from_sharly_chess_id(self.id)
-
-    @property
-    def tournament_id(self) -> int:
-        return self.player_tournament_id_from_sharly_chess_id(self.id)
 
     @property
     def pairings(self) -> dict[int, Pairing]:

@@ -3,7 +3,7 @@ from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
 from common import format_timestamp
-from database.access.papi.papi_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard
 from utils.enum import Result, PlayerRatingType
 
 if TYPE_CHECKING:
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from data.pairing import Pairing
     from data.player import Player
     from data.tournament import Tournament
+    from database.sqlite.event.event_database import EventDatabase
 
 
 @total_ordering
@@ -34,6 +35,10 @@ class Board:
         )
 
     @property
+    def tournament(self) -> 'Tournament':
+        return self.white_player.tournament
+
+    @property
     def white_player(self) -> 'Player':
         if (player := self._white_player_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
@@ -52,9 +57,8 @@ class Board:
         return self.white_player.pairings_by_round[self.round]
 
     @property
-    def black_pairing(self) -> Optional['Pairing']:
-        if not self.black_player:
-            return None
+    def black_pairing(self) -> 'Pairing':
+        assert self.black_player is not None
         return self.black_player.pairings_by_round[self.round]
 
     @property
@@ -72,7 +76,7 @@ class Board:
         return (
             self.white_player.fixed
             or getattr(self.black_player, 'fixed', None)
-            or self.white_player.tournament.first_board_number + self.index
+            or self.tournament.first_board_number + self.index
         )
 
     @property
@@ -101,10 +105,20 @@ class Board:
         white_player = self.white_player
         black_player = self.black_player
         assert black_player is not None
-        self.stored_board.white_player_id = black_player.id
-        self.stored_board.black_player_id = white_player.id
         self.replace_player(black_player, 'white')
         self.replace_player(white_player, 'black')
+        if self.result != Result.NO_RESULT:
+            white_result = self.result
+            self.black_pairing.stored_pairing.result = white_result.value
+            self.white_pairing.stored_pairing.result = (
+                white_result.opposite_result.value
+            )
+        with EventDatabase(self.tournament.event.uniq_id, True) as database:
+            database.update_stored_board(self.stored_board)
+            if self.result != Result.NO_RESULT:
+                database.update_stored_pairing(self.white_pairing.stored_pairing)
+                database.update_stored_pairing(self.black_pairing.stored_pairing)
+            database.commit()
 
     def to_pgn(
         self,

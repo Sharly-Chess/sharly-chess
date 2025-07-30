@@ -16,7 +16,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import PlayerRating
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay

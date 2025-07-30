@@ -2,7 +2,7 @@ import logging
 import socket
 import sys
 from pathlib import Path
-from typing import overload, ClassVar
+from typing import overload, ClassVar, TYPE_CHECKING
 
 import jinja2
 import litestar
@@ -26,10 +26,12 @@ from common.i18n import (
 )
 from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
-from data.player import Federation
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
+
+if TYPE_CHECKING:
+    from data.player import Federation
 
 logger: logging.Logger = get_logger()
 
@@ -147,7 +149,9 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.launch_browser and not TEST_ENV
 
     @property
-    def federation(self) -> Federation:
+    def federation(self) -> 'Federation':
+        from data.player import Federation
+
         return Federation(self.stored_config.federation or self.default_federation)
 
     @property

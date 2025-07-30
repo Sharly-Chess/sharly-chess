@@ -482,11 +482,7 @@ class PairingsAdminController(BaseEventAdminController):
                     board_id, web_context.admin_filtered_boards
                 )
         else:
-            tournament.add_result(
-                board,
-                Result.from_papi_value(result),
-                web_context.admin_round,
-            )
+            tournament.add_result(board, Result.from_papi_value(result))
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
             )
@@ -562,7 +558,7 @@ class PairingsAdminController(BaseEventAdminController):
             return web_context.error
         board = web_context.get_admin_board()
         tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards([board], round)
+        tournament.unpair_boards([board])
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -594,8 +590,7 @@ class PairingsAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         board = web_context.get_admin_board()
-        tournament = web_context.get_admin_tournament()
-        tournament.permute_board_colors(board, round)
+        board.permute_colors()
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -921,7 +916,7 @@ class PairingsAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards(web_context.admin_boards, round)
+        tournament.unpair_boards(web_context.admin_boards)
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -950,7 +945,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         for round_ in reversed(range(1, tournament.rounds + 1)):
             boards = tournament.get_round_boards(round_)
-            tournament.unpair_boards(boards, round_)
+            tournament.unpair_boards(boards)
         tournament.set_current_round(0)
         return self._admin_event_pairings_render(
             request,
