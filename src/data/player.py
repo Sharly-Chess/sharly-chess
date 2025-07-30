@@ -113,12 +113,7 @@ class Player:
         self.stored_player = stored_player
         self.stored_tournament_player = self.stored_player.stored_tournament_player
         self.ratings = self._get_ratings()
-        self.plugin_data: dict[str, PluginData] = {
-            plugin_id: plugin_data_class.from_stored_value(
-                self.stored_player.plugin_data.get(plugin_id, {})
-            )
-            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
-        }
+        self.plugin_data = self._get_plugin_data()
 
         # TournamentPlayer
         self.pairings_by_round = self._get_pairings_by_round()
@@ -223,6 +218,19 @@ class Player:
     @property
     def check_in(self) -> bool:
         return self.stored_player.check_in
+
+    def replace_stored_player(self, stored_player: StoredPlayer):
+        self.stored_player = stored_player
+        self.plugin_data = self._get_plugin_data()
+        self.ratings = self._get_ratings()
+
+    def _get_plugin_data(self) -> dict[str, PluginData]:
+        return {
+            plugin_id: plugin_data_class.from_stored_value(
+                self.stored_player.plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }
 
     def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
         return {

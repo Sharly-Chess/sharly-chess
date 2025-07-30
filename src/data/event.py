@@ -588,7 +588,7 @@ class Event:
     def update_player(self, player: Player, new_stored_player: StoredPlayer):
         new_stored_player.id = player.id
         new_stored_player.check_in = player.check_in
-        player.stored_player = new_stored_player
+        player.replace_stored_player(new_stored_player)
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_player(player.stored_player)
             database.commit()

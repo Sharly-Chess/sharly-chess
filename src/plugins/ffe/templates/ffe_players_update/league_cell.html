@@ -8,6 +8,6 @@
         scope="col" class="text-nowrap text-center {{ value.player_class }} {{ field_class }}"
         {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=value.player.plugin_data.ffe.league or '', new=value.match_player.plugin_data.ffe.league), 'top') }}{% endif %}
     >
-        {{ value.match_player.plugin_data.ffe.league }}
+        {{ value.match_player.plugin_data.ffe.league or '' }}
     </td>
 {% endif %}
