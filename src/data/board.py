@@ -76,7 +76,7 @@ class Board:
         return (
             self.white_player.fixed
             or getattr(self.black_player, 'fixed', None)
-            or self.white_player.tournament.first_board_number + self.index
+            or self.tournament.first_board_number + self.index
         )
 
     @property

@@ -687,26 +687,9 @@ class Tournament:
             round_,
             stored_boards,
         ) in self.stored_tournament.stored_boards_by_round.items():
-            round_boards = []
             for stored_board in stored_boards:
                 board = Board(self, round_, stored_board)
-                round_boards.append(board)
                 boards_by_id[board.identifier] = board
-
-            # TODO (Molrn - Big move) Remove as indexes should be stored
-            for player in self.players:
-                self.set_player_points(player, before_round=round_)
-            for index, board in enumerate(sorted(round_boards, reverse=True)):
-                board.stored_board.index = index
-
-            for board in round_boards:
-                board.white_player.set_board(
-                    board.index, board.number, BoardColor.WHITE
-                )
-                if board.black_player:
-                    board.black_player.set_board(
-                        board.index, board.number, BoardColor.BLACK
-                    )
         return boards_by_id
 
     def _set_handicap(self, round_: int):
@@ -792,6 +775,12 @@ class Tournament:
         self._estimate_players(self.players, after_round=round_)
         if self.handicap:
             self._set_handicap(round_)
+        for board in self.get_round_boards(round_):
+            board.white_player.set_board(board.index, board.number, BoardColor.WHITE)
+            if board.black_player:
+                board.black_player.set_board(
+                    board.index, board.number, BoardColor.BLACK
+                )
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
