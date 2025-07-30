@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import platform
 import subprocess
 from functools import cache
 from operator import attrgetter
@@ -137,7 +138,19 @@ class BbpPairings(PairingEngine):
     BYE_ID = 0
 
     @property
+    def executable_dir(self) -> Path:
+        return self.bbp_pairings_dir
+
+    @property
     def executable_path(self) -> Path:
+        system: str = platform.system()
+        build_filename: str
+        if system == 'Windows':
+            return self.executable_dir / 'bbpPairings-windows.exe'
+        elif system == 'Darwin':
+            return self.executable_dir / 'bbpPairings-macos'
+        elif system == 'Linux':
+            return self.executable_dir / 'bbpPairings-linux'
         return BbpPairingsInstaller().executable_path
 
     @property

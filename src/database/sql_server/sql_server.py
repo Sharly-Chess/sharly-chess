@@ -83,47 +83,93 @@ class SqlServer:
 
     async def __aenter__(self) -> Self:
         """Opens the database connection, raises SharlyChessException on error."""
-        needed_driver: str = 'SQL Server'
-        if needed_driver not in pyodbc.drivers():
+        # Try to find an appropriate SQL Server driver
+        available_drivers = pyodbc.drivers()
+
+        # Preferred drivers in order of preference
+        preferred_drivers = [
+            'FreeTDS',      # Open source driver, works well with older servers
+            'SQL Server'    # Legacy Windows driver, stable and reliable
+        ]
+
+        selected_driver = None
+        for driver in preferred_drivers:
+            if driver in available_drivers:
+                selected_driver = driver
+                break
+
+        if selected_driver is None:
             logger.error('Installed ODBC drivers are:')
-            for driver in pyodbc.drivers():
+            for driver in available_drivers:
                 logger.error(' - %s', driver)
-            logger.error('Needed driver: %s', needed_driver)
-            install_url: str = (
-                'https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server'
-                '?view=sql-server-ver16#download-for-windows'
-            )
-            logger.error('Install the driver (see %s) and restart.', install_url)
+            logger.error('No compatible SQL Server driver found. Supported drivers: %s', ', '.join(preferred_drivers))
+
+            import platform
+            if platform.system() == 'Darwin':  # macOS
+                logger.error('On macOS, install FreeTDS: brew install freetds')
+            elif platform.system() == 'Windows':  # Windows
+                logger.error('Needed driver: SQL Server')
+                install_url: str = (
+                    'https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server'
+                    '?view=sql-server-ver16#download-for-windows'
+                )
+                logger.error('Install the driver (see %s) and restart.', install_url)
+            else:  # Linux
+                logger.error('On Linux, install FreeTDS: apt-get install freetds-dev unixodbc-dev (Ubuntu/Debian) or equivalent')
             self.error = 'SQL server driver not found.'
             logger.error(self.error)
             return self
 
-        db_url: str = f'Driver={{{needed_driver}}};Server={self.credentials.host};Database={self.credentials.database};UID={self.credentials.user};PWD={self.credentials.password}'
-        timeout = self.timeout or self.DEFAULT_TIMEOUT
+        logger.info('Using SQL Server driver: %s', selected_driver)
 
-        async def connect_to_server():
-            nonlocal self, db_url
-            self.database = await aioodbc.connect(dsn=db_url)
+        common_params = [
+            f'Driver={{{selected_driver}}}',
+            f'Server={self.credentials.host}',
+            f'Database={self.credentials.database}',
+            f'UID={self.credentials.user}',
+            f'PWD={self.credentials.password}'
+        ]
+
+        if 'FreeTDS' in selected_driver:
+            # FreeTDS has different connection parameters
+            conn_params = common_params + [
+                'Port=1433',
+                'TDS_Version=7.0'  # Very old SQL Server compatibility
+            ]
+
+        else:
+            # Legacy SQL Server driver (Windows)
+            conn_params = common_params + [
+                ('Basic', common_params + ['Connection Timeout=30'])
+            ]
+
+        last_error = None
+        db_url = ';'.join(conn_params)
 
         try:
-            await asyncio.wait_for(connect_to_server(), timeout=timeout)
-        except pyodbc.Error as e:
+            timeout = self.timeout or self.DEFAULT_TIMEOUT
+            self.database = await asyncio.wait_for(
+                aioodbc.connect(dsn=db_url), timeout=timeout
+            )
+            logger.info('Successfully connected')
+        except (pyodbc.Error, TimeoutError, OSError) as e:
+            last_error = e
+            logger.warning('Connection failed: %s', str(e))
+
+        if self.database is None:
             NetworkMonitor.set_connected(False)
-            if DEVEL_ENV:
-                error: str = _('Connection to the server failed: {error}.').format(
-                    error=e.args
+            if isinstance(last_error, TimeoutError):
+                error_msg = _('Connection to the server failed: {error}.').format(
+                    error=_('timeout')
+                )
+            elif DEVEL_ENV and last_error:
+                error_msg = _('Connection to the server failed: {error}.').format(
+                    error=last_error.args if hasattr(last_error, 'args') else str(last_error)
                 )
             else:
-                error: str = _('Connection to the server failed.')
-            logger.error(error)
-            raise SharlyChessException(error) from e
-        except TimeoutError as e:
-            NetworkMonitor.set_connected(False)
-            error: str = _('Connection to the server failed: {error}.').format(
-                error=_('timeout')
-            )
-            logger.error(error)
-            raise SharlyChessException(error) from e
+                error_msg = _('Connection to the server failed.')
+            logger.error(error_msg)
+            raise SharlyChessException(error_msg) from last_error
 
         assert self.database is not None
         try:
