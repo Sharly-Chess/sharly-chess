@@ -308,7 +308,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_extra_screen_columns(self, screen: ScreenType) -> Iterable[ExtraColumn]:
+    def get_extra_screen_columns(self, screen: 'ScreenType') -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
     # ---------------------------------------------------------------------------------

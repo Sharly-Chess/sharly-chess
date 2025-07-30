@@ -10,6 +10,7 @@ import requests
 from packaging.version import Version, InvalidVersion
 
 from common.i18n import update_i18n_files
+from plugins.ffe.papi_converter import PapiConverter
 
 sys.path.extend(
     map(
@@ -28,6 +29,7 @@ from PyInstaller.__main__ import run
 
 from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER, TMP_DIR
 from data.pairings.engines import BbpPairings
+
 from common import SHARLY_CHESS_VERSION
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -161,10 +163,23 @@ def build_exe():
     files += [
         FFE_SQL_SERVER_CREDENTIALS_FILE,
     ]
+
+    # Use correct path separator for PyInstaller --add-data based on OS
+    data_separator = ':' if os.name != 'nt' else ';'
+
+    # Process project files (files within BASE_DIR)
     for file in files:
-        pyinstaller_params.append(
-            f'--add-data={file};{file.parent.relative_to(BASE_DIR)}'
-        )
+        try:
+            relative_path = file.parent.relative_to(BASE_DIR)
+            pyinstaller_params.append(
+                f'--add-data={file}{data_separator}{relative_path}'
+            )
+        except ValueError:
+            # File is outside BASE_DIR, add to root
+            pyinstaller_params.append(
+                f'--add-data={file}{data_separator}.'
+            )
+            logger.info(f'Adding external file to root: {file}')
     iso4217parse_dir: Path = TMP_DIR / 'iso4217parse'
     iso4217parse_dir.mkdir(parents=True, exist_ok=True)
     iso4217parse_version = '0.6.2'
@@ -183,8 +198,13 @@ def build_exe():
                 f.write(chunk)
         logger.info('Done.')
         pyinstaller_params.append(
-            f'--add-data={file};{file.parent.relative_to(TMP_DIR)}'
+            f'--add-data={file}{data_separator}{file.parent.relative_to(TMP_DIR)}'
         )
+
+    # Add macOS-specific options when building on macOS
+    if os.name != 'nt':  # macOS/Linux
+        pyinstaller_params.append('--osx-bundle-identifier=com.shary-chess.app')
+
     run(pyinstaller_params)
 
 
@@ -200,6 +220,55 @@ def create_project():
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
+
+    # Create a double-clickable launcher for macOS/Linux
+    if os.name != 'nt':  # macOS/Linux
+        launcher_path = PROJECT_DIR / 'Launch Sharly Chess.app'
+        logger.info('Creating AppleScript launcher at [%s]...', launcher_path)
+
+        # AppleScript to launch the main executable in a new Terminal window (in Dark Mode)
+        applescript = f'''
+            on run
+                -- The path to this launcher is /path/to/dist_folder/Launch Sharly Chess.app
+                -- We need the path to the folder that contains it.
+                set app_path to path to me
+                tell application "Finder"
+                    set container_path to (container of app_path) as alias
+                end tell
+                set script_path to POSIX path of container_path
+
+                tell application "Terminal"
+                    activate
+                    -- Create the new tab and execute the command
+                    set new_tab to do script "cd " & quoted form of script_path & " && ./sharly-chess-{SHARLY_CHESS_VERSION}"
+
+                    -- Try to set the theme to dark mode
+                    try
+                        set current settings of new_tab to settings set "Pro"
+                    on error
+                        -- If "Pro" theme isn't found, we just continue with the default
+                    end try
+                end tell
+            end run
+        '''
+
+        # Use osacompile to create the .app bundle
+        cmd = [
+            'osacompile',
+            '-o',
+            str(launcher_path),
+            '-e',
+            applescript,
+        ]
+
+        # Run the command
+        import subprocess
+        process = subprocess.run(cmd, capture_output=True, text=True)
+        if process.returncode != 0:
+            logger.error("Failed to create AppleScript launcher:")
+            logger.error(process.stderr)
+        else:
+            logger.info("AppleScript launcher created successfully.")
     target_file = tools_dir / 'chessevent.bat'
     logger.info('Creating batch file [%s]]...', target_file)
     with open(target_file, 'wt', encoding='utf-8') as f:
@@ -242,8 +311,10 @@ def build_test():
 def main():
     # option --github is used when generating the EXE file from a GITHUB action
     # to verify that the name of the tag matches the Sharly Chess version.
+    # option --preserve-build is used to skip cleanup for signing purposes
     parser = argparse.ArgumentParser()
     parser.add_argument('--github', type=str)
+    parser.add_argument('--preserve-build', action='store_true', help='Skip cleanup to preserve build artifacts for signing')
     args = parser.parse_args()
     if args.github:
         if SHARLY_CHESS_VERSION != Version(args.github):
@@ -262,7 +333,12 @@ def main():
     create_project()
     create_zip_files()
     build_test()
-    clean(clean_zip=False)
+
+    # Skip cleanup if we need to preserve build artifacts for signing
+    if not args.preserve_build:
+        clean(clean_zip=False)
+    else:
+        logger.info('Preserving build artifacts for signing (--preserve-build was specified)')
 
 
 if __name__ == '__main__':

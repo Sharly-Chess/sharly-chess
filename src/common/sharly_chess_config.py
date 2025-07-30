@@ -7,7 +7,6 @@ from typing import overload, ClassVar, TYPE_CHECKING
 import jinja2
 import litestar
 import pycountry
-import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
@@ -261,7 +260,6 @@ class SharlyChessConfig(metaclass=Singleton):
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
     jinja2_version: Version = Version(jinja2.__version__)
     uvicorn_version: Version = Version(uvicorn.__version__)
-    pyodbc_version: Version = Version(pyodbc.version)
 
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')

@@ -9,7 +9,6 @@ from common.network import NetworkMonitor
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
 from data.player import Federation
-from database.access.access_database import access_driver, odbc_drivers
 
 from litestar import get, post, patch, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
@@ -243,8 +242,6 @@ class IndexAdminController(BaseAdminController):
             console_level_infos[value]['name'] = name
 
         context = web_context.template_context | {
-            'odbc_drivers': odbc_drivers(),
-            'access_driver': access_driver(),
             'plugins': plugin_manager.all_plugins,
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,

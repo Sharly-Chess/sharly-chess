@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import platform
 import subprocess
 from functools import cache
 from operator import attrgetter
@@ -135,6 +136,10 @@ class PairingEngine(ABC):
 
 class BbpPairings(PairingEngine):
     BYE_ID = 0
+
+    @property
+    def executable_dir(self) -> Path:
+        return self.bbp_pairings_dir
 
     @property
     def executable_path(self) -> Path:

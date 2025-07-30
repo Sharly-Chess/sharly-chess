@@ -10,7 +10,6 @@ from types import FrameType
 from typing import ClassVar
 from webbrowser import open
 
-import pyodbc  # type: ignore
 import requests
 import uvicorn
 from litestar import Litestar
@@ -79,9 +78,6 @@ class ServerEngine(Engine):
         if self.error:
             return
 
-        logger.debug('ODBC drivers found:')
-        for driver in pyodbc.drivers():
-            logger.debug(' - %s', driver)
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
