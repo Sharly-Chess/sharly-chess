@@ -1,6 +1,11 @@
 name: Sharly-Chess export
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to build'
+        required: true
   push:
     tags:
       - '*'
@@ -9,10 +14,7 @@ permissions:
   contents: write
 
 jobs:
-  tests:
-    uses: ./.github/workflows/full_tests.yml
   export-sharly-chess:
-    needs: tests
     strategy:
       matrix:
         include:
@@ -100,7 +102,123 @@ jobs:
         if: matrix.platform == 'macos'
         shell: bash
         run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
+          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --preserve-build
+
+      # For Mac - Sign and notarize
+      - name: Sign and Notarize macOS App
+        if: matrix.platform == 'macos'
+        shell: bash
+        env:
+          MACOS_SIGNING_CERT_BASE64: ${{ secrets.MACOS_SIGNING_CERT_BASE64 }}
+          MACOS_SIGNING_CERT_PASSWORD: ${{ secrets.MACOS_SIGNING_CERT_PASSWORD }}
+          APPLE_DEVELOPER_USERNAME: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          # Find the built project directory (PyInstaller creates a directory with the executable and _internal folder)
+          PROJECT_DIR=$(find "dist" -type d -name "sharly-chess-*" -print -quit 2>/dev/null || true)
+          
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "::error::PyInstaller project directory not found in dist/!"
+            echo "Directory contents:"
+            ls -la dist/
+            exit 1
+          fi
+          echo "Found project directory at: $PROJECT_DIR"
+          
+          # Find the main executable
+          EXECUTABLE_PATH=$(find "$PROJECT_DIR" -type f -name "sharly-chess-*" -perm +111 -print -quit 2>/dev/null || true)
+          if [ -z "$EXECUTABLE_PATH" ]; then
+            echo "::error::Main executable not found in $PROJECT_DIR!"
+            ls -la "$PROJECT_DIR"
+            exit 1
+          fi
+          echo "Found main executable at: $EXECUTABLE_PATH"
+
+          # 1. Import the signing certificate
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo "Creating temporary keychain at: $KEYCHAIN_PATH"
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
+          security unlock-keychain -p "" "$KEYCHAIN_PATH"
+
+          echo "Decoding and importing certificate..."
+          CERT_PATH=$RUNNER_TEMP/certificate.p12
+          echo -n "$MACOS_SIGNING_CERT_BASE64" | base64 --decode -o "$CERT_PATH"
+          security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_SIGNING_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
+
+          # 2. Sign all binaries and libraries in the project directory
+          echo "Signing all binaries and libraries..."
+          
+          # Sign all dynamic libraries and shared objects
+          find "$PROJECT_DIR" -type f \( -name "*.dylib" -o -name "*.so" \) -exec bash -c '
+            file="$1"
+            if file "$file" | grep -q "Mach-O"; then
+              echo "Signing library: $file"
+              codesign --force --options=runtime --sign "Developer ID Application" --keychain "'"$KEYCHAIN_PATH"'" "$file" 2>/dev/null || echo "Warning: Could not sign $file"
+            fi
+          ' _ {} \;
+          
+          # Sign all executables (including Python binaries)
+          find "$PROJECT_DIR" -type f -perm +111 -exec bash -c '
+            file="$1"
+            if file "$file" | grep -q "Mach-O"; then
+              echo "Signing executable: $file"
+              codesign --force --options=runtime --sign "Developer ID Application" --keychain "'"$KEYCHAIN_PATH"'" "$file" 2>/dev/null || echo "Warning: Could not sign $file"
+            fi
+          ' _ {} \;
+          
+          # Finally, sign the main executable (this might be redundant but ensures it's signed)
+          echo "Signing main executable: $EXECUTABLE_PATH"
+          codesign --force --options=runtime --sign "Developer ID Application" --keychain "$KEYCHAIN_PATH" "$EXECUTABLE_PATH"
+
+          # 4. Create a ZIP file for notarization
+          echo "Creating ZIP for notarization..."
+          ARCHIVE_PATH="dist/sharly-chess-for-notarization.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$PROJECT_DIR" "$ARCHIVE_PATH"
+
+          # 5. Notarize the application
+          echo "Submitting for notarization..."
+          xcrun notarytool submit "$ARCHIVE_PATH" \
+            --apple-id "$APPLE_DEVELOPER_USERNAME" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+
+          # 6. Staple the notarization ticket to the app
+          echo "Stapling notarization ticket..."
+          xcrun stapler staple "$EXECUTABLE_PATH"
+
+          # 7. Recreate ZIP files with the signed app bundle
+          echo "Recreating ZIP files with signed app bundle..."
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # Use the project directory we already found
+          
+          if [ -d "$PROJECT_DIR" ]; then
+            echo "Recreating ZIP from signed project directory: $PROJECT_DIR"
+            cd "$PROJECT_DIR"
+            rm -f "../../export/sharly-chess-${VERSION}.zip" "../../export/papi-web-${VERSION}.zip"
+            zip -r "../../export/sharly-chess-${VERSION}.zip" .
+            cp "../../export/sharly-chess-${VERSION}.zip" "../../export/papi-web-${VERSION}.zip"
+            cd ../..
+          else
+            echo "::warning::Could not find project directory to recreate ZIP"
+          fi
+          
+          # 8. Clean up temporary keychain and certificate
+          security delete-keychain "$KEYCHAIN_PATH"
+          rm -f "$CERT_PATH"
+
+      - name: Clean up macOS build artifacts
+        if: always() && matrix.platform == 'macos' # always() ensures this runs even if previous steps fail
+        shell: bash
+        run: |
+          echo "Cleaning up macOS build artifacts..."
+          rm -rf dist/
+          rm -rf build/
+          rm -f *.spec
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
