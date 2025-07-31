@@ -175,7 +175,7 @@
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3 mb-3">
                         {% if admin_unpaired|length > 0 %}
-                            {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='upaired-players-table %}
+                            {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
                         {% endif %}
