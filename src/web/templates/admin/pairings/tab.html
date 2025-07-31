@@ -172,21 +172,21 @@
                 </div>
             </div>
 
-                {% if has_unpaired %}
-                    <div class="col-12 col-lg-3 mb-3">
-                        {% if admin_unpaired|length > 0 %}
-                            {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                        {% endif %}
+            {% if has_unpaired %}
+                <div class="col-12 col-lg-3 mb-3">
+                    {% if admin_unpaired|length > 0 %}
+                        {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
+                        {% endwith %}
+                    {% endif %}
 
-                        {% if admin_bye_players|length > 0 %}
-                            {% with title=_('Byes (%(byes)d) *** Players with byes', byes=admin_bye_players|length), unpaired=admin_bye_players, table_id='bye-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                        {% endif %}
-                    </div>
-                {% endif %}
+                    {% if admin_bye_players|length > 0 %}
+                        {% with title=_('Byes (%(byes)d) *** Players with byes', byes=admin_bye_players|length), unpaired=admin_bye_players, table_id='bye-players-table' %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+            {% endif %}
 
             <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} mb-3">
                 <table
@@ -198,30 +198,29 @@
                         class="position-sticky z-2"
                         style="top: var(--header-height);"
                     >
-                            <tr>
-                                <th>{{ _('Board (%(remaining)d)', remaining=admin_tournament.boards_without_result|length) }}</th>
-                                <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                                {% if admin_tournament.print_real_points %}
-                                    <th>&nbsp;</th>
-                                {% endif %}
-                                <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}</th>
-                                <th class="text-center">{{ _('Result') }}</th>
-                                <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}</th>
-                                {% if admin_tournament.print_real_points %}
-                                    <th>&nbsp;</th>
-                                {% endif %}
-                                <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for board in admin_filtered_boards %}
-                                {% with wp=board.white_player, bp=board.black_player %}
-                                    {% include '/admin/pairings/pairing_row.html' %}
-                                {% endwith %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                        <tr>
+                            <th>{{ _('Board (%(remaining)d)', remaining=admin_tournament.boards_without_result|length) }}</th>
+                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+                            {% if admin_tournament.print_real_points %}
+                                <th>&nbsp;</th>
+                            {% endif %}
+                            <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}</th>
+                            <th class="text-center">{{ _('Result') }}</th>
+                            <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}</th>
+                            {% if admin_tournament.print_real_points %}
+                                <th>&nbsp;</th>
+                            {% endif %}
+                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for board in admin_filtered_boards %}
+                            {% with wp=board.white_player, bp=board.black_player %}
+                                {% include '/admin/pairings/pairing_row.html' %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
