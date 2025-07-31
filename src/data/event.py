@@ -115,10 +115,7 @@ class Event:
         last_load_date: float | None = event_last_load_date_by_uniq_id.get(
             self.uniq_id, None
         )
-        self._silent = (
-            last_load_date is not None
-            and last_load_date > self.stored_event.last_update
-        )
+        self._silent = last_load_date is not None and last_load_date > self.last_update
         event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
 
     @property
