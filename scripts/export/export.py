@@ -293,6 +293,11 @@ def build_exe():
         pyinstaller_params.append(
             f'--add-data={file}{data_separator}{file.parent.relative_to(TMP_DIR)}'
         )
+
+    # Add macOS-specific options when building on macOS
+    if os.name != 'nt':  # macOS/Linux
+        pyinstaller_params.append('--osx-bundle-identifier=com.arcticwhiteness.sharlychess')
+
     run(pyinstaller_params)
 
 
@@ -313,6 +318,55 @@ def create_project():
     # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
     custom_dir: Path = PROJECT_DIR / 'custom'
     custom_dir.mkdir(exist_ok=True)
+
+    # Create a double-clickable launcher for macOS/Linux
+    if os.name != 'nt':  # macOS/Linux
+        launcher_path = PROJECT_DIR / 'Launch Sharly Chess.app'
+        logger.info('Creating AppleScript launcher at [%s]...', launcher_path)
+
+        # AppleScript to launch the main executable in a new Terminal window (in Dark Mode)
+        applescript = f'''
+            on run
+                -- The path to this launcher is /path/to/dist_folder/Launch Sharly Chess.app
+                -- We need the path to the folder that contains it.
+                set app_path to path to me
+                tell application "Finder"
+                    set container_path to (container of app_path) as alias
+                end tell
+                set script_path to POSIX path of container_path
+
+                tell application "Terminal"
+                    activate
+                    -- Create the new tab and execute the command
+                    set new_tab to do script "cd " & quoted form of script_path & " && ./sharly-chess-{SHARLY_CHESS_VERSION}"
+
+                    -- Try to set the theme to dark mode
+                    try
+                        set current settings of new_tab to settings set "Pro"
+                    on error
+                        -- If "Pro" theme isn't found, we just continue with the default
+                    end try
+                end tell
+            end run
+        '''
+
+        # Use osacompile to create the .app bundle
+        cmd = [
+            'osacompile',
+            '-o',
+            str(launcher_path),
+            '-e',
+            applescript,
+        ]
+
+        # Run the command
+        import subprocess
+        process = subprocess.run(cmd, capture_output=True, text=True)
+        if process.returncode != 0:
+            logger.error("Failed to create AppleScript launcher:")
+            logger.error(process.stderr)
+        else:
+            logger.info("AppleScript launcher created successfully.")
     target_file = tools_dir / 'chessevent.bat'
     logger.info('Creating batch file [%s]]...', target_file)
     with open(target_file, 'wt', encoding='utf-8') as f:
@@ -355,8 +409,10 @@ def build_test():
 def main():
     # option --github is used when generating the EXE file from a GITHUB action
     # to verify that the name of the tag matches the Sharly Chess version.
+    # option --preserve-build is used to skip cleanup for signing purposes
     parser = argparse.ArgumentParser()
     parser.add_argument('--github', type=str)
+    parser.add_argument('--preserve-build', action='store_true', help='Skip cleanup to preserve build artifacts for signing')
     args = parser.parse_args()
     if args.github:
         if SHARLY_CHESS_VERSION != Version(args.github):
@@ -375,7 +431,12 @@ def main():
     create_project()
     create_zip_files()
     build_test()
-    clean(clean_zip=False)
+
+    # Skip cleanup if we need to preserve build artifacts for signing
+    if not args.preserve_build:
+        clean(clean_zip=False)
+    else:
+        logger.info('Preserving build artifacts for signing (--preserve-build was specified)')
 
 
 if __name__ == '__main__':
