@@ -195,7 +195,7 @@ def build_exe():
 
     # Add macOS-specific options when building on macOS
     if os.name != 'nt':  # macOS/Linux
-        pyinstaller_params.append('--osx-bundle-identifier=com.arcticwhiteness.sharlychess')
+        pyinstaller_params.append('--osx-bundle-identifier=com.shary-chess.app')
 
     run(pyinstaller_params)
 
