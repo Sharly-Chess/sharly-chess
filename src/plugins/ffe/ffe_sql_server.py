@@ -197,14 +197,14 @@ class FFESqlServer(SqlServer):
         params: list[Any] = []
         for token in tokens:
             token_expressions: list[str] = [
-                f'(UPPER({field[0]}) LIKE ?)' for field in str_fields
+                f'(UPPER({field[0]}) LIKE %s)' for field in str_fields
             ]
             token_params: list[str | int] = [
                 f'{field[1]}{token}{field[2]}' for field in str_fields
             ]
             with suppress(ValueError):
                 int_value = int(token.strip())
-                token_expressions.append('(joueur.FideCode IN (?, ?))')
+                token_expressions.append('(joueur.FideCode IN (%s, %s))')
                 token_params += [
                     self.remote_fide_id_format_1(int_value),
                     self.remote_fide_id_format_2(int_value),
@@ -216,7 +216,7 @@ class FFESqlServer(SqlServer):
         condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
         order = ' OR '.join(
             [
-                '(UPPER(joueur.Nom) LIKE ?)',
+                '(UPPER(joueur.Nom) LIKE %s)',
             ]
             * len(tokens)
         )
@@ -228,7 +228,7 @@ class FFESqlServer(SqlServer):
             f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
         )
         if limit:
-            query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
+            query += ' OFFSET 0 ROWS FETCH NEXT %s ROWS ONLY'
             params += [
                 limit,
             ]
@@ -262,7 +262,7 @@ class FFESqlServer(SqlServer):
         player_ffe_id: int,
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
-            'joueur.Ref = ?', (player_ffe_id,)
+            'joueur.Ref = %s', (player_ffe_id,)
         )
 
     async def get_stored_player_by_fide_id(
@@ -270,7 +270,7 @@ class FFESqlServer(SqlServer):
         player_fide_id: int,
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
-            'joueur.FideCode IN (?, ?)',
+            'joueur.FideCode IN (%s, %s)',
             (
                 self.remote_fide_id_format_1(player_fide_id),
                 self.remote_fide_id_format_2(player_fide_id),
@@ -284,7 +284,7 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.NrFFE IN ({", ".join(["?"] * len(player_ffe_licence_numbers))}) '
+            f'WHERE joueur.NrFFE IN ({", ".join(["%s"] * len(player_ffe_licence_numbers))}) '
             f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
@@ -297,7 +297,7 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.FideCode IN ({", ".join(["?"] * 2 * len(player_fide_ids))}) '
+            f'WHERE joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))}) '
             f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(

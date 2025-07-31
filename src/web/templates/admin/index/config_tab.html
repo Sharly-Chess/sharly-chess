@@ -193,10 +193,6 @@
                 <td>{{ sharly_chess_config.jstree_version }}</td>
             </tr>
             <tr class="{{ row_cycler() }}">
-                <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
-                <td>{{ sharly_chess_config.pyodbc_version }}</td>
-            </tr>
-            <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{
                     _('Access driver (found)')
                     if access_driver in odbc_drivers else

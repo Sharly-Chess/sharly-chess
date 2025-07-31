@@ -152,113 +152,12 @@ def build_exe():
     files += [BbpPairings().executable_path]
     files += [
         FFE_SQL_SERVER_CREDENTIALS_FILE,
-        Path(__file__).parent / 'setup_odbc.py',  # ODBC setup script
     ]
 
     # Keep track of external files that need special handling
     external_files = []
     # Use correct path separator for PyInstaller --add-data based on OS
     data_separator = ':' if os.name != 'nt' else ';'
-
-    # Add platform-specific libraries
-    if os.name != 'nt':  # macOS/Linux
-        # Add unixodbc libraries for pyodbc on macOS
-        # Try both ARM Mac (/opt/homebrew) and Intel Mac (/usr/local) paths
-        homebrew_paths = [
-            Path('/opt/homebrew/opt/unixodbc/lib'),  # ARM Mac
-            Path('/usr/local/opt/unixodbc/lib'),     # Intel Mac
-        ]
-
-        for unixodbc_lib_path in homebrew_paths:
-            if unixodbc_lib_path.exists():
-                odbc_libs = [
-                    unixodbc_lib_path / 'libodbc.2.dylib',
-                    unixodbc_lib_path / 'libodbcinst.2.dylib',
-                ]
-                for lib in odbc_libs:
-                    if lib.exists():
-                        pyinstaller_params.append(f'--add-binary={lib}{data_separator}.')
-                break  # Only use the first path that exists
-
-        # Add FreeTDS libraries for SQL Server connectivity
-        freetds_paths = [
-            Path('/opt/homebrew/lib'),  # ARM Mac
-            Path('/usr/local/lib'),     # Intel Mac
-        ]
-
-        for freetds_lib_path in freetds_paths:
-            if freetds_lib_path.exists():
-                freetds_libs = [
-                    freetds_lib_path / 'libtdsodbc.so',
-                    freetds_lib_path / 'libtdsodbc.0.so',
-                    freetds_lib_path / 'libsybdb.5.dylib',    # Core FreeTDS library
-                    freetds_lib_path / 'libct.4.dylib',       # Client library
-                ]
-                for lib in freetds_libs:
-                    if lib.exists():
-                        logger.info(f'Adding FreeTDS library: {lib}')
-                        pyinstaller_params.append(f'--add-binary={lib}{data_separator}.')
-
-                # Add OpenSSL dependencies (required by FreeTDS and Python)
-                openssl_path = None
-                python_framework_ssl = Path(f'/Library/Frameworks/Python.framework/Versions/{sys.version_info.major}.{sys.version_info.minor}/lib')
-                
-                # Try Python framework path first
-                if python_framework_ssl.exists():
-                    openssl_path = python_framework_ssl
-                else:
-                    # Try direct paths if Python framework path fails
-                    direct_paths = [
-                        Path('/opt/homebrew/opt/openssl@3/lib'),     # Homebrew symlink path (ARM Mac)
-                        Path('/usr/local/opt/openssl@3/lib'),        # Homebrew symlink path (Intel Mac)
-                    ]
-                    
-                    for path_candidate in direct_paths:
-                        if path_candidate.exists():
-                            openssl_path = path_candidate
-                            break
-                    
-                    # If direct paths don't work, try versioned paths
-                    if not openssl_path:
-                        cellar_dirs = [
-                            Path('/opt/homebrew/Cellar/openssl@3'),  # ARM Mac
-                            Path('/usr/local/Cellar/openssl@3'),     # Intel Mac
-                        ]
-                        
-                        for cellar_dir in cellar_dirs:
-                            if cellar_dir.exists():
-                                # Find the latest version directory
-                                version_dirs = [d for d in cellar_dir.iterdir() if d.is_dir()]
-                                if version_dirs:
-                                    # Use the first (and likely only) version directory
-                                    lib_dir = version_dirs[0] / 'lib'
-                                    if lib_dir.exists():
-                                        openssl_path = lib_dir
-                                        break
-                
-                if openssl_path and openssl_path.exists():
-                    openssl_libs = [
-                        openssl_path / 'libssl.3.dylib',
-                        openssl_path / 'libcrypto.3.dylib',
-                    ]
-                    for lib in openssl_libs:
-                        if lib.exists():
-                            logger.info(f'Adding OpenSSL library: {lib}')
-                            pyinstaller_params.append(f'--add-binary={lib}{data_separator}.')
-                break  # Only use the first path that exists
-
-    # Add ODBC configuration files for non-Windows platforms
-    if os.name != 'nt':  # macOS/Linux
-        odbc_config_paths = [
-            Path('/opt/homebrew/etc/odbcinst.ini'),  # ARM Mac
-            Path('/usr/local/etc/odbcinst.ini'),     # Intel Mac
-        ]
-        for config_path in odbc_config_paths:
-            if config_path.exists():
-                # Add external ODBC config to a dedicated folder
-                pyinstaller_params.append(f'--add-data={config_path}{data_separator}etc')
-                logger.info(f'Adding ODBC config: {config_path}')
-                break
 
     # Process project files (files within BASE_DIR)
     for file in files:

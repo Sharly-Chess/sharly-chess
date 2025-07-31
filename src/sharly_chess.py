@@ -1,3 +1,5 @@
+# ODBC setup no longer needed - using python-tds instead
+
 try:
     import argparse
     import traceback
@@ -6,19 +8,6 @@ try:
     from utils.scripts import init_script
 
     arguments = init_script()
-    
-    # Set up ODBC environment for exported applications
-    try:
-        import sys
-        from pathlib import Path
-        if hasattr(sys, '_MEIPASS'):  # Running as PyInstaller bundle
-            # Import and run ODBC setup
-            sys.path.insert(0, str(Path(sys._MEIPASS) / 'scripts' / 'export'))
-            from setup_odbc import setup_odbc_environment
-            setup_odbc_environment()
-    except Exception as e:
-        # Don't fail if ODBC setup fails, just log the error
-        print(f"Warning: ODBC setup failed: {e}")
 
     from common import DEVEL_ENV
     from common.i18n import _
