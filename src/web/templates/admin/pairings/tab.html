@@ -186,26 +186,7 @@
                     id="pairings-table"
                     class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
                 >
-                    <thead
-                        id="pairings-table-header"
-                        class="position-sticky z-2"
-                        style="top: var(--header-height);"
-                    >
-                        <tr>
-                            <th>{{ _('Board') }}</th>
-                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                            {% if admin_tournament.print_real_points %}
-                                <th>&nbsp;</th>
-                            {% endif %}
-                            <th>{{ _('White') }}</th>
-                            <th class="text-center">{{ _('Result') }}</th>
-                            <th>{{ _('Black') }}</th>
-                            {% if admin_tournament.print_real_points %}
-                                <th>&nbsp;</th>
-                            {% endif %}
-                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                        </tr>
-                    </thead>
+                    {% include '/admin/pairings/pairing_table_header.html' %}
                     <tbody>
                         {% for board in admin_filtered_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}

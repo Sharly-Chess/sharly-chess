@@ -528,7 +528,9 @@ class Tournament:
             [
                 player
                 for player in self.players
-                if not self.current_round or player.board_id
+                if not self.current_round
+                or player.board_id
+                and player not in self.unpaired_players
             ],
             key=lambda p: (p.last_name, p.first_name),
         )
@@ -604,9 +606,9 @@ class Tournament:
     def boards(self) -> list[Board]:
         return self.get_round_boards(self.current_round)
 
-    @property
-    def boards_without_result(self) -> list[Board]:
-        return [board for board in self.boards if board.result == Result.NO_RESULT]
+    def boards_without_result(self, at_round: int) -> list[Board]:
+        boards = self.get_round_boards(at_round)
+        return [board for board in boards if board.result == Result.NO_RESULT]
 
     @cached_property
     def unpaired_players(self) -> list[Player]:

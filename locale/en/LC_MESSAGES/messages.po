@@ -67,6 +67,10 @@ msgid "%(set_name)s (check-in)"
 msgstr ""
 
 #, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr ""
+
+#, python-format
 msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
 msgstr ""
 
@@ -531,9 +535,6 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
-msgid "Board"
-msgstr ""
-
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
@@ -543,6 +544,10 @@ msgid "Board %(board_number)s"
 msgstr ""
 
 msgid "Board & color"
+msgstr ""
+
+#, python-format
+msgid "Board (%(remaining)d)"
 msgstr ""
 
 msgid "Board selection (by number)"
