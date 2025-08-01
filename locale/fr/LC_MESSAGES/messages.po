@@ -17,6 +17,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "avec les %(color)s"
+
+#, python-format
 msgid "%(count)d boards without result"
 msgstr "%(count)d échiquiers sans résultat"
 
@@ -65,6 +69,10 @@ msgstr "%(player)s - Ronde %(num)s"
 #, python-format
 msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
+
+#, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
 msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
@@ -531,9 +539,6 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
-msgid "Board"
-msgstr "Éch."
-
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
@@ -544,6 +549,10 @@ msgstr "Échiquier %(board_number)s"
 
 msgid "Board & color"
 msgstr "Échiquier & couleur"
+
+#, python-format
+msgid "Board (%(remaining)d)"
+msgstr "Éch. (%(remaining)d)"
 
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
@@ -1272,6 +1281,9 @@ msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
+
+msgid "Display format for pairings."
+msgstr "Méthode d’affichage des appariements."
 
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
@@ -3119,6 +3131,9 @@ msgstr "Sélection des numéros d'appariements"
 msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
 
+msgid "Pairing style:"
+msgstr "Format d’appariement"
+
 msgid "Pairing system"
 msgstr "Système d'appariements"
 
@@ -3326,6 +3341,10 @@ msgstr "En cours"
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
+
+#, python-format
+msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
+msgstr "Table %(board)d"
 
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
