@@ -5,11 +5,6 @@ msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
 
 #, python-format
-msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
-msgstr "avec les %(color)s"
-
-
-#, python-format
 msgid "#%(board_number)d"
 msgstr "n°%(board_number)d"
 
@@ -20,6 +15,10 @@ msgstr "%%s est remplacé par le temps passé depuis l'horaire."
 #, python-format
 msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
+
+#, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "avec les %(color)s"
 
 #, python-format
 msgid "%(count)d boards without result"
@@ -66,6 +65,10 @@ msgstr "%(player)s - Ronde %(num)s"
 #, python-format
 msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
+
+#, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
 msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
@@ -413,13 +416,6 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr "Permet la création de comptes, la déclaration d'appareils et l'assignation de permissions."
 
-msgid "Alphabetical Pairings"
-msgstr "Appariements alphabétiques"
-
-#, python-format
-msgid "Alphabetical Pairings (round #{round})"
-msgstr "Appariements par ordre alphabétique (ronde n°{round})"
-
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -623,9 +619,6 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
-msgid "Board (%(remaining)d)"
-msgstr "Éch. (%(remaining)d)"
-
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
@@ -636,6 +629,10 @@ msgstr "Échiquier %(board_number)s"
 
 msgid "Board & color"
 msgstr "Échiquier & couleur"
+
+#, python-format
+msgid "Board (%(remaining)d)"
+msgstr "Éch. (%(remaining)d)"
 
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
@@ -699,6 +696,7 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
+#, python-format
 msgid "Byes (%(byes)d) *** Players with byes"
 msgstr "Forfaits et absences (%(byes)d)"
 
@@ -1429,6 +1427,9 @@ msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé en mode personnalisable)."
+
+msgid "Display format for pairings."
+msgstr "Méthode d’affichage des appariements."
 
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
@@ -3315,6 +3316,9 @@ msgstr "Sélection des numéros d'appariements"
 
 msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
+
+msgid "Pairing style:"
+msgstr "Format d’appariement"
 
 msgid "Pairing system"
 msgstr "Système d'appariements"
@@ -5991,4 +5995,10 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Alphabetical Pairings"
+#~ msgstr "Appariements alphabétiques"
+
+#~ msgid "Alphabetical Pairings (round #{round})"
+#~ msgstr "Appariements par ordre alphabétique (ronde n°{round})"
 

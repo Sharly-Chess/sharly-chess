@@ -9,16 +9,16 @@ msgid "#%(board_number)d"
 msgstr ""
 
 #, python-format
-msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
-msgstr "with %(color)s"
-
-#, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
 
 #, python-format
 msgid "%%s is replaced by the time left before the hour."
 msgstr ""
+
+#, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "with %(color)s"
 
 #, python-format
 msgid "%(count)d boards without result"
@@ -64,6 +64,10 @@ msgstr ""
 
 #, python-format
 msgid "%(set_name)s (check-in)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
 #, python-format
@@ -412,13 +416,6 @@ msgstr ""
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr ""
 
-msgid "Alphabetical Pairings"
-msgstr ""
-
-#, python-format
-msgid "Alphabetical Pairings (round #{round})"
-msgstr ""
-
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -623,10 +620,6 @@ msgid "Blitz:"
 msgstr ""
 
 #, python-format
-msgid "Board (%(remaining)d)"
-msgstr ""
-
-#, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
 
@@ -635,6 +628,10 @@ msgid "Board %(board_number)s"
 msgstr ""
 
 msgid "Board & color"
+msgstr ""
+
+#, python-format
+msgid "Board (%(remaining)d)"
 msgstr ""
 
 msgid "Board selection (by number)"
@@ -1429,6 +1426,9 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
+msgstr ""
+
+msgid "Display format for pairings."
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -3315,6 +3315,9 @@ msgid "Pairing numbers selection"
 msgstr ""
 
 msgid "Pairing settings"
+msgstr ""
+
+msgid "Pairing style:"
 msgstr ""
 
 msgid "Pairing system"
@@ -5992,4 +5995,10 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Alphabetical Pairings"
+#~ msgstr ""
+
+#~ msgid "Alphabetical Pairings (round #{round})"
+#~ msgstr ""
 
