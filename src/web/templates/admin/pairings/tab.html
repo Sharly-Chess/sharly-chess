@@ -168,13 +168,13 @@
             {% if has_unpaired %}
                 <div class="col-12 col-lg-3 mb-3">
                     {% if admin_unpaired|length > 0 %}
-                        {% with title=_('Unpaired'), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
+                        {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}
 
                     {% if admin_bye_players|length > 0 %}
-                        {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players, table_id='bye-players-table' %}
+                        {% with title=_('Byes (%(byes)d) *** Players with byes', byes=admin_bye_players|length), unpaired=admin_bye_players, table_id='bye-players-table' %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}

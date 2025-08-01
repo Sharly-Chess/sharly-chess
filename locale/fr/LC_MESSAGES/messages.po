@@ -607,8 +607,9 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Byes *** Players with byes"
-msgstr "Absences et points joker"
+#, python-format
+msgid "Byes (%(byes)d) *** Players with byes"
+msgstr "Byes (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -5095,8 +5096,9 @@ msgstr "Désapparier toutes les rondes du tournoi."
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
-msgid "Unpaired"
-msgstr "Non-apparié·es"
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
+msgstr "Non-apparié·es (%(unpaired)d)"
 
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"
