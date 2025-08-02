@@ -14,6 +14,10 @@ English version below
 - Ajout de boutons « Créer et ajouter à nouveau » pour réduire nombre de clics lors de la création d'objets (2.8.0)
 - Rechargement des ressources statiques après les mises à jour (2.8.1)
 
+### Gestion des évènements
+
+- Correction d'un bug à la création des évènements (2.8.5)
+
 ### Gestion des tournois
 
 - Correction du formulaire d'édition des tournois (2.8.3)
@@ -79,6 +83,10 @@ English version below
 - Simplified the home page and added a QR code to ease the connection of devices (2.8.0)
 - 'Create and add another' buttons added to reduce click count when creating objects (2.8.0)
 - Reload static resources after upgrading (2.8.1)
+
+### Event management
+
+- Fixed a bug on event creation (2.8.5)
 
 ### Tournaments management
 

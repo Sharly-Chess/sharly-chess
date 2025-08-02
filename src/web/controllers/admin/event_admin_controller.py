@@ -115,6 +115,7 @@ class EventAdminController(BaseEventAdminController):
                         'update',
                         'clone',
                     ]
+                    and 'background_image' in data
                     else {},
                     'modal': 'event',
                     'plugin_form_fields_templates': plugin_form_fields_templates,
