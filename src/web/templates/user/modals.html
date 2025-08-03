@@ -17,6 +17,7 @@
                     <div class="modal-body">
                         <div class="row d-flex align-items-center justify-content-center">
                             <button
+                                data-testid="white-wins-button"
                                 class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                 {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
@@ -27,6 +28,7 @@
                                 {% endif %}
                             >{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</button>
                             <button
+                                data-testid="draw-button"
                                 class="result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                 {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
@@ -37,6 +39,7 @@
                                 {% endif %}
                             >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
                             <button
+                                data-testid="black-wins-button"
                                 class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                 {% if board.result and not client.can_update_results(wp.tournament.id) %}
                                     disabled
@@ -50,18 +53,21 @@
                         {% if client.can_set_special_results(wp.tournament.id) %}
                             <div class="row d-flex align-items-center justify-content-center mt-3">
                                 <button
+                                    data-testid="white-wins-by-forfeit-button"
                                     class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=6) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 >{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</button>
                                 <button
+                                    data-testid="double-forfeit-button"
                                     class="admin-result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=5) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 >{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</button>
                                 <button
+                                    data-testid="black-wins-by-forfeit-button"
                                     class="admin-result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=4) }}"
                                     hx-target="body"
@@ -73,6 +79,7 @@
                     <div class="modal-footer row d-flex align-items-center justify-content-center">
                         {% if client.can_update_results(wp.tournament.id) %}
                             <button
+                                data-testid="clear-result-button"
                                 class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                                 {% if board.no_result %}
                                     disabled

@@ -270,7 +270,6 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    last_update: float = 0.0
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None

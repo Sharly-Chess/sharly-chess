@@ -14,9 +14,9 @@ from data.screen import Screen
 from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
+from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.event_user_controller import (
     EventUserWebContext,
-    EventUserController,
 )
 from web.messages import Message
 from web.session import SessionHandler
@@ -146,7 +146,7 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
         }
 
 
-class BaseScreenUserController(EventUserController):
+class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
         cls,
@@ -165,16 +165,19 @@ class BaseScreenUserController(EventUserController):
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        if web_context.screen and web_context.screen.type == ScreenType.RANKING:
+        if web_context.screen:
             for tournament in {
                 screen_set.tournament
                 for screen_set in web_context.screen.screen_sets_sorted_by_order
             }:
-                tournament.compute_player_ranks(
-                    after_round=tournament.correct_ranking_round(
-                        web_context.screen.ranking_round
+                if web_context.screen.type == ScreenType.RANKING:
+                    tournament.compute_player_ranks(
+                        after_round=tournament.correct_ranking_round(
+                            web_context.screen.ranking_round
+                        )
                     )
-                )
+                else:
+                    tournament.set_for_round()
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context

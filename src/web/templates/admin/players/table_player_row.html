@@ -89,6 +89,7 @@
         <td class="text-nowrap text-center">
             {% set can_check_in=client.can_check_in_players(player.tournament.id) %}
             <i
+                data-testid="check-in-cell"
                 {% if player.tournament.finished %}
                     class="bi-ban text-secondary"
                     {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=player.tournament.uniq_id), 'right') }}

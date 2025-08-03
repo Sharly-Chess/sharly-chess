@@ -178,3 +178,25 @@ class Guard:
             raise PermissionDeniedException(
                 f'You are not allowed to set result [{result}] for tournament [{tournament.uniq_id}].'
             )
+
+    @classmethod
+    def client_can_view_players_tab(
+        cls, request: HTMXRequest, _: BaseRouteHandler
+    ) -> None:
+        """Raises an exception if viewing the players tab is not allowed."""
+        client: Client = RequestUtils.get_client(request)
+        if not client.can_view_players_tab:
+            raise PermissionDeniedException(
+                'You are not allowed to view the players tab.'
+            )
+
+    @classmethod
+    def client_can_view_pairings_tab(
+        cls, request: HTMXRequest, _: BaseRouteHandler
+    ) -> None:
+        """Raises an exception if viewing the pairings tab is not allowed."""
+        client: Client = RequestUtils.get_client(request)
+        if not client.can_view_pairings_tab:
+            raise PermissionDeniedException(
+                'You are not allowed to view the pairings tab.'
+            )

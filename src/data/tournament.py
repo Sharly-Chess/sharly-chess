@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 import weakref
 from collections import Counter
 from collections.abc import Collection
@@ -786,18 +787,8 @@ class Tournament:
                     )
         return boards_by_id
 
-    def _set_for_current_round(self):
-        current_round = self.current_round
-        illegal_moves: Counter[int] = self.get_illegal_moves(current_round)
-        for player in self.players:
-            player.illegal_moves = illegal_moves[player.id]
-            self.set_player_points(player, before_round=current_round)
-        self._estimate_players(self.players, after_round=current_round)
-        if self.handicap:
-            self._set_handicap()
-
-    def _set_handicap(self):
-        for board in self.boards:
+    def _set_handicap(self, round_: int):
+        for board in self.get_round_boards(round_):
             if not board.black_player:
                 continue
             strong_player: Player
@@ -887,6 +878,18 @@ class Tournament:
         for family in self.dependent_families:
             family.clear_cache()
         self.event.clear_player_cache()
+
+    def set_for_round(self, round_: int | None = None):
+        """Set the tournament for the given round (defaults to the current round)"""
+        if round_ is None:
+            round_ = self.current_round
+        illegal_moves: Counter[int] = self.get_illegal_moves(round_)
+        for player in self.players:
+            player.illegal_moves = illegal_moves[player.id]
+            self.set_player_points(player, before_round=round_)
+        self._estimate_players(self.players, after_round=round_)
+        if self.handicap:
+            self._set_handicap(round_)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
@@ -1146,6 +1149,9 @@ class Tournament:
             ):
                 player.illegal_moves += 1
             event_database.commit()
+
+        # No need to reload the tournament, we update the last date for refresh purposes
+        self.stored_tournament.last_illegal_move_update = time.time()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
@@ -1162,6 +1168,9 @@ class Tournament:
             logger.info('An illegal move has been deleted for player [%s].', player.id)
         else:
             logger.info('No illegal move found for player [%s].', player.id)
+
+        # No need to reload the tournament, we update the last date for refresh purposes
+        self.stored_tournament.last_illegal_move_update = time.time()
         return deleted
 
     def get_illegal_moves(self, at_round: int) -> Counter[int]:

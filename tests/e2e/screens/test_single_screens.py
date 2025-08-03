@@ -1,3 +1,4 @@
+import re
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
@@ -82,29 +83,33 @@ class TestSingleScreensFunctionality:
         expect(rows).to_have_count(16)
 
         # Should not be checked in
-        row = rows.filter(has_text='ALYX')
+        row = rows.filter(has_text='AMOS')
         expect(row.locator('i.bi-square')).to_be_visible()
 
-        row.click()
-        modal = lan_page.locator('.modal-dialog')
-        # The modal should not be visible since check-in is not open yet
-        expect(modal).not_to_be_visible()
+        # Clicking the row should not trigger a check-in
+        expect(row).not_to_have_attribute('hx-get', re.compile(r'.*checkin-modal.*'))
 
         # Open check-in
         api_request_context.patch(
             f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
         )
+
         # Reload the page
         lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+
         # Try to open the modal again
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(16)
+        row = rows.filter(has_text='AMOS')
+        expect(row.locator('td:nth-child(1)')).to_have_attribute(
+            'hx-get', re.compile(r'.*checkin-modal.*')
+        )
         row.click()
         modal = lan_page.locator('.modal-dialog')
 
         expect(modal).to_be_visible()
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
-        expect(button).to_contain_text('ALYX')
+        expect(button).to_contain_text('AMOS')
         button.click()
 
         # Test that the page is updated
@@ -112,25 +117,25 @@ class TestSingleScreensFunctionality:
 
         with EventDatabase(EVENT_ID) as database:
             event = Event(database.load_stored_event())
-            bruno = next(
-                p for p in event.players_by_id.values() if p.last_name == 'BRUNO'
+            barbara = next(
+                p for p in event.players_by_id.values() if p.last_name == 'BARBARA'
             )
-            maria = next(
-                p for p in event.players_by_id.values() if p.last_name == 'MARIA'
+            marmite = next(
+                p for p in event.players_by_id.values() if p.last_name == 'MARMITE'
             )
 
         # Test that the page is updated after a player checks in on another screen
         api_request_context.patch(
-            f'/user/toggle-check-in/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{bruno.id}'
+            f'/user/toggle-check-in/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
         )
 
-        row = rows.filter(has_text='BRUNO')
+        row = rows.filter(has_text='BARBARA')
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
 
         # Test that the page is updated after a player is checked in on an admin screen
-        api_request_context.patch(f'/admin/player-check-in/{EVENT_ID}/{maria.id}')
+        api_request_context.patch(f'/admin/player-check-in/{EVENT_ID}/{marmite.id}')
 
-        row = rows.filter(has_text='MARIA')
+        row = rows.filter(has_text='MARMITE')
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
 
         TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
