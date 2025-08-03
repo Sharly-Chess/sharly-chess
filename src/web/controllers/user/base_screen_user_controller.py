@@ -14,9 +14,9 @@ from data.screen import Screen
 from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
+from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.event_user_controller import (
     EventUserWebContext,
-    EventUserController,
 )
 from web.messages import Message
 from web.session import SessionHandler
@@ -146,7 +146,7 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
         }
 
 
-class BaseScreenUserController(EventUserController):
+class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
         cls,

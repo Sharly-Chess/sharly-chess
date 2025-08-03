@@ -53,10 +53,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> bool:
         if web_context.screen:
             assert web_context.screen.event is not None
-            if (
-                web_context.screen.event.last_update
-                and web_context.screen.event.last_update > date
-            ):
+            if web_context.screen.event.last_update > date:
                 return True
             if web_context.screen.last_update > date:
                 return True
@@ -95,10 +92,7 @@ class ScreenUserController(BaseScreenUserController):
         elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
             assert web_context.family is not None
             assert web_context.family.event is not None
-            if (
-                web_context.family.event.last_update
-                and web_context.family.event.last_update > date
-            ):
+            if web_context.family.event.last_update > date:
                 return True
             if web_context.family.last_update and web_context.family.last_update > date:
                 return True

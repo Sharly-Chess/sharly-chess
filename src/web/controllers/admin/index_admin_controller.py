@@ -375,6 +375,7 @@ class IndexAdminController(BaseAdminController):
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_event_form_fields_template() or []
                 )
+
                 context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         SharlyChessConfig.default_record_illegal_moves_number
@@ -384,7 +385,9 @@ class IndexAdminController(BaseAdminController):
                     ),
                     'background_images_jstree_data': cls.background_images_jstree_data(
                         data['background_image']
-                    ),
+                    )
+                    if 'background_image' in data
+                    else {},
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'federation_options': cls._get_federation_options(
                         default_federation=None
