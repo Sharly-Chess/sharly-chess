@@ -58,11 +58,21 @@ class BackendServer:
     def start(self):
         """Start the backend server."""
 
+        # Add src directory to PYTHONPATH for server to find modules
+        current_pythonpath = env.get('PYTHONPATH', '')
+        project_root = Path(__file__).parent
+        src_path = str((project_root / 'src').resolve())
+        env['PYTHONPATH'] = (
+            f'{src_path}{os.pathsep}{current_pythonpath}'
+            if current_pythonpath
+            else src_path
+        )
+
         # Start your backend server process
         # Adjust this command based on how your server is started
         cmd = [
             sys.executable,
-            str(Path('../../src/sharly_chess.py').resolve()),
+            str((project_root / 'src/sharly_chess.py').resolve()),
             '--path',
             str(TestConfig.TEST_DATA_DIR.resolve()),
         ]
