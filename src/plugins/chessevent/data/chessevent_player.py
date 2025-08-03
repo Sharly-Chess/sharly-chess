@@ -75,9 +75,9 @@ class ChessEventPlayer:
 
             self.ffe_id = reader.get('ffe_id', int)
             self.ffe_licence = ChessEventFFELicence.get_core_object(
-                reader.get('ffe_licence', int)
+                reader.get('ffe_license', int)
             )
-            self.ffe_licence_number = reader.get('ffe_licence_number', str)
+            self.ffe_licence_number = reader.get('ffe_license_number', str)
             self.ffe_league = reader.get('ffe_league', str)
             self.ffe_club_id = reader.get('ffe_club_id', int, 0)
             self.ffe_club = reader.get('ffe_club', str, '')

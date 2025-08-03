@@ -613,8 +613,8 @@ msgstr "Absences et points joker"
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
-msgid "C *** THE LETTER TO ANSWER CREATE"
-msgstr "C"
+msgid "R *** THE LETTER TO ANSWER REPLACE"
+msgstr "R"
 
 msgid "CHECK-IN"
 msgstr "Pointer"
@@ -5594,4 +5594,3 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
