@@ -26,8 +26,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> bool:
         tournament: Tournament = screen_set.tournament
         if tournament.last_update > date:
-            if tournament.last_update > date:
-                return True
+            return True
         if tournament.last_check_in_update > date:
             return True
         match screen_set.type:
@@ -54,10 +53,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> bool:
         if web_context.screen:
             assert web_context.screen.event is not None
-            if (
-                web_context.screen.event.last_update
-                and web_context.screen.event.last_update > date
-            ):
+            if web_context.screen.event.last_update > date:
                 return True
             if web_context.screen.last_update > date:
                 return True
@@ -96,10 +92,7 @@ class ScreenUserController(BaseScreenUserController):
         elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
             assert web_context.family is not None
             assert web_context.family.event is not None
-            if (
-                web_context.family.event.last_update
-                and web_context.family.event.last_update > date
-            ):
+            if web_context.family.event.last_update > date:
                 return True
             if web_context.family.last_update and web_context.family.last_update > date:
                 return True
@@ -149,8 +142,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    rotator_guards = [
-        Guard.event_is_visible,
+    rotator_guards = EventUserController.event_guards + [
         Guard.rotator_is_visible,
     ]
 
@@ -198,8 +190,7 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    display_controller_guards = [
-        Guard.event_is_visible,
+    display_controller_guards = EventUserController.event_guards + [
         Guard.display_controller_is_visible,
     ]
 

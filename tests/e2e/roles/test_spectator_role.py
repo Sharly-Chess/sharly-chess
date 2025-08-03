@@ -1,8 +1,8 @@
 from database.sqlite.event.event_store import StoredScreen
 import pytest
-from playwright.sync_api import expect, Page
+from playwright.sync_api import Page, APIRequestContext
 from data.auth.roles import SpectatorRole
-from tests.e2e.roles.base_role_test import BaseRoleTest
+from tests.e2e.roles.base_role_test import BaseRoleTest, DisplayMode
 from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
 
 
@@ -11,39 +11,33 @@ class TestSpectatorRole(BaseRoleTest):
     def get_roles(self):
         return [SpectatorRole]
 
-    def test_access_to_visible_events(self, auth_page):
-        self.auth_page.goto('/admin/current_events')
-        expect(auth_page.locator('.card')).to_have_count(1)
-        expect(
-            auth_page.locator(f"div.card:has-text('{PUBLIC_EVENT_ID}')")
-        ).to_be_visible()
-
-    def test_access_to_visible_screens(
+    def test_access(
         self,
         auth_page: Page,
         public_input_screen: StoredScreen,
         private_input_screen: StoredScreen,
+        api_request_context: APIRequestContext,
     ):
-        self.auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/input-screens')
+        # Admin tabs
 
-        # Only the public input screen should be visible
-        expect(auth_page.locator('.card')).to_have_count(1)
-        expect(
-            auth_page.locator(f"div.card:has-text('{public_input_screen.name}')")
-        ).to_be_visible()
+        super().assert_can_access_players_tab(False, auth_page)
+        super().assert_can_access_pairings_tab(False, auth_page)
 
-        # Test access to the public input screen
-        auth_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{public_input_screen.uniq_id}')
-        rows = auth_page.locator('table tbody tr')
-        expect(rows).to_have_count(8)
+        # Screens
 
-        # We should NOT see the modal
-        row = rows.filter(has_text='ALYX')
-        row.click()
-        modal = auth_page.locator('.modal-dialog')
-        auth_page.wait_for_timeout(200)
-        expect(modal).not_to_be_visible()
-
-        # Test no access to the private input screen, should redirect to the home page
-        auth_page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{private_input_screen.uniq_id}')
-        auth_page.wait_for_url('/error/403')
+        super().assert_access_to_visible_events(PUBLIC_EVENT_ID, auth_page)
+        super().assert_access_to_input_screen(
+            True,
+            DisplayMode.SCREENS_IN_MENU,
+            auth_page,
+            public_input_screen,
+        )
+        super().assert_access_to_input_screen(
+            False,
+            DisplayMode.SCREENS_IN_MENU,
+            auth_page,
+            private_input_screen,
+        )
+        super().assert_can_checkin_via_screen(False, api_request_context)
+        super().assert_can_enter_results_via_screen(False, False, False)
+        super().assert_can_set_illegal_moves_via_screen(False, api_request_context)

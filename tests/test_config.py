@@ -9,7 +9,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from database.access.papi.papi_database import PapiDatabase
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Callable, Dict, Optional, Any
 import re
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -101,6 +101,23 @@ class TestUtils:
         errors = [(div_id, text.strip()) for div_id, text in matches]
 
         assert not errors, errors
+
+    @staticmethod
+    def poll_expect_with_reload(
+        page,
+        assertion: Callable[[], None],
+        retries: int = 5,
+        delay_secs: float = 0.2,
+    ):
+        for attempt in range(retries):
+            page.reload()
+            try:
+                assertion()
+                return
+            except AssertionError:
+                if attempt == retries - 1:
+                    raise
+                time.sleep(delay_secs)
 
     @classmethod
     def create_event(

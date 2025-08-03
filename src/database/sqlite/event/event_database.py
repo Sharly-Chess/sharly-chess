@@ -830,27 +830,15 @@ class EventDatabase(MigrationDatabase):
                 index += 1
                 arch = file.parent / f'{file.stem}_{date_str}-{index}.arch'
 
-    def set_last_update(self):
-        """Store the current time as the last time the database was updated."""
-        # NOTE(Amaras): We could get in weird territory if time is not
-        # monotonic.
-        self.execute('UPDATE `info` SET `last_update` = ?', (time.time(),))
-
     def rename(self, new_uniq_id: str):
         """Changes the event file database to the one associated to the
         provided `new_uniq_id`."""
         self.file.rename(EventDatabase(new_uniq_id).file)
-        with EventDatabase(new_uniq_id, write=True) as event_database:
-            event_database.set_last_update()
-            event_database.commit()
 
     def clone(self, new_uniq_id: str):
         """Create a copy of the event database file corresponding to an event
         with name `new_uniq_id`."""
         shutil.copy(self.file, EventDatabase(new_uniq_id).file)
-        with EventDatabase(new_uniq_id, write=True) as event_database:
-            event_database.set_last_update()
-            event_database.commit()
 
     def create_backup(self) -> 'EventBackup':
         """Creates a backup of the event database.
@@ -966,7 +954,6 @@ class EventDatabase(MigrationDatabase):
             custom_exec_mode=self.load_bool_from_database_field(
                 row['custom_exec_mode']
             ),
-            last_update=row['last_update'],
         )
         plugin_manager.hook.augment_event_after_db_fetch(
             stored_event=stored_event, row=row
@@ -1046,7 +1033,6 @@ class EventDatabase(MigrationDatabase):
                 'timer_delays': self.dump_to_json_database_timer_delays(
                     stored_event.timer_delays
                 ),
-                'last_update': time.time(),
             }
             | plugin_data
         )
@@ -1151,7 +1137,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_timer_hour = self.get_stored_timer_hour(stored_timer_hour.id)
         if fetched_stored_timer_hour is None:
             raise RuntimeError('Timer hour write failed')
-        self.set_last_update()
         return fetched_stored_timer_hour
 
     def reorder_stored_timer_hours(
@@ -1168,7 +1153,6 @@ class EventDatabase(MigrationDatabase):
                 ),
             )
             order += 1
-        self.set_last_update()
 
     def update_stored_timer_hour(
         self,
@@ -1239,7 +1223,6 @@ class EventDatabase(MigrationDatabase):
                 ),
             )
             order += 1
-        self.set_last_update()
 
     def _delete_stored_timer_hours(self, timer_id: int):
         self.execute('DELETE FROM `timer_hour` WHERE `timer_id` = ?;', (timer_id,))
@@ -1322,7 +1305,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_timer = self.get_stored_timer(stored_timer.id)
         if fetched_stored_timer is None:
             raise RuntimeError('Timer write failed')
-        self.set_last_update()
         return fetched_stored_timer
 
     def add_stored_timer(
@@ -1349,7 +1331,6 @@ class EventDatabase(MigrationDatabase):
         self._delete_stored_timer_hours(timer_id)
         # references are not deleted as they should be!
         self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredTournament
@@ -1502,7 +1483,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
         if fetched_stored_tournament is None:
             raise RuntimeError('Tournament write failed')
-        self.set_last_update()
         return fetched_stored_tournament
 
     def add_stored_tournament(
@@ -1523,7 +1503,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
-        self.set_last_update()
 
     def _set_tournament_last_illegal_move_update(self, tournament_id: int):
         self.execute(
@@ -1929,7 +1908,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_family = self.get_stored_family(stored_family.id)
         if fetched_stored_family is None:
             raise RuntimeError('Family write failed')
-        self.set_last_update()
         return fetched_stored_family
 
     def add_stored_family(
@@ -1948,7 +1926,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_family(self, family_id: int):
         self.execute('DELETE FROM `family` WHERE `id` = ?;', (family_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredScreen
@@ -2117,7 +2094,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_screen = self.get_stored_screen(screen_id=stored_screen.id)
         if fetched_stored_screen is None:
             raise RuntimeError('Screen write failed')
-        self.set_last_update()
         return fetched_stored_screen
 
     def add_stored_screen(
@@ -2136,7 +2112,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_screen(self, screen_id: int):
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredScreenSet
@@ -2198,7 +2173,6 @@ class EventDatabase(MigrationDatabase):
             )
             order += 1
         self._set_stored_screen_last_update(screen_id)
-        self.set_last_update()
 
     def _write_stored_screen_set(
         self,
@@ -2248,7 +2222,6 @@ class EventDatabase(MigrationDatabase):
             )
         if fetched_stored_screen_set is None:
             raise RuntimeError('Screen set write failed')
-        self.set_last_update()
         return fetched_stored_screen_set
 
     def clone_stored_screen_set(
@@ -2307,7 +2280,6 @@ class EventDatabase(MigrationDatabase):
             order += 1
         self._set_stored_screen_last_update(screen_id)
         self.execute('DELETE FROM `screen_set` WHERE `id` = ?;', (screen_set_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredRotator
@@ -2385,7 +2357,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_rotator = self.get_stored_rotator(stored_rotator.id)
         if fetched_stored_rotator is None:
             raise RuntimeError('Rotator write failed')
-        self.set_last_update()
         return fetched_stored_rotator
 
     def add_stored_rotator(
@@ -2404,7 +2375,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredDisplayController
@@ -2488,7 +2458,6 @@ class EventDatabase(MigrationDatabase):
             )
         if fetched_stored_display_controller is None:
             raise RuntimeError('Display controller write failed')
-        self.set_last_update()
         return fetched_stored_display_controller
 
     def add_stored_display_controller(
@@ -2509,7 +2478,6 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'DELETE FROM `display_controller` WHERE `id` = ?;', (display_controller_id,)
         )
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredPrizeGroup
@@ -2881,7 +2849,6 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_device = self.get_stored_device(device_id=stored_device.id)
         if fetched_stored_device is None:
             raise RuntimeError('Device write failed')
-        self.set_last_update()
         return fetched_stored_device
 
     def add_stored_device(self, stored_device: StoredDevice) -> StoredDevice:
@@ -2897,7 +2864,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_device(self, device_id: int):
         self.execute('DELETE FROM `device` WHERE `id` = ?', (device_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredAccount
@@ -2969,7 +2935,6 @@ class EventDatabase(MigrationDatabase):
             )
         if fetched_stored_account is None:
             raise RuntimeError('Account write failed')
-        self.set_last_update()
         return fetched_stored_account
 
     def add_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
@@ -2982,7 +2947,6 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_account(self, account_id: int):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
-        self.set_last_update()
 
     # ---------------------------------------------------------------------------------
     # StoredDevice and StoredAccount

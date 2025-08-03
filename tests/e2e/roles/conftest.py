@@ -8,6 +8,7 @@ from tests.test_config import TestUtils
 PUBLIC_EVENT_ID = 'event-test-roles-public'
 PRIVATE_EVENT_ID = 'event-test-roles-private'
 TOURNAMENT_ID = 'tournament-test-roles'
+TOURNAMENT_UNPAIRED_ID = 'tournament-test-roles-unpaired'
 
 
 @pytest.fixture(scope='module', autouse=True)
