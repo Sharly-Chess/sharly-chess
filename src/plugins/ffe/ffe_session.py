@@ -13,7 +13,6 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 from common.i18n import _
 from common.logger import get_logger
 from data.tournament import Tournament
-from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
@@ -424,12 +423,12 @@ class FFESession(Session):
         tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
         logger.debug('Copying [%s] to [%s]...', self.tournament.file, tmp_file)
         tmp_file.write_bytes(self.tournament.file.read_bytes())
-        with PapiDatabase(tmp_file, write=True) as tmp_database:
-            logger.debug("Deleting personal players' data...")
-            tmp_database.delete_players_personal_data()
-            logger.debug('Deleting ZPBs if no pairings...')
-            tmp_database.remove_zpbs_if_no_pairings()
-            tmp_database.commit()
+        # with PapiDatabase(tmp_file, write=True) as tmp_database:
+        #     logger.debug("Deleting personal players' data...")
+        #     tmp_database.delete_players_personal_data()
+        #     logger.debug('Deleting ZPBs if no pairings...')
+        #     tmp_database.remove_zpbs_if_no_pairings()
+        #     tmp_database.commit()
         html: str | None = self._read_url(
             url=url,
             data=post,

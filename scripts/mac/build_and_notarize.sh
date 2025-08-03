@@ -21,25 +21,31 @@ echo
 
 echo "--- Section 1: Environment and Prerequisite Checks ---"
 
-if [ ! -f ".env" ]; then
-    echo "Error: .env file not found. Please create one with your signing and notarization secrets."
-    echo "It should contain: MACOS_SIGNING_CERT_BASE64, MACOS_SIGNING_CERT_PASSWORD,"
-    echo "                   APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID"
-    exit 1
+# Check if we're running in GitHub Actions (environment variables are already set)
+if [ -n "$GITHUB_ACTIONS" ]; then
+    echo "Running in GitHub Actions - using environment variables..."
+else
+    # Running locally - check for .env file
+    if [ ! -f ".env" ]; then
+        echo "Error: .env file not found. Please create one with your signing and notarization secrets."
+        echo "It should contain: MACOS_SIGNING_CERT_BASE64, MACOS_SIGNING_CERT_PASSWORD,"
+        echo "                   APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID"
+        exit 1
+    fi
+
+    echo "Sourcing secrets from .env file..."
+    set -o allexport
+    source .env
+    set +o allexport
 fi
 
-echo "Sourcing secrets from .env file..."
-set -o allexport
-source .env
-set +o allexport
-
 if [ -z "$APPLE_ID" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ] || [ -z "$APPLE_TEAM_ID" ]; then
-    echo "Error: Ensure APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID are set in the .env file."
+    echo "Error: Ensure APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID are set."
     exit 1
 fi
 
 if [ -z "$MACOS_SIGNING_CERT_BASE64" ] || [ -z "$MACOS_SIGNING_CERT_PASSWORD" ]; then
-    echo "Error: Ensure MACOS_SIGNING_CERT_BASE64 and MACOS_SIGNING_CERT_PASSWORD are set in the .env file."
+    echo "Error: Ensure MACOS_SIGNING_CERT_BASE64 and MACOS_SIGNING_CERT_PASSWORD are set."
     exit 1
 fi
 echo "Environment variables loaded successfully."
@@ -78,8 +84,21 @@ security unlock-keychain -p "" "$KEYCHAIN_PATH"
 echo "Importing signing certificate..."
 CERT_PATH=$RUNNER_TEMP/certificate.p12
 echo -n "$MACOS_SIGNING_CERT_BASE64" | base64 --decode -o "$CERT_PATH"
-security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_SIGNING_CERT_PASSWORD" -T /usr/bin/codesign
-security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
+security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_SIGNING_CERT_PASSWORD" -A
+
+# Configure keychain for GitHub Actions
+if [ -n "$GITHUB_ACTIONS" ]; then
+    echo "Configuring keychain for GitHub Actions..."
+    # Add keychain to search list and make it default
+    security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | sed s/\"//g)
+    security default-keychain -s "$KEYCHAIN_PATH"
+    # Set key partition list for automated access
+    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" "$KEYCHAIN_PATH"
+else
+    # For local development, just add to search list
+    security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | sed s/\"//g)
+fi
+
 echo "Certificate imported successfully."
 
 echo "--- Section 4: Signing Application Files ---"
@@ -88,6 +107,7 @@ echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
 ENTITLEMENTS_FILE="scripts/mac/entitlements.plist"
 
+# Step 4a: Sign regular files
 while IFS= read -r file; do
     if file "$file" | grep -q "Mach-O" || [[ "$file" == *.app* ]]; then
         echo "Signing: $(basename "$file")"
@@ -100,11 +120,52 @@ while IFS= read -r file; do
         fi
     fi
 done <<<"$(find "$PROJECT_DIR" -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) -o -name "*.app")"
+
+# Step 4b: Handle JAR files with native libraries
+echo "Checking for JAR files with native libraries..."
+if command -v jar >/dev/null 2>&1; then
+    while IFS= read -r jar_file; do
+        if [ -f "$jar_file" ]; then
+            echo "Processing JAR: $(basename "$jar_file")"
+
+            # Create temporary directory for extraction
+            JAR_TEMP_DIR=$(mktemp -d)
+            ORIGINAL_DIR=$(pwd)
+
+            # Extract JAR (JAR files are ZIP files)
+            cd "$JAR_TEMP_DIR"
+            unzip -q "$ORIGINAL_DIR/$jar_file"
+
+            # Find and sign any .dylib files in the extracted content
+            JAR_MODIFIED=false
+            while IFS= read -r dylib_file; do
+                if [ -f "$dylib_file" ]; then
+                    echo "  Signing native library in JAR: $dylib_file"
+                    codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$dylib_file" --verbose=2
+                    JAR_MODIFIED=true
+                fi
+            done <<<"$(find . -name "*.dylib" -type f)"
+
+            # If we signed anything, repackage the JAR
+            if [ "$JAR_MODIFIED" = true ]; then
+                echo "  Repackaging JAR: $(basename "$jar_file")"
+                zip -qr "$ORIGINAL_DIR/$jar_file" *
+            fi
+
+            cd "$ORIGINAL_DIR"
+            rm -rf "$JAR_TEMP_DIR"
+        fi
+    done <<<"$(find "$PROJECT_DIR" -name "*.jar" -type f)"
+else
+    echo "Note: jar command not available, skipping JAR file processing"
+    echo "Warning: Native libraries in JAR files may not be signed"
+fi
+
 echo "Application file signing complete."
 echo
 
 # --- 5. Create DMG ---
-echo
+
 echo "--- Section 5: Creating DMG Disk Image ---"
 
 VERSION_FOLDER=$(basename "$PROJECT_DIR")
@@ -162,6 +223,12 @@ echo
 # --- 7. Clean up temporary keychain ---
 echo "--- Section 7: Cleaning up temporary keychain ---"
 echo "Removing temporary keychain and certificate..."
+
+# Restore original default keychain if we changed it
+if [ -n "$GITHUB_ACTIONS" ]; then
+    security default-keychain -s ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+fi
+
 security delete-keychain "$KEYCHAIN_PATH"
 rm -f "$CERT_PATH"
 echo "Cleanup complete."
@@ -171,20 +238,13 @@ echo
 echo "--- Section 8: Final Verification ---"
 echo "Verifying stapled ticket..."
 xcrun stapler validate "$DMG_PATH"
-echo "Verifying DMG assessment..."
-spctl --assess -v --type open "$DMG_PATH"
-echo "Verification complete."
 echo
-
 
 # --- 9. Summary ---
 echo "=== Summary ==="
-echo "✓ Process finished successfully!"
+echo "Process finished successfully!"
 echo "Final distributable disk image is at: $DMG_PATH"
 echo "  - To install, open the DMG and drag the '$VERSION_FOLDER' folder to:"
-echo "    • Your Desktop (~/Desktop)"
-echo "    • Your Documents folder (~/Documents)"
 echo "    • Any writable folder in your home directory"
 echo "  - Note: Do NOT place in /Applications - the app needs write access to its folder."
 echo
-

@@ -24,7 +24,7 @@ jobs:
             platform: macos
     runs-on: ${{ matrix.os }}
     steps:
-      # get the current date to set the title of the release
+      # Get the current date to set the title of the release
       - name: Get current date
         id: date
         uses: Kaven-Universe/github-action-current-date-time@v1
@@ -37,11 +37,6 @@ jobs:
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           python-version: 3.12
-      - name: Install macOS dependencies
-        if: matrix.platform == 'macos'
-        shell: bash
-        run: |
-          brew install freetds unixodbc openssl
       - name: Install dependencies (Windows)
         if: matrix.platform == 'windows'
         shell: pwsh
@@ -98,124 +93,33 @@ jobs:
         shell: pwsh
         run: |
           python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
-      - name: Generate ZIP file (macOS)
-        if: matrix.platform == 'macos'
-        shell: bash
-        run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --preserve-build
-
-      # For Mac - Sign and notarize
-      - name: Sign and Notarize macOS App
+      - name: Build, Sign, and Notarize macOS App
         if: matrix.platform == 'macos'
         shell: bash
         env:
+          # Map GitHub secrets to environment variables expected by the script
           MACOS_SIGNING_CERT_BASE64: ${{ secrets.MACOS_SIGNING_CERT_BASE64 }}
           MACOS_SIGNING_CERT_PASSWORD: ${{ secrets.MACOS_SIGNING_CERT_PASSWORD }}
-          APPLE_DEVELOPER_USERNAME: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
+          APPLE_ID: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          # Find the built project directory (PyInstaller creates a directory with the executable and _internal folder)
-          PROJECT_DIR=$(find "dist" -type d -name "sharly-chess-*" -print -quit 2>/dev/null || true)
-          
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "::error::PyInstaller project directory not found in dist/!"
-            echo "Directory contents:"
-            ls -la dist/
-            exit 1
-          fi
-          echo "Found project directory at: $PROJECT_DIR"
-          
-          # Find the main executable
-          EXECUTABLE_PATH=$(find "$PROJECT_DIR" -type f -name "sharly-chess-*" -perm +111 -print -quit 2>/dev/null || true)
-          if [ -z "$EXECUTABLE_PATH" ]; then
-            echo "::error::Main executable not found in $PROJECT_DIR!"
-            ls -la "$PROJECT_DIR"
-            exit 1
-          fi
-          echo "Found main executable at: $EXECUTABLE_PATH"
+          # Build the application first
+          echo "Building application with preserved artifacts..."
+          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --preserve-build
 
-          # 1. Import the signing certificate
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          echo "Creating temporary keychain at: $KEYCHAIN_PATH"
-          security create-keychain -p "" "$KEYCHAIN_PATH"
-          security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
-          security unlock-keychain -p "" "$KEYCHAIN_PATH"
-
-          echo "Decoding and importing certificate..."
-          CERT_PATH=$RUNNER_TEMP/certificate.p12
-          echo -n "$MACOS_SIGNING_CERT_BASE64" | base64 --decode -o "$CERT_PATH"
-          security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_SIGNING_CERT_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
-
-          # 2. Sign all binaries and libraries in the project directory
-          echo "Signing all binaries and libraries..."
-          
-          # Sign all dynamic libraries and shared objects
-          find "$PROJECT_DIR" -type f \( -name "*.dylib" -o -name "*.so" \) -exec bash -c '
-            file="$1"
-            if file "$file" | grep -q "Mach-O"; then
-              echo "Signing library: $file"
-              codesign --force --options=runtime --sign "Developer ID Application" --keychain "'"$KEYCHAIN_PATH"'" "$file" 2>/dev/null || echo "Warning: Could not sign $file"
-            fi
-          ' _ {} \;
-          
-          # Sign all executables (including Python binaries)
-          find "$PROJECT_DIR" -type f -perm +111 -exec bash -c '
-            file="$1"
-            if file "$file" | grep -q "Mach-O"; then
-              echo "Signing executable: $file"
-              codesign --force --options=runtime --sign "Developer ID Application" --keychain "'"$KEYCHAIN_PATH"'" "$file" 2>/dev/null || echo "Warning: Could not sign $file"
-            fi
-          ' _ {} \;
-          
-          # Finally, sign the main executable (this might be redundant but ensures it's signed)
-          echo "Signing main executable: $EXECUTABLE_PATH"
-          codesign --force --options=runtime --sign "Developer ID Application" --keychain "$KEYCHAIN_PATH" "$EXECUTABLE_PATH"
-
-          # 4. Create a ZIP file for notarization
-          echo "Creating ZIP for notarization..."
-          ARCHIVE_PATH="dist/sharly-chess-for-notarization.zip"
-          ditto -c -k --sequesterRsrc --keepParent "$PROJECT_DIR" "$ARCHIVE_PATH"
-
-          # 5. Notarize the application
-          echo "Submitting for notarization..."
-          xcrun notarytool submit "$ARCHIVE_PATH" \
-            --apple-id "$APPLE_DEVELOPER_USERNAME" \
-            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID" \
-            --wait
-
-          # 6. Staple the notarization ticket to the app
-          echo "Stapling notarization ticket..."
-          xcrun stapler staple "$EXECUTABLE_PATH"
-
-          # 7. Recreate ZIP files with the signed app bundle
-          echo "Recreating ZIP files with signed app bundle..."
-          VERSION="${{ steps.version.outputs.version }}"
-          
-          # Use the project directory we already found
-          
-          if [ -d "$PROJECT_DIR" ]; then
-            echo "Recreating ZIP from signed project directory: $PROJECT_DIR"
-            cd "$PROJECT_DIR"
-            rm -f "../../export/sharly-chess-${VERSION}.zip" "../../export/papi-web-${VERSION}.zip"
-            zip -r "../../export/sharly-chess-${VERSION}.zip" .
-            cp "../../export/sharly-chess-${VERSION}.zip" "../../export/papi-web-${VERSION}.zip"
-            cd ../..
-          else
-            echo "::warning::Could not find project directory to recreate ZIP"
-          fi
-          
-          # 8. Clean up temporary keychain and certificate
-          security delete-keychain "$KEYCHAIN_PATH"
-          rm -f "$CERT_PATH"
+          # Run the build and notarize script
+          echo "Running signing and notarization script..."
+          chmod +x scripts/mac/build_and_notarize.sh
+          ./scripts/mac/build_and_notarize.sh
 
       - name: Clean up macOS build artifacts
         if: always() && matrix.platform == 'macos' # always() ensures this runs even if previous steps fail
         shell: bash
         run: |
           echo "Cleaning up macOS build artifacts..."
+          # Preserve the DMG file but clean up other build artifacts
+          find dist/ -name "*.dmg" -exec mv {} export/ \;
           rm -rf dist/
           rm -rf build/
           rm -f *.spec
@@ -226,6 +130,7 @@ jobs:
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
             export/papi-web-${{ steps.version.outputs.version }}.zip
+            export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
   create-release:
     needs: export-sharly-chess
@@ -265,10 +170,8 @@ jobs:
           mkdir -p release-files
           # Windows files
           cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
-          cp export-windows/papi-web-${VERSION}.zip release-files/papi-web-${VERSION}-windows.zip
-          # macOS files
-          cp export-macos/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-macos.zip
-          cp export-macos/papi-web-${VERSION}.zip release-files/papi-web-${VERSION}-macos.zip
+          # macOS files - only sharly-chess
+          cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -278,7 +181,5 @@ jobs:
           prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
           files: |
             release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
-            release-files/papi-web-${{ steps.version.outputs.version }}-windows.zip
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.zip
-            release-files/papi-web-${{ steps.version.outputs.version }}-macos.zip
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
           body_path: RELEASE_NOTES.md

@@ -35,7 +35,6 @@ dependencies = [
   "pluggy ~= 1.5.0",
   "pycountry ~= 24.6.1",
   "pyexcel-ods3 ~= 0.6.1",
-  "pyodbc ~= 5.2.0",
   "python-tds ~= 1.16.0",
   "qrcode[pil] ~= 7.4.2",
   "requests ~= 2.32.3",

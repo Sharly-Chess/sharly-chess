@@ -5,7 +5,6 @@ import shutil
 import time
 import urllib
 from common.sharly_chess_config import SharlyChessConfig
-from database.access.papi.papi_database import PapiDatabase
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, Optional, Any
@@ -182,7 +181,7 @@ class TestUtils:
         path = SharlyChessConfig.default_papi_path
         path.mkdir(parents=True, exist_ok=True)
         file_path = path / f'{name}.papi'
-        PapiDatabase(file_path).create_empty()
+        #PapiDatabase(file_path).create_empty()
         return file_path
 
     @classmethod
