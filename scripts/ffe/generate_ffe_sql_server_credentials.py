@@ -14,8 +14,6 @@ sys.path.extend(
     )
 )
 
-import plugins.manager  # noqa
-
 from common.exception import SharlyChessException
 from common.logger import (
     print_interactive_error,

@@ -67,6 +67,23 @@ class AppPluginManager(PluginManager):
                 self.unregister(plugin, plugin.id)
 
 
-plugin_manager = AppPluginManager(APP_NAME)
-plugin_manager.add_hookspecs(AppHookSpecs)
-plugin_manager.load_register()
+_plugin_manager = None
+
+
+def get_plugin_manager() -> AppPluginManager:
+    global _plugin_manager
+    if _plugin_manager is None:
+        _plugin_manager = AppPluginManager(APP_NAME)
+        _plugin_manager.add_hookspecs(AppHookSpecs)
+        _plugin_manager.load_register()
+    return _plugin_manager
+
+
+# Create a lazy proxy object
+# This is to avoid circular imports
+class LazyPluginManager:
+    def __getattr__(self, name):
+        return getattr(get_plugin_manager(), name)
+
+
+plugin_manager = LazyPluginManager()

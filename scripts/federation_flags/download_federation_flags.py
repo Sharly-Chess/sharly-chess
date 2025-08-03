@@ -2,8 +2,6 @@ from pathlib import Path
 
 from requests import get, Response, HTTPError
 
-# Import this to avoid circular imports
-import plugins.manager  # noqa
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.fide.fide_database import FideDatabase
 

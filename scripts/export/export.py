@@ -26,9 +26,6 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from logging import Logger
 from PyInstaller.__main__ import run
 
-# Needs to be imported first to avoid circular import
-from plugins.manager import plugin_manager  # Noqa
-
 from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER, TMP_DIR
 from data.pairings.engines import BbpPairings
 from common import SHARLY_CHESS_VERSION
@@ -39,6 +36,7 @@ from database.sqlite.event import migrations as event_migrations
 from common.installation_checker import (
     InstallationChecker,
 )
+from plugins.manager import plugin_manager
 from plugins import PLUGINS_DIR
 
 # Enable experimental features to force the installation of the experimental tools and libs before exporting
