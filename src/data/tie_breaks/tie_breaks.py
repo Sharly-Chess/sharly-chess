@@ -748,7 +748,7 @@ class SonnebornBergerTieBreak(TieBreak):
 
     @staticmethod
     def static_papi_id() -> str:
-        return 'Sonneborn-Berger'
+        return 'Sonnenborn-Berger'
 
     @property
     def acronym(self) -> str:
