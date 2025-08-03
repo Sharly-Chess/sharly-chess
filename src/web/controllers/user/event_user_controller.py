@@ -200,7 +200,7 @@ class EventUserController(BaseUserController):
         event: Event,
         date: float,
     ) -> bool:
-        if event.last_update and event.last_update > date:
+        if event.last_update > date:
             return True
         for screen in event.basic_screens_by_id.values():
             if screen.last_update > date:
