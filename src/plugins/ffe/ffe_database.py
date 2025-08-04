@@ -1,6 +1,5 @@
 import os.path
 import zipfile
-from collections.abc import Callable
 from contextlib import suppress
 from datetime import datetime
 from logging import Logger
@@ -18,6 +17,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
+from plugins.ffe.papi_converter import PapiConverter
 from utils.enum import (
     TournamentRating,
     PlayerRatingType,
@@ -28,9 +28,7 @@ from database.sqlite.config.config_store import StoredLocalSourceDatabase
 
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
-from plugins.ffe.ffe_access_database import FfeAccessDatabase
 from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
-from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
 
@@ -120,72 +118,8 @@ class FfeDatabase(LocalSourceDatabase):
             return False
         return True
 
-    def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
-        translations: dict[str, Callable[[Any], Any] | None] = {
-            'ffe_id': None,
-            'ffe_licence_number': lambda s: s.strip().upper() if s else None,
-            'last_name': lambda s: s.strip().upper(),
-            'first_name': lambda s: s.strip().title() if s else '',
-            'gender': PlayerGender.from_papi_value,
-            'date_of_birth': lambda dt: dt.date() if dt else None,
-            'federation': None,
-            'standard_rating': int,
-            'rapid_rating': int,
-            'blitz_rating': int,
-            'standard_rating_type': PlayerRatingType.from_papi_value,
-            'rapid_rating_type': PlayerRatingType.from_papi_value,
-            'blitz_rating_type': PlayerRatingType.from_papi_value,
-            'fide_id': lambda s: int(s.strip("' ")) if s else 0,
-            'fide_title': PlayerTitle.from_papi_value,
-            'ffe_licence': PlayerFFELicence.from_papi_value,
-            'league': None,
-            'city': None,
-            'club': None,
-        }
-        column_names: list[str] = list(translations.keys())
-        bindings: list[str] = [f':{column_name}' for column_name in column_names]
-        escaped_column_names: list[str] = list(map(lambda s: f'`{s}`', column_names))
-        query: str = (
-            f'INSERT INTO player({", ".join(escaped_column_names)}) '
-            f'VALUES({", ".join(bindings)})'
-        )
-        with FfeAccessDatabase(self._source_file_path) as ffe_access_database:
-            with database:
-                player_count: int = 0
-                to_write: list[dict[str, Any]] = []
-                data: dict[str, Any]
-                for player_dict in ffe_access_database.read_player_dicts():
-                    try:
-                        data = {
-                            field: player_dict[field]
-                            if function is None
-                            else function(player_dict[field])
-                            for field, function in translations.items()
-                        }
-                        to_write.append(data)
-                        player_count += 1
-                        if player_count % 1000 == 0:
-                            database.executemany(query, to_write)
-                            to_write.clear()
-                            if self.stop_event.is_set():
-                                return False
-                        if player_count % 100_000 == 0:
-                            database.commit()
-
-                    except ValueError:
-                        logger.warning(
-                            _(
-                                'Error reading the following row '
-                                '(player ignored): [{row}].'
-                            ).format(row=player_dict)
-                        )
-                if to_write:
-                    database.executemany(query, to_write)
-                    database.commit()
-        logger.info(
-            self.log_prefix
-            + _('{number} players written to the database.').format(number=player_count)
-        )
+    def _generate_from_source_file(self, tmp_file: Path) -> bool:
+        PapiConverter().convert_player_database(self._source_file_path, tmp_file)
         return True
 
     def _create_indexes(self):
@@ -240,10 +174,10 @@ class FfeDatabase(LocalSourceDatabase):
             check_in=False,  # not taken into account when updating/creating/deleting the player
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=row['Ref'],
-                    ffe_licence=PlayerFFELicence.from_papi_value(row['AffType']),
-                    ffe_licence_number=row['NrFFE'],
-                    league=row['ClubLigue'],
+                    ffe_id=row['ffe_id'],
+                    ffe_licence=PlayerFFELicence(row['ffe_licence']),
+                    ffe_licence_number=row['ffe_licence_number'],
+                    league=row['league'],
                 ).to_stored_value()
             },
         )
