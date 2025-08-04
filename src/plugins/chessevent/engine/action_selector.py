@@ -35,6 +35,7 @@ from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
 from plugins.chessevent.utils import ChessEventUtils
+from plugins.ffe import PLUGIN_NAME as FFE_PLUGIN_NAME
 from plugins.ffe.utils import FfePlayerPluginData
 from plugins.utils import PluginUtils
 
@@ -100,7 +101,7 @@ class ActionSelector(metaclass=Singleton):
             club=player.ffe_club,
             fixed=player.board,
             check_in=check_in_started and player.check_in,
-            plugin_data=ffe_plugin_data.to_stored_value(),
+            plugin_data={FFE_PLUGIN_NAME: ffe_plugin_data.to_stored_value()},
         )
 
         stored_player.id = event_database.add_stored_player(stored_player)
@@ -167,7 +168,6 @@ class ActionSelector(metaclass=Singleton):
                 ),
             )
 
-            event_database.set_last_update()
             event_database.commit()
         return players_added
 
@@ -222,7 +222,7 @@ class ActionSelector(metaclass=Singleton):
         default_answer: str = create_answer
         actions1: dict[str, str] = {
             create_answer: _(
-                'Replace all players your tournaments with those from ChessEvent-'
+                'Replace all the players in your tournaments with those from ChessEvent'
             ),
             quit_answer: _('Quit'),
         }

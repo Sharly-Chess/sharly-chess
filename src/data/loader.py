@@ -188,9 +188,8 @@ class EventLoader:
                 # This can happen using the ChessEvent engine.
                 self.clear_cache(uniq_id)
             else:
-                event = self._loaded_events_by_id[uniq_id]
-                event.check_update()
-                return event
+                return self._loaded_events_by_id[uniq_id]
+
         self.load_event_ids(uniq_id)
         with EventDatabase(uniq_id) as event_database:
             event = Event(event_database.load_stored_event())

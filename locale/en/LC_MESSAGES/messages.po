@@ -613,9 +613,6 @@ msgstr "Byes"
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
-msgid "R *** THE LETTER TO ANSWER REPLACE"
-msgstr "R"
-
 msgid "CHECK-IN"
 msgstr ""
 
@@ -990,12 +987,6 @@ msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
-msgstr ""
-
-msgid "Create the Papi files"
-msgstr ""
-
-msgid "Create the Papi files and send them to the FFE website"
 msgstr ""
 
 msgid "Create with default screens"
@@ -1675,9 +1666,6 @@ msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
 msgid "Error message"
-msgstr ""
-
-msgid "Error reading the following row (player ignored): [{row}]."
 msgstr ""
 
 msgid "Error uploading tournament"
@@ -2874,6 +2862,9 @@ msgstr ""
 msgid "No tournaments"
 msgstr ""
 
+msgid "No tournaments configured with ChessEvent connections found."
+msgstr ""
+
 msgid "No tournaments."
 msgstr ""
 
@@ -3147,9 +3138,6 @@ msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
 msgid "Papi file"
-msgstr ""
-
-msgid "Papi file [{file}] has been created (players: {num})."
 msgstr ""
 
 msgid "Papi file [{tournament_file}] not found."
@@ -3606,6 +3594,9 @@ msgstr ""
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
 
+msgid "R *** THE LETTER TO ANSWER REPLACE"
+msgstr "R"
+
 msgid "Random"
 msgstr ""
 
@@ -3733,6 +3724,9 @@ msgstr ""
 
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
+msgstr ""
+
+msgid "Replace all the players in your tournaments with those from ChessEvent"
 msgstr ""
 
 #, python-format
@@ -4222,9 +4216,6 @@ msgstr ""
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr ""
 
-msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
-msgstr ""
-
 msgid "The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem."
 msgstr ""
 
@@ -4665,9 +4656,6 @@ msgstr ""
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
-msgid "This action can not be applied to the tournaments of this event."
-msgstr ""
-
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr ""
 
@@ -4851,6 +4839,9 @@ msgstr ""
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr ""
 
+msgid "Tournament [{name}] has been updated, {num} players added."
+msgstr ""
+
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
@@ -4979,9 +4970,6 @@ msgstr ""
 msgid "Type: %(screen_type)s"
 msgstr ""
 
-msgid "U *** THE LETTER TO ANSWER UPLOAD"
-msgstr "U"
-
 msgid "U10"
 msgstr ""
 
@@ -5010,9 +4998,6 @@ msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
 msgid "URL [{url}] responded code [{code}]."
-msgstr ""
-
-msgid "Unable to create Papi files."
 msgstr ""
 
 msgid "Unable to download tournament fees."
@@ -5594,3 +5579,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+

@@ -37,10 +37,6 @@ class SQLiteDatabase:
     def release_lock(self):
         locks[self.file].release()
 
-    @property
-    def file_modified_at(self) -> float:
-        return self.file.lstat().st_mtime
-
     def _create(self, script: str | None = None):
         database: Connection | None = None
         try:

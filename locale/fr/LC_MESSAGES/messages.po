@@ -613,9 +613,6 @@ msgstr "Absences et points joker"
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
-msgid "R *** THE LETTER TO ANSWER REPLACE"
-msgstr "R"
-
 msgid "CHECK-IN"
 msgstr "Pointer"
 
@@ -991,12 +988,6 @@ msgstr "Créer et ajouter à nouveau"
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
-
-msgid "Create the Papi files"
-msgstr "Créer les fichiers Papi"
-
-msgid "Create the Papi files and send them to the FFE website"
-msgstr "Créer les fichiers Papi et les envoyer sur le site web FFE"
 
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
@@ -1676,9 +1667,6 @@ msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
 msgid "Error message"
 msgstr "Message d'erreur"
-
-msgid "Error reading the following row (player ignored): [{row}]."
-msgstr "Erreur à la lecture de la ligne suivante (joueur·euse ignoré·e): [{row}]."
 
 msgid "Error uploading tournament"
 msgstr "Erreur lors de la mise en ligne du tournoi"
@@ -2874,6 +2862,9 @@ msgstr "Aucun titre"
 msgid "No tournaments"
 msgstr "Aucun tournoi"
 
+msgid "No tournaments configured with ChessEvent connections found."
+msgstr "Aucun tournoi configuré avec des connexions ChessEvent n’a été trouvé."
+
 msgid "No tournaments."
 msgstr "Aucun tournoi."
 
@@ -3148,9 +3139,6 @@ msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Papi file"
 msgstr "Fichier Papi"
-
-msgid "Papi file [{file}] has been created (players: {num})."
-msgstr "Le fichier Papi [{file}] a été créé (joueur·euses : {num})."
 
 msgid "Papi file [{tournament_file}] not found."
 msgstr "Fichier Papi [{tournament_file}] introuvable."
@@ -3606,6 +3594,9 @@ msgstr "Quitter"
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
 
+msgid "R *** THE LETTER TO ANSWER REPLACE"
+msgstr "R"
+
 msgid "Random"
 msgstr "Aléatoire"
 
@@ -3734,6 +3725,9 @@ msgstr "Le renommage de la base de données a échoué : {ex}"
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
+
+msgid "Replace all the players in your tournaments with those from ChessEvent"
+msgstr "Remplacez tous les joueurs de vos tournois par ceux provenant de ChessEvent"
 
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
@@ -4222,9 +4216,6 @@ msgstr "Le fichier Papi du tournoi existe pas n'a pas pu être lu (%(papi_file)s
 msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
 msgstr "Le fichier Papi du tournoi a été lu avec succès (%(papi_file)s)."
 
-msgid "The Papi file is not defined for tournament [{tournament_uniq_id}]."
-msgstr "Fichier Papi non défini pour le tournoi [{tournament_uniq_id}]."
-
 msgid "The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem."
 msgstr "Le tournoi Sharly Chess ets supprimé mais le fichier Papi est conservé sur la système de fichiers."
 
@@ -4665,9 +4656,6 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
-msgid "This action can not be applied to the tournaments of this event."
-msgstr "Cette action ne peut être réalisée sur les tournois de cet évènement."
-
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
 
@@ -4851,6 +4839,9 @@ msgstr "Le tournoi [%(tournament_uniq_id)s] est terminé."
 msgid "Tournament [%(tournament_uniq_id)s] is playing."
 msgstr "Le tournoi [%(tournament_uniq_id)s] est en cours."
 
+msgid "Tournament [{name}] has been updated, {num} players added."
+msgstr "Le tournoi [{name}] a été mis à jour, {num} joueur(s) ajouté(s)."
+
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
 
@@ -4979,9 +4970,6 @@ msgstr "Type : %(family_type)s"
 msgid "Type: %(screen_type)s"
 msgstr "Type : %(screen_type)s"
 
-msgid "U *** THE LETTER TO ANSWER UPLOAD"
-msgstr "U"
-
 msgid "U10"
 msgstr "U10"
 
@@ -5011,9 +4999,6 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
-
-msgid "Unable to create Papi files."
-msgstr "Impossible de créer les fichiers Papi."
 
 msgid "Unable to download tournament fees."
 msgstr "Impossible de télécharger les droits d'homologation."
@@ -5594,3 +5579,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
