@@ -10,6 +10,7 @@ import requests
 from packaging.version import Version, InvalidVersion
 
 from common.i18n import update_i18n_files
+from plugins.ffe.papi_converter import PapiConverter
 
 sys.path.extend(
     map(
@@ -28,6 +29,7 @@ from PyInstaller.__main__ import run
 
 from common import BASE_DIR, enable_experimental_features, EVENTS_FOLDER, TMP_DIR
 from data.pairings.engines import BbpPairings
+
 from common import SHARLY_CHESS_VERSION
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -150,12 +152,11 @@ def build_exe():
     files += [file for file in custom_dir.glob('**/*') if file.is_file()]
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
     files += [BbpPairings().executable_path]
+    files += [PapiConverter().executable_path]
     files += [
         FFE_SQL_SERVER_CREDENTIALS_FILE,
     ]
 
-    # Keep track of external files that need special handling
-    external_files = []
     # Use correct path separator for PyInstaller --add-data based on OS
     data_separator = ':' if os.name != 'nt' else ';'
 
