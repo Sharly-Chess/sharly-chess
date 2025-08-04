@@ -1,0 +1,23 @@
+<thead
+    id="pairings-table-header"
+    class="position-sticky z-2"
+    style="top: var(--header-height);"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    <tr>
+        <th>{{ _('Board (%(remaining)d)', remaining=admin_tournament.boards_without_result(admin_round)|length) }}</th>
+        <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+        {% if admin_tournament.print_real_points %}
+            <th>&nbsp;</th>
+        {% endif %}
+        <th>{{ _('White') }}</th>
+        <th class="text-center">{{ _('Result') }}</th>
+        <th>{{ _('Black') }}</th>
+        {% if admin_tournament.print_real_points %}
+            <th>&nbsp;</th>
+        {% endif %}
+        <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+    </tr>
+</thead>
