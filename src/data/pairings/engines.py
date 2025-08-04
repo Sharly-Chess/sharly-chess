@@ -6,13 +6,13 @@ from pathlib import Path
 from typing import TextIO, TYPE_CHECKING
 
 import trf
-from packaging.version import Version
 from typing_extensions import override
 
-from common import TMP_DIR, BASE_DIR
+from common import TMP_DIR
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
+from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_store import StoredBoard
@@ -134,19 +134,11 @@ class PairingEngine(ABC):
 
 
 class BbpPairings(PairingEngine):
-    version: Version = Version('5.0.1')
-
     BYE_ID = 0
-
-    bbp_pairings_dir: Path = BASE_DIR / 'tools' / 'bbpPairings'
-
-    @property
-    def executable_dir(self) -> Path:
-        return self.bbp_pairings_dir / f'bbpPairings-v{self.version}'
 
     @property
     def executable_path(self) -> Path:
-        return self.executable_dir / 'bbpPairings.exe'
+        return BbpPairingsInstaller().executable_path
 
     @property
     def reorder_boards(self) -> bool:

@@ -1,11 +1,14 @@
+import platform
 import shutil
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from functools import cached_property
 from pathlib import Path
 
 import requests
 from packaging.version import Version
 
-from common import DEVEL_ENV, REQUEST_TIMEOUT
+from common import DEVEL_ENV, REQUEST_TIMEOUT, BASE_DIR, TMP_DIR
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -84,3 +87,240 @@ class ToolInstaller(ABC):
         shutil.unpack_archive(archive_path, install_dir)
         archive_path.unlink(missing_ok=True)
         print_interactive_success('Done.')
+
+
+class WebLibInstaller(ToolInstaller, ABC):
+    """A utility class to install web libraries."""
+
+    lib_dir: Path = BASE_DIR / 'src' / 'web' / 'static' / 'lib'
+
+    def __init__(
+        self,
+        name: str,
+        version: Version,
+        lib_install_folder_name: str,
+        version_folder_name: str,
+        lib_files: list[str],
+    ):
+        super().__init__(name, version)
+        self.lib_install_dir: Path = self.lib_dir / lib_install_folder_name
+        self.version_folder_name: str = version_folder_name.format(version=self.version)
+        self.version_install_dir: Path = self.lib_install_dir / self.version_folder_name
+        self.lib_files: list[str] = [
+            lib_file.format(version=self.version) for lib_file in lib_files
+        ]
+
+    @property
+    def check_file(self) -> Path:
+        return self.version_install_dir / self.lib_files[0]
+
+
+class WebLibArchiveInstaller(WebLibInstaller, ABC):
+    """A utility class to install web libraries from archives."""
+
+    def __init__(
+        self,
+        name: str,
+        version: Version,
+        lib_install_folder_name: str,
+        version_folder_name: str,
+        lib_files: list[str],
+        archive_url: str,
+        archive_filename: str,
+    ):
+        super().__init__(
+            name, version, lib_install_folder_name, version_folder_name, lib_files
+        )
+        self.archive_url = archive_url.format(version=self.version)
+        self.archive_filename = archive_filename.format(version=self.version)
+
+    def install(self) -> bool:
+        self.version_install_dir.mkdir(parents=True, exist_ok=True)
+        archive_file: Path = TMP_DIR / self.archive_filename
+        self.download_file(self.archive_url, archive_file)
+        print_interactive_info(f'Installing to {self.version_install_dir}...')
+        shutil.unpack_archive(archive_file, TMP_DIR)
+        archive_dir: Path = TMP_DIR / self.version_folder_name
+        for lib_file in self.lib_files:
+            src_file: Path = TMP_DIR / self.version_folder_name / lib_file
+            dst_file: Path = self.version_install_dir / lib_file
+            dst_dir: Path = dst_file.parent
+            dst_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy(src_file, dst_dir)
+        archive_file.unlink(missing_ok=True)
+        shutil.rmtree(archive_dir)
+        print_interactive_success('Done.')
+        return self.is_installed
+
+
+class WebLibFileInstaller(WebLibInstaller):
+    def __init__(
+        self,
+        name: str,
+        version: Version,
+        url: str,
+        lib_file: str,
+    ):
+        super().__init__(
+            name,
+            version,
+            '',
+            '',
+            [
+                lib_file,
+            ],
+        )
+        self.url: str = url.format(version=self.version)
+
+    def install(self) -> bool:
+        self.check_file.parent.mkdir(parents=True, exist_ok=True)
+        print_interactive_info(f'Downloading {self.url} to {self.check_file}...')
+        response = requests.get(self.url, stream=True, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        with open(self.check_file, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print_interactive_success('Done.')
+        return self.is_installed
+
+
+@dataclass
+class SystemHandler:
+    executable_dir: str
+    executable_filename: str
+    archive_filename: str
+
+
+class ExecutableInstaller(ToolInstaller, ABC):
+    """Abstract installer for tools containing a executable"""
+
+    def __init__(self):
+        super().__init__(self._name, self._version)
+
+    @property
+    @abstractmethod
+    def _name(self) -> str: ...
+
+    @property
+    @abstractmethod
+    def _version(self) -> Version: ...
+
+    @cached_property
+    @abstractmethod
+    def system_handler(self) -> SystemHandler:
+        """System specific variables."""
+
+    @property
+    def executable_path(self) -> Path:
+        """Path to the executable file."""
+        return self.executable_dir / self.system_handler.executable_filename
+
+    @property
+    def executable_dir(self) -> Path:
+        return self.get_export_dir(BASE_DIR)
+
+    @property
+    def install_dir(self) -> Path:
+        return self.executable_dir.parent
+
+    @abstractmethod
+    def get_export_dir(self, base_path: Path) -> Path:
+        """Get the directory to export from a base path."""
+
+    @property
+    def check_file(self) -> Path:
+        return self.executable_path
+
+
+class BbpPairingsInstaller(ExecutableInstaller):
+    @property
+    def _name(self) -> str:
+        return 'BBP Pairings'
+
+    @property
+    def _version(self) -> Version:
+        return Version('5.0.1')
+
+    @cached_property
+    def system_handler(self) -> SystemHandler:
+        system = platform.system()
+        match system:
+            case 'Windows':
+                return SystemHandler(
+                    executable_dir=f'bbpPairings-v{self.version}',
+                    executable_filename='bbpPairings.exe',
+                    archive_filename=f'bbpPairings-v{self.version}-x86_64-pc-windows.zip',
+                )
+            case 'Linux':
+                return SystemHandler(
+                    executable_dir=f'bbpPairings-v{self.version}',
+                    executable_filename='bbpPairings.exe',
+                    archive_filename=f'bbpPairings-v{self.version}-x86_64-pc-linux.tar.gz',
+                )
+            case _:
+                raise OSError(
+                    f'{self._name} is not available for the current system: {system}'
+                )
+
+    def get_export_dir(self, base_path: Path) -> Path:
+        return base_path / 'tools' / 'bbpPairings' / self.system_handler.executable_dir
+
+    def install(self) -> bool:
+        archive_filename = self.system_handler.archive_filename
+        build_url: str = (
+            'https://github.com/BieremaBoyzProgramming/bbpPairings'
+            f'/releases/download/v{self.version}/{archive_filename}'
+        )
+        self.install_dir.mkdir(parents=True, exist_ok=True)
+        archive_path: Path = self.install_dir / archive_filename
+        self.download_file(build_url, archive_path)
+        self.install_archive_and_delete(archive_path, self.install_dir)
+        return self.is_installed
+
+
+class PapiConverterInstaller(ExecutableInstaller):
+    @cached_property
+    def system_handler(self) -> SystemHandler:
+        system = platform.system()
+        match system:
+            case 'Windows':
+                return SystemHandler(
+                    executable_dir='papi-converter-windows',
+                    executable_filename='papi-converter.bat',
+                    archive_filename='papi-converter-windows.zip',
+                )
+            case 'Darwin':
+                return SystemHandler(
+                    executable_dir='papi-converter-mac',
+                    executable_filename='papi-converter.sh',
+                    archive_filename='papi-converter-mac.tar.gz',
+                )
+            case _:
+                raise OSError(
+                    f'{self._name} is not available for the current system: {system}'
+                )
+
+    @property
+    def _name(self) -> str:
+        return 'Papi Converter'
+
+    @property
+    def _version(self) -> Version:
+        return Version('1.0.0')
+
+    def get_export_dir(self, base_path: Path) -> Path:
+        return (
+            base_path / 'tools' / 'papi-converter' / self.system_handler.executable_dir
+        )
+
+    def install(self) -> bool:
+        archive_filename = self.system_handler.archive_filename
+        build_url: str = (
+            'https://github.com/Sharly-Chess/papi-converter/'
+            f'releases/download/v{self.version}/{archive_filename}'
+        )
+        self.install_dir.mkdir(parents=True, exist_ok=True)
+        archive_path: Path = self.install_dir / archive_filename
+        self.download_file(build_url, archive_path)
+        self.install_archive_and_delete(archive_path, self.install_dir)
+        return self.is_installed
