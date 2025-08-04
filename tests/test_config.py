@@ -4,7 +4,6 @@ import shutil
 
 import time
 import urllib
-from plugins.manager import plugin_manager  # Noqa
 from common.sharly_chess_config import SharlyChessConfig
 from database.access.papi.papi_database import PapiDatabase
 from datetime import datetime, timedelta
