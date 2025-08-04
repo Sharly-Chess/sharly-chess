@@ -59,6 +59,17 @@ class EventDatabase(MigrationDatabase):
         self.uniq_id = uniq_id
         super().__init__(self.event_database_path(self.uniq_id), write)
 
+    def __exit__(self, exc_type, exc_value, traceback):
+        from data.loader import EventLoader
+
+        super().__exit__(exc_type, exc_value, traceback)
+
+        # Inform EventLoader that this event has been updated internally
+        if self.write:
+            EventLoader.set_last_known_update(
+                self.uniq_id, self.database_modified_timestamp(self.uniq_id)
+            )
+
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
         return cls(file.stem, write)
@@ -101,6 +112,10 @@ class EventDatabase(MigrationDatabase):
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
         return EVENTS_DIR / f'{uniq_id}.{SharlyChessConfig.event_database_ext}'
+
+    @classmethod
+    def database_modified_timestamp(cls, uniq_id: str) -> float:
+        return cls.event_database_path(uniq_id).lstat().st_mtime
 
     @staticmethod
     def _check_populate_dict(
