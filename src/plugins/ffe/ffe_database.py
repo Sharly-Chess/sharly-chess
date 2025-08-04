@@ -118,6 +118,9 @@ class FfeDatabase(LocalSourceDatabase):
             return False
         return True
 
+    def _use_external_generator(self):
+        return True
+
     def _generate_from_source_file(self, tmp_file: Path) -> bool:
         PapiConverter().convert_player_database(self._source_file_path, tmp_file)
         return True
