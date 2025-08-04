@@ -992,9 +992,6 @@ msgstr ""
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr ""
 
-msgid "Create file"
-msgstr ""
-
 msgid "Create the Papi files"
 msgstr ""
 
@@ -1930,22 +1927,10 @@ msgstr ""
 msgid "Fide Master"
 msgstr ""
 
-msgid "Fields relying on the Papi database can't be updated if the file does not exist."
-msgstr ""
-
 msgid "File [{file}] not found."
 msgstr ""
 
-msgid "File already exists."
-msgstr ""
-
-msgid "File found"
-msgstr ""
-
 msgid "File name (without extension):"
-msgstr ""
-
-msgid "File not found"
 msgstr ""
 
 msgid "Filter out players with a greater rating."

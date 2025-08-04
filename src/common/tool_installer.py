@@ -223,9 +223,8 @@ class ExecutableInstaller(ToolInstaller, ABC):
     def install_dir(self) -> Path:
         return self.executable_dir.parent
 
-    @abstractmethod
     def get_export_dir(self, base_path: Path) -> Path:
-        """Get the directory to export from a base path."""
+        return base_path / 'tools' / self.name / self.system_handler.executable_dir
 
     @property
     def check_file(self) -> Path:
@@ -235,7 +234,7 @@ class ExecutableInstaller(ToolInstaller, ABC):
 class BbpPairingsInstaller(ExecutableInstaller):
     @property
     def _name(self) -> str:
-        return 'BBP Pairings'
+        return 'bbpPairings'
 
     @property
     def _version(self) -> Version:
@@ -302,16 +301,11 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _name(self) -> str:
-        return 'Papi Converter'
+        return 'papi-converter'
 
     @property
     def _version(self) -> Version:
         return Version('1.0.0')
-
-    def get_export_dir(self, base_path: Path) -> Path:
-        return (
-            base_path / 'tools' / 'papi-converter' / self.system_handler.executable_dir
-        )
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename

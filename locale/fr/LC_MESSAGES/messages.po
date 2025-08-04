@@ -992,9 +992,6 @@ msgstr "Créer et ajouter à nouveau"
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
 
-msgid "Create file"
-msgstr "Créer le fichier"
-
 msgid "Create the Papi files"
 msgstr "Créer les fichiers Papi"
 
@@ -1930,23 +1927,11 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 msgid "Fide Master"
 msgstr "Maître Fide"
 
-msgid "Fields relying on the Papi database can't be updated if the file does not exist."
-msgstr "Les champs qui dépendent de la base de données Papi ne peuvent pas être mis à jour si le fichier n'existe pas."
-
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
-msgid "File already exists."
-msgstr "Le fichier existe déjà."
-
-msgid "File found"
-msgstr "Fichier trouvé"
-
 msgid "File name (without extension):"
 msgstr "Nom du fichier (sans extension) :"
-
-msgid "File not found"
-msgstr "Fichier introuvable"
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
