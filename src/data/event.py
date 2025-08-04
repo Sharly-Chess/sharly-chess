@@ -38,7 +38,6 @@ from utils.enum import (
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
-    StoredTournament,
     StoredPlayer,
 )
 
@@ -433,7 +432,7 @@ class Event:
 
     @property
     def last_update(self) -> float:
-        return EventDatabase(self.uniq_id).file_modified_at
+        return EventDatabase.database_modified_timestamp(self.uniq_id)
 
     @cached_property
     def last_update_str(self) -> str:
@@ -524,29 +523,6 @@ class Event:
             for tournament in self.tournaments_sorted_by_uniq_id
             if tournament.can_add_players
         ]
-
-    def check_update(self):
-        """Verify that all the tournaments of the event are up to date.
-        If they are not, update them."""
-        stored_tournaments: list[StoredTournament] = []
-        modified = False
-        with EventDatabase(self.uniq_id) as database:
-            last_updates = database.get_stored_tournament_last_updates()
-            for stored_tournament in self.stored_event.stored_tournaments:
-                id_ = stored_tournament.id
-                assert id_ is not None
-                if stored_tournament.last_update == last_updates[id_]:
-                    stored_tournaments.append(stored_tournament)
-                else:
-                    modified = True
-                    new_stored_tournament = database.get_stored_tournament(id_)
-                    assert new_stored_tournament is not None
-                    stored_tournaments.append(new_stored_tournament)
-                    if tournament := self.tournaments_by_id.get(id_, None):
-                        tournament.stored_tournament = new_stored_tournament
-                        tournament.clear_cache()
-        if modified:
-            self.stored_event.stored_tournaments = stored_tournaments
 
     # --------------------------------------------------------------------------
     # Players

@@ -82,7 +82,7 @@ class IndexUserController(BaseUserController):
             public_only=not web_context.admin_auth
         )
         return any(
-            EventDatabase(event.uniq_id).file_modified_at > date
+            EventDatabase.database_modified_timestamp(event.uniq_id) > date
             for event in events_metadata
         )
 
