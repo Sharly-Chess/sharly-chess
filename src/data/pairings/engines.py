@@ -143,14 +143,6 @@ class BbpPairings(PairingEngine):
 
     @property
     def executable_path(self) -> Path:
-        system: str = platform.system()
-        build_filename: str
-        if system == 'Windows':
-            return self.executable_dir / 'bbpPairings-windows.exe'
-        elif system == 'Darwin':
-            return self.executable_dir / 'bbpPairings-macos'
-        elif system == 'Linux':
-            return self.executable_dir / 'bbpPairings-linux'
         return BbpPairingsInstaller().executable_path
 
     @property
