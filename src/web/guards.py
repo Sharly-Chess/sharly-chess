@@ -1,3 +1,5 @@
+import time
+
 from litestar.exceptions import PermissionDeniedException
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
@@ -20,6 +22,16 @@ class Guard:
                 raise PermissionDeniedException(
                     'You are not allowed to view private events.'
                 )
+        if not event.current(now := time.time()):
+            if not client.can_view_passed_coming_events:
+                if event.passed(now):
+                    raise PermissionDeniedException(
+                        'You are not allowed to view passed events.'
+                    )
+                else:
+                    raise PermissionDeniedException(
+                        'You are not allowed to view coming events.'
+                    )
 
     @classmethod
     def screen_is_visible(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
@@ -115,28 +127,6 @@ class Guard:
             )
 
     @classmethod
-    def client_can_view_players_tab(
-        cls, request: HTMXRequest, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception accessing the players tab if the client is not allowed"""
-        client: Client = RequestUtils.get_client(request)
-        if not client.can_view_players_tab:
-            raise PermissionDeniedException(
-                'You are not allowed to view the players tab.'
-            )
-
-    @classmethod
-    def client_can_view_pairings_tab(
-        cls, request: HTMXRequest, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception accessing the pairings tab if the client is not allowed"""
-        client: Client = RequestUtils.get_client(request)
-        if not client.can_view_pairings_tab:
-            raise PermissionDeniedException(
-                'You are not allowed to view the pairings tab.'
-            )
-
-    @classmethod
     def client_can_set_illegal_moves(
         cls, request: HTMXRequest, _: BaseRouteHandler
     ) -> None:
@@ -187,4 +177,26 @@ class Guard:
         ):
             raise PermissionDeniedException(
                 f'You are not allowed to set result [{result}] for tournament [{tournament.uniq_id}].'
+            )
+
+    @classmethod
+    def client_can_view_players_tab(
+        cls, request: HTMXRequest, _: BaseRouteHandler
+    ) -> None:
+        """Raises an exception if viewing the players tab is not allowed."""
+        client: Client = RequestUtils.get_client(request)
+        if not client.can_view_players_tab:
+            raise PermissionDeniedException(
+                'You are not allowed to view the players tab.'
+            )
+
+    @classmethod
+    def client_can_view_pairings_tab(
+        cls, request: HTMXRequest, _: BaseRouteHandler
+    ) -> None:
+        """Raises an exception if viewing the pairings tab is not allowed."""
+        client: Client = RequestUtils.get_client(request)
+        if not client.can_view_pairings_tab:
+            raise PermissionDeniedException(
+                'You are not allowed to view the pairings tab.'
             )

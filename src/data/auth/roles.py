@@ -432,6 +432,7 @@ class AdministrationRole(Role):
             AuthAction.UPDATE_APPLICATION_SETTINGS,
             AuthAction.MANAGE_SOURCE_DATABASES,
             AuthAction.VIEW_PRIVATE_EVENTS,
+            AuthAction.VIEW_PASSED_COMING_EVENTS,
             AuthAction.ADD_EVENTS,
             AuthAction.VIEW_DETAILED_EVENT_CARDS,
             AuthAction.DELETE_EVENTS,

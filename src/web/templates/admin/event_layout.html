@@ -1,12 +1,13 @@
 {% extends 'common/base.html' %}
 
 {% block admin_header_back_button %}
-    {% if admin_event.start > now %}
-        {% set target_tab = 'coming_events' %}
-    {% elif admin_event.stop < now %}
-        {% set target_tab = 'passed_events' %}
-    {% else %}
-        {% set target_tab = 'current_events' %}
+    {% set target_tab = 'current_events' %}
+    {% if client.can_view_passed_coming_events %}
+        {% if admin_event.coming(now) %}
+            {% set target_tab = 'coming_events' %}
+        {% elif admin_event.passed(now) %}
+            {% set target_tab = 'passed_events' %}
+        {% endif %}
     {% endif %}
     <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
         <button

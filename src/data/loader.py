@@ -234,7 +234,7 @@ class EventLoader:
             case 'passed':
                 conditions.append(lambda event: event.stop < now)
             case 'current':
-                conditions.append(lambda event: event.start < now < event.stop)
+                conditions.append(lambda event: event.start <= now <= event.stop)
             case 'coming':
                 conditions.append(lambda event: now < event.start)
         return sorted(

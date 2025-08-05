@@ -1925,6 +1925,9 @@ msgstr ""
 msgid "Events"
 msgstr ""
 
+msgid "Events ({num})"
+msgstr ""
+
 msgid "Execution"
 msgstr ""
 
@@ -2969,6 +2972,9 @@ msgid "No display controllers"
 msgstr ""
 
 msgid "No events found."
+msgstr ""
+
+msgid "No events."
 msgstr ""
 
 msgid "No hours."

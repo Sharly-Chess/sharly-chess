@@ -1925,6 +1925,9 @@ msgstr "Évènement : {event_name}"
 msgid "Events"
 msgstr "Évènements"
 
+msgid "Events ({num})"
+msgstr "Évènements ({num})"
+
 msgid "Execution"
 msgstr "Exécution"
 
@@ -2970,6 +2973,9 @@ msgstr "Aucun pilote d'afficheurs"
 
 msgid "No events found."
 msgstr "Aucun évènement trouvé."
+
+msgid "No events."
+msgstr "Aucun évènement."
 
 msgid "No hours."
 msgstr "Aucun horaire."

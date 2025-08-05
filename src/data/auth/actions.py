@@ -9,6 +9,7 @@ class AuthAction(StrEnum):
 
     # Events
     VIEW_PRIVATE_EVENTS = auto()
+    VIEW_PASSED_COMING_EVENTS = auto()
     ADD_EVENTS = auto()
     VIEW_DETAILED_EVENT_CARDS = auto()
     DELETE_EVENTS = auto()

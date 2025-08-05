@@ -175,46 +175,65 @@ class IndexAdminController(BaseAdminController):
                 'disabled': False,
                 'experimental_features_warning': True,
             },
-            'current_events': {
-                'section_title': _('Events'),
-                'title': _('Current ({num})').format(num=len(current_events) or '-'),
-                'template': 'index/events_tab.html',
-                'events': current_events,
-                'disabled': not current_events,
-                'empty_str': _('No current events.'),
-                'icon_class': 'bi-calendar indented',
-                'page_title': _('Current events'),
-            },
-            'coming_events': {
-                'title': _('Upcoming ({num})').format(num=len(coming_events) or '-'),
-                'template': 'index/events_tab.html',
-                'events': coming_events,
-                'disabled': not coming_events,
-                'empty_str': _('No upcoming events.'),
-                'icon_class': 'bi-calendar-check indented',
-                'page_title': _('Upcoming events'),
-            },
-            'passed_events': {
-                'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
-                'template': 'index/events_tab.html',
-                'events': passed_events,
-                'disabled': not passed_events,
-                'empty_str': _('No passed events.'),
-                'icon_class': 'bi-calendar-minus indented',
-                'page_title': _('Passed events'),
-            },
-            'archives': {
-                'title': _('Archived ({num})').format(
-                    num=len(archive_loader.archives_sorted_by_date) or '-'
-                ),
-                'template': 'index/archives_tab.html',
-                'archives': archive_loader.archives_sorted_by_date,
-                'disabled': not archive_loader.archives_sorted_by_date,
-                'empty_str': _('No archived events.'),
-                'icon_class': 'bi-archive indented',
-                'page_title': _('Archived events'),
-            },
         }
+        if web_context.client.can_view_passed_coming_events:
+            nav_tabs |= {
+                'current_events': {
+                    'section_title': _('Events'),
+                    'title': _('Current ({num})').format(
+                        num=len(current_events) or '-'
+                    ),
+                    'template': 'index/events_tab.html',
+                    'events': current_events,
+                    'disabled': not current_events,
+                    'empty_str': _('No current events.'),
+                    'icon_class': 'bi-calendar indented',
+                    'page_title': _('Current events'),
+                },
+                'coming_events': {
+                    'title': _('Upcoming ({num})').format(
+                        num=len(coming_events) or '-'
+                    ),
+                    'template': 'index/events_tab.html',
+                    'events': coming_events,
+                    'disabled': not coming_events,
+                    'empty_str': _('No upcoming events.'),
+                    'icon_class': 'bi-calendar-check indented',
+                    'page_title': _('Upcoming events'),
+                },
+                'passed_events': {
+                    'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
+                    'template': 'index/events_tab.html',
+                    'events': passed_events,
+                    'disabled': not passed_events,
+                    'empty_str': _('No passed events.'),
+                    'icon_class': 'bi-calendar-minus indented',
+                    'page_title': _('Passed events'),
+                },
+                'archives': {
+                    'title': _('Archived ({num})').format(
+                        num=len(archive_loader.archives_sorted_by_date) or '-'
+                    ),
+                    'template': 'index/archives_tab.html',
+                    'archives': archive_loader.archives_sorted_by_date,
+                    'disabled': not archive_loader.archives_sorted_by_date,
+                    'empty_str': _('No archived events.'),
+                    'icon_class': 'bi-archive indented',
+                    'page_title': _('Archived events'),
+                },
+            }
+        else:
+            nav_tabs |= {
+                'current_events': {
+                    'title': _('Events ({num})').format(num=len(current_events) or '-'),
+                    'template': 'index/events_tab.html',
+                    'events': current_events,
+                    'disabled': not current_events,
+                    'empty_str': _('No events.'),
+                    'icon_class': 'bi-calendar indented',
+                    'page_title': _('Events'),
+                },
+            }
         if web_context.client.can_view_application_settings:
             nav_tabs |= {
                 'config': {

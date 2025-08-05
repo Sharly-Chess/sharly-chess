@@ -366,7 +366,7 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             return cls._admin_event_render(template_context)
 
-    pairing_tab_guards = EventUserController.event_guards + [
+    pairings_tab_guards = EventUserController.event_guards + [
         Guard.client_can_view_pairings_tab,
     ]
 
@@ -377,7 +377,7 @@ class PairingsAdminController(BaseEventAdminController):
             '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
-        guards=pairing_tab_guards,
+        guards=pairings_tab_guards,
         cache=1,
     )
     async def htmx_admin_pairings_tab(
