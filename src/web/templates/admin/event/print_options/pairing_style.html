@@ -1,0 +1,9 @@
+<div class="col-12 mb-3">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Pairing style:'),
+        help_text=_('Display format for pairings.'),
+        select_options=option.pairing_style_options,
+        data=data, errors=errors
+    ) }}
+</div>

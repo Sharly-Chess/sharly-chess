@@ -175,13 +175,13 @@
             {% if has_unpaired %}
                 <div class="col-12 col-lg-3 mb-3">
                     {% if admin_unpaired|length > 0 %}
-                        {% with title=_('Unpaired'), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
+                        {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}
 
                     {% if admin_bye_players|length > 0 %}
-                        {% with title=_('Byes *** Players with byes'), unpaired=admin_bye_players, table_id='bye-players-table' %}
+                        {% with title=_('Byes (%(byes)d) *** Players with byes', byes=admin_bye_players|length), unpaired=admin_bye_players, table_id='bye-players-table' %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                     {% endif %}
@@ -193,26 +193,7 @@
                     id="pairings-table"
                     class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
                 >
-                    <thead
-                        id="pairings-table-header"
-                        class="position-sticky z-2"
-                        style="top: var(--header-height);"
-                    >
-                        <tr>
-                            <th>{{ _('Board') }}</th>
-                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                            {% if admin_tournament.print_real_points %}
-                                <th>&nbsp;</th>
-                            {% endif %}
-                            <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}</th>
-                            <th class="text-center">{{ _('Result') }}</th>
-                            <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}</th>
-                            {% if admin_tournament.print_real_points %}
-                                <th>&nbsp;</th>
-                            {% endif %}
-                            <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-                        </tr>
-                    </thead>
+                    {% include '/admin/pairings/pairing_table_header.html' %}
                     <tbody>
                         {% for board in admin_filtered_boards %}
                             {% with wp=board.white_player, bp=board.black_player %}
@@ -278,24 +259,24 @@
             requestInFlight = true;
             const { code, pairing_board_id: board_id } = keyQueue.shift();
 
-        htmx.ajax('PUT',
-            "{{ url_for(
-                'admin-pairings-set-result-hotkey',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-                round=admin_round
-            ) }}",
-            {
-                target: "body",
-                swap: "outerHTML",
-                values: {
-                    key: code,
-                    board_id: board_id || 0,
-                    validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
+            htmx.ajax('PUT',
+                "{{ url_for(
+                    'admin-pairings-set-result-hotkey',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round
+                ) }}",
+                {
+                    target: "body",
+                    swap: "outerHTML",
+                    values: {
+                        key: code,
+                        board_id: board_id || 0,
+                        validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
+                    },
                 },
-            },
-        );
-    }
+            );
+        }
 
         function handleShortCutKey(code) {
             if (hasErrorRow()) {
@@ -376,7 +357,7 @@
             $(document).on("click.pairings", "tr.pairing-row > td", rowClickHandler);
             $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
             $(document).on("highlight_board_with_warning.pairings", function(e) {
-            highlightBoardWithError(e.detail.board_id);
+                highlightBoardWithError(e.detail.board_id);
             });
         });
     </script>

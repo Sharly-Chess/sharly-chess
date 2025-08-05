@@ -4,6 +4,7 @@ from types import UnionType
 from typing import override, Any
 
 from common.i18n import _
+from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
 from data.print_documents.player_sorters import (
     PlayerSorter,
     NamePlayerSorter,
@@ -115,6 +116,40 @@ class PlayerSortPrintOption(PrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown player sorter: {self.value}', self)
+
+
+class PairingStylePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'pairing-style'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> Any:
+        return BoardsPairingStyle.static_id()
+
+    @property
+    def pairing_style_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPairingStyleManager
+
+        return PrintPairingStyleManager.options()
+
+    @cached_property
+    def pairing_style(self) -> PairingStyle:
+        from data.print_documents import PrintPairingStyleManager
+
+        return PrintPairingStyleManager.get_object(self.value)
+
+    @override
+    def validate(self):
+        try:
+            _style = self.pairing_style
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown pairing style: {self.value}', self)
 
 
 class ShowWarningsPrintOption(PrintOption):

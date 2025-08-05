@@ -17,6 +17,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "with %(color)s"
+
+#, python-format
 msgid "%(count)d boards without result"
 msgstr ""
 
@@ -64,6 +68,10 @@ msgstr ""
 
 #, python-format
 msgid "%(set_name)s (round %(round)d)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
 msgstr ""
 
 #, python-format
@@ -611,9 +619,6 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
-msgid "Board"
-msgstr ""
-
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
@@ -623,6 +628,10 @@ msgid "Board %(board_number)s"
 msgstr ""
 
 msgid "Board & color"
+msgstr ""
+
+#, python-format
+msgid "Board (%(remaining)d)"
 msgstr ""
 
 msgid "Board selection (by number)"
@@ -687,8 +696,9 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-msgid "Byes *** Players with byes"
-msgstr "Byes"
+#, python-format
+msgid "Byes (%(byes)d) *** Players with byes"
+msgstr "Byes (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -1416,6 +1426,9 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
+msgstr ""
+
+msgid "Display format for pairings."
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -3304,6 +3317,9 @@ msgstr ""
 msgid "Pairing settings"
 msgstr ""
 
+msgid "Pairing style:"
+msgstr ""
+
 msgid "Pairing system"
 msgstr ""
 
@@ -3511,6 +3527,10 @@ msgstr ""
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr ""
+
+#, python-format
+msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
+msgstr "Plays on board %(board)d"
 
 msgid "Please choose the document."
 msgstr ""
@@ -5327,7 +5347,8 @@ msgstr ""
 msgid "Unpair tournament"
 msgstr ""
 
-msgid "Unpaired"
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
 msgstr ""
 
 msgid "Unpaired *** FEMALE"
@@ -5974,4 +5995,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Please ask the organizer to get the password."
+#~ msgstr ""
 
