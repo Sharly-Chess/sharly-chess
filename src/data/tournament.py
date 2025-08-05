@@ -1051,11 +1051,11 @@ class Tournament:
 
         # NOTE(Amaras): Because EM did not take into account HPB in his code,
         # this function must be used instead of Player.points_after
-        def papi_points_after(player: Player, after_round: int) -> float:
+        def papi_points_after(player: Player, after_round_: int) -> float:
             return sum(
                 pairing.result.points(self.point_values)
                 for round_index, pairing in player.pairings.items()
-                if round_index <= after_round
+                if round_index <= after_round_
                 and (
                     pairing.played
                     or pairing.result in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)

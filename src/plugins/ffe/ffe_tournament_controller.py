@@ -61,7 +61,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
             result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
 
         def report(
-            tournament: Tournament, status: FfeUploadStatus, message: str
+            tournament_: Tournament, status: FfeUploadStatus, message: str
         ) -> None:
             nonlocal result
             result = FfeUploadResult(status, message)
@@ -147,7 +147,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
             )
 
         def report(
-            tournament: Tournament, status: FfeUploadStatus, message: str
+            tournament_: Tournament, status: FfeUploadStatus, message: str
         ) -> None:
             nonlocal result
             result = FfeUploadResult(status, message)
@@ -239,7 +239,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
             result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
 
         def report(
-            tournament: Tournament, status: FfeUploadStatus, message: str
+            tournament_: Tournament, status: FfeUploadStatus, message: str
         ) -> None:
             nonlocal result
             result = FfeUploadResult(status, message)
