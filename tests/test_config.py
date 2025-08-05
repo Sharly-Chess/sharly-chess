@@ -414,13 +414,11 @@ class TestUtils:
         cls.check_api_response(res)
 
     @staticmethod
-    def button_by_text(object: Page | Locator, text: str) -> Locator:
+    def button_by_text(obj: Page | Locator, text: str) -> Locator:
         """
         Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
         """
-        return object.get_by_role(
-            'button', name=re.compile(rf'\b{text}\b', re.IGNORECASE)
-        )
+        return obj.get_by_role('button', name=re.compile(rf'\b{text}\b', re.IGNORECASE))
 
     @staticmethod
     def take_screenshot(page, name: str):

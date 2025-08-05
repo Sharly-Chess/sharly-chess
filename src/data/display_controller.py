@@ -85,14 +85,14 @@ class DisplayController:
 
     @property
     def assigned_type(self) -> str | None:
-        object = self.assigned_object
-        if object is None:
+        obj = self.assigned_object
+        if obj is None:
             return None
-        if isinstance(object, Screen):
+        if isinstance(obj, Screen):
             return 'screen'
-        if isinstance(object, Rotator):
+        if isinstance(obj, Rotator):
             return 'rotator'
-        raise ValueError(f'type=[{type(object)}]')
+        raise ValueError(f'type=[{type(obj)}]')
 
     @property
     def assigned_description(

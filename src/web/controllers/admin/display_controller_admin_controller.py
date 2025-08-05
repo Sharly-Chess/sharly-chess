@@ -149,15 +149,15 @@ class DisplayControllerAdminController(BaseEventAdminController):
 
         assert uniq_id is not None
 
-        id: int | None = None
+        display_controller_id: int | None = None
         if web_context.admin_display_controller and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_display_controller.id
+            display_controller_id = web_context.admin_display_controller.id
 
         return StoredDisplayController(
-            id=id,
+            id=display_controller_id,
             uniq_id=uniq_id,
             public=bool(public),
             name=name,
