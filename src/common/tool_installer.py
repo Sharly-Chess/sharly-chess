@@ -326,7 +326,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.0.0')
+        return Version('1.0.1')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename
