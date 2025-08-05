@@ -217,14 +217,11 @@ class ExecutableInstaller(ToolInstaller, ABC):
 
     @property
     def executable_dir(self) -> Path:
-        return self.get_export_dir(BASE_DIR)
+        return BASE_DIR / 'tools' / self.name / self.system_handler.executable_dir
 
     @property
     def install_dir(self) -> Path:
         return self.executable_dir.parent
-
-    def get_export_dir(self, base_path: Path) -> Path:
-        return base_path / 'tools' / self.name / self.system_handler.executable_dir
 
     @property
     def check_file(self) -> Path:
@@ -260,9 +257,6 @@ class BbpPairingsInstaller(ExecutableInstaller):
                 raise OSError(
                     f'{self._name} is not available for the current system: {system}'
                 )
-
-    def get_export_dir(self, base_path: Path) -> Path:
-        return base_path / 'tools' / 'bbpPairings' / self.system_handler.executable_dir
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename
@@ -305,7 +299,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.0.0')
+        return Version('1.0.1')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename
