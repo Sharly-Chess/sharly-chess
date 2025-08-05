@@ -9,6 +9,11 @@
 {% endwith %}
 {% with swap_oob=True %}
     <template>
+        {% include '/admin/pairings/pairing_table_header.html' %}
+    </template>
+{% endwith %}
+{% with swap_oob=True %}
+    <template>
         {% include admin_tournament.pairing_system.pairing_buttons_template %}
     </template>
 {% endwith %}

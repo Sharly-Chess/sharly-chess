@@ -34,7 +34,7 @@
                     id="board-{{board.id}}"
                     class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}"
                 >
-                    <td class="board-number">{{ board.number }}</td>
+                    <td class="board-number">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
                     <td class="points">{{ board.white_player.vpoints_str }}</td>
                     {% if document.tournament.print_real_points %}
                         <td class="points">[{{ board.white_player.points_str }}]</td>
