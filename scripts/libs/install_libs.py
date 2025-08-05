@@ -1,5 +1,3 @@
-# Need to import this first to avoid circular imports
-import plugins.manager  # noqa
 from common.installation_checker import InstallationChecker
 from common.logger import print_interactive_info, print_interactive_success
 

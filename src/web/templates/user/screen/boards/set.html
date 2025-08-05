@@ -6,7 +6,7 @@
             <div class="boards-set">
                 <h2 class="set-title text-center">
                     {% if tournament.current_round %}
-                        {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_boards, round=tournament.current_round) }}
+                        {{ _('%(set_name)s (round %(round)d) [%(remaining)d boards remaining]', set_name=screen_set.name_for_boards, round=tournament.current_round, remaining=tournament.boards_without_result(tournament.current_round)|length) }}
                     {% else %}
                         {{ screen_set.name_for_boards }}
                     {% endif %}
@@ -58,7 +58,7 @@
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modal-wrapper"
                                             {% endif %}
-                                        >{{ board.number }}.</th>
+                                        >{{ board.number }}.{% if board.number != board.id %} ({{ board.id }}.){% endif %}</th>
                                         <td
                                             class="points bg-transparent text-center"
                                             {% if editable %}

@@ -1,15 +1,25 @@
 {# ========== BORDERS ========== #}
 .player-table { border-collapse:collapse; }
 {# ========== WIDTH, MARGINS, PADDING ==========#}
-.player-table { width: 750px; }
+.player-table { min-width: 750px; max-width: 75%;}
 .player-table { padding: 2px; border-spacing: 0; }
 {# ========== FONT SIZE ========== #}
 .crosstable .player-header *,
 .crosstable .player-row * { font-size: 10px; }
+@media print {
+    .player-header *,
+    .player-row * { font-size: 10px; }
+}
 {# ========== FONT WEIGHT ========== #}
 .player-header * { font-weight: bold; }
-.player-row .name,
-.player-row .points { font-weight: bold; }
+@media not print {
+    .player-row .name,
+    .player-row .points { font-weight: bold; }
+}
+@media print {
+    .player-table .board,
+    .player-table .color { font-weight: bold; }
+}
 {# ========== TEXT ALIGN ========== #}
 .player-table .name,
 .player-table .club { text-align: left; }
