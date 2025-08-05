@@ -86,7 +86,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         field = 'uniq_id'
         uniq_id: str | None = WebContext.form_data_to_str(data, field)
-        name: str | None = None
+        name: str | None
         public: bool | None = None
 
         if action in [
