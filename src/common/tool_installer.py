@@ -285,7 +285,7 @@ class PapiConverterInstaller(ExecutableInstaller):
             case 'Darwin':
                 return SystemHandler(
                     executable_dir='papi-converter-mac',
-                    executable_filename='papi-converter.sh',
+                    executable_filename='papi-converter',
                     archive_filename='papi-converter-mac.tar.gz',
                 )
             case _:
@@ -299,7 +299,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.0.1')
+        return Version('1.1.1')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename

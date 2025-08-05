@@ -126,21 +126,28 @@ class FfeDatabase(LocalSourceDatabase):
         return True
 
     def _create_indexes(self):
-        self.write = True
-        with self:
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+        try:
+            self.write = True
+            with self:
+                self.execute(
+                    'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+                )
+                self.execute(
+                    'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+                )
+                self.execute(
+                    'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
+                )
+                self.execute(
+                    'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+                )
+                self.commit()
+        except Exception as e:
+            logger.error(
+                self.log_prefix
+                + _('Error creating database indexes: {error}.').format(error=e)
             )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
-            )
-            self.commit()
+            raise
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
