@@ -71,12 +71,14 @@ msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
 
 #, python-format
-msgid "%(set_name)s (round %(round)d)"
-msgstr "%(set_name)s (ronde %(round)d)"
+msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
+msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquier restant)"
+msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquiers restants)"
 
 #, python-format
-msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
-msgstr "%(set_name)s (ronde %(round)d) [reste %(remaining)d échiquiers]"
+msgid "%(set_name)s (round %(round)d)"
+msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
 msgid "%(string)s:"
@@ -3132,7 +3134,7 @@ msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
 
 msgid "Pairing style:"
-msgstr "Format d’appariement"
+msgstr "Format d’appariement :"
 
 msgid "Pairing system"
 msgstr "Système d'appariements"
