@@ -6,7 +6,15 @@
             <div class="boards-set">
                 <h2 class="set-title text-center">
                     {% if tournament.current_round %}
-                        {{ _('%(set_name)s (round %(round)d) [%(remaining)d boards remaining]', set_name=screen_set.name_for_boards, round=tournament.current_round, remaining=tournament.boards_without_result(tournament.current_round)|length) }}
+                        {% set remaining=tournament.boards_without_result(tournament.current_round)|length %}
+                        {{ ngettext(
+                            "%(set_name)s (round #%(round)d, %(remaining)d board remaining)",
+                            "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)",
+                            remaining,
+                            set_name=screen_set.name_for_boards,
+                            round=tournament.current_round,
+                            remaining=remaining
+                        ) }}
                     {% else %}
                         {{ screen_set.name_for_boards }}
                     {% endif %}

@@ -67,12 +67,14 @@ msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
 
 #, python-format
-msgid "%(set_name)s (round %(round)d)"
-msgstr "%(set_name)s (ronde %(round)d)"
+msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
+msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquier restant)"
+msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquiers restants)"
 
 #, python-format
-msgid "%(set_name)s (round %(round)d) [%(remaining)d boards remaining]"
-msgstr "%(set_name)s (ronde %(round)d) [reste %(remaining)d échiquiers]"
+msgid "%(set_name)s (round %(round)d)"
+msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
 msgid "%(string)s:"
@@ -3324,7 +3326,7 @@ msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
 
 msgid "Pairing style:"
-msgstr "Format d’appariement"
+msgstr "Format d’appariement :"
 
 msgid "Pairing system"
 msgstr "Système d'appariements"
@@ -4136,7 +4138,7 @@ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tourno
 msgid "Rules uploaded"
 msgstr "Règlement téléversé"
 
-msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgid "S-Berger *** SHORT NAME FOR SONNEBORN-BERGER"
 msgstr "S-Berger"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
@@ -4308,8 +4310,8 @@ msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice
 msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
 msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
 
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
+msgid "Sonneborn-Berger"
+msgstr "Sonneborn-Berger"
 
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."

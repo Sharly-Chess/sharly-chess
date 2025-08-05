@@ -23,7 +23,8 @@ logger.debug('Locale folder: %s', _locale_dir)
 
 # Build a dict of all the translations with the available locales retrieved from the filesystem.
 locales: list[str] = []
-for l_entry in _locale_dir.iterdir():
+# sort the list to ensure that the order is the same on all the OS
+for l_entry in sorted(_locale_dir.iterdir()):
     if l_entry.is_dir():
         mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
         if mo_file.is_file():
