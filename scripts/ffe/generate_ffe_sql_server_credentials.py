@@ -72,7 +72,7 @@ async def main():
         print_interactive_info('Now testing the remote database...')
         try:
             async with FFESqlServer() as ffe_sql_server:
-                async for player in await ffe_sql_server.search_player(
+                for player in await ffe_sql_server.search_player(
                     'pascal aubry', limit=8
                 ):
                     print_interactive_info(f'{player=}')
