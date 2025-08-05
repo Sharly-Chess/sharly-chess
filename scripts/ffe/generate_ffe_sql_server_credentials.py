@@ -25,18 +25,18 @@ from plugins.ffe.ffe_sql_server import FFESqlServer
 
 async def main():
     parser = ArgumentParser(
-        description=('Generate credentials for the FFE online database.')
+        description='Generate credentials for the FFE online database.'
     )
     parser.add_argument(
         '--host',
         type=str,
-        help=('The host.'),
+        help='The host.',
         required=True,
     )
     parser.add_argument(
         '--user',
         type=str,
-        help=('The user.'),
+        help='The user.',
         required=True,
     )
     parser.add_argument(
