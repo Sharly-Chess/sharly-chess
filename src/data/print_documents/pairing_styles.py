@@ -6,7 +6,6 @@ from utils.entity import IdentifiableEntity
 
 class PairingStyle(IdentifiableEntity, ABC):
     @abstractmethod
-    @property
     def template(self) -> str:
         """Returns the print template for the pairing style."""
 
