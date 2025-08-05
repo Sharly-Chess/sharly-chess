@@ -3938,7 +3938,7 @@ msgstr ""
 msgid "Rules uploaded"
 msgstr ""
 
-msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgid "S-Berger *** SHORT NAME FOR SONNEBORN-BERGER"
 msgstr "S-Berger"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
@@ -4113,7 +4113,7 @@ msgstr ""
 msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
 msgstr ""
 
-msgid "Sonnenborn-Berger"
+msgid "Sonneborn-Berger"
 msgstr ""
 
 msgid "Sorry, an unexpected error has occurred."
