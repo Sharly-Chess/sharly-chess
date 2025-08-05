@@ -151,8 +151,15 @@ def build_exe():
     custom_dir: Path = SOURCE_DIR / 'custom'
     files += [file for file in custom_dir.glob('**/*') if file.is_file()]
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
-    files += [BbpPairings().executable_path]
-    files += [PapiConverter().executable_path]
+
+    # Add entire executable installer directories
+    # This ensures papi-converter gets its jre-mac and java folders
+    for executable_installer in InstallationChecker.executable_installers:
+        installer_dir = executable_installer.executable_dir
+        if installer_dir.exists():
+            # Add all files in the installer directory recursively
+            files += [file for file in installer_dir.glob('**/*') if file.is_file()]
+
     files += [
         FFE_SQL_SERVER_CREDENTIALS_FILE,
     ]
@@ -206,12 +213,7 @@ def create_project():
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     tools_dir: Path = PROJECT_DIR / 'tools'
     tools_dir.mkdir(parents=True, exist_ok=True)
-    for executable_installer in InstallationChecker.executable_installers:
-        base_tool_dir = executable_installer.get_export_dir(BASE_DIR)
-        export_tool_dir = executable_installer.get_export_dir(PROJECT_DIR)
-        logger.info('Copying [%s] to [%s]...', base_tool_dir, export_tool_dir)
-        export_tool_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(base_tool_dir, export_tool_dir, dirs_exist_ok=True)
+
     # create an empty events dir
     events_dir: Path = PROJECT_DIR / EVENTS_FOLDER
     events_dir.mkdir(exist_ok=True)
