@@ -83,6 +83,7 @@ class StoredPairing:
     round_: int
     result: int
     board_id: int | None
+    illegal_moves: int = 0
 
 
 @dataclass
@@ -338,12 +339,3 @@ class EventMetadata(BaseStoredEvent):
     family_count: int = 0
     rotator_count: int = 0
     last_tournament_update: float | None = None
-
-
-@dataclass
-class StoredIllegalMove:
-    id: int | None
-    tournament_id: int
-    round: int
-    player_id: int
-    date: float

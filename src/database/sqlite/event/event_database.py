@@ -16,7 +16,6 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.board import Board
 from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
@@ -27,7 +26,6 @@ from database.sqlite.event.event_store import (
     StoredTimer,
     StoredTimerHour,
     StoredFamily,
-    StoredIllegalMove,
     StoredRotator,
     StoredScreenSet,
     StoredScreen,
@@ -1784,6 +1782,7 @@ class EventDatabase(MigrationDatabase):
             round_=row['round'],
             result=row['result'],
             board_id=row['board_id'],
+            illegal_moves=row.get('illegal_moves', 0),
         )
 
     def load_tournament_player_stored_pairings(
@@ -1805,7 +1804,7 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_pairing,
-            ['tournament_id', 'player_id', 'result', 'board_id'],
+            ['tournament_id', 'player_id', 'result', 'board_id', 'illegal_moves'],
         ) | {'round': stored_pairing.round_}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1815,7 +1814,7 @@ class EventDatabase(MigrationDatabase):
         )
 
     def update_stored_pairing(self, stored_pairing: StoredPairing):
-        fields = self._get_fields_dict(stored_pairing, ['result', 'board_id'])
+        fields = self._get_fields_dict(stored_pairing, ['result', 'board_id', 'illegal_moves'])
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(
             (
@@ -1914,89 +1913,61 @@ class EventDatabase(MigrationDatabase):
     # Illegal moves
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
-    def _row_to_stored_illegal_move(row: dict[str, Any]) -> StoredIllegalMove:
-        return StoredIllegalMove(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            round=row['round'],
-            player_id=row['player_id'],
-            date=row['date'],
-        )
-
-    def _get_stored_illegal_move(
-        self,
-        illegal_move_id: int,
-    ) -> StoredIllegalMove | None:
-        self.execute(
-            'SELECT * FROM `illegal_move` WHERE `id` = ?',
-            (illegal_move_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_illegal_move(row)
-        return None
-
     def get_stored_illegal_moves(self, tournament_id: int, round_: int) -> Counter[int]:
+        """Get illegal move counts for all players in a tournament round."""
         self.execute(
-            'SELECT `illegal_move`.* '
-            'FROM `illegal_move` '
-            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
-            'WHERE `tournament`.`id` = ? AND `round` = ?',
-            (
-                tournament_id,
-                round_,
-            ),
+            'SELECT `player_id`, `illegal_moves` '
+            'FROM `pairing` '
+            'WHERE `tournament_id` = ? AND `round` = ? AND `illegal_moves` > 0',
+            (tournament_id, round_),
         )
         illegal_moves: Counter[int] = Counter[int]()
         for row in self.fetchall():
-            illegal_moves[int(row['player_id'])] += 1
+            illegal_moves[int(row['player_id'])] = int(row['illegal_moves'])
         return illegal_moves
 
     def add_stored_illegal_move(
         self, tournament_id: int, round_: int, player_id: int
-    ) -> StoredIllegalMove:
+    ) -> int:
+        """Increment illegal move count for a player. Returns new count."""
         self._set_tournament_last_illegal_move_update(tournament_id)
-        fields: list[str] = [
-            'tournament_id',
-            'round',
-            'player_id',
-            'date',
-        ]
-        params: list = [tournament_id, round_, player_id, time.time()]
-        protected_fields = [f'`{f}`' for f in fields]
+
         self.execute(
-            f'INSERT INTO `illegal_move`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-            tuple(params),
+            'UPDATE `pairing` SET `illegal_moves` = `illegal_moves` + 1 '
+            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
+            (tournament_id, player_id, round_),
         )
-        illegal_move_id: int | None = self._last_inserted_id()
-        if illegal_move_id is None:
-            raise RuntimeError('Illegal move insertion failed')
-        fetched_stored_illegal_move = self._get_stored_illegal_move(illegal_move_id)
-        if fetched_stored_illegal_move is None:
-            raise RuntimeError('Illegal move write failed')
-        return fetched_stored_illegal_move
+
+        if self.cursor.rowcount == 0:
+            raise RuntimeError(f'No pairing found for tournament {tournament_id}, player {player_id}, round {round_}')
+
+        self.execute(
+            'SELECT `illegal_moves` FROM `pairing` '
+            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
+            (tournament_id, player_id, round_),
+        )
+        row = self.fetchone()
+        return int(row['illegal_moves'])
 
     def delete_stored_illegal_move(
         self, tournament_id: int, round_: int, player_id: int
     ) -> bool:
+        """Decrement illegal move count for a player. Returns True if count was > 0."""
         self._set_tournament_last_illegal_move_update(tournament_id)
+
         self.execute(
-            'SELECT `id` FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ? AND `player_id` = ? LIMIT 1',
-            (
-                tournament_id,
-                round_,
-                player_id,
-            ),
+            'UPDATE `pairing` SET `illegal_moves` = MAX(0, `illegal_moves` - 1) '
+            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ? AND `illegal_moves` > 0',
+            (tournament_id, player_id, round_),
         )
-        row: dict[str, Any] = self.fetchone()
-        if not row:
-            return False
+
         self.execute(
-            'DELETE FROM `illegal_move` WHERE `id` = ?',
-            (row['id'],),
+            'SELECT `illegal_moves` FROM `pairing` '
+            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
+            (tournament_id, player_id, round_),
         )
-        return True
+        row = self.fetchone()
+        return int(row['illegal_moves'])
 
     # ---------------------------------------------------------------------------------
     # results
@@ -2032,7 +2003,7 @@ class EventDatabase(MigrationDatabase):
         self, limit: int, tournament_ids: list[int], max_age: int
     ) -> list[DataResult]:
         params: list = [time.time() - max_age * 60]
-        
+
         # Build base query - only get the pairing for the white player to avoid duplicates
         query: str = (
             'SELECT '
@@ -2045,12 +2016,12 @@ class EventDatabase(MigrationDatabase):
             'AND p.board_id IS NOT NULL '
             'AND p.player_id = b.white_player_id '
         )
-        
+
         # Add tournament filter if tournament_ids provided
         if tournament_ids:
             query += f'AND ({" OR ".join(["p.tournament_id = ?"] * len(tournament_ids))}) '
             params += tournament_ids
-        
+
         query += 'ORDER BY b.last_result_update DESC'
         if limit:
             query += ' LIMIT ?'

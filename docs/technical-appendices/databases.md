@@ -156,16 +156,6 @@
 | `ffe_last_upload`                     | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date the tournament was last uploaded to the FFE federal website                                                                                       |
 | `ffe_last_rules_upload`               | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date of the last sending of the tournament rules to the FFE federal website                                                                            |
 
-### `illegal_move` (illegal moves)
-
-| Field           | Type      | Constraint                                 | Ext | Description                                     |
-|-----------------|-----------|--------------------------------------------|-----|-------------------------------------------------|
-| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The ID of the illegal move                      |
-| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) |     | The tournament ID                               |
-| `round`         | `INTEGER` | NOT NULL                                   |     | The round number                                |
-| `player_id`     | `INTEGER` | NOT NULL                                   |     | The player ID (in the tournament's _Papi_ file) |
-| `date`          | `FLOAT`   | NOT NULL                                   |     | The recording date                              |
-
 ### `screen` (screens)
 
 | Field                    | Type      | Constraint                                 | Ext | Description                                                                                                                                                                                                       |

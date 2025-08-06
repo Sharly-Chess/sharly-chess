@@ -1035,10 +1035,10 @@ class Tournament:
         """Store an illegal move for the given `player`, for the current
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            if event_database.add_stored_illegal_move(
+            if illegal_moves := event_database.add_stored_illegal_move(
                 self.id, self.current_round, player.id
             ):
-                player.illegal_moves += 1
+                player.illegal_moves = illegal_moves
             event_database.commit()
         logger.info('An illegal move has been recorded for player [%s].', player.id)
 
@@ -1046,16 +1046,17 @@ class Tournament:
         """Deletes one illegal move for the given `player` for the current
         round. If no illegal move was stored, don't do anything in the database."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            deleted: bool = event_database.delete_stored_illegal_move(
+            deleted: bool = False
+            illegal_moves =  event_database.delete_stored_illegal_move(
                 self.id, self.current_round, player.id
             )
+            if illegal_moves != player.illegal_moves:
+                deleted = True
+                player.illegal_moves = illegal_moves
+                logger.info('An illegal move has been deleted for player [%s].', player.id)
+            else:
+                logger.info('No illegal move found for player [%s].', player.id)
             event_database.commit()
-        if deleted:
-            player.illegal_moves -= 1
-            player.illegal_moves = max(player.illegal_moves, 0)
-            logger.info('An illegal move has been deleted for player [%s].', player.id)
-        else:
-            logger.info('No illegal move found for player [%s].', player.id)
         return deleted
 
     def get_illegal_moves(self, at_round: int) -> Counter[int]:

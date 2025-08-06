@@ -59,6 +59,7 @@ class Migration(BaseMigration):
             '   `round` INTEGER NOT NULL,'
             '   `result` INTEGER NOT NULL,'
             '   `board_id` INTEGER,'
+            '   `illegal_moves` INTEGER NOT NULL DEFAULT 0,'
             '   PRIMARY KEY (`tournament_id`, `player_id`, `round`),'
             '   FOREIGN KEY (`tournament_id`) REFERENCES '
             '   `tournament`(`id`) ON DELETE CASCADE,'
@@ -69,6 +70,7 @@ class Migration(BaseMigration):
             ')'
         )
         self.database.execute('DROP TABLE `result`')
+        self.database.execute('DROP TABLE `illegal_move`')
 
     def backward(self):
         self.database.execute('DROP TABLE `pairing`')
@@ -86,6 +88,17 @@ class Migration(BaseMigration):
             '    `black_player_id` INTEGER NOT NULL,'
             '    `date` FLOAT NOT NULL,'
             '    `value` INTEGER NOT NULL,'
+            '    PRIMARY KEY(`id` AUTOINCREMENT),'
+            '    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
+            ')'
+        )
+        self.database.execute(
+            'CREATE TABLE `illegal_move` ('
+            '    `id` INTEGER NOT NULL,'
+            '    `tournament_id` INTEGER NOT NULL,'
+            '    `round` INTEGER NOT NULL,'
+            '    `player_id` INTEGER NOT NULL,'
+            '    `date` FLOAT NOT NULL,'
             '    PRIMARY KEY(`id` AUTOINCREMENT),'
             '    FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
             ')'
