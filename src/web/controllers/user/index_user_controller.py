@@ -25,7 +25,10 @@ class IndexUserController(BaseUserController):
                     num=len(current_events) or '-'
                 ),
                 'events': current_events,
-                'empty_str': _('No current events.'),
+                'admin_empty_str': _('No current events.'),
+                'empty_str': _(
+                    'No current events (only public events are displayed on clients).'
+                ),
                 'class': 'bg-primary-subtle',
                 'icon_class': 'bi-calendar',
                 'disabled': not current_events,
@@ -35,7 +38,10 @@ class IndexUserController(BaseUserController):
                     num=len(coming_events) or '-'
                 ),
                 'events': coming_events,
-                'empty_str': _('No upcoming events.'),
+                'admin_empty_str': _('No upcoming events.'),
+                'empty_str': _(
+                    'No upcoming events (only public events are displayed on clients).'
+                ),
                 'class': 'bg-info-subtle',
                 'icon_class': 'bi-calendar-check',
                 'disabled': not coming_events,
@@ -45,7 +51,10 @@ class IndexUserController(BaseUserController):
                     num=len(passed_events) or '-'
                 ),
                 'events': passed_events,
-                'empty_str': _('No passed events.'),
+                'admin_empty_str': _('No passed events.'),
+                'empty_str': _(
+                    'No passed events (only public events are displayed on clients).'
+                ),
                 'class': 'bg-secondary-subtle',
                 'icon_class': 'bi-calendar-minus',
                 'disabled': not passed_events,

@@ -401,7 +401,12 @@ class PapiDatabase(AccessDatabase):
             )
             fide_id: int | None = None
             if row['FideCode']:
-                fide_id = int(str(row['FideCode']).strip())
+                try:
+                    fide_id = int(str(row['FideCode']).strip())
+                except ValueError:
+                    logger.warning(
+                        'Invalid FIDE code [%s] in [%s]', row['FideCode'], self.file
+                    )
             player = Player(
                 id=player_sharly_chess_id,
                 last_name=row['Nom'] or '',

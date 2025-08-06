@@ -865,22 +865,30 @@ class TournamentAdminController(BaseEventAdminController):
                             (
                                 'input',
                                 '@input',
-                                _('Results entry'),
+                                _('Results entry ({tournament_name})').format(
+                                    tournament_name=stored_tournament.name
+                                ),
                             ),
                             (
                                 'boards',
                                 '@boards',
-                                _('Pairings by board'),
+                                _('Pairings by board ({tournament_name})').format(
+                                    tournament_name=stored_tournament.name
+                                ),
                             ),
                             (
                                 'players',
                                 '@players',
-                                _('Pairings by player'),
+                                _('Pairings by player ({tournament_name})').format(
+                                    tournament_name=stored_tournament.name
+                                ),
                             ),
                             (
                                 'ranking',
                                 '@ranking',
-                                _('Ranking'),
+                                _('Ranking ({tournament_name})').format(
+                                    tournament_name=stored_tournament.name
+                                ),
                             ),
                         ]:
                             stored_screen: StoredScreen = event_database.add_stored_screen(

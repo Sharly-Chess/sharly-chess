@@ -32,6 +32,7 @@ English version below
 - Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
 - Clarification des sources de données de joueur·euses (2.8.0)
 - Amélioration du filtrage sur le nom et le club (2.8.3)
+- Correction des identifiants FIDE invalides dans les fichiers Papi (2.8.6)
 
 ### Gestion des appariements
 
@@ -45,6 +46,8 @@ English version below
 - Ajout de la possibilité de ne pas afficher les adversaires sur les écrans d'appariements par ordre alphabétique (2.8.0)
 - Correction de la suppression des résultats (2.8.2)
 - Correction de l'affichage des points sur les écrans (2.8.4)
+- Correction de l'affichage des boutons de sortie sur les écrans de saisie (2.8.6)
+- Correction du nom des écrans par défaut (2.8.6)
 
 ### Gestion des prix
 
@@ -102,6 +105,7 @@ English version below
 - Calculation of the players' category relative to the date of the tournament (2.8.0)
 - Clarification of player data sources (2.8.0)
 - Improved filtering on players' name and club (2.8.3)
+- Fixed invalid FIDE IDs in Papi files (2.8.6)
 
 ### Pairings management
 
@@ -115,6 +119,8 @@ English version below
 - Added the possibility not to show the opponents on pairings screens by alphabetical order (2.8.0)
 - Fixed deletion of results (2.8.2)
 - Fixed the display of points on screens (2.8.4)
+- Fixed the display of exit button on input screens (2.8.6)
+- Fixed the names of the default screens (2.8.6)
 
 ### Prizes management
 
