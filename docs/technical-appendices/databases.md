@@ -166,19 +166,6 @@
 | `player_id`     | `INTEGER` | NOT NULL                                   |     | The player ID (in the tournament's _Papi_ file) |
 | `date`          | `FLOAT`   | NOT NULL                                   |     | The recording date                              |
 
-### `result` (results)
-
-| Field             | Type      | Constraint                                 | Ext | Description                                                                                                                                                         |
-|-------------------|-----------|--------------------------------------------|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The result ID                                                                                                                                                       |
-| `tournament_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) |     | The tournament ID                                                                                                                                                   |
-| `round`           | `INTEGER` | NOT NULL                                   |     | The round number                                                                                                                                                    |
-| `board_id`        | `INTEGER` | NOT NULL                                   |     | The board number                                                                                                                                                    |
-| `white_player_id` | `INTEGER` | NOT NULL                                   |     | The number of the White player (in the tournament _Papi_ file)                                                                                                      |
-| `black_player_id` | `INTEGER` | NOT NULL                                   |     | The number of the player with Black (in the tournament's _Papi_ file)                                                                                               |
-| `date`            | `FLOAT`   | NOT NULL                                   |     | The registration date                                                                                                                                               |
-| `value`           | `INTEGER` | NOT NULL                                   |     | The result:<br/>- `1`: Black wins<br/>- `2`: draw<br/>- `3`: White wins<br/>- `4`: Black wins by forfeit<br/>- `5`: double forfeit<br/>- `6`: White wins by forfeit |
-
 ### `screen` (screens)
 
 | Field                    | Type      | Constraint                                 | Ext | Description                                                                                                                                                                                                       |

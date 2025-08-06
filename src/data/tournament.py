@@ -1118,12 +1118,12 @@ class Tournament:
         assert board.black_player is not None
 
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            self.stored_tournament.last_result_update = (
-                event_database.add_stored_result(self.id, board, white_result)
-            )
             board.white_pairing.update_result(event_database, white_result)
             board.black_pairing.update_result(
                 event_database, white_result.opposite_result
+            )
+            self.stored_tournament.last_result_update = (
+                event_database.update_board_result_from_pairing(board.white_pairing)
             )
             event_database.commit()
 
@@ -1149,11 +1149,11 @@ class Tournament:
         """Deletes the result for the given `board`."""
         assert board.black_player is not None
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            self.stored_tournament.last_result_update = (
-                event_database.delete_stored_result(self.id, board.round, board.id)
-            )
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
+            self.stored_tournament.last_result_update = (
+                event_database.update_board_result_from_pairing(board.white_pairing)
+            )
             event_database.commit()
         self.clear_cache()
         board.white_player.clear_cache()
@@ -1252,6 +1252,7 @@ class Tournament:
                     black_player_id=None,
                     index=max(board.index for board in self.get_round_boards(round_nb))
                     + 1,
+                    last_result_update=None
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id

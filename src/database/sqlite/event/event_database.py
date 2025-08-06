@@ -28,7 +28,6 @@ from database.sqlite.event.event_store import (
     StoredTimerHour,
     StoredFamily,
     StoredIllegalMove,
-    StoredResult,
     StoredRotator,
     StoredScreenSet,
     StoredScreen,
@@ -47,6 +46,7 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
+    from data.pairing import Pairing
     from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
@@ -1854,6 +1854,7 @@ class EventDatabase(MigrationDatabase):
             white_player_id=row['white_player_id'],
             black_player_id=row['black_player_id'],
             index=row['index'],
+            last_result_update=row.get('last_result_update'),
         )
 
     def load_tournament_stored_boards_by_round(
@@ -1861,7 +1862,10 @@ class EventDatabase(MigrationDatabase):
     ) -> dict[int, list[StoredBoard]]:
         self.execute(
             (
-                'SELECT `board`.*, `pairing`.`round` '
+                'SELECT `board`.`id`, `board`.`white_player_id`, `board`.`black_player_id`, '
+                '`board`.`index`, '
+                'datetime(`board`.`last_result_update`, "unixepoch") as last_result_update, '
+                '`pairing`.`round` '
                 'FROM `board` INNER JOIN `pairing` '
                 'ON `board`.`id` = `pairing`.`board_id` '
                 'WHERE `pairing`.`tournament_id` = ? '
@@ -1998,81 +2002,56 @@ class EventDatabase(MigrationDatabase):
     # results
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
-    def _row_to_stored_result(row: dict[str, Any]) -> StoredResult:
-        return StoredResult(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            board_id=row['board_id'],
-            result=row['result'],
-            date=row['date'],
-        )
+    def update_board_result_from_pairing(self, pairing: 'Pairing') -> float:
+        """Updates pairing result and board timestamp. Clears board timestamp if result is NO_RESULT."""
+        from utils.enum import Result as UtilResult
 
-    def _get_stored_result(
-        self,
-        result_id: int,
-    ) -> StoredResult | None:
-        self.execute(
-            'SELECT * FROM `result` WHERE `id` = ?',
-            (result_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_result(row)
-        return None
+        date: float = self.set_tournament_last_result_update(pairing.stored_pairing.tournament_id)
 
-    def add_stored_result(
-        self, tournament_id: int, board: Board, result: UtilResult
-    ) -> float:
-        """Stores a result and return the date of the update."""
-        assert board.black_player is not None
-        date: float = self.set_tournament_last_result_update(tournament_id)
-        self.execute(
-            'INSERT INTO `result`('
-            '    `tournament_id`, `round`, `board_id`, '
-            '    `white_player_id`, `black_player_id`, '
-            '    `value`, `date`'
-            ') VALUES(?, ?, ?, ?, ?, ?, ?)',
-            (
-                tournament_id,
-                board.round,
-                board.id,
-                board.white_player.id,
-                board.black_player.id,
-                result,
-                date,
-            ),
-        )
-        return date
+        # Update the pairing result in the database
+        self.update_stored_pairing(pairing.stored_pairing)
 
-    def delete_stored_result(
-        self, tournament_id: int, round_: int, board_id: int
-    ) -> float:
-        """Deletes a result and return the date of the update."""
-        date: float = self.set_tournament_last_result_update(tournament_id)
-        self.execute(
-            'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
-            (tournament_id, round_, board_id),
-        )
+        # Update or clear the board's last_result_update timestamp based on result
+        if pairing.stored_pairing.board_id:
+            if pairing.result == UtilResult.NO_RESULT:
+                # Clear timestamp when result is cleared
+                self.execute(
+                    'UPDATE `board` SET `last_result_update` = NULL WHERE `id` = ?',
+                    (pairing.stored_pairing.board_id,),
+                )
+            else:
+                # Set timestamp when result is added/updated
+                self.execute(
+                    'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
+                    (date, pairing.stored_pairing.board_id),
+                )
+
         return date
 
     def get_stored_results(
         self, limit: int, tournament_ids: list[int], max_age: int
     ) -> list[DataResult]:
         params: list = [time.time() - max_age * 60]
-        if not tournament_ids:
-            query: str = (
-                'SELECT     * FROM `result` WHERE `date` > ?ORDER BY `date` DESC'
-            )
-        else:
-            query: str = (
-                'SELECT '
-                '    * '
-                'FROM `result` '
-                f'WHERE `date` > ? AND ({" OR ".join(["`tournament_id` = ?"] * len(tournament_ids))}) '
-                'ORDER BY `date` DESC'
-            )
+        
+        # Build base query - only get the pairing for the white player to avoid duplicates
+        query: str = (
+            'SELECT '
+            '    p.tournament_id, p.round, p.board_id, '
+            '    b.white_player_id, b.black_player_id, p.result as value, '
+            '    b.last_result_update as date '
+            'FROM `pairing` p '
+            'INNER JOIN `board` b ON p.board_id = b.id '
+            'WHERE b.last_result_update IS NOT NULL AND b.last_result_update > ? '
+            'AND p.board_id IS NOT NULL '
+            'AND p.player_id = b.white_player_id '
+        )
+        
+        # Add tournament filter if tournament_ids provided
+        if tournament_ids:
+            query += f'AND ({" OR ".join(["p.tournament_id = ?"] * len(tournament_ids))}) '
             params += tournament_ids
+        
+        query += 'ORDER BY b.last_result_update DESC'
         if limit:
             query += ' LIMIT ?'
             params += [
