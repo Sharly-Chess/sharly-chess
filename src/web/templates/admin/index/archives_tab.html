@@ -1,7 +1,13 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
-        {{ admin_macros.admin_title(nav_tab.title) }}
+        <div class="flex-grow-1"></div>
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            {% include 'create_event_button.html' %}
+        </div>
     </div>
+</div>
+
+<div class="d-flex mb-2 align-items-center flex-wrap gap-1">
 </div>
 
 <table class="mt-5 px-4 table table-striped table-sm table-hover border-black w-auto bg-light mx-auto justify-content-center">

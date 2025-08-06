@@ -2772,6 +2772,9 @@ msgstr "Aucun critère pour la catégorie générale."
 msgid "No criteria."
 msgstr "Aucun critère."
 
+msgid "No current events (only public events are displayed on clients)."
+msgstr "Aucun évènement en cours (seuls les évènements publics sont montrés sur les afficheurs)."
+
 msgid "No current events."
 msgstr "Aucun évènement en cours."
 
@@ -2810,6 +2813,9 @@ msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
 msgid "No pairings."
 msgstr "Aucun appariement."
+
+msgid "No passed events (only public events are displayed on clients)."
+msgstr "Aucun évènement passé (seuls les évènements publics sont montrés sur les afficheurs)."
 
 msgid "No passed events."
 msgstr "Aucun évènement passé."
@@ -2906,6 +2912,9 @@ msgstr "Aucun tournoi"
 
 msgid "No tournaments."
 msgstr "Aucun tournoi."
+
+msgid "No upcoming events (only public events are displayed on clients)."
+msgstr "Aucun évènement à venir (seuls les évènements publics sont montrés sur les afficheurs)."
 
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
@@ -3148,11 +3157,17 @@ msgstr "Appariements par échiquier"
 msgid "Pairings by board ({num})"
 msgstr "Appariements par échiquier ({num})"
 
+msgid "Pairings by board ({tournament_name})"
+msgstr "Appariements par échiquier ({tournament_name})"
+
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
 msgid "Pairings by player ({num})"
 msgstr "Appariements par ordre alphabétique ({num})"
+
+msgid "Pairings by player ({tournament_name})"
+msgstr "Appariements par ordre alphabétique ({tournament_name})"
 
 msgid "Pairings disabled while check-in is open."
 msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
@@ -3669,6 +3684,9 @@ msgstr "Classement %f-%l"
 msgid "Ranking ({num})"
 msgstr "Classement ({num})"
 
+msgid "Ranking ({tournament_name})"
+msgstr "Classement ({tournament_name})"
+
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr "Classement après la ronde %(round)d"
@@ -3800,6 +3818,9 @@ msgstr "Saisie des résultats"
 
 msgid "Results entry ({num})"
 msgstr "Saisie des résultats ({num})"
+
+msgid "Results entry ({tournament_name})"
+msgstr "Saisie des résultats ({tournament_name})"
 
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
@@ -4112,11 +4133,11 @@ msgstr "Écrans simples ({num})"
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
-msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
-
 msgid "Sonneborn-Berger"
 msgstr "Sonneborn-Berger"
+
+msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
+msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
 
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."

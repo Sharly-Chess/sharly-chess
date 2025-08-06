@@ -2772,6 +2772,9 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
+msgid "No current events (only public events are displayed on clients)."
+msgstr ""
+
 msgid "No current events."
 msgstr ""
 
@@ -2809,6 +2812,9 @@ msgid "No pairing found for this player in the current round."
 msgstr ""
 
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed events (only public events are displayed on clients)."
 msgstr ""
 
 msgid "No passed events."
@@ -2905,6 +2911,9 @@ msgid "No tournaments"
 msgstr ""
 
 msgid "No tournaments."
+msgstr ""
+
+msgid "No upcoming events (only public events are displayed on clients)."
 msgstr ""
 
 msgid "No upcoming events."
@@ -3148,10 +3157,16 @@ msgstr ""
 msgid "Pairings by board ({num})"
 msgstr ""
 
+msgid "Pairings by board ({tournament_name})"
+msgstr ""
+
 msgid "Pairings by player"
 msgstr ""
 
 msgid "Pairings by player ({num})"
+msgstr ""
+
+msgid "Pairings by player ({tournament_name})"
 msgstr ""
 
 msgid "Pairings disabled while check-in is open."
@@ -3669,6 +3684,9 @@ msgstr ""
 msgid "Ranking ({num})"
 msgstr ""
 
+msgid "Ranking ({tournament_name})"
+msgstr ""
+
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr ""
@@ -3799,6 +3817,9 @@ msgid "Results entry"
 msgstr ""
 
 msgid "Results entry ({num})"
+msgstr ""
+
+msgid "Results entry ({tournament_name})"
 msgstr ""
 
 msgid "Results for round #{round}"
@@ -4112,10 +4133,10 @@ msgstr ""
 msgid "Soft Haley system"
 msgstr ""
 
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
+msgid "Sonneborn-Berger"
 msgstr ""
 
-msgid "Sonneborn-Berger"
+msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
 msgstr ""
 
 msgid "Sorry, an unexpected error has occurred."

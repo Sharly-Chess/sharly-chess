@@ -437,10 +437,9 @@ class PairingPrintDocument(BoardPrintDocument, PlayerPrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        return (
-            BoardPrintDocument.template_context.fget(self) | 
-            PlayerPrintDocument.template_context.fget(self)
-        )
+        return BoardPrintDocument.template_context.fget(
+            self
+        ) | PlayerPrintDocument.template_context.fget(self)
 
 
 class ResultPrintDocument(BoardPrintDocument):
