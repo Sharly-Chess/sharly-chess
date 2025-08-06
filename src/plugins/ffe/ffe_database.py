@@ -142,7 +142,7 @@ class FfeDatabase(LocalSourceDatabase):
                     'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
                 )
                 self.commit()
-        except Exception as e:
+        except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
             logger.error(
                 self.log_prefix
                 + _('Error creating database indexes: {error}.').format(error=e)
