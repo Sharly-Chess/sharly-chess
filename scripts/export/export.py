@@ -54,7 +54,6 @@ basename: str = f'sharly-chess-{SHARLY_CHESS_VERSION}'
 EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
-OLD_ZIP_FILE: Path = EXPORT_DIR / f'papi-web-{SHARLY_CHESS_VERSION}.zip'
 EXE_FILENAME: str = basename + '.exe'
 INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
@@ -227,7 +226,6 @@ def create_zip_files():
                 file_path: Path = Path(folder_name, filename)
                 zip_file.write(file_path, file_path)
         os.chdir(BASE_DIR)
-    shutil.copy(ZIP_FILE, OLD_ZIP_FILE)
 
 
 def build_test():
