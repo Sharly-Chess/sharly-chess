@@ -337,9 +337,8 @@ class PapiDatabase(AccessDatabase):
                 variable, (tie_breaks.pop(0).papi_id or '') if tie_breaks else ''
             )
 
-    @classmethod
     def _stored_player_from_row(
-        cls,
+        self,
         tournament_id: int,
         row: dict[str, Any],
         stored_pairings: list[StoredPairing],
@@ -347,6 +346,14 @@ class PapiDatabase(AccessDatabase):
         player_id = Player.player_sharly_chess_id_from_papi_id(
             tournament_id, row['Ref']
         )
+        fide_id: int | None = None
+        if row['FideCode']:
+            try:
+                fide_id = int(str(row['FideCode']).strip())
+            except ValueError:
+                logger.warning(
+                    'Invalid FIDE code [%s] in [%s]', row['FideCode'], self.file
+                )
         return StoredPlayer(
             id=player_id,
             last_name=row['Nom'] or '',
@@ -366,7 +373,7 @@ class PapiDatabase(AccessDatabase):
                 ).stored_value
                 for tr in TournamentRating
             },
-            fide_id=int(str(row['FideCode']).strip()) if row['FideCode'] else None,
+            fide_id=fide_id,
             federation=row['Federation'] or '',
             club=row['Club'] or '',
             fixed=row['Fixe'] or 0,
