@@ -47,6 +47,7 @@ English version below
 - Correction de la suppression des résultats (2.8.2)
 - Correction de l'affichage des points sur les écrans (2.8.4)
 - Correction de l'affichage des boutons de sortie sur les écrans de saisie (2.8.6)
+- Correction du nom des écrans par défaut (2.8.6)
 
 ### Gestion des prix
 
@@ -119,6 +120,7 @@ English version below
 - Fixed deletion of results (2.8.2)
 - Fixed the display of points on screens (2.8.4)
 - Fixed the display of exit button on input screens (2.8.6)
+- Fixed the names of the default screens (2.8.6)
 
 ### Prizes management
 
