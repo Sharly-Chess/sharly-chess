@@ -2757,6 +2757,9 @@ msgstr "Aucun critère pour la catégorie générale."
 msgid "No criteria."
 msgstr "Aucun critère."
 
+msgid "No current events (only public events are displayed on clients)."
+msgstr "Aucun évènement en cours (seuls les évènements publics sont montrés sur les afficheurs)."
+
 msgid "No current events."
 msgstr "Aucun évènement en cours."
 
@@ -2891,6 +2894,9 @@ msgstr "Aucun tournoi"
 
 msgid "No tournaments."
 msgstr "Aucun tournoi."
+
+msgid "No upcoming events (only public events are displayed on clients)."
+msgstr "Aucun évènement à venir (seuls les évènements publics sont montrés sur les afficheurs)."
 
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."

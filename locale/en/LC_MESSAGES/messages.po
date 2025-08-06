@@ -2757,6 +2757,9 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
+msgid "No current events (only public events are displayed on clients)."
+msgstr ""
+
 msgid "No current events."
 msgstr ""
 
@@ -2794,6 +2797,9 @@ msgid "No pairing found for this player in the current round."
 msgstr ""
 
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed events (only public events are displayed on clients)."
 msgstr ""
 
 msgid "No passed events."
@@ -2890,6 +2896,9 @@ msgid "No tournaments"
 msgstr ""
 
 msgid "No tournaments."
+msgstr ""
+
+msgid "No upcoming events (only public events are displayed on clients)."
 msgstr ""
 
 msgid "No upcoming events."
