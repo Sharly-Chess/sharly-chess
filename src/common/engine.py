@@ -664,7 +664,10 @@ class Engine(ABC):
                     continue
                 download_url: str | None = None
                 for asset in assets:
-                    valid_asset_name: str = f'sharly-chess-{version}.zip'
+                    valid_asset_names = (
+                        f'sharly-chess-{version}-windows.zip',
+                        f'sharly-chess-{version}.zip',
+                    )
                     if (
                         asset_name := asset.get('name', 'undefined')
                     ) == f'papi-web-{version}.zip':
@@ -672,15 +675,25 @@ class Engine(ABC):
                             'Old asset name [%s] found in release [%s] (expected [%s]), asset ignored.',
                             asset_name,
                             version,
-                            valid_asset_name,
+                            ' or '.join(
+                                map(
+                                    lambda valid_asset_name: f'[{valid_asset_name}]',
+                                    valid_asset_names,
+                                )
+                            ),
                         )
                         continue
-                    if asset_name != valid_asset_name:
+                    if asset_name not in valid_asset_names:
                         logger.debug(
                             '[%s] is not a valid asset name in release [%s] (expected [%s]), asset ignored.',
                             asset_name,
                             version,
-                            valid_asset_name,
+                            ' or '.join(
+                                map(
+                                    lambda valid_asset_name: f'[{valid_asset_name}]',
+                                    valid_asset_names,
+                                )
+                            ),
                         )
                         continue
                     if not (asset_url := asset.get('browser_download_url', '')):
