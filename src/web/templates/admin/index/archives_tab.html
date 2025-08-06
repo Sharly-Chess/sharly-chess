@@ -1,8 +1,13 @@
-<div class="d-flex mb-2 align-items-center flex-wrap gap-1">
-    <div class="flex-grow-1 fs-4 fw-bold">
-        <i class="{{ nav_tab.icon_class }}"></i>
-        {{ nav_tab.title }}
+<div id="top-nav-wrapper">
+    <div id="top-nav-content">
+        <div class="flex-grow-1"></div>
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            {% include 'create_event_button.html' %}
+        </div>
     </div>
+</div>
+
+<div class="d-flex mb-2 align-items-center flex-wrap gap-1">
 </div>
 
 <table class="table table-striped table-sm table-hover border-black w-auto bg-light mx-auto justify-content-center">
