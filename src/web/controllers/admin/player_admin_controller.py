@@ -1652,8 +1652,8 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
         )
 
+    @staticmethod
     def _admin_tournament_close_check_in(
-        self,
         request: HTMXRequest,
         data: Annotated[
             dict[str, str],

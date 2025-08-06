@@ -81,14 +81,14 @@ class NetworkMonitor:
         #
         # By passing cls as an arg, we can share it with the main thread.
 
-        def _check_connected(cls) -> None:
+        def _check_connected(cls_) -> None:
             """This function is supposed to be run in a thread or process, or it will
             hog all the caller's time.
             Tries to connect to root DNS servers, as shit has already hit the fan if
             they are not reachable"""
 
             while True:
-                cls._test_for_internet_connection()
+                cls_._test_for_internet_connection()
                 time.sleep(SLEEP_TIME)
 
         connection_checker = Thread(target=_check_connected, args=(cls,), daemon=True)

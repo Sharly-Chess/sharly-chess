@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 import time
+from io import TextIOWrapper
 from pathlib import Path
 from common.sharly_chess_config import SharlyChessConfig
 from playwright.sync_api import Browser, Playwright, APIRequestContext
@@ -48,6 +49,7 @@ class BackendServer:
         self.host = host or TestConfig.TEST_HOST
         self.port = port or TestConfig.TEST_PORT
         self.process: subprocess.Popen | None = None
+        self.log_file_handle: TextIOWrapper | None = None
         # Construct base URL with explicit port
         if self.port == 80:
             self.base_url = f'http://{self.host}'
@@ -109,7 +111,7 @@ class BackendServer:
                 self.process.wait()
 
         # Close log file handle if it exists
-        if hasattr(self, 'log_file_handle') and self.log_file_handle:
+        if self.log_file_handle:
             self.log_file_handle.close()
 
     def _wait_for_server(self, timeout: int | None = None):

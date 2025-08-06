@@ -74,7 +74,7 @@ class FamilyAdminController(BaseEventAdminController):
         if data is None:
             data = {}
         field: str
-        type_: str | None = None
+        type_: str
         match action:
             case 'create':
                 type_ = web_context.family_type
@@ -294,15 +294,15 @@ class FamilyAdminController(BaseEventAdminController):
         assert tournament_id is not None
         assert uniq_id is not None
 
-        id: int | None = None
+        family_id: int | None = None
         if web_context.admin_family and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_family.id
+            family_id = web_context.admin_family.id
 
         return StoredFamily(
-            id=id,
+            id=family_id,
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),

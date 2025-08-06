@@ -3,7 +3,7 @@
 import shutil
 
 import time
-import urllib
+from urllib import parse
 from common.sharly_chess_config import SharlyChessConfig
 from database.access.papi.papi_database import PapiDatabase
 from datetime import datetime, timedelta
@@ -63,26 +63,22 @@ class TestUtils:
         'plugin_data': {},
     }
 
-    @classmethod
-    def prepare_form_data(cls, data: dict[str, Any]):
-        items = []
-        for k, v in data.items():
-            if isinstance(v, (list, tuple)):
-                for item in v:
-                    items.append((k, cls.prepare_value(item)))
-            else:
-                items.append((k, cls.prepare_value(v)))
-        return urllib.parse.urlencode(items)
-
     @staticmethod
-    def prepare_value(v):
-        if v is None:
-            return ''
-        if v is False:
-            return 'off'
-        if v is True:
-            return 'on'
-        return str(v)
+    def prepare_form_data(data: dict[str, str]):
+        form_data = {
+            k: (
+                ''
+                if v is None
+                else 'off'
+                if v is False
+                else 'on'
+                if v is True
+                else str(v)
+            )
+            for k, v in data.items()
+        }
+
+        return parse.urlencode(form_data)
 
     @staticmethod
     def check_api_response(response: APIResponse):
@@ -310,7 +306,7 @@ class TestUtils:
         overrides = overrides or {}
 
         # Provide defaults
-        defaults = {
+        defaults: dict[str, Any] = {
             'id': None,
             'uniq_id': uniq_id,
             'name': uniq_id,
@@ -436,13 +432,11 @@ class TestUtils:
         cls.check_api_response(res)
 
     @staticmethod
-    def button_by_text(page: Page, text: str) -> Locator:
+    def button_by_text(obj: Page | Locator, text: str) -> Locator:
         """
         Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
         """
-        return page.get_by_role(
-            'button', name=re.compile(rf'\b{text}\b', re.IGNORECASE)
-        )
+        return obj.get_by_role('button', name=re.compile(rf'\b{text}\b', re.IGNORECASE))
 
     @staticmethod
     def take_screenshot(page, name: str):

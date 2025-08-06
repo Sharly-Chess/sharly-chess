@@ -151,8 +151,8 @@ class FfeAdminEventController(BaseEventAdminController):
             },
         )
 
+    @staticmethod
     def _render_upload_results(
-        self,
         request: HTMXRequest,
         web_context: BaseEventAdminWebContext,
     ) -> Template | ClientRedirect:

@@ -86,7 +86,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         field = 'uniq_id'
         uniq_id: str | None = WebContext.form_data_to_str(data, field)
-        name: str | None = None
+        name: str | None
         public: bool | None = None
 
         if action in [
@@ -149,15 +149,15 @@ class DisplayControllerAdminController(BaseEventAdminController):
 
         assert uniq_id is not None
 
-        id: int | None = None
+        display_controller_id: int | None = None
         if web_context.admin_display_controller and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_display_controller.id
+            display_controller_id = web_context.admin_display_controller.id
 
         return StoredDisplayController(
-            id=id,
+            id=display_controller_id,
             uniq_id=uniq_id,
             public=bool(public),
             name=name,
