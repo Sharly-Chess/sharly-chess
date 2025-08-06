@@ -25,18 +25,18 @@ from plugins.ffe.ffe_sql_server import FFESqlServer
 
 async def main():
     parser = ArgumentParser(
-        description=('Generate credentials for the FFE online database.')
+        description='Generate credentials for the FFE online database.'
     )
     parser.add_argument(
         '--host',
         type=str,
-        help=('The host.'),
+        help='The host.',
         required=True,
     )
     parser.add_argument(
         '--user',
         type=str,
-        help=('The user.'),
+        help='The user.',
         required=True,
     )
     parser.add_argument(
@@ -72,7 +72,7 @@ async def main():
         print_interactive_info('Now testing the remote database...')
         try:
             async with FFESqlServer() as ffe_sql_server:
-                async for player in await ffe_sql_server.search_player(
+                for player in await ffe_sql_server.search_player(
                     'pascal aubry', limit=8
                 ):
                     print_interactive_info(f'{player=}')

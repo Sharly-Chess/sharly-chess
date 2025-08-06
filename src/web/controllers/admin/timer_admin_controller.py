@@ -141,16 +141,16 @@ class TimerAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
 
-        id: int | None = None
+        timer_id: int | None = None
         if web_context.admin_timer and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_timer.id
+            timer_id = web_context.admin_timer.id
 
         assert uniq_id is not None
         return StoredTimer(
-            id=id,
+            id=timer_id,
             uniq_id=uniq_id,
             colors=colors,
             delays=delays,

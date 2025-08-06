@@ -136,15 +136,15 @@ class RotatorAdminController(BaseEventAdminController):
 
         assert uniq_id is not None
 
-        id: int | None = None
+        rotator_id: int | None = None
         if web_context.admin_rotator and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_rotator.id
+            rotator_id = web_context.admin_rotator.id
 
         return StoredRotator(
-            id=id,
+            id=rotator_id,
             uniq_id=uniq_id,
             public=bool(public),
             delay=delay,

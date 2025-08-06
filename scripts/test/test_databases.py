@@ -1,22 +1,20 @@
-from asyncio import run
 import random
 import string
 import time
+from asyncio import run
 
-# Import this first to avoid circular imports
-import plugins.manager  # noqa
 from common.exception import SharlyChessException
 from common.logger import (
     print_interactive_info,
     print_interactive_error,
     print_interactive_success,
 )
-from data.player import Player
+from database.access.papi.papi_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
 
-limit: int = 8
+search_limit: int = 8
 searches: int = 100
 test_names: bool = True
 test_ids: bool = True
@@ -72,7 +70,9 @@ def test_fide_local_database():
                 for _ in range(searches):
                     with FideDatabase() as fide_database:
                         # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
-                        fide_database.search_player(random_search_token(), limit=limit)
+                        fide_database.search_player(
+                            random_search_token(), limit=search_limit
+                        )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
                 start: float = time.perf_counter()
@@ -83,7 +83,9 @@ def test_fide_local_database():
                     )
                     for _ in range(searches):
                         # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
-                        fide_database.search_player(random_search_token(), limit=limit)
+                        fide_database.search_player(
+                            random_search_token(), limit=search_limit
+                        )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
             if test_ids:
@@ -95,7 +97,9 @@ def test_fide_local_database():
                 for _ in range(searches):
                     with FideDatabase() as fide_database:
                         # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
-                        fide_database.search_player(random_search_id(), limit=limit)
+                        fide_database.search_player(
+                            random_search_id(), limit=search_limit
+                        )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
                 print(
@@ -106,7 +110,9 @@ def test_fide_local_database():
                 with FideDatabase() as fide_database:
                     for _ in range(searches):
                         # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
-                        fide_database.search_player(random_search_id(), limit=limit)
+                        fide_database.search_player(
+                            random_search_id(), limit=search_limit
+                        )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
 
@@ -126,13 +132,13 @@ def test_ffe_local_database():
         start: float = time.perf_counter()
         for _ in range(searches):
             with FfeDatabase() as ffe_database:
-                ffe_database.search_player(random_search_token(), limit=limit)
+                ffe_database.search_player(random_search_token(), limit=search_limit)
         duration: float = time.perf_counter() - start
         print(f'Done in {duration:.2f} seconds.')
 
 
-async def search_ffe_sql_server_token(token: str, limit: int = 0) -> list[Player]:
-    result: list[Player] = []
+async def search_ffe_sql_server_token(token: str, limit: int = 0) -> list[StoredPlayer]:
+    result: list[StoredPlayer] = []
     print_interactive_info(
         '--------------------------------------------------------------------------------------------------------------------------------------------------------'
     )
@@ -140,9 +146,7 @@ async def search_ffe_sql_server_token(token: str, limit: int = 0) -> list[Player
     start: float = time.perf_counter()
     try:
         async with FFESqlServer() as ffe_sql_server:
-            async for player in await ffe_sql_server.search_player(
-                str(token), limit=limit
-            ):
+            for player in await ffe_sql_server.search_player(str(token), limit=limit):
                 if player.fide_id:
                     print_interactive_info(f'{player=}')
                     result.append(player)
@@ -153,15 +157,15 @@ async def search_ffe_sql_server_token(token: str, limit: int = 0) -> list[Player
     return result
 
 
-async def search_ffe_sql_server_fide_id(player_fide_id: int) -> list[Player]:
-    result: list[Player] = []
+async def search_ffe_sql_server_fide_id(player_fide_id: int) -> list[StoredPlayer]:
+    result: list[StoredPlayer] = []
     print_interactive_info(
         f'Searching FIDE ID [{player_fide_id}] in the FFE SQL server...'
     )
     start: float = time.perf_counter()
     try:
         async with FFESqlServer() as ffe_sql_server:
-            async for player in await ffe_sql_server.search_player(
+            for player in await ffe_sql_server.search_player(
                 str(player_fide_id), limit=2
             ):
                 result.append(player)
