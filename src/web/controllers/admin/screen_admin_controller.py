@@ -203,7 +203,7 @@ class ScreenAdminController(BaseEventAdminController):
                     case ScreenType.BOARDS:
                         pass
                     case ScreenType.INPUT:
-                        input_exit_button = WebContext.form_data_to_bool(
+                        input_exit_button = WebContext.form_data_to_bool_or_none(
                             data, 'input_exit_button'
                         )
                     case ScreenType.PLAYERS:
