@@ -288,7 +288,7 @@ class TestUtils:
         overrides = overrides or {}
 
         # Provide defaults
-        defaults: dict = {
+        defaults: dict[str, Any] = {
             'id': None,
             'uniq_id': uniq_id,
             'name': uniq_id,

@@ -8,7 +8,6 @@ from litestar_htmx import HTMXRequest, ClientRedirect
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.tournament import Tournament
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import (
@@ -60,9 +59,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if not NetworkMonitor.connected():
             result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
 
-        def report(
-            tournament_: Tournament, status: FfeUploadStatus, message: str
-        ) -> None:
+        def report(status: FfeUploadStatus, message: str) -> None:
             nonlocal result
             result = FfeUploadResult(status, message)
 
@@ -73,9 +70,9 @@ class FfeAdminTournamentController(BaseEventAdminController):
             try:
                 FFESession(
                     tournament,
-                    report_error=partial(report, tournament, FfeUploadStatus.ERROR),
-                    report_info=partial(report, tournament, FfeUploadStatus.INFO),
-                    report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
+                    report_error=partial(report, FfeUploadStatus.ERROR),
+                    report_info=partial(report, FfeUploadStatus.INFO),
+                    report_success=partial(report, FfeUploadStatus.SUCCESS),
                 ).upload(set_visible=True)
             except Exception:
                 logger.exception(
@@ -146,9 +143,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
                 FfeUploadStatus.ERROR, _('Tournament rules are not set')
             )
 
-        def report(
-            tournament_: Tournament, status: FfeUploadStatus, message: str
-        ) -> None:
+        def report(status: FfeUploadStatus, message: str) -> None:
             nonlocal result
             result = FfeUploadResult(status, message)
 
@@ -159,9 +154,9 @@ class FfeAdminTournamentController(BaseEventAdminController):
             try:
                 FFESession(
                     tournament,
-                    report_error=partial(report, tournament, FfeUploadStatus.ERROR),
-                    report_info=partial(report, tournament, FfeUploadStatus.INFO),
-                    report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
+                    report_error=partial(report, FfeUploadStatus.ERROR),
+                    report_info=partial(report, FfeUploadStatus.INFO),
+                    report_success=partial(report, FfeUploadStatus.SUCCESS),
                 ).upload_rules()
             except Exception:
                 logger.exception(
@@ -238,9 +233,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if not NetworkMonitor.connected():
             result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
 
-        def report(
-            tournament_: Tournament, status: FfeUploadStatus, message: str
-        ) -> None:
+        def report(status: FfeUploadStatus, message: str) -> None:
             nonlocal result
             result = FfeUploadResult(status, message)
 
@@ -251,9 +244,9 @@ class FfeAdminTournamentController(BaseEventAdminController):
             try:
                 if html := FFESession(
                     tournament,
-                    report_error=partial(report, tournament, FfeUploadStatus.ERROR),
-                    report_info=partial(report, tournament, FfeUploadStatus.INFO),
-                    report_success=partial(report, tournament, FfeUploadStatus.SUCCESS),
+                    report_error=partial(report, FfeUploadStatus.ERROR),
+                    report_info=partial(report, FfeUploadStatus.INFO),
+                    report_success=partial(report, FfeUploadStatus.SUCCESS),
                 ).get_fees():
                     fees_file = self.tournament_fees_file(tournament)
                     fees_file.parent.mkdir(parents=True, exist_ok=True)
