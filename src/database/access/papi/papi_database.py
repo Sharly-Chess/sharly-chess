@@ -53,7 +53,7 @@ class RoundFields:
 
     @property
     def field_sets(self) -> str:
-        return ', '.join(f'`{field}` = ?' for field in self.all)
+        return ', '.join(f'`{field_}` = ?' for field_ in self.all)
 
 
 @dataclass
@@ -207,7 +207,7 @@ class PapiDatabase(AccessDatabase):
         """Writes the information of a Papi player extracted from another database to this database,
         returns the papi_id."""
         field_names: list[str] = list(data.keys())
-        params: tuple = tuple([data[field] for field in field_names])
+        params: tuple = tuple([data[field_] for field_ in field_names])
         fields = ', '.join(f'`{f}`' for f in field_names)
         values = ', '.join(['?'] * len(field_names))
         self._execute(f'INSERT INTO `joueur`({fields}) VALUES ({values})', params)
@@ -243,7 +243,7 @@ class PapiDatabase(AccessDatabase):
             ]
             + [tr.papi_value_field for tr in TournamentRating]
             + [tr.papi_type_field for tr in TournamentRating]
-            + [field for field in plugin_data.keys()]
+            + [field_ for field_ in plugin_data.keys()]
         )
         params = (
             [
@@ -390,7 +390,7 @@ class PapiDatabase(AccessDatabase):
         The tournament_id is used to make the players' id unique for an event."""
 
         per_plugin_fields = plugin_manager.hook.get_db_player_fields()
-        plugin_fields = [field for fields in per_plugin_fields for field in fields]
+        plugin_fields = [field_ for fields in per_plugin_fields for field_ in fields]
         player_fields: list[str] = (
             [
                 'Ref',

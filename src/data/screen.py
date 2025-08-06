@@ -482,7 +482,7 @@ class Screen:
 
     @property
     def timer(self) -> Timer | None:
-        timer_id: int | None = None
+        timer_id: int | None
         if self.stored_screen:
             timer_id = self.stored_screen.timer_id
         elif self.family is None:

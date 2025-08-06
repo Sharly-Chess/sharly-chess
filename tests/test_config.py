@@ -3,7 +3,7 @@
 import shutil
 
 import time
-import urllib
+from urllib import parse
 from common.sharly_chess_config import SharlyChessConfig
 from database.access.papi.papi_database import PapiDatabase
 from datetime import datetime, timedelta
@@ -78,7 +78,7 @@ class TestUtils:
             for k, v in data.items()
         }
 
-        return urllib.parse.urlencode(form_data)
+        return parse.urlencode(form_data)
 
     @staticmethod
     def check_api_response(response: APIResponse):
@@ -288,7 +288,7 @@ class TestUtils:
         overrides = overrides or {}
 
         # Provide defaults
-        defaults = {
+        defaults: dict[str, Any] = {
             'id': None,
             'uniq_id': uniq_id,
             'name': uniq_id,
@@ -414,13 +414,11 @@ class TestUtils:
         cls.check_api_response(res)
 
     @staticmethod
-    def button_by_text(page: Page, text: str) -> Locator:
+    def button_by_text(obj: Page | Locator, text: str) -> Locator:
         """
         Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
         """
-        return page.get_by_role(
-            'button', name=re.compile(rf'\b{text}\b', re.IGNORECASE)
-        )
+        return obj.get_by_role('button', name=re.compile(rf'\b{text}\b', re.IGNORECASE))
 
     @staticmethod
     def take_screenshot(page, name: str):
