@@ -3,6 +3,9 @@
 {% block content %}
 
     {% for prize_group in document.tournament.sorted_prize_groups %}
+        {% if not loop.first %}
+            <hr/>
+        {% endif %}
         {% for prize_category in prize_group.sorted_categories %}
             <div class="section-title">
                 {{ prize_category.name }}

@@ -9,6 +9,9 @@
     <div class="centered">
         <div class="prize-table">
             {% for prize_group in document.tournament.sorted_prize_groups %}
+                {% if not loop.first %}
+                    <hr/>
+                {% endif %}
                 {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
                 {% for prize_category in prize_group.sorted_categories %}
                     <div class="section-title">
@@ -19,6 +22,7 @@
                     </div>
                     <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
                     <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}</div>
+                    <div class="header">&nbsp;</div> {# Title #}
                     <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
                     <div class="header">{{ document.tournament.rating.print_view_header }}</div>
                     <div class="header">{{ _("Cat *** CATEGORY FOR TABLE HEADER") }}</div>
@@ -34,6 +38,7 @@
                         </div>
                         {% if player %}
                             <div class="cell place">({{ ordinal_integer(player.rank)|safe }})</div>
+                            <div class="cell title">{{ player.title.short_name }}</div>
                             <div class="cell name">{{ player.full_name }}</div>
                             <div class="cell">{{ player.rating_str }}</div>
                             <div class="cell">{{ player.category.short_name }}</div>
