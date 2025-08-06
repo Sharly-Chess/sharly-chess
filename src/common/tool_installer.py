@@ -26,9 +26,11 @@ class ToolInstaller(ABC):
     """An abstract class for tools and libs to check installation and install.
     Classes inheriting from this class should just implement methods check_file() and install()."""
 
-    def __init__(self, name: str, version: Version):
+    def __init__(self, name: str, version: Version, licence_files: list[str] | None = None, licence_type: str | None = None):
         self.name: str = name
         self.version: Version = version
+        self.licence_files = licence_files or []
+        self.licence_type = licence_type
 
     @property
     @abstractmethod
@@ -102,8 +104,9 @@ class WebLibInstaller(ToolInstaller, ABC):
         lib_install_folder_name: str,
         version_folder_name: str,
         lib_files: list[str],
+        licence_files: list[str] | None = None,
     ):
-        super().__init__(name, version)
+        super().__init__(name, version, licence_files)
         self.lib_install_dir: Path = self.lib_dir / lib_install_folder_name
         self.version_folder_name: str = version_folder_name.format(version=self.version)
         self.version_install_dir: Path = self.lib_install_dir / self.version_folder_name
@@ -128,12 +131,15 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
         lib_files: list[str],
         archive_url: str,
         archive_filename: str,
+        licence_files: list[str] | None = None,
+        licence_type: str | None = None,
     ):
         super().__init__(
-            name, version, lib_install_folder_name, version_folder_name, lib_files
+            name, version, lib_install_folder_name, version_folder_name, lib_files, licence_files
         )
         self.archive_url = archive_url.format(version=self.version)
         self.archive_filename = archive_filename.format(version=self.version)
+        self.licence_type = licence_type
 
     def install(self) -> bool:
         self.version_install_dir.mkdir(parents=True, exist_ok=True)
@@ -142,12 +148,37 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
         print_interactive_info(f'Installing to {self.version_install_dir}...')
         shutil.unpack_archive(archive_file, TMP_DIR)
         archive_dir: Path = TMP_DIR / self.version_folder_name
+        # Copy requested library files
         for lib_file in self.lib_files:
             src_file: Path = TMP_DIR / self.version_folder_name / lib_file
             dst_file: Path = self.version_install_dir / lib_file
             dst_dir: Path = dst_file.parent
             dst_dir.mkdir(parents=True, exist_ok=True)
             shutil.copy(src_file, dst_dir)
+
+        # Copy specified licence files preserving their relative paths
+        if self.licence_files:
+            extracted_licence_files = []
+            for licence_file in self.licence_files:
+                # Handle licence file paths within the archive
+                src_file: Path = TMP_DIR / self.version_folder_name / licence_file
+                if src_file.exists():
+                    # Preserve the full relative path for the destination
+                    dst_file: Path = self.version_install_dir / licence_file
+                    dst_dir: Path = dst_file.parent
+                    dst_dir.mkdir(parents=True, exist_ok=True)
+                    try:
+                        shutil.copy2(src_file, dst_file)
+                        extracted_licence_files.append(licence_file)
+                        logger.debug(f'Extracted licence file: {licence_file} -> {licence_file} for {self.name}')
+                    except Exception as e:
+                        logger.warning(f'Failed to copy licence file {licence_file}: {e}')
+                else:
+                    logger.warning(f'Licence file not found in archive: {licence_file} for {self.name}')
+
+            if extracted_licence_files:
+                print_interactive_info(f'Extracted licence files for {self.name}: {extracted_licence_files}')
+
         archive_file.unlink(missing_ok=True)
         shutil.rmtree(archive_dir)
         print_interactive_success('Done.')
@@ -161,6 +192,7 @@ class WebLibFileInstaller(WebLibInstaller):
         version: Version,
         url: str,
         lib_file: str,
+        licence_type: str | None = None,
     ):
         super().__init__(
             name,
@@ -172,6 +204,7 @@ class WebLibFileInstaller(WebLibInstaller):
             ],
         )
         self.url: str = url.format(version=self.version)
+        self.licence_type = licence_type
 
     def install(self) -> bool:
         self.check_file.parent.mkdir(parents=True, exist_ok=True)
@@ -195,8 +228,8 @@ class SystemHandler:
 class ExecutableInstaller(ToolInstaller, ABC):
     """Abstract installer for tools containing a executable"""
 
-    def __init__(self):
-        super().__init__(self._name, self._version)
+    def __init__(self, licence_files: list[str] | None = None):
+        super().__init__(self._name, self._version, licence_files)
 
     @property
     @abstractmethod
@@ -230,6 +263,11 @@ class ExecutableInstaller(ToolInstaller, ABC):
 
 
 class BbpPairingsInstaller(ExecutableInstaller):
+    def __init__(self):
+        # Specify which files in the archive are licence files
+        licence_files = ['LICENSE.txt', 'Apache-2.0.txt']
+        super().__init__(licence_files=licence_files)
+
     @property
     def _name(self) -> str:
         return 'bbpPairings'
@@ -293,6 +331,10 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
 
 class PapiConverterInstaller(ExecutableInstaller):
+    def __init__(self):
+        # Specify which files in the archive are licence files
+        super().__init__()
+
     @cached_property
     def system_handler(self) -> SystemHandler:
         system = platform.system()
