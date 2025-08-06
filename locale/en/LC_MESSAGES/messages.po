@@ -3139,10 +3139,16 @@ msgstr ""
 msgid "Pairings by board ({num})"
 msgstr ""
 
+msgid "Pairings by board ({tournament_name})"
+msgstr ""
+
 msgid "Pairings by player"
 msgstr ""
 
 msgid "Pairings by player ({num})"
+msgstr ""
+
+msgid "Pairings by player ({tournament_name})"
 msgstr ""
 
 msgid "Pairings disabled while check-in is open."
@@ -3653,6 +3659,9 @@ msgstr ""
 msgid "Ranking ({num})"
 msgstr ""
 
+msgid "Ranking ({tournament_name})"
+msgstr ""
+
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr ""
@@ -3783,6 +3792,9 @@ msgid "Results entry"
 msgstr ""
 
 msgid "Results entry ({num})"
+msgstr ""
+
+msgid "Results entry ({tournament_name})"
 msgstr ""
 
 msgid "Results for round #{round}"
@@ -5609,4 +5621,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "XResults entry ({tournament_name})"
+#~ msgstr ""
 
