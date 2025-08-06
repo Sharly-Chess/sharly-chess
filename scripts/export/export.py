@@ -186,6 +186,15 @@ def create_project():
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
     tools_dir: Path = PROJECT_DIR / 'tools'
     tools_dir.mkdir(parents=True, exist_ok=True)
+    bbp_pairings: BbpPairings = BbpPairings()
+    bbp_pairings_dir: Path = (
+        tools_dir / 'bbpPairings' / f'bbpPairings-v{bbp_pairings.version}'
+    )
+    bbp_pairings_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(
+        'Copying [%s] to [%s]...', bbp_pairings.executable_dir, bbp_pairings_dir
+    )
+    shutil.copytree(bbp_pairings.executable_dir, bbp_pairings_dir, dirs_exist_ok=True)
     # create an empty events dir
     events_dir: Path = PROJECT_DIR / EVENTS_FOLDER
     events_dir.mkdir(exist_ok=True)
