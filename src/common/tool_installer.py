@@ -265,9 +265,6 @@ class BbpPairingsInstaller(ExecutableInstaller):
                     f'{self._name} is not available for the current system: {system}'
                 )
 
-    def get_export_dir(self, base_path: Path) -> Path:
-        return base_path / 'tools' / 'bbpPairings' / self.system_handler.executable_dir
-
     @property
     def install_dir(self) -> Path:
         return self.executable_dir

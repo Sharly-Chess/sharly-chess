@@ -138,10 +138,6 @@ class BbpPairings(PairingEngine):
     BYE_ID = 0
 
     @property
-    def executable_dir(self) -> Path:
-        return self.bbp_pairings_dir
-
-    @property
     def executable_path(self) -> Path:
         return BbpPairingsInstaller().executable_path
 
