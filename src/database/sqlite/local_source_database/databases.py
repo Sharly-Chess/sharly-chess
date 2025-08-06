@@ -303,6 +303,22 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.file.unlink(missing_ok=True)
         tmp_file.rename(self.file)
         self.release_lock()
+
+        # Validate that the database file is actually a SQLite database before creating indexes
+        try:
+            import sqlite3
+            # Test if we can open the database
+            test_conn = sqlite3.connect(str(self.file))
+            test_conn.execute('SELECT 1')  # Simple test query
+            test_conn.close()
+        except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
+            logger.error(
+                self.log_prefix
+                + _('Generated database file is not a valid SQLite database: {error}.').format(error=e)
+            )
+            self.file.unlink(missing_ok=True)
+            return self.stop_update(False)
+
         self._create_indexes()
 
         self.stored_source_database.updated_at = time.time()
