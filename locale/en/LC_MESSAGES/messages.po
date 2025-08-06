@@ -5622,6 +5622,3 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
-#~ msgid "XResults entry ({tournament_name})"
-#~ msgstr ""
-

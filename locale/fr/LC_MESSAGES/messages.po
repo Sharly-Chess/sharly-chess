@@ -2799,6 +2799,9 @@ msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 msgid "No pairings."
 msgstr "Aucun appariement."
 
+msgid "No passed events (only public events are displayed on clients)."
+msgstr "Aucun évènement passé (seuls les évènements publics sont montrés sur les afficheurs)."
+
 msgid "No passed events."
 msgstr "Aucun évènement passé."
 
