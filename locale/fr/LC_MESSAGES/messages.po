@@ -3340,11 +3340,17 @@ msgstr "Appariements par échiquier"
 msgid "Pairings by board ({num})"
 msgstr "App. par échiquier ({num})"
 
+msgid "Pairings by board ({tournament_name})"
+msgstr "Appariements par échiquier ({tournament_name})"
+
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
 msgid "Pairings by player ({num})"
 msgstr "App. par ordre alpha. ({num})"
+
+msgid "Pairings by player ({tournament_name})"
+msgstr "Appariements par ordre alphabétique ({tournament_name})"
 
 msgid "Pairings disabled while check-in is open."
 msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
@@ -3858,6 +3864,9 @@ msgstr "Classement %f-%l"
 msgid "Ranking ({num})"
 msgstr "Classement ({num})"
 
+msgid "Ranking ({tournament_name})"
+msgstr "Classement ({tournament_name})"
+
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr "Classement après la ronde %(round)d"
@@ -3992,6 +4001,9 @@ msgstr "Saisie des résultats"
 
 msgid "Results entry ({num})"
 msgstr "Saisie des résultats ({num})"
+
+msgid "Results entry ({tournament_name})"
+msgstr "Saisie des résultats ({tournament_name})"
 
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
@@ -4307,11 +4319,11 @@ msgstr "Système de Haley dégressif"
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
 
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
-msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
-
 msgid "Sonneborn-Berger"
 msgstr "Sonneborn-Berger"
+
+msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
+msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
 
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."
@@ -6004,6 +6016,12 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "Please ask the organizer to get the password."
-#~ msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
+#~ msgid "No current events (only public events are displayed on clients)."
+#~ msgstr "Aucun évènement en cours (seuls les évènements publics sont montrés sur les afficheurs)."
+
+#~ msgid "No passed events (only public events are displayed on clients)."
+#~ msgstr "Aucun évènement passé (seuls les évènements publics sont montrés sur les afficheurs)."
+
+#~ msgid "No upcoming events (only public events are displayed on clients)."
+#~ msgstr "Aucun évènement à venir (seuls les évènements publics sont montrés sur les afficheurs)."
 

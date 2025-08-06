@@ -144,7 +144,7 @@ class StaticUtils:
                 )
         prefix, suffix = affix_fn(value)
         return _('{prefix}{int_value}<sup>{suffix}</sup>').format(
-            prefix='', int_value=value, suffix=suffix
+            prefix=prefix, int_value=value, suffix=suffix
         )
 
     @staticmethod
@@ -158,9 +158,7 @@ class StaticUtils:
     @staticmethod
     @cache
     def _ordinal_affix_fr(value: int) -> tuple[str, str]:
-        if value == 1:
-            return '', 're'
-        return '', 'e'
+        return '', 'er' if value == 1 else 'e'
 
 
 class SharedUtils:
