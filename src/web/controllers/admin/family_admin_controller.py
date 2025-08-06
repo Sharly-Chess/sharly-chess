@@ -222,7 +222,7 @@ class FamilyAdminController(BaseEventAdminController):
                     case 'boards':
                         pass
                     case 'input':
-                        input_exit_button = WebContext.form_data_to_bool(
+                        input_exit_button = WebContext.form_data_to_bool_or_none(
                             data, 'input_exit_button'
                         )
                     case 'players':

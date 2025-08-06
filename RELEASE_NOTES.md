@@ -45,6 +45,7 @@ English version below
 - Ajout de la possibilité de ne pas afficher les adversaires sur les écrans d'appariements par ordre alphabétique (2.8.0)
 - Correction de la suppression des résultats (2.8.2)
 - Correction de l'affichage des points sur les écrans (2.8.4)
+- Correction de l'affichage des boutons de sortie sur les écrans de saisie (2.8.6)
 
 ### Gestion des prix
 
@@ -115,6 +116,7 @@ English version below
 - Added the possibility not to show the opponents on pairings screens by alphabetical order (2.8.0)
 - Fixed deletion of results (2.8.2)
 - Fixed the display of points on screens (2.8.4)
+- Fixed the display of exit button on input screens (2.8.6)
 
 ### Prizes management
 
