@@ -17,6 +17,7 @@ English version below
 ### Gestion des évènements
 
 - Correction d'un bug à la création des évènements (2.8.5)
+- Ajout d'un bouton pour créer les évènements depuis la page des archives (2.8.6)
 
 ### Gestion des tournois
 
@@ -90,6 +91,7 @@ English version below
 ### Event management
 
 - Fixed a bug on event creation (2.8.5)
+- Added a button to create events from the Archives page (2.8.6)
 
 ### Tournaments management
 
