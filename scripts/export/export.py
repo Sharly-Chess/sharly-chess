@@ -150,9 +150,7 @@ def build_exe():
     custom_dir: Path = SOURCE_DIR / 'custom'
     files += [file for file in custom_dir.glob('**/*') if file.is_file()]
     files += [file for file in LOCALE_DIR.glob('**/*.mo') if file.is_file()]
-    files += [
-        file for file in BbpPairings().executable_dir.glob('**/*') if file.is_file()
-    ]
+    files += [BbpPairings().executable_path]
     files += [
         FFE_SQL_SERVER_CREDENTIALS_FILE,
     ]
