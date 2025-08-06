@@ -32,6 +32,7 @@ English version below
 - Calcul de la catégorie des joueur·euses relativement à la date du tournoi (2.8.0)
 - Clarification des sources de données de joueur·euses (2.8.0)
 - Amélioration du filtrage sur le nom et le club (2.8.3)
+- Correction des identifiants FIDE invalides dans les fichiers Papi (2.8.6)
 
 ### Gestion des appariements
 
@@ -103,6 +104,7 @@ English version below
 - Calculation of the players' category relative to the date of the tournament (2.8.0)
 - Clarification of player data sources (2.8.0)
 - Improved filtering on players' name and club (2.8.3)
+- Fixed invalid FIDE IDs in Papi files (2.8.6)
 
 ### Pairings management
 
