@@ -676,10 +676,8 @@ class Engine(ABC):
                             asset_name,
                             version,
                             ' or '.join(
-                                map(
-                                    lambda valid_asset_name: f'[{valid_asset_name}]',
-                                    valid_asset_names,
-                                )
+                                f'[{valid_asset_name}]'
+                                for valid_asset_name in valid_asset_names
                             ),
                         )
                         continue
@@ -689,10 +687,8 @@ class Engine(ABC):
                             asset_name,
                             version,
                             ' or '.join(
-                                map(
-                                    lambda valid_asset_name: f'[{valid_asset_name}]',
-                                    valid_asset_names,
-                                )
+                                f'[{valid_asset_name}]'
+                                for valid_asset_name in valid_asset_names
                             ),
                         )
                         continue
