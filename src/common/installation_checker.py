@@ -28,6 +28,7 @@ class InstallationChecker:
             ],
             'https://github.com/twbs/bootstrap/releases/download/v{version}/bootstrap-{version}-dist.zip',
             'bootstrap-{version}-dist.zip',
+            licence_type="MIT",
         ),
         WebLibArchiveInstaller(
             'Bootstrap icons',
@@ -41,6 +42,7 @@ class InstallationChecker:
             ],
             'https://github.com/twbs/icons/releases/download/v{version}/bootstrap-icons-{version}.zip',
             'bootstrap-icons-{version}.zip',
+            licence_type="MIT",
         ),
         WebLibArchiveInstaller(
             'Sortable',
@@ -52,6 +54,7 @@ class InstallationChecker:
             ],
             'https://github.com/SortableJS/Sortable/archive/refs/tags/{version}.zip',
             'Sortable-{version}.zip',
+            licence_type="MIT",
         ),
         WebLibArchiveInstaller(
             'jsTree',
@@ -67,6 +70,7 @@ class InstallationChecker:
             ],
             'https://github.com/vakata/jstree/archive/refs/tags/{version}.zip',
             'jstree-{version}.zip',
+            licence_type="MIT",
         ),
         WebLibArchiveInstaller(
             'MorphDom',
@@ -78,6 +82,7 @@ class InstallationChecker:
             ],
             'https://github.com/patrick-steele-idem/morphdom/archive/refs/tags/v{version}.zip',
             'morphdom-{version}.zip',
+            licence_type="MIT",
         ),
         WebLibArchiveInstaller(
             'Select2',
@@ -90,48 +95,7 @@ class InstallationChecker:
             ],
             'https://github.com/select2/select2/archive/refs/tags/{version}.zip',
             'select2-{version}.zip',
-        ),
-        WebLibFileInstaller(
-            'jQuery',
-            SharlyChessConfig.jquery_version,
-            'https://code.jquery.com/jquery-{version}.min.js',
-            'jquery/jquery-{version}.min.js',
-        ),
-        WebLibFileInstaller(
-            'HTMX',
-            SharlyChessConfig.htmx_version,
-            'https://unpkg.com/htmx.org@{version}/dist/htmx.min.js',
-            'htmx/htmx-{version}/htmx.min.js',
-        ),
-        WebLibFileInstaller(
-            'HTMX Preload extension',
-            SharlyChessConfig.htmx_preload_version,
-            'https://unpkg.com/htmx-ext-preload@{version}',
-            'htmx/preload-{version}/preload.js',
-        ),
-        WebLibFileInstaller(
-            'HTMX Remove me extension',
-            SharlyChessConfig.htmx_remove_me_version,
-            'https://unpkg.com/htmx-ext-remove-me@{version}',
-            'htmx/remove-me-{version}/remove-me.js',
-        ),
-        WebLibFileInstaller(
-            'HTMX Multi swap extension',
-            SharlyChessConfig.htmx_multi_swap_version,
-            'https://unpkg.com/htmx-ext-multi-swap@{version}',
-            'htmx/multi-swap-{version}/multi-swap.js',
-        ),
-        WebLibFileInstaller(
-            'HTMX SSE extension',
-            SharlyChessConfig.htmx_sse_version,
-            'https://unpkg.com/htmx-ext-sse@{version}',
-            'htmx/sse-{version}/sse.js',
-        ),
-        WebLibFileInstaller(
-            'jQuery',
-            SharlyChessConfig.jquery_version,
-            'https://code.jquery.com/jquery-{version}.min.js',
-            'jquery/jquery-{version}.min.js',
+            licence_type="MIT",
         ),
         WebLibFileInstaller(
             'Select2 Bootstrap Theme',
@@ -139,6 +103,48 @@ class InstallationChecker:
             'https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@{version}'
             '/dist/select2-bootstrap-5-theme.min.css',
             'select2/themes/bootstrap-5-{version}.min.css',
+            licence_type="MIT",
+        ),
+        WebLibFileInstaller(
+            'jQuery',
+            SharlyChessConfig.jquery_version,
+            'https://code.jquery.com/jquery-{version}.min.js',
+            'jquery/jquery-{version}.min.js',
+            licence_type="MIT",
+        ),
+        WebLibFileInstaller(
+            'HTMX',
+            SharlyChessConfig.htmx_version,
+            'https://unpkg.com/htmx.org@{version}/dist/htmx.min.js',
+            'htmx/htmx-{version}/htmx.min.js',
+            licence_type="Zero-Clause BSD",
+        ),
+        WebLibFileInstaller(
+            'HTMX Preload extension',
+            SharlyChessConfig.htmx_preload_version,
+            'https://unpkg.com/htmx-ext-preload@{version}',
+            'htmx/preload-{version}/preload.js',
+            licence_type="Zero-Clause BSD",
+        ),
+        WebLibFileInstaller(
+            'HTMX Remove me extension',
+            SharlyChessConfig.htmx_remove_me_version,
+            'https://unpkg.com/htmx-ext-remove-me@{version}',
+            'htmx/remove-me-{version}/remove-me.js',
+            licence_type="Zero-Clause BSD",
+        ),
+        WebLibFileInstaller(
+            'HTMX Multi swap extension',
+            SharlyChessConfig.htmx_multi_swap_version,
+            'https://unpkg.com/htmx-ext-multi-swap@{version}',
+            'htmx/multi-swap-{version}/multi-swap.js',
+            licence_type="Zero-Clause BSD",
+        ),
+        WebLibFileInstaller(
+            'HTMX SSE extension',
+            SharlyChessConfig.htmx_sse_version,
+            'https://unpkg.com/htmx-ext-sse@{version}',
+            'htmx/sse-{version}/sse.js',
         ),
     ]
 
