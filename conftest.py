@@ -18,6 +18,7 @@ import requests
 # The WindowsSelectorEventLoop doesn't support subprocess operations
 
 from tests.test_config import TestConfig
+from utils.file import shutil_delete_onerror
 
 
 def pytest_configure(config):
@@ -150,7 +151,7 @@ def set_working_dir(request):
         if item.is_file() or item.is_symlink():
             item.unlink()
         elif item.is_dir():
-            shutil.rmtree(item)
+            shutil.rmtree(item, onerror=shutil_delete_onerror)
 
     os.chdir(TestConfig.TEST_DATA_DIR.resolve())
     return
