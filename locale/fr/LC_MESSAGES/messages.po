@@ -205,12 +205,6 @@ msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tourn
 msgid "Access denied, please authenticate to enter results."
 msgstr "Accès refusé, veuillez vous authentifier pour entrer des résultats."
 
-msgid "Access driver (found)"
-msgstr "Pilote Access (présent)"
-
-msgid "Access driver (not found)"
-msgstr "Pilote Access (absent)"
-
 msgid "Access from the Sharly Chess server"
 msgstr "Accès depuis le serveur Sharly Chess"
 
@@ -880,12 +874,6 @@ msgstr "Connexion à la plateforme ChessEvent"
 
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr "Connexion à la source de données [{data_source}] échouée. Consulter les logs pour plus de détails."
-
-msgid "Connection to the database failed."
-msgstr "La connexion à la base a échoué."
-
-msgid "Connection to the database failed: {error}."
-msgstr "La connexion à la base a échoué : {error}."
 
 msgid "Connection to the server failed."
 msgstr "La connexion au serveur a échoué."
@@ -3011,9 +2999,6 @@ msgstr "Adversaire Elo [Pts]"
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
-
-msgid "Other ODBC drivers found on the server"
-msgstr "Autres pilotes ODBC sur le serveur"
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
@@ -5510,9 +5495,6 @@ msgstr "classement complet"
 msgid "time control"
 msgstr "temps"
 
-msgid "timeout"
-msgstr "temps dépassé"
-
 msgid "timer"
 msgstr "chrono"
 
@@ -5579,4 +5561,22 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Access driver (found)"
+#~ msgstr "Pilote Access (présent)"
+
+#~ msgid "Access driver (not found)"
+#~ msgstr "Pilote Access (absent)"
+
+#~ msgid "Connection to the database failed."
+#~ msgstr "La connexion à la base a échoué."
+
+#~ msgid "Connection to the database failed: {error}."
+#~ msgstr "La connexion à la base a échoué : {error}."
+
+#~ msgid "Other ODBC drivers found on the server"
+#~ msgstr "Autres pilotes ODBC sur le serveur"
+
+#~ msgid "timeout"
+#~ msgstr "temps dépassé"
 

@@ -205,12 +205,6 @@ msgstr ""
 msgid "Access denied, please authenticate to enter results."
 msgstr ""
 
-msgid "Access driver (found)"
-msgstr ""
-
-msgid "Access driver (not found)"
-msgstr ""
-
 msgid "Access from the Sharly Chess server"
 msgstr ""
 
@@ -879,12 +873,6 @@ msgid "Connection to the ChessEvent platform"
 msgstr ""
 
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
-msgstr ""
-
-msgid "Connection to the database failed."
-msgstr ""
-
-msgid "Connection to the database failed: {error}."
 msgstr ""
 
 msgid "Connection to the server failed."
@@ -3010,9 +2998,6 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
-msgstr ""
-
-msgid "Other ODBC drivers found on the server"
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
@@ -5510,9 +5495,6 @@ msgstr ""
 msgid "time control"
 msgstr ""
 
-msgid "timeout"
-msgstr ""
-
 msgid "timer"
 msgstr ""
 
@@ -5579,4 +5561,22 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Access driver (found)"
+#~ msgstr ""
+
+#~ msgid "Access driver (not found)"
+#~ msgstr ""
+
+#~ msgid "Connection to the database failed."
+#~ msgstr ""
+
+#~ msgid "Connection to the database failed: {error}."
+#~ msgstr ""
+
+#~ msgid "Other ODBC drivers found on the server"
+#~ msgstr ""
+
+#~ msgid "timeout"
+#~ msgstr ""
 

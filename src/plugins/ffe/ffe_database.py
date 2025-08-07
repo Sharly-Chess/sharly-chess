@@ -1,4 +1,5 @@
 import os.path
+import sqlite3
 import zipfile
 from contextlib import suppress
 from datetime import datetime
@@ -143,10 +144,7 @@ class FfeDatabase(LocalSourceDatabase):
                 )
                 self.commit()
         except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
-            logger.error(
-                self.log_prefix
-                + _('Error creating database indexes: {error}.').format(error=e)
-            )
+            logger.error(self.log_prefix + f'Error creating database indexes: {e}.')
             raise
 
     @staticmethod
