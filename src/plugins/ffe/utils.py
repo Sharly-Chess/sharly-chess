@@ -8,10 +8,8 @@ from common.i18n import _
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
-from data.pairings import PairingVariation, PairingSystem, systems, variations
 from plugins.ffe import PLUGIN_NAME
-from plugins.pairing_acceleration import pairing_variations as accelerations
-from plugins.utils import PluginCoreMapper, PluginUtils, PluginData
+from plugins.utils import PluginUtils, PluginData
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -159,48 +157,3 @@ class FfePlayerPluginData(PluginData):
                 'ffe_league': self.league,
             }
         )
-
-
-class PapiPairingSystem(PluginCoreMapper[str, PairingSystem]):
-    @classmethod
-    def _core_object_by_plugin_value(cls) -> dict[str, PairingSystem]:
-        return {
-            'Suisse': systems.SwissPairingSystem(),
-            'ToutesRondes': systems.RoundRobinPairingSystem(),
-        }
-
-
-class PapiPairingVariation(PluginCoreMapper[str, PairingVariation]):
-    """Mapper of the pairing variations in the Papi database."""
-
-    @classmethod
-    def _core_object_by_plugin_value(cls) -> dict[str, PairingVariation]:
-        from plugins.ffe.ffe_entity import NicoisSwissVariation
-
-        return {
-            'Standard': variations.StandardSwissVariation(),
-            'Haley': accelerations.HaleySwissVariation(),
-            'HaleySoft': accelerations.HaleySoftSwissVariation(),
-            'SAD': accelerations.ProgressiveSwissVariation(),
-            'Nicois': NicoisSwissVariation(),
-            'Berger': variations.BergerRoundRobinVariation(),
-        }
-
-    @classmethod
-    def get_plugin_value(cls, core_object: PairingVariation) -> str | None:
-        if core_object == variations.DoubleBergerRoundRobinVariation():
-            core_object = variations.BergerRoundRobinVariation()
-        return super().get_plugin_value(core_object)
-
-
-class PapiThreePointsForAWin(PluginCoreMapper[str, bool]):
-    @classmethod
-    def _core_object_by_plugin_value(cls) -> dict[str, bool]:
-        return {
-            'OUI': True,
-            'NON': False,
-        }
-
-    @classmethod
-    def get_core_object(cls, plugin_value: str) -> bool:
-        return cls._core_object_by_plugin_value()[plugin_value.upper()]

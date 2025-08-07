@@ -43,16 +43,8 @@ class PapiTieBreakManager(EntityManager[TieBreak]):
         return [
             tie_break_type
             for tie_break_type in TieBreakManager.entity_types()
-            if tie_break_type().papi_id is not None
+            if tie_break_type.static_papi_id() is not None
         ]
-
-    @classmethod
-    def type_by_papi_id(cls) -> dict[str, type[TieBreak]]:
-        return {
-            str(entity_type.static_papi_id()): entity_type
-            for entity_type in cls.entity_types()
-            if entity_type.static_papi_id() is not None
-        }
 
 
 class TieBreakOptionManager(EntityManager[TieBreakOption]):

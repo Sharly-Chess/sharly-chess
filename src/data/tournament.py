@@ -19,6 +19,7 @@ from common.logger import get_logger
 
 from data.board import Board
 from data.family import Family
+from data.pairings.variations import SwissVariation
 from data.player import Player, Federation, Club
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -324,7 +325,12 @@ class Tournament:
     def pairing_variation(self) -> 'PairingVariation':
         from data.pairings import PairingVariationManager
 
-        return PairingVariationManager.get_object(self.stored_tournament.pairing)
+        variation_id = self.stored_tournament.pairing
+        return (
+            PairingVariationManager.get_object(variation_id)
+            if variation_id
+            else SwissVariation()
+        )
 
     @property
     def pairing_system(self) -> 'PairingSystem':
@@ -1105,7 +1111,9 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = event_database.set_tournament_last_result_update(self.id)
+            self.stored_tournament.last_result_update = (
+                event_database.set_tournament_last_result_update(self.id)
+            )
             event_database.commit()
 
         self.clear_cache()
@@ -1133,7 +1141,9 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = event_database.set_tournament_last_result_update(self.id)
+            self.stored_tournament.last_result_update = (
+                event_database.set_tournament_last_result_update(self.id)
+            )
             event_database.commit()
         self.clear_cache()
         board.white_player.clear_cache()

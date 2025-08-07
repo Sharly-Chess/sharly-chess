@@ -412,59 +412,11 @@ class Result(IntEnum):
 
 
 class TournamentRating(IntEnum):
-    """A wrapper around the tournament rating used stored in the papi db."""
+    """A wrapper around the tournament rating type."""
 
     STANDARD = 1
     RAPID = 2
     BLITZ = 3
-
-    @classmethod
-    def from_papi_value(cls, value) -> 'TournamentRating':
-        match value:
-            case 'Elo':
-                return cls.STANDARD
-            case 'Rapide':
-                return cls.RAPID
-            case 'Blitz':
-                return cls.BLITZ
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case TournamentRating.STANDARD:
-                return 'Elo'
-            case TournamentRating.RAPID:
-                return 'Rapide'
-            case TournamentRating.BLITZ:
-                return 'Blitz'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
-    @property
-    def papi_value_field(self) -> str:
-        match self:
-            case TournamentRating.STANDARD:
-                return 'Elo'
-            case TournamentRating.RAPID:
-                return 'Rapide'
-            case TournamentRating.BLITZ:
-                return 'Blitz'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
-    @property
-    def papi_type_field(self) -> str:
-        match self:
-            case TournamentRating.STANDARD:
-                return 'Fide'
-            case TournamentRating.RAPID:
-                return 'RapideFide'
-            case TournamentRating.BLITZ:
-                return 'BlitzFide'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
     @property
     def form_key(self) -> str:
@@ -526,30 +478,6 @@ class PlayerGender(IntEnum):
     @classmethod
     def values(cls) -> tuple[int, ...]:
         return tuple(item.value for item in cls)
-
-    @classmethod
-    def from_papi_value(cls, value: str) -> 'PlayerGender':
-        match value:
-            case '':
-                return cls.NONE
-            case 'F' | 'f':
-                return cls.FEMALE
-            case 'M' | 'm':
-                return cls.MALE
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case PlayerGender.NONE:
-                return ''
-            case PlayerGender.FEMALE:
-                return 'F'
-            case PlayerGender.MALE:
-                return 'M'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerGender':
