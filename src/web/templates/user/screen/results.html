@@ -24,7 +24,7 @@
                         {% with white_player=board.white_player %}
                          {% with black_player=board.black_player %}
                         {% if print_tournament %}<td scope="row" class="tournament bg-transparent">{{ tournament.uniq_id }}</td>{% endif %}
-                        <td scope="row" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.index }}</td>
+                        <td scope="row" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.number }}</td>
                         <td scope="row" class="player bg-transparent">{{ white_player.full_name }} {{ white_player.rating_str }}</td>
                         <td scope="row" class="score bg-transparent text-center">{{ board.result_str }}</td>
                         <td scope="row" class="player bg-transparent">{{ black_player.full_name }} {{ black_player.rating_str }}</td>
