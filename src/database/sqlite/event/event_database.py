@@ -16,7 +16,6 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -44,7 +43,6 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
-    from data.pairing import Pairing
     from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
@@ -1782,7 +1780,7 @@ class EventDatabase(MigrationDatabase):
             round_=row['round'],
             result=row['result'],
             board_id=row['board_id'],
-            illegal_moves=row.get('illegal_moves', 0),
+            illegal_moves=row['illegal_moves'],
         )
 
     def load_tournament_player_stored_pairings(
@@ -1853,7 +1851,7 @@ class EventDatabase(MigrationDatabase):
             white_player_id=row['white_player_id'],
             black_player_id=row['black_player_id'],
             index=row['index'],
-            last_result_update=row.get('last_result_update'),
+            last_result_update=row['last_result_update'],
         )
 
     def load_tournament_stored_boards_by_round(
@@ -1861,10 +1859,7 @@ class EventDatabase(MigrationDatabase):
     ) -> dict[int, list[StoredBoard]]:
         self.execute(
             (
-                'SELECT `board`.`id`, `board`.`white_player_id`, `board`.`black_player_id`, '
-                '`board`.`index`, '
-                'datetime(`board`.`last_result_update`, "unixepoch") as last_result_update, '
-                '`pairing`.`round` '
+                'SELECT `board`.*, `pairing`.`round` '
                 'FROM `board` INNER JOIN `pairing` '
                 'ON `board`.`id` = `pairing`.`board_id` '
                 'WHERE `pairing`.`tournament_id` = ? '
@@ -1909,139 +1904,25 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_board(self, board_id: int):
         self.execute('DELETE FROM `board` WHERE `id` = ?;', (board_id,))
 
-    # ---------------------------------------------------------------------------------
-    # Illegal moves
-    # ---------------------------------------------------------------------------------
+    def update_board_last_result_update(self, board_id: int, clear: bool = False) -> float | None:
+        """Updates board timestamp"""
 
-    def get_stored_illegal_moves(self, tournament_id: int, round_: int) -> Counter[int]:
-        """Get illegal move counts for all players in a tournament round."""
-        self.execute(
-            'SELECT `player_id`, `illegal_moves` '
-            'FROM `pairing` '
-            'WHERE `tournament_id` = ? AND `round` = ? AND `illegal_moves` > 0',
-            (tournament_id, round_),
-        )
-        illegal_moves: Counter[int] = Counter[int]()
-        for row in self.fetchall():
-            illegal_moves[int(row['player_id'])] = int(row['illegal_moves'])
-        return illegal_moves
 
-    def add_stored_illegal_move(
-        self, tournament_id: int, round_: int, player_id: int
-    ) -> int:
-        """Increment illegal move count for a player. Returns new count."""
-        self._set_tournament_last_illegal_move_update(tournament_id)
-
-        self.execute(
-            'UPDATE `pairing` SET `illegal_moves` = `illegal_moves` + 1 '
-            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
-            (tournament_id, player_id, round_),
-        )
-
-        if self.cursor.rowcount == 0:
-            raise RuntimeError(f'No pairing found for tournament {tournament_id}, player {player_id}, round {round_}')
-
-        self.execute(
-            'SELECT `illegal_moves` FROM `pairing` '
-            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
-            (tournament_id, player_id, round_),
-        )
-        row = self.fetchone()
-        return int(row['illegal_moves'])
-
-    def delete_stored_illegal_move(
-        self, tournament_id: int, round_: int, player_id: int
-    ) -> bool:
-        """Decrement illegal move count for a player. Returns True if count was > 0."""
-        self._set_tournament_last_illegal_move_update(tournament_id)
-
-        self.execute(
-            'UPDATE `pairing` SET `illegal_moves` = MAX(0, `illegal_moves` - 1) '
-            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ? AND `illegal_moves` > 0',
-            (tournament_id, player_id, round_),
-        )
-
-        self.execute(
-            'SELECT `illegal_moves` FROM `pairing` '
-            'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
-            (tournament_id, player_id, round_),
-        )
-        row = self.fetchone()
-        return int(row['illegal_moves'])
-
-    # ---------------------------------------------------------------------------------
-    # results
-    # ---------------------------------------------------------------------------------
-
-    def update_board_result_from_pairing(self, pairing: 'Pairing') -> float:
-        """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
-        from utils.enum import Result as UtilResult
-
-        date: float = self.set_tournament_last_result_update(pairing.stored_pairing.tournament_id)
-
-        if pairing.stored_pairing.board_id:
-            if pairing.result == UtilResult.NO_RESULT:
-                self.execute(
-                    'UPDATE `board` SET `last_result_update` = NULL WHERE `id` = ?',
-                    (pairing.stored_pairing.board_id,),
-                )
-            else:
-                self.execute(
-                    'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
-                    (date, pairing.stored_pairing.board_id),
-                )
-
-        return date
-
-    def get_stored_results(
-        self, limit: int, tournament_ids: list[int], max_age: int
-    ) -> list[DataResult]:
-        params: list = [time.time() - max_age * 60]
-
-        # Build base query - only get the pairing for the white player to avoid duplicates
-        query: str = (
-            'SELECT '
-            '    p.tournament_id, p.round, p.board_id, '
-            '    b.white_player_id, b.black_player_id, p.result as value, '
-            '    b.last_result_update as date '
-            'FROM `pairing` p '
-            'INNER JOIN `board` b ON p.board_id = b.id '
-            'WHERE b.last_result_update IS NOT NULL AND b.last_result_update > ? '
-            'AND p.board_id IS NOT NULL '
-            'AND p.player_id = b.white_player_id '
-        )
-
-        # Add tournament filter if tournament_ids provided
-        if tournament_ids:
-            query += f'AND ({" OR ".join(["p.tournament_id = ?"] * len(tournament_ids))}) '
-            params += tournament_ids
-
-        query += 'ORDER BY b.last_result_update DESC'
-        if limit:
-            query += ' LIMIT ?'
-            params += [
-                limit,
-            ]
-        self.execute(query, tuple(params))
-        results: list[DataResult] = []
-        for row in self.fetchall():
-            try:
-                value: UtilResult = UtilResult.from_papi_value(int(row['value']))
-            except ValueError:
-                logger.warning('Invalid result [%s] found in database.', row['value'])
-                continue
-            results.append(
-                DataResult(
-                    row['date'],
-                    row['tournament_id'],
-                    row['round'],
-                    row['board_id'],
-                    row['white_player_id'],
-                    row['black_player_id'],
-                    value,
-                )
+        if clear:
+            self.execute(
+                'UPDATE `board` SET `last_result_update` = NULL WHERE `id` = ?',
+                (board_id,),
             )
-        return results
+            return None
+        else:
+            date = time.time()
+
+            self.execute(
+                'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
+                (date, board_id),
+            )
+
+            return date
 
     # ---------------------------------------------------------------------------------
     # StoredFamily

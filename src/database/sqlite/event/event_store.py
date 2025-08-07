@@ -92,7 +92,7 @@ class StoredBoard:
     white_player_id: int
     black_player_id: int | None
     index: int
-    last_result_update: datetime | None = None
+    last_result_update: float | None = None
 
 @dataclass
 class StoredTournamentPlayer:

@@ -2,7 +2,7 @@
 {% with print_tournament=tournament_ids|length > 1 %}
 <h2 class="set-title text-center">{{ screen.name }}</h2>
 <div class="row screen-set-row mx-0 w-100">
-    {% for results in screen.results_lists %}
+    {% for result_boards in screen.results_lists %}
         <div class="col-auto mx-auto screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
             <table class="table table-striped table-sm bg-light">
                 <thead class="table-dark">
@@ -16,17 +16,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for result in results %}
+                {% for board in result_boards %}
                     <tr class="result-row">
-                        <td scope="row" class="time bg-transparent text-center">{{ result.timestamp_str }}</td>
-                        {% with tournament=user_event.tournaments_by_id[result.tournament_id] %}
+                        <td scope="row" class="time bg-transparent text-center">{{ board.last_result_update_str }}</td>
+                        {% with tournament=board.tournament %}
                         {% with players_by_id=tournament.players_by_id %}
-                        {% with white_player=players_by_id[result.white_player_id] %}
-                        {% with black_player=players_by_id[result.black_player_id] %}
+                        {% with white_player=board.white_player %}
+                         {% with black_player=board.black_player %}
                         {% if print_tournament %}<td scope="row" class="tournament bg-transparent">{{ tournament.uniq_id }}</td>{% endif %}
-                        <td scope="row" class="board-number bg-transparent text-center">{{ result.round }}.{{ result.board_id }}</td>
+                        <td scope="row" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.index }}</td>
                         <td scope="row" class="player bg-transparent">{{ white_player.full_name }} {{ white_player.rating_str }}</td>
-                        <td scope="row" class="score bg-transparent text-center">{{ result.result_str }}</td>
+                        <td scope="row" class="score bg-transparent text-center">{{ board.result_str }}</td>
                         <td scope="row" class="player bg-transparent">{{ black_player.full_name }} {{ black_player.rating_str }}</td>
                         {% endwith %}
                         {% endwith %}
