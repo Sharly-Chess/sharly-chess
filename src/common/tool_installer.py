@@ -1,4 +1,5 @@
 import platform
+import stat
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -244,30 +245,50 @@ class BbpPairingsInstaller(ExecutableInstaller):
             case 'Windows':
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
-                    executable_filename='bbpPairings.exe',
-                    archive_filename=f'bbpPairings-v{self.version}-x86_64-pc-windows.zip',
+                    executable_filename='bbpPairings-windows.exe',
+                    archive_filename=f'bbpPairings-Windows.zip',
+                )
+            case 'Darwin':
+                return SystemHandler(
+                    executable_dir=f'bbpPairings-v{self.version}',
+                    executable_filename='bbpPairings-macos',
+                    archive_filename=f'bbpPairings-macOS.zip',
                 )
             case 'Linux':
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
-                    executable_filename='bbpPairings.exe',
-                    archive_filename=f'bbpPairings-v{self.version}-x86_64-pc-linux.tar.gz',
+                    executable_filename='bbpPairings-linux',
+                    archive_filename=f'bbpPairings-Linux.zip',
                 )
             case _:
                 raise OSError(
                     f'{self._name} is not available for the current system: {system}'
                 )
 
+    @property
+    def install_dir(self) -> Path:
+        return self.executable_dir
+
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename
         build_url: str = (
-            'https://github.com/BieremaBoyzProgramming/bbpPairings'
-            f'/releases/download/v{self.version}/{archive_filename}'
+            'https://github.com/Sharly-Chess/bbpPairings'
+            f'/releases/download/v{self.version}-sc/{archive_filename}'
         )
         self.install_dir.mkdir(parents=True, exist_ok=True)
         archive_path: Path = self.install_dir / archive_filename
         self.download_file(build_url, archive_path)
         self.install_archive_and_delete(archive_path, self.install_dir)
+
+        # Set execute permissions for macOS and Linux
+        system = platform.system()
+        if system in ['Darwin', 'Linux']:
+            if self.executable_path.exists():
+                # Add execute permission for owner, group, and others
+                current_permissions = self.executable_path.stat().st_mode
+                new_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                self.executable_path.chmod(new_permissions)
+
         return self.is_installed
 
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Allow incoming network connections -->
+    <key>com.apple.security.network.server</key>
+    <true/>
+    
+    <!-- Allow outgoing network connections -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    
+    <!-- Allow file system access for reading/writing data files -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    
+    <!-- Allow execution of other programs (for bbpPairings) -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    
+    <!-- Disable library validation for bundled libraries -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+    
+    <!-- Allow JIT for Python -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    
+    <!-- Allow Apple Events to control Terminal -->
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+    
+    <!-- Allow loading of dynamically extracted native libraries -->
+    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    <true/>
+    
+    <!-- Disable code signature enforcement for loaded libraries -->
+    <key>com.apple.security.cs.disable-executable-page-protection</key>
+    <true/>
+</dict>
+</plist>

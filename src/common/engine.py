@@ -5,6 +5,8 @@ import shutil
 import time
 import webbrowser
 import zipfile
+import platform
+import subprocess
 from abc import ABC, abstractmethod
 from datetime import datetime
 from json import JSONDecodeError
@@ -666,17 +668,13 @@ class Engine(ABC):
                     continue
                 download_url: str | None = None
                 for asset in assets:
-                    valid_asset_name: str = f'sharly-chess-{version}.zip'
-                    if (
-                        asset_name := asset.get('name', 'undefined')
-                    ) == f'papi-web-{version}.zip':
-                        logger.debug(
-                            'Old asset name [%s] found in release [%s] (expected [%s]), asset ignored.',
-                            asset_name,
-                            version,
-                            valid_asset_name,
-                        )
-                        continue
+                    # Determine expected asset name based on platform
+                    if platform.system() == 'Windows':
+                        valid_asset_name: str = f'sharly-chess-{version}-windows.zip'
+                    else:
+                        valid_asset_name: str = f'sharly-chess-{version}-macos.dmg'
+                    asset_name = asset.get('name', 'undefined')
+                    
                     if asset_name != valid_asset_name:
                         logger.debug(
                             '[%s] is not a valid asset name in release [%s] (expected [%s]), asset ignored.',
@@ -747,12 +745,44 @@ class Engine(ABC):
             if response.status_code != 200:
                 logger.error('Downloading failed with code [%d].', response.status_code)
                 return False
-            zip_file = TMP_DIR / f'sharly-chess-{version}.zip'
-            zip_file.write_bytes(response.content)
-            logger.debug('File downloaded: [%s].', zip_file)
-            new_version_dir.mkdir()
-            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-                zip_ref.extractall(new_version_dir)
+            # Determine downloaded file name based on platform
+            if platform.system() == 'Windows':
+                downloaded_file = TMP_DIR / f'sharly-chess-{version}-windows.zip'
+            else:
+                downloaded_file = TMP_DIR / f'sharly-chess-{version}-macos.dmg'
+            downloaded_file.write_bytes(response.content)
+            logger.debug('File downloaded: [%s].', downloaded_file)
+
+            if platform.system() == 'Windows':
+                # For Windows: Unzip the file
+                new_version_dir.mkdir()
+                with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                    zip_ref.extractall(new_version_dir)
+            else:
+                # For Mac: Handle the DMG file
+                mount_point = TMP_DIR / f'mount-{version}'
+                mount_point.mkdir(exist_ok=True)
+                try:
+                    # Mount the DMG
+                    subprocess.run(['hdiutil', 'attach', str(downloaded_file), '-mountpoint', str(mount_point)], check=True)
+                    dmg_content = list(mount_point.iterdir())
+                    if len(dmg_content) == 1 and dmg_content[0].is_dir():
+                        # Copy the folder from DMG to the new version directory
+                        # Use cp -R to preserve code signatures and extended attributes
+                        subprocess.run(['cp', '-R', str(dmg_content[0]), str(new_version_dir.parent)], check=True)
+                    else:
+                        logger.error('DMG does not contain exactly one folder as expected.')
+                        return False
+                finally:
+                    # Always try to unmount the DMG, even if copying failed
+                    try:
+                        subprocess.run(['hdiutil', 'detach', str(mount_point)], check=True)
+                    except subprocess.CalledProcessError:
+                        logger.warning('Failed to unmount DMG at [%s]', mount_point)
+                    # Clean up the mount point directory
+                    if mount_point.exists():
+                        shutil.rmtree(mount_point, ignore_errors=True)
+
             logger.info(
                 'New release [%s] has been installed in [%s].',
                 version,
@@ -761,4 +791,10 @@ class Engine(ABC):
             return True
         except RequestException as ex:
             logger.warning('Failed to read [%s]: [%s].', download_url, ex)
+            return False
+        except subprocess.CalledProcessError as ex:
+            logger.error('Failed to process DMG file: [%s]', ex)
+            return False
+        except Exception as ex:
+            logger.error('Unexpected error during installation: [%s]', ex)
             return False

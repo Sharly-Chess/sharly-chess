@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import platform
 import subprocess
 from functools import cache
 from operator import attrgetter
