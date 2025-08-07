@@ -12,6 +12,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
 from data.input_output.dict_reader import dict_to_dataclass, DictReaderException
+from data.player import PlayerRating
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
@@ -25,8 +26,12 @@ from plugins.ffe.papi_mappers import (
     PapiTournamentRating,
     PapiTieBreakMapper,
     PapiThreePointsForAWin,
+    PapiPlayerGender,
+    PapiPlayerRatingType,
+    PapiPlayerFFELicence,
 )
-from utils.enum import TournamentRating
+from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
+from utils.enum import TournamentRating, PlayerGender, PlayerTitle, PlayerRatingType
 
 
 @dataclass
@@ -71,14 +76,14 @@ class PapiPlayer:
     paid: int | float | None = None
     fideTitle: str | None = None
     elo: int = 0
-    fideElo: str = 'E'
+    fideElo: str | None = None
     rapidElo: int = 0
-    fideRapidElo: str = 'E'
+    fideRapidElo: str | None = None
     blitzElo: int = 0
-    fideBlitzElo: str = 'E'
+    fideBlitzElo: str | None = None
     fideCode: str | None = None
     federation: str = 'FID'
-    licenceType: str = 'N'
+    licenceType: str | None = None
     nrFFE: str | None = None
     refFFE: int | None = None
     league: str | None = None
@@ -92,6 +97,15 @@ class PapiPlayer:
 class PapiData:
     variables: PapiVariables
     players: list[PapiPlayer]
+
+
+@dataclass
+class PapiRating:
+    value_field: str
+    value: int
+    type_field: str
+    type: str
+    tournament_rating: TournamentRating
 
 
 class PapiConverter:
@@ -304,7 +318,7 @@ class PapiConverter:
                 raise_unknown_value(f'tiebreak{index + 1}', papi_tie_break)
         stored_tournament.tie_breaks = tie_breaks
         three_points_for_a_win = False
-        if variables.ratingClass:
+        if variables.pointSystem:
             try:
                 three_points_for_a_win = PapiThreePointsForAWin.get_core_object(
                     variables.pointSystem
@@ -346,11 +360,92 @@ class PapiConverter:
                     ),
                 )
 
+        gender = PlayerGender.NONE
+        if papi_player.gender:
+            try:
+                gender = PapiPlayerGender.get_core_object(papi_player.gender)
+            except KeyError:
+                raise_unknown_value('gender', papi_player.gender)
+        title = PlayerTitle.NONE
+        if papi_player.fideTitle:
+            try:
+                gender = PapiPlayerGender.get_core_object(papi_player.fideTitle)
+            except KeyError:
+                raise_unknown_value('fideTitle', papi_player.fideTitle)
+
+        ratings: dict[int, dict[str, int]] = {}
+        papi_ratings = [
+            PapiRating(
+                'elo',
+                papi_player.elo,
+                'fideElo',
+                papi_player.fideElo,
+                TournamentRating.STANDARD,
+            ),
+            PapiRating(
+                'rapidElo',
+                papi_player.rapidElo,
+                'fideRapidElo',
+                papi_player.fideRapidElo,
+                TournamentRating.RAPID,
+            ),
+            PapiRating(
+                'blitzElo',
+                papi_player.blitzElo,
+                'fideBlitzElo',
+                papi_player.fideRapidElo,
+                TournamentRating.BLITZ,
+            ),
+        ]
+        for papi_rating in papi_ratings:
+            if papi_rating.value < 0:
+                raise_exception(
+                    papi_rating.value_field, _('A positive integer is expected')
+                )
+            rating_type = PlayerRatingType.ESTIMATED
+            if papi_rating.type:
+                try:
+                    rating_type = PapiPlayerRatingType.get_core_object(papi_rating.type)
+                except KeyError:
+                    raise_unknown_value(papi_rating.type_field, papi_rating.type)
+            ratings[papi_rating.tournament_rating.value] = PlayerRating(
+                papi_rating.value, rating_type
+            ).stored_value
+
+        ffe_licence = PlayerFFELicence.NONE
+        if papi_player.licenceType:
+            try:
+                ffe_licence = PapiPlayerFFELicence.get_core_object(
+                    papi_player.licenceType
+                )
+            except KeyError:
+                raise_unknown_value('licenceType', papi_player.licenceType)
         return StoredPlayer(
             id=None,
             last_name=papi_player.lastName,
             first_name=papi_player.firstName,
             date_of_birth=date_of_birth,
+            gender=gender.value,
+            mail=papi_player.email,
+            phone=papi_player.phone,
+            comment=papi_player.comment,
+            owed=float(papi_player.owed or 0),
+            paid=float(papi_player.paid or 0),
+            title=title,
+            ratings=ratings,
+            fide_id=None,
+            federation=papi_player.federation,
+            club=papi_player.club,
+            fixed=papi_player.fixedBoard,
+            check_in=papi_player.checkedIn,
+            plugin_data={
+                PLUGIN_NAME: FfePlayerPluginData(
+                    ffe_id=papi_player.refFFE,
+                    ffe_licence=ffe_licence,
+                    ffe_licence_number=papi_player.nrFFE,
+                    league=papi_player.league,
+                )
+            },
         )
 
     def _read_papi_round(

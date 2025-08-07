@@ -539,62 +539,6 @@ class PlayerCategory(IntEnum):
     O50 = 9
     O65 = 10
 
-    @classmethod
-    def from_papi_value(cls, value: str) -> 'PlayerCategory':
-        match value:
-            case '':
-                return cls.NONE
-            case 'Ppo':
-                return cls.U8
-            case 'Pou':
-                return cls.U10
-            case 'Pup':
-                return cls.U12
-            case 'Ben':
-                return cls.U14
-            case 'Min':
-                return cls.U16
-            case 'Cad':
-                return cls.U18
-            case 'Jun':
-                return cls.U20
-            case 'Sen':
-                return cls.O20
-            case 'Sep':
-                return cls.O50
-            case 'Vet':
-                return cls.O65
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case PlayerCategory.NONE:
-                return ''
-            case PlayerCategory.U8:
-                return 'Ppo'
-            case PlayerCategory.U10:
-                return 'Pou'
-            case PlayerCategory.U12:
-                return 'Pup'
-            case PlayerCategory.U14:
-                return 'Ben'
-            case PlayerCategory.U16:
-                return 'Min'
-            case PlayerCategory.U18:
-                return 'Cad'
-            case PlayerCategory.U20:
-                return 'Jun'
-            case PlayerCategory.O20:
-                return 'Sen'
-            case PlayerCategory.O50:
-                return 'Sep'
-            case PlayerCategory.O65:
-                return 'Vet'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
     @property
     def short_name(self) -> str:
         match self:
@@ -698,30 +642,6 @@ class PlayerRatingType(IntEnum):
     NATIONAL = 2
     FIDE = 3
 
-    @classmethod
-    def from_papi_value(cls, value: str) -> 'PlayerRatingType':
-        match value:
-            case 'E' | None:
-                return cls.ESTIMATED
-            case 'N':
-                return cls.NATIONAL
-            case 'F':
-                return cls.FIDE
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case PlayerRatingType.ESTIMATED:
-                return 'E'
-            case PlayerRatingType.NATIONAL:
-                return 'N'
-            case PlayerRatingType.FIDE:
-                return 'F'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
     @property
     def name(self) -> str:
         match self:
@@ -764,50 +684,6 @@ class PlayerTitle(IntEnum):
     INTERNATIONAL_MASTER = 6
     WOMAN_GRANDMASTER = 7
     GRANDMASTER = 8
-
-    @classmethod
-    def from_papi_value(cls, value: str) -> 'PlayerTitle':
-        match value.strip():
-            case '':
-                return PlayerTitle.NONE
-            case 'ff':
-                return PlayerTitle.WOMAN_FIDE_MASTER
-            case 'f':
-                return PlayerTitle.FIDE_MASTER
-            case 'mf':
-                return PlayerTitle.WOMAN_INTERNATIONAL_MASTER
-            case 'm':
-                return PlayerTitle.INTERNATIONAL_MASTER
-            case 'gf':
-                return PlayerTitle.WOMAN_GRANDMASTER
-            case 'g':
-                return PlayerTitle.GRANDMASTER
-            case _:
-                raise ValueError(f'Unknown title value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case (
-                PlayerTitle.NONE
-                | PlayerTitle.WOMAN_CANDIDATE_MASTER
-                | PlayerTitle.CANDIDATE_MASTER
-            ):
-                return ''
-            case PlayerTitle.WOMAN_FIDE_MASTER:
-                return 'ff'
-            case PlayerTitle.FIDE_MASTER:
-                return 'f'
-            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
-                return 'mf'
-            case PlayerTitle.INTERNATIONAL_MASTER:
-                return 'm'
-            case PlayerTitle.WOMAN_GRANDMASTER:
-                return 'gf'
-            case PlayerTitle.GRANDMASTER:
-                return 'g'
-            case _:
-                raise ValueError(f'Unknown title: {self}')
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerTitle':

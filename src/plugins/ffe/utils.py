@@ -51,34 +51,6 @@ class PlayerFFELicence(IntEnum):
     A = 2
     B = 3
 
-    @classmethod
-    def from_papi_value(cls, value: str) -> Self:
-        match value:
-            case '' | None:
-                return cls(cls.NONE)
-            case 'N':
-                return cls(cls.N)
-            case 'A':
-                return cls(cls.A)
-            case 'B':
-                return cls(cls.B)
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case PlayerFFELicence.NONE:
-                return ''
-            case PlayerFFELicence.N:
-                return 'N'
-            case PlayerFFELicence.A:
-                return 'A'
-            case PlayerFFELicence.B:
-                return 'B'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
     @property
     def name(self) -> str:
         match self:
