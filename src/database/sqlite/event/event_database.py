@@ -1974,24 +1974,18 @@ class EventDatabase(MigrationDatabase):
     # ---------------------------------------------------------------------------------
 
     def update_board_result_from_pairing(self, pairing: 'Pairing') -> float:
-        """Updates pairing result and board timestamp. Clears board timestamp if result is NO_RESULT."""
+        """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
         from utils.enum import Result as UtilResult
 
         date: float = self.set_tournament_last_result_update(pairing.stored_pairing.tournament_id)
 
-        # Update the pairing result in the database
-        self.update_stored_pairing(pairing.stored_pairing)
-
-        # Update or clear the board's last_result_update timestamp based on result
         if pairing.stored_pairing.board_id:
             if pairing.result == UtilResult.NO_RESULT:
-                # Clear timestamp when result is cleared
                 self.execute(
                     'UPDATE `board` SET `last_result_update` = NULL WHERE `id` = ?',
                     (pairing.stored_pairing.board_id,),
                 )
             else:
-                # Set timestamp when result is added/updated
                 self.execute(
                     'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
                     (date, pairing.stored_pairing.board_id),

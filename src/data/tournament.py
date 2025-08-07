@@ -1035,12 +1035,13 @@ class Tournament:
         """Store an illegal move for the given `player`, for the current
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            if illegal_moves := event_database.add_stored_illegal_move(
+            illegal_moves = event_database.add_stored_illegal_move(
                 self.id, self.current_round, player.id
-            ):
+            )
+            if illegal_moves != player.illegal_moves:
                 player.illegal_moves = illegal_moves
+                logger.info('An illegal move has been recorded for player [%s].', player.id)
             event_database.commit()
-        logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current
@@ -1253,7 +1254,6 @@ class Tournament:
                     black_player_id=None,
                     index=max(board.index for board in self.get_round_boards(round_nb))
                     + 1,
-                    last_result_update=None
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id
