@@ -768,9 +768,7 @@ class Tournament:
         """Set the tournament for the given round (defaults to the current round)"""
         if round_ is None:
             round_ = self.current_round
-        illegal_moves: Counter[int] = self.get_illegal_moves(round_)
         for player in self.players:
-            player.illegal_moves = illegal_moves[player.id]
             self.set_player_points(player, before_round=round_)
         self._estimate_players(self.players, after_round=round_)
         if self.handicap:
@@ -1035,34 +1033,17 @@ class Tournament:
         """Store an illegal move for the given `player`, for the current
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            if event_database.add_stored_illegal_move(
-                self.id, self.current_round, player.id
-            ):
-                player.illegal_moves += 1
+            player.pairings[self.current_round].add_illegal_move(event_database)
             event_database.commit()
-        logger.info('An illegal move has been recorded for player [%s].', player.id)
 
     def delete_illegal_move(self, player: Player) -> bool:
-        """Deletes one illegal move for the given `player` for the current
-        round. If no illegal move was stored, don't do anything in the database."""
+        """Deletes one illegal move for the given `player` for the current round."""
+        deleted: bool = False
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            deleted: bool = event_database.delete_stored_illegal_move(
-                self.id, self.current_round, player.id
-            )
+            player.pairings[self.current_round].delete_illegal_move(event_database)
             event_database.commit()
-        if deleted:
-            player.illegal_moves -= 1
-            player.illegal_moves = max(player.illegal_moves, 0)
-            logger.info('An illegal move has been deleted for player [%s].', player.id)
-        else:
-            logger.info('No illegal move found for player [%s].', player.id)
+            deleted = True
         return deleted
-
-    def get_illegal_moves(self, at_round: int) -> Counter[int]:
-        """Retrieves all the illegal moves for the round *at_round*.
-        Returns a Counter, ordered by player id."""
-        with EventDatabase(self.event.uniq_id) as event_database:
-            return event_database.get_stored_illegal_moves(self.id, at_round)
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
         """Returns a correct round number that corresponds the best to a given round number."""
@@ -1118,13 +1099,13 @@ class Tournament:
         assert board.black_player is not None
 
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            self.stored_tournament.last_result_update = (
-                event_database.add_stored_result(self.id, board, white_result)
-            )
             board.white_pairing.update_result(event_database, white_result)
             board.black_pairing.update_result(
                 event_database, white_result.opposite_result
             )
+
+            board.set_last_result_update(board.white_pairing.result, event_database)
+            self.stored_tournament.last_result_update = event_database.set_tournament_last_result_update(self.id)
             event_database.commit()
 
         self.clear_cache()
@@ -1149,11 +1130,10 @@ class Tournament:
         """Deletes the result for the given `board`."""
         assert board.black_player is not None
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            self.stored_tournament.last_result_update = (
-                event_database.delete_stored_result(self.id, board.round, board.id)
-            )
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
+            board.set_last_result_update(board.white_pairing.result, event_database)
+            self.stored_tournament.last_result_update = event_database.set_tournament_last_result_update(self.id)
             event_database.commit()
         self.clear_cache()
         board.white_player.clear_cache()

@@ -3,7 +3,7 @@ All the classes of this module are basic data classes stored in the event databa
 """
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
@@ -83,6 +83,7 @@ class StoredPairing:
     round_: int
     result: int
     board_id: int | None
+    illegal_moves: int = 0
 
 
 @dataclass
@@ -91,7 +92,7 @@ class StoredBoard:
     white_player_id: int
     black_player_id: int | None
     index: int
-
+    last_result_update: float | None = None
 
 @dataclass
 class StoredTournamentPlayer:
@@ -338,21 +339,3 @@ class EventMetadata(BaseStoredEvent):
     family_count: int = 0
     rotator_count: int = 0
     last_tournament_update: float | None = None
-
-
-@dataclass
-class StoredIllegalMove:
-    id: int | None
-    tournament_id: int
-    round: int
-    player_id: int
-    date: float
-
-
-@dataclass
-class StoredResult:
-    id: int | None
-    tournament_id: int
-    board_id: int
-    result: int
-    date: float

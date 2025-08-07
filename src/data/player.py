@@ -123,7 +123,6 @@ class Player:
         self.board_id: int | None = None
         self.board_number: int | None = None
         self.color: BoardColor | None = None
-        self.illegal_moves: int = 0
         self._tie_break_values: list['SupportsRichComparison'] | None = None
         self._rank: int | None = None
         self.time_control_initial_time: int | None = None

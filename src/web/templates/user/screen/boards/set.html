@@ -79,10 +79,10 @@
                                                 [{{ wp.points_str }}]
                                             </td>
                                         {% endif %}
-                                        {% with player=wp %}{% with opponent=bp %}
+                                        {% with player=wp, opponent=bp, pairing=board.white_pairing %}
                                             {% include 'board_row_illegal_moves_cell.html' %}
                                             {% include 'board_row_player_cell.html' %}
-                                        {% endwith %}{% endwith %}
+                                        {% endwith %}
                                         <td
                                             class="score bg-transparent text-center"
                                             {% if editable %}
@@ -96,10 +96,10 @@
                                         >
                                             {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
                                         </td>
-                                        {% with player=bp %}{% with opponent=wp %}
+                                        {% with player=bp, opponent=wp, pairing=board.black_pairing %}
                                             {% include 'board_row_illegal_moves_cell.html' %}
                                             {% include 'board_row_player_cell.html' %}
-                                        {% endwith %}{% endwith %}
+                                        {% endwith %}
                                         {% if tournament.print_real_points %}
                                             <td
                                                 class="points bg-transparent text-center"

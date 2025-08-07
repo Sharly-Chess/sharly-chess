@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional, Literal
 
 from common import format_timestamp
 from database.sqlite.event.event_store import StoredBoard
+from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result, PlayerRatingType
 
 if TYPE_CHECKING:
@@ -11,7 +12,6 @@ if TYPE_CHECKING:
     from data.pairing import Pairing
     from data.player import Player
     from data.tournament import Tournament
-    from database.sqlite.event.event_database import EventDatabase
 
 
 @total_ordering
@@ -91,6 +91,14 @@ class Board:
     def result_str(self) -> str:
         return str(self.result)
 
+    @property
+    def last_result_update(self) -> float | None:
+        return self.stored_board.last_result_update
+
+    @property
+    def last_result_update_str(self) -> str:
+        return format_timestamp(self.last_result_update) if self.last_result_update else ''
+
     def replace_player(
         self, new_player: 'Player', player_color: Literal['white', 'black']
     ):
@@ -119,6 +127,12 @@ class Board:
                 database.update_stored_pairing(self.white_pairing.stored_pairing)
                 database.update_stored_pairing(self.black_pairing.stored_pairing)
             database.commit()
+
+    def set_last_result_update(self, new_result: Result, database: EventDatabase):
+        """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
+        self.stored_board.last_result_update = database.update_board_last_result_update(
+            self.identifier, clear=new_result == Result.NO_RESULT
+        )
 
     def to_pgn(
         self,

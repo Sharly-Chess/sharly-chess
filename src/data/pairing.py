@@ -3,6 +3,8 @@ from typing import Callable, TYPE_CHECKING
 
 from trf.Player import Game as TrfGame
 
+from logging import Logger
+from common.logger import get_logger
 from data.board import Board
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPairing
@@ -12,6 +14,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.player import Player
 
+logger: Logger = get_logger()
 
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
@@ -48,6 +51,10 @@ class Pairing:
     def result(self) -> Result:
         return Result(self.stored_pairing.result)
 
+    @property
+    def illegal_moves(self) -> int:
+        return self.stored_pairing.illegal_moves
+
     def update_result(self, event_database: EventDatabase, result: Result):
         self.stored_pairing.result = result.value
         self.update(event_database)
@@ -58,6 +65,23 @@ class Pairing:
         else:
             event_database.add_stored_pairing(self.stored_pairing)
             self.exists = True
+
+    def add_illegal_move(self, event_database: EventDatabase):
+        if self.illegal_moves < self.player.tournament.record_illegal_moves:
+            self.stored_pairing.illegal_moves += 1
+            self.update(event_database)
+            logger.info('An illegal move has been recorded for player [%s].', self.player.id)
+            return True
+
+    def delete_illegal_move(self, event_database: EventDatabase):
+        if self.illegal_moves > 0:
+            self.stored_pairing.illegal_moves -= 1
+            self.update(event_database)
+            logger.info('An illegal move has been deleted for player [%s].', self.player.id)
+            return True
+        else:
+            logger.info('No illegal move found for player [%s].', self.player.id)
+            return False
 
     @property
     def zero_point_bye(self) -> bool:

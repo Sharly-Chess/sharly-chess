@@ -16,8 +16,6 @@ from packaging.version import Version
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.board import Board
-from data.result import Result as DataResult
 from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -27,8 +25,6 @@ from database.sqlite.event.event_store import (
     StoredTimer,
     StoredTimerHour,
     StoredFamily,
-    StoredIllegalMove,
-    StoredResult,
     StoredRotator,
     StoredScreenSet,
     StoredScreen,
@@ -1784,6 +1780,7 @@ class EventDatabase(MigrationDatabase):
             round_=row['round'],
             result=row['result'],
             board_id=row['board_id'],
+            illegal_moves=row['illegal_moves'],
         )
 
     def load_tournament_player_stored_pairings(
@@ -1805,7 +1802,7 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_pairing,
-            ['tournament_id', 'player_id', 'result', 'board_id'],
+            ['tournament_id', 'player_id', 'result', 'board_id', 'illegal_moves'],
         ) | {'round': stored_pairing.round_}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1815,7 +1812,7 @@ class EventDatabase(MigrationDatabase):
         )
 
     def update_stored_pairing(self, stored_pairing: StoredPairing):
-        fields = self._get_fields_dict(stored_pairing, ['result', 'board_id'])
+        fields = self._get_fields_dict(stored_pairing, ['result', 'board_id', 'illegal_moves'])
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(
             (
@@ -1854,6 +1851,7 @@ class EventDatabase(MigrationDatabase):
             white_player_id=row['white_player_id'],
             black_player_id=row['black_player_id'],
             index=row['index'],
+            last_result_update=row['last_result_update'],
         )
 
     def load_tournament_stored_boards_by_round(
@@ -1906,198 +1904,25 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_board(self, board_id: int):
         self.execute('DELETE FROM `board` WHERE `id` = ?;', (board_id,))
 
-    # ---------------------------------------------------------------------------------
-    # Illegal moves
-    # ---------------------------------------------------------------------------------
+    def update_board_last_result_update(self, board_id: int, clear: bool = False) -> float | None:
+        """Updates board timestamp"""
 
-    @staticmethod
-    def _row_to_stored_illegal_move(row: dict[str, Any]) -> StoredIllegalMove:
-        return StoredIllegalMove(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            round=row['round'],
-            player_id=row['player_id'],
-            date=row['date'],
-        )
 
-    def _get_stored_illegal_move(
-        self,
-        illegal_move_id: int,
-    ) -> StoredIllegalMove | None:
-        self.execute(
-            'SELECT * FROM `illegal_move` WHERE `id` = ?',
-            (illegal_move_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_illegal_move(row)
-        return None
-
-    def get_stored_illegal_moves(self, tournament_id: int, round_: int) -> Counter[int]:
-        self.execute(
-            'SELECT `illegal_move`.* '
-            'FROM `illegal_move` '
-            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
-            'WHERE `tournament`.`id` = ? AND `round` = ?',
-            (
-                tournament_id,
-                round_,
-            ),
-        )
-        illegal_moves: Counter[int] = Counter[int]()
-        for row in self.fetchall():
-            illegal_moves[int(row['player_id'])] += 1
-        return illegal_moves
-
-    def add_stored_illegal_move(
-        self, tournament_id: int, round_: int, player_id: int
-    ) -> StoredIllegalMove:
-        self._set_tournament_last_illegal_move_update(tournament_id)
-        fields: list[str] = [
-            'tournament_id',
-            'round',
-            'player_id',
-            'date',
-        ]
-        params: list = [tournament_id, round_, player_id, time.time()]
-        protected_fields = [f'`{f}`' for f in fields]
-        self.execute(
-            f'INSERT INTO `illegal_move`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-            tuple(params),
-        )
-        illegal_move_id: int | None = self._last_inserted_id()
-        if illegal_move_id is None:
-            raise RuntimeError('Illegal move insertion failed')
-        fetched_stored_illegal_move = self._get_stored_illegal_move(illegal_move_id)
-        if fetched_stored_illegal_move is None:
-            raise RuntimeError('Illegal move write failed')
-        return fetched_stored_illegal_move
-
-    def delete_stored_illegal_move(
-        self, tournament_id: int, round_: int, player_id: int
-    ) -> bool:
-        self._set_tournament_last_illegal_move_update(tournament_id)
-        self.execute(
-            'SELECT `id` FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ? AND `player_id` = ? LIMIT 1',
-            (
-                tournament_id,
-                round_,
-                player_id,
-            ),
-        )
-        row: dict[str, Any] = self.fetchone()
-        if not row:
-            return False
-        self.execute(
-            'DELETE FROM `illegal_move` WHERE `id` = ?',
-            (row['id'],),
-        )
-        return True
-
-    # ---------------------------------------------------------------------------------
-    # results
-    # ---------------------------------------------------------------------------------
-
-    @staticmethod
-    def _row_to_stored_result(row: dict[str, Any]) -> StoredResult:
-        return StoredResult(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            board_id=row['board_id'],
-            result=row['result'],
-            date=row['date'],
-        )
-
-    def _get_stored_result(
-        self,
-        result_id: int,
-    ) -> StoredResult | None:
-        self.execute(
-            'SELECT * FROM `result` WHERE `id` = ?',
-            (result_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_result(row)
-        return None
-
-    def add_stored_result(
-        self, tournament_id: int, board: Board, result: UtilResult
-    ) -> float:
-        """Stores a result and return the date of the update."""
-        assert board.black_player is not None
-        date: float = self.set_tournament_last_result_update(tournament_id)
-        self.execute(
-            'INSERT INTO `result`('
-            '    `tournament_id`, `round`, `board_id`, '
-            '    `white_player_id`, `black_player_id`, '
-            '    `value`, `date`'
-            ') VALUES(?, ?, ?, ?, ?, ?, ?)',
-            (
-                tournament_id,
-                board.round,
-                board.id,
-                board.white_player.id,
-                board.black_player.id,
-                result,
-                date,
-            ),
-        )
-        return date
-
-    def delete_stored_result(
-        self, tournament_id: int, round_: int, board_id: int
-    ) -> float:
-        """Deletes a result and return the date of the update."""
-        date: float = self.set_tournament_last_result_update(tournament_id)
-        self.execute(
-            'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
-            (tournament_id, round_, board_id),
-        )
-        return date
-
-    def get_stored_results(
-        self, limit: int, tournament_ids: list[int], max_age: int
-    ) -> list[DataResult]:
-        params: list = [time.time() - max_age * 60]
-        if not tournament_ids:
-            query: str = (
-                'SELECT     * FROM `result` WHERE `date` > ?ORDER BY `date` DESC'
+        if clear:
+            self.execute(
+                'UPDATE `board` SET `last_result_update` = NULL WHERE `id` = ?',
+                (board_id,),
             )
+            return None
         else:
-            query: str = (
-                'SELECT '
-                '    * '
-                'FROM `result` '
-                f'WHERE `date` > ? AND ({" OR ".join(["`tournament_id` = ?"] * len(tournament_ids))}) '
-                'ORDER BY `date` DESC'
+            date = time.time()
+
+            self.execute(
+                'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
+                (date, board_id),
             )
-            params += tournament_ids
-        if limit:
-            query += ' LIMIT ?'
-            params += [
-                limit,
-            ]
-        self.execute(query, tuple(params))
-        results: list[DataResult] = []
-        for row in self.fetchall():
-            try:
-                value: UtilResult = UtilResult.from_papi_value(int(row['value']))
-            except ValueError:
-                logger.warning('Invalid result [%s] found in database.', row['value'])
-                continue
-            results.append(
-                DataResult(
-                    row['date'],
-                    row['tournament_id'],
-                    row['round'],
-                    row['board_id'],
-                    row['white_player_id'],
-                    row['black_player_id'],
-                    value,
-                )
-            )
-        return results
+
+            return date
 
     # ---------------------------------------------------------------------------------
     # StoredFamily
