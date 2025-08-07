@@ -1,7 +1,7 @@
 import asyncio
 import base64
 import json
-from typing import TYPE_CHECKING, Self, Any
+from typing import TYPE_CHECKING, Self, Any, NoReturn
 from pathlib import Path
 from logging import Logger
 from collections.abc import AsyncIterator
@@ -93,8 +93,10 @@ class SqlServer:
                 timeout=self.timeout,
                 autocommit=True,
             )
-            self.cursor = self.database.cursor()
-            logger.info('Successfully connected using python-tds')
+
+            if self.database is not None:
+                self.cursor = self.database.cursor()
+                logger.info('Successfully connected using python-tds')
         except (pytds.Error, TimeoutError) as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
@@ -127,7 +129,7 @@ class SqlServer:
         if not self.cursor:
             raise RuntimeError("Database connection not established")
 
-    def _handle_database_error(self, e: Exception) -> None:
+    def _handle_database_error(self, e: Exception) -> NoReturn:
         """Handle database errors consistently."""
         NetworkMonitor.set_connected(False)
         if DEVEL_ENV:

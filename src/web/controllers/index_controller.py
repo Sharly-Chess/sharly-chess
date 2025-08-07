@@ -196,4 +196,4 @@ class IndexController(BaseController):
         ],
     )
     async def no_content(self) -> Response:
-        return Response(status_code=HTTP_204_NO_CONTENT)
+        return Response(status_code=HTTP_204_NO_CONTENT, content=None)

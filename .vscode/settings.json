@@ -200,10 +200,13 @@
   "files.associations": {
     "*.html": "jinja"
   },
-  "python.analysis.typeCheckingMode": "off",
   "editor.formatOnSave": false,
   "editor.formatOnPaste": false,
   "[jinja]": {
     "editor.formatOnSave": false
-  }
+  },
+  "python.analysis.typeCheckingMode": "off",
+  "mypy-type-checker.importStrategy": "fromEnvironment",
+  "mypy-type-checker.reportingScope": "workspace",
+  "mypy-type-checker.cwd": "${workspaceFolder}/src",
 }
