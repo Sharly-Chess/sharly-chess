@@ -95,7 +95,7 @@ class SqlServer:
             )
             self.cursor = self.database.cursor()
             logger.info('Successfully connected using python-tds')
-        except pytds.Error as e:
+        except (pytds.Error, TimeoutError) as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
                 error_msg = _('Connection to the server failed: {error}.').format(error=str(e))
@@ -127,33 +127,41 @@ class SqlServer:
         if not self.cursor:
             raise RuntimeError("Database connection not established")
 
+    def _handle_database_error(self, e: Exception) -> None:
+        """Handle database errors consistently."""
+        NetworkMonitor.set_connected(False)
+        if DEVEL_ENV:
+            error_msg = _('Request to the database failed: {error}.').format(error=str(e))
+        else:
+            error_msg = _('Request to the database failed.')
+        logger.error(error_msg)
+        raise SharlyChessException(error_msg) from e
+
     async def execute(self, query: str, params: tuple = ()) -> None:
         """Executes the prepared query with the given parameters."""
         self._check_cursor()
         assert self.cursor is not None
         try:
             await asyncio.to_thread(self.cursor.execute, query, params)
-        except pytds.Error as e:
-            if DEVEL_ENV:
-                error: str = _('Request to the database failed: {error}.').format(error=str(e))
-            else:
-                error: str = _('Request to the database failed.')
-            logger.error(error)
-            raise SharlyChessException(error) from e
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def fetchall(self) -> AsyncIterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
         self._check_cursor()
         assert self.cursor is not None
-        
-        # Get column names
-        columns = [column[0] for column in self.cursor.description]
-        
-        # Fetch all rows and convert to dictionaries
-        rows = await asyncio.to_thread(self.cursor.fetchall)
-        for row in rows:
-            yield dict(zip(columns, row))
+
+        try:
+            # Get column names
+            columns = [column[0] for column in self.cursor.description]
+
+            # Fetch all rows and convert to dictionaries
+            rows = await asyncio.to_thread(self.cursor.fetchall)
+            for row in rows:
+                yield dict(zip(columns, row))
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def fetchone(self) -> dict[str, Any] | None:
         """Returns a dictionary from the last executed query, in the format
@@ -162,20 +170,26 @@ class SqlServer:
         and return different row data."""
         self._check_cursor()
         assert self.cursor is not None
-        
-        # Get column names
-        columns = [column[0] for column in self.cursor.description]
-        
-        # Fetch one row
-        row = await asyncio.to_thread(self.cursor.fetchone)
-        return dict(zip(columns, row)) if row else None
+
+        try:
+            # Get column names
+            columns = [column[0] for column in self.cursor.description]
+
+            # Fetch one row
+            row = await asyncio.to_thread(self.cursor.fetchone)
+            return dict(zip(columns, row)) if row else None
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def fetchval(self) -> Any:
         """Returns the next database cursor value."""
         self._check_cursor()
         assert self.cursor is not None
-        row = await asyncio.to_thread(self.cursor.fetchone)
-        return row[0] if row else None
+        try:
+            row = await asyncio.to_thread(self.cursor.fetchone)
+            return row[0] if row else None
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def commit(self):
         """Commits the pending transaction."""
