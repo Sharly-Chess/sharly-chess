@@ -278,7 +278,10 @@ class PapiConverter:
                         next_board_id += 1
                         stored_board.id = board_id
                         stored_boards_by_round[round_nb].append(stored_board)
-                        board_id_by_player_id_by_round[round_nb][player_id] = board_id
+                        if papi_round.opponent is not None:
+                            board_id_by_player_id_by_round[round_nb][
+                                papi_round.opponent
+                            ] = board_id
                     stored_pairing.board_id = board_id
                 stored_tournament_player.stored_pairings.append(stored_pairing)
             stored_player.stored_tournament_player = stored_tournament_player
